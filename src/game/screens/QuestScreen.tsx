@@ -282,8 +282,10 @@ export default function QuestScreen({
               rows={3}
               className="kr-body text-[13px] md:text-[14px] leading-[1.7] w-full mt-2 bg-white/5 border border-white/10 rounded-[14px] px-4 py-3 outline-none focus:border-[#67e8f9] focus:bg-white/10 resize-y placeholder:text-cream/40"
             />
-            <p className="kr-body text-[11px] text-cream/40 mt-1.5">
-              탭 바깥을 누르거나 Ctrl/⌘ + Enter 로 저장.
+            <p className="kr-body text-[11px] text-cream/40 mt-1.5 leading-[1.7]">
+              탭 바깥을 누르거나 Ctrl/⌘ + Enter 로 저장. 저장한 메모는 이 문제를
+              다시 풀 때나 <span className="text-[#67e8f9]">⭐ 북마크</span> 페이지에서
+              언제든 다시 볼 수 있어요.
             </p>
           </div>
         ) : null}

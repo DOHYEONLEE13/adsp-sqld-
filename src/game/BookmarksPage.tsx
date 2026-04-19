@@ -321,8 +321,8 @@ function BookmarkRow({
             className="kr-body text-[13px] leading-[1.7] w-full bg-white/5 border border-white/10 rounded-[12px] px-3 py-2 outline-none focus:border-[#67e8f9] focus:bg-white/10 resize-y placeholder:text-cream/40"
           />
           <div className="flex items-center justify-between mt-1.5">
-            <span className="kr-body text-[11px] text-cream/40">
-              탭 바깥을 누르면 저장
+            <span className="kr-body text-[11px] text-cream/40 leading-[1.7]">
+              탭 바깥을 누르면 저장 · 같은 문제를 다시 풀 때 자동으로 보여요
             </span>
             {draft !== note ? (
               <button

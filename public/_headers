@@ -1,0 +1,10 @@
+# Cloudflare Pages — 전역 응답 헤더.
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# Vite 가 해시된 파일명을 쓰므로 /assets/* 는 길게 캐시.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable

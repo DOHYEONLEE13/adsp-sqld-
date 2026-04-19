@@ -1,0 +1,23 @@
+{
+  "subject": "sqld",
+  "meta": {
+    "version": "0.0.1",
+    "updatedAt": "2026-04-17",
+    "source": "샘플 데이터 — 실제 문제로 교체 예정",
+    "notes": "스키마 검증용 seed file. 실제 배포 시 삭제 또는 대체."
+  },
+  "questions": [
+    {
+      "id": "sqld-2-sample-001",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "type": "fill_blank",
+      "difficulty": 2,
+      "question": "SELECT DEPT_ID, COUNT(*) FROM EMP {{blank}} DEPT_ID;",
+      "answer": "GROUP BY",
+      "explanation": "집계 함수와 함께 부서별 집계를 하려면 GROUP BY 절이 필요합니다."
+    }
+  ]
+}

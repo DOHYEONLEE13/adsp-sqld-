@@ -1,0 +1,4 @@
+# Cloudflare Pages — SPA fallback.
+# 해시 라우팅(#/game, #/stats)을 쓰지만, 미래의 path 기반 경로도 대비해서
+# 모든 미지의 경로를 index.html 로 넘겨 클라이언트 라우팅에 맡깁니다.
+/*    /index.html   200

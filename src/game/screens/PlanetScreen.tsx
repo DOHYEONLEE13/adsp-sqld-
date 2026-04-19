@@ -35,6 +35,7 @@ export default function PlanetScreen({
       subtitle="탐사할 행성(챕터)을 선택하세요. 각 행성에는 여러 존(토픽)이 있습니다."
       onExit={onBack}
       exitLabel="은하로"
+      backgroundImage="/error%20404.gif"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {planets.map((planet) => {

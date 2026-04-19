@@ -3,7 +3,7 @@
  * ADSP / SQLD 가 각각 하나의 "은하" 로 표현됩니다.
  */
 
-import { BarChart3, ChevronRight, Sparkles } from 'lucide-react';
+import { BarChart3, ChevronRight, Sparkles, Star } from 'lucide-react';
 import { SUBJECT_SCHEMAS } from '@/data/subjects';
 import type { Subject } from '@/types/question';
 import { playableCount } from '../session';
@@ -12,6 +12,7 @@ import ProgressBadge from '../components/ProgressBadge';
 import DailyMissionCard from '../components/DailyMissionCard';
 import { aggregateSubject } from '../aggregate';
 import { useProgress } from '../useProgress';
+import { useBookmarks } from '../useBookmarks';
 
 interface Props {
   onSelectSubject: (subject: Subject) => void;
@@ -27,6 +28,8 @@ export default function GalaxyScreen({
   onExit,
 }: Props) {
   const progress = useProgress();
+  const bookmarks = useBookmarks();
+  const bookmarkCount = bookmarks.ids.size;
   // 현재는 데이터 있는 과목 우선 — 가장 많은 플레이 가능 문항 기준.
   const defaultMissionSubject: Subject =
     playableCount('adsp') >= playableCount('sqld') ? 'adsp' : 'sqld';
@@ -36,10 +39,36 @@ export default function GalaxyScreen({
       title="행성을 선택하라"
       subtitle="탐사할 자격증 은하를 선택하세요. 각 은하에는 여러 행성(챕터)이 존재합니다."
       onExit={onExit}
-      backgroundImage="/galaxy-bg.gif"
+      backgroundImage="/error%20404.gif"
     >
-      {/* 대시보드 진입 */}
-      <div className="mb-6 flex justify-end">
+      {/* 대시보드 / 북마크 진입 */}
+      <div className="mb-6 flex justify-end gap-2">
+        <button
+          type="button"
+          onClick={() => {
+            window.location.hash = '/bookmarks';
+          }}
+          className="liquid-glass kr-heading inline-flex items-center gap-2 text-[12px] uppercase tracking-widest px-5 py-3 rounded-full hover:bg-white/10 transition"
+        >
+          <Star
+            size={14}
+            strokeWidth={2.4}
+            className={bookmarkCount > 0 ? 'text-[#fbbf24]' : ''}
+            fill={bookmarkCount > 0 ? 'currentColor' : 'none'}
+          />
+          북마크
+          {bookmarkCount > 0 ? (
+            <span
+              className="ml-1 text-[10px] px-2 py-0.5 rounded-full tabular-nums"
+              style={{
+                background: 'rgba(251,191,36,0.14)',
+                color: '#fbbf24',
+              }}
+            >
+              {bookmarkCount}
+            </span>
+          ) : null}
+        </button>
         <button
           type="button"
           onClick={() => {

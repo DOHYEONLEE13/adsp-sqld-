@@ -3,11 +3,14 @@
  * 정답률 / 소요 시간 / 문항별 정오표 + 리매치 or 다른 토픽 진입 액션.
  */
 
-import { CheckCircle2, Clock, RefreshCcw, XCircle } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { CheckCircle2, Clock, RefreshCcw, Star, XCircle } from 'lucide-react';
 import type { QuestSummary } from '../types';
 import { formatDuration } from '../session';
 import ScreenShell from '../components/ScreenShell';
 import { cx } from '@/lib/utils';
+import { bulkAdd, toggleBookmark } from '../bookmarks';
+import { useBookmarks } from '../useBookmarks';
 
 interface Props {
   summary: QuestSummary;
@@ -24,6 +27,25 @@ export default function ResultScreen({
 }: Props) {
   const accuracyPct = Math.round(summary.accuracy * 100);
   const verdict = verdictFor(summary.accuracy);
+
+  const bookmarks = useBookmarks();
+  const wrongIds = useMemo(
+    () => summary.answers.filter((a) => !a.correct).map((a) => a.questionId),
+    [summary.answers],
+  );
+  const allWrongAlreadyBookmarked =
+    wrongIds.length > 0 && wrongIds.every((id) => bookmarks.ids.has(id));
+  const [bulkFlash, setBulkFlash] = useState<string | null>(null);
+  const handleBulkBookmarkWrong = () => {
+    if (wrongIds.length === 0) return;
+    const added = bulkAdd(wrongIds);
+    setBulkFlash(
+      added === 0
+        ? '이미 모두 북마크 되어 있어요'
+        : `오답 ${added}개를 북마크에 담았어요`,
+    );
+    window.setTimeout(() => setBulkFlash(null), 2400);
+  };
 
   return (
     <ScreenShell
@@ -53,54 +75,110 @@ export default function ResultScreen({
 
       {/* 문항별 정오표 */}
       <section className="mb-10">
-        <h2 className="kr-heading text-[13px] uppercase tracking-widest text-cream/70 mb-4">
-          문항별 결과
-        </h2>
-        <div className="grid grid-cols-1 gap-3">
-          {summary.answers.map((a, i) => (
-            <div
-              key={a.questionId}
+        <div className="flex items-center justify-between gap-4 mb-4">
+          <h2 className="kr-heading text-[13px] uppercase tracking-widest text-cream/70">
+            문항별 결과
+          </h2>
+          {wrongIds.length > 0 ? (
+            <button
+              type="button"
+              onClick={handleBulkBookmarkWrong}
+              disabled={allWrongAlreadyBookmarked}
               className={cx(
-                'liquid-glass rounded-[18px] p-4 md:p-5 flex gap-4 items-start',
-                a.correct
-                  ? 'ring-1 ring-[rgba(111,255,0,0.35)]'
-                  : 'ring-1 ring-[rgba(248,113,113,0.35)]',
+                'kr-heading inline-flex items-center gap-2 text-[11px] uppercase tracking-widest px-4 py-2.5 rounded-full transition',
+                allWrongAlreadyBookmarked
+                  ? 'liquid-glass text-cream/50 cursor-not-allowed'
+                  : 'liquid-glass hover:bg-white/10 text-[#fbbf24]',
               )}
             >
-              <span className="kr-heading text-[12px] uppercase tracking-widest text-cream/60 shrink-0 mt-0.5 min-w-[28px]">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <div className="flex-1">
-                <p className="kr-body text-[13px] md:text-[14px] leading-[1.7]">
-                  {a.question.question}
-                </p>
-                {!a.correct ? (
-                  <p className="kr-body text-[12px] leading-[1.7] text-cream/70 mt-2">
-                    <span className="text-red-400">내 답</span>:{' '}
-                    {a.chosenIndex < 0
-                      ? '시간 초과 (미응답)'
-                      : a.question.choices[a.chosenIndex] ?? '—'}
-                    <br />
-                    <span className="text-neon">정답</span>:{' '}
-                    {a.question.choices[a.question.answerIndex]}
+              <Star
+                size={14}
+                strokeWidth={2.4}
+                fill={allWrongAlreadyBookmarked ? 'currentColor' : 'none'}
+              />
+              {allWrongAlreadyBookmarked
+                ? '오답 북마크 완료'
+                : `오답 ${wrongIds.length}개 북마크`}
+            </button>
+          ) : null}
+        </div>
+        {bulkFlash ? (
+          <div
+            className="liquid-glass kr-body text-[12px] px-4 py-2.5 rounded-full mb-3 inline-flex items-center gap-2"
+            style={{ color: '#fbbf24' }}
+          >
+            <Star size={12} fill="currentColor" />
+            {bulkFlash}
+          </div>
+        ) : null}
+        <div className="grid grid-cols-1 gap-3">
+          {summary.answers.map((a, i) => {
+            const starred = bookmarks.ids.has(a.questionId);
+            return (
+              <div
+                key={a.questionId}
+                className={cx(
+                  'liquid-glass rounded-[18px] p-4 md:p-5 flex gap-4 items-start',
+                  a.correct
+                    ? 'ring-1 ring-[rgba(111,255,0,0.35)]'
+                    : 'ring-1 ring-[rgba(248,113,113,0.35)]',
+                )}
+              >
+                <span className="kr-heading text-[12px] uppercase tracking-widest text-cream/60 shrink-0 mt-0.5 min-w-[28px]">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <div className="flex-1">
+                  <p className="kr-body text-[13px] md:text-[14px] leading-[1.7]">
+                    {a.question.question}
                   </p>
-                ) : null}
+                  {!a.correct ? (
+                    <p className="kr-body text-[12px] leading-[1.7] text-cream/70 mt-2">
+                      <span className="text-red-400">내 답</span>:{' '}
+                      {a.chosenIndex < 0
+                        ? '시간 초과 (미응답)'
+                        : a.question.choices[a.chosenIndex] ?? '—'}
+                      <br />
+                      <span className="text-neon">정답</span>:{' '}
+                      {a.question.choices[a.question.answerIndex]}
+                    </p>
+                  ) : null}
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => toggleBookmark(a.questionId)}
+                    aria-pressed={starred}
+                    aria-label={starred ? '북마크 해제' : '북마크'}
+                    className={cx(
+                      'w-9 h-9 rounded-full inline-flex items-center justify-center transition',
+                      starred
+                        ? 'bg-[rgba(251,191,36,0.14)] text-[#fbbf24]'
+                        : 'text-cream/50 hover:text-[#fbbf24] hover:bg-white/5',
+                    )}
+                  >
+                    <Star
+                      size={16}
+                      strokeWidth={2.2}
+                      fill={starred ? 'currentColor' : 'none'}
+                    />
+                  </button>
+                  {a.correct ? (
+                    <CheckCircle2
+                      className="text-neon"
+                      size={22}
+                      strokeWidth={2.4}
+                    />
+                  ) : (
+                    <XCircle
+                      className="text-red-400"
+                      size={22}
+                      strokeWidth={2.4}
+                    />
+                  )}
+                </div>
               </div>
-              {a.correct ? (
-                <CheckCircle2
-                  className="text-neon shrink-0"
-                  size={22}
-                  strokeWidth={2.4}
-                />
-              ) : (
-                <XCircle
-                  className="text-red-400 shrink-0"
-                  size={22}
-                  strokeWidth={2.4}
-                />
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 

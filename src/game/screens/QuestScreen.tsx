@@ -6,10 +6,19 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
-import { BookOpen, CheckCircle2, Clock, XCircle } from 'lucide-react';
+import {
+  BookOpen,
+  CheckCircle2,
+  Clock,
+  Star,
+  StickyNote,
+  XCircle,
+} from 'lucide-react';
 import type { QuestSession } from '../types';
 import { cx } from '@/lib/utils';
 import ScreenShell from '../components/ScreenShell';
+import { setNote, toggleBookmark } from '../bookmarks';
+import { useBookmarks } from '../useBookmarks';
 
 interface Props {
   session: QuestSession;
@@ -48,6 +57,21 @@ export default function QuestScreen({
 
   // Test mode 타이머 — 문제 바뀔 때마다 리셋.
   const [remainingMs, setRemainingMs] = useState<number>(TEST_TIME_LIMIT_MS);
+
+  // 북마크 · 노트 — 문제 단위 (test flow 에선 비활성).
+  const bookmarks = useBookmarks();
+  const isBookmarked = current ? bookmarks.ids.has(current.id) : false;
+  const savedNote = current ? (bookmarks.notes[current.id] ?? '') : '';
+  const [noteOpen, setNoteOpen] = useState<boolean>(false);
+  const [noteDraft, setNoteDraft] = useState<string>('');
+
+  useEffect(() => {
+    // 문제 바뀌면 노트 초기화 — 저장된 값이 있으면 프리필 + 자동 펼침.
+    setNoteDraft(savedNote);
+    setNoteOpen(savedNote !== '');
+    // savedNote 는 bookmarks 구독으로 바뀌므로 의존성에 직접 넣지 않고 session.index 로 트리거.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session.index]);
 
   useEffect(() => {
     // 문제 바뀔 때마다 local state 리셋.
@@ -187,12 +211,82 @@ export default function QuestScreen({
 
       {/* 문제 지문 */}
       <div className="liquid-glass rounded-[24px] p-6 md:p-8 mb-6">
-        <span className="kr-heading text-[11px] uppercase tracking-widest text-cream/60">
-          Question {progress.curr}
-        </span>
+        <div className="flex items-start justify-between gap-3">
+          <span className="kr-heading text-[11px] uppercase tracking-widest text-cream/60">
+            Question {progress.curr}
+          </span>
+          {!isTest ? (
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => toggleBookmark(current.id)}
+                aria-pressed={isBookmarked}
+                aria-label={isBookmarked ? '북마크 해제' : '북마크'}
+                className={cx(
+                  'w-9 h-9 rounded-full inline-flex items-center justify-center transition',
+                  isBookmarked
+                    ? 'bg-[rgba(251,191,36,0.14)] text-[#fbbf24]'
+                    : 'text-cream/60 hover:text-[#fbbf24] hover:bg-white/5',
+                )}
+              >
+                <Star
+                  size={18}
+                  strokeWidth={2.2}
+                  fill={isBookmarked ? 'currentColor' : 'none'}
+                />
+              </button>
+              <button
+                type="button"
+                onClick={() => setNoteOpen((v) => !v)}
+                aria-expanded={noteOpen}
+                aria-label={noteOpen ? '메모 접기' : '메모 펼치기'}
+                className={cx(
+                  'w-9 h-9 rounded-full inline-flex items-center justify-center transition',
+                  noteOpen || savedNote
+                    ? 'bg-[rgba(103,232,249,0.14)] text-[#67e8f9]'
+                    : 'text-cream/60 hover:text-[#67e8f9] hover:bg-white/5',
+                )}
+              >
+                <StickyNote size={18} strokeWidth={2.2} />
+              </button>
+            </div>
+          ) : null}
+        </div>
         <p className="kr-body text-[15px] md:text-[17px] leading-[1.8] mt-3 whitespace-pre-wrap">
           {current.question}
         </p>
+
+        {/* 메모 입력 — 저장은 blur 에 + Ctrl/Cmd+Enter. */}
+        {!isTest && noteOpen ? (
+          <div className="mt-4 pt-4 border-t border-white/10">
+            <label className="kr-heading text-[11px] uppercase tracking-widest text-[#67e8f9] flex items-center gap-2">
+              <StickyNote size={12} strokeWidth={2.4} />
+              My Note
+            </label>
+            <textarea
+              value={noteDraft}
+              onChange={(e) => setNoteDraft(e.target.value)}
+              onBlur={(e) => {
+                // DOM 값을 직접 읽어야 빠른 blur 에도 마지막 타이핑이 누락되지 않음.
+                const v = e.currentTarget.value;
+                if (v !== savedNote) setNote(current.id, v);
+              }}
+              onKeyDown={(e) => {
+                if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                  const v = (e.currentTarget as HTMLTextAreaElement).value;
+                  setNote(current.id, v);
+                  (e.currentTarget as HTMLTextAreaElement).blur();
+                }
+              }}
+              placeholder="이 문제에 대한 나만의 메모 · 핵심 개념 · 실수한 이유 등..."
+              rows={3}
+              className="kr-body text-[13px] md:text-[14px] leading-[1.7] w-full mt-2 bg-white/5 border border-white/10 rounded-[14px] px-4 py-3 outline-none focus:border-[#67e8f9] focus:bg-white/10 resize-y placeholder:text-cream/40"
+            />
+            <p className="kr-body text-[11px] text-cream/40 mt-1.5">
+              탭 바깥을 누르거나 Ctrl/⌘ + Enter 로 저장.
+            </p>
+          </div>
+        ) : null}
       </div>
 
       {/* 선지 */}

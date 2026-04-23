@@ -19,6 +19,8 @@ import { cx } from '@/lib/utils';
 import ScreenShell from '../components/ScreenShell';
 import { setNote, toggleBookmark } from '../bookmarks';
 import { useBookmarks } from '../useBookmarks';
+import XpPopup from '../components/XpPopup';
+import { XP_PER_CORRECT } from '../rpg';
 
 interface Props {
   session: QuestSession;
@@ -64,6 +66,13 @@ export default function QuestScreen({
   const savedNote = current ? (bookmarks.notes[current.id] ?? '') : '';
   const [noteOpen, setNoteOpen] = useState<boolean>(false);
   const [noteDraft, setNoteDraft] = useState<string>('');
+
+  // XP 팝업 — 정답일 때마다 token 을 갱신해 애니메이션 재생 (key 로 주입).
+  const [xpEvent, setXpEvent] = useState<{
+    token: number;
+    xp: number;
+    label?: string;
+  } | null>(null);
 
   useEffect(() => {
     // 문제 바뀌면 노트 초기화 — 저장된 값이 있으면 프리필 + 자동 펼침.
@@ -130,12 +139,26 @@ export default function QuestScreen({
   const handleSelect = (idx: number) => {
     if (local.studying) return;
     if (isTest) {
-      // 즉시 제출 후 다음으로.
+      // 즉시 제출 후 다음으로 — test 는 XP 피드백도 숨김.
       onAnswer(idx);
       return;
     }
     if (local.revealed) return;
     setLocal({ ...local, chosen: idx, revealed: true });
+
+    // 정답일 때만 XP 팝업. 이전까지의 연속 정답 수 + 1 로 streak 라벨.
+    if (current && idx === current.answerIndex) {
+      let run = 1;
+      for (let i = session.answers.length - 1; i >= 0; i -= 1) {
+        if (session.answers[i]!.correct) run += 1;
+        else break;
+      }
+      setXpEvent({
+        token: Date.now(),
+        xp: XP_PER_CORRECT,
+        label: run >= 3 ? `${run}연속!` : undefined,
+      });
+    }
   };
 
   const handleNext = () => {
@@ -209,8 +232,12 @@ export default function QuestScreen({
         </div>
       ) : null}
 
-      {/* 문제 지문 */}
-      <div className="liquid-glass rounded-[24px] p-6 md:p-8 mb-6">
+      {/* 문제 지문 — 바깥 래퍼는 overflow visible 로 XP 팝업이 위로 빠질 수 있게. */}
+      <div className="relative mb-6">
+        {xpEvent ? (
+          <XpPopup key={xpEvent.token} xp={xpEvent.xp} label={xpEvent.label} />
+        ) : null}
+        <div className="liquid-glass rounded-[24px] p-6 md:p-8">
         <div className="flex items-start justify-between gap-3">
           <span className="kr-heading text-[11px] uppercase tracking-widest text-cream/60">
             Question {progress.curr}
@@ -289,6 +316,7 @@ export default function QuestScreen({
             </p>
           </div>
         ) : null}
+        </div>
       </div>
 
       {/* 선지 */}

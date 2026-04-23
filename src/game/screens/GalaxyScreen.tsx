@@ -13,6 +13,8 @@ import DailyMissionCard from '../components/DailyMissionCard';
 import { aggregateSubject } from '../aggregate';
 import { useProgress } from '../useProgress';
 import { useBookmarks } from '../useBookmarks';
+import { computePlayerStats } from '../rpg';
+import PlayerHud from '../components/PlayerHud';
 
 interface Props {
   onSelectSubject: (subject: Subject) => void;
@@ -30,6 +32,7 @@ export default function GalaxyScreen({
   const progress = useProgress();
   const bookmarks = useBookmarks();
   const bookmarkCount = bookmarks.ids.size;
+  const playerStats = computePlayerStats(progress);
   // 현재는 데이터 있는 과목 우선 — 가장 많은 플레이 가능 문항 기준.
   const defaultMissionSubject: Subject =
     playableCount('adsp') >= playableCount('sqld') ? 'adsp' : 'sqld';
@@ -41,6 +44,9 @@ export default function GalaxyScreen({
       onExit={onExit}
       backgroundImage="/error%20404.gif"
     >
+      {/* Player HUD — 레벨 · XP · 스트릭 */}
+      <PlayerHud stats={playerStats} />
+
       {/* 대시보드 / 북마크 진입 */}
       <div className="mb-6 flex justify-end gap-2">
         <button

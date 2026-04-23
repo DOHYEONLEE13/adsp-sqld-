@@ -24,9 +24,11 @@ import { getZones, reviewPoolSize, type SamplingMode } from '../session';
 import ScreenShell from '../components/ScreenShell';
 import ProgressBadge from '../components/ProgressBadge';
 import WeaknessBadge from '../components/WeaknessBadge';
+import MasteryBadge from '../components/MasteryBadge';
 import { aggregateTopic } from '../aggregate';
 import { useProgress } from '../useProgress';
 import { topicWeaknessOf } from '../weakness';
+import { masteryFromAggregate } from '../rpg';
 
 export interface StartParams {
   topic: string | null;
@@ -129,6 +131,8 @@ export default function ZoneScreen({
         ) : (
           zones.map((zone) => {
             const weakness = topicWeaknessOf(subject, chapter, zone.topic, progress);
+            const agg = aggregateTopic(subject, chapter, zone.topic, progress);
+            const mastery = masteryFromAggregate(agg);
             return (
               <button
                 key={zone.topic}
@@ -155,14 +159,15 @@ export default function ZoneScreen({
                         <h3 className="kr-heading text-[16px] uppercase leading-tight flex-1">
                           {zone.topic}
                         </h3>
-                        {weakness ? <WeaknessBadge weakness={weakness} /> : null}
+                        <div className="flex flex-col items-end gap-1 shrink-0">
+                          {weakness ? <WeaknessBadge weakness={weakness} /> : null}
+                          <MasteryBadge info={mastery} compact />
+                        </div>
                       </div>
                       <p className="kr-body text-[12px] leading-[1.7] text-cream/70 mt-1">
                         문항 {zone.questionCount}개
                       </p>
-                      <ProgressBadge
-                        agg={aggregateTopic(subject, chapter, zone.topic, progress)}
-                      />
+                      <ProgressBadge agg={agg} />
                     </div>
                   </div>
                   <span

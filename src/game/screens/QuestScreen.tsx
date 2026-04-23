@@ -20,6 +20,7 @@ import ScreenShell from '../components/ScreenShell';
 import { setNote, toggleBookmark } from '../bookmarks';
 import { useBookmarks } from '../useBookmarks';
 import XpPopup from '../components/XpPopup';
+import CorrectBurst from '../components/CorrectBurst';
 import { XP_PER_CORRECT } from '../rpg';
 
 interface Props {
@@ -235,7 +236,10 @@ export default function QuestScreen({
       {/* 문제 지문 — 바깥 래퍼는 overflow visible 로 XP 팝업이 위로 빠질 수 있게. */}
       <div className="relative mb-6">
         {xpEvent ? (
-          <XpPopup key={xpEvent.token} xp={xpEvent.xp} label={xpEvent.label} />
+          <>
+            <CorrectBurst key={`burst-${xpEvent.token}`} />
+            <XpPopup key={xpEvent.token} xp={xpEvent.xp} label={xpEvent.label} />
+          </>
         ) : null}
         <div className="liquid-glass rounded-[24px] p-6 md:p-8">
         <div className="flex items-start justify-between gap-3">

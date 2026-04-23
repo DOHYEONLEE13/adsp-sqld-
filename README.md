@@ -99,6 +99,17 @@ MVP 랜딩 + 문제 데이터 로더 + 게임 섹션 엔진 완성:
 - **Part B** — 약점 분석 (attempts / accuracy / timing / recency 복합 점수)
 - **Part C** — 학습 대시보드 (`#/stats`) 및 리셋
 - **Part D** — Flow/Sampling 분리 (play · learn · test × random · weakness · review) + Daily Mission
-- **Part E (예정)** — 북마크 & 노트
-- **Part F (예정)** — XP / 레벨 / Topic Mastery (RPG 레이어)
-- **Part G (예정)** — 실제 시공간 RPG UI
+- **Part E** — 북마크 & 노트 (`#/bookmarks`)
+- **Part F** — XP / 레벨 / Topic Mastery (RPG 레이어)
+- **Part G (Tier 1)** — three.js 3D Galaxy: 별밭 + GLB 행성 + 카메라 줌인 + 정답 파티클
+
+## Credits
+
+### 3D Models — CC BY 4.0
+
+Galaxy 화면의 3D 행성 에셋은 [Creative Commons Attribution 4.0](https://creativecommons.org/licenses/by/4.0/) 라이선스입니다.
+
+- **ADSP 행성** — [Stylized Planet](https://sketchfab.com/3d-models/stylized-planet-789725db86f547fc9163b00f302c3e70) by **cmzw** (Sketchfab)
+- **SQLD 행성** — [Purple Planet](https://sketchfab.com/3d-models/purple-planet-264eb22207184fc99a5e3b1279a763b8) by **Yo.Ri** (Sketchfab)
+
+두 에셋 모두 원본 그대로 사용되었으며 파일명만 `adsp-planet.glb` / `sqld-planet.glb` 로 변경되었습니다.

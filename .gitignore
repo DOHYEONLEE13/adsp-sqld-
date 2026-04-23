@@ -32,3 +32,8 @@ vite.config.d.ts
 
 # research artifacts (not part of app)
 adsp_sqld_platform_research.json
+
+# PDF 원본 텍스트 추출물 — 저작권 문제로 레포에 포함 금지 (CLAUDE.md §2 절대 원칙 #1)
+pdf_extracted.txt
+pdf_full.txt
+extract_pdf.py

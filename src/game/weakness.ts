@@ -11,6 +11,7 @@
  */
 
 import type { MultipleChoiceQuestion, Subject } from '@/types/question';
+import { canonicalTopic } from '@/data/topicAlias';
 import { playableQuestions } from './session';
 import type { ProgressStore, QuestionStat } from './storage';
 import { clamp } from '@/lib/utils';
@@ -72,7 +73,11 @@ export function topicWeaknesses(
   const pool = playableQuestions(subject);
   const buckets = new Map<string, MultipleChoiceQuestion[]>();
   for (const q of pool) {
-    const key = `${q.chapter}::${q.topic}`;
+    // canonicalize — 버킷 키는 스키마 토픽. 매핑 실패 시 해당 문항은 제외
+    // (챕터 랜덤/전체 풀에는 여전히 살아 있지만, 토픽 약점 집계에는 빠짐).
+    const canon = canonicalTopic(subject, q.chapter, q.topic);
+    if (!canon) continue;
+    const key = `${q.chapter}::${canon}`;
     const arr = buckets.get(key) ?? [];
     arr.push(q);
     buckets.set(key, arr);

@@ -8,6 +8,7 @@
  */
 
 import type { Subject } from '@/types/question';
+import { canonicalTopic } from '@/data/topicAlias';
 import { playableQuestions } from './session';
 import type { ProgressStore } from './storage';
 
@@ -67,7 +68,7 @@ export function aggregateChapter(
   return aggregateFromIds(ids, store);
 }
 
-/** 토픽 단위 집계. */
+/** 토픽 단위 집계 — `topic` 은 스키마 토픽. raw 문항 토픽은 canonicalize 후 비교. */
 export function aggregateTopic(
   subject: Subject,
   chapter: number,
@@ -75,7 +76,11 @@ export function aggregateTopic(
   store: ProgressStore,
 ): Aggregate {
   const ids = playableQuestions(subject)
-    .filter((q) => q.chapter === chapter && q.topic === topic)
+    .filter(
+      (q) =>
+        q.chapter === chapter &&
+        canonicalTopic(subject, q.chapter, q.topic) === topic,
+    )
     .map((q) => q.id);
   return aggregateFromIds(ids, store);
 }

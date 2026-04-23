@@ -193,6 +193,20 @@ export function recordSessionSummary(summary: QuestSummary): void {
   commit({ ...next, sessions, updatedAt: at });
 }
 
+/**
+ * 레슨 스텝의 단일 문제 응답 기록.
+ * Quest 세션이 아닌 개념 학습 중 즉석 풀이도 같은 stat 으로 누적됩니다.
+ */
+export function recordSingleAnswer(
+  questionId: string,
+  correct: boolean,
+  timeMs: number,
+): void {
+  const at = Date.now();
+  const next = applyAnswer(current, questionId, { correct, timeMs, at });
+  commit({ ...next, updatedAt: at });
+}
+
 /** 개발자/사용자용 리셋 (#/stats 에 연결 예정). */
 export function resetProgress(): void {
   commit(emptyStore());

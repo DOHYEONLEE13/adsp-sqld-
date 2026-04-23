@@ -1,0 +1,970 @@
+{
+  "subject": "adsp",
+  "meta": {
+    "version": "0.1.0",
+    "updatedAt": "2026-04-23",
+    "source": "개념 학습용 자체 제작 문항",
+    "notes": "각 토픽 레슨을 막 끝낸 학습자가 바로 풀어볼 수 있도록 설계된 원본 객관식 예제. 기출 문항과 구분해 소스 표기."
+  },
+  "questions": [
+    {
+      "id": "adsp-1-1-cp-01",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 이해",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "다음 중 DIKW 피라미드에서 \"지식(Knowledge)\"에 가장 가까운 예시는?",
+      "choices": [
+        "오늘 서울 기온은 22℃ 이다",
+        "B마트는 A마트보다 콜라가 300원 더 싸다",
+        "콜라는 B마트에서 사는 게 유리하다",
+        "B마트에서는 음료 전반이 저렴할 것이다"
+      ],
+      "answerIndex": 2,
+      "explanation": "데이터(사실) → 정보(의미 부여) → 지식(규칙/일반화) → 지혜(통찰) 순. 비교 결과를 일반화한 \"~에서 사는 게 유리하다\"는 지식 단계에 해당합니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-1-1-cp-02",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 이해",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "고객 리뷰 텍스트를 데이터 유형별로 바르게 분류한 것은?",
+      "choices": [
+        "정형 · 정량적 · 수치형",
+        "반정형 · 정량적 · 범주형",
+        "비정형 · 정성적 · 범주형",
+        "비정형 · 정량적 · 수치형"
+      ],
+      "answerIndex": 2,
+      "explanation": "리뷰 텍스트는 구조 측면에서 비정형, 형태 측면에서 정성적, 값 측면에서 라벨/토큰이므로 범주형에 가깝습니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-1-1-cp-03",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 이해",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "SECI 모델에서 \"장인이 현장에서 쌓은 노하우를 매뉴얼로 정리\"하는 과정은?",
+      "choices": [
+        "공동화 (Socialization)",
+        "표출화 (Externalization)",
+        "연결화 (Combination)",
+        "내면화 (Internalization)"
+      ],
+      "answerIndex": 1,
+      "explanation": "암묵지를 형식지로 옮기는 단계가 표출화(Externalization)입니다. \"공표연내\" 순서로 기억합니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-1-1-cp-04",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 이해",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "데이터베이스의 특징 \"공통저변\"에 해당하지 않는 것은?",
+      "choices": [
+        "공용성 — 여러 사용자가 동시에 공유",
+        "통합성 — 데이터 중복 최소화",
+        "정규성 — 모든 값이 정규분포를 따름",
+        "저장성 — 영속적으로 보관"
+      ],
+      "answerIndex": 2,
+      "explanation": "\"공통저변\"은 공용·통합·저장·변화를 뜻합니다. 통계적 정규성과는 무관합니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-1-1-cp-05",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 이해",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "기업의 생산·판매·재무·인사 등 전사 업무를 하나의 통합 시스템으로 관리하도록 지원하는 것은?",
+      "choices": [
+        "CRM (고객 관계 관리)",
+        "ERP (전사적 자원관리)",
+        "SCM (공급망 관리)",
+        "BI (비즈니스 인텔리전스)"
+      ],
+      "answerIndex": 1,
+      "explanation": "ERP 는 생산·재고·회계·인사 등 부서별로 흩어진 업무를 한 시스템으로 통합해 전사 자원을 효율적으로 배분합니다. CRM 은 고객, SCM 은 공급사슬, BI 는 의사결정 지원이 중심입니다.",
+      "source": "개념 예제"
+    },
+
+    {
+      "id": "adsp-1-2-cp-01",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 가치와 미래",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "빅데이터 3V 에 속하지 않는 것은?",
+      "choices": [
+        "Volume (대용량)",
+        "Variety (다양성)",
+        "Velocity (속도)",
+        "Value (가치)"
+      ],
+      "answerIndex": 3,
+      "explanation": "3V 는 Volume · Variety · Velocity 입니다. Value 는 5V 이상에서 추가되는 축입니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-1-2-cp-02",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 가치와 미래",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "빅데이터 시대의 분석 패러다임 변화로 올바른 것은?",
+      "choices": [
+        "전수 분석 → 표본 분석",
+        "상관관계 중심 → 인과관계 중심",
+        "질 우선 → 양 우선",
+        "데이터 기반 → 이론 기반"
+      ],
+      "answerIndex": 2,
+      "explanation": "빅데이터 시대에는 표본→전수, 인과→상관, 질→양, 이론→데이터 방향으로 변화했습니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-1-2-cp-03",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 가치와 미래",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "데이터 3법 개정으로 도입된 개념으로, 추가정보 없이는 특정 개인을 식별할 수 없도록 가공된 정보를 가리키는 용어는?",
+      "choices": [
+        "익명정보",
+        "개인정보",
+        "가명정보",
+        "민감정보"
+      ],
+      "answerIndex": 2,
+      "explanation": "가명정보는 통계작성·과학연구·공익적 기록보존 목적으로는 정보주체 동의 없이 처리할 수 있습니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-1-2-cp-04",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 가치와 미래",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "빅데이터를 \"가공을 거쳐야 비로소 쓸모가 생긴다\"는 의미로 가장 잘 표현하는 비유는?",
+      "choices": [
+        "석탄과 철",
+        "원유",
+        "렌즈",
+        "플랫폼"
+      ],
+      "answerIndex": 1,
+      "explanation": "원유는 정제 과정이 없으면 쓸모가 없다는 점에서 가공 필요성을 강조하는 비유입니다.",
+      "source": "개념 예제"
+    },
+
+    {
+      "id": "adsp-1-3-cp-01",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "가치 창조를 위한 데이터 사이언스",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "데이터 사이언스의 핵심 구성요소 \"AI 비\"가 아닌 것은?",
+      "choices": [
+        "Analytics (분석)",
+        "IT (정보기술)",
+        "Business (비즈니스 컨설팅)",
+        "Infrastructure (물리 인프라)"
+      ],
+      "answerIndex": 3,
+      "explanation": "AI비 = Analytics + IT + Business. 물리 인프라는 IT 범주에 일부 포함될 뿐 독립 구성요소가 아닙니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-1-3-cp-02",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "가치 창조를 위한 데이터 사이언스",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "다음 중 데이터 사이언티스트의 Soft Skill 로 분류되는 것은?",
+      "choices": [
+        "머신러닝 알고리즘 구현 능력",
+        "SQL · 프로그래밍 숙련도",
+        "시각화·스토리텔링 커뮤니케이션",
+        "분산 시스템 설계 경험"
+      ],
+      "answerIndex": 2,
+      "explanation": "Soft Skill 은 통찰력·커뮤니케이션·협력처럼 배워서 바로 쓰기 어려운 태도·관점 역량입니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-1-3-cp-03",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "가치 창조를 위한 데이터 사이언스",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "데이터 사이언티스트의 요구 역량 암기법 \"Digital CA메라\" 에 포함되지 않는 것은?",
+      "choices": [
+        "Communication",
+        "Math",
+        "Research",
+        "Management"
+      ],
+      "answerIndex": 3,
+      "explanation": "Digital CA메라 = Communication · Analytics · Math · Engineering · Research · Art. Management 는 포함되지 않습니다.",
+      "source": "개념 예제"
+    },
+
+    {
+      "id": "adsp-2-1-cp-01",
+      "subject": "adsp",
+      "chapter": 2,
+      "chapterTitle": "데이터 분석 기획",
+      "topic": "데이터 분석 기획의 이해",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "분석 대상은 알지만 방법은 모를 때에 해당하는 분석 유형은?",
+      "choices": [
+        "Optimization (최적화)",
+        "Solution (솔루션)",
+        "Insight (통찰)",
+        "Discovery (발견)"
+      ],
+      "answerIndex": 1,
+      "explanation": "대상(What) ○ / 방법(How) × → Solution. 나머지 조합을 함께 기억하세요.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-2-1-cp-02",
+      "subject": "adsp",
+      "chapter": 2,
+      "chapterTitle": "데이터 분석 기획",
+      "topic": "데이터 분석 기획의 이해",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "CRISP-DM 의 6단계 순서로 올바른 것은?",
+      "choices": [
+        "업무이해 → 데이터이해 → 데이터준비 → 모델링 → 평가 → 전개",
+        "데이터이해 → 업무이해 → 모델링 → 데이터준비 → 평가 → 전개",
+        "업무이해 → 모델링 → 데이터준비 → 데이터이해 → 평가 → 전개",
+        "데이터준비 → 데이터이해 → 업무이해 → 모델링 → 평가 → 전개"
+      ],
+      "answerIndex": 0,
+      "explanation": "\"업데데이트모델평가전\" — 업무이해 · 데이터이해 · 데이터준비 · 모델링 · 평가 · 전개.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-2-1-cp-03",
+      "subject": "adsp",
+      "chapter": 2,
+      "chapterTitle": "데이터 분석 기획",
+      "topic": "데이터 분석 기획의 이해",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "하향식(Top-Down) 접근의 4단계 \"탐·정·해·타\" 에서 세 번째 단계는?",
+      "choices": [
+        "문제 탐색",
+        "문제 정의",
+        "해결 방안 탐색",
+        "타당성 검토"
+      ],
+      "answerIndex": 2,
+      "explanation": "탐색 → 정의 → 해결방안 탐색 → 타당성 검토. 세 번째는 해결 방안 탐색입니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-2-1-cp-04",
+      "subject": "adsp",
+      "chapter": 2,
+      "chapterTitle": "데이터 분석 기획",
+      "topic": "데이터 분석 기획의 이해",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "요구사항이 잦게 변하는 프로젝트에 가장 적합한 분석 방법론은?",
+      "choices": [
+        "계층적(Waterfall)",
+        "애자일(Agile)",
+        "나선형(Spiral)",
+        "프로토타입"
+      ],
+      "answerIndex": 1,
+      "explanation": "애자일은 짧은 반복과 변경 수용이 특징이어서 요구 변화가 잦은 환경에 유리합니다.",
+      "source": "개념 예제"
+    },
+
+    {
+      "id": "adsp-2-2-cp-01",
+      "subject": "adsp",
+      "chapter": 2,
+      "chapterTitle": "데이터 분석 기획",
+      "topic": "분석 마스터플랜",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "분석 과제 우선순위 평가의 두 축으로 옳은 것은?",
+      "choices": [
+        "기술성과 창의성",
+        "시급성과 난이도",
+        "비용과 수익성",
+        "인력과 데이터양"
+      ],
+      "answerIndex": 1,
+      "explanation": "우선순위는 시급성(Now/Future) × 난이도(Easy/Difficult) 의 2×2 매트릭스로 평가합니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-2-2-cp-02",
+      "subject": "adsp",
+      "chapter": 2,
+      "chapterTitle": "데이터 분석 기획",
+      "topic": "분석 마스터플랜",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "분석 거버넌스의 5대 축 \"시·조·프로·인·데\" 에 해당하지 않는 것은?",
+      "choices": [
+        "시스템(Infra)",
+        "조직(Organization)",
+        "마케팅(Marketing)",
+        "데이터(Data)"
+      ],
+      "answerIndex": 2,
+      "explanation": "시스템 · 조직 · 프로세스 · 인력 · 데이터 — 마케팅은 5축에 포함되지 않습니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-2-2-cp-03",
+      "subject": "adsp",
+      "chapter": 2,
+      "chapterTitle": "데이터 분석 기획",
+      "topic": "분석 마스터플랜",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "분석 성숙도 4단계(\"도·활·확·최\") 를 올바른 순서로 나열한 것은?",
+      "choices": [
+        "도입 → 활용 → 확산 → 최적화",
+        "도입 → 확산 → 활용 → 최적화",
+        "활용 → 도입 → 확산 → 최적화",
+        "도입 → 활용 → 최적화 → 확산"
+      ],
+      "answerIndex": 0,
+      "explanation": "도입(개인 시도) → 활용(부서 도입) → 확산(전사 표준화) → 최적화(의사결정 내재화) 순서입니다. 조직의 분석 준비도(Readiness) 와 혼동하지 않도록 주의하세요.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-2-2-cp-04",
+      "subject": "adsp",
+      "chapter": 2,
+      "chapterTitle": "데이터 분석 기획",
+      "topic": "분석 마스터플랜",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "데이터 거버넌스의 3대 구성요소로 올바르게 묶인 것은?",
+      "choices": [
+        "비전 · 전략 · 실행계획",
+        "원칙(Principle) · 조직(Organization) · 프로세스(Process)",
+        "입력 · 처리 · 출력",
+        "데이터 · 정보 · 지식"
+      ],
+      "answerIndex": 1,
+      "explanation": "데이터 거버넌스는 관리 원칙 · 역할을 맡는 조직 · 실행 프로세스 3요소로 구성됩니다. 표준화·관리체계·저장소 관리·품질관리 활동이 프로세스 축에 담깁니다. 분석 거버넌스 5축(시·조·프·인·데) 과 혼동하지 마세요.",
+      "source": "개념 예제"
+    },
+
+    {
+      "id": "adsp-2-3-cp-01",
+      "subject": "adsp",
+      "chapter": 2,
+      "chapterTitle": "데이터 분석 기획",
+      "topic": "분석 과제 발굴",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "분석 과제 타당성 검토의 3가지 축이 아닌 것은?",
+      "choices": [
+        "경제적 타당성",
+        "기술적 타당성",
+        "운영적 타당성",
+        "사회적 타당성"
+      ],
+      "answerIndex": 3,
+      "explanation": "타당성 검토는 경제·기술·운영의 3가지를 기본으로 수행합니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-2-3-cp-02",
+      "subject": "adsp",
+      "chapter": 2,
+      "chapterTitle": "데이터 분석 기획",
+      "topic": "분석 과제 발굴",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "분석 과제 발굴에서 데이터를 먼저 들여다보고 패턴에서 주제를 발견하는 접근 방식은?",
+      "choices": [
+        "하향식(Top-Down)",
+        "상향식(Bottom-Up)",
+        "계층적(Hierarchical)",
+        "나선형(Spiral)"
+      ],
+      "answerIndex": 1,
+      "explanation": "상향식은 대량의 원시 데이터에서 패턴·이상을 탐지해 주제를 발견합니다. EDA·비지도학습이 주 도구입니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-2-3-cp-03",
+      "subject": "adsp",
+      "chapter": 2,
+      "chapterTitle": "데이터 분석 기획",
+      "topic": "분석 과제 발굴",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "하향식과 상향식 접근을 오가며 가설과 데이터를 반복적으로 점검하는 혼합 접근을 무엇이라 부르는가?",
+      "choices": [
+        "프로토타입 방법론",
+        "애자일 방법론",
+        "디자인 씽킹",
+        "폭포수 모델"
+      ],
+      "answerIndex": 2,
+      "explanation": "디자인 씽킹(Design Thinking) 은 하향식 가설 수립과 상향식 데이터 관찰을 반복하는 혼합 접근입니다.",
+      "source": "개념 예제"
+    },
+
+    {
+      "id": "adsp-3-1-cp-01",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "R 기초와 데이터 마트",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "요약변수와 파생변수의 구분으로 가장 적절한 예시는?",
+      "choices": [
+        "월별 총 매출 — 파생변수",
+        "BMI (몸무게/키²) — 요약변수",
+        "고객별 평균 주문액 — 요약변수",
+        "요일(월/화/…) — 요약변수"
+      ],
+      "answerIndex": 2,
+      "explanation": "요약변수는 여러 행을 집계한 값(예: 고객별 평균), 파생변수는 기존 변수의 조합/변환(BMI, 요일 등) 입니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-3-1-cp-02",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "R 기초와 데이터 마트",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "EDA 4원칙 \"저·잔·재·현\" 중 이상치에 덜 휘둘리는 중앙값·IQR 같은 통계를 선호하는 원칙은?",
+      "choices": [
+        "저항성 (Resistance)",
+        "잔차 해석 (Residual)",
+        "재표현 (Re-expression)",
+        "현시성 (Revelation)"
+      ],
+      "answerIndex": 0,
+      "explanation": "저항성은 이상치가 있어도 영향이 크지 않은 통계·추정값을 사용하는 원칙입니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-3-1-cp-03",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "R 기초와 데이터 마트",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "결측값 처리에서 여러 번 대치한 뒤 결과를 통합해 불확실성까지 반영하는 방법은?",
+      "choices": [
+        "Listwise Deletion",
+        "평균 대치",
+        "다중 대치 (Multiple Imputation)",
+        "최빈값 대치"
+      ],
+      "answerIndex": 2,
+      "explanation": "다중 대치는 서로 다른 값으로 여러 번 대치해 결과를 평균·통합합니다. 분산을 과소평가하지 않는 장점이 있습니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-3-1-cp-04",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "R 기초와 데이터 마트",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "상자그림(Box plot) 의 수염(whisker) 바깥쪽 — 즉 Q1 − 1.5·IQR 미만 또는 Q3 + 1.5·IQR 초과 구간 — 에 놓인 값을 이상치로 판단하는 방법은?",
+      "choices": [
+        "ESD (Extreme Studentized Deviate)",
+        "IQR 기반 판정",
+        "Z-Score",
+        "Mahalanobis 거리"
+      ],
+      "answerIndex": 1,
+      "explanation": "사분위수 범위(IQR = Q3 − Q1) 를 기준으로 Q1 − 1.5·IQR, Q3 + 1.5·IQR 경계 밖의 값을 이상치로 분류합니다. 상자그림의 수염이 바로 이 경계선입니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-3-1-cp-05",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "R 기초와 데이터 마트",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "R 에서 같은 유형의 값들을 한 줄로 담는 가장 기본적인 1차원 자료구조는?",
+      "choices": [
+        "데이터프레임 (data.frame)",
+        "리스트 (list)",
+        "벡터 (vector)",
+        "팩터 (factor)"
+      ],
+      "answerIndex": 2,
+      "explanation": "벡터는 `c(1, 2, 3)` 처럼 같은 유형 값이 한 줄로 모인 R 의 가장 기본 1차원 구조입니다. 여러 유형을 섞으려면 list, 2차원 표 구조는 data.frame 을 씁니다.",
+      "source": "개념 예제"
+    },
+
+    {
+      "id": "adsp-3-2-cp-01",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "통계 분석",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "\"섭씨 온도\" 는 4가지 측정 척도 중 어디에 해당하는가?",
+      "choices": [
+        "명목(Nominal)",
+        "순서(Ordinal)",
+        "등간(Interval)",
+        "비율(Ratio)"
+      ],
+      "answerIndex": 2,
+      "explanation": "섭씨는 0이 절대영점이 아니므로 비율 연산이 불가합니다. 따라서 등간 척도입니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-3-2-cp-02",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "통계 분석",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "단위시간 내에 드물게 발생하는 사건의 횟수를 모형화할 때 가장 적절한 확률분포는?",
+      "choices": [
+        "이항분포",
+        "초기하분포",
+        "포아송분포",
+        "음이항분포"
+      ],
+      "answerIndex": 2,
+      "explanation": "포아송분포는 단위시간/단위공간당 드물게 일어나는 사건의 발생 횟수를 모형화합니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-3-2-cp-03",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "통계 분석",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "좋은 점추정량의 4가지 성질 \"불·효·일·충\" 에 포함되지 않는 것은?",
+      "choices": [
+        "불편성 (Unbiased)",
+        "효율성 (Efficient)",
+        "일치성 (Consistent)",
+        "정규성 (Normality)"
+      ],
+      "answerIndex": 3,
+      "explanation": "불편성·효율성·일치성·충분성이 정답. 정규성은 추정량의 필수 성질이 아닙니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-3-2-cp-04",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "통계 분석",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "중심극한정리(CLT)에 대한 설명으로 옳은 것은?",
+      "choices": [
+        "표본의 개별 관측값이 정규분포를 따른다",
+        "모집단 분포와 무관하게 n이 충분히 크면 표본평균의 분포가 정규에 가까워진다",
+        "모집단이 정규일 때만 성립한다",
+        "n이 작을수록 정규에 가까워진다"
+      ],
+      "answerIndex": 1,
+      "explanation": "CLT는 \"표본평균\"의 분포에 대한 진술이며, 모집단 분포와 무관하게 n≥30 정도면 정규에 근사합니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-3-2-cp-05",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "통계 분석",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "주성분 분석(PCA) 에 대한 설명으로 가장 적절한 것은?",
+      "choices": [
+        "정답 레이블을 활용해 예측 오차를 최소화하는 지도 학습 기법이다",
+        "분산이 큰 방향 순으로 새 축을 만들어 변수 개수를 줄이는 선형 차원축소 기법이다",
+        "범주형 변수를 0/1 더미 변수로 변환하는 기법이다",
+        "군집의 최적 개수를 자동으로 결정하는 비지도 군집 기법이다"
+      ],
+      "answerIndex": 1,
+      "explanation": "PCA 는 데이터 분산이 가장 큰 방향을 1주성분, 그다음을 2주성분… 순으로 뽑아 소수의 새 축으로 변수를 압축하는 비지도 선형 차원축소 기법입니다. 표준화가 선행돼야 하고 해석이 어려울 수 있습니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-3-2-cp-06",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "통계 분석",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "다차원척도화(MDS) 가 주로 하는 일로 가장 적절한 것은?",
+      "choices": [
+        "결측값을 여러 번 대치해 불확실성을 반영한다",
+        "개체 사이의 유사도/거리를 최대한 보존하면서 저차원 공간에 시각화한다",
+        "독립변수의 효과를 하나의 선형식으로 추정한다",
+        "시계열을 추세·계절·순환·불규칙 성분으로 분해한다"
+      ],
+      "answerIndex": 1,
+      "explanation": "MDS 는 개체 간 거리(또는 유사도) 행렬을 입력으로 받아, 그 거리를 가장 잘 유지하는 2~3차원 좌표를 찾아 배치합니다. 거리표로 지도를 복원하는 것과 같은 발상입니다.",
+      "source": "개념 예제"
+    },
+
+    {
+      "id": "adsp-3-3-cp-01",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "통계적 가설 검정",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "p-value 에 대한 설명으로 옳은 것은?",
+      "choices": [
+        "귀무가설이 참일 확률이다",
+        "대립가설이 참일 확률이다",
+        "귀무가설이 참일 때 현 데이터 이상의 극단값이 나올 확률이다",
+        "표본크기가 커질수록 증가한다"
+      ],
+      "answerIndex": 2,
+      "explanation": "p-value 는 \"H0가 참이라 가정할 때 현재 관측 이상 극단적인 결과가 나올 확률\" 입니다. 가설의 참/거짓 확률이 아닙니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-3-3-cp-02",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "통계적 가설 검정",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "같은 대상의 \"다이어트 전/후 체중\" 을 비교할 때 가장 적절한 검정은?",
+      "choices": [
+        "단일 표본 t검정",
+        "대응 표본 t검정",
+        "독립 표본 t검정",
+        "카이제곱 검정"
+      ],
+      "answerIndex": 1,
+      "explanation": "같은 개체의 전/후 쌍이 있으므로 대응 표본(paired) t검정이 적절합니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-3-3-cp-03",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "통계적 가설 검정",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "회귀의 4가지 기본 가정 \"선·분·정·독\" 에 포함되지 않는 것은?",
+      "choices": [
+        "선형성",
+        "등분산성",
+        "정규성 (잔차)",
+        "단조성"
+      ],
+      "answerIndex": 3,
+      "explanation": "선형성 · 등분산성 · 정규성(잔차) · 독립성(오차) 의 4가정입니다. 단조성은 포함되지 않습니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-3-3-cp-04",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "통계적 가설 검정",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "다중공선성을 의심하는 기준으로 흔히 쓰이는 값은?",
+      "choices": [
+        "AIC ≥ 10",
+        "VIF ≥ 10",
+        "R² ≥ 0.9",
+        "p-value ≤ 0.05"
+      ],
+      "answerIndex": 1,
+      "explanation": "VIF(Variance Inflation Factor) 가 10 이상이면 다중공선성을 의심합니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-3-3-cp-05",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "통계적 가설 검정",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "시계열의 4성분 \"추·계·순·불\" 에 해당하지 않는 것은?",
+      "choices": [
+        "추세 (Trend)",
+        "계절성 (Seasonality)",
+        "순환 (Cycle)",
+        "지연 (Lag)"
+      ],
+      "answerIndex": 3,
+      "explanation": "추세 · 계절성 · 순환 · 불규칙이 시계열 분해의 4성분입니다. 지연(Lag) 은 모형 파라미터입니다.",
+      "source": "개념 예제"
+    },
+
+    {
+      "id": "adsp-3-4-cp-01",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "정형 데이터 마이닝",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "훈련 데이터에는 맞지만 새 데이터에 성능이 떨어지는 현상은?",
+      "choices": [
+        "과소적합 (Underfitting)",
+        "과적합 (Overfitting)",
+        "정칙화 (Regularization)",
+        "부스팅 (Boosting)"
+      ],
+      "answerIndex": 1,
+      "explanation": "모델이 훈련 데이터의 잡음까지 학습한 상태로, 일반화 성능이 떨어집니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-3-4-cp-02",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "정형 데이터 마이닝",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "앙상블 기법 중 \"순차적으로 학습하며 이전 모델의 오차를 보완\" 하는 방식은?",
+      "choices": [
+        "Voting",
+        "Bagging",
+        "Boosting",
+        "Stacking"
+      ],
+      "answerIndex": 2,
+      "explanation": "Boosting 은 순차적 학습으로 오차를 보정하며, AdaBoost·XGBoost 가 대표입니다. Bagging 은 병렬 학습입니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-3-4-cp-03",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "정형 데이터 마이닝",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "연관분석 3지표 \"지·신·향\" 중 \"1보다 크면 양의 연관성\" 을 뜻하는 것은?",
+      "choices": [
+        "지지도 (Support)",
+        "신뢰도 (Confidence)",
+        "향상도 (Lift)",
+        "카이제곱 (χ²)"
+      ],
+      "answerIndex": 2,
+      "explanation": "향상도가 1이면 우연과 같음, 1보다 크면 양의 연관, 1보다 작으면 음의 연관을 의미합니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-3-4-cp-04",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "정형 데이터 마이닝",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "사전에 군집 개수 K 를 정하지 않아도 되고 이상치에 강한 밀도 기반 군집 알고리즘은?",
+      "choices": [
+        "K-means",
+        "계층적 군집",
+        "DBSCAN",
+        "SOM"
+      ],
+      "answerIndex": 2,
+      "explanation": "DBSCAN 은 밀도(반경 ε, 최소점수 MinPts) 기반으로 K를 사전에 지정하지 않으며, 밀도 낮은 점은 이상치로 처리합니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-3-4-cp-05",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "정형 데이터 마이닝",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "이진 분류에서 \"실제 양성인 사람을 얼마나 놓치지 않고 잡았는가\" 를 나타내는 지표는?",
+      "choices": [
+        "정확도 (Accuracy)",
+        "정밀도 (Precision)",
+        "재현율 (Recall)",
+        "특이도 (Specificity)"
+      ],
+      "answerIndex": 2,
+      "explanation": "재현율(Recall, 민감도) = TP / (TP + FN). 실제 양성 중 올바르게 양성으로 잡아낸 비율입니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-3-4-cp-06",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "정형 데이터 마이닝",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "출력을 시그모이드 함수로 0~1 사이 확률로 변환해 이진 분류에 사용되는 알고리즘은?",
+      "choices": [
+        "선형회귀 (Linear Regression)",
+        "로지스틱 회귀 (Logistic Regression)",
+        "K-평균 (K-means)",
+        "주성분 분석 (PCA)"
+      ],
+      "answerIndex": 1,
+      "explanation": "로지스틱 회귀는 log-odds 를 선형으로 모델링하고 시그모이드로 0~1 사이 확률을 내보냅니다. 임계값(보통 0.5) 을 기준으로 범주를 예측합니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-3-4-cp-07",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "정형 데이터 마이닝",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "다음 중 의사결정나무의 분리 기준(불순도 측도) 으로 일반적으로 사용되지 않는 것은?",
+      "choices": [
+        "정보이득 (Information Gain)",
+        "지니계수 (Gini)",
+        "엔트로피 (Entropy)",
+        "오즈비 (Odds Ratio)"
+      ],
+      "answerIndex": 3,
+      "explanation": "의사결정나무의 분리 기준은 정보이득(엔트로피 감소)·지니계수·카이제곱 같은 불순도 측도입니다. 오즈비는 로지스틱 회귀 계수 해석에 쓰이는 지표로, 나무 분리 기준이 아닙니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-3-4-cp-08",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "정형 데이터 마이닝",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "K-최근접이웃(K-NN) 에 대한 설명으로 가장 거리가 먼 것은?",
+      "choices": [
+        "새 데이터가 들어오면 가장 가까운 K 개 이웃의 다수결로 범주를 정한다",
+        "학습 단계에서 실제 모델 파라미터를 추정하지 않는 게으른 학습기(lazy learner) 이다",
+        "변수 스케일이 다르면 거리 계산이 왜곡되므로 표준화가 필요하다",
+        "설명변수들이 조건부 독립이라고 가정하고 베이즈 정리로 확률을 계산한다"
+      ],
+      "answerIndex": 3,
+      "explanation": "조건부 독립 가정 + 베이즈 정리는 나이브베이즈(NBC) 의 특징입니다. K-NN 은 모델을 만들지 않고 이웃의 다수결로 분류하며 거리 기반이라 표준화가 필수입니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-3-4-cp-09",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "정형 데이터 마이닝",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "나이브베이즈 분류기에 \"Naive(순진한)\" 라는 이름이 붙은 이유로 가장 적절한 것은?",
+      "choices": [
+        "학습에 걸리는 시간이 거의 0 에 가깝기 때문",
+        "모든 설명변수가 서로 조건부 독립이라고 단순화해 가정하기 때문",
+        "결측값을 자동으로 평균으로 대치하기 때문",
+        "은닉층 없이도 높은 성능을 내기 때문"
+      ],
+      "answerIndex": 1,
+      "explanation": "나이브베이즈는 \"특징들이 서로 조건부 독립\" 이라는, 현실에는 잘 맞지 않는 순진한 가정을 통해 결합확률을 조건부 확률의 곱으로 단순화합니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-3-4-cp-10",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "정형 데이터 마이닝",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "서포트 벡터 머신(SVM) 의 분류 전략을 가장 정확히 설명한 것은?",
+      "choices": [
+        "가장 가까운 K개 이웃을 찾아 다수결로 분류한다",
+        "각 특징의 조건부 확률을 모두 곱해 가장 높은 클래스를 예측한다",
+        "두 집단 사이의 마진(margin) 을 최대로 하는 경계(초평면) 를 찾는다",
+        "입력에 따라 가지를 타고 내려가며 최종 잎에서 분류한다"
+      ],
+      "answerIndex": 2,
+      "explanation": "SVM 은 서포트 벡터(경계에 가장 가까운 점들) 와의 거리인 마진을 최대화하는 초평면을 찾습니다. 비선형 경계는 커널 트릭으로 고차원에서 선형 분리해 해결합니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-3-4-cp-11",
+      "subject": "adsp",
+      "chapter": 3,
+      "chapterTitle": "데이터 분석",
+      "topic": "정형 데이터 마이닝",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "인공신경망과 딥러닝에 대한 설명으로 옳지 않은 것은?",
+      "choices": [
+        "각 뉴런은 입력의 가중합을 활성화 함수에 통과시켜 출력을 만든다",
+        "ReLU 는 은닉층에서 널리 쓰이는 비선형 활성화 함수 중 하나이다",
+        "오차역전파(Backpropagation) 는 출력의 오차를 뒤에서부터 전달해 가중치를 갱신한다",
+        "은닉층이 1개만 존재하는 신경망도 일반적으로 딥러닝(Deep Learning) 이라고 부른다"
+      ],
+      "answerIndex": 3,
+      "explanation": "딥러닝은 은닉층이 여러 개(일반적으로 2개 이상) 깊게 쌓인 신경망을 가리킵니다. 은닉층이 1개인 경우는 얕은(shallow) 인공신경망으로 분류합니다.",
+      "source": "개념 예제"
+    }
+  ]
+}

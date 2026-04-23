@@ -12,6 +12,7 @@ export type GameScreen =
   | { kind: 'galaxy' }
   | { kind: 'planet'; subject: Subject }
   | { kind: 'zone'; subject: Subject; chapter: number }
+  | { kind: 'lesson'; subject: Subject; chapter: number; topic: string }
   | { kind: 'quest'; session: QuestSession }
   | { kind: 'result'; summary: QuestSummary };
 

@@ -18,6 +18,7 @@ import { markDailyMissionStarted, recordSessionSummary } from './storage';
 import GalaxyScreen from './screens/GalaxyScreen';
 import PlanetScreen from './screens/PlanetScreen';
 import ZoneScreen, { type StartParams } from './screens/ZoneScreen';
+import LessonScreen from './screens/LessonScreen';
 import QuestScreen from './screens/QuestScreen';
 import ResultScreen from './screens/ResultScreen';
 
@@ -111,8 +112,41 @@ export default function GamePage({ onExitToLanding }: Props) {
               p.flow,
             )
           }
+          onSelectTopic={(topic) =>
+            setScreen({
+              kind: 'lesson',
+              subject: screen.subject,
+              chapter: screen.chapter,
+              topic,
+            })
+          }
           onBack={() =>
             setScreen({ kind: 'planet', subject: screen.subject })
+          }
+        />
+      );
+
+    case 'lesson':
+      return (
+        <LessonScreen
+          subject={screen.subject}
+          chapter={screen.chapter}
+          topic={screen.topic}
+          onFinishGoToPractice={() =>
+            startSession(
+              screen.subject,
+              screen.chapter,
+              screen.topic,
+              'random',
+              'play',
+            )
+          }
+          onBack={() =>
+            setScreen({
+              kind: 'zone',
+              subject: screen.subject,
+              chapter: screen.chapter,
+            })
           }
         />
       );

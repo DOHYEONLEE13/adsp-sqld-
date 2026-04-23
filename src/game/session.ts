@@ -13,6 +13,7 @@ import type {
 } from '@/types/question';
 import { ALL_QUESTIONS } from '@/lib/questions';
 import { SUBJECT_SCHEMAS } from '@/data/subjects';
+import { canonicalTopic } from '@/data/topicAlias';
 import { shuffle } from '@/lib/utils';
 import { getSnapshot } from './storage';
 import { questionWeaknessScore } from './weakness';
@@ -65,18 +66,32 @@ export function getPlanets(subject: Subject): PlanetInfo[] {
   }));
 }
 
-/** Zone 화면용 — 챕터 안 토픽별 집계. 문항이 있는 토픽만 반환. */
+/**
+ * Zone 화면용 — 챕터 안 토픽별 집계.
+ *
+ * 노드는 언제나 `SUBJECT_SCHEMAS` 의 토픽 목록을 따릅니다 (순서/개수 고정).
+ * 각 문항은 `canonicalTopic` 으로 매핑된 스키마 토픽 버킷으로 집계됩니다.
+ * 이렇게 해야 노드 1:1 로 레슨이 연결되고 "레슨 준비 중" 이 뜨지 않습니다.
+ */
 export function getZones(subject: Subject, chapter: number): ZoneInfo[] {
+  const schema = SUBJECT_SCHEMAS[subject];
+  const chapterMeta = schema.chapters.find((c) => c.chapter === chapter);
+  if (!chapterMeta) return [];
   const pool = playableQuestions(subject).filter(
     (q) => q.chapter === chapter,
   );
   const counts = new Map<string, number>();
+  for (const t of chapterMeta.topics) counts.set(t, 0);
   for (const q of pool) {
-    counts.set(q.topic, (counts.get(q.topic) ?? 0) + 1);
+    const canon = canonicalTopic(subject, q.chapter, q.topic);
+    if (!canon) continue;
+    counts.set(canon, (counts.get(canon) ?? 0) + 1);
   }
-  return Array.from(counts.entries())
-    .map(([topic, questionCount]) => ({ topic, questionCount }))
-    .sort((a, b) => b.questionCount - a.questionCount);
+  // 스키마 토픽 순서대로 반환 — UI 의 로드맵 순서가 예측 가능해집니다.
+  return chapterMeta.topics.map((topic) => ({
+    topic,
+    questionCount: counts.get(topic) ?? 0,
+  }));
 }
 
 export interface CreateSessionOptions {
@@ -113,7 +128,8 @@ export function createSession(opts: CreateSessionOptions): QuestSession | null {
 
   let pool = playableQuestions(subject).filter((q) => {
     if (q.chapter !== chapter) return false;
-    if (topic && q.topic !== topic) return false;
+    if (topic && canonicalTopic(subject, q.chapter, q.topic) !== topic)
+      return false;
     return true;
   });
   if (pool.length === 0) return null;
@@ -249,7 +265,8 @@ export function reviewPoolSize(
   const store = getSnapshot();
   return playableQuestions(subject).filter((q) => {
     if (q.chapter !== chapter) return false;
-    if (topic && q.topic !== topic) return false;
+    if (topic && canonicalTopic(subject, q.chapter, q.topic) !== topic)
+      return false;
     const stat = store.questionStats[q.id];
     return stat && !stat.lastCorrect;
   }).length;

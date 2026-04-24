@@ -256,6 +256,41 @@ export function createDailyMissionSession(subject: Subject): QuestSession | null
   };
 }
 
+/**
+ * 모의고사(Mock Exam) 세션 — 과목 전체 문항 풀에서 50 문항 랜덤 추출.
+ * 'test' flow 로 생성되어 타이머/피드백 숨김이 자동 적용됩니다.
+ * pool < 50 이면 가능한 만큼만(최소 1문).
+ */
+export function createMockExamSession(
+  subject: Subject,
+  size: number = 50,
+): QuestSession | null {
+  const pool = playableQuestions(subject);
+  if (pool.length === 0) return null;
+
+  const picked = shuffle(pool)
+    .slice(0, Math.min(size, pool.length))
+    .map(shuffleChoices);
+
+  const repChapter = picked[0]!.chapter;
+  const schema = SUBJECT_SCHEMAS[subject];
+  const chapterTitle =
+    schema.chapters.find((c) => c.chapter === repChapter)?.title ?? '';
+
+  return {
+    subject,
+    chapter: repChapter,
+    chapterTitle,
+    topic: null,
+    flow: 'test',
+    label: '모의고사',
+    questions: picked,
+    index: 0,
+    answers: [],
+    startedAt: Date.now(),
+  };
+}
+
 /** Review 풀 크기 — Zone 화면 뱃지에 씁니다. */
 export function reviewPoolSize(
   subject: Subject,

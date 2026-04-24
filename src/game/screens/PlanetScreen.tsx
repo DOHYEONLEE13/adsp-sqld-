@@ -24,7 +24,7 @@
  * 화면에서 이미 노출되므로 여기서는 "탐사 경로" 에만 집중.
  */
 
-import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Flame } from 'lucide-react';
 import { SUBJECT_SCHEMAS } from '@/data/subjects';
 import type { Subject } from '@/types/question';
@@ -38,9 +38,6 @@ import {
 import { useProgress } from '../useProgress';
 import { topicWeaknessesInChapter, weaknessLevel } from '../weakness';
 import type { ProgressStore } from '../storage';
-
-// three.js 씬은 lazy chunk. Galaxy 와 Planet.tsx 를 공유 → 실질 추가 비용 0.
-const PlanetScene = lazy(() => import('../three/PlanetScene'));
 
 const SUBJECT_ACCENT: Record<Subject, string> = {
   adsp: '#67e8f9',
@@ -67,17 +64,23 @@ export default function PlanetScreen({
 
   return (
     <section className="relative min-h-screen bg-base text-cream isolate overflow-hidden">
-      {/* === 3D 풀뷰포트 배경 (fixed, 스크롤해도 따라옴) === */}
+      {/* === 2D 풀뷰포트 배경 (fixed, 스크롤해도 따라옴) === */}
       <div className="fixed inset-0 z-0 pointer-events-none" aria-hidden>
-        <Suspense
-          fallback={
-            <div className="absolute inset-0 flex items-center justify-center text-cream/30 kr-heading text-[11px] uppercase tracking-widest">
-              Loading planet...
-            </div>
-          }
-        >
-          <PlanetScene subject={subject} />
-        </Suspense>
+        {/* 큰 행성 실루엣 — 좌측에서 반만 보임 */}
+        <div
+          className="absolute"
+          style={{
+            left: '-18vmin',
+            top: '38%',
+            width: '68vmin',
+            height: '68vmin',
+            borderRadius: '50%',
+            background: `radial-gradient(circle at 62% 32%, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 42%), linear-gradient(180deg, ${accent} 0%, ${accent}bb 55%, rgba(0,0,0,0.45) 100%)`,
+            boxShadow: `0 0 120px -10px ${accent}, inset 0 -12px 40px rgba(0,0,0,0.4)`,
+            transform: 'translateY(-50%)',
+            opacity: 0.55,
+          }}
+        />
 
         {/* 과목 액센트 radial — 화면 좌중앙에 은은하게 */}
         <div

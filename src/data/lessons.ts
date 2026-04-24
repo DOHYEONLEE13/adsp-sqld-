@@ -20,6 +20,21 @@ import type { Subject } from '@/types/question';
 import { ALL_QUESTIONS } from '@/lib/questions';
 import type { MultipleChoiceQuestion } from '@/types/question';
 import { SUBJECT_SCHEMAS } from '@/data/subjects';
+import type { QuesPose } from '@/components/mascot/types';
+
+// ================================================================
+// Dialogue 타입 (듀오링고식 캐릭터 대화)
+// ================================================================
+
+/**
+ * 한 번의 말풍선 단위. [키워드] 브래킷 안의 텍스트는 SpeechBubble 에서
+ * `.dialogue-keyword` 로 하이라이트됨 (과목색 + 점선 밑줄).
+ */
+export interface DialogueTurn {
+  text: string;
+  /** 이 대사를 할 때 Ques 의 포즈. 기본 'idle'. */
+  pose?: QuesPose;
+}
 
 // ================================================================
 // Block 타입 (개념 카드 구성 요소)
@@ -76,6 +91,11 @@ export interface LessonStep {
   title: string;
   /** 개념 설명을 구성하는 블록들. */
   blocks: LessonBlock[];
+  /**
+   * 듀오링고식 대사 스크립트. 존재하면 LessonScreen 대신 DialogueLesson
+   * 이 활성화됨. blocks 는 "📖 상세보기" 바텀시트에서 그대로 재사용.
+   */
+  dialogue?: DialogueTurn[];
   /** 이 개념을 막 배운 사람이 바로 풀 문제 id (concept-practice.json). */
   quizId: string;
 }
@@ -111,6 +131,13 @@ const ADSP_1_1: Lesson = {
       id: 'adsp-1-1-s1',
       title: 'DIKW 피라미드',
       quizId: 'adsp-1-1-cp-01',
+      dialogue: [
+        { pose: 'wave', text: '안녕! 나는 [조롱이]야. 오늘은 [DIKW 피라미드]부터 시작할게.' },
+        { pose: 'think', text: '편의점 영수증을 떠올려봐. "[콜라 1,800원]" 이건 그냥 숫자지?' },
+        { pose: 'lightbulb', text: '근데 한 달치를 모아서 "[콜라는 금요일 저녁에 제일 잘 팔린다]" 까지 읽으면 — 같은 재료가 전혀 다른 가치가 돼.' },
+        { pose: 'happy', text: '이 계단을 [4단계]로 정리한 게 DIKW 피라미드야. [데] · [정] · [지] · [혜] — "데정지혜" 로 외우자!' },
+        { pose: 'idle', text: '자, 바로 확인 문제 들어갈게. 한 번 풀어봐!' },
+      ],
       blocks: [
         {
           kind: 'intro',
@@ -141,6 +168,13 @@ const ADSP_1_1: Lesson = {
       id: 'adsp-1-1-s2',
       title: '데이터의 3가지 분류 기준',
       quizId: 'adsp-1-1-cp-02',
+      dialogue: [
+        { pose: 'wave', text: '데이터 분류는 [세 축]이 따로 돌아가. 섞이면 안 돼.' },
+        { pose: 'think', text: '첫째, [구조] — [정형] · [반정형] · [비정형]. 테이블이면 정형, JSON 은 반정형, 영상은 비정형.' },
+        { pose: 'lightbulb', text: '둘째, [형태] — [정량적] vs [정성적]. 숫자로 재면 정량, 말·감정이면 정성.' },
+        { pose: 'happy', text: '셋째, [값] — [수치형] vs [범주형]. 연속·이산 숫자 vs 순서·명목 라벨.' },
+        { pose: 'idle', text: '같은 데이터도 [세 축 각각]에 답이 있어야 해. 확인 문제로 가자!' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -169,6 +203,13 @@ const ADSP_1_1: Lesson = {
       id: 'adsp-1-1-s3',
       title: '암묵지 vs 형식지 (SECI)',
       quizId: 'adsp-1-1-cp-03',
+      dialogue: [
+        { pose: 'wave', text: '[자전거 타는 법]을 책으로 옮겨볼 수 있을까? 힘들지.' },
+        { pose: 'think', text: '그런데 누구나 연습하면 탈 수 있어. 몸이 배운 거야 — 이게 [암묵지].' },
+        { pose: 'lightbulb', text: '반대로 매뉴얼·논문처럼 [글로 정리된 지식]이 [형식지]. 조직은 이 변환으로 성장해.' },
+        { pose: 'happy', text: '변환은 [4단계] — [공]동화 · [표]출화 · [연]결화 · [내]면화. "[공표연내]" 로 외우자!' },
+        { pose: 'idle', text: '장인의 노하우를 매뉴얼로 옮기는 건? 확인 문제에서 보자.' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -189,6 +230,13 @@ const ADSP_1_1: Lesson = {
       id: 'adsp-1-1-s4',
       title: 'DB 특징 · DW · Data Lake',
       quizId: 'adsp-1-1-cp-04',
+      dialogue: [
+        { pose: 'wave', text: '엑셀 파일과 [데이터베이스]는 뭐가 다를까?' },
+        { pose: 'think', text: 'DB 는 [공]용 · [통]합 · [저]장 · [변]화 + [실시간] — 다섯 성질이 다 붙어야 돼.' },
+        { pose: 'lightbulb', text: '[DW(Data Warehouse)]는 분석용 창고 — 운영계 데이터를 [ETL] 해서 정돈.' },
+        { pose: 'happy', text: '[Data Lake]는 정제 전 원시까지 다 담는 저수지 — 정형·반정형·비정형 전부 OK.' },
+        { pose: 'idle', text: 'OLTP(거래) vs OLAP(분석) 구분까지 챙기고, 문제로 가자!' },
+      ],
       blocks: [
         {
           kind: 'callout',
@@ -218,6 +266,13 @@ const ADSP_1_1: Lesson = {
       id: 'adsp-1-1-s5',
       title: '기업 정보 시스템 — DBMS·ERP·CRM·SCM·BI',
       quizId: 'adsp-1-1-cp-05',
+      dialogue: [
+        { pose: 'wave', text: '회사는 [부서별로 다른 데이터]를 다뤄 — 생산·판매·고객·재고.' },
+        { pose: 'think', text: '조각을 따로 두면 "팀끼리 숫자가 안 맞는" 문제가 터져. 그래서 [시스템]이 필요해.' },
+        { pose: 'lightbulb', text: '[ERP](전사 통합) · [CRM](고객) · [SCM](공급사슬) · [BI](의사결정). 모두 [DBMS] 위에서 돌아가.' },
+        { pose: 'happy', text: '흐름으로 외우자 — "[생고공의]". 생산→고객→공급→의사결정 순환.' },
+        { pose: 'idle', text: '약어 풀네임도 같이 기억. 바로 문제!' },
+      ],
       blocks: [
         {
           kind: 'intro',
@@ -272,6 +327,13 @@ const ADSP_1_2: Lesson = {
       id: 'adsp-1-2-s1',
       title: '3V · 데이터 단위',
       quizId: 'adsp-1-2-cp-01',
+      dialogue: [
+        { pose: 'wave', text: '스마트폰 [10분]이 인류 [1만 년] 분량을 넘어선다고 해.' },
+        { pose: 'think', text: '단위부터 익히자 — [K]B · [M]B · [G]B · [T]B · [P]B · [E]B · [Z]B · [Y]B. 단계마다 1024배.' },
+        { pose: 'lightbulb', text: '가트너의 [3V]: [Volume](양) · [Variety](다양성) · [Velocity](속도). 세 가지가 "빅" 의 정의야.' },
+        { pose: 'happy', text: '확장하면 [5V] = 3V + [Value](가치) + [Veracity](진실성). 더 가면 7V.' },
+        { pose: 'idle', text: '단위랑 V 매칭, 문제로 확인!' },
+      ],
       blocks: [
         {
           kind: 'intro',
@@ -308,6 +370,13 @@ const ADSP_1_2: Lesson = {
       id: 'adsp-1-2-s2',
       title: '변화 — 표본→전수, 인과→상관',
       quizId: 'adsp-1-2-cp-02',
+      dialogue: [
+        { pose: 'wave', text: '빅데이터 이전엔 [작은 표본]으로 [원인]을 찾는 게 주류였어.' },
+        { pose: 'think', text: '지금은 [전수] 데이터를 놓고 [상관]부터 훑는 게 가능해졌어.' },
+        { pose: 'lightbulb', text: '네 축이 뒤집혔지 — [표본→전수] · [질→양] · [인과→상관] · [이론→데이터].' },
+        { pose: 'happy', text: '"원인을 알 필요 없다" 가 아니라 "상관만으로도 충분히 유용한 의사결정" 이 가능해졌다는 뜻!' },
+        { pose: 'idle', text: '전후 비교 명확히 하고 문제로!' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -331,6 +400,13 @@ const ADSP_1_2: Lesson = {
       id: 'adsp-1-2-s3',
       title: '데이터 3법 · 가명정보',
       quizId: 'adsp-1-2-cp-03',
+      dialogue: [
+        { pose: 'wave', text: '데이터를 쓰려면 [법]부터 알아야 해. 2020년 개정이 핵심 포인트.' },
+        { pose: 'think', text: '[데이터 3법] — [개]인정보보호법 · [정]보통신망법 · [신]용정보법. "[개정신]" 으로 외워.' },
+        { pose: 'lightbulb', text: '개정 전엔 "동의 받아야만 활용 가능" → 개정 후엔 [가명정보] 라는 중간 영역이 생겼어.' },
+        { pose: 'happy', text: '[가명정보]는 [통계·연구·공익] 한정으로 [동의 없이] 활용 OK. [익명정보]는 아예 개인정보 대상 밖!' },
+        { pose: 'idle', text: '세 카테고리 구분, 문제로 확인해보자.' },
+      ],
       blocks: [
         {
           kind: 'callout',
@@ -354,6 +430,13 @@ const ADSP_1_2: Lesson = {
       id: 'adsp-1-2-s4',
       title: '빅데이터 비유 · 위기요인',
       quizId: 'adsp-1-2-cp-04',
+      dialogue: [
+        { pose: 'wave', text: '빅데이터가 뭐와 닮았다고들 할까? [4가지 비유]가 시험에 자주 나와.' },
+        { pose: 'think', text: '[산업혁명 석탄·철](원동력) · [원유](정제해야 쓸모) · [렌즈](관찰·발견) · [플랫폼](토대).' },
+        { pose: 'lightbulb', text: '근데 위기도 있어 — [사생활 침해] · [책임원칙 훼손] · [데이터 오용(과신)].' },
+        { pose: 'happy', text: '대응은 "[동의제 → 책임제]", "결과 기반 책임", "알고리즘 [접근·감사] 허용".' },
+        { pose: 'idle', text: '비유 4개와 위기-대응 짝 정리 끝, 문제!' },
+      ],
       blocks: [
         {
           kind: 'table',
@@ -395,6 +478,13 @@ const ADSP_1_3: Lesson = {
       id: 'adsp-1-3-s1',
       title: '핵심 3축 — "AI 비"',
       quizId: 'adsp-1-3-cp-01',
+      dialogue: [
+        { pose: 'wave', text: '[데이터 사이언스]는 통계학보다 훨씬 넓은 판이야.' },
+        { pose: 'think', text: '통계가 [수식]이라면 DS는 여기에 [컴퓨터공학](속도)과 [비즈니스](목적)까지 합쳐져.' },
+        { pose: 'lightbulb', text: '핵심 3축 = [A]nalytics · [I]T · [B]usiness. 첫 글자 "[AI 비]" 로 외우자!' },
+        { pose: 'happy', text: '세 꼭짓점의 [교집합]에서 데이터 사이언스가 태어나는 거야.' },
+        { pose: 'idle', text: '이 3축, 문제로 확인해보자.' },
+      ],
       blocks: [
         {
           kind: 'intro',
@@ -414,6 +504,13 @@ const ADSP_1_3: Lesson = {
       id: 'adsp-1-3-s2',
       title: 'Hard Skill vs Soft Skill',
       quizId: 'adsp-1-3-cp-02',
+      dialogue: [
+        { pose: 'wave', text: '데이터 사이언티스트의 역량은 두 부류로 나뉘어.' },
+        { pose: 'think', text: '[Hard Skill] — 배워서 익히는 기술. 머신러닝, SQL, 프로그래밍.' },
+        { pose: 'lightbulb', text: '[Soft Skill] — 태도·관점·커뮤니케이션. [통찰], [스토리텔링], [협력].' },
+        { pose: 'happy', text: '시험은 "어떤 역량이 어느 쪽이냐" 매칭을 자주 물어. Hard = 기술, Soft = 태도!' },
+        { pose: 'idle', text: '역량 매칭 문제로 체크!' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -435,6 +532,13 @@ const ADSP_1_3: Lesson = {
       id: 'adsp-1-3-s3',
       title: '요구 역량 — "Digital CA메라"',
       quizId: 'adsp-1-3-cp-03',
+      dialogue: [
+        { pose: 'wave', text: '데이터 사이언티스트에게 요구되는 [6가지 역량], 외우기 킬러 있어.' },
+        { pose: 'think', text: '[C]ommunication · [A]nalytics · [M]ath · [E]ngineering · [R]esearch · [A]rt.' },
+        { pose: 'lightbulb', text: '첫 글자 모으면 — "[Digital CA메라]". 6가지가 [카메라 하나]로 세상을 담듯 통합되는 거야.' },
+        { pose: 'happy', text: '의사결정도 진화해 — [직관 → 데이터 → 예측 → 처방]. DS는 뒤 두 단계를 가능케 해.' },
+        { pose: 'idle', text: '"[Management]" 같은 항목은 포함 안 됨. 함정 주의!' },
+      ],
       blocks: [
         {
           kind: 'callout',
@@ -476,6 +580,13 @@ const ADSP_2_1: Lesson = {
       id: 'adsp-2-1-s1',
       title: '분석 4유형 (What × How)',
       quizId: 'adsp-2-1-cp-01',
+      dialogue: [
+        { pose: 'wave', text: '분석 프로젝트가 망하는 이유 1위 — [엉뚱한 방법]을 [엉뚱한 문제]에 쓰는 거.' },
+        { pose: 'think', text: '두 축으로 분류하자 — [What](풀 것이 분명?) × [How](푸는 법 아는?).' },
+        { pose: 'lightbulb', text: '[○/○ = Optimization](최적화) · [○/× = Solution](방법 탐색) · [×/○ = Insight](대상 발견) · [×/× = Discovery](전방위 탐험).' },
+        { pose: 'happy', text: '네 칸을 [2×2 매트릭스]로 외워두면 어떤 과제든 분류가 돼!' },
+        { pose: 'idle', text: '각 유형 매칭 문제로!' },
+      ],
       blocks: [
         {
           kind: 'intro',
@@ -499,6 +610,13 @@ const ADSP_2_1: Lesson = {
       id: 'adsp-2-1-s2',
       title: 'KDD vs CRISP-DM',
       quizId: 'adsp-2-1-cp-02',
+      dialogue: [
+        { pose: 'wave', text: '분석 프로세스의 [두 표준]이 있어 — [KDD] 와 [CRISP-DM].' },
+        { pose: 'think', text: 'KDD 는 [5단계] — 선택 · 전처리 · 변환 · 마이닝 · 해석/평가.' },
+        { pose: 'lightbulb', text: 'CRISP-DM 은 [6단계] — "[업데데이트모델평가전]" 으로 외워!' },
+        { pose: 'happy', text: '풀면 — [업]무이해 → [데]이터이해 → [데]이터준비 → [모델]링 → [평가] → [전]개.' },
+        { pose: 'idle', text: '이 순서 그대로 문제에 나와. 체크!' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -531,6 +649,13 @@ const ADSP_2_1: Lesson = {
       id: 'adsp-2-1-s3',
       title: '하향식 접근 — "탐·정·해·타"',
       quizId: 'adsp-2-1-cp-03',
+      dialogue: [
+        { pose: 'wave', text: '[문제가 분명]할 때 쓰는 정석 — [하향식 접근].' },
+        { pose: 'think', text: '4단계 순서: [탐]색 → [정]의 → [해]결방안 → [타]당성. "[탐정해타]" 로 외워!' },
+        { pose: 'lightbulb', text: '문제 탐색은 두 관점 — [내부](업제고에) · [외부]([STEEP]).' },
+        { pose: 'happy', text: 'STEEP = [S]ocial · [T]ech · [E]conomic · [E]nvironment · [P]olitical. 5가지 렌즈!' },
+        { pose: 'idle', text: '내·외부 교차로 빠짐없이 훑자. 문제로!' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -553,6 +678,13 @@ const ADSP_2_1: Lesson = {
       id: 'adsp-2-1-s4',
       title: '분석 방법론 5종',
       quizId: 'adsp-2-1-cp-04',
+      dialogue: [
+        { pose: 'wave', text: '분석 방법론 [5종] — SW 공학에서 넘어왔어.' },
+        { pose: 'think', text: '[Waterfall](순차) · [프로토타입](시제품) · [Spiral](반복+위험관리) · [Agile](짧은 반복) · [RAD](빠른 반복개발).' },
+        { pose: 'lightbulb', text: '요구사항 명확 → Waterfall. 불명확 → 프로토타입. 대형 위험 → Spiral. 변경 잦음 → Agile.' },
+        { pose: 'happy', text: '"어떤 상황에 어떤 방법론" 매칭이 시험 포인트야!' },
+        { pose: 'idle', text: '상황-방법론 매칭, 바로 확인!' },
+      ],
       blocks: [
         {
           kind: 'table',
@@ -585,6 +717,13 @@ const ADSP_2_2: Lesson = {
       id: 'adsp-2-2-s1',
       title: '우선순위 — 시급성 × 난이도',
       quizId: 'adsp-2-2-cp-01',
+      dialogue: [
+        { pose: 'wave', text: '과제 100개가 있다면? 한 번에 다 못 해. 순서가 필요해.' },
+        { pose: 'think', text: '두 축 — [시급성](지금 급한가) × [난이도](얼마나 어려운가).' },
+        { pose: 'lightbulb', text: '[Now × Easy = 1순위] 즉시 착수! [Now × Difficult] 은 장기 투자.' },
+        { pose: 'happy', text: '[Future × Easy] 는 3순위, [Future × Difficult] 는 후순위·중장기.' },
+        { pose: 'idle', text: '어느 칸이 최우선인지 체크!' },
+      ],
       blocks: [
         {
           kind: 'intro',
@@ -607,6 +746,13 @@ const ADSP_2_2: Lesson = {
       id: 'adsp-2-2-s2',
       title: '분석 거버넌스 — "시조프로마인드데"',
       quizId: 'adsp-2-2-cp-02',
+      dialogue: [
+        { pose: 'wave', text: '[분석 거버넌스]는 조직이 분석을 체계적으로 돌리기 위한 5개 축이야.' },
+        { pose: 'think', text: '[시]스템 · [조]직 · [프]로세스 · [인]력 · [데]이터 — "[시조프로인데]".' },
+        { pose: 'lightbulb', text: '조직 준비도는 6영역 — [IT] · [문화] · [데이터] · [기법] · [인력] · [파급효과].' },
+        { pose: 'happy', text: '"[마케팅]" 같은 항목은 [5축에 없음]. 함정 주의!' },
+        { pose: 'idle', text: '5축 · 6영역, 구분해서 체크!' },
+      ],
       blocks: [
         {
           kind: 'callout',
@@ -628,6 +774,13 @@ const ADSP_2_2: Lesson = {
       id: 'adsp-2-2-s3',
       title: '성숙도 "도·활·확·최"',
       quizId: 'adsp-2-2-cp-03',
+      dialogue: [
+        { pose: 'wave', text: '조직의 분석 [성숙도]는 [4단계]로 봐.' },
+        { pose: 'think', text: '첫 글자만 따서 "[도활확최]" — [도]입 · [활]용 · [확]산 · [최]적화.' },
+        { pose: 'lightbulb', text: '[준비도(Readiness)]와 혼동 금지! 준비도는 "할 준비됐나" 별개 축이야.' },
+        { pose: 'happy', text: '조직 구조도 진화 — "[집기분]" = 집중형 → 기능형 → 분산형.' },
+        { pose: 'idle', text: '단계 이름·순서, 시험 단골!' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -658,6 +811,13 @@ const ADSP_2_2: Lesson = {
       id: 'adsp-2-2-s4',
       title: '데이터 거버넌스 3요소 — "원·조·프"',
       quizId: 'adsp-2-2-cp-04',
+      dialogue: [
+        { pose: 'wave', text: '[분석 거버넌스] ≠ [데이터 거버넌스]! 혼동이 시험 함정 1위.' },
+        { pose: 'think', text: '데이터 거버넌스는 [데이터 자체]를 공용 자산으로 관리하는 규범이야.' },
+        { pose: 'lightbulb', text: '[3요소] — [원]칙(Principle) · [조]직(Organization) · [프]로세스(Process). "[원조프]"!' },
+        { pose: 'happy', text: '"비전·전략·계획" 같은 엉뚱한 묶음이 답으로 자주 나와. [원조프] 고정!' },
+        { pose: 'idle', text: '3요소만 딱! 문제로.' },
+      ],
       blocks: [
         {
           kind: 'intro',
@@ -707,6 +867,13 @@ const ADSP_2_3: Lesson = {
       id: 'adsp-2-3-s1',
       title: '타당성 3요소',
       quizId: 'adsp-2-3-cp-01',
+      dialogue: [
+        { pose: 'wave', text: '하향식 마지막 [타당성 검토]는 [3축]으로 분리해.' },
+        { pose: 'think', text: '[경제적](비용·편익 ROI) · [기술적](데이터·알고리즘·시스템) · [운영적](조직·인력·프로세스).' },
+        { pose: 'lightbulb', text: '"[사회적 타당성]" 같은 추가 항목은 [함정] — 기본 3요소 아님!' },
+        { pose: 'happy', text: '경제·기술·운영 — 딱 3개만!' },
+        { pose: 'idle', text: '오답 선지 주의하며 문제 가자.' },
+      ],
       blocks: [
         {
           kind: 'intro',
@@ -735,6 +902,13 @@ const ADSP_2_3: Lesson = {
       id: 'adsp-2-3-s2',
       title: '상향식 접근',
       quizId: 'adsp-2-3-cp-02',
+      dialogue: [
+        { pose: 'wave', text: '하향식이 "문제 먼저" 라면 [상향식]은 "[데이터 먼저]" 야.' },
+        { pose: 'think', text: '대량의 로그·거래 데이터에서 [패턴·이상 징후]를 발견하는 방식.' },
+        { pose: 'lightbulb', text: '주 무기는 [비지도 학습] · [EDA]. 문제를 미리 정의 안 해!' },
+        { pose: 'happy', text: '대표 예 — [장바구니 분석]에서 "맥주 + 기저귀" 같은 예상 밖 조합 발견.' },
+        { pose: 'idle', text: '주제 없을 때 or 혁신 찾을 때 유리. 체크!' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -754,6 +928,13 @@ const ADSP_2_3: Lesson = {
       id: 'adsp-2-3-s3',
       title: '디자인 씽킹 (혼합)',
       quizId: 'adsp-2-3-cp-03',
+      dialogue: [
+        { pose: 'wave', text: '현대 기업이 제일 선호하는 방식은 뭘까? [디자인 씽킹].' },
+        { pose: 'think', text: '[하향식] ↔ [상향식]을 왕복하며 [가설 수정 반복]하는 접근이야.' },
+        { pose: 'lightbulb', text: '과제도 프로젝트로 관리돼 — [PMBOK 10영역].' },
+        { pose: 'happy', text: '"[이범통이의자에서]" — 이해관계자 · 범위 · 통합 · 일정 · 원가 · 품질 · 자원 · 의사소통 · 위험 · 조달.' },
+        { pose: 'idle', text: '혼합 접근이 왜 강한지, 체크!' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -791,6 +972,13 @@ const ADSP_3_1: Lesson = {
       id: 'adsp-3-1-s1',
       title: '요약변수 vs 파생변수',
       quizId: 'adsp-3-1-cp-01',
+      dialogue: [
+        { pose: 'wave', text: '분석 시간의 [80%]는 [데이터 정리]야. 그 정리 결과물이 [데이터 마트].' },
+        { pose: 'think', text: 'DW 가 전사 창고라면, [데이터 마트]는 "마케팅팀 전용 코너" — 부서·목적별 소형 저장소.' },
+        { pose: 'lightbulb', text: '[요약변수] = 여러 행을 [집계] (월별 총 매출). [파생변수] = 기존 변수 [조합/변환] (BMI, 나이구간).' },
+        { pose: 'happy', text: '요약은 "줄이기", 파생은 "만들기" — 이 차이만 기억!' },
+        { pose: 'idle', text: '예시 매칭, 문제로.' },
+      ],
       blocks: [
         {
           kind: 'intro',
@@ -818,6 +1006,13 @@ const ADSP_3_1: Lesson = {
       id: 'adsp-3-1-s2',
       title: 'EDA 4원칙 — "저·잔·재·현"',
       quizId: 'adsp-3-1-cp-02',
+      dialogue: [
+        { pose: 'wave', text: '[EDA](탐색적 데이터 분석) — 모델 만들기 전에 데이터를 먼저 이해하는 단계.' },
+        { pose: 'think', text: '4원칙 — [저]항성 · [잔]차 해석 · [재]표현 · [현]시성.' },
+        { pose: 'lightbulb', text: '"[저잔재현]" 으로 외워! 극단값에 견디고, 잔차 분석, 변수 재표현, 시각화 강조.' },
+        { pose: 'happy', text: '분석가는 [이상치]에 흔들리지 않고 [잔차]에서 힌트를 찾아.' },
+        { pose: 'idle', text: '네 원칙 이름, 체크!' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -838,6 +1033,13 @@ const ADSP_3_1: Lesson = {
       id: 'adsp-3-1-s3',
       title: '결측값 처리',
       quizId: 'adsp-3-1-cp-03',
+      dialogue: [
+        { pose: 'wave', text: '데이터에 [빈칸]이 있으면? 무시할지 채울지 정해야 해.' },
+        { pose: 'think', text: '[완전 삭제](레코드 제거) · [단순 대치](평균·중앙값) · [다중 대치](모델로 예측).' },
+        { pose: 'lightbulb', text: '결측 매커니즘 3종 — [MCAR](완전 무작위) · [MAR](무작위) · [MNAR](비무작위).' },
+        { pose: 'happy', text: '[MCAR]은 삭제해도 OK, [MNAR]은 삭제하면 [편향] 생김!' },
+        { pose: 'idle', text: '방법 매칭 문제!' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -861,6 +1063,13 @@ const ADSP_3_1: Lesson = {
       id: 'adsp-3-1-s4',
       title: '이상값 탐지 4가지',
       quizId: 'adsp-3-1-cp-04',
+      dialogue: [
+        { pose: 'wave', text: '[이상값] 한 개가 모델을 망가뜨릴 수 있어. 탐지가 필수!' },
+        { pose: 'think', text: '[ESD] (평균 ± 3σ) · [IQR] (Q3 + 1.5·IQR 밖) · [기하 평균]법 · [사분위수 범위].' },
+        { pose: 'lightbulb', text: '분포가 치우쳤으면 [IQR]이 안전, 정규 분포면 [ESD]가 빠름.' },
+        { pose: 'happy', text: '이상값이 [오류]인지 [진짜 극단값]인지 구분해서 처리해야 해.' },
+        { pose: 'idle', text: '방법 4종 암기, 체크!' },
+      ],
       blocks: [
         {
           kind: 'keypoints',
@@ -885,6 +1094,13 @@ const ADSP_3_1: Lesson = {
       id: 'adsp-3-1-s5',
       title: 'R 문법 기초 — 자료구조와 기본 함수',
       quizId: 'adsp-3-1-cp-05',
+      dialogue: [
+        { pose: 'wave', text: 'ADsP 에서 [R 문법] 기본도 나와. 자료구조부터!' },
+        { pose: 'think', text: '[벡터](c) · [행렬](matrix) · [배열](array) · [리스트](list) · [데이터프레임](data.frame).' },
+        { pose: 'lightbulb', text: '벡터는 [같은 타입만], 리스트는 [섞어도 됨], 데이터프레임은 [열별로 타입 다름].' },
+        { pose: 'happy', text: '기본 함수 — [apply](행·열 적용) · [sapply](벡터 반환) · [lapply](리스트 반환).' },
+        { pose: 'idle', text: '자료구조-용도 매칭, 문제로!' },
+      ],
       blocks: [
         {
           kind: 'intro',
@@ -948,6 +1164,13 @@ const ADSP_3_2: Lesson = {
       id: 'adsp-3-2-s1',
       title: '측정 척도 4단계',
       quizId: 'adsp-3-2-cp-01',
+      dialogue: [
+        { pose: 'wave', text: '데이터의 [숫자]가 다 같은 숫자일까? 척도가 다르면 할 수 있는 계산도 달라.' },
+        { pose: 'think', text: '[명목](구분만) · [순서](대소 있음) · [등간](차이 의미) · [비율](절대 0).' },
+        { pose: 'lightbulb', text: '체온 [°C]는 [등간], 체중 [kg]은 [비율]. 섭씨는 0이 "없다"가 아니야!' },
+        { pose: 'happy', text: '척도 낮을수록 [정보 적음], 높을수록 [계산 자유]. 이 위계 기억!' },
+        { pose: 'idle', text: '예시 분류, 문제!' },
+      ],
       blocks: [
         {
           kind: 'intro',
@@ -977,6 +1200,13 @@ const ADSP_3_2: Lesson = {
       id: 'adsp-3-2-s2',
       title: '확률분포 — 이산과 연속',
       quizId: 'adsp-3-2-cp-02',
+      dialogue: [
+        { pose: 'wave', text: '확률분포는 [이산] vs [연속] 두 갈래.' },
+        { pose: 'think', text: '[이산] — [베르누이] · [이항] · [포아송] · [기하] · [다항].' },
+        { pose: 'lightbulb', text: '[연속] — [정규] · [t] · [카이제곱] · [F] · [균등] · [지수].' },
+        { pose: 'happy', text: '"희귀 사건이 시간당 몇 번" → [포아송]. "대소표본 평균 검정" → [t분포].' },
+        { pose: 'idle', text: '분포-용도 매칭, 체크!' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -1002,6 +1232,13 @@ const ADSP_3_2: Lesson = {
       id: 'adsp-3-2-s3',
       title: '좋은 추정량 — "불·효·일·충"',
       quizId: 'adsp-3-2-cp-03',
+      dialogue: [
+        { pose: 'wave', text: '[추정량]이 모수를 잘 맞추려면 4가지 성질이 필요해.' },
+        { pose: 'think', text: '[불]편성(편향 없음) · [효]율성(분산 작음) · [일]치성(표본↑ → 모수 수렴) · [충]분성(정보 보존).' },
+        { pose: 'lightbulb', text: '첫 글자 모아 "[불효일충]" — 시험 단골 니모닉!' },
+        { pose: 'happy', text: '표본평균이 모평균의 [불편·일치] 추정량인 건 시험 직빵 지식!' },
+        { pose: 'idle', text: '네 성질, 체크!' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -1022,6 +1259,13 @@ const ADSP_3_2: Lesson = {
       id: 'adsp-3-2-s4',
       title: '중심극한정리 (CLT)',
       quizId: 'adsp-3-2-cp-04',
+      dialogue: [
+        { pose: 'wave', text: '통계학의 [슈퍼 무기] — [중심극한정리(CLT)].' },
+        { pose: 'think', text: '모집단 분포가 뭐든, 표본크기 [n]이 충분히 크면 [표본평균]의 분포는 [정규]에 가까워져.' },
+        { pose: 'lightbulb', text: '[n ≥ 30] 이 "충분히 크다" 의 관습적 기준. 여기서 [t분포]로 검정하는 근거가 나와.' },
+        { pose: 'happy', text: '"모집단이 뭐든 [표본평균] 은 [정규]" — 이 한 줄이 핵심!' },
+        { pose: 'idle', text: '정확한 조건, 체크!' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -1042,6 +1286,13 @@ const ADSP_3_2: Lesson = {
       id: 'adsp-3-2-s5',
       title: '주성분 분석 (PCA)',
       quizId: 'adsp-3-2-cp-05',
+      dialogue: [
+        { pose: 'wave', text: '변수가 [100개] 있다면? 시각화·모델링 모두 힘들어. [차원 축소] 가 필요해.' },
+        { pose: 'think', text: '[PCA(주성분 분석)] — [분산 최대] 방향을 새 축으로 잡아 축소.' },
+        { pose: 'lightbulb', text: '원래 정보를 [최대한 보존]하면서 차원을 줄이는 [선형] 기법이야.' },
+        { pose: 'happy', text: '[Scree Plot]에서 "꺾이는 지점"이 적정 주성분 수! 누적 분산비 [80~90%] 정도 기준.' },
+        { pose: 'idle', text: '목적·원리, 체크!' },
+      ],
       blocks: [
         {
           kind: 'intro',
@@ -1077,6 +1328,13 @@ const ADSP_3_2: Lesson = {
       id: 'adsp-3-2-s6',
       title: '다차원척도화 (MDS)',
       quizId: 'adsp-3-2-cp-06',
+      dialogue: [
+        { pose: 'wave', text: 'PCA 의 사촌 — [MDS(다차원척도화)].' },
+        { pose: 'think', text: 'PCA 가 [변수]에서 시작한다면, MDS 는 [거리·유사도 행렬]에서 시작해.' },
+        { pose: 'lightbulb', text: '개체들의 [상대적 거리]를 최대한 보존하면서 [2~3차원]에 배치 — 시각화에 강해.' },
+        { pose: 'happy', text: '[계량형 MDS](수치 거리) vs [비계량형 MDS](순위 거리) 구분!' },
+        { pose: 'idle', text: 'PCA 와 차이 포인트, 체크!' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -1129,6 +1387,13 @@ const ADSP_3_3: Lesson = {
       id: 'adsp-3-3-s1',
       title: 'p-value 와 가설검정 5용어',
       quizId: 'adsp-3-3-cp-01',
+      dialogue: [
+        { pose: 'wave', text: '[가설검정] 5용어, 헷갈리면 시험에서 뚫려!' },
+        { pose: 'think', text: '[귀무가설(H₀)](차이 없음) · [대립가설(H₁)](차이 있음) · [유의수준(α)] · [p-value] · [기각역].' },
+        { pose: 'lightbulb', text: '[p < α] → H₀ 기각 = "차이 있다 주장". 반대면 기각 못 함.' },
+        { pose: 'happy', text: '주의 — "차이 없음 증명"은 [불가능]! 기각 못 함은 "증거 부족"일 뿐.' },
+        { pose: 'idle', text: '용어 정의, 체크!' },
+      ],
       blocks: [
         {
           kind: 'intro',
@@ -1159,6 +1424,13 @@ const ADSP_3_3: Lesson = {
       id: 'adsp-3-3-s2',
       title: 't검정 3종류',
       quizId: 'adsp-3-3-cp-02',
+      dialogue: [
+        { pose: 'wave', text: '[t검정]은 "평균 차이" 검정에 쓰는데, 3가지 버전이 있어.' },
+        { pose: 'think', text: '[일표본 t] — 한 집단 평균 = 특정값? | [독립표본 t] — 두 집단 평균 같아?' },
+        { pose: 'lightbulb', text: '[대응표본 t] — [같은 사람] 전·후 비교 (다이어트 전후 체중).' },
+        { pose: 'happy', text: '독립 vs 대응 헷갈리기 쉬워! "같은 대상" 이면 대응!' },
+        { pose: 'idle', text: '상황별 t검정, 체크!' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -1181,6 +1453,13 @@ const ADSP_3_3: Lesson = {
       id: 'adsp-3-3-s3',
       title: '회귀 가정 — "선·분·정·독"',
       quizId: 'adsp-3-3-cp-03',
+      dialogue: [
+        { pose: 'wave', text: '[선형회귀]가 정확히 돌려면 [4가지 가정]이 맞아야 해.' },
+        { pose: 'think', text: '[선]형성 · [분]산 일정(등분산) · [정]규성 · [독]립성.' },
+        { pose: 'lightbulb', text: '"[선분정독]" — 첫 글자만 기억하면 4가지 가정 순서가 완성!' },
+        { pose: 'happy', text: '잔차플롯·QQ플롯 같은 진단 그래프가 이 가정들을 눈으로 확인하는 도구!' },
+        { pose: 'idle', text: '가정 이름, 체크!' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -1210,6 +1489,13 @@ const ADSP_3_3: Lesson = {
       id: 'adsp-3-3-s4',
       title: '다중공선성 · 변수 선택',
       quizId: 'adsp-3-3-cp-04',
+      dialogue: [
+        { pose: 'wave', text: '설명변수끼리 서로 너무 비슷하면? [다중공선성] 문제!' },
+        { pose: 'think', text: '[VIF > 10] 이면 경고! 회귀계수의 분산이 [폭발]해 해석이 엉망.' },
+        { pose: 'lightbulb', text: '변수 선택법 — [전진선택], [후진제거], [단계적(stepwise)].' },
+        { pose: 'happy', text: '[AIC] · [BIC] 같은 정보 기준으로 모델 간 비교!' },
+        { pose: 'idle', text: '탐지와 대응, 체크!' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -1242,6 +1528,13 @@ const ADSP_3_3: Lesson = {
       id: 'adsp-3-3-s5',
       title: '시계열 — "추·계·순·불"',
       quizId: 'adsp-3-3-cp-05',
+      dialogue: [
+        { pose: 'wave', text: '[시계열]은 4가지 구성요소로 분해돼.' },
+        { pose: 'think', text: '[추]세 · [계]절성 · [순]환 · [불]규칙. "[추계순불]"!' },
+        { pose: 'lightbulb', text: '[AR](과거값), [MA](과거 오차), [ARMA](둘 다), [ARIMA](차분까지) — 한 걸음씩 확장.' },
+        { pose: 'happy', text: '시계열이 [정상성] 만족해야 모델링이 의미 있어. 차분으로 정상화!' },
+        { pose: 'idle', text: '구성요소 4개, 체크!' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -1275,6 +1568,13 @@ const ADSP_3_4: Lesson = {
       id: 'adsp-3-4-s1',
       title: '과적합 / 데이터 분할',
       quizId: 'adsp-3-4-cp-01',
+      dialogue: [
+        { pose: 'wave', text: '모델이 [훈련 데이터]는 100% 맞추는데 [새 데이터]엔 망하면? [과적합]이야.' },
+        { pose: 'think', text: '원인 — [모델 복잡], [데이터 부족], [잡음 학습].' },
+        { pose: 'lightbulb', text: '대응 — [훈련·검증·테스트] 분할 + [교차검증(CV)] + [정규화(L1/L2)].' },
+        { pose: 'happy', text: '편향-분산 트레이드오프 — 너무 단순하면 [편향], 너무 복잡하면 [분산] 폭발!' },
+        { pose: 'idle', text: '과적합 신호, 체크!' },
+      ],
       blocks: [
         {
           kind: 'intro',
@@ -1304,6 +1604,13 @@ const ADSP_3_4: Lesson = {
       id: 'adsp-3-4-s2',
       title: '앙상블 4종',
       quizId: 'adsp-3-4-cp-02',
+      dialogue: [
+        { pose: 'wave', text: '[앙상블] — 모델 여러 개를 합쳐 더 강한 모델 만들기.' },
+        { pose: 'think', text: '[배깅] (병렬 투표) · [부스팅] (순차 가중치) · [랜덤 포레스트] · [스태킹].' },
+        { pose: 'lightbulb', text: '배깅은 [분산 감소] (과적합↓), 부스팅은 [편향 감소] (성능↑).' },
+        { pose: 'happy', text: '[랜덤 포레스트] = 배깅 + [변수 무작위]. 가장 대중적 앙상블!' },
+        { pose: 'idle', text: '종류별 차이, 체크!' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -1334,6 +1641,13 @@ const ADSP_3_4: Lesson = {
       id: 'adsp-3-4-s3',
       title: '연관분석 — "지·신·향"',
       quizId: 'adsp-3-4-cp-03',
+      dialogue: [
+        { pose: 'wave', text: '[연관분석] — "맥주 산 사람이 [기저귀] 도 살까?" 장바구니 규칙 찾기.' },
+        { pose: 'think', text: '세 지표: [지지도] (동시구매 비율) · [신뢰도] (A→B 비율) · [향상도] (랜덤 대비 배수).' },
+        { pose: 'lightbulb', text: '[향상도] > 1 → 양의 연관, = 1 → 독립, < 1 → 음의 연관!' },
+        { pose: 'happy', text: '암기법: [지·신·향] — 지지도·신뢰도·향상도 순서 고정!' },
+        { pose: 'idle', text: '알고리즘은 [Apriori] · [FP-Growth]. 문제로!' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -1362,6 +1676,13 @@ const ADSP_3_4: Lesson = {
       id: 'adsp-3-4-s4',
       title: '군집 — DBSCAN 과 친구들',
       quizId: 'adsp-3-4-cp-04',
+      dialogue: [
+        { pose: 'wave', text: '[군집] — 레이블 없이 [유사한 것끼리] 묶기. 비지도 학습의 대표주자!' },
+        { pose: 'think', text: '[계층적] (덴드로그램) · [K-means] (중심 K개) · [DBSCAN] (밀도) · [EM] · [SOM].' },
+        { pose: 'lightbulb', text: '[DBSCAN] 은 K 불필요 + [이상치] 에 강함. [K-means] 는 K 를 먼저 정해야 함.' },
+        { pose: 'happy', text: 'K-means 최적 K 찾기: [팔꿈치법] (WCSS) · [실루엣 계수] (1 가까울수록 좋음)!' },
+        { pose: 'idle', text: '5가지 군집 기법, 각자 특징 명확! 문제로!' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -1393,6 +1714,13 @@ const ADSP_3_4: Lesson = {
       id: 'adsp-3-4-s5',
       title: '분류 평가지표',
       quizId: 'adsp-3-4-cp-05',
+      dialogue: [
+        { pose: 'wave', text: '[분류 평가] — [오분류표] (TP/FP/FN/TN) 에서 모든 지표가 나와!' },
+        { pose: 'think', text: '[정확도] (전체 맞춘 비율) · [정밀도] (예측의 정확함) · [재현율] (실제 포착률).' },
+        { pose: 'lightbulb', text: '[암 진단·스팸] → 놓치면 안 되니 [재현율]! [추천·검색] → 잘못 보이면 안 되니 [정밀도]!' },
+        { pose: 'happy', text: '균형은 [F1] (조화평균). 상위 X% 타겟팅은 [Lift·Gain 차트]!' },
+        { pose: 'idle', text: '[ROC/AUC] 는 1에 가까울수록 우수. 문제로!' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -1434,6 +1762,13 @@ const ADSP_3_4: Lesson = {
       id: 'adsp-3-4-s6',
       title: '로지스틱 회귀',
       quizId: 'adsp-3-4-cp-06',
+      dialogue: [
+        { pose: 'wave', text: '[로지스틱 회귀] — "당뇨냐 아니냐" 처럼 [분류] 문제에 쓰는 회귀!' },
+        { pose: 'think', text: '선형회귀는 음수·2도 나올 수 있어 부적합 → [시그모이드] 로 0~1 사이 확률로!' },
+        { pose: 'lightbulb', text: '[odds] = p/(1−p) · [logit] = ln(odds) 로 선형 모델링. [Odds Ratio] > 1 → 양의 영향!' },
+        { pose: 'happy', text: '다중 분류로 확장 = [소프트맥스 회귀]. 평가는 [ROC/AUC] · 검정은 [Wald]!' },
+        { pose: 'idle', text: '회귀 이름이지만 실은 [분류기]. 문제로!' },
+      ],
       blocks: [
         {
           kind: 'intro',
@@ -1470,6 +1805,13 @@ const ADSP_3_4: Lesson = {
       id: 'adsp-3-4-s7',
       title: '의사결정나무',
       quizId: 'adsp-3-4-cp-07',
+      dialogue: [
+        { pose: 'wave', text: '[의사결정나무] — 뿌리에서 "나이 > 30?" 같은 [질문을 타고] 잎까지 내려가!' },
+        { pose: 'think', text: '분리 기준 4가지: [정보이득] (ID3) · [이득비] (C4.5) · [지니] (CART) · [카이제곱] (CHAID).' },
+        { pose: 'lightbulb', text: '최대 장점은 [해석이 쉽다]! 규칙이 그대로 보여서 "왜 그렇게 예측했나" 설명 가능.' },
+        { pose: 'happy', text: '약점은 [과적합] — [가지치기] (사전/사후) 로 해결. 앙상블로도 보완!' },
+        { pose: 'idle', text: '알고리즘별 분리 기준 매칭, 확실히! 문제로!' },
+      ],
       blocks: [
         {
           kind: 'section',
@@ -1510,6 +1852,13 @@ const ADSP_3_4: Lesson = {
       id: 'adsp-3-4-s8',
       title: 'K-최근접이웃 (K-NN)',
       quizId: 'adsp-3-4-cp-08',
+      dialogue: [
+        { pose: 'wave', text: '[K-NN] — "비슷한 애들 [K 명] 보고 다수결로 따라 한다!"' },
+        { pose: 'think', text: '학습은 데이터 [저장만] — 예측할 때 모든 점과 거리 계산. [게으른 학습기]!' },
+        { pose: 'lightbulb', text: 'K 작으면 [과적합] · K 크면 [과소적합]. [홀수 K] 로 동률 회피!' },
+        { pose: 'happy', text: '거리 측도: [유클리드] · [맨해튼] · [민코프스키] · [마할라노비스] (상관 반영).' },
+        { pose: 'idle', text: '스케일 다르면 [표준화] 필수 (키 170 vs 체중 65)! 문제로!' },
+      ],
       blocks: [
         {
           kind: 'intro',
@@ -1550,6 +1899,13 @@ const ADSP_3_4: Lesson = {
       id: 'adsp-3-4-s9',
       title: '나이브베이즈 분류기 (NBC)',
       quizId: 'adsp-3-4-cp-09',
+      dialogue: [
+        { pose: 'wave', text: '[나이브베이즈] — [베이즈 정리] + "특징들이 모두 [독립]" 이라는 순진한 가정!' },
+        { pose: 'think', text: '복잡한 결합확률이 [각 확률의 곱] 으로 단순화 → 학습·예측 매우 빠름.' },
+        { pose: 'lightbulb', text: '사후확률 ∝ [사전 × 가능도]. 클래스별 계산해서 가장 큰 거 선택!' },
+        { pose: 'happy', text: '변형: [Gaussian NB] (연속형) · [Multinomial NB] (단어빈도) · [Bernoulli NB] (이진).' },
+        { pose: 'idle', text: '대표 활용: [스팸 필터] · [문서 분류]. 문제로!' },
+      ],
       blocks: [
         {
           kind: 'intro',
@@ -1586,6 +1942,13 @@ const ADSP_3_4: Lesson = {
       id: 'adsp-3-4-s10',
       title: '서포트 벡터 머신 (SVM)',
       quizId: 'adsp-3-4-cp-10',
+      dialogue: [
+        { pose: 'wave', text: '[SVM] — 두 집단 사이에 선 그을 때, [가장 여유롭게] 긋자!' },
+        { pose: 'think', text: '[마진] (경계까지 거리) 최대화. 경계 결정하는 소수 점이 [서포트 벡터]!' },
+        { pose: 'lightbulb', text: '[하드 마진] (완전 분리) vs [소프트 마진] (약간 허용, 파라미터 C 로 조정).' },
+        { pose: 'happy', text: '[커널 트릭] — 선형 분리 안 되면 [고차원으로 올려서] 풀자! (RBF · 다항 · 시그모이드)' },
+        { pose: 'idle', text: '[고차원·소표본] 에 강함. 문제로!' },
+      ],
       blocks: [
         {
           kind: 'intro',
@@ -1622,6 +1985,13 @@ const ADSP_3_4: Lesson = {
       id: 'adsp-3-4-s11',
       title: '인공신경망 · 딥러닝',
       quizId: 'adsp-3-4-cp-11',
+      dialogue: [
+        { pose: 'wave', text: '[인공신경망] — 뇌 뉴런을 수식으로 흉내. 층을 [깊게] 쌓으면 [딥러닝]!' },
+        { pose: 'think', text: '구조: [입력층] → [은닉층 × N] → [출력층]. 학습은 [오차역전파] 로 뒤에서부터 가중치 조정.' },
+        { pose: 'lightbulb', text: '활성화 함수: [시그모이드] (0~1) · [tanh] · [ReLU] (현대 표준) · [Softmax] (다중분류).' },
+        { pose: 'happy', text: '3대 구조: [CNN] (이미지) · [RNN/LSTM] (시계열) · [Transformer] (BERT·GPT)!' },
+        { pose: 'idle', text: '대량 데이터 + GPU + 역전파 = 2010년대 폭발적 성장! 문제로!' },
+      ],
       blocks: [
         {
           kind: 'intro',
@@ -1665,6 +2035,651 @@ const ADSP_3_4: Lesson = {
 };
 
 // ================================================================
+// SQLD · 1과목 · 데이터 모델링의 이해
+// ================================================================
+
+const SQLD_1_1: Lesson = {
+  id: 'sqld-1-1',
+  subject: 'sqld',
+  chapter: 1,
+  chapterTitle: '데이터 모델링의 이해',
+  topic: '데이터 모델링의 이해',
+  title: '엔티티·속성·관계 — 모델링의 3요소',
+  hook: '테이블을 그리기 전에, "무엇을 저장할지" 를 먼저 정리하자.',
+  estimatedMinutes: 8,
+  steps: [
+    {
+      id: 'sqld-1-1-s1',
+      title: '데이터 모델링의 3관점',
+      quizId: 'sqld-1-1-cp-01',
+      dialogue: [
+        { pose: 'wave', text: '[SQLD] 시작! 먼저 [데이터 모델링] 부터. 복잡한 업무를 [표] 로 바꾸는 일!' },
+        { pose: 'think', text: '세 관점: [데이터] (무엇이 저장되나) · [프로세스] (어떻게 흐르나) · [상관] (둘의 관계).' },
+        { pose: 'lightbulb', text: '영어로는 [What] · [How] · [Data-Process]. 관점별로 같은 업무를 다르게 본다!' },
+        { pose: 'happy', text: '암기법: [데프상] — 데이터·프로세스·상관 순!' },
+        { pose: 'idle', text: '자, 어떤 관점이 [How] 인지 맞혀보자!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '데이터 모델링은 현실 세계의 업무를 컴퓨터가 다룰 수 있는 형태(테이블·관계) 로 정리하는 작업입니다. 같은 업무를 세 관점에서 나눠 봅니다.',
+        },
+        {
+          kind: 'keypoints',
+          title: '3관점',
+          items: [
+            '데이터 관점(Data, What) — "무엇이 저장되는가": 엔티티·속성',
+            '프로세스 관점(Process, How) — "어떻게 업무가 흐르는가": DFD·업무 흐름도',
+            '상관 관점(Data-Process, Interaction) — "데이터가 프로세스에 어떻게 쓰이나"',
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'mnemonic',
+          title: '"데·프·상" 으로 외우자',
+          body:
+            '데이터(What) → 프로세스(How) → 상관(Interaction). SQLD 는 주로 데이터 관점의 모델링을 다룹니다.',
+        },
+      ],
+    },
+    {
+      id: 'sqld-1-1-s2',
+      title: '엔티티의 조건',
+      quizId: 'sqld-1-1-cp-02',
+      dialogue: [
+        { pose: 'wave', text: '[엔티티] — "저장할 필요가 있는 [실체]"! 고객·주문·상품 같은 것.' },
+        { pose: 'think', text: '엔티티 5조건: [업무에 필요] · [식별 가능] · [2개 이상 인스턴스] · [속성 보유] · [프로세스 이용].' },
+        { pose: 'lightbulb', text: '"영속적 저장" 은 조건이 아니야! 임시 엔티티도 존재할 수 있음.' },
+        { pose: 'happy', text: '암기법: [업식인속프] — 업무·식별·인스턴스·속성·프로세스!' },
+        { pose: 'idle', text: '함정 문제 나올 수 있어. 문제로!' },
+      ],
+      blocks: [
+        {
+          kind: 'section',
+          title: '엔티티란?',
+          body:
+            '업무에서 관리해야 할 "실체" 또는 "개념". 고객(Customer)·주문(Order)·상품(Product) 등이 전형적인 엔티티입니다.',
+        },
+        {
+          kind: 'keypoints',
+          title: '엔티티가 갖춰야 할 5가지',
+          items: [
+            '업무에서 필요한 정보 (업무적 가치)',
+            '유일하게 식별 가능 (식별자 존재)',
+            '2개 이상의 인스턴스를 가짐 (하나뿐인 것은 엔티티 아님)',
+            '속성(Attribute) 을 반드시 가짐',
+            '업무 프로세스에서 이용됨',
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: '자주 틀리는 함정',
+          body:
+            '"영속적으로 저장되어야 한다" 는 조건이 아닙니다. 임시 엔티티·이벤트성 엔티티도 엔티티로 인정됩니다.',
+        },
+      ],
+    },
+    {
+      id: 'sqld-1-1-s3',
+      title: '속성 분류 — 기본·설계·파생',
+      quizId: 'sqld-1-1-cp-03',
+      dialogue: [
+        { pose: 'wave', text: '[속성] — 엔티티를 구성하는 [세부 정보]! 고객의 이름·나이·주소 같은 것.' },
+        { pose: 'think', text: '속성 3분류: [기본] (업무에서 원래 존재) · [설계] (설계 시 새로 정의) · [파생] (계산·가공).' },
+        { pose: 'lightbulb', text: '예: \"이름\"은 기본, \"고객 ID\"는 설계, \"총 구매액\"은 파생(주문 합산)!' },
+        { pose: 'happy', text: '암기법: [기설파] — 기본·설계·파생!' },
+        { pose: 'idle', text: '분류 매칭 문제로!' },
+      ],
+      blocks: [
+        {
+          kind: 'section',
+          title: '속성 3분류',
+          body:
+            '속성은 출처와 생성 방식에 따라 기본·설계·파생의 3가지로 나뉩니다.',
+        },
+        {
+          kind: 'table',
+          headers: ['분류', '의미', '예시'],
+          rows: [
+            ['기본속성', '업무에서 이미 존재하는 원천 속성', '이름, 주민등록번호, 주소'],
+            ['설계속성', '설계 과정에서 새로 정의된 속성', '고객ID, 주문번호'],
+            ['파생속성', '다른 속성에서 계산·가공해 생성', '총구매액, 평균단가, 나이(생년월일→계산)'],
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '도메인(Domain)',
+          body:
+            '속성이 가질 수 있는 값의 범위·제약. 예: "성별" 속성의 도메인은 {\'M\', \'F\'}. 도메인 정의는 데이터 정합성의 기본.',
+        },
+      ],
+    },
+    {
+      id: 'sqld-1-1-s4',
+      title: '관계와 카디널리티',
+      quizId: 'sqld-1-1-cp-04',
+      dialogue: [
+        { pose: 'wave', text: '[관계] — 엔티티끼리 어떻게 연결되나! 부서와 사원, 학생과 과목 같은.' },
+        { pose: 'think', text: '카디널리티 3종: [1:1] (일대일) · [1:N] (일대다) · [N:M] (다대다).' },
+        { pose: 'lightbulb', text: '"부서 1개 ↔ 사원 여러" → [1:N]. "학생 ↔ 과목" → [N:M] (여러 학생이 여러 과목 수강).' },
+        { pose: 'happy', text: 'N:M 은 실제 DB에서는 [중간 테이블] 로 풀어서 구현해!' },
+        { pose: 'idle', text: '관계 차수 맞히기! 문제로!' },
+      ],
+      blocks: [
+        {
+          kind: 'section',
+          title: '관계의 3요소',
+          body:
+            '두 엔티티 간의 연결을 "관계" 라 부릅니다. 관계를 읽을 때는 (1) 관계명 (2) 카디널리티 (3) 선택성(참여도) 을 함께 봅니다.',
+        },
+        {
+          kind: 'keypoints',
+          title: '카디널리티(Cardinality) 3종',
+          items: [
+            '1:1 (일대일) — 사원과 사물함',
+            '1:N (일대다) — 부서와 사원, 고객과 주문',
+            'N:M (다대다) — 학생과 과목, 상품과 주문',
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: 'N:M 풀기',
+          body:
+            '관계형 DB 는 N:M 을 직접 표현하지 못하므로 중간 교차 테이블(Associative Entity) 로 쪼갭니다. "학생–수강–과목" 에서 수강이 중간 테이블입니다.',
+        },
+      ],
+    },
+  ],
+};
+
+const SQLD_1_2: Lesson = {
+  id: 'sqld-1-2',
+  subject: 'sqld',
+  chapter: 1,
+  chapterTitle: '데이터 모델링의 이해',
+  topic: '데이터 모델과 성능',
+  title: '정규화·반정규화·식별자',
+  hook: '좋은 테이블은 "중복이 없고 이상이 안 생기게" 쪼갠 것. 단, 성능이 필요하면 다시 합친다.',
+  estimatedMinutes: 8,
+  steps: [
+    {
+      id: 'sqld-1-2-s1',
+      title: '정규화의 목적',
+      quizId: 'sqld-1-2-cp-01',
+      dialogue: [
+        { pose: 'wave', text: '[정규화] — 테이블을 [잘게 쪼개] 중복·이상을 없애는 작업!' },
+        { pose: 'think', text: '목적 3가지: [중복 최소화] · [이상(Anomaly) 방지] · [일관성 유지].' },
+        { pose: 'lightbulb', text: '이상 3종: [삽입 이상] · [삭제 이상] · [갱신 이상]!' },
+        { pose: 'happy', text: '주의: 조회 성능은 [떨어질 수 있어]! JOIN 이 늘어나니까. 성능은 반정규화로 보정!' },
+        { pose: 'idle', text: '정규화 목적이 "아닌" 것 찾기! 문제로!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '정규화(Normalization) 는 테이블을 "더 작은 테이블들" 로 쪼개 중복을 없애고 이상(Anomaly) 을 방지하는 설계 원칙입니다.',
+        },
+        {
+          kind: 'keypoints',
+          title: '목적',
+          items: [
+            '데이터 중복 최소화 — 저장공간 절감 + 일관성 확보',
+            '이상 현상 방지 — 삽입/삭제/갱신 이상 방지',
+            '무결성 유지 — 일관된 데이터 상태 보장',
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: '조회 성능은 오히려 ↓',
+          body:
+            '정규화는 테이블을 늘리므로 JOIN 횟수가 증가해 조회 성능이 떨어질 수 있습니다. 성능이 필요하면 반정규화로 보정합니다.',
+        },
+      ],
+    },
+    {
+      id: 'sqld-1-2-s2',
+      title: '정규형 1NF → BCNF',
+      quizId: 'sqld-1-2-cp-02',
+      dialogue: [
+        { pose: 'wave', text: '[정규형] — 정규화 단계. 보통 [3NF] 까지 많이 가고, 엄격하면 [BCNF]!' },
+        { pose: 'think', text: '[1NF]: 모든 값이 원자값. [2NF]: 부분 함수 종속 제거 (완전 함수 종속). [3NF]: 이행 함수 종속 제거.' },
+        { pose: 'lightbulb', text: '[BCNF]: 모든 [결정자] 가 [후보키] 여야 함. 3NF 보다 강한 조건!' },
+        { pose: 'happy', text: '암기법: [원·부·이·결] — 원자값/부분종속/이행종속/결정자!' },
+        { pose: 'idle', text: '2NF 규칙 맞히기! 문제로!' },
+      ],
+      blocks: [
+        {
+          kind: 'table',
+          title: '정규형 단계',
+          headers: ['정규형', '규칙'],
+          rows: [
+            ['1NF (제1정규형)', '모든 속성이 원자값(Atomic Value) 을 가짐 — 반복 그룹 제거'],
+            ['2NF (제2정규형)', '1NF + 기본키 전체에 대한 완전 함수 종속 (부분 종속 제거)'],
+            ['3NF (제3정규형)', '2NF + 이행 함수 종속 제거 (A→B, B→C 인 경우 A→C 제거)'],
+            ['BCNF', '3NF + 모든 결정자가 후보키 (더 엄격)'],
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'mnemonic',
+          title: '"원·부·이·결"',
+          body:
+            '1NF=원자값 · 2NF=부분종속제거 · 3NF=이행종속제거 · BCNF=결정자=후보키. 핵심 단어만 외우면 문제는 절반 풀린 것!',
+        },
+      ],
+    },
+    {
+      id: 'sqld-1-2-s3',
+      title: '반정규화',
+      quizId: 'sqld-1-2-cp-03',
+      dialogue: [
+        { pose: 'wave', text: '[반정규화] — 정규화된 것을 다시 [합치거나 중복] 시켜 [조회 성능] 을 올리는 기법!' },
+        { pose: 'think', text: '언제 쓰나? [대량 JOIN 반복] 으로 조회가 느릴 때, [같은 계산을 매번 반복] 할 때.' },
+        { pose: 'lightbulb', text: '방법: [테이블 통합] · [컬럼 중복] · [파생 컬럼 추가] · [요약 테이블].' },
+        { pose: 'happy', text: '대가: [갱신 부담] ↑ + [일관성 리스크] ↑. 세트로 외우기!' },
+        { pose: 'idle', text: '반정규화가 적절한 상황 찾기!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '반정규화(Denormalization) 는 정규화된 테이블을 일부러 다시 "뭉치거나 중복시켜" 조회 성능을 끌어올리는 기법입니다.',
+        },
+        {
+          kind: 'keypoints',
+          title: '주요 방법',
+          items: [
+            '테이블 통합 — 1:1 관계 테이블을 하나로 합침',
+            '컬럼 중복 — 자주 조회되는 컬럼을 다른 테이블에 복사',
+            '파생 컬럼 추가 — 합계·평균·건수 같은 집계 결과를 미리 저장',
+            '이력 요약 테이블 — 일별·월별 집계 테이블 별도 운영',
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: '성능 ↔ 일관성 트레이드오프',
+          body:
+            '반정규화는 INSERT/UPDATE 시 여러 곳을 동시에 수정해야 하므로 갱신 부담과 일관성 리스크가 커집니다. 꼭 필요한 지점에만 적용.',
+        },
+      ],
+    },
+    {
+      id: 'sqld-1-2-s4',
+      title: '주식별자(PK) 의 4가지 요건',
+      quizId: 'sqld-1-2-cp-04',
+      dialogue: [
+        { pose: 'wave', text: '[주식별자] — 테이블의 [PK]! 각 행을 유일하게 구분하는 기준!' },
+        { pose: 'think', text: '4요건: [유일성] · [최소성] · [불변성] · [존재성] (NOT NULL).' },
+        { pose: 'lightbulb', text: '"의미가 있어야 함" 은 조건 [아님]! 의미 있는 값은 오히려 자주 바뀜.' },
+        { pose: 'happy', text: '그래서 의미 없는 [인조키 (surrogate key)] 를 권장하는 경우가 많아!' },
+        { pose: 'idle', text: '암기법: [유최불존] — 유일·최소·불변·존재!' },
+      ],
+      blocks: [
+        {
+          kind: 'section',
+          title: '주식별자(Primary Key) 란',
+          body:
+            '테이블의 각 행(인스턴스) 을 유일하게 식별하는 기준이 되는 속성(또는 속성 집합).',
+        },
+        {
+          kind: 'keypoints',
+          title: '4가지 요건',
+          items: [
+            '유일성(Uniqueness) — 각 인스턴스가 유일하게 식별됨',
+            '최소성(Minimality) — 꼭 필요한 속성만으로 구성 (중복 컬럼 X)',
+            '불변성(Immutability) — 값이 자주 바뀌지 않음',
+            '존재성(Existence) — NULL 이 아님',
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '본질식별자 vs 인조식별자',
+          body:
+            '업무 의미가 있는 값(주민번호 등)은 "본질식별자" 지만 변경 리스크·개인정보 이슈가 큽니다. 대안으로 일련번호 같은 "인조식별자(surrogate key)" 를 PK 로 쓰는 경우가 많습니다.',
+        },
+      ],
+    },
+  ],
+};
+
+// ================================================================
+// SQLD · 2과목 · SQL 기본 및 활용
+// ================================================================
+
+const SQLD_2_1: Lesson = {
+  id: 'sqld-2-1',
+  subject: 'sqld',
+  chapter: 2,
+  chapterTitle: 'SQL 기본 및 활용',
+  topic: 'SQL 기본',
+  title: 'SELECT · WHERE · GROUP BY · JOIN',
+  hook: '모든 쿼리의 뼈대. 실행 순서부터 정확히!',
+  estimatedMinutes: 10,
+  steps: [
+    {
+      id: 'sqld-2-1-s1',
+      title: 'SQL 실행 순서',
+      quizId: 'sqld-2-1-cp-01',
+      dialogue: [
+        { pose: 'wave', text: '[SQL 실행 순서] — 이거 꼭 외워! 함정 문제 단골!' },
+        { pose: 'think', text: '작성은 [SELECT] 부터지만, 엔진이 푸는 순서는 [FROM] 이 먼저야.' },
+        { pose: 'lightbulb', text: '순서: [FROM] → [WHERE] → [GROUP BY] → [HAVING] → [SELECT] → [ORDER BY].' },
+        { pose: 'happy', text: '암기법: [프웨그하셀오] — FROM·WHERE·GROUP·HAVING·SELECT·ORDER!' },
+        { pose: 'idle', text: '실행 순서 맞히기! 문제로!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'SQL 은 "작성 순서" 와 "논리적 실행 순서" 가 다릅니다. 우리는 SELECT 부터 쓰지만, DB 엔진은 FROM 부터 처리합니다.',
+        },
+        {
+          kind: 'table',
+          title: '논리적 처리 순서',
+          headers: ['단계', '절', '의미'],
+          rows: [
+            ['1', 'FROM / JOIN', '대상 테이블 결정'],
+            ['2', 'WHERE', '행 단위 필터'],
+            ['3', 'GROUP BY', '그룹화'],
+            ['4', 'HAVING', '그룹 단위 필터'],
+            ['5', 'SELECT', '컬럼 선택 및 표현식 계산'],
+            ['6', 'ORDER BY', '정렬'],
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'mnemonic',
+          title: '"프웨그하셀오"',
+          body:
+            'FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY. WHERE 는 "행 필터", HAVING 은 "그룹 필터" — 이 구분이 핵심!',
+        },
+      ],
+    },
+    {
+      id: 'sqld-2-1-s2',
+      title: 'NULL 과 3값 논리',
+      quizId: 'sqld-2-1-cp-02',
+      dialogue: [
+        { pose: 'wave', text: '[NULL] — "값이 없음". 0 이나 "" 와 달라!' },
+        { pose: 'think', text: 'NULL 과의 [=], [!=] 비교는 모두 [UNKNOWN] 을 반환. 예상과 다른 결과!' },
+        { pose: 'lightbulb', text: '반드시 [IS NULL] · [IS NOT NULL] 써야 맞아!' },
+        { pose: 'happy', text: '집계함수는 대부분 NULL을 [무시]해. COUNT(*) 는 NULL도 셈, COUNT(컬럼) 은 NULL 제외!' },
+        { pose: 'idle', text: 'NULL 비교 연산자 맞히기!' },
+      ],
+      blocks: [
+        {
+          kind: 'section',
+          title: 'NULL 의 특별함',
+          body:
+            'NULL 은 "값이 없음" 을 의미합니다. 빈 문자열 \'\' 이나 0 과는 엄연히 다르며, 3값 논리(TRUE/FALSE/UNKNOWN) 의 UNKNOWN 을 만들어냅니다.',
+        },
+        {
+          kind: 'keypoints',
+          items: [
+            'col = NULL → UNKNOWN (원하는 결과 안 나옴)',
+            'col IS NULL · col IS NOT NULL → 올바른 방법',
+            'NULL + 1 = NULL (산술 연산 결과도 NULL)',
+            'COUNT(*) 는 NULL 포함, COUNT(컬럼) 은 NULL 제외',
+            'AVG/SUM 은 NULL 무시',
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: 'NVL / COALESCE',
+          body:
+            'NULL 을 다른 값으로 치환: Oracle 은 NVL(col, 0), 표준은 COALESCE(col, 0). COALESCE 는 인자 여러 개 중 첫 NOT NULL 을 반환.',
+        },
+      ],
+    },
+    {
+      id: 'sqld-2-1-s3',
+      title: 'GROUP BY 와 HAVING',
+      quizId: 'sqld-2-1-cp-03',
+      dialogue: [
+        { pose: 'wave', text: '[GROUP BY] — 그룹으로 묶고 [집계함수] 로 요약. COUNT, SUM, AVG, MAX, MIN!' },
+        { pose: 'think', text: '"행 하나하나 조건" 은 [WHERE], "집계 후 조건" 은 [HAVING]. 헷갈리면 바로 오답!' },
+        { pose: 'lightbulb', text: '집계함수는 WHERE 에 못 써! 실행 순서상 GROUP BY 보다 먼저라 집계 결과가 아직 없음.' },
+        { pose: 'happy', text: 'SELECT 절에 온 컬럼은 GROUP BY 에 있거나 집계함수로 감싸야 함!' },
+        { pose: 'idle', text: '부서별 평균급여 조건 쿼리, 어느 게 맞나?' },
+      ],
+      blocks: [
+        {
+          kind: 'section',
+          title: '그룹화와 집계',
+          body:
+            'GROUP BY 는 같은 값을 가진 행들을 묶고, 집계함수로 묶음별 요약을 만듭니다. WHERE 는 "행 필터", HAVING 은 "집계 결과 필터".',
+        },
+        {
+          kind: 'example',
+          body:
+            'SELECT DEPT, AVG(SAL) AS AVG_SAL\nFROM EMP\nWHERE HIRE_YEAR >= 2020\nGROUP BY DEPT\nHAVING AVG(SAL) >= 5000000\nORDER BY AVG_SAL DESC;',
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: '자주 틀리는 포인트',
+          body:
+            '(1) SELECT 의 비집계 컬럼은 모두 GROUP BY 에 있어야 함. (2) 집계함수는 WHERE 에 쓸 수 없음 — HAVING 에서만. (3) HAVING 은 GROUP BY 뒤, ORDER BY 앞.',
+        },
+      ],
+    },
+    {
+      id: 'sqld-2-1-s4',
+      title: 'JOIN 4종 세트',
+      quizId: 'sqld-2-1-cp-04',
+      dialogue: [
+        { pose: 'wave', text: '[JOIN] — 여러 테이블을 엮는 가장 강력한 도구!' },
+        { pose: 'think', text: '[INNER] (교집합) · [LEFT OUTER] (왼쪽 모두 보존) · [RIGHT OUTER] · [FULL OUTER] (합집합).' },
+        { pose: 'lightbulb', text: '"사원 없는 부서까지 조회" → [LEFT OUTER JOIN] (부서 왼쪽에 두기)!' },
+        { pose: 'happy', text: '[CROSS JOIN] 은 [카티시안 곱] — 모든 쌍. 신중히 쓰자!' },
+        { pose: 'idle', text: '부서 없는 사원·사원 없는 부서 모두 보려면? 문제로!' },
+      ],
+      blocks: [
+        {
+          kind: 'table',
+          title: 'JOIN 종류',
+          headers: ['JOIN', '의미'],
+          rows: [
+            ['INNER JOIN', '양쪽에 매칭되는 행만 반환 (교집합)'],
+            ['LEFT OUTER JOIN', '왼쪽 테이블의 모든 행 + 매칭된 오른쪽 (없으면 NULL)'],
+            ['RIGHT OUTER JOIN', '오른쪽 테이블의 모든 행 + 매칭된 왼쪽'],
+            ['FULL OUTER JOIN', '양쪽의 모든 행 (매칭 없는 쪽은 NULL)'],
+            ['CROSS JOIN', '모든 행 쌍 — 카티시안 곱'],
+            ['SELF JOIN', '같은 테이블을 두 번 참조 (사원-상사 관계 등)'],
+          ],
+        },
+        {
+          kind: 'example',
+          body:
+            '-- 사원이 없는 부서까지 조회\nSELECT D.DEPT_NAME, E.EMP_NAME\nFROM DEPT D\nLEFT OUTER JOIN EMP E ON D.DEPT_ID = E.DEPT_ID;',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: 'NATURAL JOIN 과 USING',
+          body:
+            'NATURAL JOIN 은 같은 이름 컬럼을 자동 매칭 (권장 X — 실수 유발). USING(컬럼명) 은 명시적으로 조인 컬럼을 지정하는 깔끔한 방법.',
+        },
+      ],
+    },
+  ],
+};
+
+const SQLD_2_2: Lesson = {
+  id: 'sqld-2-2',
+  subject: 'sqld',
+  chapter: 2,
+  chapterTitle: 'SQL 기본 및 활용',
+  topic: 'SQL 활용',
+  title: '서브쿼리 · 집합연산 · 윈도우 함수',
+  hook: '한 쿼리 안에 쿼리를 품고, 여러 결과를 합치고, 순위를 매긴다.',
+  estimatedMinutes: 10,
+  steps: [
+    {
+      id: 'sqld-2-2-s1',
+      title: '서브쿼리 4종',
+      quizId: 'sqld-2-2-cp-01',
+      dialogue: [
+        { pose: 'wave', text: '[서브쿼리] — 쿼리 안의 쿼리! 쓰는 위치에 따라 이름이 달라져.' },
+        { pose: 'think', text: '[스칼라] (SELECT 절) · [인라인 뷰] (FROM 절) · [중첩] (WHERE 절) · [상관] (바깥 값 참조).' },
+        { pose: 'lightbulb', text: '[상관 서브쿼리] 는 바깥 쿼리 값을 [참조] 해서 행마다 다시 실행됨. 느릴 수 있어!' },
+        { pose: 'happy', text: '[비상관] = 독립 실행, [상관] = 바깥 값 필요. 명확히 구분!' },
+        { pose: 'idle', text: '설명 틀린 것 찾기! 문제로!' },
+      ],
+      blocks: [
+        {
+          kind: 'table',
+          title: '서브쿼리 위치별 분류',
+          headers: ['유형', '위치', '특징'],
+          rows: [
+            ['스칼라 서브쿼리', 'SELECT 절', '한 행·한 컬럼 반환'],
+            ['인라인 뷰', 'FROM 절', '임시 테이블처럼 동작'],
+            ['중첩 서브쿼리', 'WHERE 절', 'IN, EXISTS 등과 함께'],
+            ['상관 서브쿼리', 'WHERE 절', '바깥 쿼리 값을 참조 → 행마다 실행'],
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'mnemonic',
+          title: '상관 vs 비상관',
+          body:
+            '상관(Correlated): 바깥 쿼리 컬럼 참조 → 행마다 실행. 비상관(Non-Correlated): 독립적으로 한 번만 실행. 상관은 EXISTS 와 자주 쓰임.',
+        },
+        {
+          kind: 'example',
+          body:
+            '-- 상관 서브쿼리 예: 부서 평균보다 급여가 높은 사원\nSELECT EMP_NAME, SAL\nFROM EMP E\nWHERE SAL > (SELECT AVG(SAL) FROM EMP WHERE DEPT_ID = E.DEPT_ID);',
+        },
+      ],
+    },
+    {
+      id: 'sqld-2-2-s2',
+      title: '집합 연산자',
+      quizId: 'sqld-2-2-cp-02',
+      dialogue: [
+        { pose: 'wave', text: '[집합 연산자] — 두 쿼리 결과를 [세로로] 합치는 도구!' },
+        { pose: 'think', text: '[UNION] (중복제거) · [UNION ALL] (중복포함) · [INTERSECT] (교집합) · [MINUS/EXCEPT] (차집합).' },
+        { pose: 'lightbulb', text: '[UNION ALL] 이 가장 빠름 — 정렬·중복제거를 안 해!' },
+        { pose: 'happy', text: '전제: 두 쿼리의 [컬럼 개수] 와 [데이터 타입] 이 호환되어야 해!' },
+        { pose: 'idle', text: '중복 유지하는 건? 문제로!' },
+      ],
+      blocks: [
+        {
+          kind: 'table',
+          title: '집합 연산자',
+          headers: ['연산자', '의미', '비용'],
+          rows: [
+            ['UNION', '합집합 — 중복 제거 + 정렬', '높음'],
+            ['UNION ALL', '이어붙이기 — 중복 포함', '낮음 (가장 빠름)'],
+            ['INTERSECT', '교집합 — 양쪽 모두 있는 행', '중간'],
+            ['MINUS (EXCEPT)', '차집합 — 앞에서 뒤를 뺀 결과', '중간'],
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '성능 팁',
+          body:
+            '중복이 없음을 이미 알거나 중복 제거가 필요 없으면 UNION ALL 을 사용하세요. 중복 제거 비용을 안 내서 훨씬 빠릅니다.',
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: '전제 조건',
+          body:
+            '집합 연산자를 쓰려면 두 쿼리의 (1) 컬럼 개수가 같고 (2) 대응 컬럼의 데이터 타입이 호환되어야 합니다. 컬럼 이름은 첫 쿼리 기준.',
+        },
+      ],
+    },
+    {
+      id: 'sqld-2-2-s3',
+      title: '윈도우 함수 — 순위',
+      quizId: 'sqld-2-2-cp-03',
+      dialogue: [
+        { pose: 'wave', text: '[윈도우 함수] — 그룹 내 순위·누적·이동평균 등을 GROUP BY 없이 계산!' },
+        { pose: 'think', text: '순위 3종: [RANK] (동점=같은 순위, 건너뜀) · [DENSE_RANK] (건너뛰지 않음) · [ROW_NUMBER] (고유 순번).' },
+        { pose: 'lightbulb', text: '예: 점수 90,90,80 → RANK 는 1,1,3 / DENSE_RANK 는 1,1,2 / ROW_NUMBER 는 1,2,3!' },
+        { pose: 'happy', text: '문법: [함수() OVER (PARTITION BY 기준 ORDER BY 정렬)]!' },
+        { pose: 'idle', text: '동점자 다음 순위 건너뛰지 않는 함수?' },
+      ],
+      blocks: [
+        {
+          kind: 'section',
+          title: '윈도우 함수 기본 문법',
+          body:
+            '윈도우 함수는 OVER() 절로 "행들의 창(window)" 을 정의합니다. PARTITION BY 로 그룹, ORDER BY 로 순서, 필요시 ROWS/RANGE 로 윈도우 크기.',
+        },
+        {
+          kind: 'example',
+          body:
+            '-- 부서별 급여 순위\nSELECT EMP_NAME, DEPT_ID, SAL,\n       RANK() OVER (PARTITION BY DEPT_ID ORDER BY SAL DESC) AS RNK\nFROM EMP;',
+        },
+        {
+          kind: 'table',
+          title: '대표 윈도우 함수',
+          headers: ['함수', '의미'],
+          rows: [
+            ['RANK()', '동점 같은 순위, 다음 순위 건너뜀 (1,1,3)'],
+            ['DENSE_RANK()', '동점 같은 순위, 다음 순위 연속 (1,1,2)'],
+            ['ROW_NUMBER()', '동점 없이 고유 순번 (1,2,3)'],
+            ['LAG/LEAD', '이전/다음 행의 값 참조'],
+            ['SUM/AVG OVER', '누적 합계·이동 평균'],
+            ['NTILE(n)', 'n 개 그룹으로 균등 분할'],
+          ],
+        },
+      ],
+    },
+    {
+      id: 'sqld-2-2-s4',
+      title: 'DDL · DML · DCL · TCL',
+      quizId: 'sqld-2-2-cp-04',
+      dialogue: [
+        { pose: 'wave', text: 'SQL 은 [4가지 명령군] 으로 나뉘어!' },
+        { pose: 'think', text: '[DDL] (데이터 정의) · [DML] (데이터 조작) · [DCL] (권한) · [TCL] (트랜잭션 제어).' },
+        { pose: 'lightbulb', text: '[TCL] 의 핵심 3종: [COMMIT] · [ROLLBACK] · [SAVEPOINT]!' },
+        { pose: 'happy', text: '암기법: [정조권트] — 정의·조작·권한·트랜잭션!' },
+        { pose: 'idle', text: 'COMMIT 이 속한 그룹은? 문제로!' },
+      ],
+      blocks: [
+        {
+          kind: 'table',
+          title: 'SQL 명령 4군',
+          headers: ['그룹', '의미', '대표 명령'],
+          rows: [
+            ['DDL (Definition)', '객체 정의·변경', 'CREATE, ALTER, DROP, TRUNCATE'],
+            ['DML (Manipulation)', '데이터 조작', 'SELECT, INSERT, UPDATE, DELETE, MERGE'],
+            ['DCL (Control)', '권한 제어', 'GRANT, REVOKE'],
+            ['TCL (Transaction)', '트랜잭션 제어', 'COMMIT, ROLLBACK, SAVEPOINT'],
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'mnemonic',
+          title: '트랜잭션의 ACID',
+          body:
+            '원자성(Atomicity) · 일관성(Consistency) · 격리성(Isolation) · 지속성(Durability). COMMIT 전까지는 "되돌릴 수 있다"가 핵심.',
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: 'TRUNCATE 는 DDL',
+          body:
+            'DELETE 처럼 "모든 행 삭제" 에 쓰이지만 TRUNCATE 는 DDL 이라 자동 COMMIT 됩니다. ROLLBACK 불가 — 되돌릴 수 없음!',
+        },
+      ],
+    },
+  ],
+};
+
+// ================================================================
 // Export & helpers
 // ================================================================
 
@@ -1679,6 +2694,10 @@ export const ALL_LESSONS: Lesson[] = [
   ADSP_3_2,
   ADSP_3_3,
   ADSP_3_4,
+  SQLD_1_1,
+  SQLD_1_2,
+  SQLD_2_1,
+  SQLD_2_2,
 ];
 
 export function getLesson(

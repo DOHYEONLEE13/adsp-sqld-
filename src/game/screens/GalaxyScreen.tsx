@@ -1,15 +1,22 @@
 /**
  * Galaxy 화면 — 과목 선택.
  *
- * 3D 은하가 전체 뷰포트를 차지하는 "히어로" 레이아웃.
- * 타이틀/HUD/데일리 미션 등 모든 UI 는 캔버스 위에 오버레이로 올라갑니다.
+ * 2D 풀블리드 레이아웃. 중앙에 Ques 마스코트 + ADSP/SQLD 선택 카드가 놓이고,
+ * 모든 UI(타이틀/HUD/데일리 미션)는 그 위에 오버레이로 배치됩니다.
  *
- * 행성 클릭 → 카메라 줌인 + 과목 상세 패널 오버레이 (우측 하단).
- * 패널의 "플레이하기" 버튼 → 워프 애니메이션 → Planet 화면 진입.
+ * 선택 카드 클릭 → 과목 상세 패널(우측 하단).
+ * "플레이하기" 버튼 → 워프 트랜지션 → Planet 화면.
  */
 
-import { lazy, Suspense, useEffect, useState } from 'react';
-import { ArrowLeft, BarChart3, ChevronRight, Star, X } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  ArrowLeft,
+  BarChart3,
+  ChevronRight,
+  RotateCcw,
+  Star,
+  X,
+} from 'lucide-react';
 import { SUBJECT_SCHEMAS } from '@/data/subjects';
 import type { Subject } from '@/types/question';
 import { playableCount } from '../session';
@@ -18,15 +25,20 @@ import DailyMissionCard from '../components/DailyMissionCard';
 import { aggregateSubject } from '../aggregate';
 import { useProgress } from '../useProgress';
 import { useBookmarks } from '../useBookmarks';
-import { computePlayerStats } from '../rpg';
+import { computePlayerStats, type PlayerStats } from '../rpg';
 import PlayerHud from '../components/PlayerHud';
-
-// three.js 스택(약 240KB gzip)은 Galaxy 화면에서만 필요 → lazy chunk 로 분리.
-const GalaxyScene = lazy(() => import('../three/GalaxyScene'));
+import Ques from '@/components/mascot/Ques';
+import SpeechBubble from '@/game/lesson/SpeechBubble';
+import type { QuesPose } from '@/components/mascot/types';
+import type { ProgressStore } from '../storage';
+import DailyQuestsCard from '../components/DailyQuestsCard';
+import { getTodayQuests } from '../dailyQuests';
 
 interface Props {
   onSelectSubject: (subject: Subject) => void;
   onStartDailyMission: (subject: Subject) => void;
+  onStartMockExam: (subject: Subject) => void;
+  onOpenReview: () => void;
   onExit: () => void;
 }
 
@@ -55,12 +67,15 @@ type View =
 export default function GalaxyScreen({
   onSelectSubject,
   onStartDailyMission,
+  onStartMockExam,
+  onOpenReview,
   onExit,
 }: Props) {
   const progress = useProgress();
   const bookmarks = useBookmarks();
   const bookmarkCount = bookmarks.ids.size;
   const playerStats = computePlayerStats(progress);
+  const dailyQuests = getTodayQuests(progress);
   const defaultMissionSubject: Subject =
     playableCount('adsp') >= playableCount('sqld') ? 'adsp' : 'sqld';
 
@@ -95,21 +110,9 @@ export default function GalaxyScreen({
 
   return (
     <section className="relative min-h-screen bg-base text-cream isolate overflow-hidden">
-      {/* === Background: 3D 은하 캔버스 (풀 블리드) === */}
+      {/* === Background: 2D 은하 (풀 블리드) === */}
       <div className="absolute inset-0">
-        <Suspense
-          fallback={
-            <div className="absolute inset-0 flex items-center justify-center text-cream/50 kr-heading text-[11px] uppercase tracking-widest">
-              ⚡ Loading galaxy...
-            </div>
-          }
-        >
-          <GalaxyScene
-            zoomTarget={selectedSubject}
-            disabled={{ adsp: adspTotal === 0, sqld: sqldTotal === 0 }}
-            onSelect={handlePlanetClick}
-          />
-        </Suspense>
+        <GalaxyStarfield />
 
         {/* 상하 그라디언트 — 텍스트 가독성용 */}
         <div
@@ -135,12 +138,29 @@ export default function GalaxyScreen({
           </button>
 
           <div className="pointer-events-auto flex gap-2">
+            <DailyQuestsCard
+              quests={dailyQuests}
+              compact
+              onClick={() => {
+                window.location.hash = '/stats';
+              }}
+            />
+            <button
+              type="button"
+              onClick={onOpenReview}
+              aria-label="복습"
+              className="liquid-glass kr-heading inline-flex items-center gap-2 whitespace-nowrap text-[10px] md:text-[11px] uppercase tracking-widest px-3 py-2 md:px-4 md:py-2.5 rounded-full hover:bg-white/10 transition"
+            >
+              <RotateCcw size={12} strokeWidth={2.4} />
+              <span className="hidden sm:inline">복습</span>
+            </button>
             <button
               type="button"
               onClick={() => {
                 window.location.hash = '/bookmarks';
               }}
-              className="liquid-glass kr-heading inline-flex items-center gap-2 text-[10px] md:text-[11px] uppercase tracking-widest px-3 py-2 md:px-4 md:py-2.5 rounded-full hover:bg-white/10 transition"
+              aria-label="북마크"
+              className="liquid-glass kr-heading inline-flex items-center gap-2 whitespace-nowrap text-[10px] md:text-[11px] uppercase tracking-widest px-3 py-2 md:px-4 md:py-2.5 rounded-full hover:bg-white/10 transition"
             >
               <Star
                 size={12}
@@ -148,7 +168,7 @@ export default function GalaxyScreen({
                 className={bookmarkCount > 0 ? 'text-[#fbbf24]' : ''}
                 fill={bookmarkCount > 0 ? 'currentColor' : 'none'}
               />
-              북마크
+              <span className="hidden sm:inline">북마크</span>
               {bookmarkCount > 0 ? (
                 <span
                   className="ml-1 text-[10px] px-2 py-0.5 rounded-full tabular-nums"
@@ -166,10 +186,11 @@ export default function GalaxyScreen({
               onClick={() => {
                 window.location.hash = '/stats';
               }}
-              className="liquid-glass kr-heading inline-flex items-center gap-2 text-[10px] md:text-[11px] uppercase tracking-widest px-3 py-2 md:px-4 md:py-2.5 rounded-full hover:bg-white/10 transition"
+              aria-label="대시보드"
+              className="liquid-glass kr-heading inline-flex items-center gap-2 whitespace-nowrap text-[10px] md:text-[11px] uppercase tracking-widest px-3 py-2 md:px-4 md:py-2.5 rounded-full hover:bg-white/10 transition"
             >
               <BarChart3 size={12} strokeWidth={2.4} />
-              대시보드
+              <span className="hidden sm:inline">대시보드</span>
             </button>
           </div>
         </div>
@@ -181,13 +202,8 @@ export default function GalaxyScreen({
               Galaxy
             </span>
             <h1 className="kr-heading uppercase text-[28px] md:text-[48px] lg:text-[60px] mt-2 leading-[1.05] drop-shadow-[0_2px_20px_rgba(0,0,0,0.75)]">
-              행성을 선택하라
+              은하를 선택하라
             </h1>
-            <p className="hidden md:block kr-body text-[13px] md:text-[14px] text-cream/75 mt-3 max-w-xl leading-[1.7]">
-              탐사할 자격증 은하를 선택하세요.
-              <br className="hidden md:block" />
-              행성을 클릭하면 소개가 나타납니다.
-            </p>
           </div>
 
           {/* PlayerHud — 모바일은 타이틀 아래 풀폭, 데스크탑은 우측 고정폭 */}
@@ -199,7 +215,7 @@ export default function GalaxyScreen({
 
       {/* === Overlay: Bottom-left — Daily Mission ===
           모바일에서는 SubjectInfoPanel 이 풀폭으로 하단을 차지하므로
-          행성 선택 상태(detail/launching)에서는 숨김. 데스크탑은 좌우로 나뉘어 문제 없음. */}
+          과목 선택 상태(detail/launching)에서는 숨김. 데스크탑은 좌우로 나뉘어 문제 없음. */}
       <div
         className={`pointer-events-none absolute bottom-0 left-0 p-4 md:p-10 lg:p-14 w-full md:w-auto md:max-w-[420px] z-10 ${
           selectedSubject ? 'hidden md:block' : ''
@@ -214,10 +230,29 @@ export default function GalaxyScreen({
         </div>
       </div>
 
-      {/* === Overlay: Bottom-center — 안내 문구 (overview 일 때만) === */}
+      {/* === Overlay: Center — Subject Chooser (overview 한정) ===
+          조롱이 마스코트가 사용자에게 ADSP/SQLD 중 오늘의 과목을 고르라고 안내.
+          모바일에선 상단의 타이틀·HUD 와 겹치지 않도록 top 을 고정하고 bottom 은 데일리
+          미션 카드 위쪽에서 멈춤. 데스크탑은 HUD 가 우상단이라 inset-0 로 중앙 정렬. */}
       {view.kind === 'overview' ? (
-        <div className="pointer-events-none absolute bottom-6 left-1/2 -translate-x-1/2 kr-heading text-[11px] uppercase tracking-widest text-cream/55 text-center hidden md:block z-10">
-          · 행성을 클릭하세요 ·
+        <div className="pointer-events-none absolute inset-x-0 top-[260px] bottom-[170px] md:top-[240px] md:bottom-[200px] flex items-center justify-center z-10 px-5">
+          <div className="pointer-events-auto flex flex-col items-center gap-3 md:gap-5 w-full max-w-[560px]">
+            <ChooserMascot stats={playerStats} progress={progress} />
+            <div className="flex items-stretch gap-3 md:gap-4 w-full">
+              <SubjectChoice
+                subject="adsp"
+                disabled={adspTotal === 0}
+                total={adspTotal}
+                onSelect={() => handlePlanetClick('adsp')}
+              />
+              <SubjectChoice
+                subject="sqld"
+                disabled={sqldTotal === 0}
+                total={sqldTotal}
+                onSelect={() => handlePlanetClick('sqld')}
+              />
+            </div>
+          </div>
         </div>
       ) : null}
 
@@ -231,6 +266,7 @@ export default function GalaxyScreen({
             launching={isLaunching}
             onBack={handleBack}
             onPlay={() => handlePlay(selectedSubject)}
+            onMockExam={() => onStartMockExam(selectedSubject)}
           />
         </div>
       ) : null}
@@ -261,44 +297,222 @@ export default function GalaxyScreen({
         })()
       ) : null}
 
-      {/* === Overlay: Bottom — 크레딧 (CC BY 4.0) === */}
-      <div className="pointer-events-none absolute bottom-2 right-4 text-[9px] text-cream/35 leading-[1.6] text-right hidden lg:block z-10">
-        <span className="pointer-events-auto">
-          3D:{' '}
-          <a
-            href="https://sketchfab.com/3d-models/stylized-planet-789725db86f547fc9163b00f302c3e70"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:text-cream/60"
-          >
-            Stylized Planet
-          </a>{' '}
-          by cmzw ·{' '}
-          <a
-            href="https://sketchfab.com/3d-models/purple-planet-264eb22207184fc99a5e3b1279a763b8"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:text-cream/60"
-          >
-            Purple Planet
-          </a>{' '}
-          by Yo.Ri ·{' '}
-          <a
-            href="https://creativecommons.org/licenses/by/4.0/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:text-cream/60"
-          >
-            CC BY 4.0
-          </a>
-        </span>
-      </div>
     </section>
   );
 }
 
 // ----------------------------------------------------------------
-// Subject info panel — 행성 클릭 시 오버레이
+// GalaxyStarfield — 심우주 그라디언트 + SVG 별밭. 배경 전용.
+// ----------------------------------------------------------------
+
+function GalaxyStarfield() {
+  return (
+    <div className="absolute inset-0 overflow-hidden">
+      {/* 심우주 그라디언트 */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            'radial-gradient(ellipse at 30% 20%, rgba(103,232,249,0.12) 0%, rgba(1,8,40,0) 55%),' +
+            'radial-gradient(ellipse at 75% 80%, rgba(192,132,252,0.14) 0%, rgba(1,8,40,0) 55%),' +
+            'linear-gradient(180deg, #010828 0%, #020a30 100%)',
+        }}
+      />
+      {/* 정적 별밭 (SVG) */}
+      <svg
+        className="absolute inset-0 w-full h-full opacity-70"
+        viewBox="0 0 1200 800"
+        preserveAspectRatio="xMidYMid slice"
+        aria-hidden
+      >
+        {STARFIELD_2D.map((s, i) => (
+          <circle
+            key={i}
+            cx={s.x}
+            cy={s.y}
+            r={s.r}
+            fill="#eff4ff"
+            opacity={s.o}
+          />
+        ))}
+      </svg>
+    </div>
+  );
+}
+
+const STARFIELD_2D = Array.from({ length: 80 }, (_, i) => {
+  const seed = (i + 1) * 9301 + 49297;
+  const rand = (n: number) => ((Math.sin(seed + n) + 1) / 2);
+  return {
+    x: rand(1) * 1200,
+    y: rand(2) * 800,
+    r: rand(3) * 1.4 + 0.3,
+    o: rand(4) * 0.6 + 0.3,
+  };
+});
+
+// ----------------------------------------------------------------
+// ChooserMascot — Ques 캐릭터 + 질문 말풍선. 사용자 상태별 카피 분기.
+// ----------------------------------------------------------------
+
+interface ChooserGreeting {
+  pose: QuesPose;
+  text: string;
+}
+
+function buildChooserGreeting(
+  stats: PlayerStats,
+  progress: ProgressStore,
+): ChooserGreeting {
+  if (stats.sessionsCount === 0) {
+    return {
+      pose: 'wave',
+      text: '어서 와! 나는 [조롱이] 야. [ADSP] 랑 [SQLD] 중에 뭘 공부할래?',
+    };
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayStart = today.getTime();
+  const hasToday = progress.sessions.some((s) => s.at >= todayStart);
+
+  if (hasToday) {
+    return {
+      pose: 'happy',
+      text:
+        stats.streakDays >= 3
+          ? `오늘도 도착! [${stats.streakDays}일 연속] — 어느 쪽으로 이어갈까?`
+          : '오늘도 잘 오셨어요! 어떤 과목으로 이어갈까요?',
+    };
+  }
+
+  if (stats.streakDays >= 3) {
+    return {
+      pose: 'celebrate',
+      text: `스트릭 [${stats.streakDays}일 연속] — 오늘은 어떤 시험을 볼까?`,
+    };
+  }
+
+  const now = Date.now();
+  const lastAt = progress.sessions.reduce((mx, s) => Math.max(mx, s.at), 0);
+  const daysAway = Math.floor((now - lastAt) / (24 * 60 * 60 * 1000));
+
+  if (daysAway >= 3) {
+    return {
+      pose: 'sad',
+      text: `${daysAway}일 만이에요... 오늘은 어떤 시험을 볼까?`,
+    };
+  }
+
+  return {
+    pose: 'idle',
+    text: '오늘은 어떤 시험을 공부할까?',
+  };
+}
+
+function ChooserMascot({
+  stats,
+  progress,
+}: {
+  stats: PlayerStats;
+  progress: ProgressStore;
+}) {
+  const greeting = useMemo(
+    () => buildChooserGreeting(stats, progress),
+    [stats, progress],
+  );
+  return (
+    <div className="flex flex-col items-center gap-2">
+      <div className="max-w-[360px]">
+        <SpeechBubble text={greeting.text} placement="top" />
+      </div>
+      <Ques pose={greeting.pose} size={150} />
+    </div>
+  );
+}
+
+// ----------------------------------------------------------------
+// SubjectChoice — ADSP/SQLD 중 하나를 선택하는 글래스 카드 버튼.
+//
+// liquid-glass 위에 과목 액센트 glow 를 얹고, 좌상단에 3D 미니 행성 오브를 앵커로.
+// 본체는 심우주 톤 유리 — 두 옵션이 나란히 있을 때 배경과 자연스럽게 섞이게.
+// ----------------------------------------------------------------
+
+function SubjectChoice({
+  subject,
+  disabled,
+  total,
+  onSelect,
+}: {
+  subject: Subject;
+  disabled: boolean;
+  total: number;
+  onSelect: () => void;
+}) {
+  const accent = subject === 'adsp' ? '#67e8f9' : '#c084fc';
+  const intro = SUBJECT_INTRO[subject];
+  const schema = SUBJECT_SCHEMAS[subject];
+  return (
+    <button
+      type="button"
+      onClick={() => !disabled && onSelect()}
+      disabled={disabled}
+      aria-label={`${subject.toUpperCase()} 선택`}
+      className="group flex-1 liquid-glass rounded-[26px] px-4 py-5 md:px-5 md:py-6 text-left transition duration-300 relative overflow-hidden hover:scale-[1.03] hover:bg-white/[0.06] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-neon"
+      style={{
+        boxShadow: disabled
+          ? undefined
+          : `0 16px 36px -18px ${accent}, 0 0 0 1px rgba(255,255,255,0.04)`,
+      }}
+    >
+      {/* 액센트 aura — 우상단 */}
+      <div
+        className="pointer-events-none absolute -top-14 -right-14 w-44 h-44 rounded-full opacity-55 group-hover:opacity-85 transition duration-300"
+        style={{
+          background: `radial-gradient(circle, ${accent}55 0%, transparent 65%)`,
+        }}
+      />
+      {/* 저층 노이즈 tint */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-60"
+        style={{
+          background: `linear-gradient(180deg, rgba(1,8,40,0.35) 0%, rgba(1,8,40,0.65) 100%)`,
+        }}
+      />
+
+      {/* 3D 미니 행성 오브 */}
+      <div
+        className="w-[46px] h-[46px] md:w-[54px] md:h-[54px] rounded-full relative z-10 mb-3 transition-transform duration-300 group-hover:scale-110"
+        style={{
+          background: `radial-gradient(circle at 30% 25%, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0) 46%), linear-gradient(180deg, ${accent} 0%, ${accent}cc 55%, rgba(1,8,40,0.7) 100%)`,
+          boxShadow: `0 10px 24px -6px ${accent}, inset 0 -5px 12px rgba(0,0,0,0.42), inset 0 2px 0 rgba(255,255,255,0.25)`,
+        }}
+      />
+
+      {/* 타이틀 + 태그라인 + 메타 */}
+      <div className="relative z-10">
+        <div
+          className="cursive text-[34px] md:text-[42px] leading-none"
+          style={{
+            color: accent,
+            textShadow: `0 0 18px ${accent}88, 0 1px 0 rgba(0,0,0,0.4)`,
+          }}
+        >
+          {subject.toUpperCase()}
+        </div>
+        <p className="kr-heading text-[10px] md:text-[11px] uppercase tracking-widest text-cream/85 mt-2 leading-snug">
+          {intro.tagline}
+        </p>
+        <p className="kr-body text-[10px] md:text-[11px] text-cream/50 mt-2 tabular-nums">
+          챕터 {schema.chapters.length} · 문항 {total}
+        </p>
+      </div>
+    </button>
+  );
+}
+
+// ----------------------------------------------------------------
+// Subject info panel — 과목 카드 클릭 시 오버레이
 // ----------------------------------------------------------------
 
 interface PanelProps {
@@ -308,6 +522,7 @@ interface PanelProps {
   launching: boolean;
   onBack: () => void;
   onPlay: () => void;
+  onMockExam: () => void;
 }
 
 function SubjectInfoPanel({
@@ -317,6 +532,7 @@ function SubjectInfoPanel({
   launching,
   onBack,
   onPlay,
+  onMockExam,
 }: PanelProps) {
   const schema = SUBJECT_SCHEMAS[subject];
   const intro = SUBJECT_INTRO[subject];
@@ -393,9 +609,23 @@ function SubjectInfoPanel({
             disabled={launching}
             className="liquid-glass kr-heading uppercase tracking-widest text-[11px] px-4 py-3.5 rounded-full transition hover:bg-white/10 disabled:opacity-40 shrink-0"
           >
-            다른 행성
+            다른 과목
           </button>
         </div>
+
+        {/* 모의고사 — 과목 전체 50문항 · 시험 모드(타이머 + 피드백 숨김) */}
+        <button
+          type="button"
+          onClick={onMockExam}
+          disabled={launching || total === 0}
+          className="mt-2 w-full liquid-glass kr-heading uppercase tracking-widest text-[11px] px-4 py-3 rounded-full inline-flex items-center justify-center gap-2 transition hover:bg-white/10 disabled:opacity-40"
+          style={{ color: accent }}
+        >
+          <span>🎯 모의고사 50문항</span>
+          <span className="kr-body text-[10px] text-cream/60 normal-case tracking-normal">
+            · 시험 모드
+          </span>
+        </button>
       </div>
     </div>
   );

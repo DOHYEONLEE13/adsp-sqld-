@@ -1,0 +1,315 @@
+{
+  "subject": "sqld",
+  "meta": {
+    "version": "0.1.0",
+    "updatedAt": "2026-04-24",
+    "source": "개념 학습용 자체 제작 문항",
+    "notes": "SQLD 스텝 기반 레슨 예제. LessonStep.quizId 와 1:1 매칭."
+  },
+  "questions": [
+    {
+      "id": "sqld-1-1-cp-01",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "데이터 모델링의 세 가지 관점(what·how·why) 중, \"업무가 어떤 흐름으로 일어나는가\" 를 기술하는 관점은?",
+      "choices": [
+        "데이터 관점(Data, what)",
+        "프로세스 관점(Process, how)",
+        "상관 관점(Data-Process)",
+        "메타 관점"
+      ],
+      "answerIndex": 1,
+      "explanation": "데이터 관점은 \"무엇이 저장되는가(What)\", 프로세스 관점은 \"어떻게 업무가 흐르는가(How)\", 상관 관점은 둘의 관계를 봅니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "sqld-1-1-cp-02",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "엔티티(Entity) 가 갖춰야 할 필수 특징이 아닌 것은?",
+      "choices": [
+        "업무에서 필요한 정보여야 한다",
+        "유일한 식별자로 구분되어야 한다",
+        "반드시 영속적으로 저장되어야 한다",
+        "업무 프로세스에서 이용되어야 한다"
+      ],
+      "answerIndex": 2,
+      "explanation": "엔티티는 (1) 업무에 필요하고 (2) 식별 가능하며 (3) 2개 이상 인스턴스를 가지고 (4) 속성을 갖고 (5) 프로세스에서 이용되어야 합니다. \"영속적 저장\"은 필수 조건이 아닙니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "sqld-1-1-cp-03",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "속성(Attribute) 분류로 바르게 짝지어진 것은?",
+      "choices": [
+        "기본속성 — 다른 속성을 계산해 만든 속성",
+        "파생속성 — 업무 분석을 통해 새롭게 도출된 속성",
+        "설계속성 — 계산·가공으로 생성되는 속성",
+        "기본속성 — 업무에서 직접 추출된 원천 속성"
+      ],
+      "answerIndex": 3,
+      "explanation": "기본속성은 업무에서 원래 존재하는 속성, 설계속성은 설계 과정에서 새로 정의한 속성, 파생속성은 다른 속성에서 계산·가공해 만든 속성입니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "sqld-1-1-cp-04",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "\"한 부서(Department) 에 여러 사원(Employee) 이 속한다\" 의 관계 차수(Cardinality) 로 올바른 것은?",
+      "choices": [
+        "1:1 (일대일)",
+        "1:N (일대다)",
+        "N:M (다대다)",
+        "0:1 (선택적)"
+      ],
+      "answerIndex": 1,
+      "explanation": "부서 1개에 사원이 여러 명이 대응하므로 1:N 관계입니다. N:M 은 \"학생과 과목\" 같이 양쪽 모두 다수로 대응하는 경우입니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "sqld-1-2-cp-01",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "정규화(Normalization) 의 목적으로 가장 거리가 먼 것은?",
+      "choices": [
+        "데이터 중복 최소화",
+        "이상(Anomaly) 현상 방지",
+        "조회 성능 극대화",
+        "데이터 일관성 유지"
+      ],
+      "answerIndex": 2,
+      "explanation": "정규화는 중복 제거·이상 방지·일관성 유지가 목적입니다. 테이블이 쪼개져 JOIN 이 늘어나므로 조회 성능은 오히려 떨어질 수 있고, 성능이 필요하면 반정규화로 보정합니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "sqld-1-2-cp-02",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "\"모든 속성이 기본키 전체에 완전 함수 종속되어야 한다\" 는 어느 정규형의 규칙인가?",
+      "choices": [
+        "제1정규형 (1NF)",
+        "제2정규형 (2NF)",
+        "제3정규형 (3NF)",
+        "BCNF"
+      ],
+      "answerIndex": 1,
+      "explanation": "1NF 는 원자값, 2NF 는 부분 함수 종속 제거(완전 함수 종속), 3NF 는 이행 함수 종속 제거, BCNF 는 모든 결정자가 후보키여야 합니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "sqld-1-2-cp-03",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "반정규화(Denormalization) 를 고려하기 가장 적절한 상황은?",
+      "choices": [
+        "자주 갱신되는 테이블에 INSERT/UPDATE 성능 문제가 있을 때",
+        "조회 시 대량 JOIN 이 반복되어 조회 성능이 부족할 때",
+        "저장 공간을 최소화해야 할 때",
+        "데이터 일관성이 최우선 요구사항일 때"
+      ],
+      "answerIndex": 1,
+      "explanation": "반정규화는 조회 성능 향상이 목적입니다. 대량 JOIN 을 줄이려 컬럼을 중복시키거나 테이블을 통합합니다. 반대급부로 갱신 부담이 커지고 일관성 리스크가 생깁니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "sqld-1-2-cp-04",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "주식별자(Primary Key) 가 갖춰야 할 특성이 아닌 것은?",
+      "choices": [
+        "유일성 — 각 인스턴스를 유일하게 식별",
+        "최소성 — 꼭 필요한 속성만 포함",
+        "불변성 — 값이 자주 변하지 않음",
+        "의미성 — 업무적 의미를 담고 있어야 함"
+      ],
+      "answerIndex": 3,
+      "explanation": "주식별자는 유일성·최소성·불변성·존재성이 요구됩니다. 오히려 업무 의미가 강한 속성은 값이 변할 수 있어 인조키(surrogate key) 를 권장합니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "sqld-2-1-cp-01",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "다음 SQL 구문의 실행 순서로 올바른 것은?\nSELECT ... FROM ... WHERE ... GROUP BY ... HAVING ... ORDER BY ...",
+      "choices": [
+        "SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY",
+        "FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY",
+        "FROM → SELECT → WHERE → GROUP BY → HAVING → ORDER BY",
+        "WHERE → FROM → GROUP BY → SELECT → HAVING → ORDER BY"
+      ],
+      "answerIndex": 1,
+      "explanation": "SQL 논리적 처리 순서: FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY. 작성은 SELECT 부터지만 엔진이 실제로 푸는 순서는 FROM 이 먼저입니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "sqld-2-1-cp-02",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "NULL 을 비교할 때 올바른 방법은?",
+      "choices": [
+        "WHERE col = NULL",
+        "WHERE col != NULL",
+        "WHERE col IS NULL",
+        "WHERE col == NULL"
+      ],
+      "answerIndex": 2,
+      "explanation": "NULL 은 \"값이 없음\" 이라 =, != 비교 결과가 모두 UNKNOWN 입니다. 반드시 IS NULL / IS NOT NULL 연산자를 사용합니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "sqld-2-1-cp-03",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "\"부서별 평균 급여가 500만원 이상인 부서만 조회\" 하려 할 때 옳은 쿼리는?",
+      "choices": [
+        "SELECT DEPT, AVG(SAL) FROM EMP WHERE AVG(SAL) >= 5000000 GROUP BY DEPT",
+        "SELECT DEPT, AVG(SAL) FROM EMP GROUP BY DEPT WHERE AVG(SAL) >= 5000000",
+        "SELECT DEPT, AVG(SAL) FROM EMP GROUP BY DEPT HAVING AVG(SAL) >= 5000000",
+        "SELECT DEPT, AVG(SAL) FROM EMP HAVING AVG(SAL) >= 5000000 GROUP BY DEPT"
+      ],
+      "answerIndex": 2,
+      "explanation": "WHERE 는 \"행\" 에 대한 필터 — 집계함수 사용 불가. 집계 결과에 조건을 거는 절은 HAVING 이며, 순서는 GROUP BY 뒤·ORDER BY 앞입니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "sqld-2-1-cp-04",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "부서 테이블에는 있지만 사원이 없는 부서까지 함께 조회하려면 어떤 JOIN 을 써야 하나?",
+      "choices": [
+        "INNER JOIN",
+        "LEFT OUTER JOIN (부서가 왼쪽일 때)",
+        "CROSS JOIN",
+        "NATURAL JOIN"
+      ],
+      "answerIndex": 1,
+      "explanation": "INNER JOIN 은 양쪽에 매칭되는 행만 남깁니다. 한쪽(부서) 의 행을 모두 보존하려면 그쪽을 왼쪽에 둔 LEFT OUTER JOIN 을 사용합니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "sqld-2-2-cp-01",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "서브쿼리 유형에 대한 설명으로 옳지 않은 것은?",
+      "choices": [
+        "스칼라 서브쿼리 — SELECT 절에서 한 행·한 컬럼 반환",
+        "인라인 뷰 — FROM 절의 서브쿼리, 임시 테이블처럼 동작",
+        "상관 서브쿼리 — 바깥 쿼리 값을 참조하지 않는 독립 쿼리",
+        "중첩 서브쿼리 — WHERE 절의 서브쿼리"
+      ],
+      "answerIndex": 2,
+      "explanation": "상관(Correlated) 서브쿼리는 오히려 바깥 쿼리의 컬럼을 참조해 \"행마다 다시 실행\" 되는 서브쿼리입니다. 바깥 쿼리를 참조하지 않는 것은 비상관(Non-correlated) 서브쿼리입니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "sqld-2-2-cp-02",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "집합 연산자 중 \"중복을 제거하지 않고 두 결과를 그대로 이어 붙이는\" 것은?",
+      "choices": [
+        "UNION",
+        "UNION ALL",
+        "INTERSECT",
+        "MINUS (EXCEPT)"
+      ],
+      "answerIndex": 1,
+      "explanation": "UNION 은 중복 제거 + 정렬로 비용이 큽니다. 중복이 없음을 이미 알거나 중복 제거가 필요 없는 경우 UNION ALL 이 훨씬 빠릅니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "sqld-2-2-cp-03",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "question": "\"부서 내에서 급여 순위\" 를 매길 때, 동점자는 같은 순위 + 다음 순위를 건너뛰지 않는 함수는?",
+      "choices": [
+        "RANK()",
+        "DENSE_RANK()",
+        "ROW_NUMBER()",
+        "NTILE()"
+      ],
+      "answerIndex": 1,
+      "explanation": "RANK 는 동점자에게 같은 순위를 주고 다음 순위를 건너뜁니다(1,1,3). DENSE_RANK 는 건너뛰지 않습니다(1,1,2). ROW_NUMBER 는 동점이 없이 고유 순번입니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "sqld-2-2-cp-04",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "TCL(Transaction Control Language) 에 해당하는 명령어는?",
+      "choices": [
+        "CREATE · DROP · ALTER",
+        "SELECT · INSERT · UPDATE · DELETE",
+        "COMMIT · ROLLBACK · SAVEPOINT",
+        "GRANT · REVOKE"
+      ],
+      "answerIndex": 2,
+      "explanation": "TCL: COMMIT · ROLLBACK · SAVEPOINT (트랜잭션 제어). DDL: CREATE·DROP·ALTER / DML: SELECT·INSERT·UPDATE·DELETE / DCL: GRANT·REVOKE.",
+      "source": "개념 예제"
+    }
+  ]
+}

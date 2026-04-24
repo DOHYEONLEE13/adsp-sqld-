@@ -14,7 +14,8 @@ export type GameScreen =
   | { kind: 'zone'; subject: Subject; chapter: number }
   | { kind: 'lesson'; subject: Subject; chapter: number; topic: string }
   | { kind: 'quest'; session: QuestSession }
-  | { kind: 'result'; summary: QuestSummary };
+  | { kind: 'result'; summary: QuestSummary }
+  | { kind: 'review' };
 
 /**
  * 세션 진행 방식.

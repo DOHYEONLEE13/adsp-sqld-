@@ -8,6 +8,7 @@ import type { Subject } from '@/types/question';
 import type { FlowMode, GameScreen, QuestSummary } from './types';
 import {
   createDailyMissionSession,
+  createMockExamSession,
   createSession,
   isSessionDone,
   recordAnswer,
@@ -19,8 +20,12 @@ import GalaxyScreen from './screens/GalaxyScreen';
 import PlanetScreen from './screens/PlanetScreen';
 import ZoneScreen, { type StartParams } from './screens/ZoneScreen';
 import LessonScreen from './screens/LessonScreen';
+import DialogueLesson from './lesson/DialogueLesson';
+import { getLesson } from '@/data/lessons';
 import QuestScreen from './screens/QuestScreen';
 import ResultScreen from './screens/ResultScreen';
+import ReviewPage from './ReviewPage';
+import { createReviewSession } from './review';
 
 interface Props {
   /** 랜딩으로 빠져나가는 훅. 해시에서 `#/` 로 복귀시킵니다. */
@@ -71,6 +76,20 @@ export default function GamePage({ onExitToLanding }: Props) {
     setScreen({ kind: 'quest', session });
   };
 
+  /** 모의고사 — 과목 전체에서 50문항 랜덤 + 시험 모드(타이머·피드백 숨김). */
+  const startMockExam = (subject: Subject) => {
+    const session = createMockExamSession(subject);
+    if (!session) return;
+    setScreen({ kind: 'quest', session });
+  };
+
+  /** 복습 세션 — SRS due · 오답 · 약점 혼합 15문항. */
+  const startReview = (subject: Subject) => {
+    const session = createReviewSession(subject, 15);
+    if (!session) return;
+    setScreen({ kind: 'quest', session });
+  };
+
   // 세션이 끝날 때 딱 한 번 저장소에 반영한 뒤 result 로 전이.
   const finalizeSession = (summary: QuestSummary) => {
     recordSessionSummary(summary);
@@ -83,7 +102,17 @@ export default function GamePage({ onExitToLanding }: Props) {
         <GalaxyScreen
           onSelectSubject={(subject) => setScreen({ kind: 'planet', subject })}
           onStartDailyMission={startDailyMission}
+          onStartMockExam={startMockExam}
+          onOpenReview={() => setScreen({ kind: 'review' })}
           onExit={onExitToLanding}
+        />
+      );
+
+    case 'review':
+      return (
+        <ReviewPage
+          onStartSession={startReview}
+          onExit={() => setScreen({ kind: 'galaxy' })}
         />
       );
 
@@ -126,9 +155,14 @@ export default function GamePage({ onExitToLanding }: Props) {
         />
       );
 
-    case 'lesson':
+    case 'lesson': {
+      // 첫 스텝에 dialogue 가 있으면 듀오링고식 대화 레슨, 아니면 기존 LessonScreen.
+      // PR 5b 에서 챕터 1 앞부분부터 점진적으로 dialogue[] 채워넣음.
+      const _lesson = getLesson(screen.subject, screen.chapter, screen.topic);
+      const useDialogue = !!_lesson?.steps[0]?.dialogue?.length;
+      const Cmp = useDialogue ? DialogueLesson : LessonScreen;
       return (
-        <LessonScreen
+        <Cmp
           subject={screen.subject}
           chapter={screen.chapter}
           topic={screen.topic}
@@ -150,6 +184,7 @@ export default function GamePage({ onExitToLanding }: Props) {
           }
         />
       );
+    }
 
     case 'quest':
       return (

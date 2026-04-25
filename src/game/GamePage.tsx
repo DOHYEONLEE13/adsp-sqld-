@@ -28,12 +28,21 @@ import ReviewPage from './ReviewPage';
 import { createReviewSession } from './review';
 
 interface Props {
+  /**
+   * 딥링크로 진입한 시작 과목. 주어지면 galaxy chooser 를 건너뛰고 바로
+   * 해당 과목의 Planet 화면으로 시작. 랜딩의 ADSP/SQLD 카드에서 옴.
+   */
+  initialSubject?: Subject;
   /** 랜딩으로 빠져나가는 훅. 해시에서 `#/` 로 복귀시킵니다. */
   onExitToLanding: () => void;
 }
 
-export default function GamePage({ onExitToLanding }: Props) {
-  const [screen, setScreen] = useState<GameScreen>({ kind: 'galaxy' });
+export default function GamePage({ initialSubject, onExitToLanding }: Props) {
+  const [screen, setScreen] = useState<GameScreen>(() =>
+    initialSubject
+      ? { kind: 'planet', subject: initialSubject }
+      : { kind: 'galaxy' },
+  );
 
   /** 일반 세션 시작. */
   const startSession = (
@@ -123,7 +132,15 @@ export default function GamePage({ onExitToLanding }: Props) {
           onSelectChapter={(chapter) =>
             setScreen({ kind: 'zone', subject: screen.subject, chapter })
           }
-          onBack={() => setScreen({ kind: 'galaxy' })}
+          onBack={() => {
+            // 딥링크 진입(`#/game/adsp`)을 떠나 chooser 로 갈 때 URL 도 함께
+            // 정리. 새로고침 시 의도된 chooser 가 다시 뜸.
+            if (/^#\/game\/(adsp|sqld)/.test(window.location.hash)) {
+              window.location.hash = '/game';
+            } else {
+              setScreen({ kind: 'galaxy' });
+            }
+          }}
         />
       );
 

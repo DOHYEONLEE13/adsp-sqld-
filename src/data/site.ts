@@ -36,27 +36,27 @@ export const HERO: HeroContent = {
 
 export const ABOUT: AboutContent = {
   headingLines: ['안녕!', '난 퀘스트디피야'],
-  lead: '암기 싫어하는 수험생을 위한 게임형 학습 플랫폼. 몬스터를 잡고 보스를 깨며, 책 없이 ADSP·SQLD에 합격하세요.',
+  lead: '암기 싫어하는 수험생을 위한 게임형 학습 플랫폼. 우주를 탐험하듯 챕터를 정복하고, AI가 매일 약점을 골라 맞춤 미션을 던집니다.',
   bulletLines: [
-    '몬스터는 개념, 보스는 과목. 정답 하나가 곧 한 방의 공격.',
-    'AI가 당신의 약점을 진단해 맞춤형 보스 스테이지를 생성합니다.',
+    'ADSP · SQLD 두 은하, 행성마다 챕터, 그 안엔 토픽 존. 한 스텝씩 풀며 레벨업.',
+    'Leitner 5단계 SRS · 오답 큐 · 약점 점수 — 오늘 풀이가 내일 다시 만나는 복습으로.',
   ],
   videoUrl: VIDEO_URLS.about,
 };
 
 export const COLLECTION: CollectionContent = {
-  titleFirstLine: '게임 모드',
+  titleFirstLine: '도전할',
   cursiveInline: '전체 ',
-  titleSecondLineSuffix: '컬렉션',
-  seeAllPrimary: '모두',
-  seeAllSecondaryTop: '모드',
-  seeAllSecondaryBottom: '보기',
-  cardFunScoreLabel: '재미 지수:',
+  titleSecondLineSuffix: '자격증',
+  seeAllPrimary: '지금',
+  seeAllSecondaryTop: '플레이',
+  seeAllSecondaryBottom: '하기',
+  cardFunScoreLabel: '콘텐츠',
 };
 
 export const CTA: CtaContent = {
   cursiveAccent: '지금 시작',
   joinLine: '함께하세요.',
-  restLines: ['보스를 잡고.', '레벨을 올리고.', '시험을 끝내세요.'],
+  restLines: ['행성을 정복하고.', '레벨을 올리고.', '시험을 끝내세요.'],
   videoUrl: VIDEO_URLS.cta,
 };

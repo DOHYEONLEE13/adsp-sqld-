@@ -54,6 +54,13 @@ export interface ProgressStore {
   sessions: SessionRecord[];
   /** 마지막 Daily Mission 시작 epoch ms. UI 가 "오늘 완료" 를 계산. */
   lastDailyMissionAt?: number;
+  /**
+   * 사용자가 메인으로 공부 중인 과목.
+   * - undefined = 아직 안 골랐음 (첫 방문) → onboarding chooser 표시
+   * - 'adsp' / 'sqld' = 정해진 활성 과목 → `#/game` 진입 시 `#/game/${activeSubject}` 로 자동 redirect
+   * 사용자는 Planet 화면의 "다른 과목" 버튼으로 언제든 변경 가능 (chooser 재진입).
+   */
+  activeSubject?: Subject;
   createdAt: number;
   updatedAt: number;
 }
@@ -86,6 +93,7 @@ function loadStore(): ProgressStore {
       questionStats: parsed.questionStats ?? {},
       sessions: parsed.sessions ?? [],
       lastDailyMissionAt: parsed.lastDailyMissionAt,
+      activeSubject: parsed.activeSubject,
       createdAt: parsed.createdAt ?? Date.now(),
       updatedAt: parsed.updatedAt ?? Date.now(),
     };
@@ -215,6 +223,25 @@ export function resetProgress(): void {
 /** Daily Mission 시작 시점 기록. */
 export function markDailyMissionStarted(): void {
   commit({ ...current, lastDailyMissionAt: Date.now() });
+}
+
+/**
+ * 메인 학습 과목을 정함 (onboarding 또는 "다른 과목" 전환).
+ * 한 번 set 하면 `#/game` 진입 시 자동으로 해당 과목 Planet 으로 직진.
+ */
+export function setActiveSubject(subject: Subject): void {
+  commit({ ...current, activeSubject: subject, updatedAt: Date.now() });
+}
+
+/**
+ * 활성 과목 해제 — "다른 과목" 으로 가서 chooser 를 다시 노출시킬 때.
+ * 다음 `#/game` 진입에서 chooser 가 보임. 이전 학습 데이터는 그대로 유지.
+ */
+export function clearActiveSubject(): void {
+  if (current.activeSubject === undefined) return;
+  const { activeSubject: _drop, ...rest } = current;
+  void _drop;
+  commit({ ...rest, updatedAt: Date.now() });
 }
 
 // ----------------------------------------------------------------

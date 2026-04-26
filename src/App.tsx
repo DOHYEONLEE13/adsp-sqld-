@@ -4,6 +4,7 @@ import GamePage from './game/GamePage';
 import StatsPage from './game/StatsPage';
 import BookmarksPage from './game/BookmarksPage';
 import type { Subject } from './types/question';
+import { getSnapshot } from './game/storage';
 
 type Route = 'landing' | 'game' | 'stats' | 'bookmarks';
 
@@ -16,7 +17,8 @@ interface RouteState {
 /**
  * 얇은 해시 라우터.
  *  - `#/`              → landing
- *  - `#/game`          → game (galaxy chooser)
+ *  - `#/game`          → activeSubject 있으면 그 과목 planet 직진,
+ *                        없으면 onboarding chooser
  *  - `#/game/adsp`     → game, ADSP planet 으로 직진 (랜딩 카드에서 옴)
  *  - `#/game/sqld`     → game, SQLD planet 으로 직진
  *  - `#/stats`         → stats
@@ -32,6 +34,12 @@ function getRoute(): RouteState {
     const sub = parts[1];
     if (sub === 'adsp' || sub === 'sqld') {
       return { route: 'game', initialSubject: sub };
+    }
+    // /game (no subject) — fallback: 저장된 activeSubject 가 있으면 그 과목으로
+    // 직진. 없으면 chooser 로 onboarding.
+    const active = getSnapshot().activeSubject;
+    if (active === 'adsp' || active === 'sqld') {
+      return { route: 'game', initialSubject: active };
     }
     return { route: 'game' };
   }

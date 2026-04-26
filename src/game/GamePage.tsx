@@ -3,7 +3,7 @@
  * 내부 화면 간 네비게이션은 해시가 아닌 상태 머신으로 처리합니다.
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Subject } from '@/types/question';
 import type { FlowMode, GameScreen, QuestSummary } from './types';
 import {
@@ -15,7 +15,12 @@ import {
   summarize,
   type SamplingMode,
 } from './session';
-import { markDailyMissionStarted, recordSessionSummary } from './storage';
+import {
+  clearActiveSubject,
+  markDailyMissionStarted,
+  recordSessionSummary,
+  setActiveSubject,
+} from './storage';
 import GalaxyScreen from './screens/GalaxyScreen';
 import PlanetScreen from './screens/PlanetScreen';
 import ZoneScreen, { type StartParams } from './screens/ZoneScreen';
@@ -43,6 +48,18 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
       ? { kind: 'planet', subject: initialSubject }
       : { kind: 'galaxy' },
   );
+
+  // initialSubject 가 있으면 그 과목을 active 로 영속화 — 다음 #/game 진입 시
+  // 자동 redirect 되도록. 마운트 시 한 번 (idempotent).
+  useEffect(() => {
+    if (initialSubject) setActiveSubject(initialSubject);
+  }, [initialSubject]);
+
+  /** 과목을 active 로 잠그고 planet 으로 전환 (chooser 에서 호출). */
+  const goToPlanet = (subject: Subject) => {
+    setActiveSubject(subject);
+    setScreen({ kind: 'planet', subject });
+  };
 
   /** 일반 세션 시작. */
   const startSession = (
@@ -109,7 +126,7 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
     case 'galaxy':
       return (
         <GalaxyScreen
-          onSelectSubject={(subject) => setScreen({ kind: 'planet', subject })}
+          onSelectSubject={goToPlanet}
           onStartDailyMission={startDailyMission}
           onStartMockExam={startMockExam}
           onOpenReview={() => setScreen({ kind: 'review' })}
@@ -133,8 +150,9 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
             setScreen({ kind: 'zone', subject: screen.subject, chapter })
           }
           onBack={() => {
-            // 딥링크 진입(`#/game/adsp`)을 떠나 chooser 로 갈 때 URL 도 함께
-            // 정리. 새로고침 시 의도된 chooser 가 다시 뜸.
+            // "다른 과목" 의미 — activeSubject 해제해서 chooser 가 다시 노출되게.
+            // 새로고침 시에도 chooser 로 떨어지도록 URL 도 정리.
+            clearActiveSubject();
             if (/^#\/game\/(adsp|sqld)/.test(window.location.hash)) {
               window.location.hash = '/game';
             } else {

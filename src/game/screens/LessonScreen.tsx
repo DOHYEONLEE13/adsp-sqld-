@@ -46,6 +46,8 @@ interface Props {
   subject: Subject;
   chapter: number;
   topic: string;
+  /** 진입 시 시작 step. 지정되면 single-step 모드. */
+  initialStepIdx?: number;
   /** 레슨 완료 후 "실전 세트" 로 넘어갈 때. */
   onFinishGoToPractice: () => void;
   /** 상단 "Zone 으로". */
@@ -56,9 +58,11 @@ export default function LessonScreen({
   subject,
   chapter,
   topic,
+  initialStepIdx,
   onFinishGoToPractice,
   onBack,
 }: Props) {
+  const isSingleStep = typeof initialStepIdx === 'number';
   const accent = SUBJECT_ACCENT[subject];
   const schema = SUBJECT_SCHEMAS[subject];
   const chapterMeta = schema.chapters.find((c) => c.chapter === chapter);
@@ -84,7 +88,7 @@ export default function LessonScreen({
   }, [chapterSteps, lesson]);
 
   // 현재 스텝 index (토픽 내, 0-based)
-  const [stepIdx, setStepIdx] = useState(0);
+  const [stepIdx, setStepIdx] = useState(initialStepIdx ?? 0);
   // 'concept' → 개념 카드 보여주는 중, 'quiz' → 문제 풀이 중
   const [view, setView] = useState<'concept' | 'quiz'>('concept');
   // 스텝별 선택/채점 상태: { [stepIdx]: { chosen, correct } }
@@ -160,6 +164,11 @@ export default function LessonScreen({
   };
 
   const goNextStep = () => {
+    if (isSingleStep) {
+      // single-step 모드 — 한 step 만 풀고 Zone 복귀.
+      onBack();
+      return;
+    }
     if (stepIdx < lesson.steps.length - 1) {
       setStepIdx(stepIdx + 1);
       setView('concept');

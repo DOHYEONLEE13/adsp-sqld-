@@ -127,186 +127,565 @@ const ADSP_1_1: Lesson = {
   hook: '"데이터"와 "정보"가 헷갈리는 순간, 이 레슨으로 명확하게.',
   estimatedMinutes: 8,
   steps: [
+    // ─── DIKW 피라미드 — 1 step → 5 steps 로 분해 (Phase C, 2026-04-27) ───
     {
       id: 'adsp-1-1-s1',
-      title: 'DIKW 피라미드',
-      quizId: 'adsp-1-1-cp-01',
+      title: 'DIKW 피라미드 — 4단계 개요',
+      quizId: 'adsp-1-1-cp-01a',
       dialogue: [
-        { pose: 'wave', text: '안녕! 나는 [조롱이]야. 오늘은 [DIKW 피라미드]부터 시작할게.' },
-        { pose: 'think', text: '편의점 영수증을 떠올려봐. "[콜라 1,800원]" 이건 그냥 숫자지?' },
-        { pose: 'lightbulb', text: '근데 한 달치를 모아서 "[콜라는 금요일 저녁에 제일 잘 팔린다]" 까지 읽으면 — 같은 재료가 전혀 다른 가치가 돼.' },
-        { pose: 'happy', text: '이 계단을 [4단계]로 정리한 게 DIKW 피라미드야. [데] · [정] · [지] · [혜] — "데정지혜" 로 외우자!' },
-        { pose: 'idle', text: '자, 바로 확인 문제 들어갈게. 한 번 풀어봐!' },
+        { pose: 'wave', text: '안녕! 첫 시간이야. 오늘은 [DIKW 피라미드] 부터.' },
+        { pose: 'think', text: '같은 데이터도 가공 정도에 따라 가치가 달라져. 단계는 4개야.' },
+        { pose: 'happy', text: '데이터(D) → 정보(I) → 지식(K) → 지혜(W). 줄여서 [데정지혜].' },
+        { pose: 'idle', text: '먼저 4단계 순서를 한 번 확인하고 가자.' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            '편의점 영수증을 떠올려보세요. "콜라 1,800원" 자체는 그냥 숫자입니다. 하지만 한 달치를 모아 "콜라는 금요일 저녁에 제일 잘 팔린다" 까지 읽으면, 같은 재료가 전혀 다른 가치를 갖습니다. 이 계단을 4단계로 정리한 게 DIKW 피라미드입니다.',
+            'DIKW 피라미드는 데이터가 의사결정에 쓰이기까지의 가공 단계를 4 층으로 정리한 모델입니다. 아래로 갈수록 양은 많고 가치는 낮으며, 위로 갈수록 양은 줄지만 의사결정에 직접 쓰입니다.',
         },
         {
           kind: 'callout',
           tone: 'mnemonic',
           title: '"데정지혜" 로 외우자',
           body:
-            '데이터(Data) → 정보(Information) → 지식(Knowledge) → 지혜(Wisdom). 아래로 갈수록 양이 많고 가치가 낮고, 위로 갈수록 양은 줄지만 의사결정에 바로 쓰입니다.',
+            '데이터(Data) → 정보(Information) → 지식(Knowledge) → 지혜(Wisdom). 시험에 순서를 묻는 문제가 자주 나옵니다.',
         },
         {
           kind: 'table',
-          title: '편의점 예시로 보는 4단계',
+          title: '4단계 한 줄 정리',
           headers: ['단계', '정의', '예시'],
           rows: [
-            ['데이터', '가공 전 객관적 사실', 'A마트 콜라 1,800원 · B마트 콜라 1,500원'],
-            ['정보', '가공·의미부여된 데이터', 'B마트가 300원 더 싸다'],
-            ['지식', '정보를 분류·일반화한 규칙', '콜라는 B마트에서 사는 게 유리하다'],
-            ['지혜', '지식 바탕의 창의적 추론', 'B마트에서는 음료 전반이 저렴하겠다'],
+            ['데이터', '가공 전 측정값', 'B마트 콜라 1,500원'],
+            ['정보', '비교·해석이 더해진 의미', 'B마트가 300원 더 싸다'],
+            ['지식', '일반화된 규칙', '콜라는 B마트가 유리'],
+            ['지혜', '새 영역으로의 확장 추론', '음료 전반 B마트가 저렴할 것'],
           ],
         },
       ],
     },
     {
-      id: 'adsp-1-1-s2',
-      title: '데이터의 3가지 분류 기준',
-      quizId: 'adsp-1-1-cp-02',
+      id: 'adsp-1-1-s1-data',
+      title: 'DIKW ① 데이터 (Data)',
+      quizId: 'adsp-1-1-cp-01b',
       dialogue: [
-        { pose: 'wave', text: '데이터 분류는 [세 축]이 따로 돌아가. 섞이면 안 돼.' },
-        { pose: 'think', text: '첫째, [구조] — [정형] · [반정형] · [비정형]. 테이블이면 정형, JSON 은 반정형, 영상은 비정형.' },
-        { pose: 'lightbulb', text: '둘째, [형태] — [정량적] vs [정성적]. 숫자로 재면 정량, 말·감정이면 정성.' },
-        { pose: 'happy', text: '셋째, [값] — [수치형] vs [범주형]. 연속·이산 숫자 vs 순서·명목 라벨.' },
-        { pose: 'idle', text: '같은 데이터도 [세 축 각각]에 답이 있어야 해. 확인 문제로 가자!' },
-      ],
-      blocks: [
-        {
-          kind: 'section',
-          title: '세 축으로 따로 분류하기',
-          body:
-            '시험이 자주 노리는 함정은 "어떤 기준으로 나누었는지" 헷갈리게 섞어 묻는 것입니다. 아래 세 축을 분리해서 기억해두면 절대 꼬이지 않습니다.',
-        },
-        {
-          kind: 'table',
-          headers: ['분류 기준', '유형', '설명'],
-          rows: [
-            ['구조', '정형 / 반정형 / 비정형', 'RDB 테이블 · JSON/XML · 영상·텍스트'],
-            ['형태', '정량적 / 정성적', '수치로 측정 vs 언어·감정 등 서술'],
-            ['값', '수치형 / 범주형', '연속·이산 숫자 vs 순서·명목 라벨'],
-          ],
-        },
-        {
-          kind: 'example',
-          title: '세 기준 동시에 답하는 법',
-          body:
-            '고객 리뷰 텍스트 → "비정형 · 정성적 · 범주형". SNS 좋아요 수 → "정형 · 정량적 · 수치형". CCTV 영상 → "비정형 · 정성적". 같은 데이터라도 세 축 각각에 답이 있어야 합니다.',
-        },
-      ],
-    },
-    {
-      id: 'adsp-1-1-s3',
-      title: '암묵지 vs 형식지 (SECI)',
-      quizId: 'adsp-1-1-cp-03',
-      dialogue: [
-        { pose: 'wave', text: '[자전거 타는 법]을 책으로 옮겨볼 수 있을까? 힘들지.' },
-        { pose: 'think', text: '그런데 누구나 연습하면 탈 수 있어. 몸이 배운 거야 — 이게 [암묵지].' },
-        { pose: 'lightbulb', text: '반대로 매뉴얼·논문처럼 [글로 정리된 지식]이 [형식지]. 조직은 이 변환으로 성장해.' },
-        { pose: 'happy', text: '변환은 [4단계] — [공]동화 · [표]출화 · [연]결화 · [내]면화. "[공표연내]" 로 외우자!' },
-        { pose: 'idle', text: '장인의 노하우를 매뉴얼로 옮기는 건? 확인 문제에서 보자.' },
-      ],
-      blocks: [
-        {
-          kind: 'section',
-          title: '말로 못 쓰는 지식이 있다',
-          body:
-            '자전거 타는 법은 책으로 옮기기 어렵지만 누구나 탈 수 있습니다 — 몸이 배웠기 때문입니다. 이처럼 언어화 어려운 경험·노하우가 암묵지. 매뉴얼·논문처럼 글로 정리된 것이 형식지. 조직은 암묵지를 형식지로 변환하며 성장합니다.',
-        },
-        {
-          kind: 'callout',
-          tone: 'mnemonic',
-          title: 'SECI 4단계 — "공표연내"',
-          body:
-            '공동화(Socialization) → 표출화(Externalization) → 연결화(Combination) → 내면화(Internalization). 암묵↔형식 변환의 4단계. 장인의 노하우를 매뉴얼로 옮기는 것이 "표출화" — 시험 단골입니다.',
-        },
-      ],
-    },
-    {
-      id: 'adsp-1-1-s4',
-      title: 'DB 특징 · DW · Data Lake',
-      quizId: 'adsp-1-1-cp-04',
-      dialogue: [
-        { pose: 'wave', text: '엑셀 파일과 [데이터베이스]는 뭐가 다를까?' },
-        { pose: 'think', text: 'DB 는 [공]용 · [통]합 · [저]장 · [변]화 + [실시간] — 다섯 성질이 다 붙어야 돼.' },
-        { pose: 'lightbulb', text: '[DW(Data Warehouse)]는 분석용 창고 — 운영계 데이터를 [ETL] 해서 정돈.' },
-        { pose: 'happy', text: '[Data Lake]는 정제 전 원시까지 다 담는 저수지 — 정형·반정형·비정형 전부 OK.' },
-        { pose: 'idle', text: 'OLTP(거래) vs OLAP(분석) 구분까지 챙기고, 문제로 가자!' },
-      ],
-      blocks: [
-        {
-          kind: 'callout',
-          tone: 'mnemonic',
-          title: 'DB 특징 — "공통저변 + 실시간"',
-          body:
-            '공용(여러 사용자 공유) · 통합(중복 최소화) · 저장(영속 보관) · 변화(수정 반영) + 실시간 처리. 엑셀 파일과 데이터베이스를 구분짓는 다섯 가지 성질.',
-        },
-        {
-          kind: 'section',
-          title: 'DW vs Data Lake',
-          body:
-            'Data Warehouse(DW) 는 "분석용 창고". 운영 시스템(OLTP) 의 정형 데이터를 ETL(Extract-Transform-Load) 해서 ODS 에 모으고 주제별로 정돈합니다. Data Lake 는 "정제 전 원시 데이터" 까지 포함해 정형·반정형·비정형을 전부 담는 저수지.',
-        },
-        {
-          kind: 'keypoints',
-          title: 'OLTP vs OLAP',
-          items: [
-            'OLTP: 거래 중심. 짧고 많은 insert/update (결제·주문)',
-            'OLAP: 분석 중심. 읽기 위주의 집계·다차원 조회 (월별 매출)',
-            'DW 는 OLAP 을 돕기 위한 읽기 전용 분석 창고',
-          ],
-        },
-      ],
-    },
-    {
-      id: 'adsp-1-1-s5',
-      title: '기업 정보 시스템 — DBMS·ERP·CRM·SCM·BI',
-      quizId: 'adsp-1-1-cp-05',
-      dialogue: [
-        { pose: 'wave', text: '회사는 [부서별로 다른 데이터]를 다뤄 — 생산·판매·고객·재고.' },
-        { pose: 'think', text: '조각을 따로 두면 "팀끼리 숫자가 안 맞는" 문제가 터져. 그래서 [시스템]이 필요해.' },
-        { pose: 'lightbulb', text: '[ERP](전사 통합) · [CRM](고객) · [SCM](공급사슬) · [BI](의사결정). 모두 [DBMS] 위에서 돌아가.' },
-        { pose: 'happy', text: '흐름으로 외우자 — "[생고공의]". 생산→고객→공급→의사결정 순환.' },
-        { pose: 'idle', text: '약어 풀네임도 같이 기억. 바로 문제!' },
+        { pose: 'wave', text: '첫 단계, [데이터] 야.' },
+        { pose: 'think', text: '가공 안 된 객관적 사실. "콜라 1,800원" 처럼 측정값 그 자체.' },
+        { pose: 'happy', text: '의미도, 비교도 아직 없어. 양은 가장 많고 가치는 가장 낮은 단계.' },
+        { pose: 'idle', text: '어떤 게 데이터 단계인지 골라봐.' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            '회사마다 부서별로 다른 데이터를 다룹니다 — 생산·판매·고객·재고·물류·재무. 이 조각들을 따로 두면 "팀끼리 숫자가 안 맞는" 상황이 생깁니다. 기업 정보 시스템은 그 조각들을 한 곳에 모아주는 장치예요.',
+            '데이터(Data)는 측정·관찰·기록의 결과 그 자체입니다. 어떤 의미나 해석도 붙지 않은 raw 값입니다.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"객관적 사실", "측정값", "raw", "가공 전". 단순한 숫자나 단일 관찰이 등장하면 데이터로 분류합니다. "비교", "해석", "규칙" 이 들어가면 더 위 단계.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s1-info',
+      title: 'DIKW ② 정보 (Information)',
+      quizId: 'adsp-1-1-cp-01c',
+      dialogue: [
+        { pose: 'wave', text: '둘째, [정보] 단계.' },
+        { pose: 'lightbulb', text: '데이터끼리 비교·집계하면 의미가 생겨. "B마트가 300원 싸다" 처럼.' },
+        { pose: 'happy', text: '데이터가 점이라면, 정보는 점들을 잇는 선이야.' },
+        { pose: 'idle', text: '정보 단계 예시를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '정보(Information)는 데이터에 비교·집계·맥락을 더해 "그래서 어떤 뜻인지" 가 드러난 단계입니다.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"의미 부여", "맥락", "비교 결과". 두 데이터를 비교하거나 합산해 의미가 나오면 정보입니다. 일반화된 규칙으로 굳어지면 다음 단계(지식).',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s1-knowledge',
+      title: 'DIKW ③ 지식 (Knowledge)',
+      quizId: 'adsp-1-1-cp-01',
+      dialogue: [
+        { pose: 'wave', text: '셋째, [지식] 단계.' },
+        { pose: 'think', text: '정보를 묶어 "다음에도 통할 룰" 로 굳히는 거.' },
+        { pose: 'happy', text: '"콜라는 B마트가 유리해" 같이 일반화된 패턴이 지식. 의사결정에 바로 쓰여.' },
+        { pose: 'idle', text: '어떤 게 지식 단계인지 골라봐!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '지식(Knowledge)은 여러 정보를 묶어 "이런 상황엔 이렇게" 라는 규칙·패턴으로 굳힌 단계입니다.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"규칙", "일반화", "다음에도 적용 가능". 정보가 일회적 관찰이라면 지식은 반복 가능한 룰. "~가 유리하다", "~할 때는 ~한다" 형태로 자주 등장.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s1-wisdom',
+      title: 'DIKW ④ 지혜 (Wisdom)',
+      quizId: 'adsp-1-1-cp-01d',
+      dialogue: [
+        { pose: 'wave', text: '마지막, [지혜] 단계.' },
+        { pose: 'lightbulb', text: '지식을 새로운 영역으로 확장하는 통찰. 직접 비교한 적 없는 곳까지 추론.' },
+        { pose: 'happy', text: '시험엔 "창의적 아이디어", "통찰", "확장 추론" 키워드로 자주 등장해.' },
+        { pose: 'idle', text: '마지막 단계, 지혜 예시를 골라봐!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '지혜(Wisdom)는 검증된 지식을 새로운 영역으로 확장하는 창의적 추론입니다. 직접 비교한 적 없는 영역까지 적용하는 통찰.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"창의적 아이디어", "통찰", "확장 추론". 단순 규칙(지식)을 넘어 다른 영역에 적용하거나 새로운 가설을 세우는 단계.',
+        },
+      ],
+    },
+    // ─── 데이터 3가지 분류 기준 — 1 step → 4 substeps ───
+    {
+      id: 'adsp-1-1-s2',
+      title: '데이터 분류 — 3축 동시 적용 (개요)',
+      quizId: 'adsp-1-1-cp-02',
+      dialogue: [
+        { pose: 'wave', text: '데이터 분류는 [세 축] 이 따로 돌아가. 섞이면 안 돼.' },
+        { pose: 'think', text: '구조 · 형태 · 값 — 같은 데이터를 3축 각각에 답해야 완전 분류야.' },
+        { pose: 'idle', text: '먼저 통합 예시로 감을 잡고 가자.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '데이터 분류는 한 축으로만 답하면 틀립니다. 같은 데이터를 (1) 구조 (2) 형태 (3) 값 세 축에 따로 답해야 완전합니다.',
         },
         {
           kind: 'table',
-          title: '5가지 대표 시스템',
-          headers: ['약어', '풀이', '역할'],
+          title: '3축 한 줄 정리',
+          headers: ['축', '유형', '예시'],
           rows: [
-            ['DBMS', 'DataBase Management System', '데이터베이스를 생성·조회·수정·백업하는 소프트웨어'],
-            ['ERP', 'Enterprise Resource Planning', '생산·판매·재무·인사 등 전사 업무를 하나로 통합'],
-            ['CRM', 'Customer Relationship Management', '고객 이력·성향을 관리해 맞춤 마케팅·서비스에 활용'],
-            ['SCM', 'Supply Chain Management', '원자재 조달부터 생산·유통까지 공급사슬 최적화'],
-            ['BI', 'Business Intelligence', '쌓인 데이터를 대시보드·리포트로 가공해 의사결정 지원'],
+            ['구조', '정형 / 반정형 / 비정형', 'RDB · JSON · 영상'],
+            ['형태', '정량 / 정성', '숫자 측정 vs 언어·감정'],
+            ['값', '수치 / 범주', '연속·이산 vs 순서·명목'],
           ],
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s2-structure',
+      title: '데이터 분류 ① 구조 — 정형/반정형/비정형',
+      quizId: 'adsp-1-1-cp-02-structure',
+      dialogue: [
+        { pose: 'wave', text: '첫째 축은 [구조] 야.' },
+        { pose: 'think', text: '정해진 행·열 스키마 → 정형. 태그·키 있지만 자유 → 반정형. 스키마 없음 → 비정형.' },
+        { pose: 'idle', text: '어떤 데이터가 비정형 인지 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '구조(structure) 축은 데이터가 미리 정해진 스키마(행/열) 를 가지는지로 나눕니다. RDB 테이블처럼 완전 정형, JSON·XML 처럼 태그/키가 있는 반정형, 영상·텍스트·음성처럼 스키마 없는 비정형.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"RDB / 테이블" → 정형. "JSON / XML / 로그" → 반정형. "영상 / 이미지 / 음성 / 자유 텍스트" → 비정형.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s2-form',
+      title: '데이터 분류 ② 형태 — 정량/정성',
+      quizId: 'adsp-1-1-cp-02-form',
+      dialogue: [
+        { pose: 'wave', text: '둘째 축은 [형태] 야.' },
+        { pose: 'think', text: '숫자로 측정되면 정량적. 언어·감정·서술이면 정성적.' },
+        { pose: 'idle', text: '정성적 데이터를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '형태(form) 축은 측정 단위가 숫자인지로 나눕니다. 키·매출처럼 숫자로 잴 수 있으면 정량적. "만족" / 리뷰 텍스트 처럼 언어·감정·서술이면 정성적.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"숫자 측정 / 통계 / 양" → 정량. "언어 / 감정 / 서술 / 인터뷰" → 정성. "정성적이면 비정형이다" 는 함정 (정성+정형 도 가능 — 등급 코드).',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s2-value',
+      title: '데이터 분류 ③ 값 — 수치/범주',
+      quizId: 'adsp-1-1-cp-02-value',
+      dialogue: [
+        { pose: 'wave', text: '셋째 축은 [값] 의 종류야.' },
+        { pose: 'think', text: '연속·이산 숫자면 수치형. 순서나 명목 라벨이면 범주형.' },
+        { pose: 'idle', text: '범주형 예시를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '값(value) 축은 수치형(numerical) 과 범주형(categorical) 으로 나눕니다. 키·매출은 수치형, 혈액형·등급·도시는 범주형. 범주형은 다시 명목(순서 X) 과 순서(랭크) 로 나뉩니다.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"숫자 / 연속 / 이산" → 수치형. "라벨 / 카테고리 / 명목 / 순서" → 범주형. 1·2·3 이라도 "1=서울 2=부산" 처럼 라벨 코딩이면 범주형.',
+        },
+      ],
+    },
+    // ─── SECI — 1 step → 5 substeps (암묵·형식 + 4 변환) ───
+    {
+      id: 'adsp-1-1-s3',
+      title: '암묵지 · 형식지 · SECI 개요',
+      quizId: 'adsp-1-1-cp-03',
+      dialogue: [
+        { pose: 'wave', text: '[자전거 타는 법] 을 책으로 옮길 수 있을까?' },
+        { pose: 'think', text: '몸이 배운 노하우가 [암묵지]. 글로 정리되면 [형식지]. 조직은 이 변환으로 성장해.' },
+        { pose: 'happy', text: '변환은 [4단계] — 공동화·표출화·연결화·내면화. "[공표연내]".' },
+        { pose: 'idle', text: '먼저 암묵지/형식지 구분부터 확인.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '자전거 타는 법은 책으로 옮기기 어렵지만 누구나 탈 수 있습니다. 몸이 배운 노하우 — 이게 암묵지. 매뉴얼·논문처럼 글로 정리된 게 형식지. 조직은 둘 사이를 4가지 방식으로 순환시키며 지식을 키웁니다 (SECI).',
+        },
+        {
+          kind: 'callout',
+          tone: 'mnemonic',
+          title: '"공표연내"',
+          body:
+            'Socialization(공동화) → Externalization(표출화) → Combination(연결화) → Internalization(내면화). 시험에 4단계 매핑이 자주 등장합니다.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s3-S',
+      title: 'SECI ① 공동화 (Socialization)',
+      quizId: 'adsp-1-1-cp-03-S',
+      dialogue: [
+        { pose: 'wave', text: '첫째, [공동화] — 암묵지 → 암묵지.' },
+        { pose: 'think', text: '말 없이 몸으로 전수. OJT, 도제, 현장 어깨너머가 여기.' },
+        { pose: 'idle', text: '공동화 예시를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '공동화(Socialization)는 암묵지 → 암묵지 변환입니다. 글이나 매뉴얼 없이, 같은 공간에서 같이 일하며 노하우가 몸에서 몸으로 전해지는 과정.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"OJT", "도제", "현장 어깨너머", "직접 함께 일하며 익히기". 글·문서가 등장하면 공동화 아님.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s3-E',
+      title: 'SECI ② 표출화 (Externalization)',
+      quizId: 'adsp-1-1-cp-03-E',
+      dialogue: [
+        { pose: 'wave', text: '둘째, [표출화] — 암묵지 → 형식지.' },
+        { pose: 'think', text: '장인의 손맛을 매뉴얼·체크리스트·논문으로 옮기는 단계.' },
+        { pose: 'idle', text: '시험에 가장 자주 묻는 단계 — 잘 봐둬.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '표출화(Externalization)는 암묵지 → 형식지 변환입니다. 머릿속·몸의 경험을 언어·기호·도식으로 외화(externalize) 하는 단계.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"노하우를 매뉴얼로", "현장 경험을 보고서로", "베테랑 노하우 명문화". SECI 중 시험 빈출 1위.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s3-C',
+      title: 'SECI ③ 연결화 (Combination)',
+      quizId: 'adsp-1-1-cp-03-C',
+      dialogue: [
+        { pose: 'wave', text: '셋째, [연결화] — 형식지 → 형식지.' },
+        { pose: 'think', text: '여러 매뉴얼·문서를 합쳐 새 표준·백서를 만드는 단계.' },
+        { pose: 'idle', text: '연결화 예시를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '연결화(Combination)는 형식지 → 형식지 변환입니다. 이미 문서화된 지식들을 결합·재구성해 새 형식지(표준안·백서·종합 보고서) 를 만드는 단계.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"여러 보고서를 합쳐 백서로", "표준 매뉴얼 제정", "데이터 통합 분석 보고서". 모두 글→글 변환.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s3-I',
+      title: 'SECI ④ 내면화 (Internalization)',
+      quizId: 'adsp-1-1-cp-03-I',
+      dialogue: [
+        { pose: 'wave', text: '넷째, [내면화] — 형식지 → 암묵지.' },
+        { pose: 'think', text: '매뉴얼을 읽고 따라 하다보니 어느새 몸에 배는 단계.' },
+        { pose: 'idle', text: '내면화 예시를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '내면화(Internalization)는 형식지 → 암묵지 변환입니다. 매뉴얼·교본을 읽고 실습해 자신의 체화된 지식으로 만드는 단계. SECI 사이클의 마지막.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"매뉴얼 보고 연습 → 숙련", "교본대로 따라 하다 자기 것 됨", "OJT 후 다시 읽고 체화". 글→몸의 변환.',
+        },
+      ],
+    },
+    // ─── DB 특징 + DW/Data Lake — 1 step → 3 substeps (특징 5종 통합 + DW + Data Lake) ───
+    {
+      id: 'adsp-1-1-s4',
+      title: 'DB 5특징 — "공·통·저·변" + 실시간',
+      quizId: 'adsp-1-1-cp-04',
+      dialogue: [
+        { pose: 'wave', text: '엑셀과 DB 차이는 [5가지 성질].' },
+        { pose: 'think', text: '[공]용·[통]합·[저]장·[변]화 + [실시간]. "공통저변 + 실시간".' },
+        { pose: 'idle', text: '5성질을 한꺼번에 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'mnemonic',
+          title: 'DB 5특징',
+          body:
+            '공용(여러 사용자 공유) · 통합(중복 최소화) · 저장(영속) · 변화(수정 반영) + 실시간 처리. 엑셀 파일과 구분짓는 5가지.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s4-dw',
+      title: 'DW (Data Warehouse) — 분석 창고',
+      quizId: 'adsp-1-1-cp-04-dw',
+      dialogue: [
+        { pose: 'wave', text: 'DW — 운영계 데이터를 [ETL] 해서 정돈한 분석 창고.' },
+        { pose: 'think', text: '주제별·시간별로 정형 데이터만 담음. OLAP 을 위한 읽기 전용.' },
+        { pose: 'idle', text: 'DW 의 특징을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Data Warehouse 는 운영 시스템(OLTP) 데이터를 ETL(Extract-Transform-Load) 한 후 주제별로 정돈한 분석 창고. 주로 정형 데이터, OLAP·BI 가 사용.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"ETL", "주제별·시간별 정돈", "OLAP·BI". 정형/반정형/비정형 모두면 Data Lake.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s4-lake',
+      title: 'Data Lake — 정제 전 저수지',
+      quizId: 'adsp-1-1-cp-04-lake',
+      dialogue: [
+        { pose: 'wave', text: 'Data Lake — 정제 전 원시까지 다 담음.' },
+        { pose: 'think', text: '정형·반정형·비정형 모두 raw 로 저장.' },
+        { pose: 'idle', text: 'Data Lake 의 특징을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Data Lake 는 정형뿐 아니라 반정형·비정형·raw 데이터까지 형태 변환 없이 적재하는 저장소. Schema-on-read (읽을 때 구조 적용) 방식.',
+        },
+        {
+          kind: 'keypoints',
+          title: 'OLTP vs OLAP',
+          items: [
+            'OLTP: 거래 중심, 짧고 많은 insert/update',
+            'OLAP: 분석 중심, 읽기 위주 집계·다차원 조회',
+            'DW 는 OLAP 지원, Data Lake 는 raw 까지 보관',
+          ],
+        },
+      ],
+    },
+    // ─── 기업 정보 시스템 5종 — 1 step → 6 substeps ───
+    {
+      id: 'adsp-1-1-s5',
+      title: '기업 정보 시스템 — "생고공의" 개요',
+      quizId: 'adsp-1-1-cp-05',
+      dialogue: [
+        { pose: 'wave', text: '회사 부서마다 다른 데이터 → 통합 시스템 필요.' },
+        { pose: 'think', text: '5종: [DBMS] · [ERP] · [CRM] · [SCM] · [BI].' },
+        { pose: 'idle', text: '먼저 5 시스템 매칭 + DBMS 유형.' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'mnemonic',
+          title: '"생고공의" 흐름',
+          body:
+            'ERP(생산·전사) → CRM(고객) → SCM(공급사슬) → BI(의사결정). 모두 DBMS 위에서 작동.',
         },
         {
           kind: 'keypoints',
           title: 'DBMS 유형 4가지',
           items: [
-            '계층형(Hierarchical): 트리 구조 — 1:N 부모·자식',
-            '망형(Network): 자식이 여러 부모를 가질 수 있음',
-            '관계형(Relational, RDB): 테이블·SQL — 현재 가장 널리 쓰임 (Oracle, MySQL, PostgreSQL)',
-            'NoSQL(문서·KV·그래프): 대용량·비정형 대응 (MongoDB, Redis, Neo4j)',
+            '계층형: 트리 구조 1:N',
+            '망형: 자식이 여러 부모',
+            '관계형(RDB): 테이블·SQL — 가장 널리 쓰임',
+            'NoSQL: 대용량·비정형 대응',
           ],
         },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s5-dbms',
+      title: '기업 시스템 ① DBMS',
+      quizId: 'adsp-1-1-cp-05-dbms',
+      dialogue: [
+        { pose: 'wave', text: 'DBMS — 모든 시스템의 기반.' },
+        { pose: 'think', text: '데이터베이스 생성·조회·수정·백업 소프트웨어.' },
+        { pose: 'idle', text: 'DBMS 의 역할을 골라봐.' },
+      ],
+      blocks: [
         {
-          kind: 'callout',
-          tone: 'mnemonic',
-          title: '흐름으로 기억 — "생고공의"',
+          kind: 'intro',
           body:
-            'ERP(생산·전사) → CRM(고객) → SCM(공급사슬) → BI(의사결정). 기업이 "안에서 만들고 → 밖에 고객에게 팔고 → 다시 공급자에게 주문하고 → 쌓인 데이터로 결정" 하는 순환을 떠올리면 5가지가 한 줄로 꿰어집니다.',
+            'DBMS(DataBase Management System) 는 데이터베이스의 생성·조회·수정·삭제·백업을 담당하는 소프트웨어. ERP·CRM·SCM·BI 모두 DBMS 위에서 동작.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"DB 관리 SW", "Oracle·MySQL·PostgreSQL". 전사 통합 업무는 ERP, 고객 관리는 CRM.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s5-erp',
+      title: '기업 시스템 ② ERP',
+      quizId: 'adsp-1-1-cp-05-erp',
+      dialogue: [
+        { pose: 'wave', text: 'ERP — Enterprise Resource Planning.' },
+        { pose: 'think', text: '생산·판매·재무·인사 등 전사 업무를 하나로 통합.' },
+        { pose: 'idle', text: 'ERP 의 정의를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'ERP 는 생산·판매·재무·인사 등 전사적 자원을 하나의 시스템으로 통합해 부서 간 데이터 일관성을 확보합니다. 대표: SAP · Oracle ERP.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"전사 자원 통합", "생산·재무·인사 통합". 고객 관리만이면 CRM, 공급사슬만이면 SCM.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s5-crm',
+      title: '기업 시스템 ③ CRM',
+      quizId: 'adsp-1-1-cp-05-crm',
+      dialogue: [
+        { pose: 'wave', text: 'CRM — Customer Relationship Management.' },
+        { pose: 'think', text: '고객 이력·성향 관리, 맞춤 마케팅·서비스.' },
+        { pose: 'idle', text: 'CRM 의 정의를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'CRM 은 고객 정보·구매 이력·접점 데이터를 통합 관리해 개인화된 마케팅·서비스 제공을 지원. 대표: Salesforce.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"고객 관리", "맞춤 마케팅". 공급자·재고면 SCM, 의사결정 BI.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s5-scm',
+      title: '기업 시스템 ④ SCM',
+      quizId: 'adsp-1-1-cp-05-scm',
+      dialogue: [
+        { pose: 'wave', text: 'SCM — Supply Chain Management.' },
+        { pose: 'think', text: '원자재 조달 → 생산 → 유통 공급사슬 최적화.' },
+        { pose: 'idle', text: 'SCM 의 정의를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'SCM 은 원자재 조달부터 생산·유통·반품까지 공급사슬 전체를 통합 관리해 재고·납기·비용을 최적화. 협력사 정보 공유가 핵심.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"공급사슬 최적화", "조달·재고·물류". 고객 접점이면 CRM, 의사결정 대시보드면 BI.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s5-bi',
+      title: '기업 시스템 ⑤ BI',
+      quizId: 'adsp-1-1-cp-05-bi',
+      dialogue: [
+        { pose: 'wave', text: 'BI — Business Intelligence.' },
+        { pose: 'think', text: '쌓인 데이터를 대시보드·리포트로 가공 → 의사결정.' },
+        { pose: 'idle', text: 'BI 의 정의를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'BI 는 데이터를 다차원 분석·리포트·대시보드로 시각화해 경영 의사결정을 지원. 대표: Tableau · Power BI · Looker.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"대시보드·리포트", "의사결정 지원". 운영 통합이면 ERP, 고객 관리면 CRM.',
         },
       ],
     },
@@ -323,38 +702,33 @@ const ADSP_1_2: Lesson = {
   hook: '3V·5V… 숫자만 외우지 말고, 왜 "가치" 로 이어지는지.',
   estimatedMinutes: 8,
   steps: [
+    // ─── 3V · 데이터 단위 — 1 step → 4 substeps ───
     {
       id: 'adsp-1-2-s1',
-      title: '3V · 데이터 단위',
+      title: '빅데이터 단위 · 3V/5V 개요',
       quizId: 'adsp-1-2-cp-01',
       dialogue: [
-        { pose: 'wave', text: '스마트폰 [10분]이 인류 [1만 년] 분량을 넘어선다고 해.' },
-        { pose: 'think', text: '단위부터 익히자 — [K]B · [M]B · [G]B · [T]B · [P]B · [E]B · [Z]B · [Y]B. 단계마다 1024배.' },
-        { pose: 'lightbulb', text: '가트너의 [3V]: [Volume](양) · [Variety](다양성) · [Velocity](속도). 세 가지가 "빅" 의 정의야.' },
-        { pose: 'happy', text: '확장하면 [5V] = 3V + [Value](가치) + [Veracity](진실성). 더 가면 7V.' },
-        { pose: 'idle', text: '단위랑 V 매칭, 문제로 확인!' },
+        { pose: 'wave', text: '스마트폰 10분이 인류 1만 년 분량을 넘는다고 해.' },
+        { pose: 'think', text: '단위 KB·MB·GB·TB·PB·EB·ZB·YB — 단계마다 1024배.' },
+        { pose: 'happy', text: '"빅" 의 정의는 가트너 [3V]: Volume · Variety · Velocity.' },
+        { pose: 'idle', text: '단위·3V 개요부터 확인!' },
       ],
       blocks: [
         {
-          kind: 'intro',
-          body:
-            '스마트폰 10분이 인류 1만 년 분량을 넘어선다고 합니다. 저장장치는 싸지고, 컴퓨터는 빨라지고, SNS·IoT 는 끝없이 데이터를 뿌립니다. "많이 쌓인다 → 가치를 뽑을 수 있다" 가 빅데이터 시대의 동력.',
-        },
-        {
           kind: 'callout',
           tone: 'mnemonic',
-          title: '데이터 단위 — "패지요"',
+          title: '데이터 단위',
           body:
-            'KB · MB · GB · TB · PB(페타) · EB(엑사) · ZB(제타) · YB(요타). 단계마다 1024배. PB 이상을 빅데이터 영역으로 봅니다.',
+            'KB → MB → GB → TB → PB(페타) → EB(엑사) → ZB(제타) → YB(요타). 단계마다 1024배. PB 이상을 빅데이터 영역으로 봅니다.',
         },
         {
           kind: 'table',
           title: '가트너의 3V',
           headers: ['V', '의미', '예시'],
           rows: [
-            ['Volume', '데이터의 양', 'PB 단위 로그'],
-            ['Variety', '형태의 다양성', '정형 + 이미지 + 센서'],
-            ['Velocity', '생성·처리 속도', '초당 수만 건 스트리밍'],
+            ['Volume', '데이터의 양', 'PB 로그'],
+            ['Variety', '형태의 다양성', '정형+이미지+센서'],
+            ['Velocity', '생성·처리 속도', '초당 수만 건'],
           ],
         },
         {
@@ -362,34 +736,97 @@ const ADSP_1_2: Lesson = {
           tone: 'tip',
           title: '5V · 7V 확장',
           body:
-            '3V + Value(가치) + Veracity(진실성) = 5V. + Validity(유효성) + Volatility(휘발성) = 7V. "3V + 가·진·신·휘" 로 외우세요.',
+            '3V + Value(가치) + Veracity(진실성) = 5V. + Validity(유효성) + Volatility(휘발성) = 7V.',
         },
       ],
     },
     {
-      id: 'adsp-1-2-s2',
-      title: '변화 — 표본→전수, 인과→상관',
-      quizId: 'adsp-1-2-cp-02',
+      id: 'adsp-1-2-s1-volume',
+      title: '3V ① Volume — 양',
+      quizId: 'adsp-1-2-cp-01-volume',
       dialogue: [
-        { pose: 'wave', text: '빅데이터 이전엔 [작은 표본]으로 [원인]을 찾는 게 주류였어.' },
-        { pose: 'think', text: '지금은 [전수] 데이터를 놓고 [상관]부터 훑는 게 가능해졌어.' },
-        { pose: 'lightbulb', text: '네 축이 뒤집혔지 — [표본→전수] · [질→양] · [인과→상관] · [이론→데이터].' },
-        { pose: 'happy', text: '"원인을 알 필요 없다" 가 아니라 "상관만으로도 충분히 유용한 의사결정" 이 가능해졌다는 뜻!' },
-        { pose: 'idle', text: '전후 비교 명확히 하고 문제로!' },
+        { pose: 'wave', text: '첫째, [Volume] 은 데이터의 양.' },
+        { pose: 'think', text: 'PB 이상의 규모, 처리 인프라 압박이 키워드.' },
+        { pose: 'idle', text: 'Volume 의 핵심 키워드를 골라봐.' },
       ],
       blocks: [
         {
-          kind: 'section',
-          title: '분석 패러다임이 뒤집혔다',
+          kind: 'intro',
           body:
-            '빅데이터 이전엔 "작은 표본으로 원인을 찾는" 사전 분석이 주류였습니다. 이후엔 "전수 데이터를 놓고 상관부터 훑는" 사후 분석이 가능해졌습니다.',
+            'Volume(양) — 단위 시간·공간에 쌓인 데이터의 절대 규모. PB·EB 단위로 들어가면 단일 서버로 처리가 어려워 분산처리(Hadoop·Spark) 가 필요해집니다.',
         },
         {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"규모", "PB 단위", "분산 저장·처리", "데이터 폭증". 다양성이나 속도가 키워드면 다른 V.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-2-s1-variety',
+      title: '3V ② Variety — 다양성',
+      quizId: 'adsp-1-2-cp-01-variety',
+      dialogue: [
+        { pose: 'wave', text: '둘째, [Variety] 는 형태의 다양성.' },
+        { pose: 'think', text: '정형 + 반정형 + 비정형이 한 시스템에 섞여 들어와.' },
+        { pose: 'idle', text: 'Variety 예시를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Variety(다양성) — 데이터의 종류·형태가 정형(테이블) · 반정형(JSON·XML) · 비정형(영상·텍스트·음성) 으로 함께 쏟아지는 상황. 한 종류만 다루면 Variety 가 아닙니다.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"형태가 다양", "정형+비정형 혼재", "이미지·텍스트·센서 동시". 단순히 "양 많음" 은 Volume.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-2-s1-velocity',
+      title: '3V ③ Velocity — 속도',
+      quizId: 'adsp-1-2-cp-01-velocity',
+      dialogue: [
+        { pose: 'wave', text: '셋째, [Velocity] 는 생성·처리 속도.' },
+        { pose: 'think', text: '실시간/스트리밍이 키워드. 배치 처리 만으로는 못 따라가.' },
+        { pose: 'idle', text: 'Velocity 예시를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Velocity(속도) — 데이터가 생성·도착·처리되어야 하는 속도. 초당 수만 건의 IoT 센서·SNS 스트리밍처럼 실시간 처리가 요구되는 상황.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"실시간", "스트리밍", "초당 N 건", "Kafka / Flink". 단순 일괄 처리만 있으면 Velocity 가 아님.',
+        },
+      ],
+    },
+    // ─── 빅데이터 변화 4축 — 1 step → 5 substeps ───
+    {
+      id: 'adsp-1-2-s2',
+      title: '빅데이터 변화 — 4축 개요',
+      quizId: 'adsp-1-2-cp-02',
+      dialogue: [
+        { pose: 'wave', text: '빅데이터로 분석 패러다임이 4축에서 뒤집혔어.' },
+        { pose: 'think', text: '[표본→전수] · [질→양] · [인과→상관] · [이론→데이터].' },
+        { pose: 'idle', text: '먼저 4축 비교 매트릭스.' },
+      ],
+      blocks: [
+        {
           kind: 'table',
+          title: '변화 4축',
           headers: ['축', '이전', '이후'],
           rows: [
             ['규모', '표본(Sample)', '전수(Population)'],
-            ['품질', '질(Quality) 우선', '양(Quantity) 우선'],
+            ['품질', '질(Quality)', '양(Quantity)'],
             ['관점', '인과(Causation)', '상관(Correlation)'],
             ['접근', '이론 기반', '데이터 기반'],
           ],
@@ -397,32 +834,192 @@ const ADSP_1_2: Lesson = {
       ],
     },
     {
+      id: 'adsp-1-2-s2-scale',
+      title: '변화 ① 표본 → 전수',
+      quizId: 'adsp-1-2-cp-02-scale',
+      dialogue: [
+        { pose: 'wave', text: '첫 축 [규모] — 작은 표본 → 전수 데이터.' },
+        { pose: 'think', text: '저장·연산 비용 하락 → 전수 다루기 가능.' },
+        { pose: 'idle', text: '규모 축의 이전/이후를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '과거엔 통계 표본 추출이 분석의 출발이었습니다. 빅데이터 시대엔 전수(Population) 자체를 다루는 것이 가능해졌습니다.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"표본 → 전수", "Sample → Population". 인과·상관 축은 별도, 질·양 축도 별도.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-2-s2-quality',
+      title: '변화 ② 질 → 양',
+      quizId: 'adsp-1-2-cp-02-quality',
+      dialogue: [
+        { pose: 'wave', text: '둘째 축 [품질] — 질 우선 → 양 우선.' },
+        { pose: 'think', text: '깔끔한 소수 데이터 < 잡음 섞여도 풍부한 다량.' },
+        { pose: 'idle', text: '품질 축의 변화를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '소량의 깔끔한 데이터를 정성스럽게 모으던 방식에서, 잡음이 있어도 양이 압도적으로 많은 데이터로 패턴을 찾는 쪽으로 무게가 옮겨갔습니다.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"질 → 양", "Quality → Quantity". 규모(표본/전수) 와 별개 축.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-2-s2-corr',
+      title: '변화 ③ 인과 → 상관',
+      quizId: 'adsp-1-2-cp-02-corr',
+      dialogue: [
+        { pose: 'wave', text: '셋째 축 [관점] — 인과 → 상관.' },
+        { pose: 'think', text: '"왜?" 보다 "함께 움직이나?" 만으로도 의사결정 가능.' },
+        { pose: 'idle', text: '관점 축의 변화를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '과거엔 "왜 그런가" 의 인과를 밝혀야 했지만, 빅데이터에선 "함께 움직인다" 는 상관만으로도 마케팅·운영 의사결정에 충분히 활용 가능해졌습니다.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"인과 → 상관", "Causation → Correlation". "원인 무관" 이 아니라 "상관만으로도 의사결정 가능".',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-2-s2-data',
+      title: '변화 ④ 이론 → 데이터',
+      quizId: 'adsp-1-2-cp-02-data',
+      dialogue: [
+        { pose: 'wave', text: '넷째 축 [접근] — 이론 → 데이터.' },
+        { pose: 'think', text: '가설 먼저 → 데이터로 확인 vs 데이터에서 패턴 발굴.' },
+        { pose: 'idle', text: '접근 축의 변화를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '예전엔 이론·가설을 먼저 세우고 데이터로 검증했다면, 지금은 풍부한 데이터에서 직접 패턴을 발굴하는 데이터 기반 접근이 가능해졌습니다.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"이론 → 데이터", "Theory → Data-driven". 인과/상관 축과 혼동 주의.',
+        },
+      ],
+    },
+    // ─── 데이터 3법 (개정신) — 1 step → 4 substeps ───
+    {
       id: 'adsp-1-2-s3',
-      title: '데이터 3법 · 가명정보',
+      title: '데이터 3법 — "개·정·신" 개요',
       quizId: 'adsp-1-2-cp-03',
       dialogue: [
-        { pose: 'wave', text: '데이터를 쓰려면 [법]부터 알아야 해. 2020년 개정이 핵심 포인트.' },
-        { pose: 'think', text: '[데이터 3법] — [개]인정보보호법 · [정]보통신망법 · [신]용정보법. "[개정신]" 으로 외워.' },
-        { pose: 'lightbulb', text: '개정 전엔 "동의 받아야만 활용 가능" → 개정 후엔 [가명정보] 라는 중간 영역이 생겼어.' },
-        { pose: 'happy', text: '[가명정보]는 [통계·연구·공익] 한정으로 [동의 없이] 활용 OK. [익명정보]는 아예 개인정보 대상 밖!' },
-        { pose: 'idle', text: '세 카테고리 구분, 문제로 확인해보자.' },
+        { pose: 'wave', text: '2020년 개정으로 가명정보 활용 가능.' },
+        { pose: 'think', text: '3법 "[개정신]" — 개인정보보호법 · 정보통신망법 · 신용정보법.' },
+        { pose: 'idle', text: '먼저 3법 + 정보 카테고리 개요.' },
       ],
       blocks: [
         {
           kind: 'callout',
           tone: 'mnemonic',
-          title: '데이터 3법 — "개·정·신"',
+          title: '"개·정·신"',
           body:
-            '개인정보보호법 · 정보통신망법 · 신용정보법. 2020년 개정으로 "가명정보" 개념이 도입되어 통계·연구·공익 목적 한정 동의 없이 활용 가능해졌습니다.',
+            '개인정보보호법 · 정보통신망법 · 신용정보법. 2020년 개정으로 "가명정보" 개념 도입.',
         },
         {
           kind: 'keypoints',
-          title: '3종 정보 구분',
+          title: '3종 정보 카테고리',
           items: [
-            '개인정보: 개인 직접 식별. 원칙적으로 동의 필요',
-            '가명정보: 추가정보 없이는 식별 불가. 통계·연구·공익은 동의 없이 활용 가능',
-            '익명정보: 식별 불가능. 개인정보보호법 적용 대상 아님',
+            '개인정보: 직접 식별 — 원칙적으로 동의 필요',
+            '가명정보: 추가정보 없이는 식별 불가 — 통계·연구·공익 한정 동의 없이 활용 가능',
+            '익명정보: 식별 불가능 — 개인정보보호법 대상 외',
           ],
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-2-s3-pipa',
+      title: '데이터 3법 ① 개인정보보호법',
+      quizId: 'adsp-1-2-cp-03-pipa',
+      dialogue: [
+        { pose: 'wave', text: '첫째 [개인정보보호법] — 개인정보 처리 일반.' },
+        { pose: 'think', text: '수집·이용·제공·파기의 원칙. 일반법.' },
+        { pose: 'idle', text: '개인정보보호법 영역을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '개인정보보호법은 모든 개인정보 처리에 대한 일반법. 정보주체의 동의·열람·정정·삭제 권리, 처리자의 안전조치 의무 등을 규정.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"일반법", "동의 원칙", "정보주체 권리". 통신서비스 영역 추가 규제는 정보통신망법, 신용정보 영역은 신용정보법.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-2-s3-net',
+      title: '데이터 3법 ② 정보통신망법',
+      quizId: 'adsp-1-2-cp-03-net',
+      dialogue: [
+        { pose: 'wave', text: '둘째 [정보통신망법] — 통신서비스 특화.' },
+        { pose: 'think', text: '온라인 서비스·웹사이트·앱에서의 개인정보 보호 강화.' },
+        { pose: 'idle', text: '정보통신망법 영역을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '정보통신망법은 정보통신서비스 제공자(웹사이트·앱·SNS 등) 의 개인정보 보호 의무·이용자 보호 조치를 규정.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"정보통신서비스", "웹·앱·SNS", "이용자 보호". 일반 처리는 개인정보보호법, 신용정보는 신용정보법.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-2-s3-credit',
+      title: '데이터 3법 ③ 신용정보법',
+      quizId: 'adsp-1-2-cp-03-credit',
+      dialogue: [
+        { pose: 'wave', text: '셋째 [신용정보법] — 금융·신용 영역.' },
+        { pose: 'think', text: '신용평가·금융거래의 신용정보 처리 규제.' },
+        { pose: 'idle', text: '신용정보법 영역을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '신용정보법은 금융거래·신용평가에 사용되는 신용정보의 수집·이용·제공·집중관리(신용정보집중기관) 등을 규제. 마이데이터(본인신용정보관리업) 의 근거 법.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"금융·신용정보", "마이데이터". 일반 개인정보면 개인정보보호법, 통신서비스면 정보통신망법.',
         },
       ],
     },
@@ -528,34 +1125,170 @@ const ADSP_1_3: Lesson = {
         },
       ],
     },
+    // ─── Digital CA메라 6역량 — 1 step → 7 substeps (overview + 6 역량) ───
     {
       id: 'adsp-1-3-s3',
-      title: '요구 역량 — "Digital CA메라"',
+      title: 'DS 6역량 — "Digital CA메라" 개요',
       quizId: 'adsp-1-3-cp-03',
       dialogue: [
-        { pose: 'wave', text: '데이터 사이언티스트에게 요구되는 [6가지 역량], 외우기 킬러 있어.' },
-        { pose: 'think', text: '[C]ommunication · [A]nalytics · [M]ath · [E]ngineering · [R]esearch · [A]rt.' },
-        { pose: 'lightbulb', text: '첫 글자 모으면 — "[Digital CA메라]". 6가지가 [카메라 하나]로 세상을 담듯 통합되는 거야.' },
-        { pose: 'happy', text: '의사결정도 진화해 — [직관 → 데이터 → 예측 → 처방]. DS는 뒤 두 단계를 가능케 해.' },
-        { pose: 'idle', text: '"[Management]" 같은 항목은 포함 안 됨. 함정 주의!' },
+        { pose: 'wave', text: '데이터 사이언티스트 6역량 — "Digital CA메라".' },
+        { pose: 'think', text: '[C]·[A]·[M]·[E]·[R]·[A] — Comm·Analytics·Math·Eng·Research·Art.' },
+        { pose: 'idle', text: '먼저 6역량 매핑 + 함정.' },
       ],
       blocks: [
         {
           kind: 'callout',
           tone: 'mnemonic',
-          title: '"Digital CA메라" 6가지',
+          title: '"Digital CA메라"',
           body:
-            'Communication · Analytics · Math · Engineering · Research · Art. 서로 다른 역량이 "카메라 하나" 로 세상을 담듯 통합돼야 한다는 의미. Management 같은 항목은 포함되지 않습니다.',
+            'Communication · Analytics · Math · Engineering · Research · Art. "Management" 는 포함되지 않음 — 함정.',
         },
         {
           kind: 'keypoints',
-          title: '의사결정의 진화',
+          title: '의사결정 진화',
           items: [
             '직관 → 데이터 기반 → 예측 → 처방',
-            '예측: "무슨 일이 일어날까"',
-            '처방: "그럼 무엇을 해야 할까"',
-            '데이터 사이언스는 예측·처방 단계를 가능케 하는 학문',
+            '예측 = 무슨 일이 일어날까',
+            '처방 = 그럼 무엇을 해야 할까',
           ],
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-3-s3-c',
+      title: '6역량 ① Communication',
+      quizId: 'adsp-1-3-cp-03-c',
+      dialogue: [
+        { pose: 'wave', text: '첫째 [Communication] — 분석 결과 전달력.' },
+        { pose: 'think', text: '시각화·스토리텔링·이해관계자 설득.' },
+        { pose: 'idle', text: 'Communication 영역을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Communication 은 분석 결과를 비즈니스 청중에 맞게 풀어내는 역량 — 시각화·스토리텔링·발표.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"전달", "스토리텔링", "시각화 발표". 통계·수식이면 Math, 시스템·코드면 Engineering.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-3-s3-a',
+      title: '6역량 ② Analytics',
+      quizId: 'adsp-1-3-cp-03-a',
+      dialogue: [
+        { pose: 'wave', text: '둘째 [Analytics] — 분석 기법·도메인 지식.' },
+        { pose: 'think', text: '도메인 문제 정의 + 적합한 분석 방법 선택.' },
+        { pose: 'idle', text: 'Analytics 영역을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Analytics 는 도메인 이해 + 분석 기법 선택 능력. 어떤 비즈니스 문제에 어떤 모델·기법이 맞는지 판단하는 역량.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"도메인 + 분석 기법", "문제 정의 + 모델 선택". 순수 수학·통계면 Math, 새로운 가설 발굴이면 Research.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-3-s3-m',
+      title: '6역량 ③ Math (수학·통계)',
+      quizId: 'adsp-1-3-cp-03-m',
+      dialogue: [
+        { pose: 'wave', text: '셋째 [Math] — 수학·통계 이론.' },
+        { pose: 'think', text: '확률·선형대수·미적분이 모델의 뼈대.' },
+        { pose: 'idle', text: 'Math 영역을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Math 는 통계·확률·선형대수·미적분 등 분석의 수학적 기반. 모델 가정·수식 유도·검정의 토대.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"확률·통계", "선형대수", "미적분". 코드·시스템이면 Engineering, 청중 설득이면 Communication.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-3-s3-e',
+      title: '6역량 ④ Engineering',
+      quizId: 'adsp-1-3-cp-03-e',
+      dialogue: [
+        { pose: 'wave', text: '넷째 [Engineering] — 데이터·시스템 구축.' },
+        { pose: 'think', text: '파이프라인·DB·인프라·코드 구현.' },
+        { pose: 'idle', text: 'Engineering 영역을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Engineering 은 데이터 파이프라인·DB·분산 처리·코드 구현 능력. 모델을 실제 서비스로 옮기는 데 필수.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"파이프라인", "DB·시스템", "구현·코드". 수식·확률이면 Math, 도메인 분석이면 Analytics.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-3-s3-r',
+      title: '6역량 ⑤ Research',
+      quizId: 'adsp-1-3-cp-03-r',
+      dialogue: [
+        { pose: 'wave', text: '다섯째 [Research] — 새 가설·기법 탐구.' },
+        { pose: 'think', text: '논문·신기법 도입, R&D 적 사고.' },
+        { pose: 'idle', text: 'Research 영역을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Research 는 기존 모델·기법으로 풀리지 않는 문제에 대해 새 가설·접근을 탐구하는 R&D 역량.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"새 가설·기법", "논문·R&D", "탐색적 연구". 검증된 기법 적용은 Analytics, 시각화 전달은 Communication.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-3-s3-art',
+      title: '6역량 ⑥ Art (디자인·창의)',
+      quizId: 'adsp-1-3-cp-03-art',
+      dialogue: [
+        { pose: 'wave', text: '여섯째 [Art] — 통찰·창의·디자인 감각.' },
+        { pose: 'think', text: '데이터에서 새 관점·디자인을 끌어내는 능력.' },
+        { pose: 'idle', text: 'Art 영역을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Art 는 데이터에서 통찰·창의적 관점·미적 디자인을 끌어내는 비기술적 역량. 시각화 미감, 새 가치 발견의 직관.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"창의·통찰", "디자인 감각". 단순 발표면 Communication, 새 가설 R&D 면 Research. Management 는 6역량에 없음 — 시험 함정.',
         },
       ],
     },
@@ -576,56 +1309,142 @@ const ADSP_2_1: Lesson = {
   hook: '"문제를 안다 × 방법을 안다" — 2×2 칸이 분석을 결정합니다.',
   estimatedMinutes: 9,
   steps: [
+    // ─── 분석 4유형 (What × How) — 1 step → 5 substeps ───
     {
       id: 'adsp-2-1-s1',
-      title: '분석 4유형 (What × How)',
+      title: '분석 4유형 — What × How (개요)',
       quizId: 'adsp-2-1-cp-01',
       dialogue: [
-        { pose: 'wave', text: '분석 프로젝트가 망하는 이유 1위 — [엉뚱한 방법]을 [엉뚱한 문제]에 쓰는 거.' },
-        { pose: 'think', text: '두 축으로 분류하자 — [What](풀 것이 분명?) × [How](푸는 법 아는?).' },
-        { pose: 'lightbulb', text: '[○/○ = Optimization](최적화) · [○/× = Solution](방법 탐색) · [×/○ = Insight](대상 발견) · [×/× = Discovery](전방위 탐험).' },
-        { pose: 'happy', text: '네 칸을 [2×2 매트릭스]로 외워두면 어떤 과제든 분류가 돼!' },
-        { pose: 'idle', text: '각 유형 매칭 문제로!' },
+        { pose: 'wave', text: '분석 프로젝트 실패 1위 — 엉뚱한 방법을 엉뚱한 문제에.' },
+        { pose: 'think', text: '두 축: [What] (풀 것이 분명?) × [How] (푸는 법 아는?).' },
+        { pose: 'happy', text: '4 칸: Optimization · Solution · Insight · Discovery.' },
+        { pose: 'idle', text: '먼저 매트릭스 구조부터.' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            '분석 프로젝트가 실패하는 가장 흔한 이유는 "엉뚱한 방법을 엉뚱한 문제에 쓰기". "풀려는 것이 분명한가(What)", "어떻게 풀지 아는가(How)" 두 축으로 분류하는 것이 첫 단추입니다.',
+            '"What 을 안다 / 모른다" × "How 를 안다 / 모른다" 의 2×2. 각 칸이 다른 분석 전략을 요구합니다.',
         },
         {
           kind: 'table',
           title: 'What × How = 4유형',
-          headers: ['What 앎', 'How 앎', '유형', '설명'],
+          headers: ['What', 'How', '유형'],
           rows: [
-            ['○', '○', 'Optimization', '정답 존재, 최적화'],
-            ['○', '×', 'Solution', '목표 분명, 방법 탐색'],
-            ['×', '○', 'Insight', '기법은 있는데 대상 발견'],
-            ['×', '×', 'Discovery', '대상·방법 모두 탐험'],
+            ['○', '○', 'Optimization (최적화)'],
+            ['○', '×', 'Solution (방법 탐색)'],
+            ['×', '○', 'Insight (대상 발견)'],
+            ['×', '×', 'Discovery (전방위 탐험)'],
           ],
         },
       ],
     },
     {
-      id: 'adsp-2-1-s2',
-      title: 'KDD vs CRISP-DM',
-      quizId: 'adsp-2-1-cp-02',
+      id: 'adsp-2-1-s1-opt',
+      title: '4유형 ① Optimization (최적화)',
+      quizId: 'adsp-2-1-cp-01-opt',
       dialogue: [
-        { pose: 'wave', text: '분석 프로세스의 [두 표준]이 있어 — [KDD] 와 [CRISP-DM].' },
-        { pose: 'think', text: 'KDD 는 [5단계] — 선택 · 전처리 · 변환 · 마이닝 · 해석/평가.' },
-        { pose: 'lightbulb', text: 'CRISP-DM 은 [6단계] — "[업데데이트모델평가전]" 으로 외워!' },
-        { pose: 'happy', text: '풀면 — [업]무이해 → [데]이터이해 → [데]이터준비 → [모델]링 → [평가] → [전]개.' },
-        { pose: 'idle', text: '이 순서 그대로 문제에 나와. 체크!' },
+        { pose: 'wave', text: '[Optimization] — What 알고, How 도 안다.' },
+        { pose: 'think', text: '목표 명확 + 모델·기법 정해짐 → 파라미터 튜닝·운영 최적화.' },
+        { pose: 'idle', text: 'Optimization 예시를 골라봐.' },
       ],
       blocks: [
         {
-          kind: 'section',
-          title: '두 표준 프로세스',
+          kind: 'intro',
           body:
-            '둘 다 "데이터 → 전처리 → 모델링 → 평가" 의 큰 틀은 같지만 단계 수와 이름이 다릅니다. KDD는 5단계, CRISP-DM은 6단계.',
+            'Optimization(최적화)는 풀 문제(What) 와 방법(How) 둘 다 명확한 상황. 기존 모델·프로세스의 파라미터·자원 배분을 미세 조정해 효율을 올리는 단계.',
         },
         {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"기존 모델 튜닝", "물류 비용 최소화 (선형계획)", "광고 입찰 최적화". 새 가설 발굴이 필요하면 Discovery.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-1-s1-sol',
+      title: '4유형 ② Solution (방법 탐색)',
+      quizId: 'adsp-2-1-cp-01-sol',
+      dialogue: [
+        { pose: 'wave', text: '[Solution] — What 안다, How 모른다.' },
+        { pose: 'think', text: '목표는 분명하지만 방법이 미정 → 후보 알고리즘·접근 비교.' },
+        { pose: 'idle', text: 'Solution 예시를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Solution(방법 탐색)은 What 은 명확("이탈 예측") 한데 How 가 미정("어떤 모델로?"). 여러 후보를 시도해 가장 잘 맞는 방법을 고르는 단계.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"이탈 예측 모델 선정", "최적 알고리즘 선정", "여러 기법 비교". 풀 문제 자체가 미정이면 Discovery.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-1-s1-ins',
+      title: '4유형 ③ Insight (대상 발견)',
+      quizId: 'adsp-2-1-cp-01-ins',
+      dialogue: [
+        { pose: 'wave', text: '[Insight] — What 모른다, How 안다.' },
+        { pose: 'think', text: '기법은 있는데 풀 대상이 미정 → 데이터에서 흥미로운 패턴 탐색.' },
+        { pose: 'idle', text: 'Insight 예시를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Insight(대상 발견) 는 How 는 갖춰졌지만("우리 분석팀이 잘하는 회귀·군집") What 이 미정("어디 적용?") 인 상황. 주어진 데이터에서 가치 있는 분석 대상을 발굴.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"이상 패턴 발견", "고객 군집화로 새 세그먼트 발굴", "보유 기법으로 새 적용처 찾기". What/How 둘 다 미정이면 Discovery.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-1-s1-dis',
+      title: '4유형 ④ Discovery (전방위 탐험)',
+      quizId: 'adsp-2-1-cp-01-dis',
+      dialogue: [
+        { pose: 'wave', text: '[Discovery] — What 모르고 How 도 모른다.' },
+        { pose: 'think', text: '신규 사업·미지의 영역. 데이터·문제·방법 모두 탐험.' },
+        { pose: 'idle', text: 'Discovery 예시를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Discovery(전방위 탐험)는 What 도 How 도 명확하지 않은 상황. 신규 사업, 미지의 시장, 새로운 데이터 소스에 대해 가설부터 세우며 접근하는 R&D 적 분석.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"신규 사업 가능성 탐색", "신상품 콘셉트 발굴", "탐색적 분석". What 이 분명하면 Optimization/Solution, How 만 명확하면 Insight.',
+        },
+      ],
+    },
+    // ─── KDD vs CRISP-DM — 1 step → 3 substeps (overview + KDD + CRISP) ───
+    {
+      id: 'adsp-2-1-s2',
+      title: '분석 프로세스 — KDD vs CRISP-DM 개요',
+      quizId: 'adsp-2-1-cp-02',
+      dialogue: [
+        { pose: 'wave', text: '분석 프로세스 두 표준 — [KDD] 5단계 · [CRISP-DM] 6단계.' },
+        { pose: 'think', text: '큰 틀은 같지만 단계 수·이름이 다름.' },
+        { pose: 'idle', text: '먼저 비교 매트릭스부터.' },
+      ],
+      blocks: [
+        {
           kind: 'table',
+          title: '두 프로세스 비교',
           headers: ['구분', 'KDD (5)', 'CRISP-DM (6)'],
           rows: [
             ['1', '데이터 선택', '업무 이해'],
@@ -636,67 +1455,311 @@ const ADSP_2_1: Lesson = {
             ['6', '—', '전개'],
           ],
         },
+      ],
+    },
+    {
+      id: 'adsp-2-1-s2-kdd',
+      title: 'KDD 5단계',
+      quizId: 'adsp-2-1-cp-02-kdd',
+      dialogue: [
+        { pose: 'wave', text: '[KDD] 5단계: 선택·전처리·변환·마이닝·해석/평가.' },
+        { pose: 'think', text: '학술적 색채. 데이터부터 시작 (업무이해 단계 없음).' },
+        { pose: 'idle', text: 'KDD 단계 순서를 골라봐.' },
+      ],
+      blocks: [
         {
-          kind: 'callout',
-          tone: 'mnemonic',
-          title: 'CRISP-DM 암기 — "업데데이트모델평가전"',
+          kind: 'intro',
           body:
-            '업무이해 · 데이터이해 · 데이터준비 · 모델링 · 평가 · 전개. 이 순서 그대로가 시험에 나옵니다.',
+            'KDD(Knowledge Discovery in Databases) 는 1996년 Fayyad 가 정립한 5단계 프로세스. 데이터 선택 → 전처리 → 변환 → 마이닝 → 해석·평가.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"5단계", "선택·전처리·변환·마이닝·해석". 6단계+업무이해 시작이면 CRISP-DM.',
         },
       ],
     },
     {
-      id: 'adsp-2-1-s3',
-      title: '하향식 접근 — "탐·정·해·타"',
-      quizId: 'adsp-2-1-cp-03',
+      id: 'adsp-2-1-s2-crisp',
+      title: 'CRISP-DM 6단계 — "업데데이트모델평가전"',
+      quizId: 'adsp-2-1-cp-02-crisp',
       dialogue: [
-        { pose: 'wave', text: '[문제가 분명]할 때 쓰는 정석 — [하향식 접근].' },
-        { pose: 'think', text: '4단계 순서: [탐]색 → [정]의 → [해]결방안 → [타]당성. "[탐정해타]" 로 외워!' },
-        { pose: 'lightbulb', text: '문제 탐색은 두 관점 — [내부](업제고에) · [외부]([STEEP]).' },
-        { pose: 'happy', text: 'STEEP = [S]ocial · [T]ech · [E]conomic · [E]nvironment · [P]olitical. 5가지 렌즈!' },
-        { pose: 'idle', text: '내·외부 교차로 빠짐없이 훑자. 문제로!' },
+        { pose: 'wave', text: '[CRISP-DM] 6단계: 업무→데이터이해→준비→모델링→평가→전개.' },
+        { pose: 'think', text: '"[업데데이트모델평가전]" 그대로 시험에 나옴.' },
+        { pose: 'idle', text: 'CRISP-DM 단계 순서를 골라봐.' },
       ],
       blocks: [
         {
-          kind: 'section',
-          title: '문제가 분명할 때 쓰는 정석',
+          kind: 'intro',
           body:
-            '문제 탐색 → 문제 정의 → 해결방안 탐색 → 타당성 검토. 각 단계의 이름 첫 글자 "탐·정·해·타" 를 그대로 외우면 순서가 섞이지 않습니다.',
+            'CRISP-DM(Cross-Industry Standard Process for Data Mining) 은 산업 표준. 6단계: 업무 이해 → 데이터 이해 → 데이터 준비 → 모델링 → 평가 → 전개. 비즈니스 의도에서 출발하고 배포까지.',
+        },
+        {
+          kind: 'callout',
+          tone: 'mnemonic',
+          title: '"업데데이트모델평가전"',
+          body:
+            '업무이해 · 데이터이해 · 데이터준비 · 모델링 · 평가 · 전개. 5단계·해석으로 끝나면 KDD.',
+        },
+      ],
+    },
+    // ─── 하향식 4단계 — 1 step → 5 substeps ───
+    {
+      id: 'adsp-2-1-s3',
+      title: '하향식 접근 — "탐·정·해·타" 개요',
+      quizId: 'adsp-2-1-cp-03',
+      dialogue: [
+        { pose: 'wave', text: '문제가 분명할 때 쓰는 정석 — [하향식 접근].' },
+        { pose: 'think', text: '4단계: [탐]색 → [정]의 → [해]결방안 → [타]당성. "[탐정해타]" 로 외워.' },
+        { pose: 'idle', text: '먼저 4단계 순서를 확인.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '하향식(Top-down) 접근은 풀어야 할 문제가 명확할 때 쓰는 정석. 4단계 순서가 시험에 그대로 나옵니다 — "탐정해타".',
+        },
+        {
+          kind: 'callout',
+          tone: 'mnemonic',
+          title: '"탐·정·해·타"',
+          body:
+            '문제 탐색(Exploration) → 문제 정의(Definition) → 해결방안 탐색(Solution) → 타당성 검토(Feasibility).',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-1-s3-explore',
+      title: '하향식 ① 문제 탐색',
+      quizId: 'adsp-2-1-cp-03-explore',
+      dialogue: [
+        { pose: 'wave', text: '첫 단계, [문제 탐색].' },
+        { pose: 'think', text: '내부(업제고에) + 외부(STEEP) 두 렌즈로 빠짐없이 훑어.' },
+        { pose: 'idle', text: '탐색 단계 행동을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '문제 탐색은 풀이 후보가 될 만한 문제들을 빠짐없이 모으는 단계. 내부와 외부 두 관점을 교차해 누락을 막습니다.',
         },
         {
           kind: 'keypoints',
-          title: '문제 탐색 관점',
+          title: '두 관점',
           items: [
-            '내부: 업무 · 제품 · 고객 · 외부 ("업제고에")',
-            '외부: STEEP — Social · Tech · Economic · Environment · Political',
-            '두 관점을 교차해 내·외부 문제를 빠짐없이 훑는다',
+            '내부: 업무·제품·고객·외부 ("업제고에")',
+            '외부: STEEP — Social·Tech·Economic·Environment·Political',
           ],
         },
       ],
     },
     {
+      id: 'adsp-2-1-s3-define',
+      title: '하향식 ② 문제 정의',
+      quizId: 'adsp-2-1-cp-03-define',
+      dialogue: [
+        { pose: 'wave', text: '둘째, [문제 정의].' },
+        { pose: 'think', text: '비즈니스 문제를 데이터 분석 문제로 변환 — "이탈 예측" 처럼 측정 가능하게.' },
+        { pose: 'idle', text: '정의 단계 행동을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '탐색에서 모은 후보 중 풀어야 할 문제를 골라 "데이터·지표로 측정 가능한 형태" 로 다시 쓰는 단계. "매출 부진" → "이탈률 X% 감소" 같은 변환.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"비즈니스 문제 → 분석 문제 변환", "측정 가능한 목표". 후보 발굴이 키워드면 탐색, 방법 비교면 해결방안.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-1-s3-solve',
+      title: '하향식 ③ 해결방안 탐색',
+      quizId: 'adsp-2-1-cp-03-solve',
+      dialogue: [
+        { pose: 'wave', text: '셋째, [해결방안 탐색].' },
+        { pose: 'think', text: '"어떤 분석 기법·데이터·도구로 풀까" — 후보를 비교 검토.' },
+        { pose: 'idle', text: '해결방안 단계 행동을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '정의된 분석 문제에 대해 가능한 풀이 방법(알고리즘·시스템·데이터 소스) 후보를 나열하고 비교하는 단계.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"기법 후보 비교", "필요 데이터 식별", "시스템 아키텍처 검토". 비용·실행 검토가 들어가면 다음 단계 (타당성).',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-1-s3-feas',
+      title: '하향식 ④ 타당성 검토',
+      quizId: 'adsp-2-1-cp-03-feas',
+      dialogue: [
+        { pose: 'wave', text: '마지막, [타당성 검토].' },
+        { pose: 'think', text: '경제적·기술적·운영적 3축으로 실행 가능성 점검.' },
+        { pose: 'idle', text: '타당성 검토 활동을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '실행 단계 직전, 비용·기술·조직 수용성 측면에서 정말 진행 가능한지 점검하는 단계. 이후 단계(adsp-2-3) 에서 3축을 더 자세히 다룹니다.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"ROI 검토", "데이터 확보 가능성", "조직 수용성". 후보 비교만이면 해결방안.',
+        },
+      ],
+    },
+    // ─── 분석 방법론 5종 — 1 step → 6 substeps ───
+    {
       id: 'adsp-2-1-s4',
-      title: '분석 방법론 5종',
+      title: '분석 방법론 5종 — 개요',
       quizId: 'adsp-2-1-cp-04',
       dialogue: [
-        { pose: 'wave', text: '분석 방법론 [5종] — SW 공학에서 넘어왔어.' },
-        { pose: 'think', text: '[Waterfall](순차) · [프로토타입](시제품) · [Spiral](반복+위험관리) · [Agile](짧은 반복) · [RAD](빠른 반복개발).' },
-        { pose: 'lightbulb', text: '요구사항 명확 → Waterfall. 불명확 → 프로토타입. 대형 위험 → Spiral. 변경 잦음 → Agile.' },
-        { pose: 'happy', text: '"어떤 상황에 어떤 방법론" 매칭이 시험 포인트야!' },
-        { pose: 'idle', text: '상황-방법론 매칭, 바로 확인!' },
+        { pose: 'wave', text: '분석 방법론 5종 (SW공학에서 넘어옴).' },
+        { pose: 'think', text: '[Waterfall] · [Prototype] · [Spiral] · [Agile] · [RAD].' },
+        { pose: 'idle', text: '먼저 5종 매칭 + 상황별 선택.' },
       ],
       blocks: [
         {
           kind: 'table',
-          title: 'SW공학에서 넘어온 5가지',
-          headers: ['모델', '특징', '언제'],
+          title: '상황 → 방법론',
+          headers: ['모델', '언제'],
           rows: [
-            ['계층적(Waterfall)', '순서대로, 되돌아가기 어려움', '요구사항 명확'],
-            ['프로토타입', '시제품 → 피드백', '요구사항 불명확'],
-            ['나선형(Spiral)', '반복 + 위험관리', '대형·위험 큰 프로젝트'],
-            ['애자일(Agile)', '짧은 반복, 변경 수용', '요구 변화 잦음'],
-            ['RAD/통합', '빠른 반복개발', '단기 사이클 필요'],
+            ['Waterfall', '요구사항 명확'],
+            ['Prototype', '요구사항 불명확'],
+            ['Spiral', '대형·위험 큰 프로젝트'],
+            ['Agile', '요구 변화 잦음'],
+            ['RAD', '단기 사이클 필요'],
           ],
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-1-s4-waterfall',
+      title: '방법론 ① Waterfall (계층적)',
+      quizId: 'adsp-2-1-cp-04-waterfall',
+      dialogue: [
+        { pose: 'wave', text: '첫째 [Waterfall] — 순차적, 되돌아가기 어려움.' },
+        { pose: 'think', text: '요구사항이 명확하고 변경이 적은 프로젝트에 적합.' },
+        { pose: 'idle', text: 'Waterfall 적용 상황을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Waterfall(계층적) 은 분석→설계→구현→테스트→배포가 순차로 진행. 단계 간 되돌아가기 어려워 요구가 명확할 때만 효율적.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"순차 진행", "요구 명확", "되돌리기 어려움". 요구 변화 잦으면 Agile, 위험 큰 대형이면 Spiral.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-1-s4-prototype',
+      title: '방법론 ② Prototype',
+      quizId: 'adsp-2-1-cp-04-prototype',
+      dialogue: [
+        { pose: 'wave', text: '둘째 [Prototype] — 시제품 → 피드백.' },
+        { pose: 'think', text: '요구사항이 불명확할 때, 빠른 시제품으로 사용자 반응 받기.' },
+        { pose: 'idle', text: 'Prototype 적용 상황을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Prototype 은 요구사항이 분명하지 않을 때 시제품을 빠르게 만들어 사용자에게 보여주고 피드백으로 개선하는 반복 사이클.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"시제품 → 피드백", "요구 불명확". 위험 관리 강조면 Spiral, 짧은 반복이면 Agile/RAD.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-1-s4-spiral',
+      title: '방법론 ③ Spiral (나선형)',
+      quizId: 'adsp-2-1-cp-04-spiral',
+      dialogue: [
+        { pose: 'wave', text: '셋째 [Spiral] — 반복 + 위험관리.' },
+        { pose: 'think', text: '대형·위험 큰 프로젝트에서 단계마다 위험을 평가·완화.' },
+        { pose: 'idle', text: 'Spiral 적용 상황을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Spiral(나선형) 은 반복 사이클 + 매 사이클 위험 분석을 결합. 대형·신기술·고위험 프로젝트에 적합.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"반복 + 위험 관리", "대형 프로젝트". 단순 시제품 사이클이면 Prototype, 짧은 반복이면 Agile.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-1-s4-agile',
+      title: '방법론 ④ Agile (애자일)',
+      quizId: 'adsp-2-1-cp-04-agile',
+      dialogue: [
+        { pose: 'wave', text: '넷째 [Agile] — 짧은 반복, 변경 수용.' },
+        { pose: 'think', text: '2~4주 스프린트, 요구 변화에 유연.' },
+        { pose: 'idle', text: 'Agile 적용 상황을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Agile(애자일) 은 짧은 반복 주기(스프린트) + 동작하는 결과물 + 변경 수용을 핵심 가치로 하는 방법론. 요구 변화가 잦은 환경에 적합.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"짧은 반복", "변경 수용", "스프린트". 시제품 검증이 중심이면 Prototype, 위험 관리 강조면 Spiral.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-1-s4-rad',
+      title: '방법론 ⑤ RAD (Rapid Application Dev)',
+      quizId: 'adsp-2-1-cp-04-rad',
+      dialogue: [
+        { pose: 'wave', text: '다섯째 [RAD] — 빠른 반복 개발.' },
+        { pose: 'think', text: '단기간에 결과물 도출이 필요한 단기 사이클 프로젝트.' },
+        { pose: 'idle', text: 'RAD 적용 상황을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'RAD(Rapid Application Development) 는 모듈을 빠르게 조립하고 사용자 피드백을 즉시 반영. 단기 결과 도출이 우선인 프로젝트에 적합.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"빠른 개발", "단기 사이클". Agile 과 유사하지만 RAD 는 더 단기·결과 중심. 위험 관리 + 대형은 Spiral.',
         },
       ],
     },
@@ -713,140 +1776,482 @@ const ADSP_2_2: Lesson = {
   hook: '좋은 아이디어도 조직 준비가 없으면 사장됩니다.',
   estimatedMinutes: 6,
   steps: [
+    // ─── 우선순위 4사분면 — 1 step → 5 substeps ───
     {
       id: 'adsp-2-2-s1',
-      title: '우선순위 — 시급성 × 난이도',
+      title: '과제 우선순위 — 시급성 × 난이도 (개요)',
       quizId: 'adsp-2-2-cp-01',
       dialogue: [
-        { pose: 'wave', text: '과제 100개가 있다면? 한 번에 다 못 해. 순서가 필요해.' },
-        { pose: 'think', text: '두 축 — [시급성](지금 급한가) × [난이도](얼마나 어려운가).' },
-        { pose: 'lightbulb', text: '[Now × Easy = 1순위] 즉시 착수! [Now × Difficult] 은 장기 투자.' },
-        { pose: 'happy', text: '[Future × Easy] 는 3순위, [Future × Difficult] 는 후순위·중장기.' },
-        { pose: 'idle', text: '어느 칸이 최우선인지 체크!' },
+        { pose: 'wave', text: '과제 100개? 한 번에 못 해. 순서가 필요.' },
+        { pose: 'think', text: '두 축: [시급성] (지금?) × [난이도] (어려움?).' },
+        { pose: 'idle', text: '먼저 4사분면 구조를 확인.' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            '과제를 전부 한 번에 할 수는 없습니다. "지금 급한가 · 얼마나 어려운가" 두 축으로 분류하면 투자 순서가 자연스럽게 나옵니다.',
+            '과제 우선순위는 "지금 급한가" × "얼마나 어려운가" 의 2×2 매트릭스로 분류. 각 칸이 다른 행동을 권합니다.',
         },
         {
           kind: 'table',
           headers: ['시급성', '난이도', '권고'],
           rows: [
-            ['Now', 'Easy', '1순위 즉시 착수'],
+            ['Now', 'Easy', '1순위 즉시'],
             ['Now', 'Difficult', '장기 투자'],
-            ['Future', 'Easy', '3순위 언제든 가능'],
-            ['Future', 'Difficult', '후순위·중장기'],
+            ['Future', 'Easy', '3순위'],
+            ['Future', 'Difficult', '후순위'],
           ],
         },
       ],
     },
     {
+      id: 'adsp-2-2-s1-now-easy',
+      title: '우선순위 ① Now × Easy (1순위)',
+      quizId: 'adsp-2-2-cp-01-ne',
+      dialogue: [
+        { pose: 'wave', text: '[Now × Easy] = 즉시 착수.' },
+        { pose: 'think', text: '단기간 ROI 가 명확하고 실행 부담도 낮은 과제.' },
+        { pose: 'idle', text: '1순위에 해당하는 과제를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '시급성 Now + 난이도 Easy = 1순위. 빠른 성과·작은 비용 — 즉시 착수해 조기 성과로 조직의 분석 신뢰를 확보합니다.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"즉시", "Quick Win", "ROI 명확 + 단기". 어렵거나 미래용이면 다른 칸.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-2-s1-now-hard',
+      title: '우선순위 ② Now × Difficult (장기 투자)',
+      quizId: 'adsp-2-2-cp-01-nh',
+      dialogue: [
+        { pose: 'wave', text: '[Now × Difficult] = 시급한데 어려움.' },
+        { pose: 'think', text: '지금 필요하지만 인프라·인력 투자가 큰 과제 — 단계적으로 갠다.' },
+        { pose: 'idle', text: '이 칸에 맞는 과제를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '시급성 Now + 난이도 Difficult = 즉시 필요하지만 큰 투자가 필요. 핵심 인프라·플랫폼 구축이 여기 — 단계적 로드맵으로 관리.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"전사 데이터 플랫폼", "대규모 시스템 통합", "필수지만 6개월+". 단기 Quick Win 이면 Now×Easy.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-2-s1-fut-easy',
+      title: '우선순위 ③ Future × Easy (3순위)',
+      quizId: 'adsp-2-2-cp-01-fe',
+      dialogue: [
+        { pose: 'wave', text: '[Future × Easy] = 미래에 쓸만하고 쉬움.' },
+        { pose: 'think', text: '여유 있을 때 부담 없이 처리하는 보너스 과제.' },
+        { pose: 'idle', text: '이 칸 과제를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '시급성 Future + 난이도 Easy = 지금 안 해도 되고 어렵지도 않은 과제. 자원 여유 있을 때 처리하는 보너스 후보.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"중요 낮음 + 부담 낮음", "여유 있을 때". 시급하면 Now 칸들로 이동.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-2-s1-fut-hard',
+      title: '우선순위 ④ Future × Difficult (후순위)',
+      quizId: 'adsp-2-2-cp-01-fh',
+      dialogue: [
+        { pose: 'wave', text: '[Future × Difficult] = 후순위.' },
+        { pose: 'think', text: '미래에 필요하지만 큰 투자 — 중장기 검토.' },
+        { pose: 'idle', text: '이 칸 과제를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '시급성 Future + 난이도 Difficult = 후순위·중장기. 지금 시작하기엔 비용 부담이 크고 즉각 효용도 낮은 영역.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"중장기 R&D", "당장 효과 미미 + 큰 투자". 시급하면 Now×Difficult.',
+        },
+      ],
+    },
+    // ─── 분석 거버넌스 5축 (시조프인데) — 1 step → 6 substeps ───
+    {
       id: 'adsp-2-2-s2',
-      title: '분석 거버넌스 — "시조프로마인드데"',
+      title: '분석 거버넌스 — "시·조·프·인·데" 개요',
       quizId: 'adsp-2-2-cp-02',
       dialogue: [
-        { pose: 'wave', text: '[분석 거버넌스]는 조직이 분석을 체계적으로 돌리기 위한 5개 축이야.' },
-        { pose: 'think', text: '[시]스템 · [조]직 · [프]로세스 · [인]력 · [데]이터 — "[시조프로인데]".' },
-        { pose: 'lightbulb', text: '조직 준비도는 6영역 — [IT] · [문화] · [데이터] · [기법] · [인력] · [파급효과].' },
-        { pose: 'happy', text: '"[마케팅]" 같은 항목은 [5축에 없음]. 함정 주의!' },
-        { pose: 'idle', text: '5축 · 6영역, 구분해서 체크!' },
+        { pose: 'wave', text: '분석 거버넌스 5축 — 조직이 분석을 체계적으로 돌리는 틀.' },
+        { pose: 'think', text: '"[시조프인데]" — 시스템 · 조직 · 프로세스 · 인력 · 데이터.' },
+        { pose: 'idle', text: '먼저 5축 + 함정 ("마케팅" 미포함).' },
       ],
       blocks: [
         {
           kind: 'callout',
           tone: 'mnemonic',
-          title: '거버넌스 5축',
+          title: '"시·조·프·인·데"',
           body:
-            '시스템(Infra) · 조직(Organization) · 프로세스(Process) · 인력(Resource) · 데이터(Data). 긴 이름이지만 "시·조·프로·인·데" 5글자만 기억하면 충분합니다. 마케팅은 5축에 속하지 않습니다.',
+            '시스템(Infra) · 조직(Organization) · 프로세스(Process) · 인력(Resource) · 데이터(Data). "마케팅" 은 포함되지 않음 — 함정.',
         },
         {
           kind: 'callout',
           tone: 'tip',
           title: '조직 준비도 — "IT문데기인파"',
           body:
-            'IT · 문화 · 데이터 · 기법 · 인력 · 파급효과. 조직이 분석을 소화할 수 있는지를 평가하는 6영역.',
+            'IT · 문화 · 데이터 · 기법 · 인력 · 파급효과. 거버넌스 5축과 별개의 6영역 평가.',
         },
       ],
     },
     {
-      id: 'adsp-2-2-s3',
-      title: '성숙도 "도·활·확·최"',
-      quizId: 'adsp-2-2-cp-03',
+      id: 'adsp-2-2-s2-system',
+      title: '거버넌스 ① 시스템 (Infra)',
+      quizId: 'adsp-2-2-cp-02-system',
       dialogue: [
-        { pose: 'wave', text: '조직의 분석 [성숙도]는 [4단계]로 봐.' },
-        { pose: 'think', text: '첫 글자만 따서 "[도활확최]" — [도]입 · [활]용 · [확]산 · [최]적화.' },
-        { pose: 'lightbulb', text: '[준비도(Readiness)]와 혼동 금지! 준비도는 "할 준비됐나" 별개 축이야.' },
-        { pose: 'happy', text: '조직 구조도 진화 — "[집기분]" = 집중형 → 기능형 → 분산형.' },
-        { pose: 'idle', text: '단계 이름·순서, 시험 단골!' },
-      ],
-      blocks: [
-        {
-          kind: 'section',
-          title: 'CMMI 4단계',
-          body:
-            '조직의 분석 성숙도는 4단계입니다. 이름 첫 글자만 따서 "도·활·확·최"(도입·활용·확산·최적화) 순서로 기억하세요. 준비도(Readiness) 와 혼동하지 않게 주의 — 준비도는 조직이 "분석할 준비가 됐는지" 점검하는 별개 축입니다.',
-        },
-        {
-          kind: 'table',
-          headers: ['단계', '특징'],
-          rows: [
-            ['도입 (Introduction)', '일부 개인 차원 시도'],
-            ['활용 (Adoption)', '부서 단위 도입, 산발적'],
-            ['확산 (Diffusion)', '전사적 확산, 표준화'],
-            ['최적화 (Optimization)', '전사 내재화, 의사결정 주류'],
-          ],
-        },
-        {
-          kind: 'callout',
-          tone: 'mnemonic',
-          title: '조직 구조 — "집·기·분"',
-          body:
-            '집중형(CoE) → 기능형 → 분산형. 성숙도가 올라갈수록 DSCoE 는 분산으로 퍼져 나가는 것이 일반적입니다.',
-        },
-      ],
-    },
-    {
-      id: 'adsp-2-2-s4',
-      title: '데이터 거버넌스 3요소 — "원·조·프"',
-      quizId: 'adsp-2-2-cp-04',
-      dialogue: [
-        { pose: 'wave', text: '[분석 거버넌스] ≠ [데이터 거버넌스]! 혼동이 시험 함정 1위.' },
-        { pose: 'think', text: '데이터 거버넌스는 [데이터 자체]를 공용 자산으로 관리하는 규범이야.' },
-        { pose: 'lightbulb', text: '[3요소] — [원]칙(Principle) · [조]직(Organization) · [프]로세스(Process). "[원조프]"!' },
-        { pose: 'happy', text: '"비전·전략·계획" 같은 엉뚱한 묶음이 답으로 자주 나와. [원조프] 고정!' },
-        { pose: 'idle', text: '3요소만 딱! 문제로.' },
+        { pose: 'wave', text: '첫 축 [시스템] — IT 인프라.' },
+        { pose: 'think', text: '분석 플랫폼·DB·BI 도구 등 기술 기반.' },
+        { pose: 'idle', text: '시스템 축 영역을 골라봐.' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            '"분석 거버넌스" 가 분석 활동 전반의 교통정리라면, **데이터 거버넌스** 는 데이터 자체를 조직의 공용 자산으로 다루는 규범입니다. "누가·어떤 규칙으로 데이터를 만들고 고치고 쓰는가" 를 조직 차원에서 약속하는 틀이에요.',
+            '시스템(Infra) 축은 분석을 돌릴 수 있는 기술 기반 — 분석 플랫폼·데이터베이스·BI 도구·컴퓨팅 인프라.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"분석 플랫폼", "BI·DB·인프라". 사람·R&R 이면 조직, 작업 흐름이면 프로세스.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-2-s2-org',
+      title: '거버넌스 ② 조직 (Organization)',
+      quizId: 'adsp-2-2-cp-02-org',
+      dialogue: [
+        { pose: 'wave', text: '둘째 [조직] — 분석을 책임지는 부서·체계.' },
+        { pose: 'think', text: 'CDO · 데이터 분석팀 · CoE 같은 R&R 구조.' },
+        { pose: 'idle', text: '조직 축 영역을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '조직(Organization) 축은 분석 활동의 R&R · 보고 라인 · CoE / 분산 / 기능 같은 조직 형태를 정합니다.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"R&R", "CoE", "보고 체계". 인프라면 시스템, 직원 역량이면 인력.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-2-s2-process',
+      title: '거버넌스 ③ 프로세스 (Process)',
+      quizId: 'adsp-2-2-cp-02-process',
+      dialogue: [
+        { pose: 'wave', text: '셋째 [프로세스] — 분석 작업 흐름·표준.' },
+        { pose: 'think', text: '과제 발굴 → 수행 → 평가의 표준화된 순서.' },
+        { pose: 'idle', text: '프로세스 축 영역을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '프로세스(Process) 축은 과제 발굴 → 수행 → 평가의 표준화된 작업 흐름·승인 절차·산출물 양식.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"표준 절차", "작업 흐름", "단계별 산출물". 사람·역할이면 조직, 기술 기반이면 시스템.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-2-s2-resource',
+      title: '거버넌스 ④ 인력 (Resource)',
+      quizId: 'adsp-2-2-cp-02-resource',
+      dialogue: [
+        { pose: 'wave', text: '넷째 [인력] — 분석가 역량·교육.' },
+        { pose: 'think', text: '데이터 사이언티스트 채용·육성·교육.' },
+        { pose: 'idle', text: '인력 축 영역을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '인력(Resource) 축은 분석 인력의 채용·교육·역량 평가·경력 경로.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"역량 교육", "채용·육성". R&R 구조면 조직, 데이터 자체 관리면 데이터.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-2-s2-data',
+      title: '거버넌스 ⑤ 데이터 (Data)',
+      quizId: 'adsp-2-2-cp-02-data',
+      dialogue: [
+        { pose: 'wave', text: '다섯째 [데이터] — 데이터 자체의 관리.' },
+        { pose: 'think', text: '데이터 표준화·품질·메타데이터 — 데이터 거버넌스 3요소(원조프) 와 연결.' },
+        { pose: 'idle', text: '데이터 축 영역을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '데이터(Data) 축은 데이터 자체의 표준화·품질 관리·메타데이터·라이프사이클. 더 깊이 들어가면 별도 "데이터 거버넌스 (원·조·프)" 로 펼쳐짐.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"데이터 품질·표준화·메타", "데이터 자체". 인프라·도구면 시스템, 사람 역량이면 인력.',
+        },
+      ],
+    },
+    // ─── 성숙도 4단계 (도활확최) — 1 step → 5 substeps ───
+    {
+      id: 'adsp-2-2-s3',
+      title: '분석 성숙도 — "도·활·확·최" 개요',
+      quizId: 'adsp-2-2-cp-03',
+      dialogue: [
+        { pose: 'wave', text: '조직의 분석 [성숙도] 4단계.' },
+        { pose: 'think', text: '"[도활확최]" — 도입 · 활용 · 확산 · 최적화.' },
+        { pose: 'idle', text: '먼저 4단계 순서를 잡자.' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'mnemonic',
+          title: '"도·활·확·최"',
+          body:
+            '도입(Introduction) → 활용(Adoption) → 확산(Diffusion) → 최적화(Optimization). 준비도(Readiness) 와 혼동 금지 — 준비도는 별개 축.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '조직 구조 진화 — "집·기·분"',
+          body:
+            '집중형(CoE) → 기능형 → 분산형. 성숙도가 올라갈수록 DSCoE 가 전사 분산으로 퍼져나갑니다.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-2-s3-intro',
+      title: '성숙도 ① 도입 (Introduction)',
+      quizId: 'adsp-2-2-cp-03-intro',
+      dialogue: [
+        { pose: 'wave', text: '첫 단계 [도입] — 일부 개인 차원의 시도.' },
+        { pose: 'think', text: '한두 명이 호기심으로 분석을 시도. 표준·예산은 거의 없음.' },
+        { pose: 'idle', text: '도입 단계 특징을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '도입(Introduction)은 분석이 일부 직원의 자발적 시도 수준으로 머무는 단계. 표준·예산·플랫폼 모두 부재.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"개인 차원", "비공식 시도", "표준 없음". 부서 단위면 활용, 전사면 확산.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-2-s3-adopt',
+      title: '성숙도 ② 활용 (Adoption)',
+      quizId: 'adsp-2-2-cp-03-adopt',
+      dialogue: [
+        { pose: 'wave', text: '둘째 [활용] — 부서 단위 산발적 도입.' },
+        { pose: 'think', text: '특정 부서가 정기적으로 분석을 활용. 전사 표준은 아직.' },
+        { pose: 'idle', text: '활용 단계 특징을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '활용(Adoption)은 마케팅·영업 등 특정 부서가 분석을 정기 업무로 사용하는 단계. 부서별로 다른 도구·표준이 산발적으로 공존.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"부서 단위 도입", "산발적 활용", "부서별 도구 다름". 전사 표준화면 확산 단계.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-2-s3-diffuse',
+      title: '성숙도 ③ 확산 (Diffusion)',
+      quizId: 'adsp-2-2-cp-03-diffuse',
+      dialogue: [
+        { pose: 'wave', text: '셋째 [확산] — 전사 표준화.' },
+        { pose: 'think', text: '전사 차원의 분석 표준·플랫폼 도입. 거버넌스 운영.' },
+        { pose: 'idle', text: '확산 단계 특징을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '확산(Diffusion)은 전사 차원의 표준 플랫폼·거버넌스가 자리잡고 분석이 전 부서로 퍼지는 단계. 데이터·기법이 표준화됩니다.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"전사 확산", "표준 플랫폼", "거버넌스 운영". 의사결정의 주류면 다음 단계 (최적화).',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-2-s3-optimize',
+      title: '성숙도 ④ 최적화 (Optimization)',
+      quizId: 'adsp-2-2-cp-03-optimize',
+      dialogue: [
+        { pose: 'wave', text: '마지막 [최적화] — 분석이 의사결정의 주류.' },
+        { pose: 'think', text: '전사 내재화. 데이터 기반 의사결정이 기본값.' },
+        { pose: 'idle', text: '최적화 단계 특징을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '최적화(Optimization)는 분석이 조직 의사결정의 디폴트가 된 단계. 모든 의사결정에 데이터 근거를 동반하고, 분석 ROI 자체를 다시 최적화.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"전사 내재화", "데이터 기반 의사결정 주류", "분석 ROI 최적화". 부서별이면 활용, 표준화 중이면 확산.',
+        },
+      ],
+    },
+    // ─── 데이터 거버넌스 3요소 (원조프) — 1 step → 4 substeps ───
+    {
+      id: 'adsp-2-2-s4',
+      title: '데이터 거버넌스 — "원·조·프" 개요',
+      quizId: 'adsp-2-2-cp-04',
+      dialogue: [
+        { pose: 'wave', text: '[분석 거버넌스] ≠ [데이터 거버넌스] — 시험 함정 1위.' },
+        { pose: 'think', text: '데이터 거버넌스는 데이터 자체를 공용 자산으로 관리하는 규범. 3요소 "[원조프]".' },
+        { pose: 'idle', text: '먼저 두 거버넌스 구분부터.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '"분석 거버넌스 5축 (시조프인데)" 와 "데이터 거버넌스 3요소 (원조프)" 는 별개. 시험에서 두 축을 섞어 오답 선지로 주는 게 흔합니다.',
         },
         {
           kind: 'callout',
           tone: 'mnemonic',
-          title: '3요소 — "원·조·프"',
+          title: '"원·조·프"',
           body:
-            '원칙(Principle): 데이터 관리·활용 기본 규칙 · 조직(Organization): 책임자·담당 R&R · 프로세스(Process): 표준화·품질관리 실행 절차. "비전·전략·계획" 같은 엉뚱한 묶음을 답으로 제시하는 함정이 많습니다.',
+            '원칙(Principle) · 조직(Organization) · 프로세스(Process). "비전·전략·계획" 같은 엉뚱한 묶음이 함정.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-2-s4-principle',
+      title: '데이터 거버넌스 ① 원칙 (Principle)',
+      quizId: 'adsp-2-2-cp-04-principle',
+      dialogue: [
+        { pose: 'wave', text: '첫 요소 [원칙] — 데이터 관리·활용의 기본 규칙.' },
+        { pose: 'think', text: '"누구나 어떤 데이터를 어떤 절차로" — 회사 헌법에 가까움.' },
+        { pose: 'idle', text: '원칙 영역의 활동을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '원칙(Principle)은 데이터 관리·활용에 대한 기본 규칙·정책. 보안·품질·접근 등 모든 결정의 출발점이 되는 헌법.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"기본 정책 수립", "데이터 관리 원칙·표준 정의". 책임자 지정이면 조직, 실행 절차면 프로세스.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-2-s4-org',
+      title: '데이터 거버넌스 ② 조직 (Organization)',
+      quizId: 'adsp-2-2-cp-04-org',
+      dialogue: [
+        { pose: 'wave', text: '둘째 [조직] — 책임자·담당 R&R.' },
+        { pose: 'think', text: 'CDO · 데이터 스튜어드 같은 역할이 여기.' },
+        { pose: 'idle', text: '조직 영역 활동을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '조직(Organization)은 데이터 거버넌스를 실행할 사람·역할 구조. CDO·데이터 스튜어드·데이터 오너 같은 R&R 정의가 핵심.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"책임자 지정", "R&R", "CDO·스튜어드". 정책 정의면 원칙, 절차면 프로세스.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-2-s4-process',
+      title: '데이터 거버넌스 ③ 프로세스 (Process)',
+      quizId: 'adsp-2-2-cp-04-process',
+      dialogue: [
+        { pose: 'wave', text: '셋째 [프로세스] — 표준화·품질관리 실행 절차.' },
+        { pose: 'think', text: '메타데이터 운영, 품질 점검, 표준 코드 적용 같은 일상 실행.' },
+        { pose: 'idle', text: '프로세스 영역 활동을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '프로세스(Process)는 원칙을 일상에 녹이는 실행 절차. 데이터 표준화, 품질 관리, 메타데이터·마스터데이터 운영, 저장소 관리.',
         },
         {
           kind: 'keypoints',
-          title: '주요 관리 활동',
+          title: '주요 활동',
           items: [
             '데이터 표준화: 명칭·코드·형식 통일',
-            '데이터 관리체계: 메타데이터·마스터 데이터 운영',
-            '데이터 저장소 관리: 아카이브·접근권한·백업',
-            '데이터 품질관리: 정확성·완전성·일관성 점검',
+            '메타·마스터 데이터 운영',
+            '저장소 관리: 아카이브·접근권한·백업',
+            '품질관리: 정확성·완전성·일관성 점검',
           ],
-        },
-        {
-          kind: 'callout',
-          tone: 'warn',
-          title: '분석 거버넌스와 혼동 금지',
-          body:
-            '분석 거버넌스 5축 "시·조·프·인·데" 에 "데이터" 가 한 축으로 있지만, 데이터 거버넌스는 그 "데이터" 축을 훨씬 촘촘하게 펼친 별개 개념입니다. 시험에서 두 축을 섞어 오답 선지로 주는 일이 흔합니다.',
         },
       ],
     },
@@ -863,38 +2268,92 @@ const ADSP_2_3: Lesson = {
   hook: '데이터에서 먼저? 문제에서 먼저? — 둘 다 필요합니다.',
   estimatedMinutes: 6,
   steps: [
+    // ─── 타당성 3요소 — 1 step → 4 substeps ───
     {
       id: 'adsp-2-3-s1',
-      title: '타당성 3요소',
+      title: '타당성 3요소 — 개요',
       quizId: 'adsp-2-3-cp-01',
       dialogue: [
-        { pose: 'wave', text: '하향식 마지막 [타당성 검토]는 [3축]으로 분리해.' },
-        { pose: 'think', text: '[경제적](비용·편익 ROI) · [기술적](데이터·알고리즘·시스템) · [운영적](조직·인력·프로세스).' },
-        { pose: 'lightbulb', text: '"[사회적 타당성]" 같은 추가 항목은 [함정] — 기본 3요소 아님!' },
-        { pose: 'happy', text: '경제·기술·운영 — 딱 3개만!' },
-        { pose: 'idle', text: '오답 선지 주의하며 문제 가자.' },
+        { pose: 'wave', text: '하향식 마지막 [타당성] 은 3축으로 분리.' },
+        { pose: 'think', text: '[경제적] · [기술적] · [운영적] — 사회적 타당성은 함정.' },
+        { pose: 'idle', text: '먼저 3축 구분.' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: '"사회적 타당성" 함정',
+          body:
+            '기본 3요소는 경제·기술·운영. "사회적 타당성" 같은 추가 항목은 오답 함정.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-3-s1-econ',
+      title: '타당성 ① 경제적 (Economic)',
+      quizId: 'adsp-2-3-cp-01-econ',
+      dialogue: [
+        { pose: 'wave', text: '첫 [경제적] — 비용·편익(ROI).' },
+        { pose: 'think', text: '투자 대비 수익이 양인지 검증.' },
+        { pose: 'idle', text: '경제적 타당성 활동을 골라봐.' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            '하향식 마지막 단계인 "타당성 검토" 는 ROI 한 줄로 끝나지 않습니다. 세 가지 축으로 분리해서 검토합니다.',
+            '경제적(Economic) 타당성 — 비용·편익 분석(ROI). 프로젝트가 투자 대비 충분한 수익을 낼 수 있는지.',
         },
         {
-          kind: 'keypoints',
-          title: '3축',
-          items: [
-            '경제적 타당성: 비용·편익 — ROI',
-            '기술적 타당성: 데이터 · 알고리즘 · 시스템',
-            '운영적 타당성: 조직 · 인력 · 프로세스 수용 가능성',
-          ],
-        },
-        {
-          kind: 'callout',
-          tone: 'warn',
-          title: '사회적 타당성은 기본 3요소가 아니다',
+          kind: 'section',
+          title: '시험 키워드',
           body:
-            '"사회적 타당성" 같은 추가 항목은 시험에서 오답 함정으로 자주 등장합니다. 기본 3요소만 경제·기술·운영으로 정확히 외우세요.',
+            '"비용 vs 편익", "ROI". 데이터·시스템 가용성이면 기술적, 사람·프로세스 수용성이면 운영적.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-3-s1-tech',
+      title: '타당성 ② 기술적 (Technical)',
+      quizId: 'adsp-2-3-cp-01-tech',
+      dialogue: [
+        { pose: 'wave', text: '둘째 [기술적] — 데이터·알고리즘·시스템.' },
+        { pose: 'think', text: '필요한 데이터·기술 가용성 점검.' },
+        { pose: 'idle', text: '기술적 타당성 활동을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '기술적(Technical) 타당성 — 필요한 데이터가 있는지, 알고리즘·인프라·시스템이 가능한지.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"데이터·알고리즘 가능성", "시스템 인프라". 비용·편익은 경제적, 인력·조직 수용성은 운영적.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-3-s1-ops',
+      title: '타당성 ③ 운영적 (Operational)',
+      quizId: 'adsp-2-3-cp-01-ops',
+      dialogue: [
+        { pose: 'wave', text: '셋째 [운영적] — 조직·인력·프로세스.' },
+        { pose: 'think', text: '결과를 받아 운영할 조직 준비도 점검.' },
+        { pose: 'idle', text: '운영적 타당성 활동을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '운영적(Operational) 타당성 — 분석 결과를 실제 운영할 조직·인력·프로세스 수용 가능성. "기술은 되지만 사람이 못 받는" 케이스 점검.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"조직 수용성", "인력·프로세스 준비도". ROI 면 경제적, 시스템·데이터면 기술적.',
         },
       ],
     },
@@ -1002,148 +2461,476 @@ const ADSP_3_1: Lesson = {
         },
       ],
     },
+    // ─── EDA 4원칙 — 1 step → 5 substeps ───
     {
       id: 'adsp-3-1-s2',
-      title: 'EDA 4원칙 — "저·잔·재·현"',
+      title: 'EDA — "저·잔·재·현" 개요',
       quizId: 'adsp-3-1-cp-02',
       dialogue: [
-        { pose: 'wave', text: '[EDA](탐색적 데이터 분석) — 모델 만들기 전에 데이터를 먼저 이해하는 단계.' },
-        { pose: 'think', text: '4원칙 — [저]항성 · [잔]차 해석 · [재]표현 · [현]시성.' },
-        { pose: 'lightbulb', text: '"[저잔재현]" 으로 외워! 극단값에 견디고, 잔차 분석, 변수 재표현, 시각화 강조.' },
-        { pose: 'happy', text: '분석가는 [이상치]에 흔들리지 않고 [잔차]에서 힌트를 찾아.' },
-        { pose: 'idle', text: '네 원칙 이름, 체크!' },
-      ],
-      blocks: [
-        {
-          kind: 'section',
-          title: '튜키(Tukey) 의 원칙',
-          body:
-            '데이터를 보고 눈·통계·시각화로 감을 잡는 단계. 네 원칙 모두 "R" 로 시작하지만 한국어 앞글자로는 "저잔재현" — 꼭 기억해두세요.',
-        },
-        {
-          kind: 'callout',
-          tone: 'mnemonic',
-          title: '4원칙 각각의 의미',
-          body:
-            '저항성(Resistance): 이상치에 덜 휘둘리는 통계 사용 · 잔차해석(Residual): 모형이 놓친 오차 분석 · 재표현(Re-expression): 로그·제곱근 등 스케일 변환 · 현시성(Revelation): 시각화로 패턴 드러내기.',
-        },
-      ],
-    },
-    {
-      id: 'adsp-3-1-s3',
-      title: '결측값 처리',
-      quizId: 'adsp-3-1-cp-03',
-      dialogue: [
-        { pose: 'wave', text: '데이터에 [빈칸]이 있으면? 무시할지 채울지 정해야 해.' },
-        { pose: 'think', text: '[완전 삭제](레코드 제거) · [단순 대치](평균·중앙값) · [다중 대치](모델로 예측).' },
-        { pose: 'lightbulb', text: '결측 매커니즘 3종 — [MCAR](완전 무작위) · [MAR](무작위) · [MNAR](비무작위).' },
-        { pose: 'happy', text: '[MCAR]은 삭제해도 OK, [MNAR]은 삭제하면 [편향] 생김!' },
-        { pose: 'idle', text: '방법 매칭 문제!' },
-      ],
-      blocks: [
-        {
-          kind: 'section',
-          title: '빈칸을 어떻게 메꿀 것인가',
-          body:
-            '처리 방식에 따라 분석 결과가 크게 달라집니다. 단순 대치는 쉽지만 분산을 과소평가하고, 다중 대치는 여러 번 대치해 불확실성까지 반영합니다.',
-        },
-        {
-          kind: 'table',
-          headers: ['방식', '방법', '비고'],
-          rows: [
-            ['완전 제거', 'Listwise / Pairwise Deletion', '간단하나 정보 손실'],
-            ['단순 대치', '평균·중앙값·최빈값', '분산 과소평가'],
-            ['다중 대치 (MI)', '여러 번 대치 → 통합', '불확실성 반영'],
-            ['모델 기반', '회귀·KNN 예측', '복잡·고품질'],
-          ],
-        },
-      ],
-    },
-    {
-      id: 'adsp-3-1-s4',
-      title: '이상값 탐지 4가지',
-      quizId: 'adsp-3-1-cp-04',
-      dialogue: [
-        { pose: 'wave', text: '[이상값] 한 개가 모델을 망가뜨릴 수 있어. 탐지가 필수!' },
-        { pose: 'think', text: '[ESD] (평균 ± 3σ) · [IQR] (Q3 + 1.5·IQR 밖) · [기하 평균]법 · [사분위수 범위].' },
-        { pose: 'lightbulb', text: '분포가 치우쳤으면 [IQR]이 안전, 정규 분포면 [ESD]가 빠름.' },
-        { pose: 'happy', text: '이상값이 [오류]인지 [진짜 극단값]인지 구분해서 처리해야 해.' },
-        { pose: 'idle', text: '방법 4종 암기, 체크!' },
-      ],
-      blocks: [
-        {
-          kind: 'keypoints',
-          title: '대표 4방법',
-          items: [
-            'ESD (Extreme Studentized Deviate): 평균 ± 3σ 기준',
-            'IQR: Q1 − 1.5·IQR, Q3 + 1.5·IQR 경계 바깥',
-            'Z-Score: |z| > 2 또는 3 인 점',
-            'DBScan: 밀도가 낮은 점을 이상값으로 — 밀도 기반',
-          ],
-        },
-        {
-          kind: 'callout',
-          tone: 'tip',
-          title: '이상값 = 반드시 제거 아님',
-          body:
-            '오타·기기 오류는 제거. 사기 거래·고가치 고객처럼 "진짜 극단" 이라면 남겨서 분석 대상으로 삼아야 합니다.',
-        },
-      ],
-    },
-    {
-      id: 'adsp-3-1-s5',
-      title: 'R 문법 기초 — 자료구조와 기본 함수',
-      quizId: 'adsp-3-1-cp-05',
-      dialogue: [
-        { pose: 'wave', text: 'ADsP 에서 [R 문법] 기본도 나와. 자료구조부터!' },
-        { pose: 'think', text: '[벡터](c) · [행렬](matrix) · [배열](array) · [리스트](list) · [데이터프레임](data.frame).' },
-        { pose: 'lightbulb', text: '벡터는 [같은 타입만], 리스트는 [섞어도 됨], 데이터프레임은 [열별로 타입 다름].' },
-        { pose: 'happy', text: '기본 함수 — [apply](행·열 적용) · [sapply](벡터 반환) · [lapply](리스트 반환).' },
-        { pose: 'idle', text: '자료구조-용도 매칭, 문제로!' },
+        { pose: 'wave', text: '[EDA] — 모델 만들기 전에 데이터를 먼저 이해.' },
+        { pose: 'think', text: '튜키 4원칙: [저]항성 · [잔]차 · [재]표현 · [현]시성.' },
+        { pose: 'idle', text: '먼저 4원칙 이름·순서 확인.' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            'R 은 통계 분석을 위해 태어난 언어입니다. 통계 함수가 내장돼 있고 벡터 연산이 기본이어서 한 줄에 많은 계산이 굴러갑니다. ADsP 에선 자료구조 구분과 할당 연산자가 특히 자주 나옵니다.',
+            'EDA(Exploratory Data Analysis) 는 튜키(Tukey) 가 정립한 단계. 모델링 전에 데이터의 형태·이상·관계를 파악합니다.',
+        },
+        {
+          kind: 'callout',
+          tone: 'mnemonic',
+          title: '"저·잔·재·현"',
+          body:
+            'Resistance(저항성) · Residual(잔차) · Re-expression(재표현) · Revelation(현시성). 영어는 모두 R 로 시작하지만 한국어 앞글자는 저잔재현.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-1-s2-resistance',
+      title: 'EDA ① 저항성 (Resistance)',
+      quizId: 'adsp-3-1-cp-02-resistance',
+      dialogue: [
+        { pose: 'wave', text: '첫 원칙 [저항성] — 이상치에 덜 휘둘리는 통계.' },
+        { pose: 'think', text: '평균 대신 [중앙값], 표준편차 대신 [IQR] 같은 robust 통계 사용.' },
+        { pose: 'idle', text: '저항성에 부합하는 통계를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '저항성(Resistance)은 소수의 이상치에 결과가 크게 흔들리지 않는 통계를 쓰자는 원칙. 평균은 이상치 한 개에도 크게 변하지만 중앙값은 안정적.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"중앙값", "IQR", "Trimmed Mean", "robust". 이상치 영향 받는 평균·분산은 비저항성.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-1-s2-residual',
+      title: 'EDA ② 잔차해석 (Residual)',
+      quizId: 'adsp-3-1-cp-02-residual',
+      dialogue: [
+        { pose: 'wave', text: '둘째 [잔차] — 모델이 놓친 오차 분석.' },
+        { pose: 'think', text: '잔차 = 실제 − 예측. 잔차 패턴이 남으면 모델 부적합.' },
+        { pose: 'idle', text: '잔차해석 활동을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '잔차해석(Residual)은 모델 적합 후 잔차(실제 − 예측) 의 분포·패턴을 들여다 보는 원칙. 잔차에 패턴이 남으면 모델이 무언가 놓치고 있다는 신호.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"잔차 산점도", "잔차 패턴 검토", "모델 부적합 진단". 시각화 자체가 강조면 현시성.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-1-s2-reexpression',
+      title: 'EDA ③ 재표현 (Re-expression)',
+      quizId: 'adsp-3-1-cp-02-reexpression',
+      dialogue: [
+        { pose: 'wave', text: '셋째 [재표현] — 변수 스케일 변환.' },
+        { pose: 'think', text: '로그·제곱근·역수 같은 변환으로 분포를 다루기 쉽게.' },
+        { pose: 'idle', text: '재표현 예시를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '재표현(Re-expression)은 원 변수의 분포가 비뚤어졌거나 등분산이 깨졌을 때 로그·제곱근·역수 등으로 척도를 변환하는 원칙. 회귀의 가정을 만족시키기 위해 자주 사용.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"로그 변환", "제곱근 변환", "Box-Cox", "스케일 변환". 단순 시각화면 현시성.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-1-s2-revelation',
+      title: 'EDA ④ 현시성 (Revelation)',
+      quizId: 'adsp-3-1-cp-02-revelation',
+      dialogue: [
+        { pose: 'wave', text: '넷째 [현시성] — 시각화로 패턴 드러내기.' },
+        { pose: 'think', text: '히스토그램·박스플롯·산점도로 데이터의 숨은 구조를 보여줘.' },
+        { pose: 'idle', text: '현시성 활동을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '현시성(Revelation)은 적절한 시각화로 데이터에 숨은 구조·관계·이상을 드러내는 원칙. EDA 단계에서 가장 자주 마주하는 활동.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"히스토그램·박스플롯·산점도로 패턴 발견", "시각적 탐색". 잔차 시각화도 포함되지만 초점이 모델 진단이면 잔차해석.',
+        },
+      ],
+    },
+    // ─── 결측값 처리 — 1 step → 5 substeps (overview + 4 방식) ───
+    {
+      id: 'adsp-3-1-s3',
+      title: '결측값 처리 — 개요',
+      quizId: 'adsp-3-1-cp-03',
+      dialogue: [
+        { pose: 'wave', text: '데이터 빈칸 — 무시할지 채울지.' },
+        { pose: 'think', text: '4방식: [완전 제거] · [단순 대치] · [다중 대치] · [모델 기반].' },
+        { pose: 'idle', text: '먼저 4방식 + 결측 매커니즘 (MCAR/MAR/MNAR).' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '결측 매커니즘 (MCAR/MAR/MNAR)',
+          body:
+            'MCAR(완전 무작위) → 삭제해도 편향 X. MAR(다른 변수에 의존) → 모델 기반 추천. MNAR(결측 자체에 의미) → 삭제 시 편향 큼.',
+        },
+        {
+          kind: 'table',
+          headers: ['방식', '핵심', '비고'],
+          rows: [
+            ['완전 제거', 'Listwise / Pairwise', '간단·정보 손실'],
+            ['단순 대치', '평균·중앙값·최빈값', '분산 과소평가'],
+            ['다중 대치(MI)', '여러 번 대치 → 통합', '불확실성 반영'],
+            ['모델 기반', '회귀·KNN 예측', '고품질·복잡'],
+          ],
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-1-s3-deletion',
+      title: '결측 처리 ① 완전 제거',
+      quizId: 'adsp-3-1-cp-03-deletion',
+      dialogue: [
+        { pose: 'wave', text: '첫 [완전 제거] — Listwise/Pairwise.' },
+        { pose: 'think', text: '결측 있는 행 통째 제거. 가장 간단하지만 정보 손실 큼.' },
+        { pose: 'idle', text: '완전 제거 정의를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '완전 제거(Listwise Deletion) 는 결측이 있는 레코드를 모두 제외. Pairwise 는 분석마다 가용 변수만 사용. 단순하지만 표본이 작아지고 MNAR 일 때 편향 발생.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"행 제거", "Listwise/Pairwise", "정보 손실". 평균/중앙값으로 채우면 단순 대치, 모델로 예측이면 모델 기반.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-1-s3-simple',
+      title: '결측 처리 ② 단순 대치',
+      quizId: 'adsp-3-1-cp-03-simple',
+      dialogue: [
+        { pose: 'wave', text: '둘째 [단순 대치] — 평균·중앙값·최빈값.' },
+        { pose: 'think', text: '쉽고 빠르지만 분산 과소평가.' },
+        { pose: 'idle', text: '단순 대치 예시를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '단순 대치(Simple Imputation) 는 평균·중앙값·최빈값 같은 단일 통계로 결측을 채움. 빠르지만 변동성을 줄여 통계적 추론을 왜곡할 수 있음.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"평균·중앙값·최빈값", "분산 과소평가". 여러 번 대치 후 통합이면 다중 대치, 회귀·KNN 면 모델 기반.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-1-s3-multiple',
+      title: '결측 처리 ③ 다중 대치 (MI)',
+      quizId: 'adsp-3-1-cp-03-multiple',
+      dialogue: [
+        { pose: 'wave', text: '셋째 [다중 대치] — 여러 번 대치 → 통합.' },
+        { pose: 'think', text: 'M번 다른 값으로 채워 M개 데이터셋 생성 → 결과 통합.' },
+        { pose: 'idle', text: '다중 대치 핵심을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '다중 대치(Multiple Imputation, MI) 는 결측 값에 대해 여러 번(M회) 다른 값을 대치해 M개의 완전 데이터셋을 만들고, 분석 후 결과를 통합. 대치의 불확실성까지 반영.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"여러 번 대치 → 통합", "불확실성 반영". 단일 통계로 채우면 단순 대치, 단일 모델 예측이면 모델 기반.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-1-s3-model',
+      title: '결측 처리 ④ 모델 기반',
+      quizId: 'adsp-3-1-cp-03-model',
+      dialogue: [
+        { pose: 'wave', text: '넷째 [모델 기반] — 회귀·KNN 으로 예측.' },
+        { pose: 'think', text: '다른 변수로 결측을 예측. 정교하지만 비용 큼.' },
+        { pose: 'idle', text: '모델 기반 대치 예시를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '모델 기반 대치는 회귀·KNN·랜덤포레스트 등으로 다른 변수에서 결측을 예측해 채움. 변수 간 관계를 활용해 단순 대치보다 정교.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"회귀·KNN 예측", "변수 간 관계 활용". 단일 통계는 단순, 다회 대치는 다중, 행 제거는 완전 제거.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-1-s4',
+      title: '이상값 탐지 — 개요',
+      quizId: 'adsp-3-1-cp-04',
+      dialogue: [
+        { pose: 'wave', text: '이상값 한 개가 모델을 망친다. 탐지 필수.' },
+        { pose: 'think', text: '대표 4방법: [ESD] · [IQR] · [Z-Score] · [DBScan].' },
+        { pose: 'idle', text: '먼저 4방법 + 처리 원칙.' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '이상값 = 반드시 제거 아님',
+          body:
+            '오타·기기 오류는 제거. 사기 거래·고가치 고객처럼 진짜 극단값이면 남겨서 분석 대상으로 삼습니다.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-1-s4-esd',
+      title: '이상값 ① ESD (평균 ± 3σ)',
+      quizId: 'adsp-3-1-cp-04-esd',
+      dialogue: [
+        { pose: 'wave', text: '첫 방법 [ESD] — 평균 ± 3σ 밖.' },
+        { pose: 'think', text: '정규분포 가정. 분포가 정규에 가까우면 빠르고 단순.' },
+        { pose: 'idle', text: 'ESD 정의를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'ESD(Extreme Studentized Deviate) 는 평균에서 ± 3σ 를 벗어난 점을 이상값으로 판정. 분포가 대략 정규에 가까울 때 빠르게 적용 가능.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"평균 ± 3σ", "정규 가정", "표준편차 기반". 정규 가정이 깨지면 IQR 이 안전.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-1-s4-iqr',
+      title: '이상값 ② IQR (사분위수 범위)',
+      quizId: 'adsp-3-1-cp-04-iqr',
+      dialogue: [
+        { pose: 'wave', text: '둘째 [IQR] — Q3 + 1.5·IQR 밖 / Q1 − 1.5·IQR 밖.' },
+        { pose: 'think', text: '분포 가정 X. 박스플롯 시각화와 짝.' },
+        { pose: 'idle', text: 'IQR 정의를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'IQR(Interquartile Range) 은 Q1 − 1.5·IQR 미만 또는 Q3 + 1.5·IQR 초과 점을 이상값으로 판정. 분포 가정이 없어 비대칭·왜도 큰 데이터에 안전.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"Q1·Q3 기준", "1.5·IQR 경계", "박스플롯". 정규 분포 가정이면 ESD/Z-Score.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-1-s4-z',
+      title: '이상값 ③ Z-Score',
+      quizId: 'adsp-3-1-cp-04-z',
+      dialogue: [
+        { pose: 'wave', text: '셋째 [Z-Score] — |z| > 2 또는 3.' },
+        { pose: 'think', text: '값을 (값 − 평균)/σ 로 표준화. 임계값 넘으면 이상.' },
+        { pose: 'idle', text: 'Z-Score 정의를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Z-Score 는 (x − μ)/σ 로 표준화한 뒤 |z| 가 임계값(보통 2 또는 3) 을 넘으면 이상값. ESD 와 비슷하지만 임계값이 더 유연.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"표준화 점수", "|z| > 2 또는 3". 분포 가정 X 면 IQR, 밀도 기반이면 DBScan.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-1-s4-dbscan',
+      title: '이상값 ④ DBScan (밀도 기반)',
+      quizId: 'adsp-3-1-cp-04-dbscan',
+      dialogue: [
+        { pose: 'wave', text: '넷째 [DBScan] — 밀도가 낮은 점을 이상값으로.' },
+        { pose: 'think', text: '주변 ε 반경 안 점 개수가 적으면 noise 분류.' },
+        { pose: 'idle', text: 'DBScan 의 작동 원리를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'DBScan(Density-Based Spatial Clustering) 은 군집 알고리즘이지만 noise(어떤 클러스터에도 속하지 않는 점) 를 자연스럽게 이상값으로 마킹. 비선형·비정규 분포에 강합니다.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"밀도 기반", "ε 반경 + minPts", "noise 자동 식별". 평균·분산 기반이 아니라 거리·밀도 기반이라는 점이 차별.',
+        },
+      ],
+    },
+    // ─── R 자료구조 — 1 step → 5 substeps (overview + 4 자료구조) ───
+    {
+      id: 'adsp-3-1-s5',
+      title: 'R 문법 기초 — 자료구조 개요',
+      quizId: 'adsp-3-1-cp-05',
+      dialogue: [
+        { pose: 'wave', text: 'R 은 통계 분석 전용 언어. 자료구조부터.' },
+        { pose: 'think', text: '4가지: [vector] · [list] · [matrix] · [data.frame].' },
+        { pose: 'idle', text: '먼저 4구조 비교 + 할당 연산자.' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'mnemonic',
+          title: '할당 — "화살표" `<-`',
+          body:
+            '기본 할당 연산자는 `<-` (예: `x <- c(1,2,3)`). `=` 도 대부분 동작하나 관례는 `<-`.',
         },
         {
           kind: 'table',
           title: '자료구조 4가지',
           headers: ['구조', '특징', '예시'],
           rows: [
-            ['벡터 (vector)', '같은 유형 값의 1차원 묶음', 'c(1, 2, 3)'],
-            ['리스트 (list)', '서로 다른 유형 혼합 가능', 'list(name = "A", age = 30)'],
-            ['행렬 (matrix)', '같은 유형 2차원', 'matrix(1:6, 2, 3)'],
-            ['데이터프레임 (data.frame)', '열마다 유형 다를 수 있는 표', 'iris, mtcars'],
+            ['vector', '같은 유형 1차원', 'c(1, 2, 3)'],
+            ['list', '서로 다른 유형 혼합', 'list(name="A", age=30)'],
+            ['matrix', '같은 유형 2차원', 'matrix(1:6, 2, 3)'],
+            ['data.frame', '열마다 유형 다른 표', 'iris, mtcars'],
           ],
         },
+      ],
+    },
+    {
+      id: 'adsp-3-1-s5-vector',
+      title: 'R ① vector — 같은 타입 1차원',
+      quizId: 'adsp-3-1-cp-05-vector',
+      dialogue: [
+        { pose: 'wave', text: '첫째 [vector] — 같은 타입 1차원.' },
+        { pose: 'think', text: 'c(1, 2, 3) 처럼 한 줄에 같은 유형 값들.' },
+        { pose: 'idle', text: 'vector 특징을 골라봐.' },
+      ],
+      blocks: [
         {
-          kind: 'callout',
-          tone: 'mnemonic',
-          title: '할당은 "화살표" 가 정석',
+          kind: 'intro',
           body:
-            '기본 할당 연산자는 `<-`. `=` 도 대부분 동작하지만 관례상 `<-` 를 씁니다. 예: `x <- c(1, 2, 3)`.',
+            'vector 는 R 의 기본 단위. 같은 타입의 1차원 묶음. c(1, 2, 3) · c("a", "b") · 1:10 모두 vector. 다른 타입을 섞으면 가장 일반적인 타입으로 자동 변환(coercion).',
         },
         {
-          kind: 'keypoints',
-          title: 'apply 계열 — 반복문을 한 줄로',
-          items: [
-            'apply(X, MARGIN, FUN): 행(1) 또는 열(2) 단위로 함수 적용',
-            'sapply(X, FUN): 결과를 벡터/행렬로 단순화 반환',
-            'lapply(X, FUN): 결과를 리스트로 반환',
-            'tapply(X, INDEX, FUN): 그룹별 집계',
-          ],
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"같은 타입 1차원", "c() 함수". 다른 타입 혼합이면 list, 표 형태면 data.frame.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-1-s5-list',
+      title: 'R ② list — 다른 타입 혼합',
+      quizId: 'adsp-3-1-cp-05-list',
+      dialogue: [
+        { pose: 'wave', text: '둘째 [list] — 서로 다른 타입 혼합.' },
+        { pose: 'think', text: '문자·숫자·벡터·또 다른 리스트까지 한 객체에.' },
+        { pose: 'idle', text: 'list 특징을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'list 는 서로 다른 타입·길이의 요소를 한 객체에 담는 컨테이너. list(name="A", age=30, scores=c(90,85)) 처럼 이름 붙여 접근.',
         },
         {
-          kind: 'keypoints',
-          title: '자주 쓰는 함수 · 패키지',
-          items: [
-            '기본 통계: mean, median, sd, var, quantile',
-            '시각화: plot, hist, boxplot / 고급 — ggplot2',
-            '데이터 조작: dplyr(filter, select, mutate, summarize)',
-            '패키지 사용: install.packages("pkg") → library(pkg)',
-          ],
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"이질적 타입 혼합", "list()". 단일 타입 1차원이면 vector, 단일 타입 2차원이면 matrix.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-1-s5-matrix',
+      title: 'R ③ matrix — 같은 타입 2차원',
+      quizId: 'adsp-3-1-cp-05-matrix',
+      dialogue: [
+        { pose: 'wave', text: '셋째 [matrix] — 같은 타입 2차원.' },
+        { pose: 'think', text: 'matrix(1:6, 2, 3) — 행·열 형태. 선형대수 연산 가능.' },
+        { pose: 'idle', text: 'matrix 특징을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'matrix 는 같은 타입의 2차원 배열. matrix(1:6, nrow=2, ncol=3) · 행렬 곱(%*%)·전치(t())·역행렬(solve()) 등 선형대수 연산 지원.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"같은 타입 2차원", "행·열". 열마다 타입 달라도 되면 data.frame, 1차원이면 vector.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-1-s5-df',
+      title: 'R ④ data.frame — 열마다 다른 타입',
+      quizId: 'adsp-3-1-cp-05-df',
+      dialogue: [
+        { pose: 'wave', text: '넷째 [data.frame] — 열마다 다른 타입.' },
+        { pose: 'think', text: '실무 표 데이터의 표준. iris, mtcars 가 대표.' },
+        { pose: 'idle', text: 'data.frame 특징을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'data.frame 은 분석에서 가장 자주 다루는 자료구조. 행=관측치, 열=변수. 열마다 타입(숫자·문자·factor) 이 달라도 되며, dplyr 로 filter/select/mutate.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"열마다 타입 다른 표", "iris·mtcars", "행=관측치 열=변수". 모든 열 같은 타입이면 matrix.',
         },
       ],
     },
@@ -1160,59 +2947,186 @@ const ADSP_3_2: Lesson = {
   hook: '평균·분산·정규분포를 "언제 뭘 쓰는지" 기준으로.',
   estimatedMinutes: 10,
   steps: [
+    // ─── 측정 척도 4단계 — 1 step → 5 substeps ───
     {
       id: 'adsp-3-2-s1',
-      title: '측정 척도 4단계',
+      title: '측정 척도 — "명·서·등·비" 개요',
       quizId: 'adsp-3-2-cp-01',
       dialogue: [
-        { pose: 'wave', text: '데이터의 [숫자]가 다 같은 숫자일까? 척도가 다르면 할 수 있는 계산도 달라.' },
-        { pose: 'think', text: '[명목](구분만) · [순서](대소 있음) · [등간](차이 의미) · [비율](절대 0).' },
-        { pose: 'lightbulb', text: '체온 [°C]는 [등간], 체중 [kg]은 [비율]. 섭씨는 0이 "없다"가 아니야!' },
-        { pose: 'happy', text: '척도 낮을수록 [정보 적음], 높을수록 [계산 자유]. 이 위계 기억!' },
-        { pose: 'idle', text: '예시 분류, 문제!' },
+        { pose: 'wave', text: '같은 숫자라도 [척도]가 다르면 가능한 계산이 달라.' },
+        { pose: 'think', text: '4단계: [명]목 · [서]열 · [등]간 · [비]율.' },
+        { pose: 'idle', text: '먼저 위계와 가능한 연산 확인.' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            '통계는 "불확실성을 숫자로 다루는 언어". 그 시작은 "우리 데이터가 어떤 연산까지 허용하는가" 를 분류하는 것입니다.',
+            '척도가 낮을수록 정보량이 적고, 높을수록 가능한 연산이 자유롭습니다. 명목 < 순서(서열) < 등간 < 비율 위계.',
         },
         {
           kind: 'table',
-          headers: ['척도', '예시', '가능한 연산'],
+          headers: ['척도', '예시', '연산'],
           rows: [
-            ['명목 (Nominal)', '성별, 혈액형', '='],
-            ['순서 (Ordinal)', '학점, 만족도', '= · <'],
-            ['등간 (Interval)', '섭씨 온도, 연도', '= · < · + / −'],
-            ['비율 (Ratio)', '키, 몸무게', '모든 연산 + 비율'],
+            ['명목', '성별·혈액형', '='],
+            ['순서', '학점·만족도', '=, <'],
+            ['등간', '섭씨·연도', '=, <, +/−'],
+            ['비율', '키·몸무게', '모든 연산 + 비율'],
           ],
-        },
-        {
-          kind: 'callout',
-          tone: 'warn',
-          title: '등간 vs 비율 — 0의 의미',
-          body:
-            '등간은 "0이 임의"(섭씨 0도 ≠ 온도 없음), 비율은 "0이 절대 없음"(몸무게 0kg = 질량 없음). 시험에서 항상 헷갈리는 포인트.',
         },
       ],
     },
     {
-      id: 'adsp-3-2-s2',
-      title: '확률분포 — 이산과 연속',
-      quizId: 'adsp-3-2-cp-02',
+      id: 'adsp-3-2-s1-nominal',
+      title: '척도 ① 명목 (Nominal)',
+      quizId: 'adsp-3-2-cp-01-nominal',
       dialogue: [
-        { pose: 'wave', text: '확률분포는 [이산] vs [연속] 두 갈래.' },
-        { pose: 'think', text: '[이산] — [베르누이] · [이항] · [포아송] · [기하] · [다항].' },
-        { pose: 'lightbulb', text: '[연속] — [정규] · [t] · [카이제곱] · [F] · [균등] · [지수].' },
-        { pose: 'happy', text: '"희귀 사건이 시간당 몇 번" → [포아송]. "대소표본 평균 검정" → [t분포].' },
-        { pose: 'idle', text: '분포-용도 매칭, 체크!' },
+        { pose: 'wave', text: '첫째 [명목] — 구분만 가능.' },
+        { pose: 'think', text: '성별·혈액형·국가코드 등. 대소 비교 의미 없음.' },
+        { pose: 'idle', text: '명목 척도 예시를 골라봐.' },
       ],
       blocks: [
         {
-          kind: 'section',
-          title: '이산 대표 7종',
+          kind: 'intro',
           body:
-            '베르누이(1회) → 이항(n회 중 k) → 기하(첫 성공까지) → 음이항(r번째까지) → 초기하(비복원) → 다항(여러 범주) → 포아송(단위시간 드문 사건). 포아송이 "단위시간 사건" 의 대표 주자.',
+            '명목(Nominal) 척도는 카테고리 구분만 가능. 순서·차이·비율 모두 의미 없음. = / ≠ 만 사용.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"성별", "혈액형", "도시·국가 코드". 학점·등급처럼 순서가 있으면 순서 척도.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-2-s1-ordinal',
+      title: '척도 ② 순서 (Ordinal)',
+      quizId: 'adsp-3-2-cp-01-ordinal',
+      dialogue: [
+        { pose: 'wave', text: '둘째 [순서] — 대소 비교 가능.' },
+        { pose: 'think', text: '"좋다 > 보통 > 나쁘다" 처럼 순위 있음. 차이의 크기는 의미 없음.' },
+        { pose: 'idle', text: '순서 척도 예시를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '순서(Ordinal) 척도는 순위 비교는 되지만 간격은 의미 없음. 만족도 1~5 단계, 학점, 마라톤 순위. =, <, > 사용.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"만족도 5단계", "학점 (A·B·C)", "선호 순위". 차이 계산이 의미있으면 등간 이상.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-2-s1-interval',
+      title: '척도 ③ 등간 (Interval)',
+      quizId: 'adsp-3-2-cp-01-interval',
+      dialogue: [
+        { pose: 'wave', text: '셋째 [등간] — 차이의 크기 의미.' },
+        { pose: 'think', text: '섭씨 온도·연도·IQ 점수. 0 이 임의 — "온도 없음" 아님.' },
+        { pose: 'idle', text: '등간 척도 예시를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '등간(Interval) 척도는 값의 차이가 일정한 의미를 갖지만 비율 계산은 안 됨. 섭씨 30°C 가 15°C 의 "두 배 더운" 게 아니라는 점 — 0 이 절대 0 이 아니기 때문.',
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: '0의 의미 — 등간 vs 비율',
+          body:
+            '등간은 0 이 임의 기준점. 섭씨 0°C ≠ "온도 없음". 절대 0 (켈빈, 질량 0) 이면 비율.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-2-s1-ratio',
+      title: '척도 ④ 비율 (Ratio)',
+      quizId: 'adsp-3-2-cp-01-ratio',
+      dialogue: [
+        { pose: 'wave', text: '마지막 [비율] — 모든 연산 + 비율.' },
+        { pose: 'think', text: '키·몸무게·매출. 0 이 절대 0 이라 "두 배" 같은 비율 비교 OK.' },
+        { pose: 'idle', text: '비율 척도 예시를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '비율(Ratio) 척도는 절대 0 이 존재해 모든 연산이 가능. 키 180cm 는 90cm 의 두 배 — 명백한 비율 의미. 매출·길이·질량·켈빈 온도.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"키·몸무게", "매출", "길이", "켈빈 온도". 섭씨·화씨면 등간.',
+        },
+      ],
+    },
+    // ─── 확률분포 — 1 step → 3 substeps (overview + 이산 + 연속) ───
+    {
+      id: 'adsp-3-2-s2',
+      title: '확률분포 — 이산 vs 연속 개요',
+      quizId: 'adsp-3-2-cp-02',
+      dialogue: [
+        { pose: 'wave', text: '확률분포 — 이산 vs 연속 두 갈래.' },
+        { pose: 'think', text: '이산: 셀 수 있는 결과. 연속: 실수 구간.' },
+        { pose: 'idle', text: '먼저 두 갈래 + 대표 분포.' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '구분 기준',
+          body:
+            '결과를 셀 수 있으면 이산 (베르누이·이항·포아송…), 실수 구간이면 연속 (정규·t·카이제곱·F·지수).',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-2-s2-discrete',
+      title: '확률분포 ① 이산 (Discrete)',
+      quizId: 'adsp-3-2-cp-02-discrete',
+      dialogue: [
+        { pose: 'wave', text: '첫째 [이산] — 셀 수 있는 결과.' },
+        { pose: 'think', text: '베르누이·이항·기하·포아송·다항.' },
+        { pose: 'happy', text: '"희귀 사건이 단위시간 몇 번" → 포아송!' },
+        { pose: 'idle', text: '이산 분포 예시를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '이산 확률분포는 결과가 셀 수 있는 값. 베르누이(1회 성공/실패) · 이항(n회 중 k) · 기하(첫 성공까지) · 다항(여러 범주) · 포아송(단위시간 드문 사건).',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"셀 수 있음", "성공/실패", "단위시간 사건". 키·시간 같은 실수면 연속.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-2-s2-continuous',
+      title: '확률분포 ② 연속 (Continuous)',
+      quizId: 'adsp-3-2-cp-02-continuous',
+      dialogue: [
+        { pose: 'wave', text: '둘째 [연속] — 실수 구간.' },
+        { pose: 'think', text: '정규·t·카이제곱·F·지수.' },
+        { pose: 'happy', text: '"표본 작음·모분산 모를 때 평균 검정" → t분포!' },
+        { pose: 'idle', text: '연속 분포 용도를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '연속 확률분포는 결과가 실수 구간. 정규(기본·CLT) · t(소표본 평균) · 카이제곱(분산·적합도·독립성) · F(분산비·ANOVA) · 지수(사건 사이 대기시간).',
         },
         {
           kind: 'table',
@@ -1220,38 +3134,123 @@ const ADSP_3_2: Lesson = {
           headers: ['분포', '용도'],
           rows: [
             ['정규', '기본, 평균·분산'],
-            ['t', '표본 작음 · 모분산 모를 때 평균 검정'],
-            ['χ² (카이제곱)', '분산·적합도·독립성 검정'],
+            ['t', '소표본 평균 검정'],
+            ['χ²', '분산·적합도·독립성 검정'],
             ['F', '두 분산의 비 (ANOVA)'],
-            ['지수', '사건 사이 대기 시간'],
+            ['지수', '사건 사이 대기시간'],
           ],
         },
       ],
     },
+    // ─── 좋은 추정량 4성질 (불효일충) — 1 step → 5 substeps ───
     {
       id: 'adsp-3-2-s3',
-      title: '좋은 추정량 — "불·효·일·충"',
+      title: '좋은 추정량 — "불·효·일·충" 개요',
       quizId: 'adsp-3-2-cp-03',
       dialogue: [
-        { pose: 'wave', text: '[추정량]이 모수를 잘 맞추려면 4가지 성질이 필요해.' },
-        { pose: 'think', text: '[불]편성(편향 없음) · [효]율성(분산 작음) · [일]치성(표본↑ → 모수 수렴) · [충]분성(정보 보존).' },
-        { pose: 'lightbulb', text: '첫 글자 모아 "[불효일충]" — 시험 단골 니모닉!' },
-        { pose: 'happy', text: '표본평균이 모평균의 [불편·일치] 추정량인 건 시험 직빵 지식!' },
-        { pose: 'idle', text: '네 성질, 체크!' },
+        { pose: 'wave', text: '추정량이 좋은 이유는 [4가지 성질].' },
+        { pose: 'think', text: '"[불효일충]" — 불편성 · 효율성 · 일치성 · 충분성.' },
+        { pose: 'idle', text: '먼저 4성질 이름·구분.' },
       ],
       blocks: [
         {
-          kind: 'section',
-          title: '모수를 맞추는 점추정',
-          body:
-            '모수(참값) 를 한 값으로 짐작하는 것이 점추정. 아무 추정량이나 쓰면 안 되고, 아래 4성질을 만족할 때 "좋다" 고 말할 수 있습니다. 정규성은 포함되지 않습니다.',
-        },
-        {
           kind: 'callout',
           tone: 'mnemonic',
-          title: '4성질',
+          title: '"불·효·일·충"',
           body:
-            '불편성(Unbiased): 평균적으로 참값 · 효율성(Efficient): 분산 작음 · 일치성(Consistent): n↑ 시 참값 수렴 · 충분성(Sufficient): 표본 정보를 다 담음.',
+            'Unbiased(불편성) · Efficient(효율성) · Consistent(일치성) · Sufficient(충분성). "정규성" 은 포함되지 않습니다 — 함정.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-2-s3-unbiased',
+      title: '추정량 ① 불편성 (Unbiased)',
+      quizId: 'adsp-3-2-cp-03-unbiased',
+      dialogue: [
+        { pose: 'wave', text: '첫째 [불편성] — 평균적으로 참값.' },
+        { pose: 'think', text: 'E[추정량] = 모수. 편향(bias) = 0.' },
+        { pose: 'idle', text: '불편성 정의를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '불편성(Unbiased)은 추정량의 기댓값이 모수와 같다는 성질. 표본평균이 모평균의 불편추정량이라는 사실이 통계 추론의 출발점.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"기댓값이 모수와 일치", "편향(bias) 0". 분산이 작다 = 효율성, 표본 커지면 수렴 = 일치성.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-2-s3-efficient',
+      title: '추정량 ② 효율성 (Efficient)',
+      quizId: 'adsp-3-2-cp-03-efficient',
+      dialogue: [
+        { pose: 'wave', text: '둘째 [효율성] — 분산이 작다.' },
+        { pose: 'think', text: '같은 모수를 추정하는 후보 중 분산 가장 작은 것이 효율적.' },
+        { pose: 'idle', text: '효율성 의미를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '효율성(Efficient)은 같은 모수에 대한 여러 불편추정량 중 분산(또는 MSE) 이 가장 작은 것을 가리킵니다. 표본평균이 표본중앙값보다 효율적인 이유.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"분산이 가장 작다", "MSE 최소". 평균적으로 참값이면 불편성, 표본↑ 시 수렴이면 일치성.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-2-s3-consistent',
+      title: '추정량 ③ 일치성 (Consistent)',
+      quizId: 'adsp-3-2-cp-03-consistent',
+      dialogue: [
+        { pose: 'wave', text: '셋째 [일치성] — 표본↑ → 모수 수렴.' },
+        { pose: 'think', text: 'n → ∞ 이면 추정량이 모수에 확률적으로 수렴.' },
+        { pose: 'idle', text: '일치성 정의를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '일치성(Consistent)은 표본 크기가 충분히 커지면 추정량이 모수에 점점 가까워지는 성질. 큰 표본에서 신뢰할 수 있는 추정의 기반.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"표본 크기↑ 시 모수에 수렴", "n → ∞ 일관성". 분산 작다 = 효율성, 정보 다 담는다 = 충분성.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-2-s3-sufficient',
+      title: '추정량 ④ 충분성 (Sufficient)',
+      quizId: 'adsp-3-2-cp-03-sufficient',
+      dialogue: [
+        { pose: 'wave', text: '넷째 [충분성] — 표본 정보를 다 담음.' },
+        { pose: 'think', text: '추정량 외에 표본 자료를 더 본다고 모수에 대한 정보가 늘지 않음.' },
+        { pose: 'idle', text: '충분성 의미를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '충분성(Sufficient)은 추정량이 표본의 모수 관련 정보를 모두 흡수했음을 의미. 추정량을 알면 원 표본을 더 봐도 모수 추론에 도움 안 됨.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"표본 정보를 다 담는다", "추정량 외 추가 정보 불필요". 정규성은 4성질에 포함되지 않음 — 함정.',
         },
       ],
     },
@@ -1383,105 +3382,355 @@ const ADSP_3_3: Lesson = {
   hook: 'p-value 0.05 를 넘었을 때 정확히 무슨 일이 일어난 걸까?',
   estimatedMinutes: 12,
   steps: [
+    // ─── p-value · 가설검정 5용어 — 1 step → 6 substeps ───
     {
       id: 'adsp-3-3-s1',
-      title: 'p-value 와 가설검정 5용어',
+      title: '가설검정 5용어 — 개요',
       quizId: 'adsp-3-3-cp-01',
       dialogue: [
-        { pose: 'wave', text: '[가설검정] 5용어, 헷갈리면 시험에서 뚫려!' },
-        { pose: 'think', text: '[귀무가설(H₀)](차이 없음) · [대립가설(H₁)](차이 있음) · [유의수준(α)] · [p-value] · [기각역].' },
-        { pose: 'lightbulb', text: '[p < α] → H₀ 기각 = "차이 있다 주장". 반대면 기각 못 함.' },
-        { pose: 'happy', text: '주의 — "차이 없음 증명"은 [불가능]! 기각 못 함은 "증거 부족"일 뿐.' },
-        { pose: 'idle', text: '용어 정의, 체크!' },
+        { pose: 'wave', text: '가설검정 5용어 — 헷갈리면 시험에서 뚫림.' },
+        { pose: 'think', text: '[H₀] · [H₁] · [α] · [p-value] · [1·2종 오류].' },
+        { pose: 'idle', text: '먼저 5용어 매핑.' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: 'p-value 는 "H₀ 참일 확률" 이 아님',
+          body:
+            'p-value 는 "H₀ 가정 시 현재 이상 극단값이 나올 확률". α 보다 작으면 "우연으로 보기 어렵다" 라는 판단.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-3-s1-h0',
+      title: '가설검정 ① 귀무가설 (H₀)',
+      quizId: 'adsp-3-3-cp-01-h0',
+      dialogue: [
+        { pose: 'wave', text: '첫째 [H₀] — "차이 없다 · 효과 없다".' },
+        { pose: 'think', text: '기각의 대상. 우리가 부정하고 싶은 가설.' },
+        { pose: 'idle', text: '귀무가설의 정의를 골라봐.' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            '"광고를 돌렸더니 전환율이 2% 올랐다" — 진짜일까, 운일까? 그 차이를 재는 도구가 가설 검정. 귀무가설과 대립가설을 세우고, 우연으로는 설명되기 힘든지 p-value 로 계산합니다.',
+            '귀무가설(H₀, Null Hypothesis) 은 "차이 없음 · 효과 없음" 을 가정. 검정의 출발점 — 데이터가 H₀ 를 뒤집을 만큼 강한지를 봅니다.',
         },
         {
-          kind: 'keypoints',
-          title: '5가지 용어',
-          items: [
-            '귀무가설(H0): "차이 없다 · 효과 없다" — 기각 목표',
-            '대립가설(H1): "차이 있다" — 증명 목표',
-            '유의수준(α): 잘못 기각할 위험, 보통 0.05',
-            'p-value: H0 참일 때 현재 이상 극단값이 나올 확률',
-            '1종 오류 = H0 맞는데 기각 / 2종 오류 = H0 틀렸는데 채택',
-          ],
-        },
-        {
-          kind: 'callout',
-          tone: 'warn',
-          title: 'p-value 는 "H0 가 참일 확률" 이 아니다',
+          kind: 'section',
+          title: '시험 키워드',
           body:
-            '자주 틀리는 포인트. p-value 는 "귀무가설이 참이라고 가정했을 때, 현재 데이터 정도의 극단값이 나올 확률". α 보다 작으면 "우연으로 보기 어렵다" 고 판단할 뿐.',
+            '"차이 없다", "효과 없다", "현 상태". 새로 주장할 것은 H₁(대립).',
         },
       ],
     },
     {
-      id: 'adsp-3-3-s2',
-      title: 't검정 3종류',
-      quizId: 'adsp-3-3-cp-02',
+      id: 'adsp-3-3-s1-h1',
+      title: '가설검정 ② 대립가설 (H₁)',
+      quizId: 'adsp-3-3-cp-01-h1',
       dialogue: [
-        { pose: 'wave', text: '[t검정]은 "평균 차이" 검정에 쓰는데, 3가지 버전이 있어.' },
-        { pose: 'think', text: '[일표본 t] — 한 집단 평균 = 특정값? | [독립표본 t] — 두 집단 평균 같아?' },
-        { pose: 'lightbulb', text: '[대응표본 t] — [같은 사람] 전·후 비교 (다이어트 전후 체중).' },
-        { pose: 'happy', text: '독립 vs 대응 헷갈리기 쉬워! "같은 대상" 이면 대응!' },
-        { pose: 'idle', text: '상황별 t검정, 체크!' },
+        { pose: 'wave', text: '둘째 [H₁] — "차이 있다 · 효과 있다".' },
+        { pose: 'think', text: 'H₀ 를 기각하면 채택되는 가설. 우리가 증명하고 싶은 것.' },
+        { pose: 'idle', text: '대립가설의 정의를 골라봐.' },
       ],
       blocks: [
         {
-          kind: 'section',
-          title: '평균을 다루는 대표 검정',
+          kind: 'intro',
           body:
-            't검정은 "상황에 따라 3가지" 로 나뉩니다. 표본 수·쌍 여부에 따라 어떤 검정을 쓸지 결정됩니다.',
+            '대립가설(H₁, Alternative Hypothesis) 은 "차이 있음 · 효과 있음" 을 주장. 연구자가 증명하고자 하는 가설로, H₀ 가 기각될 때 채택됩니다.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"차이 있다", "효과 있다", "주장하고 싶은 것". 부정·기각 대상은 H₀.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-3-s1-alpha',
+      title: '가설검정 ③ 유의수준 (α)',
+      quizId: 'adsp-3-3-cp-01-alpha',
+      dialogue: [
+        { pose: 'wave', text: '셋째 [α] — 잘못 기각할 위험.' },
+        { pose: 'think', text: '보통 0.05. "1종 오류를 허용할 최대 확률".' },
+        { pose: 'idle', text: '유의수준의 의미를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '유의수준(α) 은 "참인 H₀ 를 잘못 기각할 위험" 의 허용 한도. 일반적으로 0.05. p-value < α 면 H₀ 기각.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"1종 오류 허용 한도", "보통 0.05". H₀ 가 거짓일 때 기각 못 할 위험은 β (2종 오류).',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-3-s1-pvalue',
+      title: '가설검정 ④ p-value',
+      quizId: 'adsp-3-3-cp-01-pvalue',
+      dialogue: [
+        { pose: 'wave', text: '넷째 [p-value] — H₀ 참일 때 극단값 확률.' },
+        { pose: 'think', text: 'H₀ 가정 + 현재 결과 이상의 극단값이 우연으로 나올 확률.' },
+        { pose: 'idle', text: 'p-value 의 정의를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'p-value 는 "H₀ 가 참이라고 가정할 때, 현재 데이터 또는 그보다 극단적인 결과가 나올 확률". α 보다 작으면 H₀ 기각.',
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: '"H₀ 가 참일 확률" 이 아님',
+          body:
+            'p-value 는 H₀ 의 진위 확률이 아닙니다. "H₀ 가 참이라면 이런 데이터가 우연히 나올 확률" 이 정확한 정의.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-3-s1-error',
+      title: '가설검정 ⑤ 1종/2종 오류',
+      quizId: 'adsp-3-3-cp-01-error',
+      dialogue: [
+        { pose: 'wave', text: '다섯째 [오류 2종] — 1종(α) · 2종(β).' },
+        { pose: 'think', text: '1종: H₀ 맞는데 기각 (거짓 양성). 2종: H₀ 틀렸는데 채택 (놓침).' },
+        { pose: 'idle', text: '오류 매칭을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '1종 오류(α) = H₀ 가 참인데 기각 (거짓 양성). 2종 오류(β) = H₀ 가 거짓인데 채택 (놓침). 검정력(Power) = 1 − β.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"1종 = H₀ 맞는데 기각 = α", "2종 = H₀ 틀렸는데 채택 = β". 검정력 = 1−β.',
+        },
+      ],
+    },
+    // ─── t검정 3종 — 1 step → 4 substeps ───
+    {
+      id: 'adsp-3-3-s2',
+      title: 't검정 3종 — 개요',
+      quizId: 'adsp-3-3-cp-02',
+      dialogue: [
+        { pose: 'wave', text: 't검정은 평균 차이 검정 — 3가지 버전.' },
+        { pose: 'think', text: '[일표본] · [대응표본] · [독립표본].' },
+        { pose: 'idle', text: '먼저 3가지 구분 + 상황 매칭.' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '독립 vs 대응 함정',
+          body:
+            '"같은 대상의 전/후" 는 대응표본. "서로 다른 두 집단" 은 독립표본. 시험 단골.',
         },
         {
           kind: 'table',
           headers: ['종류', '상황', '예시'],
           rows: [
-            ['단일 표본', '표본 평균 vs 기준값', '평균 수명이 1000시간인가'],
-            ['대응 표본', '같은 대상 전/후', '다이어트 전/후 체중'],
-            ['독립 표본', '서로 다른 두 집단', 'A조 vs B조 점수'],
+            ['일표본', '평균 vs 기준값', '평균 수명 = 1000시간?'],
+            ['대응표본', '같은 대상 전/후', '다이어트 전/후 체중'],
+            ['독립표본', '서로 다른 두 집단', 'A조 vs B조 점수'],
           ],
         },
       ],
     },
     {
+      id: 'adsp-3-3-s2-one',
+      title: 't검정 ① 일표본 (One-sample)',
+      quizId: 'adsp-3-3-cp-02-one',
+      dialogue: [
+        { pose: 'wave', text: '첫째 [일표본 t] — 한 집단 평균 vs 기준값.' },
+        { pose: 'think', text: '"평균 수명 = 1000시간 인가?" 같은 질문.' },
+        { pose: 'idle', text: '일표본 t검정 상황을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '일표본 t검정은 한 집단의 평균이 알려진 기준값과 같은지를 검정. H0: μ = μ₀.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"평균 vs 특정값", "기준 비교", "단일 그룹". 두 그룹 비교는 독립표본, 같은 사람 전/후는 대응표본.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-3-s2-paired',
+      title: 't검정 ② 대응표본 (Paired)',
+      quizId: 'adsp-3-3-cp-02-paired',
+      dialogue: [
+        { pose: 'wave', text: '둘째 [대응표본 t] — 같은 대상 전/후.' },
+        { pose: 'think', text: '다이어트 전/후 체중, 약 복용 전/후 혈압.' },
+        { pose: 'idle', text: '대응표본 상황을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '대응표본(Paired) t검정은 같은 대상에서 두 시점·조건의 차이를 검정. 차이 d = 사후 − 사전 의 평균이 0 인지 확인.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"같은 대상의 전/후", "같은 사람 두 측정", "복용 전/후". 서로 다른 사람 두 그룹 비교면 독립표본.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-3-s2-indep',
+      title: 't검정 ③ 독립표본 (Two-sample)',
+      quizId: 'adsp-3-3-cp-02-indep',
+      dialogue: [
+        { pose: 'wave', text: '셋째 [독립표본 t] — 서로 다른 두 집단.' },
+        { pose: 'think', text: 'A반 vs B반 점수, 남 vs 여 평균 키.' },
+        { pose: 'idle', text: '독립표본 상황을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '독립표본(Two-sample) t검정은 서로 다른 두 집단의 평균을 비교. 등분산성 가정 시 pooled variance, 아니면 Welch 의 t.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"서로 다른 두 집단", "그룹 A vs 그룹 B". 같은 대상 두 측정이면 대응표본, 한 그룹 vs 기준값이면 일표본.',
+        },
+      ],
+    },
+    // ─── 회귀 4가정 (선분정독) — 1 step → 5 substeps ───
+    {
       id: 'adsp-3-3-s3',
-      title: '회귀 가정 — "선·분·정·독"',
+      title: '회귀 4가정 — "선·분·정·독" 개요',
       quizId: 'adsp-3-3-cp-03',
       dialogue: [
-        { pose: 'wave', text: '[선형회귀]가 정확히 돌려면 [4가지 가정]이 맞아야 해.' },
-        { pose: 'think', text: '[선]형성 · [분]산 일정(등분산) · [정]규성 · [독]립성.' },
-        { pose: 'lightbulb', text: '"[선분정독]" — 첫 글자만 기억하면 4가지 가정 순서가 완성!' },
-        { pose: 'happy', text: '잔차플롯·QQ플롯 같은 진단 그래프가 이 가정들을 눈으로 확인하는 도구!' },
-        { pose: 'idle', text: '가정 이름, 체크!' },
+        { pose: 'wave', text: '선형회귀가 의미 있으려면 [4가정] 충족.' },
+        { pose: 'think', text: '"[선분정독]" — 선형성 · 등분산 · 정규성 · 독립성.' },
+        { pose: 'idle', text: '먼저 SST = SSE + SSR + 4가정 개요.' },
       ],
       blocks: [
         {
           kind: 'section',
           title: 'SST = SSE + SSR',
           body:
-            '회귀는 "X 로 Y를 설명한다" 는 약속. 총 변동을 "설명된 부분 + 남은 부분" 으로 쪼갭니다. R² = SSR / SST 가 설명력.',
-        },
-        {
-          kind: 'keypoints',
-          items: [
-            'SST(총) = Σ(y − ȳ)²',
-            'SSR(설명) = Σ(ŷ − ȳ)²',
-            'SSE(잔차) = Σ(y − ŷ)²',
-            'R² = SSR / SST → 높을수록 설명력 ↑',
-          ],
+            '총 변동(SST) = 설명된 변동(SSR) + 남은 잔차(SSE). R² = SSR/SST. 4가정이 무너지면 R² · p-value 모두 의심.',
         },
         {
           kind: 'callout',
           tone: 'mnemonic',
-          title: '회귀 4가정',
+          title: '"선·분·정·독"',
           body:
-            '선형성 · 등분산성 · 정규성(잔차) · 독립성(오차). 4가정이 무너지면 해석이 흔들립니다. "단조성" 같은 항목은 포함되지 않으니 주의.',
+            'Linearity · Homoscedasticity · Normality · Independence. "단조성" 같은 항목은 포함되지 않음.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-3-s3-linear',
+      title: '회귀 가정 ① 선형성',
+      quizId: 'adsp-3-3-cp-03-linear',
+      dialogue: [
+        { pose: 'wave', text: '첫째 [선형성] — X 와 Y 의 관계가 선형.' },
+        { pose: 'think', text: '잔차 vs 적합값 산점도에 패턴이 없으면 선형성 OK.' },
+        { pose: 'idle', text: '선형성 진단 도구를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '선형성(Linearity)은 X 가 1단위 증가할 때 Y 가 일정하게 증가/감소한다는 가정. 잔차 vs 적합값 그림에서 곡선 패턴이 보이면 위반.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"잔차 산점도에 패턴 없음", "X-Y 직선 관계". 부채꼴이면 등분산 위반, 종모양이면 정규성.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-3-s3-homo',
+      title: '회귀 가정 ② 등분산성',
+      quizId: 'adsp-3-3-cp-03-homo',
+      dialogue: [
+        { pose: 'wave', text: '둘째 [등분산성] — 잔차의 분산이 일정.' },
+        { pose: 'think', text: 'X 값이 변해도 잔차의 흩어짐이 비슷해야 함.' },
+        { pose: 'idle', text: '등분산성 위반 신호를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '등분산성(Homoscedasticity)은 X 의 모든 영역에서 잔차의 분산이 일정해야 한다는 가정. 잔차 산점도가 부채꼴(funnel) 로 퍼지면 위반.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"잔차 산점도가 부채꼴", "X 가 클수록 잔차 산포 ↑". 곡선이면 선형성, 종 모양이면 정규성.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-3-s3-normal',
+      title: '회귀 가정 ③ 정규성',
+      quizId: 'adsp-3-3-cp-03-normal',
+      dialogue: [
+        { pose: 'wave', text: '셋째 [정규성] — 잔차가 정규분포를 따름.' },
+        { pose: 'think', text: 'QQ플롯의 점들이 직선 위에 있으면 OK.' },
+        { pose: 'idle', text: '정규성 진단 도구를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '정규성(Normality)은 잔차가 평균 0 인 정규분포를 따라야 한다는 가정. QQ플롯에서 점들이 대각선에서 벗어나면 위반. Shapiro-Wilk 등 검정 사용.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"QQ플롯 직선", "Shapiro-Wilk 검정", "잔차 히스토그램 종모양". 분산이 일정 안 하면 등분산성, X-Y 비선형이면 선형성.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-3-s3-indep',
+      title: '회귀 가정 ④ 독립성',
+      quizId: 'adsp-3-3-cp-03-indep',
+      dialogue: [
+        { pose: 'wave', text: '넷째 [독립성] — 잔차끼리 서로 영향 없음.' },
+        { pose: 'think', text: 'Durbin-Watson 통계량 ≈ 2 면 OK. 시계열에서 자주 위반.' },
+        { pose: 'idle', text: '독립성 진단 도구를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '독립성(Independence)은 잔차들이 서로 상관이 없다는 가정. 시계열·반복측정처럼 시간·공간 종속이 있으면 깨짐. Durbin-Watson 통계량으로 진단.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"Durbin-Watson", "잔차 자기상관", "시계열에서 위반". 잔차 산포가 변하면 등분산, 분포 형태면 정규성.',
         },
       ],
     },
@@ -1524,30 +3773,122 @@ const ADSP_3_3: Lesson = {
         },
       ],
     },
+    // ─── 시계열 4성분 (추계순불) — 1 step → 5 substeps ───
     {
       id: 'adsp-3-3-s5',
-      title: '시계열 — "추·계·순·불"',
+      title: '시계열 4성분 — "추·계·순·불" 개요',
       quizId: 'adsp-3-3-cp-05',
       dialogue: [
-        { pose: 'wave', text: '[시계열]은 4가지 구성요소로 분해돼.' },
-        { pose: 'think', text: '[추]세 · [계]절성 · [순]환 · [불]규칙. "[추계순불]"!' },
-        { pose: 'lightbulb', text: '[AR](과거값), [MA](과거 오차), [ARMA](둘 다), [ARIMA](차분까지) — 한 걸음씩 확장.' },
-        { pose: 'happy', text: '시계열이 [정상성] 만족해야 모델링이 의미 있어. 차분으로 정상화!' },
-        { pose: 'idle', text: '구성요소 4개, 체크!' },
+        { pose: 'wave', text: '시계열은 [4가지 성분] 으로 분해.' },
+        { pose: 'think', text: '"[추계순불]" — 추세 · 계절 · 순환 · 불규칙.' },
+        { pose: 'idle', text: '먼저 4성분 + 정상성 개요.' },
       ],
       blocks: [
         {
-          kind: 'section',
-          title: '정상성과 ARIMA',
+          kind: 'callout',
+          tone: 'mnemonic',
+          title: '"추·계·순·불"',
           body:
-            '시간 축을 따라가는 데이터는 "추세 · 계절성 · 순환 · 불규칙" 4성분으로 분해합니다. 모델링 전에 정상성(평균·분산 시간 불변) 확보가 필수 — 그 도구가 차분(Differencing) · 평활화.',
+            'Trend(추세) · Seasonality(계절) · Cycle(순환) · Irregular(불규칙). "지연(Lag)" 은 ARIMA 파라미터지 분해 성분 아님 — 함정.',
         },
         {
           kind: 'callout',
-          tone: 'mnemonic',
-          title: '4성분 vs 모델 파라미터',
+          tone: 'tip',
+          title: '정상성과 ARIMA',
           body:
-            '시계열 분해 4성분 = 추세 · 계절 · 순환 · 불규칙. "지연(Lag)" 은 ARIMA 의 모형 파라미터이지 분해 성분이 아닙니다. 시험 함정.',
+            '모델링 전 정상성(평균·분산 시간 불변) 확보 필수. 도구는 차분(Differencing). AR/MA/ARMA/ARIMA 는 모형 확장 단계.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-3-s5-trend',
+      title: '시계열 ① 추세 (Trend)',
+      quizId: 'adsp-3-3-cp-05-trend',
+      dialogue: [
+        { pose: 'wave', text: '첫 성분 [추세] — 장기적인 상승/하락 방향.' },
+        { pose: 'think', text: '인구 증가, 경제 성장, 기술 도입 곡선.' },
+        { pose: 'idle', text: '추세 예시를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '추세(Trend)는 시계열의 장기적인 방향성. 단기 변동을 걷어낸 뒤 보이는 우상향·우하향 같은 큰 그림.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"장기 상승/하락", "수십 년에 걸친 변화". 1년 단위 반복은 계절성, 경기 사이클은 순환.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-3-s5-season',
+      title: '시계열 ② 계절성 (Seasonality)',
+      quizId: 'adsp-3-3-cp-05-season',
+      dialogue: [
+        { pose: 'wave', text: '둘째 [계절성] — 일정 주기로 반복.' },
+        { pose: 'think', text: '여름 빙수 매출, 12월 선물 트래픽, 주말 식당 매출.' },
+        { pose: 'idle', text: '계절성 예시를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '계절성(Seasonality)은 일·주·월·년 단위 같은 고정 주기로 반복되는 패턴. 휴일·계절·요일 효과가 대표.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"고정 주기 반복", "여름·겨울", "월말·요일 패턴". 주기가 불규칙하면 순환, 장기 방향성이면 추세.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-3-s5-cycle',
+      title: '시계열 ③ 순환 (Cycle)',
+      quizId: 'adsp-3-3-cp-05-cycle',
+      dialogue: [
+        { pose: 'wave', text: '셋째 [순환] — 비고정 주기의 변동.' },
+        { pose: 'think', text: '경기 사이클·금리·부동산 — 길고 불규칙한 등락.' },
+        { pose: 'idle', text: '순환 예시를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '순환(Cycle)은 계절성보다 긴 주기에 등락이 있지만 주기가 일정하지 않은 변동. 경기 사이클이 대표 예.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"경기 사이클", "주기가 불규칙", "수년 단위 등락". 고정 주기면 계절성, 장기 방향성만이면 추세.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-3-s5-irregular',
+      title: '시계열 ④ 불규칙 (Irregular)',
+      quizId: 'adsp-3-3-cp-05-irregular',
+      dialogue: [
+        { pose: 'wave', text: '넷째 [불규칙] — 설명되지 않는 잔차.' },
+        { pose: 'think', text: '추세·계절·순환을 빼고 남는 noise. 이상 사건·우연.' },
+        { pose: 'idle', text: '불규칙 성분 정의를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '불규칙(Irregular) 성분은 추세·계절·순환을 모두 제거한 뒤 남는 무작위 변동. 자연재해·일회성 이벤트·관측 오차가 여기에.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"무작위 잡음", "잔차", "예측 불가". 일정 주기 반복이면 계절성, 장기 방향이면 추세.',
         },
       ],
     },
@@ -1600,67 +3941,137 @@ const ADSP_3_4: Lesson = {
         },
       ],
     },
+    // ─── 앙상블 4종 — 1 step → 5 substeps ───
     {
       id: 'adsp-3-4-s2',
-      title: '앙상블 4종',
+      title: '앙상블 — 개요',
       quizId: 'adsp-3-4-cp-02',
       dialogue: [
-        { pose: 'wave', text: '[앙상블] — 모델 여러 개를 합쳐 더 강한 모델 만들기.' },
-        { pose: 'think', text: '[배깅] (병렬 투표) · [부스팅] (순차 가중치) · [랜덤 포레스트] · [스태킹].' },
-        { pose: 'lightbulb', text: '배깅은 [분산 감소] (과적합↓), 부스팅은 [편향 감소] (성능↑).' },
-        { pose: 'happy', text: '[랜덤 포레스트] = 배깅 + [변수 무작위]. 가장 대중적 앙상블!' },
-        { pose: 'idle', text: '종류별 차이, 체크!' },
+        { pose: 'wave', text: '여러 모델을 합쳐 더 강한 모델 — [앙상블].' },
+        { pose: 'think', text: '4종: [Voting] · [Bagging] · [Boosting] · [Stacking].' },
+        { pose: 'idle', text: '먼저 4종 구분 + 핵심 차이.' },
       ],
       blocks: [
         {
-          kind: 'section',
-          title: '여럿이 모이면 강해진다',
-          body:
-            '단일 모델보다 여러 모델의 결과를 합치면 더 안정적입니다. 핵심은 "어떻게 합치느냐".',
-        },
-        {
-          kind: 'table',
-          headers: ['방식', '동작', '대표'],
-          rows: [
-            ['Voting', '여러 모델 다수결/평균', ''],
-            ['Bagging', '병렬 학습 + 평균', 'Random Forest'],
-            ['Boosting', '순차 학습, 오차를 보완', 'AdaBoost / XGBoost'],
-            ['Stacking', '예측을 또 다른 모델의 입력으로', ''],
-          ],
-        },
-        {
           kind: 'callout',
           tone: 'tip',
-          title: 'Bagging vs Boosting',
+          title: 'Bagging vs Boosting (시험 빈출)',
           body:
-            'Bagging 은 병렬, Boosting 은 순차. 이 구분이 제일 자주 출제됩니다.',
+            'Bagging = 병렬 학습 + 평균 (분산 감소). Boosting = 순차 학습 + 오차 보완 (편향 감소).',
         },
       ],
     },
     {
-      id: 'adsp-3-4-s3',
-      title: '연관분석 — "지·신·향"',
-      quizId: 'adsp-3-4-cp-03',
+      id: 'adsp-3-4-s2-voting',
+      title: '앙상블 ① Voting',
+      quizId: 'adsp-3-4-cp-02-voting',
       dialogue: [
-        { pose: 'wave', text: '[연관분석] — "맥주 산 사람이 [기저귀] 도 살까?" 장바구니 규칙 찾기.' },
-        { pose: 'think', text: '세 지표: [지지도] (동시구매 비율) · [신뢰도] (A→B 비율) · [향상도] (랜덤 대비 배수).' },
-        { pose: 'lightbulb', text: '[향상도] > 1 → 양의 연관, = 1 → 독립, < 1 → 음의 연관!' },
-        { pose: 'happy', text: '암기법: [지·신·향] — 지지도·신뢰도·향상도 순서 고정!' },
-        { pose: 'idle', text: '알고리즘은 [Apriori] · [FP-Growth]. 문제로!' },
+        { pose: 'wave', text: '첫째 [Voting] — 다수결/평균.' },
+        { pose: 'think', text: '서로 다른 알고리즘의 예측을 다수결(분류) · 평균(회귀) 으로 결합.' },
+        { pose: 'idle', text: 'Voting 정의를 골라봐.' },
       ],
       blocks: [
         {
-          kind: 'section',
-          title: '장바구니 분석',
+          kind: 'intro',
           body:
-            '"맥주 산 사람이 기저귀도 산다" 같은 규칙을 찾는 기법. 세 가지 지표로 평가합니다 — 지지도 · 신뢰도 · 향상도.',
+            'Voting 은 서로 다른 종류의 분류기·회귀기 예측을 다수결(hard) 또는 확률 평균(soft) 으로 합치는 가장 단순한 앙상블.',
         },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"다수결", "예측 평균", "이질적 모델 결합". 같은 알고리즘의 부트스트랩 샘플이면 Bagging.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-4-s2-bagging',
+      title: '앙상블 ② Bagging (Bootstrap Aggregating)',
+      quizId: 'adsp-3-4-cp-02-bagging',
+      dialogue: [
+        { pose: 'wave', text: '둘째 [Bagging] — 병렬 학습.' },
+        { pose: 'think', text: '부트스트랩 샘플로 같은 알고리즘 N개 학습 → 평균.' },
+        { pose: 'happy', text: '대표: [Random Forest] = Bagging + 변수 무작위.' },
+        { pose: 'idle', text: 'Bagging 의 효과를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Bagging 은 부트스트랩 샘플(중복 허용 추출) 로 같은 알고리즘 모델 N 개를 병렬 학습 → 평균/다수결. 분산 감소 → 과적합 완화.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"병렬 학습", "부트스트랩", "분산 감소". Random Forest 가 대표. 순차 + 오차 보완은 Boosting.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-4-s2-boosting',
+      title: '앙상블 ③ Boosting',
+      quizId: 'adsp-3-4-cp-02-boosting',
+      dialogue: [
+        { pose: 'wave', text: '셋째 [Boosting] — 순차 학습.' },
+        { pose: 'think', text: '약한 학습기를 순차로 만들며 이전 오차를 보완.' },
+        { pose: 'happy', text: '대표: [AdaBoost], [Gradient Boosting], [XGBoost], [LightGBM].' },
+        { pose: 'idle', text: 'Boosting 의 핵심을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Boosting 은 약한 학습기(stump 등) 를 순차로 학습하면서 이전 모델의 오차에 가중치를 두어 보완. 편향 감소 → 성능 ↑.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"순차 학습", "오차 가중치", "편향 감소", "AdaBoost·XGBoost". 병렬 + 분산 감소면 Bagging.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-4-s2-stacking',
+      title: '앙상블 ④ Stacking',
+      quizId: 'adsp-3-4-cp-02-stacking',
+      dialogue: [
+        { pose: 'wave', text: '넷째 [Stacking] — 예측을 또 다른 모델의 입력으로.' },
+        { pose: 'think', text: '베이스 모델들의 출력 → 메타 모델이 학습.' },
+        { pose: 'idle', text: 'Stacking 의 작동 방식을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Stacking 은 여러 베이스 모델의 예측을 한 번 더 학습 데이터로 만들어 메타(블렌더) 모델이 최종 예측. 다양한 모델의 강점을 결합.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"예측을 다시 입력", "메타 모델", "층 쌓기". 단순 다수결은 Voting, 부트스트랩이면 Bagging.',
+        },
+      ],
+    },
+    // ─── 연관분석 3 (지신향) — 1 step → 4 substeps ───
+    {
+      id: 'adsp-3-4-s3',
+      title: '연관분석 — "지·신·향" 개요',
+      quizId: 'adsp-3-4-cp-03',
+      dialogue: [
+        { pose: 'wave', text: '연관분석 — "맥주 산 사람이 기저귀도?" 장바구니 규칙.' },
+        { pose: 'think', text: '3지표: [지지도] · [신뢰도] · [향상도].' },
+        { pose: 'idle', text: '먼저 3지표 + 알고리즘 개요.' },
+      ],
+      blocks: [
         {
           kind: 'callout',
           tone: 'mnemonic',
-          title: '3지표의 의미',
+          title: '"지·신·향"',
           body:
-            '지지도(Support) = A·B 동시 구매 비율. 신뢰도(Confidence) = A 산 사람 중 B 비율. 향상도(Lift) = 신뢰도 / B 구매 비율 → 1보다 크면 양의 연관, 1이면 독립.',
+            'Support(지지도) · Confidence(신뢰도) · Lift(향상도). 향상도 > 1 양의 연관, = 1 독립, < 1 음의 연관.',
         },
         {
           kind: 'keypoints',
@@ -1673,88 +4084,322 @@ const ADSP_3_4: Lesson = {
       ],
     },
     {
-      id: 'adsp-3-4-s4',
-      title: '군집 — DBSCAN 과 친구들',
-      quizId: 'adsp-3-4-cp-04',
+      id: 'adsp-3-4-s3-support',
+      title: '연관분석 ① 지지도 (Support)',
+      quizId: 'adsp-3-4-cp-03-support',
       dialogue: [
-        { pose: 'wave', text: '[군집] — 레이블 없이 [유사한 것끼리] 묶기. 비지도 학습의 대표주자!' },
-        { pose: 'think', text: '[계층적] (덴드로그램) · [K-means] (중심 K개) · [DBSCAN] (밀도) · [EM] · [SOM].' },
-        { pose: 'lightbulb', text: '[DBSCAN] 은 K 불필요 + [이상치] 에 강함. [K-means] 는 K 를 먼저 정해야 함.' },
-        { pose: 'happy', text: 'K-means 최적 K 찾기: [팔꿈치법] (WCSS) · [실루엣 계수] (1 가까울수록 좋음)!' },
-        { pose: 'idle', text: '5가지 군집 기법, 각자 특징 명확! 문제로!' },
+        { pose: 'wave', text: '첫 지표 [지지도] — A·B 동시 구매 비율.' },
+        { pose: 'think', text: 'P(A ∩ B) — 전체 거래 중 A 와 B 가 함께 나타난 비율.' },
+        { pose: 'idle', text: '지지도 정의를 골라봐.' },
       ],
       blocks: [
         {
-          kind: 'section',
-          title: '비지도 군집 5종',
+          kind: 'intro',
           body:
-            '레이블 없이 유사한 것끼리 묶기. 방식에 따라 여러 갈래로 나뉩니다.',
+            '지지도(Support) = A · B 가 함께 등장한 거래 수 / 전체 거래 수. 규칙이 얼마나 빈번한가를 본다.',
         },
         {
-          kind: 'table',
-          headers: ['방법', '특징'],
-          rows: [
-            ['계층적', '덴드로그램 — 합병형/분할형'],
-            ['K-means', '중심 K개로 반복 재배정'],
-            ['DBSCAN', '밀도 기반, 이상치 강함, K 불필요'],
-            ['EM', '혼합분포 확률 할당'],
-            ['SOM', '뉴런 격자로 2D 투영'],
-          ],
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"동시 구매 비율", "전체 대비 빈도". A 산 사람 중 B 비율 = 신뢰도, 랜덤 대비 배수 = 향상도.',
         },
+      ],
+    },
+    {
+      id: 'adsp-3-4-s3-confidence',
+      title: '연관분석 ② 신뢰도 (Confidence)',
+      quizId: 'adsp-3-4-cp-03-confidence',
+      dialogue: [
+        { pose: 'wave', text: '둘째 [신뢰도] — A 산 사람 중 B 도 산 비율.' },
+        { pose: 'think', text: 'P(B|A) = Support(A∩B) / Support(A).' },
+        { pose: 'idle', text: '신뢰도 정의를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '신뢰도(Confidence) = P(B|A) = A·B 동시 / A 단독. "A 를 산 사람들 중 B 까지 산 비율" 이라는 조건부 의미.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"A 산 사람 중 B 비율", "조건부 확률". 동시 발생 비율은 지지도, 랜덤 대비 배수는 향상도.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-4-s3-lift',
+      title: '연관분석 ③ 향상도 (Lift)',
+      quizId: 'adsp-3-4-cp-03-lift',
+      dialogue: [
+        { pose: 'wave', text: '셋째 [향상도] — 신뢰도 / 전체 B 비율.' },
+        { pose: 'think', text: 'Lift = P(B|A) / P(B). > 1 양의 연관, = 1 독립, < 1 음의 연관.' },
+        { pose: 'idle', text: '향상도 해석을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '향상도(Lift) = 신뢰도 / 전체에서 B 가 등장하는 비율. A 가 B 의 출현 가능성을 얼마나 끌어올리는지의 배수.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"랜덤 대비 배수", "Lift > 1 양의 연관 / = 1 독립 / < 1 음의 연관". 동시 빈도면 지지도, 조건부면 신뢰도.',
+        },
+      ],
+    },
+    // ─── 군집 알고리즘 — 1 step → 5 substeps (overview + 4 method) ───
+    {
+      id: 'adsp-3-4-s4',
+      title: '군집 — 비지도 묶기 개요',
+      quizId: 'adsp-3-4-cp-04',
+      dialogue: [
+        { pose: 'wave', text: '군집 — 레이블 없이 유사한 것끼리.' },
+        { pose: 'think', text: '4종: [계층적] · [K-means] · [DBSCAN] · [EM/SOM].' },
+        { pose: 'idle', text: '먼저 4종 비교 + K 선택법.' },
+      ],
+      blocks: [
         {
           kind: 'callout',
           tone: 'tip',
           title: 'K-means 최적 K',
           body:
-            '팔꿈치(Elbow) 법: WCSS 를 K에 따라 그려 꺾이는 지점. 실루엣 계수: 1에 가까울수록 잘 분리됨.',
+            'Elbow(팔꿈치) 법 — WCSS 를 K 에 따라 그려 꺾이는 지점. 실루엣 계수 — 1 에 가까울수록 잘 분리.',
+        },
+        {
+          kind: 'table',
+          headers: ['방법', '특징'],
+          rows: [
+            ['계층적', '덴드로그램 합병/분할'],
+            ['K-means', '중심 K개 반복 재배정'],
+            ['DBSCAN', '밀도 기반, K 불필요, 이상치 강함'],
+            ['EM/SOM', '확률·격자 기반'],
+          ],
         },
       ],
     },
     {
-      id: 'adsp-3-4-s5',
-      title: '분류 평가지표',
-      quizId: 'adsp-3-4-cp-05',
+      id: 'adsp-3-4-s4-hier',
+      title: '군집 ① 계층적 (Hierarchical)',
+      quizId: 'adsp-3-4-cp-04-hier',
       dialogue: [
-        { pose: 'wave', text: '[분류 평가] — [오분류표] (TP/FP/FN/TN) 에서 모든 지표가 나와!' },
-        { pose: 'think', text: '[정확도] (전체 맞춘 비율) · [정밀도] (예측의 정확함) · [재현율] (실제 포착률).' },
-        { pose: 'lightbulb', text: '[암 진단·스팸] → 놓치면 안 되니 [재현율]! [추천·검색] → 잘못 보이면 안 되니 [정밀도]!' },
-        { pose: 'happy', text: '균형은 [F1] (조화평균). 상위 X% 타겟팅은 [Lift·Gain 차트]!' },
-        { pose: 'idle', text: '[ROC/AUC] 는 1에 가까울수록 우수. 문제로!' },
+        { pose: 'wave', text: '첫째 [계층적] — 덴드로그램.' },
+        { pose: 'think', text: '합병형(Bottom-up) / 분할형(Top-down).' },
+        { pose: 'idle', text: '계층적 군집의 특징을 골라봐.' },
       ],
       blocks: [
         {
-          kind: 'section',
-          title: '오분류표에서 시작',
+          kind: 'intro',
           body:
-            '오분류표(Confusion Matrix) 의 TP/FP/FN/TN 에서 여러 지표가 파생됩니다. 상황에 따라 "정밀도 우선" 인지 "재현율 우선" 인지가 달라집니다.',
+            '계층적 군집은 데이터를 점점 합치거나(합병형, agglomerative) 큰 덩어리에서 쪼개며(분할형, divisive) 트리(덴드로그램) 를 형성. K 를 미리 정할 필요 없음.',
         },
         {
-          kind: 'keypoints',
-          items: [
-            '정확도(Accuracy) = (TP+TN) / 전체',
-            '정밀도(Precision) = TP / (TP+FP) — 예측의 정확함',
-            '재현율(Recall) = TP / (TP+FN) — 실제의 포착률',
-            'F1 = 정밀도·재현율 조화평균',
-            'ROC: TPR vs FPR, AUC 는 그 면적 (1에 가까울수록 우수)',
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"덴드로그램", "합병형/분할형". 중심점 K개 반복이면 K-means, 밀도 기반이면 DBSCAN.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-4-s4-kmeans',
+      title: '군집 ② K-means',
+      quizId: 'adsp-3-4-cp-04-kmeans',
+      dialogue: [
+        { pose: 'wave', text: '둘째 [K-means] — 중심 K 개 반복.' },
+        { pose: 'think', text: 'K 를 미리 정 → 중심점 ↔ 점 거리 반복 재배정.' },
+        { pose: 'idle', text: 'K-means 의 핵심을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'K-means 는 K 개의 중심점을 두고 각 점을 가장 가까운 중심에 할당 → 중심 갱신 → 반복. K 를 미리 정해야 하고, 구형 클러스터에 강함.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"K 사전 지정", "중심점 반복", "유클리드 거리". 트리 구조면 계층적, 밀도면 DBSCAN.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-4-s4-dbscan',
+      title: '군집 ③ DBSCAN',
+      quizId: 'adsp-3-4-cp-04-dbscan',
+      dialogue: [
+        { pose: 'wave', text: '셋째 [DBSCAN] — 밀도 기반.' },
+        { pose: 'think', text: 'ε 반경 안 점 개수 ≥ minPts 면 핵심점. K 불필요.' },
+        { pose: 'idle', text: 'DBSCAN 의 강점을 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'DBSCAN(Density-Based) 은 밀도가 충분한 영역을 클러스터로, 외곽은 noise(이상값) 로 분류. K 사전 지정 불필요 + 비구형 클러스터 + 이상치 강건.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"밀도 기반", "K 불필요", "noise 자동 식별", "비구형 OK". K 미리 지정이면 K-means.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-4-s4-em-som',
+      title: '군집 ④ EM · SOM',
+      quizId: 'adsp-3-4-cp-04-em-som',
+      dialogue: [
+        { pose: 'wave', text: '넷째 [EM·SOM] — 확률·격자 기반.' },
+        { pose: 'think', text: 'EM = 가우시안 혼합 확률 할당. SOM = 뉴런 격자로 2D 투영.' },
+        { pose: 'idle', text: 'EM·SOM 정의를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'EM(Expectation-Maximization) 은 가우시안 혼합 모델로 각 점이 클러스터에 속할 확률을 학습. SOM(Self-Organizing Map) 은 신경망 기반 2D 격자 투영.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"EM = 확률 할당, 가우시안 혼합", "SOM = 신경망 격자 2D". 단순 거리·중심점이면 K-means, 트리면 계층적.',
+        },
+      ],
+    },
+    // ─── 분류 평가지표 — 1 step → 5 substeps ───
+    {
+      id: 'adsp-3-4-s5',
+      title: '평가지표 ① 오분류표 개요',
+      quizId: 'adsp-3-4-cp-05',
+      dialogue: [
+        { pose: 'wave', text: '분류 평가는 [오분류표] (TP/FP/FN/TN) 에서 출발.' },
+        { pose: 'think', text: '실제 vs 예측을 2×2 로 놓으면 모든 지표가 여기서 파생돼.' },
+        { pose: 'idle', text: '먼저 오분류표 칸 정의부터.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '오분류표(Confusion Matrix) — 행=실제, 열=예측의 2×2 표. TP(맞게 양성), FP(거짓 양성), FN(놓친 양성), TN(맞게 음성). 정확도·정밀도·재현율·F1·ROC 모두 이 4 칸에서 계산.',
+        },
+        {
+          kind: 'table',
+          title: '오분류표',
+          headers: ['', '예측 양성', '예측 음성'],
+          rows: [
+            ['실제 양성', 'TP (적중)', 'FN (놓침)'],
+            ['실제 음성', 'FP (오경보)', 'TN (정상기각)'],
           ],
         },
+      ],
+    },
+    {
+      id: 'adsp-3-4-s5-acc',
+      title: '평가지표 ② 정확도 (Accuracy)',
+      quizId: 'adsp-3-4-cp-05-acc',
+      dialogue: [
+        { pose: 'wave', text: '[정확도] — 전체 중 맞춘 비율.' },
+        { pose: 'think', text: '(TP + TN) / 전체. 가장 직관적이지만 [클래스 불균형] 에 약해.' },
+        { pose: 'idle', text: '정확도가 부적절한 케이스를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '정확도(Accuracy) = (TP + TN) / 전체. 모든 예측 중 맞춘 비율. 직관적이지만 양성:음성 = 1:99 같은 클래스 불균형에선 "전부 음성으로 예측" 만으로도 99% 가 나와 무력해집니다.',
+        },
+        {
+          kind: 'section',
+          title: '시험 함정',
+          body:
+            '클래스 불균형 케이스(암 진단·사기 탐지·드문 이벤트) 에서 "정확도 99%" 라는 모델은 의심해야 합니다. 이때는 정밀도/재현율/F1 을 봐야 함.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-4-s5-prec',
+      title: '평가지표 ③ 정밀도 (Precision)',
+      quizId: 'adsp-3-4-cp-05-prec',
+      dialogue: [
+        { pose: 'wave', text: '[정밀도] — TP / (TP+FP).' },
+        { pose: 'think', text: '"양성이라 예측한 것 중 진짜 양성 비율" — 예측의 정확함.' },
+        { pose: 'happy', text: '추천·검색처럼 [잘못 보이면 안 되는] 시나리오에 우선.' },
+        { pose: 'idle', text: '정밀도 우선 케이스를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '정밀도(Precision) = TP / (TP + FP). 양성으로 예측한 것 중 실제 양성의 비율. 거짓 양성(FP) 비용이 클 때 중요.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"잘못 양성으로 분류하면 큰 비용" — 추천 시스템 (잘못 추천하면 신뢰 ↓), 검색 결과 상위 (관련 없는 결과 보이면 곤란), 고객 타겟 광고. 정밀도 우선.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-4-s5-recall',
+      title: '평가지표 ④ 재현율 (Recall)',
+      quizId: 'adsp-3-4-cp-05-recall',
+      dialogue: [
+        { pose: 'wave', text: '[재현율] — TP / (TP+FN).' },
+        { pose: 'think', text: '"실제 양성 중 모델이 잡은 비율" — 실제의 포착률.' },
+        { pose: 'happy', text: '암 진단·사기 탐지처럼 [놓치면 안 되는] 시나리오에 우선.' },
+        { pose: 'idle', text: '재현율 우선 케이스를 골라봐.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '재현율(Recall, 민감도 Sensitivity) = TP / (TP + FN). 실제 양성 중 모델이 양성으로 잡아낸 비율. 놓침(FN) 비용이 클 때 중요.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"놓치면 큰 손해" — 암 진단(환자 놓치면 치명적), 사기 탐지(놓치면 손실), 보안 침해 탐지, 안전 결함 탐지. 재현율 우선.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-3-4-s5-f1',
+      title: '평가지표 ⑤ F1 · ROC · Lift',
+      quizId: 'adsp-3-4-cp-05-f1',
+      dialogue: [
+        { pose: 'wave', text: '균형은 [F1] (정밀도·재현율 조화평균).' },
+        { pose: 'think', text: '[ROC] 는 TPR vs FPR 곡선, [AUC] 는 그 면적 — 1에 가까울수록 우수.' },
+        { pose: 'happy', text: '상위 X% 타겟팅은 [Lift / Gain 차트] — 분위별 향상도.' },
+        { pose: 'idle', text: '시나리오별 적합 지표를 골라봐!' },
+      ],
+      blocks: [
         {
           kind: 'keypoints',
-          title: '향상도 차트 (Lift / Gain Chart)',
+          title: '복합 지표',
           items: [
-            '향상도(Lift) = 모델이 잡은 양성 비율 ÷ 랜덤으로 잡을 때 양성 비율',
-            '예측 확률 내림차순으로 고객을 10분위(decile) 로 자른 뒤 분위별 Lift 를 그림',
-            '상위 분위 Lift 가 1 보다 크면 "상위 타겟팅이 유효" 하다는 신호',
-            'Gain 곡선: 상위 X% 고객에서 실제 양성의 몇 %를 잡았는지',
-            '마케팅·리스크 관리처럼 "상위만 골라 행동" 하는 시나리오에서 핵심 평가 도구',
+            'F1 = 2·(P·R) / (P+R) — 정밀도·재현율의 조화평균. 균형 필요할 때.',
+            'ROC: TPR(=Recall) vs FPR 곡선. 임계값 변화 따라 그림.',
+            'AUC: ROC 곡선 아래 면적. 1=완벽 / 0.5=무작위 / <0.5=뒤집힘.',
+            'Lift: 모델이 잡은 양성률 ÷ 무작위 양성률. 1보다 크면 효과 있음.',
+            'Gain: 상위 X% 선별 시 실제 양성의 몇 % 잡았는지 누적 곡선.',
           ],
         },
         {
           kind: 'callout',
           tone: 'tip',
-          title: '언제 뭘 쓰나',
+          title: '시나리오별 선택',
           body:
-            '암 진단·스팸처럼 "놓치면 안 되는" 문제는 재현율. 추천·검색처럼 "잘못 보여주면 안 되는" 문제는 정밀도. 둘의 균형이 F1. 타겟 마케팅·우량 고객 선별처럼 "상위 X% 선별" 문제에선 Lift/Gain 을 같이 봅니다.',
+            '균형: F1. 임계값 비교: ROC/AUC. 상위 X% 행동(마케팅·우량 고객 선별): Lift / Gain.',
         },
       ],
     },

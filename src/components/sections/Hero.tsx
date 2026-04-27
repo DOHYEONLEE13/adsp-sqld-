@@ -53,10 +53,9 @@ export default function Hero() {
                 href="#/game"
                 className="kr-heading inline-flex items-center gap-2.5 uppercase tracking-widest text-[13px] md:text-[14px] px-7 md:px-8 py-4 md:py-5 rounded-full transition hover:scale-[1.03]"
                 style={{
-                  background:
-                    'linear-gradient(135deg, var(--purple-1), var(--purple-2))',
-                  color: '#fff',
-                  boxShadow: '0 14px 40px -10px rgba(124, 58, 237, 0.65)',
+                  background: '#FD802E',
+                  color: '#233D4C',
+                  boxShadow: '0 14px 40px -10px rgba(253, 128, 46, 0.55)',
                 }}
               >
                 <Gamepad2 size={18} strokeWidth={2.4} />

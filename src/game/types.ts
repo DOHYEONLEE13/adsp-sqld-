@@ -12,7 +12,16 @@ export type GameScreen =
   | { kind: 'galaxy' }
   | { kind: 'planet'; subject: Subject }
   | { kind: 'zone'; subject: Subject; chapter: number }
-  | { kind: 'lesson'; subject: Subject; chapter: number; topic: string }
+  | {
+      kind: 'lesson';
+      subject: Subject;
+      chapter: number;
+      topic: string;
+      /** 토픽 안에서 시작할 step index (0-based). 미지정 시 0. Zone 의 step
+       *  노드에서 직접 진입할 때 사용. 지정되면 single-step 모드로 동작 —
+       *  한 step 끝나면 onBack 으로 Zone 복귀. */
+      stepIdx?: number;
+    }
   | { kind: 'quest'; session: QuestSession }
   | { kind: 'result'; summary: QuestSummary }
   | { kind: 'review' };

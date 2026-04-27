@@ -16,6 +16,9 @@ interface Props {
   correctAnswerText?: string;
   ctaLabel: string;
   onContinue: () => void;
+  /** Secondary 액션 — primary 옆에 ghost 버튼으로 노출. 없으면 미렌더. */
+  secondaryCtaLabel?: string;
+  onSecondary?: () => void;
 }
 
 export default function FeedbackSheet({
@@ -24,6 +27,8 @@ export default function FeedbackSheet({
   correctAnswerText,
   ctaLabel,
   onContinue,
+  secondaryCtaLabel,
+  onSecondary,
 }: Props) {
   const accent = correct ? '#6FFF00' : '#f87171';
   const tintBg = correct
@@ -74,18 +79,29 @@ export default function FeedbackSheet({
           ) : null}
         </div>
 
-        <button
-          type="button"
-          onClick={onContinue}
-          className="kr-heading uppercase tracking-widest text-[13px] md:text-[14px] px-5 py-3 md:px-7 md:py-3.5 rounded-full shrink-0"
-          style={{
-            background: accent,
-            color: '#010828',
-            boxShadow: `0 6px 18px -6px ${accent}`,
-          }}
-        >
-          {ctaLabel}
-        </button>
+        <div className="flex items-center gap-2 shrink-0">
+          {secondaryCtaLabel && onSecondary ? (
+            <button
+              type="button"
+              onClick={onSecondary}
+              className="kr-heading uppercase tracking-widest text-[11px] md:text-[12px] px-3.5 py-2.5 md:px-4 md:py-3 rounded-full transition liquid-glass hover:bg-white/10 whitespace-nowrap"
+            >
+              {secondaryCtaLabel}
+            </button>
+          ) : null}
+          <button
+            type="button"
+            onClick={onContinue}
+            className="kr-heading uppercase tracking-widest text-[13px] md:text-[14px] px-5 py-3 md:px-7 md:py-3.5 rounded-full whitespace-nowrap"
+            style={{
+              background: accent,
+              color: '#010828',
+              boxShadow: `0 6px 18px -6px ${accent}`,
+            }}
+          >
+            {ctaLabel}
+          </button>
+        </div>
       </div>
     </motion.div>
   );

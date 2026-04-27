@@ -12,7 +12,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Subject } from '@/types/question';
 import {
   getChapterSteps,
@@ -30,6 +30,12 @@ interface Props {
   subject: Subject;
   chapter: number;
   topic: string;
+  /**
+   * 진입 시 시작 step index. 지정되면 single-step 모드 — 한 step 끝나면
+   * 다음 step 으로 가지 않고 onBack(Zone) 으로 복귀. Zone 의 step 노드에서
+   * 직접 진입할 때 사용.
+   */
+  initialStepIdx?: number;
   onFinishGoToPractice: () => void;
   onBack: () => void;
 }
@@ -40,9 +46,11 @@ export default function DialogueLesson({
   subject,
   chapter,
   topic,
+  initialStepIdx,
   onFinishGoToPractice,
   onBack,
 }: Props) {
+  const isSingleStep = typeof initialStepIdx === 'number';
   const lesson = useMemo(
     () => getLesson(subject, chapter, topic),
     [subject, chapter, topic],
@@ -59,7 +67,7 @@ export default function DialogueLesson({
     return i >= 0 ? i : 0;
   }, [chapterSteps, lesson]);
 
-  const [stepIdx, setStepIdx] = useState(0);
+  const [stepIdx, setStepIdx] = useState(initialStepIdx ?? 0);
   const [turnIdx, setTurnIdx] = useState(0);
   const [phase, setPhase] = useState<Phase>('narrate');
   const [chosen, setChosen] = useState<number | null>(null);
@@ -123,6 +131,39 @@ export default function DialogueLesson({
     setPhase('question');
   };
 
+  /**
+   * 한 단계 뒤로:
+   *  - narrate: 이전 대사 (turnIdx 0 이고 stepIdx 0 이면 비활성)
+   *  - narrate (turnIdx 0, stepIdx > 0): 이전 step 의 마지막 대사로
+   *  - question: 마지막 narration 으로 복귀 (선택 취소)
+   *  - feedback: 비활성 (이미 채점 기록됨)
+   */
+  const canGoPrev =
+    (phase === 'narrate' && (turnIdx > 0 || stepIdx > 0)) ||
+    phase === 'question';
+  const handleGoPrev = () => {
+    if (!canGoPrev) return;
+    if (phase === 'question') {
+      setPhase('narrate');
+      return;
+    }
+    if (phase === 'narrate') {
+      if (turnIdx > 0) {
+        setTurnIdx(turnIdx - 1);
+        return;
+      }
+      // turnIdx === 0 && stepIdx > 0 → 이전 step 마지막 narration 으로
+      const prev = lesson.steps[stepIdx - 1];
+      const prevDialogue = prev?.dialogue ?? [];
+      setStepIdx(stepIdx - 1);
+      // useEffect 가 stepIdx 변화에 turn=0/phase=narrate 로 reset 하므로
+      // 다음 tick 에 마지막 turn 으로 다시 set.
+      window.setTimeout(() => {
+        setTurnIdx(Math.max(0, prevDialogue.length - 1));
+      }, 0);
+    }
+  };
+
   const handleChoose = (idx: number) => {
     if (!quizQuestion || phase !== 'question') return;
     setChosen(idx);
@@ -133,13 +174,22 @@ export default function DialogueLesson({
     setPhase('feedback');
   };
 
-  const handleContinue = () => {
+  const handleNextStep = () => {
     if (stepIdx < lesson.steps.length - 1) {
       setStepIdx(stepIdx + 1);
       window.scrollTo({ top: 0, behavior: 'auto' });
     } else {
-      onFinishGoToPractice();
+      // 마지막 step — single-step 모드는 Zone 복귀, legacy 는 실전 세트.
+      if (isSingleStep) {
+        onBack();
+      } else {
+        onFinishGoToPractice();
+      }
     }
+  };
+
+  const handleBackToZone = () => {
+    onBack();
   };
 
   // === 렌더 ===
@@ -201,9 +251,19 @@ export default function DialogueLesson({
           </div>
         </div>
 
-        {/* narrate 단계 — 아래에 "계속" 버튼만 */}
+        {/* narrate 단계 — "이전" + "계속" 버튼 */}
         {phase === 'narrate' ? (
-          <div className="mt-8 flex justify-center">
+          <div className="mt-8 flex justify-center items-center gap-3">
+            <button
+              type="button"
+              onClick={handleGoPrev}
+              disabled={!canGoPrev}
+              aria-label="이전 대사"
+              className="kr-heading uppercase tracking-widest text-[12px] md:text-[13px] px-4 py-3 md:px-5 md:py-3.5 rounded-full inline-flex items-center gap-1.5 transition liquid-glass hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <ChevronLeft size={15} strokeWidth={2.6} />
+              이전
+            </button>
             <button
               type="button"
               onClick={handleAdvanceNarrative}
@@ -225,6 +285,19 @@ export default function DialogueLesson({
         {/* question / feedback 단계 — 4지선다 */}
         {(phase === 'question' || phase === 'feedback') && quizQuestion ? (
           <div className="mt-8">
+            {phase === 'question' ? (
+              <div className="flex justify-start mb-4">
+                <button
+                  type="button"
+                  onClick={handleGoPrev}
+                  aria-label="대사로 돌아가기"
+                  className="kr-heading uppercase tracking-widest text-[11px] md:text-[12px] px-3.5 py-2 rounded-full inline-flex items-center gap-1.5 transition liquid-glass hover:bg-white/10"
+                >
+                  <ChevronLeft size={13} strokeWidth={2.6} />
+                  대사 다시 보기
+                </button>
+              </div>
+            ) : null}
             <OptionsPanel
               choices={quizQuestion.choices}
               chosen={chosen}
@@ -238,22 +311,49 @@ export default function DialogueLesson({
         ) : null}
       </main>
 
-      {/* FeedbackSheet — 채점 직후 슬라이드업 */}
-      {phase === 'feedback' && quizQuestion && correct !== null ? (
-        <FeedbackSheet
-          correct={correct}
-          explanation={quizQuestion.explanation}
-          correctAnswerText={
-            !correct
-              ? quizQuestion.choices[quizQuestion.answerIndex]
-              : undefined
-          }
-          ctaLabel={
-            stepIdx < lesson.steps.length - 1 ? '다음 개념으로' : '실전 세트로'
-          }
-          onContinue={handleContinue}
-        />
-      ) : null}
+      {/* FeedbackSheet — 채점 직후 슬라이드업
+          액션 분기:
+            - 다음 step 있음 → primary "다음 단계", secondary "존으로 돌아가기"
+            - 마지막 step (legacy) → primary "실전 세트로", secondary "존으로 돌아가기"
+            - 마지막 step (single-step) → primary "존으로 돌아가기", secondary 없음 */}
+      {phase === 'feedback' && quizQuestion && correct !== null
+        ? (() => {
+            const hasNext = stepIdx < lesson.steps.length - 1;
+            let ctaLabel: string;
+            let onContinue: () => void;
+            let secondaryCtaLabel: string | undefined;
+            let onSecondary: (() => void) | undefined;
+            if (hasNext) {
+              ctaLabel = '다음 단계';
+              onContinue = handleNextStep;
+              secondaryCtaLabel = '존으로';
+              onSecondary = handleBackToZone;
+            } else if (isSingleStep) {
+              ctaLabel = '존으로 돌아가기';
+              onContinue = handleBackToZone;
+            } else {
+              ctaLabel = '실전 세트로';
+              onContinue = handleNextStep;
+              secondaryCtaLabel = '존으로';
+              onSecondary = handleBackToZone;
+            }
+            return (
+              <FeedbackSheet
+                correct={correct}
+                explanation={quizQuestion.explanation}
+                correctAnswerText={
+                  !correct
+                    ? quizQuestion.choices[quizQuestion.answerIndex]
+                    : undefined
+                }
+                ctaLabel={ctaLabel}
+                onContinue={onContinue}
+                secondaryCtaLabel={secondaryCtaLabel}
+                onSecondary={onSecondary}
+              />
+            );
+          })()
+        : null}
     </section>
   );
 }

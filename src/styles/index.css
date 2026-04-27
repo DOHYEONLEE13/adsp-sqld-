@@ -22,13 +22,18 @@
   --subject-accent: var(--accent-sqld);
 }
 
-/* ===== Dialogue highlight — [키워드] → 과목색 + 점선 밑줄 ===== */
+/* ===== Dialogue highlight — [키워드] → 두꺼운 폰트만 (과거 색+점선밑줄 제거).
+   톤다운 이유: 한 문장에 여러 키워드가 모두 색칠되면 시선이 분산되고 "AI 슬롭"
+   느낌이 강해진다. 핵심 단어 강조는 굵기만으로 충분. 정말 결정적인 항목이
+   필요하면 dialogue-keyword 대신 dialogue-keyword--accent 명시 사용. ===== */
 .dialogue-keyword {
-  color: var(--subject-accent);
-  border-bottom: 2px dashed currentColor;
-  padding-bottom: 1px;
-  font-weight: 600;
+  font-weight: 700;
+  color: inherit;
   white-space: nowrap;
+}
+.dialogue-keyword--accent {
+  color: var(--subject-accent);
+  font-weight: 700;
 }
 
 /* ===== Ques 마스코트 — idle 호흡 ===== */

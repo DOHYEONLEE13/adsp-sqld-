@@ -176,12 +176,13 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
               p.flow,
             )
           }
-          onSelectTopic={(topic) =>
+          onSelectStep={(topic, stepIdx) =>
             setScreen({
               kind: 'lesson',
               subject: screen.subject,
               chapter: screen.chapter,
               topic,
+              stepIdx,
             })
           }
           onBack={() =>
@@ -196,11 +197,13 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
       const _lesson = getLesson(screen.subject, screen.chapter, screen.topic);
       const useDialogue = !!_lesson?.steps[0]?.dialogue?.length;
       const Cmp = useDialogue ? DialogueLesson : LessonScreen;
+      const initialStepIdx = screen.stepIdx;
       return (
         <Cmp
           subject={screen.subject}
           chapter={screen.chapter}
           topic={screen.topic}
+          initialStepIdx={initialStepIdx}
           onFinishGoToPractice={() =>
             startSession(
               screen.subject,

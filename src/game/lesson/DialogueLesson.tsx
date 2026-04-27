@@ -234,7 +234,7 @@ export default function DialogueLesson({
       className="relative min-h-screen text-cream flex flex-col isolate"
       data-subject={subject}
     >
-      <PageAmbientBg />
+      <PageAmbientBg blur />
       <TopBar progress={progress} onExit={onBack} />
 
       {/* XP 획득 토스트 */}

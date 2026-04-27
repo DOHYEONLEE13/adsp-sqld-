@@ -222,7 +222,7 @@ export default function LessonScreen({
 
   return (
     <section className="relative min-h-screen text-cream isolate overflow-hidden pb-24">
-      <PageAmbientBg />
+      <PageAmbientBg blur />
       {/* 토픽 액센트 글로우 — 영상 위에 살짝 색감 */}
       <div
         aria-hidden

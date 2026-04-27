@@ -181,7 +181,7 @@ export default function QuestScreen({
       subtitle={session.chapterTitle}
       onExit={onAbort}
       exitLabel="중단"
-      ambient={<PageAmbientBg />}
+      ambient={<PageAmbientBg blur />}
     >
       {/* 상단 HUD — 진행률 + (test 일 때) 타이머 */}
       <div className="flex items-center gap-4 mb-6">

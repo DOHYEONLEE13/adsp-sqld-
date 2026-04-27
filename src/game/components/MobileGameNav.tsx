@@ -1,8 +1,10 @@
 /**
- * MobileGameNav — 모바일 전용 상/하단 바.
+ * MobileGameNav — 게임 내 상/하단 바.
  *
  * 듀오링고 스타일: 상단에 과목 뱃지·통계(스트릭·XP·레벨), 하단에 4-탭 내비게이션.
- * `md:hidden` 으로 모바일 전용. Planet/Zone 같은 게임 내비 화면에 부착.
+ * 모바일·태블릿·데스크탑 모두 동일하게 노출 (이전엔 `md:hidden` 으로 모바일 전용이었으나
+ * PC 사용자도 재화·내비 보이게 통일). 데스크탑에선 max-width 와 좌우 여백을 두어
+ * 가운데 정렬된 narrow bar 로 표시.
  *
  * 통계 의미:
  * - 🔥 streak — 연속 플레이 일수
@@ -76,7 +78,7 @@ export function MobileTopBar({ subject }: TopProps) {
 
   return (
     <div
-      className="md:hidden fixed top-0 left-0 right-0 z-30"
+      className="fixed top-0 left-0 right-0 z-30"
       style={{
         background: 'rgba(20,32,46,0.92)',
         backdropFilter: 'blur(12px)',
@@ -84,7 +86,7 @@ export function MobileTopBar({ subject }: TopProps) {
         borderBottom: '1px solid rgba(239,244,255,0.06)',
       }}
     >
-      <div className="flex items-center justify-between gap-2 px-4 py-2">
+      <div className="flex items-center justify-between gap-2 px-4 py-2 max-w-[1200px] mx-auto md:px-6 lg:px-10">
         <button
           type="button"
           onClick={() => {
@@ -220,7 +222,7 @@ export function MobileBottomNav({
 }: BottomProps) {
   return (
     <nav
-      className="md:hidden fixed bottom-0 left-0 right-0 z-30"
+      className="fixed bottom-0 left-0 right-0 z-30"
       style={{
         background: 'rgba(20,32,46,0.95)',
         backdropFilter: 'blur(12px)',
@@ -228,7 +230,7 @@ export function MobileBottomNav({
         borderTop: '1px solid rgba(239,244,255,0.08)',
       }}
     >
-      <div className="grid grid-cols-4 pb-[env(safe-area-inset-bottom)]">
+      <div className="grid grid-cols-4 pb-[env(safe-area-inset-bottom)] max-w-[1200px] mx-auto">
         <Tab
           tab="learn"
           active={active}

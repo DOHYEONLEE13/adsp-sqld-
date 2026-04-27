@@ -31,6 +31,15 @@ export const VIDEO_URLS = {
     'https://stream.mux.com/Si6ej2ZRrxRCnTYBXSScDRCdd7CGnyTqiPszZcw3z4I.m3u8',
 } as const;
 
+/**
+ * Mux 가 자동 생성하는 썸네일 (poster 용). 영상 로드 전·자동재생 차단 시 표시.
+ * `time=2` = 영상 2초 시점 (보통 첫 인상에 좋은 프레임).
+ */
+export const VIDEO_POSTERS = {
+  pageAmbient:
+    'https://image.mux.com/Si6ej2ZRrxRCnTYBXSScDRCdd7CGnyTqiPszZcw3z4I/thumbnail.webp?width=1920&fit_mode=preserve&time=2',
+} as const;
+
 export const HERO: HeroContent = {
   headingLines: ['ADSP, SQLD', '게임으로', '놀면서 합격!'],
   cursiveAccent: 'Play & Pass',

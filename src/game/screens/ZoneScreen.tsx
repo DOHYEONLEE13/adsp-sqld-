@@ -108,7 +108,7 @@ export default function ZoneScreen({
       <MobileTopBar subject={subject} />
       <MobileBottomNav active="learn" accent={accent} />
 
-      <div className="relative mx-auto w-full max-w-[760px] px-5 md:px-8 lg:px-10 pt-20 md:pt-10 pb-28 md:pb-10 min-h-screen">
+      <div className="relative mx-auto w-full max-w-[760px] px-5 md:px-8 lg:px-10 pt-20 pb-28 min-h-screen">
         {/* ============ Header ============ */}
         <header className="mb-10 md:mb-12">
           <button

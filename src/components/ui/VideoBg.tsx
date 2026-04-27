@@ -7,6 +7,8 @@ interface Props {
   className?: string;
   /** `cover` fills and crops, `native` keeps aspect ratio (no cropping). */
   fit?: 'cover' | 'native';
+  /** 영상 로드 전 / 자동재생 차단 시 보여줄 정적 이미지. Mux 의 thumbnail URL 권장. */
+  poster?: string;
 }
 
 /**
@@ -21,7 +23,12 @@ interface Props {
  * 케이스를 대비해 manifest parsed / loadedmetadata 후 video.play() 를 명시 호출.
  * 호출이 reject 돼도 silent — 그라디언트 배경이 그대로 유지됨.
  */
-export default function VideoBg({ src, className, fit = 'cover' }: Props) {
+export default function VideoBg({
+  src,
+  className,
+  fit = 'cover',
+  poster,
+}: Props) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const isHls = src.toLowerCase().includes('.m3u8');
 
@@ -109,6 +116,7 @@ export default function VideoBg({ src, className, fit = 'cover' }: Props) {
       aria-hidden="true"
       // crossOrigin 설정 — Mux 같은 외부 CDN 의 CORS 허용을 명시적으로
       crossOrigin="anonymous"
+      poster={poster}
     >
       {!isHls ? <source src={src} type="video/mp4" /> : null}
     </video>

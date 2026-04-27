@@ -83,7 +83,7 @@ export default function PlanetScreen({
       <MobileBottomNav active="learn" accent={accent} />
 
       {/* === 오버레이 콘텐츠 === */}
-      <div className="relative z-10 mx-auto w-full max-w-layout px-6 md:px-10 lg:px-16 pt-20 md:pt-10 lg:pt-12 pb-28 md:pb-10 lg:pb-12 min-h-screen">
+      <div className="relative z-10 mx-auto w-full max-w-layout px-6 md:px-10 lg:px-16 pt-20 pb-28 min-h-screen">
         {/* Top: Back + Breadcrumb + Title (HUD 없음 — 로드맵 공간 확보) */}
         <header className="mb-12 md:mb-16 max-w-[640px]">
           <button

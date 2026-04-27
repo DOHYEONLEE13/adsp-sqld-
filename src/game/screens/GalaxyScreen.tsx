@@ -46,12 +46,27 @@ interface Props {
 /** 워프 완료 후 실제 Subject 전환까지 대기할 시간 (ms). */
 const WARP_DURATION_MS = 900;
 
-/** 미니멀 팔레트 (이 화면 한정). */
-const FG = '#FD802E';
-const BG = '#233D4C';
-const FG_SOFT = 'rgba(253,128,46,0.65)';
-const FG_DIM = 'rgba(253,128,46,0.45)';
-const LINE = 'rgba(253,128,46,0.25)';
+/** 미니멀 팔레트 (이 화면 한정).
+ *  v3: 과목별 액센트 — ADSP 시안/블루, SQLD 퍼플 (CLAUDE.md 색 토큰과 일치).
+ *  default ACCENT (주황) 는 일일 미션 등 과목 무관 영역에만 사용. */
+const ACCENT = '#FD802E';
+const BG = '#010828';
+const FG = '#FFFFFF';
+const FG_SOFT = 'rgba(255,255,255,0.72)';
+const FG_DIM = 'rgba(255,255,255,0.5)';
+const LINE = 'rgba(255,255,255,0.22)';
+
+/** 과목별 액센트. */
+const SUBJECT_ACCENT: Record<Subject, string> = {
+  adsp: '#67e8f9', // cyan-300
+  sqld: '#c084fc', // purple-400
+};
+
+/** 과목별 액센트 + 알파 (그림자·hover 등). */
+const SUBJECT_ACCENT_RGB: Record<Subject, string> = {
+  adsp: '103, 232, 249',
+  sqld: '192, 132, 252',
+};
 
 /** 과목별 소개 문구. */
 const SUBJECT_INTRO: Record<Subject, { tagline: string; description: string }> = {
@@ -123,15 +138,15 @@ export default function GalaxyScreen({
       className="relative min-h-screen isolate overflow-hidden"
       style={{ background: BG, color: FG }}
     >
-      {/* === Background: video + teal overlay (가독성 + 톤 통일) === */}
+      {/* === Background: Mux HLS ambient + 흰글씨 가독성용 어두운 그라디언트 === */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        <VideoBg src={VIDEO_URLS.cta} fit="cover" />
-        {/* teal tint — 영상 위에 #233D4C 톤으로 깔아서 오렌지 텍스트 가독성 확보 */}
+        <VideoBg src={VIDEO_URLS.pageAmbient} fit="cover" />
+        {/* dark scrim — 배경 영상 위에 깔아 흰 텍스트 가독성 확보 */}
         <div
           className="absolute inset-0"
           style={{
             background:
-              'linear-gradient(180deg, rgba(35,61,76,0.78) 0%, rgba(35,61,76,0.85) 50%, rgba(35,61,76,0.92) 100%)',
+              'linear-gradient(180deg, rgba(1,8,40,0.55) 0%, rgba(1,8,40,0.62) 50%, rgba(1,8,40,0.78) 100%)',
           }}
           aria-hidden
         />
@@ -167,7 +182,7 @@ export default function GalaxyScreen({
               <Star
                 size={15}
                 strokeWidth={2}
-                fill={bookmarkCount > 0 ? FG : 'none'}
+                fill={bookmarkCount > 0 ? ACCENT : 'none'}
               />
             </IconBox>
             <IconBox
@@ -212,7 +227,7 @@ export default function GalaxyScreen({
         <button
           type="button"
           onClick={() => onStartDailyMission(defaultMissionSubject)}
-          className="mt-12 md:mt-16 w-full text-left transition hover:bg-[rgba(253,128,46,0.04)] focus:outline-none focus-visible:bg-[rgba(253,128,46,0.06)]"
+          className="mt-12 md:mt-16 w-full text-left transition hover:bg-[rgba(255,255,255,0.04)] focus:outline-none focus-visible:bg-[rgba(255,255,255,0.06)]"
           style={{
             borderTop: `1px solid ${LINE}`,
             borderBottom: `1px solid ${LINE}`,
@@ -236,11 +251,11 @@ export default function GalaxyScreen({
               </span>
               {dailyDoneToday ? (
                 <span
-                  className="kr-heading uppercase text-[10px] shrink-0 px-2 py-0.5"
+                  className="kr-heading uppercase text-[10px] shrink-0 px-2 py-0.5 rounded-full"
                   style={{
                     letterSpacing: '0.13em',
-                    color: BG,
-                    background: FG,
+                    color: '#FFFFFF',
+                    background: ACCENT,
                   }}
                 >
                   오늘 완료
@@ -252,18 +267,40 @@ export default function GalaxyScreen({
         </button>
       </div>
 
-      {/* === Overlay: Subject Info Panel === */}
+      {/* === Modal: Subject Info Panel === */}
       {selectedSubject ? (
-        <div className="absolute bottom-0 right-0 left-0 md:left-auto p-4 md:p-6 lg:p-10 w-full md:w-auto md:max-w-[460px] z-20">
-          <SubjectInfoPanel
-            subject={selectedSubject}
-            total={selectedSubject === 'adsp' ? adspTotal : sqldTotal}
-            progress={progress}
-            launching={isLaunching}
-            onBack={handleBack}
-            onPlay={() => handlePlay(selectedSubject)}
-            onMockExam={() => onStartMockExam(selectedSubject)}
+        <div
+          className="fixed inset-0 z-20 flex items-center justify-center p-4 md:p-6"
+          onClick={(e) => {
+            // backdrop 클릭 시 닫기 (패널 내부 클릭은 제외)
+            if (e.target === e.currentTarget && !isLaunching) handleBack();
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${selectedSubject.toUpperCase()} 과목 정보`}
+        >
+          {/* 어두운 backdrop + 강한 블러 (배경의 카드 영역을 가림) */}
+          <div
+            aria-hidden
+            className="absolute inset-0"
+            style={{
+              background: 'rgba(1,8,40,0.62)',
+              backdropFilter: 'blur(14px) saturate(110%)',
+              WebkitBackdropFilter: 'blur(14px) saturate(110%)',
+            }}
           />
+          {/* 패널 자체는 backdrop 위에 떠 있음 */}
+          <div className="relative w-full max-w-[460px]">
+            <SubjectInfoPanel
+              subject={selectedSubject}
+              total={selectedSubject === 'adsp' ? adspTotal : sqldTotal}
+              progress={progress}
+              launching={isLaunching}
+              onBack={handleBack}
+              onPlay={() => handlePlay(selectedSubject)}
+              onMockExam={() => onStartMockExam(selectedSubject)}
+            />
+          </div>
         </div>
       ) : null}
 
@@ -272,7 +309,7 @@ export default function GalaxyScreen({
         <div
           className="warp-overlay pointer-events-none absolute inset-0 flex items-center justify-center z-30"
           style={{
-            background: `radial-gradient(ellipse at center, rgba(253,128,46,0.18) 0%, rgba(253,128,46,0.06) 40%, ${BG}f0 85%)`,
+            background: `radial-gradient(ellipse at center, rgba(253,128,46,0.18) 0%, rgba(253,128,46,0.06) 40%, rgba(1,8,40,0.94) 85%)`,
           }}
         >
           <div
@@ -381,6 +418,7 @@ function SubjectChoice({
 }) {
   const intro = SUBJECT_INTRO[subject];
   const schema = SUBJECT_SCHEMAS[subject];
+  const subjectAccent = SUBJECT_ACCENT[subject];
   return (
     <button
       type="button"
@@ -394,11 +432,11 @@ function SubjectChoice({
         minHeight: 200,
       }}
     >
-      {/* 코너 마커 — 6×6 정사각 dot */}
+      {/* 코너 마커 — 과목별 액센트 (ADSP 시안 / SQLD 퍼플) */}
       <span
         aria-hidden
         className="block w-[7px] h-[7px] mb-5 transition group-hover:scale-110"
-        style={{ background: FG }}
+        style={{ background: subjectAccent }}
       />
 
       {/* 타이틀 — Anton 큰 사이즈 */}
@@ -420,7 +458,7 @@ function SubjectChoice({
       {/* 메타 — 하단 hairline 으로 구분 */}
       <div
         className="flex items-center justify-between mt-5 pt-3"
-        style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}
+        style={{ borderTop: '1px solid rgba(255,255,255,0.16)' }}
       >
         <span
           className="kr-heading uppercase text-[10px] tabular-nums"
@@ -428,7 +466,7 @@ function SubjectChoice({
         >
           챕터 {schema.chapters.length} · 문항 {total}
         </span>
-        <ArrowRight size={14} strokeWidth={2} style={{ color: FG }} />
+        <ArrowRight size={14} strokeWidth={2} style={{ color: subjectAccent }} />
       </div>
     </button>
   );
@@ -455,14 +493,18 @@ function IconBox({
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="relative w-9 h-9 md:w-10 md:h-10 inline-flex items-center justify-center transition hover:bg-[rgba(253,128,46,0.06)] focus:outline-none focus-visible:bg-[rgba(253,128,46,0.1)]"
-      style={{ border: `1px solid ${LINE}`, color: FG }}
+      className="relative w-9 h-9 md:w-10 md:h-10 inline-flex items-center justify-center rounded-full transition hover:bg-[rgba(255,255,255,0.1)] focus:outline-none focus-visible:bg-[rgba(255,255,255,0.14)] backdrop-blur-md"
+      style={{
+        border: `1px solid ${LINE}`,
+        color: FG,
+        background: 'rgba(255,255,255,0.06)',
+      }}
     >
       {children}
       {indicator ? (
         <span
           className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full"
-          style={{ background: FG }}
+          style={{ background: ACCENT }}
         />
       ) : null}
     </button>
@@ -496,17 +538,23 @@ function SubjectInfoPanel({
   const schema = SUBJECT_SCHEMAS[subject];
   const intro = SUBJECT_INTRO[subject];
   const agg = aggregateSubject(subject, progress);
+  const subjectAccent = SUBJECT_ACCENT[subject];
+  const subjectAccentRgb = SUBJECT_ACCENT_RGB[subject];
 
   return (
     <div className="panel-slide-up">
       <div
-        className="liquid-glass rounded-[18px] relative"
+        className="rounded-[20px] relative overflow-hidden"
         style={{
-          padding: '20px 20px 22px',
+          padding: '24px 22px 24px',
           color: FG,
-          background: 'rgba(35,61,76,0.96)',
-          backdropFilter: 'blur(22px) saturate(140%)',
-          WebkitBackdropFilter: 'blur(22px) saturate(140%)',
+          // 어두운 반투명 + 강한 블러 — backdrop 위에서도 콘트라스트 확보
+          background:
+            'linear-gradient(135deg, rgba(15,25,50,0.72) 0%, rgba(15,25,50,0.55) 100%)',
+          backdropFilter: 'blur(28px) saturate(170%)',
+          WebkitBackdropFilter: 'blur(28px) saturate(170%)',
+          border: `1px solid rgba(${subjectAccentRgb}, 0.3)`,
+          boxShadow: `0 24px 64px rgba(0,0,0,0.55), inset 0 1px 0 rgba(${subjectAccentRgb}, 0.25)`,
         }}
       >
         {/* 닫기 */}
@@ -515,7 +563,7 @@ function SubjectInfoPanel({
           onClick={onBack}
           disabled={launching}
           aria-label="닫기"
-          className="absolute top-3 right-3 w-8 h-8 inline-flex items-center justify-center transition hover:bg-[rgba(255,255,255,0.06)] disabled:opacity-40"
+          className="absolute top-3 right-3 w-8 h-8 inline-flex items-center justify-center rounded-full transition hover:bg-[rgba(255,255,255,0.12)] disabled:opacity-40"
           style={{ color: FG }}
         >
           <X size={16} strokeWidth={2} />
@@ -524,7 +572,7 @@ function SubjectInfoPanel({
         <div className="flex items-baseline gap-3 pr-8">
           <span
             className="kr-heading uppercase text-[28px] md:text-[34px] leading-none"
-            style={{ letterSpacing: '0.005em', color: FG }}
+            style={{ letterSpacing: '0.005em', color: subjectAccent }}
           >
             {subject.toUpperCase()}
           </span>
@@ -566,11 +614,12 @@ function SubjectInfoPanel({
             type="button"
             onClick={onPlay}
             disabled={launching || total === 0}
-            className="kr-heading uppercase tracking-widest text-[12px] md:text-[13px] px-5 py-3 inline-flex items-center gap-2 transition hover:bg-[rgba(253,128,46,0.9)] disabled:opacity-50 disabled:cursor-not-allowed flex-1 justify-center"
+            className="kr-heading uppercase tracking-widest text-[12px] md:text-[13px] px-5 py-3 rounded-full inline-flex items-center gap-2 transition hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed flex-1 justify-center"
             style={{
-              background: FG,
-              color: BG,
+              background: subjectAccent,
+              color: '#0a0f1f',
               letterSpacing: '0.16em',
+              boxShadow: `0 6px 18px rgba(${subjectAccentRgb}, 0.45)`,
             }}
           >
             {launching ? '워프 중…' : `${subject.toUpperCase()} 플레이하기`}
@@ -580,11 +629,12 @@ function SubjectInfoPanel({
             type="button"
             onClick={onBack}
             disabled={launching}
-            className="kr-heading uppercase text-[10px] md:text-[11px] px-4 py-3 transition hover:bg-[rgba(253,128,46,0.08)] disabled:opacity-40 shrink-0"
+            className="kr-heading uppercase text-[10px] md:text-[11px] px-4 py-3 rounded-full transition hover:bg-[rgba(255,255,255,0.1)] disabled:opacity-40 shrink-0"
             style={{
               border: `1px solid ${LINE}`,
               color: FG,
               letterSpacing: '0.16em',
+              background: 'rgba(255,255,255,0.04)',
             }}
           >
             다른 과목
@@ -596,11 +646,12 @@ function SubjectInfoPanel({
           type="button"
           onClick={onMockExam}
           disabled={launching || total === 0}
-          className="mt-2 w-full kr-heading uppercase text-[10px] md:text-[11px] px-4 py-3 inline-flex items-center justify-center gap-2 transition hover:bg-[rgba(253,128,46,0.06)] disabled:opacity-40"
+          className="mt-2 w-full kr-heading uppercase text-[10px] md:text-[11px] px-4 py-3 rounded-full inline-flex items-center justify-center gap-2 transition hover:bg-[rgba(255,255,255,0.08)] disabled:opacity-40"
           style={{
             border: `1px solid ${LINE}`,
             color: FG_SOFT,
             letterSpacing: '0.16em',
+            background: 'rgba(255,255,255,0.04)',
           }}
         >
           <span>모의고사 50문항</span>

@@ -25,6 +25,7 @@ import TopBar from './TopBar';
 import SpeechBubble from './SpeechBubble';
 import OptionsPanel from './OptionsPanel';
 import FeedbackSheet from './FeedbackSheet';
+import PageAmbientBg from '../components/PageAmbientBg';
 
 interface Props {
   subject: Subject;
@@ -73,6 +74,9 @@ export default function DialogueLesson({
   const [chosen, setChosen] = useState<number | null>(null);
   const [correct, setCorrect] = useState<boolean | null>(null);
   const startedAtRef = useRef<number>(Date.now());
+  const [xpToast, setXpToast] = useState<{ amount: number; key: number } | null>(
+    null,
+  );
 
   // 스텝이 바뀔 때 상태 초기화 + 질문 타이머 시작
   useEffect(() => {
@@ -170,8 +174,12 @@ export default function DialogueLesson({
     const ok = idx === quizQuestion.answerIndex;
     setCorrect(ok);
     const timeMs = Date.now() - startedAtRef.current;
-    recordSingleAnswer(quizQuestion.id, ok, timeMs);
+    const xp = recordSingleAnswer(quizQuestion.id, ok, timeMs);
     setPhase('feedback');
+    if (xp > 0) {
+      setXpToast({ amount: xp, key: Date.now() });
+      window.setTimeout(() => setXpToast(null), 1800);
+    }
   };
 
   const handleNextStep = () => {
@@ -223,10 +231,37 @@ export default function DialogueLesson({
 
   return (
     <section
-      className="relative min-h-screen bg-base text-cream flex flex-col"
+      className="relative min-h-screen text-cream flex flex-col isolate"
       data-subject={subject}
     >
+      <PageAmbientBg />
       <TopBar progress={progress} onExit={onBack} />
+
+      {/* XP 획득 토스트 */}
+      {xpToast ? (
+        <div
+          key={xpToast.key}
+          className="fixed top-[18%] left-1/2 -translate-x-1/2 z-[60] pointer-events-none"
+          style={{
+            animation: 'xpToastRise 1.8s cubic-bezier(0.18, 0.9, 0.4, 1) forwards',
+          }}
+        >
+          <div
+            className="kr-heading px-5 py-3 rounded-full"
+            style={{
+              background: 'linear-gradient(135deg, #FFB020 0%, #FD802E 100%)',
+              color: '#0a0f1f',
+              boxShadow:
+                '0 18px 48px -8px rgba(253,128,46,0.6), 0 0 0 2px rgba(255,255,255,0.18) inset',
+              fontSize: 22,
+              letterSpacing: '0.04em',
+              textShadow: '0 1px 0 rgba(255,255,255,0.25)',
+            }}
+          >
+            +{xpToast.amount} XP
+          </div>
+        </div>
+      ) : null}
 
       <main className="flex-1 mx-auto w-full max-w-[820px] px-5 md:px-8 pt-6 pb-36">
         {/* 캐릭터 + 말풍선 영역 */}

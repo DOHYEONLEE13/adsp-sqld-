@@ -1,15 +1,15 @@
 import type { NavLink, SocialLink } from '@/types/site';
+import { COMPANY } from './site';
 
 export const NAV_LINKS: NavLink[] = [
   { label: '홈', href: '#hero' },
-  { label: 'ADSP', href: '#modes' },
-  { label: 'SQLD', href: '#modes' },
+  { label: '소개', href: '#/about' },
+  { label: '모드', href: '#modes' },
   { label: '요금제', href: '#pricing' },
-  { label: '플레이', href: '#/game' },
 ];
 
 export const SOCIAL_LINKS: SocialLink[] = [
-  { platform: 'email', href: 'mailto:hello@questdp.app', label: 'Email' },
+  { platform: 'email', href: `mailto:${COMPANY.email}`, label: 'Email' },
   { platform: 'twitter', href: 'https://twitter.com', label: 'Twitter' },
   { platform: 'github', href: 'https://github.com', label: 'GitHub' },
 ];

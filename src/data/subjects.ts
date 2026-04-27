@@ -54,7 +54,7 @@ export const SQLD_SCHEMA: SubjectSchema = {
     {
       chapter: 2,
       title: 'SQL 기본 및 활용',
-      topics: ['SQL 기본', 'SQL 활용', 'SQL 최적화 기본 원리'],
+      topics: ['SQL 기본', 'SQL 활용', '관리 구문'],
     },
   ],
 };

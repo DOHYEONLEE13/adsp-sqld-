@@ -17,6 +17,7 @@ import {
 import type { QuestSession } from '../types';
 import { cx } from '@/lib/utils';
 import ScreenShell from '../components/ScreenShell';
+import PageAmbientBg from '../components/PageAmbientBg';
 import { setNote, toggleBookmark } from '../bookmarks';
 import { useBookmarks } from '../useBookmarks';
 import XpPopup from '../components/XpPopup';
@@ -125,6 +126,7 @@ export default function QuestScreen({
         title="세션 종료"
         onExit={onAbort}
         exitLabel="나가기"
+        ambient={<PageAmbientBg />}
       >
         <button
           type="button"
@@ -179,6 +181,7 @@ export default function QuestScreen({
       subtitle={session.chapterTitle}
       onExit={onAbort}
       exitLabel="중단"
+      ambient={<PageAmbientBg />}
     >
       {/* 상단 HUD — 진행률 + (test 일 때) 타이머 */}
       <div className="flex items-center gap-4 mb-6">

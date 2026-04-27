@@ -50,9 +50,41 @@ test.describe('smoke', () => {
     await expect(page.getByText(/Step\s*1/i).first()).toBeVisible({ timeout: 5000 });
   });
 
+  test('2-SQLD. SQLD chooser → planet → zone (스키마 토픽 노출)', async ({ page }) => {
+    await page.goto('/#/game');
+    // SQLD 카드
+    await expect(page.getByRole('button', { name: /SQLD/i }).first()).toBeVisible();
+    await page.getByRole('button', { name: /SQLD 선택/i }).click();
+    // SubjectInfoPanel — SQLD 플레이하기
+    const playButton = page.getByRole('button', { name: /플레이하기/ });
+    await expect(playButton).toBeVisible({ timeout: 5000 });
+    await playButton.click();
+    // Planet — Chapter 1 (데이터 모델링의 이해), Chapter 2 (SQL 기본 및 활용)
+    await expect(page.getByRole('button', { name: /Chapter 1/i })).toBeVisible({
+      timeout: 10_000,
+    });
+    await expect(page.getByRole('button', { name: /Chapter 2/i })).toBeVisible();
+    // Chapter 1 → Zone
+    await page.getByRole('button', { name: /Chapter 1/i }).click();
+    // Step 1 (= 모델링의 3특징 + 3관점) 표시
+    await expect(page.getByText(/Step\s*1/i).first()).toBeVisible({ timeout: 5000 });
+  });
+
+  test('2-SQLD-deep. SQLD ch2 zone — SQL 기본/활용/관리 구문 3 토픽 모두 노출', async ({
+    page,
+  }) => {
+    await page.goto('/#/game/sqld');
+    await page.getByRole('button', { name: /Chapter 2/i }).click();
+    // ZoneScreen 의 step 라벨은 화면상 "STEP n" (대문자) — case-insensitive 매칭
+    await expect(page.getByText(/Step\s*1/i).first()).toBeVisible({ timeout: 5000 });
+    // 12+12+8 = 32 step 중 적어도 8개는 표시되어야 함 (스크롤 가능)
+    const stepCount = await page.getByText(/Step\s*\d+/i).count();
+    expect(stepCount).toBeGreaterThanOrEqual(8);
+  });
+
   test('3. /quests 페이지 렌더', async ({ page }) => {
     await page.goto('/#/quests');
-    await expect(page.getByText(/오늘의 퀘스트/)).toBeVisible();
+    await expect(page.getByRole('heading', { name: /오늘의 퀘스트/ }).first()).toBeVisible();
   });
 
   test('4. /friends 게스트 안내', async ({ page }) => {
@@ -66,6 +98,36 @@ test.describe('smoke', () => {
     await page.goto('/#/stats');
     // Google 로 시작 버튼
     await expect(page.getByRole('button', { name: /Google 로 시작/i })).toBeVisible();
+  });
+
+  test('7. 법적 페이지 — 개인정보·이용약관·환불·소개 라우트 정상 진입', async ({
+    page,
+  }) => {
+    for (const slug of ['about', 'privacy', 'terms', 'refund']) {
+      await page.goto(`/#/${slug}`);
+      // 각 페이지의 hero h1 가 보여야
+      await expect(page.locator('h1').first()).toBeVisible({ timeout: 5000 });
+      // 홈으로 버튼
+      await expect(page.getByRole('button', { name: /홈으로/ })).toBeVisible();
+    }
+  });
+
+  test('8. 랜딩 헤더 — 로그인 버튼 노출', async ({ page }) => {
+    await page.goto('/');
+    // Supabase 미설정 환경이면 "지금 시작" 버튼, 설정되어 있으면 "로그인" 버튼
+    const loginOrStart = page
+      .getByRole('link', { name: /지금 시작/ })
+      .or(page.getByRole('button', { name: /로그인/ }));
+    await expect(loginOrStart.first()).toBeVisible({ timeout: 5000 });
+  });
+
+  test('9. /admin — 비-admin 게스트는 접근 거부 메시지 또는 홈 redirect', async ({
+    page,
+  }) => {
+    await page.goto('/#/admin');
+    // 게스트는 isAdmin=false → "접근 권한이 없습니다" 보이거나 홈으로 redirect
+    const denied = page.getByText(/접근 권한이 없습니다|홈으로/);
+    await expect(denied.first()).toBeVisible({ timeout: 5000 });
   });
 
   test('6. 모바일 하단 4-탭 nav (학습/퀘스트/친구/프로필)', async ({ page }) => {

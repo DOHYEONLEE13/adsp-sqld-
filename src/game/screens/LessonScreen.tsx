@@ -36,6 +36,7 @@ import {
 } from '@/data/lessons';
 import { useProgress } from '../useProgress';
 import { recordSingleAnswer } from '../storage';
+import PageAmbientBg from '../components/PageAmbientBg';
 
 const SUBJECT_ACCENT: Record<Subject, string> = {
   adsp: '#67e8f9',
@@ -95,6 +96,11 @@ export default function LessonScreen({
   const [quizState, setQuizState] = useState<
     Record<number, { chosen: number; correct: boolean }>
   >({});
+
+  /** XP 획득 토스트 — `+10` 같이 잠깐 떴다 사라짐. */
+  const [xpToast, setXpToast] = useState<{ amount: number; key: number } | null>(
+    null,
+  );
 
   const progress = useProgress();
   const startedAtRef = useRef<number>(Date.now());
@@ -159,8 +165,14 @@ export default function LessonScreen({
     if (savedQuiz || !quizQuestion) return;
     const correct = idx === quizQuestion.answerIndex;
     const timeMs = Date.now() - startedAtRef.current;
-    recordSingleAnswer(quizQuestion.id, correct, timeMs);
+    const xp = recordSingleAnswer(quizQuestion.id, correct, timeMs);
     setQuizState((s) => ({ ...s, [stepIdx]: { chosen: idx, correct } }));
+    if (xp > 0) {
+      setXpToast({ amount: xp, key: Date.now() });
+      window.setTimeout(() => {
+        setXpToast(null);
+      }, 1800);
+    }
   };
 
   const goNextStep = () => {
@@ -209,15 +221,42 @@ export default function LessonScreen({
   const isLastStep = stepIdx === lesson.steps.length - 1;
 
   return (
-    <section className="relative min-h-screen bg-base text-cream isolate overflow-hidden pb-24">
-      {/* 배경 글로우 */}
+    <section className="relative min-h-screen text-cream isolate overflow-hidden pb-24">
+      <PageAmbientBg />
+      {/* 토픽 액센트 글로우 — 영상 위에 살짝 색감 */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10"
+        className="pointer-events-none absolute inset-0 -z-[5]"
         style={{
           background: `radial-gradient(ellipse at 50% 0%, ${accent}1f 0%, rgba(1,8,40,0) 55%)`,
         }}
       />
+
+      {/* XP 획득 토스트 — 첫 정답 시 1.8초 등장 */}
+      {xpToast ? (
+        <div
+          key={xpToast.key}
+          className="fixed top-[18%] left-1/2 -translate-x-1/2 z-[60] pointer-events-none"
+          style={{
+            animation: 'xpToastRise 1.8s cubic-bezier(0.18, 0.9, 0.4, 1) forwards',
+          }}
+        >
+          <div
+            className="kr-heading px-5 py-3 rounded-full"
+            style={{
+              background: 'linear-gradient(135deg, #FFB020 0%, #FD802E 100%)',
+              color: '#0a0f1f',
+              boxShadow:
+                '0 18px 48px -8px rgba(253,128,46,0.6), 0 0 0 2px rgba(255,255,255,0.18) inset',
+              fontSize: 22,
+              letterSpacing: '0.04em',
+              textShadow: '0 1px 0 rgba(255,255,255,0.25)',
+            }}
+          >
+            +{xpToast.amount} XP
+          </div>
+        </div>
+      ) : null}
 
       {/* ============ Sticky 진행바 ============ */}
       <div

@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import Landing from './pages/Landing';
+import LegalPage from './pages/LegalPage';
+import AdminPage from './pages/AdminPage';
 import GamePage from './game/GamePage';
 import StatsPage from './game/StatsPage';
 import BookmarksPage from './game/BookmarksPage';
@@ -15,13 +17,24 @@ import { initBookmarksSync } from './game/bookmarks';
 import { initExamDatesSync } from './game/examDate';
 import { initEnergySync } from './game/energy';
 import { initStepUnlocksSync } from './game/stepUnlocks';
+import type { LegalDoc } from './data/legal';
 
-type Route = 'landing' | 'game' | 'stats' | 'bookmarks' | 'quests' | 'friends';
+type Route =
+  | 'landing'
+  | 'game'
+  | 'stats'
+  | 'bookmarks'
+  | 'quests'
+  | 'friends'
+  | 'legal'
+  | 'admin';
 
 interface RouteState {
   route: Route;
   /** `#/game/adsp` · `#/game/sqld` 처럼 deep-link 진입 시 시작 과목. */
   initialSubject?: Subject;
+  /** legal 페이지 진입 시 어느 문서. */
+  legalSlug?: LegalDoc['slug'];
 }
 
 /**
@@ -43,6 +56,15 @@ function getRoute(): RouteState {
   if (hash.startsWith('/friends')) return { route: 'friends' };
   if (hash.startsWith('/stats')) return { route: 'stats' };
   if (hash.startsWith('/bookmarks')) return { route: 'bookmarks' };
+  if (hash.startsWith('/admin')) return { route: 'admin' };
+  if (hash.startsWith('/about'))
+    return { route: 'legal', legalSlug: 'about' };
+  if (hash.startsWith('/privacy'))
+    return { route: 'legal', legalSlug: 'privacy' };
+  if (hash.startsWith('/terms'))
+    return { route: 'legal', legalSlug: 'terms' };
+  if (hash.startsWith('/refund'))
+    return { route: 'legal', legalSlug: 'refund' };
   if (hash.startsWith('/game')) {
     const parts = hash.split('/').filter(Boolean); // ['game'] or ['game', 'adsp']
     const sub = parts[1];
@@ -61,7 +83,7 @@ function getRoute(): RouteState {
 }
 
 export default function App() {
-  const [{ route, initialSubject }, setRouteState] =
+  const [{ route, initialSubject, legalSlug }, setRouteState] =
     useState<RouteState>(() => getRoute());
 
   useEffect(() => {
@@ -137,6 +159,27 @@ export default function App() {
       <BookmarksPage
         onExit={() => {
           window.location.hash = '/game';
+        }}
+      />
+    );
+  }
+
+  if (route === 'legal' && legalSlug) {
+    return (
+      <LegalPage
+        slug={legalSlug}
+        onBack={() => {
+          window.location.hash = '';
+        }}
+      />
+    );
+  }
+
+  if (route === 'admin') {
+    return (
+      <AdminPage
+        onBack={() => {
+          window.location.hash = '';
         }}
       />
     );

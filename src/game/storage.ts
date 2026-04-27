@@ -67,9 +67,18 @@ export interface ProgressStore {
    * 사용자는 Planet 화면의 "다른 과목" 버튼으로 언제든 변경 가능 (chooser 재진입).
    */
   activeSubject?: Subject;
+  /**
+   * 레슨 step 단일 문제 풀이로 누적된 XP. (sessions 의 합산과는 별도)
+   * 같은 문제의 첫 정답에만 +XP_PER_LESSON_CORRECT 부여 — 같은 문제를 여러 번 정답해도
+   * 무한 XP 가 쌓이지 않게 함. 세트 완주 보너스 (정확도·스트릭) 는 sessions 에서 별도.
+   */
+  lessonXp?: number;
   createdAt: number;
   updatedAt: number;
 }
+
+/** 레슨 step 정답 시 부여되는 XP (한 문제당). */
+export const XP_PER_LESSON_CORRECT = 10;
 
 // ----------------------------------------------------------------
 // Load / save
@@ -100,6 +109,7 @@ function loadStore(): ProgressStore {
       sessions: parsed.sessions ?? [],
       lastDailyMissionAt: parsed.lastDailyMissionAt,
       activeSubject: parsed.activeSubject,
+      lessonXp: parsed.lessonXp,
       createdAt: parsed.createdAt ?? Date.now(),
       updatedAt: parsed.updatedAt ?? Date.now(),
     };
@@ -219,20 +229,33 @@ export function recordSessionSummary(summary: QuestSummary): void {
 /**
  * 레슨 스텝의 단일 문제 응답 기록.
  * Quest 세션이 아닌 개념 학습 중 즉석 풀이도 같은 stat 으로 누적됩니다.
+ * 같은 문제의 [첫 정답] 에만 +XP_PER_LESSON_CORRECT 부여.
+ *
+ * @returns 이번 답으로 부여된 XP 양 (UI 토스트용). 첫 정답이 아니면 0.
  */
 export function recordSingleAnswer(
   questionId: string,
   correct: boolean,
   timeMs: number,
-): void {
+): number {
   const at = Date.now();
+  const prevStat = current.questionStats[questionId];
+  // 첫 정답인지 — 이전에 한 번도 안 맞췄고 이번에 맞췄을 때.
+  const isFirstCorrect =
+    correct && (!prevStat || prevStat.correct === 0);
+  const xpAwarded = isFirstCorrect ? XP_PER_LESSON_CORRECT : 0;
+
   const next = applyAnswer(current, questionId, { correct, timeMs, at });
-  commit({ ...next, updatedAt: at });
+  const nextLessonXp = (current.lessonXp ?? 0) + xpAwarded;
+  commit({ ...next, lessonXp: nextLessonXp, updatedAt: at });
+
   // 서버에도 반영 (인증돼 있을 때만, fire-and-forget). question_stats 는 PUT-style.
   const stat = next.questionStats[questionId];
   if (stat) {
     void pushQuestionStatToServer(questionId, stat);
   }
+
+  return xpAwarded;
 }
 
 /** 개발자/사용자용 리셋 (#/stats 에 연결 예정). */

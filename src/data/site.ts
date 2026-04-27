@@ -63,3 +63,22 @@ export const CTA: CtaContent = {
   restLines: ['행성을 정복하고.', '레벨을 올리고.', '시험을 끝내세요.'],
   videoUrl: VIDEO_URLS.cta,
 };
+
+/**
+ * 회사·운영자 정보. 사업자등록 전이면 placeholder 유지 + "준비 중" 표기.
+ * 사업자등록 완료 시 실제 정보로 교체. 한국 전자상거래법상 표시 의무.
+ */
+export const COMPANY = {
+  name: 'QuestDP',
+  representative: '이도현',
+  /** 운영 전용 이메일 — 약관·정책·푸터·문의 모든 곳에서 이 한 곳을 참조. */
+  email: 'questdpofficial@gmail.com',
+  contact: '문의는 이메일로',
+  // 아래 항목들은 사업자등록 후 채워질 자리. 현재는 "준비 중" 명시.
+  businessNumber: '사업자등록 준비 중',
+  ecommerceNumber: '통신판매업 신고 준비 중',
+  address: '서울특별시 (정식 주소 등록 예정)',
+  hostingProvider: 'Cloudflare Pages',
+  /** 약관·정책의 마지막 개정일. 변경 시 같이 갱신. */
+  policyUpdatedAt: '2026-04-28',
+} as const;

@@ -41,3 +41,7 @@ adsp_sqld_platform_research.json
 pdf_extracted.txt
 pdf_full.txt
 extract_pdf.py
+
+# 자동 생성 보고서 — 사용자 데이터 포함 (개인정보)
+reports/
+test-results/

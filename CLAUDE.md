@@ -353,3 +353,14 @@ npm run typecheck  # tsc --noEmit
   - LessonScreen 재작성 (sticky 진행바 + 이전/다음 네비)
   - 토픽 정규화 레이어 (`topicAlias.ts`) 도입
 - **세션 이어받을 때**: 이 문서 먼저 → `src/game/GamePage.tsx` → `src/data/lessons.ts` → `src/data/topicAlias.ts` 순으로 훑으면 30분 안에 손 들어간다.
+
+---
+
+## 8. 사이드 토픽 — 보류 중
+
+### 사업화 / 결제 / 세무 (보류)
+
+- 2026-04-27 결정: **결제·사업자등록 보류**, 배포 + 콘텐츠 우선
+- 사용자가 "사업자 / 결제 / 토스 / 세금 / 부가세 / 종소세" 관련 질문을 다시 꺼내면
+  → **`docs/business-setup-roadmap.md`** 부터 펼치기. 그 문서에 모든 단계·서류·업종 코드·세금 캘린더 정리되어 있음
+- 자동화 산출물: **`scripts/monthly-report.mjs`** + `npm run report` — Supabase 데이터 → Excel 7-시트 보고서. service_role 키만 `.env.local` 에 추가하면 바로 동작

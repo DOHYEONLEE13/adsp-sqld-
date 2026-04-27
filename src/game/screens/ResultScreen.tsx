@@ -8,6 +8,7 @@ import { CheckCircle2, Clock, RefreshCcw, Star, XCircle } from 'lucide-react';
 import type { QuestSummary } from '../types';
 import { formatDuration } from '../session';
 import ScreenShell from '../components/ScreenShell';
+import PageAmbientBg from '../components/PageAmbientBg';
 import { cx } from '@/lib/utils';
 import { bulkAdd, toggleBookmark } from '../bookmarks';
 import { useBookmarks } from '../useBookmarks';
@@ -54,6 +55,7 @@ export default function ResultScreen({
       subtitle={`${summary.chapterTitle}${summary.topic ? ' · ' + summary.topic : ' · 전체 믹스'}`}
       onExit={onBackToGalaxy}
       exitLabel="은하로"
+      ambient={<PageAmbientBg />}
     >
       {/* KPI 3종 */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">

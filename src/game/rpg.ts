@@ -136,7 +136,7 @@ export interface PlayerStats extends LevelInfo {
   streakDays: number;
 }
 
-/** 전체 플레이어 상태 — sessions 를 모두 합산. */
+/** 전체 플레이어 상태 — sessions 합산 + 레슨 step 누적 XP. */
 export function computePlayerStats(store: ProgressStore): PlayerStats {
   let totalXp = 0;
   let correctTotal = 0;
@@ -144,6 +144,8 @@ export function computePlayerStats(store: ProgressStore): PlayerStats {
     totalXp += xpForSessionRecord(s).total;
     correctTotal += s.correctCount;
   }
+  // 레슨 step 정답으로 누적된 XP (sessions 와 별도)
+  totalXp += store.lessonXp ?? 0;
   const lvl = levelFromXp(totalXp);
   return {
     ...lvl,

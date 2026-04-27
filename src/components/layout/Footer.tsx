@@ -1,10 +1,115 @@
-import { BRAND } from '@/data/site';
+import { BRAND, COMPANY } from '@/data/site';
 
 export default function Footer() {
   const year = new Date().getFullYear();
   return (
-    <footer className="bg-base py-10 text-center text-[12px] tracking-widest text-cream/55 uppercase">
-      © {year} {BRAND.nameKr} — ADSP · SQLD, {BRAND.tagline.split('—')[1]?.trim() ?? '놀면서 합격'}.
+    <footer className="bg-base text-cream/55 border-t border-cream/10">
+      <div className="max-w-[1200px] mx-auto px-6 md:px-10 py-12 md:py-14">
+        {/* 상단 — 로고 + 법적 링크 */}
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8 md:gap-12 mb-10">
+          {/* 좌: 로고 + 한 줄 소개 */}
+          <div className="max-w-[320px]">
+            <a
+              href="#"
+              className="kr-heading uppercase text-[18px] tracking-wider text-cream hover:text-neon transition-colors inline-block mb-3"
+            >
+              {BRAND.logoLeft}
+              <span className="text-neon">{BRAND.separator}</span>
+              {BRAND.logoRight}
+            </a>
+            <p className="kr-body text-[12px] leading-[1.65] text-cream/55">
+              {BRAND.tagline}. ADSP · SQLD 자격증을 게임으로 정복하는 학습
+              플랫폼.
+            </p>
+          </div>
+
+          {/* 우: 링크 그룹 (서비스 / 정책 / 문의) */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 md:gap-12 text-[11px] md:text-[12px] uppercase tracking-widest">
+            <FooterLinkGroup
+              title="서비스"
+              links={[
+                { label: '소개', href: '#/about' },
+                { label: '플레이', href: '#/game' },
+                { label: '요금제', href: '#pricing' },
+              ]}
+            />
+            <FooterLinkGroup
+              title="정책"
+              links={[
+                { label: '개인정보 처리방침', href: '#/privacy' },
+                { label: '이용약관', href: '#/terms' },
+                { label: '환불 정책', href: '#/refund' },
+              ]}
+            />
+            <FooterLinkGroup
+              title="문의"
+              links={[
+                { label: COMPANY.email, href: `mailto:${COMPANY.email}` },
+              ]}
+            />
+          </div>
+        </div>
+
+        {/* 중간 — 사업자 정보 (전자상거래법 표시 의무) */}
+        <div className="text-[11px] md:text-[12px] leading-[1.7] text-cream/45 space-y-1 mb-8 pb-8 border-b border-cream/10">
+          <p>
+            <span className="text-cream/60">상호</span> {BRAND.nameKr} ·{' '}
+            <span className="text-cream/60">대표</span> {COMPANY.representative}
+          </p>
+          <p>
+            <span className="text-cream/60">사업자등록번호</span>{' '}
+            {COMPANY.businessNumber} ·{' '}
+            <span className="text-cream/60">통신판매업</span>{' '}
+            {COMPANY.ecommerceNumber}
+          </p>
+          <p>
+            <span className="text-cream/60">주소</span> {COMPANY.address} ·{' '}
+            <span className="text-cream/60">호스팅</span>{' '}
+            {COMPANY.hostingProvider}
+          </p>
+          <p>
+            <span className="text-cream/60">이메일</span> {COMPANY.email}
+          </p>
+        </div>
+
+        {/* 하단 — 저작권 */}
+        <div className="flex flex-col sm:flex-row sm:justify-between gap-3 text-[11px] uppercase tracking-widest text-cream/45">
+          <p>
+            © {year} {BRAND.nameKr}. ALL RIGHTS RESERVED.
+          </p>
+          <p>최종 개정 · {COMPANY.policyUpdatedAt}</p>
+        </div>
+      </div>
     </footer>
+  );
+}
+
+interface FooterLinkGroupProps {
+  title: string;
+  links: { label: string; href: string }[];
+}
+
+function FooterLinkGroup({ title, links }: FooterLinkGroupProps) {
+  return (
+    <div>
+      <div className="kr-heading text-[10px] text-cream/85 mb-3">{title}</div>
+      <ul className="space-y-2.5 list-none m-0 p-0">
+        {links.map((link) => (
+          <li key={link.href}>
+            <a
+              href={link.href}
+              className="text-cream/55 hover:text-neon transition-colors break-all"
+              {...(link.href.startsWith('mailto:')
+                ? {}
+                : link.href.startsWith('http')
+                  ? { target: '_blank', rel: 'noopener noreferrer' }
+                  : {})}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

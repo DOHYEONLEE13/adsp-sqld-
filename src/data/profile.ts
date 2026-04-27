@@ -12,6 +12,7 @@
  * 태그 형식: `Q-XXXX-XXXX`. 서버측 트리거가 가입 시 자동 발급, 클라는 받아만 씀.
  */
 
+import { useSyncExternalStore } from 'react';
 import type { QuesPose } from '@/components/mascot/types';
 import { getSupabase, onAuthStateChange } from '@/lib/supabase';
 
@@ -39,6 +40,8 @@ export interface MyProfile {
   displayName: string;
   /** 아바타 포즈 — Ques 마스코트의 표정/포즈. */
   avatarPose: QuesPose;
+  /** 운영자 권한. server 의 profiles.role 동기화. 게스트는 항상 false. */
+  isAdmin: boolean;
   createdAt: number;
 }
 
@@ -47,6 +50,8 @@ interface StoredProfile {
   tag: string;
   displayName: string;
   avatarPose?: QuesPose;
+  /** 'user' | 'admin' — server 에서 동기화. 미설정 시 'user'. */
+  role?: 'user' | 'admin';
   createdAt: number;
 }
 
@@ -99,6 +104,7 @@ export function getMyProfile(): MyProfile {
       tag: stored.tag,
       displayName: stored.displayName || stored.tag,
       avatarPose: stored.avatarPose ?? DEFAULT_AVATAR_POSE,
+      isAdmin: stored.role === 'admin',
       createdAt: stored.createdAt,
     };
   }
@@ -114,6 +120,7 @@ export function getMyProfile(): MyProfile {
     tag: fresh.tag,
     displayName: fresh.displayName || fresh.tag,
     avatarPose: fresh.avatarPose ?? DEFAULT_AVATAR_POSE,
+    isAdmin: false,
     createdAt: fresh.createdAt,
   };
 }
@@ -156,7 +163,32 @@ export function subscribeProfile(cb: () => void): () => void {
   return () => listeners.delete(cb);
 }
 
+/**
+ * useSyncExternalStore 가 reference equality 로 비교하므로
+ * 매 호출마다 새 객체를 반환하면 무한 렌더가 발생.
+ * 캐시된 snapshot 을 유지하고 notify 가 호출될 때만 무효화한다.
+ */
+let cachedSnapshot: MyProfile | null = null;
+function profileSnapshot(): MyProfile {
+  if (cachedSnapshot === null) cachedSnapshot = getMyProfile();
+  return cachedSnapshot;
+}
+
+/**
+ * React 훅 — `getMyProfile()` 결과를 구독해 변경 시 자동 re-render.
+ * `useSyncExternalStore` 기반 (storage·friends·useProgress 와 동일 패턴).
+ */
+export function useMyProfile(): MyProfile {
+  return useSyncExternalStore(
+    subscribeProfile,
+    profileSnapshot,
+    profileSnapshot,
+  );
+}
+
 function notify() {
+  // 캐시 무효화 — 다음 snapshot 호출에서 fresh 객체 생성
+  cachedSnapshot = null;
   for (const cb of listeners) {
     try {
       cb();
@@ -183,7 +215,7 @@ async function pullFromSupabase(): Promise<void> {
   const fetchOnce = () =>
     sb
       .from('profiles')
-      .select('tag, display_name, avatar_pose, created_at')
+      .select('tag, display_name, avatar_pose, role, created_at')
       .eq('id', sess.session!.user.id)
       .maybeSingle();
 
@@ -197,11 +229,14 @@ async function pullFromSupabase(): Promise<void> {
 
   // 서버 응답 → localStorage 덮어쓰기
   const local = loadStored();
+  const role: 'user' | 'admin' =
+    data.role === 'admin' ? 'admin' : 'user';
   saveStored({
     v: 1,
     tag: data.tag,
     displayName: data.display_name ?? '',
     avatarPose: (data.avatar_pose as QuesPose) ?? DEFAULT_AVATAR_POSE,
+    role,
     createdAt: local?.createdAt ?? Date.parse(data.created_at) ?? Date.now(),
   });
   notify();

@@ -34,6 +34,8 @@ import ReviewPage from './ReviewPage';
 import { createReviewSession } from './review';
 import { consumeEnergy } from './energy';
 import EnergyBlockModal from './components/EnergyBlockModal';
+import { isStepLocked, stepKey, unlockStepOnServer } from './stepUnlocks';
+import { useStepUnlocks } from './stepUnlocks';
 
 interface Props {
   /**
@@ -54,6 +56,8 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
   const [energyBlock, setEnergyBlock] = useState<{ retryAfterSec: number } | null>(
     null,
   );
+  const [lockToast, setLockToast] = useState<string | null>(null);
+  const stepLockSnap = useStepUnlocks();
 
   /**
    * 에너지 1 차감 후 callback. 게스트·프리미엄·env 미설정 = 무조건 진행.
@@ -230,15 +234,27 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
               p.label,
             )
           }
-          onSelectStep={(topic, stepIdx) =>
+          onSelectStep={(topic, stepIdx) => {
+            // lessonId 는 lesson lookup 으로. 잠금 검사 + 다음 step 자동 해금.
+            const lesson = getLesson(screen.subject, screen.chapter, topic);
+            const lessonId = lesson?.id ?? `${screen.subject}-${screen.chapter}`;
+            if (isStepLocked(stepLockSnap, lessonId, stepIdx)) {
+              setLockToast('앞 단계를 먼저 풀이하면 자동 해금돼요.');
+              window.setTimeout(() => setLockToast(null), 2400);
+              return;
+            }
+            // 진입한 step 의 다음 step 을 자동 해금 (서버 RPC, fire-and-forget)
+            if (lesson && stepIdx + 1 < lesson.steps.length) {
+              void unlockStepOnServer(stepKey(lessonId, stepIdx + 1));
+            }
             setScreen({
               kind: 'lesson',
               subject: screen.subject,
               chapter: screen.chapter,
               topic,
               stepIdx,
-            })
-          }
+            });
+          }}
           onReviewIds={(p) =>
             startReviewFromIds(
               screen.subject,
@@ -343,6 +359,20 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
           retryAfterSec={energyBlock.retryAfterSec}
           onClose={() => setEnergyBlock(null)}
         />
+      ) : null}
+      {lockToast ? (
+        <div
+          role="status"
+          className="fixed top-20 left-1/2 -translate-x-1/2 z-40 px-4 py-2.5 rounded-full kr-num text-[12px] pointer-events-none"
+          style={{
+            background: 'rgba(20,32,46,0.96)',
+            color: 'var(--cream)',
+            border: '1px solid rgba(167,139,250,0.5)',
+            boxShadow: '0 4px 14px rgba(0,0,0,0.4)',
+          }}
+        >
+          🔒 {lockToast}
+        </div>
       ) : null}
     </>
   );

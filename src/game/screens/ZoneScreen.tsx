@@ -17,6 +17,7 @@ import {
   Check,
   Clock,
   Flame,
+  Lock,
   RefreshCcw,
   Shuffle,
   Trophy,
@@ -37,6 +38,7 @@ import {
   type MockExamSlot,
   type MockExamProgress,
 } from '../mockExams';
+import { isStepLocked, useStepUnlocks } from '../stepUnlocks';
 
 const SUBJECT_ACCENT: Record<Subject, string> = {
   adsp: '#67e8f9',
@@ -146,6 +148,7 @@ export default function ZoneScreen({
                 key={lesson.id}
                 index={lessonIdx + 1}
                 topic={lesson.topic}
+                lessonId={lesson.id}
                 steps={lesson.steps}
                 accent={accent}
                 progress={progress}
@@ -260,6 +263,7 @@ export default function ZoneScreen({
 interface TopicSectionProps {
   index: number;
   topic: string;
+  lessonId: string;
   steps: { id: string; title: string; quizId: string }[];
   accent: string;
   progress: ProgressStore;
@@ -270,12 +274,14 @@ interface TopicSectionProps {
 function TopicSection({
   index,
   topic,
+  lessonId,
   steps,
   accent,
   progress,
   isWeak,
   onSelectStep,
 }: TopicSectionProps) {
+  const lockSnap = useStepUnlocks();
   return (
     <section>
       {/* 섹션 헤더 — caps eyebrow + 토픽 이름 + hairline */}
@@ -316,6 +322,7 @@ function TopicSection({
           const stat = progress.questionStats[step.quizId];
           const completed = !!stat?.lastCorrect && (stat?.correct ?? 0) > 0;
           const attempted = !!stat && (stat.attempts ?? 0) > 0;
+          const locked = isStepLocked(lockSnap, lessonId, idx);
           return (
             <StepNode
               key={step.id}
@@ -324,6 +331,7 @@ function TopicSection({
               accent={accent}
               completed={completed}
               attempted={attempted}
+              locked={locked}
               isLast={idx === steps.length - 1}
               onClick={() => onSelectStep(idx)}
             />
@@ -344,6 +352,7 @@ interface StepNodeProps {
   accent: string;
   completed: boolean;
   attempted: boolean;
+  locked: boolean;
   isLast: boolean;
   onClick: () => void;
 }
@@ -354,6 +363,7 @@ function StepNode({
   accent,
   completed,
   attempted,
+  locked,
   isLast,
   onClick,
 }: StepNodeProps) {
@@ -364,7 +374,8 @@ function StepNode({
         <button
           type="button"
           onClick={onClick}
-          aria-label={`Step ${n} ${title}${completed ? ' (완료)' : ''}`}
+          aria-label={`Step ${n} ${title}${completed ? ' (완료)' : locked ? ' (잠김 — 앞 단계 먼저)' : ''}`}
+          aria-disabled={locked}
           className="w-11 h-11 md:w-12 md:h-12 rounded-full inline-flex items-center justify-center transition shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-neon"
           style={{
             background: completed ? accent : 'transparent',
@@ -372,12 +383,21 @@ function StepNode({
               ? `2px solid ${accent}`
               : attempted
                 ? `2px solid ${accent}aa`
-                : `1.5px solid rgba(239,244,255,0.22)`,
-            color: completed ? '#010828' : 'rgba(239,244,255,0.85)',
+                : locked
+                  ? '1.5px solid rgba(239,244,255,0.12)'
+                  : `1.5px solid rgba(239,244,255,0.22)`,
+            color: completed
+              ? '#010828'
+              : locked
+                ? 'rgba(239,244,255,0.4)'
+                : 'rgba(239,244,255,0.85)',
+            opacity: locked && !completed ? 0.55 : 1,
           }}
         >
           {completed ? (
             <Check size={18} strokeWidth={3} />
+          ) : locked ? (
+            <Lock size={14} strokeWidth={2.4} />
           ) : (
             <span className="kr-heading text-[14px] tabular-nums leading-none">
               {n}
@@ -402,7 +422,9 @@ function StepNode({
       <button
         type="button"
         onClick={onClick}
+        aria-disabled={locked}
         className="flex-1 text-left pb-6 md:pb-7 group"
+        style={{ opacity: locked && !completed ? 0.55 : 1 }}
       >
         <h4
           className="kr-body font-medium text-[13px] md:text-[14px] tracking-[-0.005em] leading-[1.4] group-hover:text-neon transition"
@@ -415,6 +437,11 @@ function StepNode({
             <span style={{ color: accent }}>✓ 완료</span>
           ) : attempted ? (
             <span className="text-cream/65">진행 중</span>
+          ) : locked ? (
+            <span className="text-cream/45 inline-flex items-center gap-1">
+              <Lock size={9} strokeWidth={2.6} />
+              앞 단계 먼저
+            </span>
           ) : (
             <span className="text-cream/45">시작 전</span>
           )}

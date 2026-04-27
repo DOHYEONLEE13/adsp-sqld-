@@ -14,6 +14,7 @@
 import type { Subject } from '@/types/question';
 import type { QuestSummary } from './types';
 import { pushSessionToServer } from './sessionSync';
+import { pushQuestionStatToServer } from './questionStatSync';
 
 const STORAGE_KEY = 'questdp.progress.v1';
 const SCHEMA_VERSION = 1 as const;
@@ -227,6 +228,11 @@ export function recordSingleAnswer(
   const at = Date.now();
   const next = applyAnswer(current, questionId, { correct, timeMs, at });
   commit({ ...next, updatedAt: at });
+  // 서버에도 반영 (인증돼 있을 때만, fire-and-forget). question_stats 는 PUT-style.
+  const stat = next.questionStats[questionId];
+  if (stat) {
+    void pushQuestionStatToServer(questionId, stat);
+  }
 }
 
 /** 개발자/사용자용 리셋 (#/stats 에 연결 예정). */

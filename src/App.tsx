@@ -14,6 +14,7 @@ import { initSessionSync } from './game/sessionSync';
 import { initBookmarksSync } from './game/bookmarks';
 import { initExamDatesSync } from './game/examDate';
 import { initEnergySync } from './game/energy';
+import { initStepUnlocksSync } from './game/stepUnlocks';
 
 type Route = 'landing' | 'game' | 'stats' | 'bookmarks' | 'quests' | 'friends';
 
@@ -79,6 +80,7 @@ export default function App() {
       initBookmarksSync(),
       initExamDatesSync(),
       initEnergySync(),
+      initStepUnlocksSync(),
       initMigration(),
     ];
     return () => {

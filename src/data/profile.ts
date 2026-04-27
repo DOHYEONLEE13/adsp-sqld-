@@ -168,18 +168,33 @@ function notify() {
 
 // ─── Supabase sync layer ────────────────────────────────────────────────
 
-/** 서버 프로필을 fetch 해 localStorage 에 덮어씌움. 인증돼 있을 때만. */
+/**
+ * 서버 프로필을 fetch 해 localStorage 에 덮어씌움. 인증돼 있을 때만.
+ *
+ * 트리거 race 대응 — `auth.users` insert 직후 `profiles` 행이 만들어지지 않은
+ * 상태에서 select 하면 빈 응답. 한 번 더 짧게 대기 후 retry (총 2회 시도).
+ */
 async function pullFromSupabase(): Promise<void> {
   const sb = getSupabase();
   if (!sb) return;
   const { data: sess } = await sb.auth.getSession();
   if (!sess.session) return;
-  const { data, error } = await sb
-    .from('profiles')
-    .select('tag, display_name, avatar_pose, created_at')
-    .eq('id', sess.session.user.id)
-    .maybeSingle();
+
+  const fetchOnce = () =>
+    sb
+      .from('profiles')
+      .select('tag, display_name, avatar_pose, created_at')
+      .eq('id', sess.session!.user.id)
+      .maybeSingle();
+
+  let { data, error } = await fetchOnce();
+  if ((!data || error) && !error) {
+    // 트리거가 아직 안 돈 경우 — 짧게 대기 후 1회 retry
+    await new Promise((r) => setTimeout(r, 350));
+    ({ data, error } = await fetchOnce());
+  }
   if (error || !data) return;
+
   // 서버 응답 → localStorage 덮어쓰기
   const local = loadStored();
   saveStored({

@@ -26,10 +26,68 @@ export default function Header() {
   );
 }
 
-/** admin 일 때만 노출되는 운영자 페이지 진입 버튼. */
+/**
+ * admin 일 때만 노출되는 운영자 페이지 진입 버튼.
+ *
+ * 다층 검증 — localStorage 캐시 (`useMyProfile().isAdmin`) 가 stale 일 수 있어
+ * 마운트 시 server 에 직접 한 번 더 fetch 해서 admin 여부 확인.
+ * 둘 중 하나라도 admin 이면 노출.
+ */
 function AdminLink() {
   const profile = useMyProfile();
-  if (!profile.isAdmin) return null;
+  const [serverAdmin, setServerAdmin] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (!isSupabaseConfigured()) {
+      setServerAdmin(false);
+      return;
+    }
+    const sb = getSupabase();
+    if (!sb) {
+      setServerAdmin(false);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data: sess } = await sb.auth.getSession();
+        if (cancelled) return;
+        if (!sess.session) {
+          setServerAdmin(false);
+          return;
+        }
+        const { data } = await sb
+          .from('profiles')
+          .select('role')
+          .eq('id', sess.session.user.id)
+          .maybeSingle();
+        if (cancelled) return;
+        setServerAdmin(data?.role === 'admin');
+      } catch {
+        if (!cancelled) setServerAdmin(false);
+      }
+    })();
+    // 로그인/로그아웃 시 재확인
+    const unsub = onAuthStateChange(async (_event, session) => {
+      if (!session) {
+        setServerAdmin(false);
+        return;
+      }
+      const { data } = await sb
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .maybeSingle();
+      if (!cancelled) setServerAdmin(data?.role === 'admin');
+    });
+    return () => {
+      cancelled = true;
+      unsub();
+    };
+  }, []);
+
+  const isAdmin = profile.isAdmin || serverAdmin === true;
+  if (!isAdmin) return null;
   return (
     <a
       href="#/admin"

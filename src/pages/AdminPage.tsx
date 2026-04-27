@@ -41,6 +41,41 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
   const [sessionStat, setSessionStat] = useState<SessionStat | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  /** server 직접 확인한 admin 여부. localStorage 가 stale 한 케이스 대응. */
+  const [serverAdmin, setServerAdmin] = useState<boolean | null>(null);
+
+  // server 에 직접 admin 여부 확인 — localStorage 우회용 안전망
+  useEffect(() => {
+    if (!isSupabaseConfigured()) {
+      setServerAdmin(false);
+      return;
+    }
+    const sb = getSupabase();
+    if (!sb) {
+      setServerAdmin(false);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      const { data: sess } = await sb.auth.getSession();
+      if (cancelled) return;
+      if (!sess.session) {
+        setServerAdmin(false);
+        return;
+      }
+      const { data } = await sb
+        .from('profiles')
+        .select('role')
+        .eq('id', sess.session.user.id)
+        .maybeSingle();
+      if (!cancelled) setServerAdmin(data?.role === 'admin');
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const isAdminFinal = profile.isAdmin || serverAdmin === true;
 
   // 비-admin 진입 시 홈으로 (clientside guard)
   useEffect(() => {
@@ -48,14 +83,11 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
       window.location.hash = '';
       return;
     }
-    if (!profile.isAdmin) {
-      // hydrate 직후엔 isAdmin 이 false 일 수 있어 짧게 대기
-      const t = window.setTimeout(() => {
-        if (!profile.isAdmin) window.location.hash = '';
-      }, 1500);
-      return () => window.clearTimeout(t);
+    // server 확인이 끝났는데도 admin 아니면 redirect
+    if (serverAdmin === false && !profile.isAdmin) {
+      window.location.hash = '';
     }
-  }, [profile.isAdmin]);
+  }, [profile.isAdmin, serverAdmin]);
 
   const refresh = async () => {
     setLoading(true);
@@ -110,12 +142,21 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
   };
 
   useEffect(() => {
-    if (profile.isAdmin) {
+    if (isAdminFinal) {
       void refresh();
     }
-  }, [profile.isAdmin]);
+  }, [isAdminFinal]);
 
-  if (!profile.isAdmin) {
+  // server 확인 진행 중인 동안 잠깐 로딩 표시
+  if (serverAdmin === null && !profile.isAdmin) {
+    return (
+      <section className="relative min-h-screen bg-base text-cream flex items-center justify-center">
+        <div className="kr-body text-cream/60 text-[14px]">권한 확인 중…</div>
+      </section>
+    );
+  }
+
+  if (!isAdminFinal) {
     return (
       <section className="relative min-h-screen bg-base text-cream flex items-center justify-center px-6">
         <div className="text-center">

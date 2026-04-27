@@ -147,6 +147,18 @@ button {
   word-break: keep-all;
 }
 
+/**
+ * 숫자·태그·레벨·짧은 영문 라벨용. Anton 의 굵은 condensed 톤이 과하게
+ * 느껴지는 mixed-content 자리에 사용. tabular-nums 자동 적용.
+ */
+.kr-num {
+  font-family: 'Noto Sans KR', ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.003em;
+  font-feature-settings: 'tnum';
+  font-variant-numeric: tabular-nums;
+}
+
 .cursive {
   font-family: 'Gaegu', 'Condiment', cursive;
   letter-spacing: 0.01em;

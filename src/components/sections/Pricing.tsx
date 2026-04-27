@@ -25,8 +25,8 @@ function PricingCard({ plan }: { plan: PricingPlan }) {
       </div>
       <div
         className={cx(
-          'kr-heading text-[44px] leading-[1] mt-2',
-          isPremium && 'text-neon',
+          'kr-num text-[36px] leading-[1] mt-2',
+          isPremium ? 'text-neon' : 'text-cream',
         )}
       >
         {plan.price}

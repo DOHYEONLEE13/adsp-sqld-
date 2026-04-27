@@ -371,7 +371,55 @@ export function summarize(session: QuestSession): QuestSummary {
     correctCount,
     accuracy: total === 0 ? 0 : correctCount / total,
     totalTimeMs,
+    label: session.label,
     answers,
+  };
+}
+
+// ---------------------------------------------------------------- review by IDs
+
+/**
+ * 특정 문항 ID 배열만으로 세션 구성. 모의고사 오답 복습 등에 사용.
+ *
+ * 보통 `flow: 'learn'` 으로 호출 — 한 문제 풀고 즉시 채점·해설을 보며 학습.
+ * 풀 안의 문항 순서는 그대로 유지하고 선지만 셔플.
+ */
+export function createReviewFromIds(opts: {
+  subject: Subject;
+  chapter: number;
+  questionIds: string[];
+  flow?: FlowMode;
+  label?: string;
+}): QuestSession | null {
+  const { subject, chapter, questionIds, flow = 'learn', label } = opts;
+  if (questionIds.length === 0) return null;
+  const schema = SUBJECT_SCHEMAS[subject];
+  const chapterMeta = schema.chapters.find((c) => c.chapter === chapter);
+  if (!chapterMeta) return null;
+
+  const idSet = new Set(questionIds);
+  const pool = playableQuestions(subject).filter((q) => idSet.has(q.id));
+  if (pool.length === 0) return null;
+
+  // 입력 ID 순서를 유지 (사용자 직전 시도와 동일한 순서로 복습).
+  const orderMap = new Map(questionIds.map((id, i) => [id, i] as const));
+  const ordered = pool.slice().sort(
+    (a, b) => (orderMap.get(a.id) ?? 0) - (orderMap.get(b.id) ?? 0),
+  );
+
+  const randomized = ordered.map(shuffleChoices);
+
+  return {
+    subject,
+    chapter,
+    chapterTitle: chapterMeta.title,
+    topic: null,
+    flow,
+    label,
+    questions: randomized,
+    index: 0,
+    answers: [],
+    startedAt: Date.now(),
   };
 }
 

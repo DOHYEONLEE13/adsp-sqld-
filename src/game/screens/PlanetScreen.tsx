@@ -38,6 +38,8 @@ import {
 import { useProgress } from '../useProgress';
 import { topicWeaknessesInChapter, weaknessLevel } from '../weakness';
 import type { ProgressStore } from '../storage';
+import { MobileTopBar, MobileBottomNav } from '../components/MobileGameNav';
+import PageAmbientBg from '../components/PageAmbientBg';
 
 const SUBJECT_ACCENT: Record<Subject, string> = {
   adsp: '#67e8f9',
@@ -63,52 +65,25 @@ export default function PlanetScreen({
   const totalQuestions = subjectAgg.total;
 
   return (
-    <section className="relative min-h-screen bg-base text-cream isolate overflow-hidden">
-      {/* === 2D 풀뷰포트 배경 (fixed, 스크롤해도 따라옴) === */}
-      <div className="fixed inset-0 z-0 pointer-events-none" aria-hidden>
-        {/* 큰 행성 실루엣 — 좌측에서 반만 보임 */}
-        <div
-          className="absolute"
-          style={{
-            left: '-18vmin',
-            top: '38%',
-            width: '68vmin',
-            height: '68vmin',
-            borderRadius: '50%',
-            background: `radial-gradient(circle at 62% 32%, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 42%), linear-gradient(180deg, ${accent} 0%, ${accent}bb 55%, rgba(0,0,0,0.45) 100%)`,
-            boxShadow: `0 0 120px -10px ${accent}, inset 0 -12px 40px rgba(0,0,0,0.4)`,
-            transform: 'translateY(-50%)',
-            opacity: 0.55,
-          }}
-        />
+    <section className="relative min-h-screen text-cream isolate overflow-hidden">
+      {/* === 풀뷰포트 ambient 비디오 배경 (Mux HLS) === */}
+      <PageAmbientBg />
 
-        {/* 과목 액센트 radial — 화면 좌중앙에 은은하게 */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background: `radial-gradient(ellipse at 32% 52%, ${accent}24 0%, rgba(1,8,40,0) 55%)`,
-          }}
-        />
-        {/* 상·하 비네트 — 타이틀/하단 요소 가독성 */}
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'linear-gradient(180deg, rgba(1,8,40,0.6) 0%, rgba(1,8,40,0) 18%, rgba(1,8,40,0) 72%, rgba(1,8,40,0.75) 100%)',
-          }}
-        />
-        {/* 우측 가림 — 로드맵 쪽 어둡게 (lg+ 전용) */}
-        <div
-          className="hidden lg:block absolute inset-0"
-          style={{
-            background:
-              'linear-gradient(90deg, rgba(1,8,40,0) 42%, rgba(1,8,40,0.55) 100%)',
-          }}
-        />
-      </div>
+      {/* === 과목 액센트 radial — ambient 위에 은은한 컬러 톤 === */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10"
+        style={{
+          background: `radial-gradient(ellipse at 50% 0%, ${accent}1f 0%, rgba(1,8,40,0) 55%)`,
+        }}
+      />
+
+      {/* === 모바일 상/하단 내비 === */}
+      <MobileTopBar subject={subject} />
+      <MobileBottomNav active="learn" accent={accent} />
 
       {/* === 오버레이 콘텐츠 === */}
-      <div className="relative z-10 mx-auto w-full max-w-layout px-6 md:px-10 lg:px-16 py-8 md:py-10 lg:py-12 min-h-screen">
+      <div className="relative z-10 mx-auto w-full max-w-layout px-6 md:px-10 lg:px-16 pt-20 md:pt-10 lg:pt-12 pb-28 md:pb-10 lg:pb-12 min-h-screen">
         {/* Top: Back + Breadcrumb + Title (HUD 없음 — 로드맵 공간 확보) */}
         <header className="mb-12 md:mb-16 max-w-[640px]">
           <button
@@ -121,7 +96,7 @@ export default function PlanetScreen({
             은하로
           </button>
 
-          <div className="flex items-center gap-2 kr-heading text-[10px] uppercase tracking-widest text-cream/55 mb-3">
+          <div className="flex items-center gap-2 kr-num text-[10px] uppercase tracking-widest text-cream/55 mb-3">
             <span>Galaxy</span>
             <span className="text-cream/30">›</span>
             <span style={{ color: accent }}>{subject.toUpperCase()} Planet</span>
@@ -254,9 +229,9 @@ function ChapterPath({
         <path
           d={d}
           fill="none"
-          stroke={`${accent}77`}
-          strokeWidth={3}
-          strokeDasharray="3 9"
+          stroke={`${accent}88`}
+          strokeWidth={2.5}
+          strokeDasharray="2 7"
           strokeLinecap="round"
           style={{ filter: `drop-shadow(0 0 8px ${accent}66)` }}
         />
@@ -361,7 +336,7 @@ function ChapterNode({
             cy={ringSize / 2}
             r={r}
             fill="none"
-            stroke="rgba(239, 244, 255, 0.14)"
+            stroke="rgba(239, 244, 255, 0.22)"
             strokeWidth={3}
           />
           {!disabled && ratio > 0 ? (
@@ -384,7 +359,7 @@ function ChapterNode({
           ) : null}
         </svg>
 
-        {/* 3D 노드 */}
+        {/* 메달리언 노드 — 정돈된 톤 */}
         <button
           type="button"
           onClick={onClick}
@@ -393,25 +368,39 @@ function ChapterNode({
           style={{
             inset: 6,
             background: disabled
-              ? `radial-gradient(circle at 32% 28%, rgba(255,255,255,0.14) 0%, transparent 45%), linear-gradient(180deg, #3a4060 0%, #1b1e30 100%)`
-              : `radial-gradient(circle at 32% 26%, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0) 48%), linear-gradient(180deg, ${accent} 0%, ${accent}cc 55%, rgba(0,0,0,0.28) 100%)`,
+              ? `radial-gradient(circle at 32% 26%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 50%), #2a3346`
+              : `radial-gradient(circle at 32% 24%, ${accent} 0%, ${accent}d8 38%, ${accent}99 78%, ${accent}66 100%)`,
             boxShadow: disabled
-              ? '0 5px 0 -1px rgba(0,0,0,0.45), inset 0 2px 0 rgba(255,255,255,0.08), inset 0 -4px 8px rgba(0,0,0,0.35)'
-              : `0 6px 0 -1px rgba(0,0,0,0.55), 0 18px 30px -10px ${accent}cc, inset 0 2px 0 rgba(255,255,255,0.4), inset 0 -5px 12px rgba(0,0,0,0.3)`,
-            border: disabled
-              ? '2px solid rgba(255,255,255,0.08)'
-              : `2.5px solid ${accent}`,
+              ? '0 4px 0 -1px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)'
+              : `0 4px 0 -1px rgba(0,0,0,0.42), 0 12px 28px -10px ${accent}aa`,
             opacity: disabled ? 0.55 : 1,
           }}
           aria-label={`Chapter ${chapter} ${title}${
             disabled ? ' (준비중)' : ''
           }`}
         >
+          {/* 안쪽 림 — 메달의 입체감 */}
           <span
-            className="kr-heading leading-none tabular-nums text-white"
+            aria-hidden
+            className="absolute inset-1 rounded-full pointer-events-none"
             style={{
-              fontSize: NODE * 0.42,
-              textShadow: '0 2px 4px rgba(0,0,0,0.35)',
+              border: disabled
+                ? '1px solid rgba(255,255,255,0.06)'
+                : `1px solid rgba(255,255,255,0.55)`,
+              boxShadow: disabled
+                ? 'inset 0 1px 0 rgba(255,255,255,0.04), inset 0 -2px 4px rgba(0,0,0,0.25)'
+                : 'inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -2px 6px rgba(0,0,0,0.22)',
+            }}
+          />
+          <span
+            className="kr-num leading-none relative"
+            style={{
+              fontSize: NODE * 0.36,
+              fontWeight: 600,
+              color: disabled ? 'rgba(255,255,255,0.6)' : '#1a1f33',
+              textShadow: disabled
+                ? 'none'
+                : '0 1px 0 rgba(255,255,255,0.25)',
             }}
           >
             {chapter}
@@ -430,7 +419,7 @@ function ChapterNode({
         }}
       >
         <h3
-          className="kr-heading text-[13px] md:text-[14px] uppercase leading-[1.2] tracking-[0.02em] truncate w-full"
+          className="kr-body font-semibold text-[14px] md:text-[15px] leading-[1.25] tracking-[-0.005em] truncate w-full"
           style={{
             color: disabled ? 'rgba(239,244,255,0.55)' : 'var(--cream)',
             textShadow: '0 1px 10px rgba(0,0,0,0.8)',
@@ -439,7 +428,7 @@ function ChapterNode({
           {title}
         </h3>
         <div
-          className="kr-body text-[11px] text-cream/70 mt-1.5 tabular-nums inline-flex items-center gap-2"
+          className="kr-num text-[11px] text-cream/65 mt-1.5 inline-flex items-center gap-2"
           style={{ textShadow: '0 1px 6px rgba(0,0,0,0.7)' }}
         >
           <span>토픽 {topicCount}</span>
@@ -447,7 +436,7 @@ function ChapterNode({
           <span>{disabled ? '준비중' : `${agg.solved}/${agg.total}`}</span>
           {weakCount > 0 ? (
             <span
-              className="kr-heading inline-flex items-center gap-1 text-[9px] uppercase tracking-widest px-1.5 py-0.5 rounded-full"
+              className="kr-num inline-flex items-center gap-1 text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-full"
               style={{
                 color: '#f87171',
                 background: 'rgba(248, 113, 113, 0.16)',

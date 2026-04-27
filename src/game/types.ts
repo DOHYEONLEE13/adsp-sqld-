@@ -74,6 +74,8 @@ export interface QuestSummary {
   /** 정답률 0~1 */
   accuracy: number;
   totalTimeMs: number;
+  /** 결과 화면·SessionRecord 에 표시될 라벨 (예: "챕터 1 모의고사 1"). */
+  label?: string;
   answers: Array<
     QuestAnswer & {
       question: MultipleChoiceQuestion;

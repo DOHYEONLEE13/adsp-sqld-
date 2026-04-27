@@ -48,10 +48,10 @@ export default function ModeCard({ mode, funScoreLabel, onEnter }: Props) {
 
       <div className="liquid-glass rounded-[20px] mt-3.5 px-5 py-4 flex items-center justify-between">
         <div>
-          <span className="kr-heading block text-[11px] uppercase tracking-widest text-cream/70">
+          <span className="kr-num block text-[11px] uppercase tracking-widest text-cream/70">
             {mode.metaLabel || funScoreLabel}
           </span>
-          <span className="kr-heading block text-[16px] mt-0.5">
+          <span className="kr-num block text-[14px] mt-0.5 text-cream">
             {mode.metaValue}
           </span>
         </div>

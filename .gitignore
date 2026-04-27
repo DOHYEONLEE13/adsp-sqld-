@@ -10,6 +10,10 @@ dist-ssr/
 .env.*
 !.env.example
 
+# MCP config — PAT/credentials live here
+.mcp.json
+!.mcp.json.example
+
 # editor / os
 .vscode/
 .idea/

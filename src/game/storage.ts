@@ -13,6 +13,7 @@
 
 import type { Subject } from '@/types/question';
 import type { QuestSummary } from './types';
+import { pushSessionToServer } from './sessionSync';
 
 const STORAGE_KEY = 'questdp.progress.v1';
 const SCHEMA_VERSION = 1 as const;
@@ -46,6 +47,10 @@ export interface SessionRecord {
   total: number;
   correctCount: number;
   totalTimeMs: number;
+  /** 라벨 — "챕터 1 모의고사 1" 같은 슬롯 식별용. 미지정 시 일반 세션. */
+  label?: string;
+  /** 이번 세션에서 틀린 문항 ID. 모의고사 오답 복습 진입점. */
+  wrongQuestionIds?: string[];
 }
 
 export interface ProgressStore {
@@ -186,6 +191,10 @@ export function recordSessionSummary(summary: QuestSummary): void {
     });
   }
 
+  const wrongQuestionIds = summary.answers
+    .filter((a) => !a.correct)
+    .map((a) => a.questionId);
+
   const record: SessionRecord = {
     at,
     subject: summary.subject,
@@ -195,10 +204,15 @@ export function recordSessionSummary(summary: QuestSummary): void {
     total: summary.total,
     correctCount: summary.correctCount,
     totalTimeMs: summary.totalTimeMs,
+    label: summary.label,
+    wrongQuestionIds: wrongQuestionIds.length > 0 ? wrongQuestionIds : undefined,
   };
 
   const sessions = [record, ...next.sessions].slice(0, MAX_SESSION_HISTORY);
   commit({ ...next, sessions, updatedAt: at });
+
+  // 백그라운드로 server 에 push. 미로그인·env 미설정이면 outbox 에 쌓이고 끝.
+  void pushSessionToServer(summary);
 }
 
 /**

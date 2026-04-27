@@ -4,9 +4,11 @@
  * - 즐겨찾기(별): Set<questionId>
  * - 노트: Record<questionId, string>    // 빈 문자열/없음 = 노트 없음
  *
- * Progress 와 별도 key 로 보관해 리셋/백업을 독립적으로 다룰 수 있게 합니다.
+ * Hybrid sync: localStorage 가 즉각 반영, 인증돼 있으면 background 로 Supabase 에 push.
+ * mount 시 server pull → local overlay (다른 기기에서 추가한 북마크 포착).
  */
 import type { Subject } from '@/types/question';
+import { getSupabase, onAuthStateChange } from '@/lib/supabase';
 
 const STORAGE_KEY = 'questdp.bookmarks.v1';
 const SCHEMA_VERSION = 1 as const;
@@ -133,6 +135,11 @@ export function toggleBookmark(questionId: string): boolean {
     added = true;
   }
   commit({ ...current, ids: next, updatedAt: Date.now() });
+  if (added) {
+    void serverUpsertBookmark(questionId, current.notes[questionId] ?? '');
+  } else {
+    void serverDeleteBookmark(questionId);
+  }
   return added;
 }
 
@@ -140,17 +147,18 @@ export function toggleBookmark(questionId: string): boolean {
 export function bulkAdd(questionIds: readonly string[]): number {
   const next = new Set(current.ids);
   const now = Date.now();
-  let n = 0;
+  const newIds: string[] = [];
   for (const id of questionIds) {
     if (!next.has(id)) {
       next.add(id);
       addedAt[id] = now;
-      n += 1;
+      newIds.push(id);
     }
   }
-  if (n === 0) return 0;
+  if (newIds.length === 0) return 0;
   commit({ ...current, ids: next, updatedAt: now });
-  return n;
+  void serverUpsertBookmarks(newIds);
+  return newIds.length;
 }
 
 /** 노트 저장. 빈 문자열/undefined 면 삭제. */
@@ -163,6 +171,10 @@ export function setNote(questionId: string, note: string): void {
     notes[questionId] = trimmed;
   }
   commit({ ...current, notes, updatedAt: Date.now() });
+  // 노트만 update — 북마크 자체는 변경 X
+  if (current.ids.has(questionId)) {
+    void serverUpsertBookmark(questionId, trimmed);
+  }
 }
 
 /** 개별 해제 — 리스트 페이지용. 노트도 같이 제거. */
@@ -174,12 +186,14 @@ export function removeBookmark(questionId: string): void {
   delete notes[questionId];
   delete addedAt[questionId];
   commit({ ...current, ids: next, notes, updatedAt: Date.now() });
+  void serverDeleteBookmark(questionId);
 }
 
 /** 모두 비우기 — 위험 액션. 대시보드 리셋과 별도. */
 export function resetBookmarks(): void {
   addedAt = {};
   commit(emptyStore());
+  void serverDeleteAllBookmarks();
 }
 
 // ----------------------------------------------------------------
@@ -214,4 +228,110 @@ export function listEntries(filter?: { subject?: Subject }): BookmarkEntry[] {
 /** 총 북마크 개수. */
 export function bookmarkCount(): number {
   return current.ids.size;
+}
+
+// ─── Supabase sync layer ────────────────────────────────────────────────
+
+async function serverUpsertBookmark(questionId: string, note: string): Promise<void> {
+  const sb = getSupabase();
+  if (!sb) return;
+  try {
+    const { data: sess } = await sb.auth.getSession();
+    if (!sess.session) return;
+    await sb.from('bookmarks').upsert(
+      { user_id: sess.session.user.id, question_id: questionId, note },
+      { onConflict: 'user_id,question_id' },
+    );
+  } catch {
+    /* 무시 */
+  }
+}
+
+async function serverUpsertBookmarks(questionIds: string[]): Promise<void> {
+  const sb = getSupabase();
+  if (!sb) return;
+  try {
+    const { data: sess } = await sb.auth.getSession();
+    if (!sess.session) return;
+    const rows = questionIds.map((qid) => ({
+      user_id: sess.session!.user.id,
+      question_id: qid,
+      note: current.notes[qid] ?? '',
+    }));
+    await sb.from('bookmarks').upsert(rows, { onConflict: 'user_id,question_id' });
+  } catch {
+    /* 무시 */
+  }
+}
+
+async function serverDeleteBookmark(questionId: string): Promise<void> {
+  const sb = getSupabase();
+  if (!sb) return;
+  try {
+    const { data: sess } = await sb.auth.getSession();
+    if (!sess.session) return;
+    await sb
+      .from('bookmarks')
+      .delete()
+      .eq('user_id', sess.session.user.id)
+      .eq('question_id', questionId);
+  } catch {
+    /* 무시 */
+  }
+}
+
+async function serverDeleteAllBookmarks(): Promise<void> {
+  const sb = getSupabase();
+  if (!sb) return;
+  try {
+    const { data: sess } = await sb.auth.getSession();
+    if (!sess.session) return;
+    await sb.from('bookmarks').delete().eq('user_id', sess.session.user.id);
+  } catch {
+    /* 무시 */
+  }
+}
+
+/** server → local pull. 다른 기기에서 추가한 북마크 흡수. */
+async function pullBookmarks(): Promise<void> {
+  const sb = getSupabase();
+  if (!sb) return;
+  const { data: sess } = await sb.auth.getSession();
+  if (!sess.session) return;
+  const { data, error } = await sb
+    .from('bookmarks')
+    .select('question_id, note, created_at');
+  if (error || !data) return;
+
+  // server 데이터로 local 덮어쓰기 (server = 진실의 근원)
+  const ids = new Set<string>();
+  const notes: Record<string, string> = {};
+  const newAddedAt: Record<string, number> = {};
+  for (const row of data as Array<{ question_id: string; note: string | null; created_at: string }>) {
+    ids.add(row.question_id);
+    if (row.note) notes[row.question_id] = row.note;
+    newAddedAt[row.question_id] = Date.parse(row.created_at) || Date.now();
+  }
+  addedAt = newAddedAt;
+  commit({ version: SCHEMA_VERSION, ids, notes, updatedAt: Date.now() });
+}
+
+let _syncStarted = false;
+
+export function initBookmarksSync(): () => void {
+  if (_syncStarted) return () => {};
+  _syncStarted = true;
+
+  void pullBookmarks();
+
+  const unsub = onAuthStateChange((event) => {
+    if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+      void pullBookmarks();
+    }
+  });
+
+  return () => {
+    unsub();
+    _syncStarted = false;
+  };
 }

@@ -1,0 +1,16 @@
+{
+  "_README": "Copy this file to .mcp.json and fill SUPABASE_ACCESS_TOKEN. .mcp.json is gitignored. Get a Personal Access Token at https://supabase.com/dashboard/account/tokens",
+  "mcpServers": {
+    "supabase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--project-ref=zkglnbfdoftfwkwrobox"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "sbp_REPLACE_ME"
+      }
+    }
+  }
+}

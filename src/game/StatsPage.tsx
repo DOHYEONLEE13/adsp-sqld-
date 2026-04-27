@@ -44,8 +44,10 @@ import {
   getAllExamDates,
   setExamDate,
 } from './examDate';
-import { getTodayQuests } from './dailyQuests';
-import DailyQuestsCard from './components/DailyQuestsCard';
+import { MobileTopBar, MobileBottomNav } from './components/MobileGameNav';
+import ProfileCustomizer from './components/ProfileCustomizer';
+import AuthCard from './components/AuthCard';
+import PageAmbientBg from './components/PageAmbientBg';
 
 interface Props {
   onExit: () => void;
@@ -71,7 +73,6 @@ export default function StatsPage({ onExit }: Props) {
     [progress, playerStats],
   );
   const calendar = useMemo(() => recentDailyTrend(progress, 30), [progress]);
-  const dailyQuests = useMemo(() => getTodayQuests(progress), [progress]);
   const chapterMastery = useMemo(() => {
     const result: Record<Subject, ChapterMasteryRow[]> = { adsp: [], sqld: [] };
     (['adsp', 'sqld'] as const).forEach((subject) => {
@@ -114,7 +115,20 @@ export default function StatsPage({ onExit }: Props) {
       subtitle="누적 진도, 약점, 최근 세션을 한눈에 확인합니다."
       onExit={onExit}
       exitLabel="돌아가기"
+      ambient={<PageAmbientBg />}
     >
+      {/* 모바일 상/하단 내비 */}
+      <MobileTopBar />
+      <div className="md:hidden h-14" aria-hidden />
+
+      {/* 로그인 / 로그아웃 (Supabase) */}
+      <AuthCard />
+
+      {/* 프로필 꾸미기 — 아바타 포즈 + 이름 */}
+      <div className="mb-6">
+        <ProfileCustomizer />
+      </div>
+
       {/* D-day — 항상 표시 (빈 상태에서도 설정 가능) */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         {(['adsp', 'sqld'] as const).map((subject) => (
@@ -126,11 +140,6 @@ export default function StatsPage({ onExit }: Props) {
           />
         ))}
       </section>
-
-      {/* 오늘의 퀘스트 */}
-      <div className="mb-8">
-        <DailyQuestsCard quests={dailyQuests} />
-      </div>
 
       {empty ? (
         <div className="liquid-glass rounded-[24px] p-8 md:p-12 text-center">
@@ -396,6 +405,9 @@ export default function StatsPage({ onExit }: Props) {
           </button>
         )}
       </section>
+
+      <div className="md:hidden h-20" aria-hidden />
+      <MobileBottomNav active="profile" />
     </ScreenShell>
   );
 }

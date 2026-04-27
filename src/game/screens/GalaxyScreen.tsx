@@ -52,7 +52,6 @@ const BG = '#233D4C';
 const FG_SOFT = 'rgba(253,128,46,0.65)';
 const FG_DIM = 'rgba(253,128,46,0.45)';
 const LINE = 'rgba(253,128,46,0.25)';
-const LINE_SOFT = 'rgba(253,128,46,0.18)';
 
 /** 과목별 소개 문구. */
 const SUBJECT_INTRO: Record<Subject, { tagline: string; description: string }> = {
@@ -305,7 +304,10 @@ function buildChooserGreeting(
   progress: ProgressStore,
 ): ChooserGreeting {
   if (stats.sessionsCount === 0) {
-    return { pose: 'wave', text: '어서 와! 오늘 뭘 공부할까?' };
+    return {
+      pose: 'wave',
+      text: '안녕하세요! 저는 [조롱이] 라고 해요! 어떤 과목을 공부하려고 하세요?',
+    };
   }
 
   const today = new Date();
@@ -363,6 +365,76 @@ function ChooserMascot({
 }
 
 // ----------------------------------------------------------------
+// SubjectChoice — 유리재질(liquid-glass) 카드.
+// ----------------------------------------------------------------
+
+function SubjectChoice({
+  subject,
+  disabled,
+  total,
+  onSelect,
+}: {
+  subject: Subject;
+  disabled: boolean;
+  total: number;
+  onSelect: () => void;
+}) {
+  const intro = SUBJECT_INTRO[subject];
+  const schema = SUBJECT_SCHEMAS[subject];
+  return (
+    <button
+      type="button"
+      onClick={() => !disabled && onSelect()}
+      disabled={disabled}
+      aria-label={`${subject.toUpperCase()} 선택`}
+      className="liquid-glass rounded-[18px] group flex flex-col text-left transition duration-200 disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:bg-[rgba(255,255,255,0.06)] hover:bg-[rgba(255,255,255,0.05)]"
+      style={{
+        color: FG,
+        padding: '20px 16px',
+        minHeight: 200,
+      }}
+    >
+      {/* 코너 마커 — 6×6 정사각 dot */}
+      <span
+        aria-hidden
+        className="block w-[7px] h-[7px] mb-5 transition group-hover:scale-110"
+        style={{ background: FG }}
+      />
+
+      {/* 타이틀 — Anton 큰 사이즈 */}
+      <div
+        className="kr-heading uppercase text-[34px] md:text-[42px] leading-none mb-2.5"
+        style={{ letterSpacing: '0.005em', color: FG }}
+      >
+        {subject.toUpperCase()}
+      </div>
+
+      {/* 태그라인 */}
+      <p
+        className="kr-heading uppercase text-[10px] md:text-[11px] leading-snug mb-auto"
+        style={{ letterSpacing: '0.16em', color: FG_SOFT }}
+      >
+        {intro.tagline}
+      </p>
+
+      {/* 메타 — 하단 hairline 으로 구분 */}
+      <div
+        className="flex items-center justify-between mt-5 pt-3"
+        style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}
+      >
+        <span
+          className="kr-heading uppercase text-[10px] tabular-nums"
+          style={{ letterSpacing: '0.13em', color: FG_SOFT }}
+        >
+          챕터 {schema.chapters.length} · 문항 {total}
+        </span>
+        <ArrowRight size={14} strokeWidth={2} style={{ color: FG }} />
+      </div>
+    </button>
+  );
+}
+
+// ----------------------------------------------------------------
 // IconBox — 미니멀 36px 보더 박스 + 아이콘.
 // ----------------------------------------------------------------
 
@@ -397,76 +469,6 @@ function IconBox({
   );
 }
 
-// ----------------------------------------------------------------
-// SubjectChoice — 미니멀 보더 카드.
-// ----------------------------------------------------------------
-
-function SubjectChoice({
-  subject,
-  disabled,
-  total,
-  onSelect,
-}: {
-  subject: Subject;
-  disabled: boolean;
-  total: number;
-  onSelect: () => void;
-}) {
-  const intro = SUBJECT_INTRO[subject];
-  const schema = SUBJECT_SCHEMAS[subject];
-  return (
-    <button
-      type="button"
-      onClick={() => !disabled && onSelect()}
-      disabled={disabled}
-      aria-label={`${subject.toUpperCase()} 선택`}
-      className="group flex flex-col text-left transition duration-200 disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:bg-[rgba(253,128,46,0.06)] hover:bg-[rgba(253,128,46,0.045)]"
-      style={{
-        border: `1.5px solid ${FG_DIM}`,
-        color: FG,
-        padding: '20px 16px',
-        minHeight: 200,
-      }}
-    >
-      {/* 코너 마커 — 6×6 정사각 dot */}
-      <span
-        aria-hidden
-        className="block w-[7px] h-[7px] mb-5 transition group-hover:scale-110"
-        style={{ background: FG }}
-      />
-
-      {/* 타이틀 — Anton 큰 사이즈 */}
-      <div
-        className="kr-heading uppercase text-[34px] md:text-[42px] leading-none mb-2.5"
-        style={{ letterSpacing: '0.005em', color: FG }}
-      >
-        {subject.toUpperCase()}
-      </div>
-
-      {/* 태그라인 */}
-      <p
-        className="kr-heading uppercase text-[10px] md:text-[11px] leading-snug mb-auto"
-        style={{ letterSpacing: '0.16em', color: FG_SOFT }}
-      >
-        {intro.tagline}
-      </p>
-
-      {/* 메타 — 하단 hairline 으로 구분 */}
-      <div
-        className="flex items-center justify-between mt-5 pt-3"
-        style={{ borderTop: `1px solid ${LINE_SOFT}` }}
-      >
-        <span
-          className="kr-heading uppercase text-[10px] tabular-nums"
-          style={{ letterSpacing: '0.13em', color: FG_SOFT }}
-        >
-          챕터 {schema.chapters.length} · 문항 {total}
-        </span>
-        <ArrowRight size={14} strokeWidth={2} style={{ color: FG }} />
-      </div>
-    </button>
-  );
-}
 
 // ----------------------------------------------------------------
 // Subject info panel — 과목 카드 클릭 시 오버레이 (orange retint).
@@ -498,12 +500,13 @@ function SubjectInfoPanel({
   return (
     <div className="panel-slide-up">
       <div
-        className="relative"
+        className="liquid-glass rounded-[18px] relative"
         style={{
-          background: BG,
-          border: `1.5px solid ${FG_DIM}`,
           padding: '20px 20px 22px',
           color: FG,
+          background: 'rgba(35,61,76,0.96)',
+          backdropFilter: 'blur(22px) saturate(140%)',
+          WebkitBackdropFilter: 'blur(22px) saturate(140%)',
         }}
       >
         {/* 닫기 */}
@@ -512,7 +515,7 @@ function SubjectInfoPanel({
           onClick={onBack}
           disabled={launching}
           aria-label="닫기"
-          className="absolute top-3 right-3 w-8 h-8 inline-flex items-center justify-center transition hover:bg-[rgba(253,128,46,0.08)] disabled:opacity-40"
+          className="absolute top-3 right-3 w-8 h-8 inline-flex items-center justify-center transition hover:bg-[rgba(255,255,255,0.06)] disabled:opacity-40"
           style={{ color: FG }}
         >
           <X size={16} strokeWidth={2} />

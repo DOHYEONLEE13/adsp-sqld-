@@ -26,6 +26,9 @@ export const VIDEO_URLS = {
   mode3:
     'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260331_055427_ac7035b5-9f3b-4289-86fc-941b2432317d.mp4',
   cta: 'https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260331_055729_72d66327-b59e-4ae9-bb70-de6ccb5ecdb0.mp4',
+  /** 게임 인내 화면(Zone/Quests/Friends/Stats) 공용 배경 — Mux HLS. */
+  pageAmbient:
+    'https://stream.mux.com/Si6ej2ZRrxRCnTYBXSScDRCdd7CGnyTqiPszZcw3z4I.m3u8',
 } as const;
 
 export const HERO: HeroContent = {

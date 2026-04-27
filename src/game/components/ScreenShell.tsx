@@ -18,6 +18,10 @@ interface Props {
    * 지정 시 isolate + radial overlay 를 적용해 가독성을 유지합니다.
    */
   backgroundImage?: string;
+  /** true 면 section 자체 bg-base 를 제거 — 외부에서 ambient 비디오 깔 때 사용. */
+  transparentBg?: boolean;
+  /** ambient 배경을 section 내부에 마운트하고 싶을 때. */
+  ambient?: ReactNode;
   children: ReactNode;
 }
 
@@ -28,10 +32,17 @@ export default function ScreenShell({
   onExit,
   exitLabel = '뒤로',
   backgroundImage,
+  transparentBg,
+  ambient,
   children,
 }: Props) {
   return (
-    <section className="relative min-h-screen bg-base text-cream isolate overflow-hidden">
+    <section
+      className={`relative min-h-screen text-cream isolate overflow-hidden ${
+        transparentBg || ambient ? '' : 'bg-base'
+      }`}
+    >
+      {ambient ?? null}
       {backgroundImage ? (
         <>
           <img

@@ -161,6 +161,148 @@ Galaxy(과목) → Planet(챕터) → Zone(토픽 로드맵)
 12. PWA 화 — Daily Mission 홈 화면 아이콘.
 13. `.claude/session-handoff.json` 내용은 2026-04-18 기준이라 낡음. 이 CLAUDE.md 가 대체하므로 점진적으로 폐기.
 
+### 🟪 P0 — Supabase 연동 (친구 경쟁 실시간 진행상황)
+
+**현재 상태 (2026-04-27)**: 친구 시스템은 **localStorage 만 쓰는 미리보기**. UI 와 데이터 모양은 다 깔려있어 서버만 붙이면 즉시 작동.
+
+#### 14. 데이터 모델 (Postgres)
+
+```sql
+-- 개인 프로필
+create table profiles (
+  id uuid primary key references auth.users on delete cascade,
+  tag text not null unique,                                -- Q-XXXX-XXXX
+  display_name text not null default '',
+  avatar_pose text not null default 'wave'                 -- Ques 8 포즈 enum
+    check (avatar_pose in
+      ('idle','happy','sad','celebrate','sleep','wave','think','lightbulb')),
+  total_xp integer not null default 0,
+  level integer not null default 1,
+  streak_days integer not null default 0,
+  last_seen_at timestamptz not null default now(),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+create index profiles_tag_idx on profiles(tag);
+
+-- 친구 관계 (단방향 — A 가 B 를 추가했다고 B 가 A 를 자동 추가하진 않음)
+create table friendships (
+  user_id uuid references profiles on delete cascade,
+  friend_id uuid references profiles on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (user_id, friend_id)
+);
+
+-- RLS
+alter table profiles enable row level security;
+alter table friendships enable row level security;
+
+create policy profiles_read_self on profiles for select using (id = auth.uid());
+create policy profiles_read_friends on profiles for select using (
+  id in (select friend_id from friendships where user_id = auth.uid())
+);
+create policy profiles_update_self on profiles for update using (id = auth.uid());
+create policy friendships_read_self on friendships for select using (user_id = auth.uid());
+create policy friendships_insert_self on friendships for insert with check (user_id = auth.uid());
+create policy friendships_delete_self on friendships for delete using (user_id = auth.uid());
+```
+
+#### 15. 클라이언트 교체 포인트 (구조는 이미 갖춤)
+
+| 현재 (localStorage) | 교체 후 (Supabase) |
+|---|---|
+| `src/data/profile.ts` `getMyProfile()` | `select * from profiles where id = auth.uid()` (없으면 insert + tag 생성 RPC) |
+| `src/data/profile.ts` `setDisplayName(n)` | `update profiles set display_name = n where id = auth.uid()` |
+| `src/data/profile.ts` `setAvatarPose(p)` | `update profiles set avatar_pose = p where id = auth.uid()` |
+| `src/data/friends.ts` `listFriends()` | `select profiles.* from friendships join profiles on friend_id = profiles.id where user_id = auth.uid() order by total_xp desc` (avatar_pose 포함) |
+| `src/data/friends.ts` `addFriend(tag, myTag)` | RPC `add_friend_by_tag(target_tag text)` — 태그 → friend_id 변환 + insert |
+| `src/data/friends.ts` `removeFriend(tag)` | `delete from friendships where user_id = auth.uid() and friend_id = (select id from profiles where tag = $1)` |
+| `subscribeFriends(cb)` | `supabase.channel('public:profiles').on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles' }, cb)` — 친구가 avatar_pose 바꾸면 즉시 리더보드 반영 |
+
+**아바타 동기화 검증**: `FriendEntry.avatarPose` 가 이미 데이터 모델에 들어가 있고 `Leaderboard` 가 그 값으로 `<Ques>` 를 렌더하므로, Supabase 응답 형태만 `{ tag, display_name, avatar_pose, total_xp, level, streak_days, last_seen_at }` 로 매핑되면 UI 변경 없음. realtime UPDATE 이벤트가 들어올 때 `setFriends(...)` 만 다시 호출하면 친구의 표정 변화도 즉시 화면에 반영.
+
+#### 16. 서버에서 갱신할 컬럼 — 어디서 쓰는지
+
+`profiles.total_xp / level / streak_days / last_seen_at` 는 클라이언트가 세션 종료 시 RPC `bump_progress(xp_delta int, streak int)` 로 푸시. 친구 화면이 realtime 구독하고 있으면 자동 라이브 갱신.
+
+#### 17. 마이그레이션 순서
+
+1. `auth` 만 먼저 도입 (이메일 magic link).
+2. profile 자동 생성 trigger — auth.users insert 시 profile row + 고유 tag 생성.
+3. 클라이언트 fallback — Supabase 응답 실패 시 localStorage 로 그레이스풀 다운그레이드.
+4. UI 의 "현재는 로컬 미리보기" 안내 문구 제거 (`src/game/FriendsPage.tsx` 하단).
+
+### ⚡ P0 — 에너지(번개) 시스템 + 무료/유료 게이트
+
+**현재 상태**: UI 상의 ⚡ 아이콘은 단순히 `playerStats.level` 을 보여주는 placeholder. 실제 에너지 소모/회복 로직 X. 로드맵 잠금 X. 결제 X.
+
+**의도된 동작 (랜딩 Pricing 카피와 일치)**:
+
+| 정책 | 무료 | 프리미엄 |
+|---|---|---|
+| ⚡ 보유 한도 | 5 | ∞ |
+| ⚡ 소모 시점 | 개념 step 풀이 / 모의고사 진입 / 오답 복습 = 1회 | 무관 |
+| ⚡ 회복 | 30분당 1회 (최대 5) | 즉시 5/5 항상 |
+| 로드맵 | 순차 잠금 — 앞 step 클리어해야 다음 해금 | 자유 — 어떤 챕터·스텝도 즉시 |
+| 챕터 모의고사 1·2·3·Final | 슬롯당 1회 무료 시도 후 ⚡ 소모 | 무제한 재시도 |
+
+#### 18. Postgres 스키마 (에너지)
+
+```sql
+-- 사용자별 에너지 상태 — 2-컬럼만 있어도 lazy regen 계산 가능
+alter table profiles add column if not exists energy_count integer not null default 5;
+alter table profiles add column if not exists energy_updated_at timestamptz not null default now();
+alter table profiles add column if not exists is_premium boolean not null default false;
+alter table profiles add column if not exists premium_until timestamptz;
+
+-- 잠금 해제 상태 — step 단위 ("subject-chapter-topic-stepIdx" 키)
+create table step_unlocks (
+  user_id uuid references profiles on delete cascade,
+  step_key text not null,                          -- "adsp-1-데이터의 이해-2"
+  unlocked_at timestamptz not null default now(),
+  primary key (user_id, step_key)
+);
+```
+
+#### 19. RPC — `consume_energy(amount int default 1)`
+
+서버에서 atomic 처리. 트랜잭션 안에서:
+
+```sql
+-- 의사 코드
+1. select energy_count, energy_updated_at, is_premium from profiles where id = auth.uid() for update
+2. is_premium 이면 곧장 ok 반환 (소모 없음)
+3. lazy regen: 마지막 갱신부터 30분당 +1 (최대 5) 계산해 energy_count 갱신
+4. if energy_count < amount → return { ok: false, retryAfterSec: ... }
+5. update profiles set energy_count = energy_count - amount, energy_updated_at = now()
+6. return { ok: true, remaining, retryAfterSec: 0 }
+```
+
+#### 20. 로드맵 잠금 RPC — `unlock_next_step(prev_step_key)`
+
+세션 종료 시 (정답률 ≥ 60% 같은 기준 충족) 다음 스텝 키를 계산해 step_unlocks 에 insert. 프리미엄은 모든 step 을 미리 unlock 처리하거나, 클라이언트가 is_premium 이면 잠금 무시.
+
+#### 21. 클라이언트 통합 포인트 (현재 코드)
+
+| 호출 시점 | 추가 작업 |
+|---|---|
+| `LessonScreen` / `DialogueLesson` 진입 시 | RPC `consume_energy(1)` — false 면 차단 모달 |
+| `ZoneScreen` 모의고사 슬롯 클릭 | RPC `consume_energy(1)` (슬롯당 첫 시도면 free, 재시도면 ⚡ 소모 — 정책 결정 필요) |
+| 세션 종료 후 | RPC `unlock_next_step(currentStepKey)` |
+| `MobileTopBar` ⚡ 아이콘 표시 | 무료: `energy_count`, 프리미엄: ∞ 아이콘 표시. realtime 구독으로 30분마다 자동 갱신 |
+| Zone step 노드 렌더 | unlocked 여부에 따라 disabled / lock 아이콘 |
+
+#### 22. 결제 게이트
+
+- Stripe (또는 Toss Payments) 구독 → webhook → `update profiles set is_premium = true, premium_until = period_end`
+- 만료 시 cron job 또는 lazy check (`is_premium and premium_until < now()` 면 false 로 회수)
+- 클라이언트 `useProfile()` 가 `is_premium` 내려주고 모든 게이트 분기 사용
+
+#### 23. UI 안내 문구
+
+- 차단 모달: "⚡ 0개 — 다음 충전까지 N분, 또는 프리미엄으로 전환"
+- 잠금 step 클릭 시: "앞 단계를 먼저 클리어하세요 (또는 프리미엄으로 자유 진행)"
+
 ---
 
 ## 6. 자주 쓰는 파일 치트시트

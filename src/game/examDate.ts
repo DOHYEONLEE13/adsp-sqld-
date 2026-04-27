@@ -4,9 +4,12 @@
  *
  * 두 과목은 각자 독립적인 시험일을 가질 수 있음 (ADSP / SQLD 분기).
  * 저장 포맷은 `YYYY-MM-DD` 문자열 (타임존 영향 없는 비교용).
+ *
+ * Hybrid sync: localStorage 즉시 반영, 인증돼 있으면 Supabase 에 background push.
  */
 
 import type { Subject } from '@/types/question';
+import { getSupabase, onAuthStateChange } from '@/lib/supabase';
 
 const STORAGE_KEY = 'questdp.examDates.v1';
 
@@ -44,6 +47,7 @@ export function setExamDate(subject: Subject, ymd: string | null): void {
   if (ymd === null || ymd === '') delete cur[subject];
   else cur[subject] = ymd;
   save(cur);
+  void serverSetExamDate(subject, ymd);
 }
 
 export function getAllExamDates(): ExamDates {
@@ -64,4 +68,65 @@ export function daysUntil(ymd: string | undefined, now: number = Date.now()): nu
   today.setHours(0, 0, 0, 0);
   const diffMs = target.getTime() - today.getTime();
   return Math.round(diffMs / (24 * 60 * 60 * 1000));
+}
+
+// ─── Supabase sync layer ────────────────────────────────────────────────
+
+async function serverSetExamDate(subject: Subject, ymd: string | null): Promise<void> {
+  const sb = getSupabase();
+  if (!sb) return;
+  try {
+    const { data: sess } = await sb.auth.getSession();
+    if (!sess.session) return;
+    if (ymd === null || ymd === '') {
+      await sb
+        .from('exam_dates')
+        .delete()
+        .eq('user_id', sess.session.user.id)
+        .eq('subject', subject);
+    } else {
+      await sb
+        .from('exam_dates')
+        .upsert(
+          { user_id: sess.session.user.id, subject, exam_date: ymd },
+          { onConflict: 'user_id,subject' },
+        );
+    }
+  } catch {
+    /* 무시 */
+  }
+}
+
+async function pullExamDates(): Promise<void> {
+  const sb = getSupabase();
+  if (!sb) return;
+  const { data: sess } = await sb.auth.getSession();
+  if (!sess.session) return;
+  const { data, error } = await sb
+    .from('exam_dates')
+    .select('subject, exam_date');
+  if (error || !data) return;
+  const merged: ExamDates = {};
+  for (const row of data as Array<{ subject: Subject; exam_date: string }>) {
+    merged[row.subject] = row.exam_date;
+  }
+  save(merged);
+}
+
+let _syncStarted = false;
+
+export function initExamDatesSync(): () => void {
+  if (_syncStarted) return () => {};
+  _syncStarted = true;
+
+  void pullExamDates();
+  const unsub = onAuthStateChange((event) => {
+    if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+      void pullExamDates();
+    }
+  });
+  return () => {
+    unsub();
+    _syncStarted = false;
+  };
 }

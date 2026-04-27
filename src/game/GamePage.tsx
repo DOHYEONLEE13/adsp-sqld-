@@ -9,6 +9,7 @@ import type { FlowMode, GameScreen, QuestSummary } from './types';
 import {
   createDailyMissionSession,
   createMockExamSession,
+  createReviewFromIds,
   createSession,
   isSessionDone,
   recordAnswer,
@@ -31,6 +32,8 @@ import QuestScreen from './screens/QuestScreen';
 import ResultScreen from './screens/ResultScreen';
 import ReviewPage from './ReviewPage';
 import { createReviewSession } from './review';
+import { consumeEnergy } from './energy';
+import EnergyBlockModal from './components/EnergyBlockModal';
 
 interface Props {
   /**
@@ -48,6 +51,22 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
       ? { kind: 'planet', subject: initialSubject }
       : { kind: 'galaxy' },
   );
+  const [energyBlock, setEnergyBlock] = useState<{ retryAfterSec: number } | null>(
+    null,
+  );
+
+  /**
+   * 에너지 1 차감 후 callback. 게스트·프리미엄·env 미설정 = 무조건 진행.
+   * 무료 인증 사용자가 0 일 때만 차단 모달.
+   */
+  const gateEnergy = async (proceed: () => void) => {
+    const result = await consumeEnergy(1);
+    if (result.ok) {
+      proceed();
+    } else {
+      setEnergyBlock({ retryAfterSec: result.retryAfterSec });
+    }
+  };
 
   // initialSubject 가 있으면 그 과목을 active 로 영속화 — 다음 #/game 진입 시
   // 자동 redirect 되도록. 마운트 시 한 번 (idempotent).
@@ -61,59 +80,91 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
     setScreen({ kind: 'planet', subject });
   };
 
-  /** 일반 세션 시작. */
+  /** 일반 세션 시작. ⚡ 1 소모. */
   const startSession = (
     subject: Subject,
     chapter: number,
     topic: string | null,
     sampling: SamplingMode = 'random',
     flow: FlowMode = 'play',
+    size?: number,
+    explicitLabel?: string,
   ) => {
-    const labelMap: Record<string, string> = {
-      weakness: '약점 집중',
-      review: '오답 복습',
-    };
-    const flowLabelMap: Record<FlowMode, string> = {
-      play: '',
-      learn: '학습 모드',
-      test: '시험 모드',
-    };
-    const label =
-      flowLabelMap[flow] ||
-      labelMap[sampling] ||
-      undefined;
-    const session = createSession({
-      subject,
-      chapter,
-      topic,
-      sampling,
-      flow,
-      label,
+    void gateEnergy(() => {
+      const labelMap: Record<string, string> = {
+        weakness: '약점 집중',
+        review: '오답 복습',
+      };
+      const flowLabelMap: Record<FlowMode, string> = {
+        play: '',
+        learn: '학습 모드',
+        test: '시험 모드',
+      };
+      const label =
+        explicitLabel ||
+        flowLabelMap[flow] ||
+        labelMap[sampling] ||
+        undefined;
+      const session = createSession({
+        subject,
+        chapter,
+        topic,
+        sampling,
+        flow,
+        size,
+        label,
+      });
+      if (!session) return;
+      setScreen({ kind: 'quest', session });
     });
-    if (!session) return;
-    setScreen({ kind: 'quest', session });
   };
 
-  /** Daily Mission 시작. */
+  /** Daily Mission 시작. ⚡ 1 소모. */
   const startDailyMission = (subject: Subject) => {
-    const session = createDailyMissionSession(subject);
-    if (!session) return;
-    markDailyMissionStarted();
-    setScreen({ kind: 'quest', session });
+    void gateEnergy(() => {
+      const session = createDailyMissionSession(subject);
+      if (!session) return;
+      markDailyMissionStarted();
+      setScreen({ kind: 'quest', session });
+    });
   };
 
-  /** 모의고사 — 과목 전체에서 50문항 랜덤 + 시험 모드(타이머·피드백 숨김). */
+  /** 모의고사 — 과목 전체에서 50문항 랜덤 + 시험 모드. ⚡ 1 소모. */
   const startMockExam = (subject: Subject) => {
-    const session = createMockExamSession(subject);
-    if (!session) return;
-    setScreen({ kind: 'quest', session });
+    void gateEnergy(() => {
+      const session = createMockExamSession(subject);
+      if (!session) return;
+      setScreen({ kind: 'quest', session });
+    });
   };
 
-  /** 복습 세션 — SRS due · 오답 · 약점 혼합 15문항. */
+  /** 복습 세션 — SRS due · 오답 · 약점 혼합 15문항. ⚡ 1 소모. */
   const startReview = (subject: Subject) => {
-    const session = createReviewSession(subject, 15);
-    if (!session) return;
-    setScreen({ kind: 'quest', session });
+    void gateEnergy(() => {
+      const session = createReviewSession(subject, 15);
+      if (!session) return;
+      setScreen({ kind: 'quest', session });
+    });
+  };
+
+  /** 모의고사 오답 복습 — 특정 문항 ID 만으로 학습 모드 세션. ⚡ 1 소모. */
+  const startReviewFromIds = (
+    subject: Subject,
+    chapter: number,
+    questionIds: string[],
+    label: string,
+  ) => {
+    void gateEnergy(() => {
+      const session = createReviewFromIds({
+        subject,
+        chapter,
+        questionIds,
+        flow: 'learn',
+        label,
+      });
+      if (!session) return;
+      setScreen({ kind: 'quest', session });
+    });
   };
 
   // 세션이 끝날 때 딱 한 번 저장소에 반영한 뒤 result 로 전이.
@@ -122,7 +173,8 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
     setScreen({ kind: 'result', summary });
   };
 
-  switch (screen.kind) {
+  const renderScreen = () => {
+    switch (screen.kind) {
     case 'galaxy':
       return (
         <GalaxyScreen
@@ -174,6 +226,8 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
               p.topic,
               p.sampling,
               p.flow,
+              p.size,
+              p.label,
             )
           }
           onSelectStep={(topic, stepIdx) =>
@@ -184,6 +238,14 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
               topic,
               stepIdx,
             })
+          }
+          onReviewIds={(p) =>
+            startReviewFromIds(
+              screen.subject,
+              screen.chapter,
+              p.questionIds,
+              p.label,
+            )
           }
           onBack={() =>
             setScreen({ kind: 'planet', subject: screen.subject })
@@ -270,5 +332,18 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
           onBackToGalaxy={() => setScreen({ kind: 'galaxy' })}
         />
       );
-  }
+    }
+  };
+
+  return (
+    <>
+      {renderScreen()}
+      {energyBlock ? (
+        <EnergyBlockModal
+          retryAfterSec={energyBlock.retryAfterSec}
+          onClose={() => setEnergyBlock(null)}
+        />
+      ) : null}
+    </>
+  );
 }

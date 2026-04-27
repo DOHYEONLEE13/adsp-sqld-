@@ -94,3 +94,36 @@ export function onAuthStateChange(
   const { data } = sb.auth.onAuthStateChange((event, session) => cb(event, session));
   return () => data.subscription.unsubscribe();
 }
+
+/**
+ * 계정 + 모든 데이터 영구 삭제. RPC 가 auth.users row 를 지우면
+ * cascade 로 profiles · sessions · friendships · ... 모두 자동 정리.
+ * 마지막에 signOut + localStorage 정리.
+ */
+export async function deleteMyAccount(): Promise<{ ok: boolean; error?: string }> {
+  const sb = getSupabase();
+  if (!sb) return { ok: false, error: 'supabase not configured' };
+  const { data: sess } = await sb.auth.getSession();
+  if (!sess.session) return { ok: false, error: 'not signed in' };
+  const { error } = await sb.rpc('delete_my_account');
+  if (error) return { ok: false, error: error.message };
+
+  // 서버 데이터 삭제 후 클라이언트 정리
+  await sb.auth.signOut();
+  if (typeof window !== 'undefined') {
+    // localStorage 의 게스트용 캐시도 모두 비움 — 새 계정처럼 시작
+    const KEYS = [
+      'questdp.profile.v1',
+      'questdp.friends.v1',
+      'questdp.progress.v1',
+      'questdp.bookmarks.v1',
+      'questdp.examDates.v1',
+      'questdp.session_outbox.v1',
+      'questdp.migrated.v1',
+    ];
+    for (const k of KEYS) {
+      try { window.localStorage.removeItem(k); } catch { /* 무시 */ }
+    }
+  }
+  return { ok: true };
+}

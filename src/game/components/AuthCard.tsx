@@ -8,8 +8,9 @@
  */
 
 import { useEffect, useState } from 'react';
-import { LogIn, LogOut, Cloud, CloudOff } from 'lucide-react';
+import { LogIn, LogOut, Cloud, CloudOff, Trash2 } from 'lucide-react';
 import {
+  deleteMyAccount,
   getSupabase,
   isSupabaseConfigured,
   signInWithOAuth,
@@ -75,6 +76,26 @@ export default function AuthCard() {
     setLoading(false);
   };
 
+  const handleDelete = async () => {
+    // 2단계 confirm — 실수 방지
+    const first = window.confirm(
+      '정말 계정을 삭제할까요?\n프로필·진도·친구·북마크 모두 영구 삭제됩니다.',
+    );
+    if (!first) return;
+    const second = window.confirm(
+      '되돌릴 수 없어요. 한 번 더 확인 — 정말 삭제할까요?',
+    );
+    if (!second) return;
+    setLoading(true);
+    const result = await deleteMyAccount();
+    setLoading(false);
+    if (result.ok) {
+      window.alert('계정이 삭제됐습니다. 안녕히 가세요.');
+    } else {
+      window.alert(`삭제 실패: ${result.error ?? '알 수 없는 오류'}`);
+    }
+  };
+
   if (!isSupabaseConfigured()) {
     return (
       <section
@@ -95,37 +116,52 @@ export default function AuthCard() {
       aria-label="로그인 / 로그아웃"
     >
       {session ? (
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <span
-              className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full"
-              style={{ background: 'rgba(111,255,0,0.12)', border: '1px solid rgba(111,255,0,0.4)' }}
-            >
-              <Cloud size={14} className="text-neon" />
-            </span>
-            <div className="min-w-0">
-              <div className="kr-num text-[10px] uppercase tracking-widest text-neon">
-                동기화 중
-              </div>
-              <div className="kr-num text-[12px] text-cream/85 truncate max-w-[220px]">
-                {session.email}
+        <div>
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-center gap-2.5 min-w-0">
+              <span
+                className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full"
+                style={{ background: 'rgba(111,255,0,0.12)', border: '1px solid rgba(111,255,0,0.4)' }}
+              >
+                <Cloud size={14} className="text-neon" />
+              </span>
+              <div className="min-w-0">
+                <div className="kr-num text-[10px] uppercase tracking-widest text-neon">
+                  동기화 중
+                </div>
+                <div className="kr-num text-[12px] text-cream/85 truncate max-w-[220px]">
+                  {session.email}
+                </div>
               </div>
             </div>
+            <button
+              type="button"
+              onClick={handleSignOut}
+              disabled={loading}
+              className="kr-num inline-flex items-center gap-1.5 text-[11px] uppercase tracking-widest px-3 py-1.5 rounded-full transition active:scale-95 disabled:opacity-40"
+              style={{
+                background: 'rgba(239,244,255,0.06)',
+                border: '1px solid rgba(239,244,255,0.18)',
+                color: 'var(--cream)',
+              }}
+            >
+              <LogOut size={11} strokeWidth={2.4} />
+              로그아웃
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={handleSignOut}
-            disabled={loading}
-            className="kr-num inline-flex items-center gap-1.5 text-[11px] uppercase tracking-widest px-3 py-1.5 rounded-full transition active:scale-95 disabled:opacity-40"
-            style={{
-              background: 'rgba(248,113,113,0.12)',
-              border: '1px solid rgba(248,113,113,0.4)',
-              color: '#f87171',
-            }}
-          >
-            <LogOut size={11} strokeWidth={2.4} />
-            로그아웃
-          </button>
+          {/* 탈퇴 — 매우 작은 ghost 링크. 의도적으로 눈에 안 띄게. */}
+          <div className="mt-3 pt-3 border-t border-cream/8">
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={loading}
+              className="kr-body text-[10.5px] inline-flex items-center gap-1 transition opacity-50 hover:opacity-90 disabled:opacity-30"
+              style={{ color: 'rgba(248,113,113,0.85)' }}
+            >
+              <Trash2 size={10} strokeWidth={2} />
+              계정 영구 삭제 (모든 데이터 사라짐)
+            </button>
+          </div>
         </div>
       ) : (
         <div>

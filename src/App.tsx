@@ -27,6 +27,7 @@ import type { LegalDoc } from './data/legal';
 import GlobalAmbientBg from './game/components/GlobalAmbientBg';
 import { onAuthStateChange } from './lib/supabase';
 import { consumePendingAuthRedirect } from './lib/authGuard';
+import TierUpgradeToast from './components/passes/TierUpgradeToast';
 
 type Route =
   | 'landing'
@@ -260,6 +261,8 @@ export default function App() {
     <>
       <GlobalAmbientBg />
       {renderRoute()}
+      {/* Tier 승급 토스트 — 모든 라우트에서 동작 */}
+      <TierUpgradeToast />
     </>
   );
 }

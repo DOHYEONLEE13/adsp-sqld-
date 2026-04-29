@@ -206,6 +206,28 @@ button {
   will-change: transform, opacity;
 }
 
+/* Pass Tier 승급 토스트 — 부드럽게 떠올랐다가 사라짐 */
+@keyframes tierToastRise {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 12px) scale(0.92);
+  }
+  20% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1.04);
+  }
+  35% {
+    transform: translate(-50%, 0) scale(1);
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -8px);
+  }
+}
+
 /* 레슨 step 정답 시 화면 상단으로 떠오르는 큰 XP 토스트 */
 @keyframes xpToastRise {
   0% {

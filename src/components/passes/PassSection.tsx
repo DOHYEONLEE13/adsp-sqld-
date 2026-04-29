@@ -159,22 +159,12 @@ export default function PassSection() {
     }
   };
 
-  // 메인 카드 외곽 스타일 (explainer 패널과 공유)
-  const cardStyle: React.CSSProperties = {
-    background: 'rgba(8, 14, 36, 0.72)',
-    backdropFilter: 'blur(16px) saturate(120%)',
-    WebkitBackdropFilter: 'blur(16px) saturate(120%)',
-    border: '1px solid rgba(239, 244, 255, 0.12)',
-    boxShadow:
-      'inset 0 1px 0 rgba(255,255,255,0.08), 0 6px 24px rgba(0,0,0,0.35)',
-  };
-
+  // 카드 외곽은 liquid-glass 클래스 (전역 강화 적용 — index.css)
   return (
     <>
     <section
       aria-label="회독 진행도"
-      className="rounded-[24px] p-5 md:p-6 mb-6 relative overflow-hidden"
-      style={cardStyle}
+      className="liquid-glass rounded-[24px] p-5 md:p-6 mb-6"
     >
       {/* ── 헤더 + 현재 Tier ── */}
       <div className="flex items-start justify-between gap-4 flex-wrap mb-3">
@@ -252,8 +242,7 @@ export default function PassSection() {
       <section
         id="pass-tier-explain-panel"
         aria-label="Tier 룰 설명"
-        className="rounded-[24px] p-5 md:p-6 mb-6 relative overflow-hidden"
-        style={cardStyle}
+        className="liquid-glass rounded-[24px] p-5 md:p-6 mb-6"
       >
         <TierRulesExplainer />
       </section>
@@ -263,16 +252,15 @@ export default function PassSection() {
     {isAdmin ? (
       <section
         aria-label="검수 모드 (admin 전용)"
-        className="rounded-[24px] p-4 mb-6 flex items-start gap-2.5 relative overflow-hidden"
-        style={{
-          ...cardStyle,
-          background: devUnlock
-            ? 'rgba(252,211,77,0.10)'
-            : 'rgba(8, 14, 36, 0.72)',
-          border: devUnlock
-            ? '1px solid rgba(252,211,77,0.45)'
-            : '1px solid rgba(239,244,255,0.12)',
-        }}
+        className="liquid-glass rounded-[24px] p-4 mb-6 flex items-start gap-2.5"
+        style={
+          devUnlock
+            ? {
+                background: 'rgba(252,211,77,0.12)',
+                border: '1px solid rgba(252,211,77,0.45)',
+              }
+            : undefined
+        }
       >
         <Wrench
           size={14}

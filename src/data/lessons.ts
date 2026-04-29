@@ -167,13 +167,13 @@ const ADSP_1_1: Lesson = {
         },
         {
           kind: 'table',
-          title: '4단계 한 줄 정리',
-          headers: ['단계', '정의', '예시'],
+          title: '4단계 한 줄 정리 (위 → 아래: 가치 ↑ · 양 ↓)',
+          headers: ['단계', '정의', '예시', '양·가치'],
           rows: [
-            ['데이터', '가공 전 측정값', 'B마트 콜라 1,500원'],
-            ['정보', '비교·해석이 더해진 의미', 'B마트가 300원 더 싸다'],
-            ['지식', '일반화된 규칙', '콜라는 B마트가 유리'],
-            ['지혜', '새 영역으로의 확장 추론', '음료 전반 B마트가 저렴할 것'],
+            ['지혜 (W)', '새 영역으로의 확장 추론', '음료 전반 B마트가 저렴할 것', '양 ↓ · 가치 ↑↑'],
+            ['지식 (K)', '일반화된 규칙', '콜라는 B마트가 유리', '양 ↓ · 가치 ↑'],
+            ['정보 (I)', '비교·해석이 더해진 의미', 'B마트가 300원 더 싸다', '양 ↑ · 가치 ↑'],
+            ['데이터 (D)', '가공 전 측정값', 'B마트 콜라 1,500원', '양 ↑↑ · 가치 ↓'],
           ],
         },
       ],
@@ -617,11 +617,28 @@ const ADSP_1_1: Lesson = {
       ],
       blocks: [
         {
+          kind: 'intro',
+          body:
+            '엑셀 파일과 진짜 데이터베이스(DB) 의 차이는 단순히 "용량이 크냐" 가 아니라 5가지 본질적 성질로 갈립니다. 같은 학생 명단이라도, 엑셀 파일은 한 번에 한 사람만 열 수 있고 누군가 수정하면 다른 사람은 모르지만, DB 는 여러 사람이 동시에 보고 누군가의 수정이 즉시 반영됩니다.',
+        },
+        {
+          kind: 'table',
+          title: 'DB 5특징 한눈에',
+          headers: ['특징', '의미', '엑셀과 차이'],
+          rows: [
+            ['공용', '여러 사용자가 동시에 공유·접근', '엑셀: 한 번에 한 사람만 열기'],
+            ['통합', '동일 데이터의 중복을 최소화', '엑셀: 부서마다 같은 정보 반복 저장'],
+            ['저장', '디스크에 영속 — 전원 꺼져도 유지', '엑셀: 파일 단위 저장 — 분실 위험'],
+            ['변화', '수정·삽입·삭제가 즉시 반영', '엑셀: 누군가의 수정을 다른 사람은 모름'],
+            ['실시간', '요청 즉시 응답 (초 이내)', '엑셀: 큰 파일은 열기·저장 자체가 느림'],
+          ],
+        },
+        {
           kind: 'callout',
           tone: 'mnemonic',
-          title: 'DB 5특징',
+          title: '암기법: "공통저변 + 실시간"',
           body:
-            '공용(여러 사용자 공유) · 통합(중복 최소화) · 저장(영속) · 변화(수정 반영) + 실시간 처리. 엑셀 파일과 구분짓는 5가지.',
+            '앞 글자 4개 = [공통저변]. 거기에 "실시간 처리" 까지. 시험에선 "DB 의 특징이 아닌 것" 으로 자주 출제 — 5가지 외 다른 보기가 정답.',
         },
       ],
     },
@@ -638,13 +655,26 @@ const ADSP_1_1: Lesson = {
         {
           kind: 'intro',
           body:
-            'Data Warehouse 는 운영 시스템(OLTP) 데이터를 ETL(Extract-Transform-Load) 한 후 주제별로 정돈한 분석 창고. 주로 정형 데이터, OLAP·BI 가 사용.',
+            'Data Warehouse 는 운영 시스템(OLTP) 데이터를 ETL 후 주제별로 정돈한 분석 창고입니다. 주로 정형 데이터, OLAP·BI 가 사용. 운영 시스템에 영향을 안 주려고 별도 저장소에 모으는 게 핵심.',
         },
         {
-          kind: 'section',
-          title: '시험 키워드',
+          kind: 'keypoints',
+          title: 'DW 의 핵심 용어 — 한 줄로',
+          items: [
+            'ETL = Extract(추출) → Transform(변환) → Load(적재). 운영 DB 의 raw 를 읽어 분석 형태로 가공 후 DW 에 저장하는 파이프라인.',
+            '주제별 정돈 = 부서·테이블 단위가 아니라 "매출", "고객", "재고" 같은 분석 주제별로 묶어 저장.',
+            '시간별 정돈 = 같은 매출 데이터도 일·주·월 단위로 미리 집계해서 보관 → 시계열 분석이 빠름.',
+            'Schema-on-Write = 저장하는 시점에 컬럼·타입을 미리 결정. 정형 데이터만 가능.',
+            'OLAP = Online Analytical Processing — 다차원 집계·조회가 주 작업.',
+            'BI = Business Intelligence — 의사결정용 시각화 도구. DW 의 주 사용자.',
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 키워드 — DW 만의 시그널',
           body:
-            '"ETL", "주제별·시간별 정돈", "OLAP·BI". 정형/반정형/비정형 모두면 Data Lake.',
+            '"ETL 후 주제별·시간별 정돈", "OLAP·BI 분석용", "Schema-on-Write". 정형·반정형·비정형 모두 raw 로 담는다 → Data Lake. 실시간 거래 처리 → OLTP.',
         },
       ],
     },
@@ -661,15 +691,29 @@ const ADSP_1_1: Lesson = {
         {
           kind: 'intro',
           body:
-            'Data Lake 는 정형뿐 아니라 반정형·비정형·raw 데이터까지 형태 변환 없이 적재하는 저장소. Schema-on-read (읽을 때 구조 적용) 방식.',
+            'Data Lake 는 정형뿐 아니라 반정형·비정형·raw 데이터까지 형태 변환 없이 적재하는 저장소입니다. DW 와의 결정적 차이는 "Schema-on-Read" — 저장할 땐 구조를 안 정하고 읽을(분석할) 때 비로소 구조를 입힙니다. 사진·영상·로그 같은 비정형도 모두 그대로 받습니다.',
         },
         {
-          kind: 'keypoints',
-          title: 'OLTP vs OLAP',
-          items: [
-            'OLTP: 거래 중심, 짧고 많은 insert/update',
-            'OLAP: 분석 중심, 읽기 위주 집계·다차원 조회',
-            'DW 는 OLAP 지원, Data Lake 는 raw 까지 보관',
+          kind: 'table',
+          title: 'DW vs Data Lake — 한눈에',
+          headers: ['축', 'DW (Data Warehouse)', 'Data Lake'],
+          rows: [
+            ['데이터 형태', '정형 only', '정형·반정형·비정형 모두'],
+            ['스키마 적용 시점', 'Schema-on-Write (저장 시)', 'Schema-on-Read (분석 시)'],
+            ['주 사용자', 'BI 분석가·경영진', '데이터 사이언티스트·엔지니어'],
+            ['활용 목적', '정형 리포트·대시보드', '머신러닝·로그 탐색·실험'],
+            ['데이터 가공', 'ETL 후 적재', 'raw 그대로 적재'],
+          ],
+        },
+        {
+          kind: 'table',
+          title: 'OLTP vs OLAP — 운영 vs 분석',
+          headers: ['축', 'OLTP (Transaction)', 'OLAP (Analytical)'],
+          rows: [
+            ['주 작업', 'insert·update·delete', 'select·aggregate'],
+            ['응답 시간', '짧은 트랜잭션 (ms)', '긴 분석 쿼리 (초~분)'],
+            ['데이터 형태', '정규화된 정형', '비정규화·집계'],
+            ['예시 시스템', 'ERP·CRM 운영 DB', 'DW·BI 분석 환경'],
           ],
         },
       ],
@@ -686,20 +730,37 @@ const ADSP_1_1: Lesson = {
       ],
       blocks: [
         {
+          kind: 'intro',
+          body:
+            '회사가 커지면 부서마다 데이터가 따로 쌓이고, 같은 고객 정보가 영업·마케팅·CS 에 중복 저장됩니다. 이를 통합·표준화하기 위한 5가지 정보 시스템이 시험에 자주 등장 — DBMS 가 가장 아래 인프라, 그 위에 ERP·CRM·SCM 이 영역별로 올라가고, BI 는 그 데이터들을 의사결정으로 연결합니다.',
+        },
+        {
+          kind: 'table',
+          title: '기업 정보 시스템 5종 — 한눈에',
+          headers: ['시스템', '풀네임', '담당 영역', '대표 사례'],
+          rows: [
+            ['DBMS', 'DataBase Management System', '데이터 저장·관리 인프라', 'Oracle·MySQL·PostgreSQL'],
+            ['ERP', 'Enterprise Resource Planning', '회사 안 — 생산·재무·인사 통합', 'SAP·Oracle ERP'],
+            ['CRM', 'Customer Relationship Management', '고객 접점 — 마케팅·캠페인', 'Salesforce'],
+            ['SCM', 'Supply Chain Management', '공급사슬 — 조달·재고·물류', 'SAP SCM'],
+            ['BI', 'Business Intelligence', '의사결정 — 대시보드·리포트', 'Tableau·Power BI'],
+          ],
+        },
+        {
           kind: 'callout',
           tone: 'mnemonic',
           title: '"생고공의" 흐름',
           body:
-            'ERP(생산·전사) → CRM(고객) → SCM(공급사슬) → BI(의사결정). 모두 DBMS 위에서 작동.',
+            'ERP(생산·전사) → CRM(고객) → SCM(공급사슬) → BI(의사결정). 모두 DBMS 위에서 작동. ERP 는 회사 안쪽, CRM·SCM 은 회사 바깥(고객·협력사) 접점, BI 는 그 데이터를 가공해 결정에 쓰는 도구.',
         },
         {
           kind: 'keypoints',
           title: 'DBMS 유형 4가지',
           items: [
-            '계층형: 트리 구조 1:N',
-            '망형: 자식이 여러 부모',
-            '관계형(RDB): 테이블·SQL — 가장 널리 쓰임',
-            'NoSQL: 대용량·비정형 대응',
+            '계층형 (Hierarchical): 트리 구조 1:N — 한 부모-여러 자식. 예전 IBM IMS.',
+            '망형 (Network): 한 자식이 여러 부모를 가질 수 있음. 복잡한 관계 표현.',
+            '관계형 (RDB): 테이블·SQL — 현대 가장 널리 쓰임 (Oracle·MySQL·PostgreSQL).',
+            'NoSQL: 대용량·비정형 대응 — 키-값·문서·그래프 등 (MongoDB·Redis).',
           ],
         },
       ],

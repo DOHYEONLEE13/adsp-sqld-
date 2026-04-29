@@ -21,6 +21,8 @@ export type GameScreen =
        *  노드에서 직접 진입할 때 사용. 지정되면 single-step 모드로 동작 —
        *  한 step 끝나면 onBack 으로 Zone 복귀. */
       stepIdx?: number;
+      /** N회독 차수. 1=원본, 2/3=변형 (진입 시 reminder 카드 노출). 기본 1. */
+      passNumber?: number;
     }
   | { kind: 'quest'; session: QuestSession }
   | { kind: 'result'; summary: QuestSummary }

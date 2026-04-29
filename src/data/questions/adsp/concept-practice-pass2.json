@@ -1,0 +1,263 @@
+{
+  "subject": "adsp",
+  "meta": {
+    "version": "1.0.0",
+    "updatedAt": "2026-04-29",
+    "source": "QuestDP 자체 제작 — 회독 시스템 2회독용 변형 문제",
+    "notes": "원본 (concept-practice.json) 의 같은 개념을 다른 각도에서 검증. 시나리오 응용·역추론·헷갈리는 distractor 위주. 1회독 클리어 사용자 대상 (난이도 3)."
+  },
+  "questions": [
+    {
+      "id": "adsp-1-1-cp-01-p2",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 이해",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "pass": 2,
+      "question": "다음 4가지 시나리오 중 DIKW 피라미드의 [지혜(Wisdom)] 단계에 가장 가까운 것은?",
+      "choices": [
+        "오늘 매장에 들어온 고객 수: 1,237명",
+        "최근 3개월간 비 오는 날 매출이 평균 12% 감소했다",
+        "비 오는 날 우산 매출은 평균 30% 증가한다는 통계",
+        "비 예보가 있는 날엔 매장 입구에 우산 매대를 미리 옮겨 두는 운영 규칙"
+      ],
+      "answerIndex": 3,
+      "explanation": "지혜(Wisdom) = 지식을 [상황에 맞게 적용·판단] 하는 단계. 운영 규칙처럼 의사결정에 직접 쓰이는 형태가 지혜.\n· (1) 단순 측정값 = 데이터, (2) 비교 후 의미 부여 = 정보, (3) 일반화된 규칙 = 지식, (4) 상황 적용 = 지혜.",
+      "source": "QuestDP 변형 — 시나리오 응용",
+      "tags": ["DIKW", "회독2", "응용"]
+    },
+    {
+      "id": "adsp-1-1-cp-02-p2",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 이해",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "pass": 2,
+      "question": "다음 데이터 유형의 분류가 [모두 올바른] 것은? (구조화·반구조화·비구조화)",
+      "choices": [
+        "엑셀 매출표 - 구조화 / JSON API 응답 - 비구조화 / 카카오톡 음성 메시지 - 반구조화",
+        "엑셀 매출표 - 구조화 / JSON API 응답 - 반구조화 / 카카오톡 음성 메시지 - 비구조화",
+        "엑셀 매출표 - 반구조화 / JSON API 응답 - 구조화 / 카카오톡 음성 메시지 - 비구조화",
+        "엑셀 매출표 - 구조화 / JSON API 응답 - 구조화 / 카카오톡 음성 메시지 - 반구조화"
+      ],
+      "answerIndex": 1,
+      "explanation": "· 구조화: 행·열로 정의된 스키마. 엑셀·관계형 DB.\n· 반구조화: 키-값 같은 메타구조 + 자유로운 본문. JSON·XML·로그.\n· 비구조화: 스키마 X, 분석엔 별도 추출 필요. 음성·이미지·영상·자유 텍스트.",
+      "source": "QuestDP 변형 — 사례 분류",
+      "tags": ["데이터 분류", "회독2"]
+    },
+    {
+      "id": "adsp-1-1-cp-03-p2",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 이해",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "pass": 2,
+      "question": "팀장이 회의에서 한 노하우를 정리해 사내 위키에 문서로 올렸다. 동료들이 위키를 읽고 새 프로젝트에 적용했다. SECI 모델 4단계 중 [위키에 올린 행위] 는 어느 단계에 해당하는가?",
+      "choices": [
+        "사회화 (Socialization)",
+        "외부화 (Externalization)",
+        "결합 (Combination)",
+        "내면화 (Internalization)"
+      ],
+      "answerIndex": 1,
+      "explanation": "· 사회화: 암묵→암묵 (도제식 견습)\n· 외부화: [암묵→형식] = 머릿속 노하우를 글·표로 바꾸는 단계 ✅\n· 결합: 형식→형식 (여러 문서 합쳐 새 문서)\n· 내면화: 형식→암묵 (읽고 체득)\n위키에 올린 = 노하우(암묵)를 문서(형식)로 만든 외부화.",
+      "source": "QuestDP 변형 — 시나리오 매칭",
+      "tags": ["SECI", "지식 변환", "회독2"]
+    },
+    {
+      "id": "adsp-1-1-cp-04-p2",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 이해",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "pass": 2,
+      "question": "다음 중 [데이터 레이크(Data Lake)] 의 핵심 차별점은?",
+      "choices": [
+        "OLTP 워크로드에 최적화된 트랜잭션 처리",
+        "엄격한 사전 스키마(Schema-on-Write) 적용으로 무결성 보장",
+        "구조·반구조·비구조 데이터를 원본 그대로 저장 후 사용 시점에 구조 부여(Schema-on-Read)",
+        "정규화된 다차원 모델로 OLAP 분석에 특화"
+      ],
+      "answerIndex": 2,
+      "explanation": "데이터 레이크 = [Schema-on-Read]. 일단 원본 그대로 저장 → 분석할 때 구조 부여. 비정형 데이터까지 포함.\n· (1) OLTP = 일반 OLTP DB 의 영역\n· (2) Schema-on-Write = 데이터 웨어하우스(DW) 의 특징\n· (4) 다차원 OLAP = 데이터 마트(DM) / DW",
+      "source": "QuestDP 변형 — 차별점 식별",
+      "tags": ["Data Lake", "DW", "회독2"]
+    },
+    {
+      "id": "adsp-1-1-cp-05-p2",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 이해",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "pass": 2,
+      "question": "다음 비즈니스 시나리오에 가장 적합한 기업 정보 시스템은? — [고객 행동 데이터를 분석해 개인화 마케팅 캠페인을 자동 발송하고 응답률을 추적]",
+      "choices": [
+        "ERP (전사적 자원관리)",
+        "SCM (공급망 관리)",
+        "CRM (고객 관계 관리)",
+        "DBMS (데이터베이스 관리 시스템)"
+      ],
+      "answerIndex": 2,
+      "explanation": "· ERP: 회계·인사·생산 등 [내부 자원] 통합 관리\n· SCM: [공급망 — 원자재 → 생산 → 물류] 최적화\n· CRM: [고객 접점 데이터·관계] 관리. 마케팅 자동화·캠페인 추적은 CRM 의 핵심 ✅\n· DBMS: 데이터 저장·관리 인프라 (특정 비즈니스 영역 X)",
+      "source": "QuestDP 변형 — 시스템 매칭",
+      "tags": ["기업 정보 시스템", "CRM", "회독2"]
+    },
+    {
+      "id": "adsp-1-2-cp-01-p2",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 가치와 미래",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "pass": 2,
+      "question": "“트위터에서 분당 약 50만 건의 트윗이 새로 발생한다” — 빅데이터 3V 중 [어느 V] 의 특성을 가장 잘 보여주는가?",
+      "choices": [
+        "Volume (규모) — 누적 데이터의 절대량",
+        "Velocity (속도) — 데이터가 생성·전달되는 빠르기",
+        "Variety (다양성) — 정형·반정형·비정형의 혼재",
+        "Veracity (정확성) — 데이터의 신뢰도·정확성"
+      ],
+      "answerIndex": 1,
+      "explanation": "분당 50만 건 = 단위 시간당 [생성 속도] 의 묘사 → Velocity.\n· Volume: 누적 [총량] 의 묘사 (예: 1PB 저장된 영상)\n· Variety: [형태가 섞인] 묘사 (텍스트+영상+센서 로그)\n· Veracity: 5V 의 확장. 3V 에는 안 들어감 (혼동 distractor)",
+      "source": "QuestDP 변형 — 3V 구분",
+      "tags": ["빅데이터 3V", "Velocity", "회독2"]
+    },
+    {
+      "id": "adsp-1-2-cp-02-p2",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 가치와 미래",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "pass": 2,
+      "question": "“데이터의 [가치]를 측정하기 어려운 본질적 이유”로 가장 적절하지 [않은] 것은?",
+      "choices": [
+        "같은 데이터라도 분석 기법·관점에 따라 다른 가치를 만든다",
+        "한 번 활용된 후에도 다른 분석에 재사용되어 가치가 누적·재창조된다",
+        "신용카드 거래 한 건의 가격처럼 단위당 시장가치가 명확히 정해져 있다",
+        "장기 보관·결합·공개 후에야 가치가 드러나는 경우가 많다"
+      ],
+      "answerIndex": 2,
+      "explanation": "[가장 적절하지 않은 것] 을 골라야 함. 데이터 가치는 [재사용·결합·시점·관점] 에 따라 달라져 단위당 가격이 정해지기 어려움. (3) 은 정반대 주장 → 정답.\n나머지 (1·2·4) 는 모두 데이터 가치 측정의 [어려움] 을 정확히 설명.",
+      "source": "QuestDP 변형 — 부정 추론",
+      "tags": ["데이터 가치", "회독2", "역추론"]
+    },
+    {
+      "id": "adsp-1-2-cp-03-p2",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 가치와 미래",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "pass": 2,
+      "question": "2020년 8월 시행된 [데이터 3법] 개정의 가장 핵심적인 변화는?",
+      "choices": [
+        "개인정보를 모든 기업이 자유롭게 거래·판매할 수 있도록 허용",
+        "개인정보를 [익명정보 / 가명정보 / 개인정보] 3단계로 구분하고, 가명정보는 통계·연구·공익 목적에 한해 동의 없이 활용 가능",
+        "EU GDPR 을 그대로 한국에 적용해 동의 없는 모든 처리를 금지",
+        "마이데이터 사업자에게 개인정보 직접 수집 권한을 부여하고 정보주체 동의 절차 폐지"
+      ],
+      "answerIndex": 1,
+      "explanation": "데이터 3법 개정 핵심 = [가명정보] 도입. 개인정보 ≠ 가명정보 ≠ 익명정보.\n· 가명정보: 통계 작성·과학적 연구·공익적 기록보존 목적에 한해 동의 없이 활용 가능\n· (1) 자유 거래·판매 허용 X (오답)\n· (3) GDPR 그대로 적용 X (오답)\n· (4) 동의 절차 폐지 X (오답) — 마이데이터는 정보주체 동의 + 전송요구권 기반",
+      "source": "QuestDP 변형 — 법 개정 핵심",
+      "tags": ["데이터 3법", "가명정보", "회독2"]
+    },
+    {
+      "id": "adsp-1-2-cp-04-p2",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 가치와 미래",
+      "type": "multiple_choice",
+      "difficulty": 4,
+      "pass": 2,
+      "question": "“이름·주민번호 등을 마스킹·치환해서 [추가 정보 결합 시] 다시 특정인을 알아볼 가능성이 [있는] 정보” — 이 정보의 분류는?",
+      "choices": [
+        "개인정보 — 동의 없이 처리 불가",
+        "가명정보 — 통계·연구·공익 목적엔 동의 없이 활용 가능",
+        "익명정보 — 결합해도 특정 개인 식별 불가, 자유롭게 활용",
+        "민감정보 — 사상·신념·건강 등 특별 보호 대상"
+      ],
+      "answerIndex": 1,
+      "explanation": "핵심 차이는 [재식별 가능성]:\n· 개인정보: 그 자체로 식별 가능\n· 가명정보: 그 자체로는 식별 X, 단 [추가정보 결합 시 식별 가능] ✅\n· 익명정보: 결합해도 식별 불가능 (완전 비식별)\n· 민감정보: 분류 축이 다름 (식별 여부 X, 보호 강도)",
+      "source": "QuestDP 변형 — 정의 매칭",
+      "tags": ["가명정보", "익명정보", "회독2"]
+    },
+    {
+      "id": "adsp-1-3-cp-01-p2",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "가치 창조를 위한 데이터 사이언스",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "pass": 2,
+      "question": "[데이터 사이언스] 가 전통적인 [통계학] 과 가장 큰 차이를 보이는 지점은?",
+      "choices": [
+        "통계 모형의 수학적 엄밀성을 더 강조한다",
+        "정형 데이터 분석에만 한정해 깊이 있게 다룬다",
+        "총체적 접근(Holistic) — 비즈니스 문제 정의·도메인 지식·시각화·소통까지 포함",
+        "자료의 표본 추출과 가설검정에 분석을 한정한다"
+      ],
+      "answerIndex": 2,
+      "explanation": "데이터 사이언스의 차별점은 [Holistic(총체적)]: 비즈니스 문제 정의 → 데이터 수집 → 분석 → 모델링 → 시각화 → 의사결정자에게 [전달] 까지 전체 가치 사슬.\n통계학은 분석 단계의 엄밀성에 집중하는 반면, 데이터 사이언스는 그 전후 단계까지 포함.",
+      "source": "QuestDP 변형 — 차별점 식별",
+      "tags": ["데이터 사이언스", "회독2"]
+    },
+    {
+      "id": "adsp-1-3-cp-02-p2",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "가치 창조를 위한 데이터 사이언스",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "pass": 2,
+      "question": "다음 데이터 사이언티스트 역량 중 [Soft Skill] 에 해당하는 것은?",
+      "choices": [
+        "통계 분석 / 머신러닝 알고리즘 구현",
+        "Hadoop · Spark 등 분산 컴퓨팅 프레임워크 활용",
+        "스토리텔링과 시각화로 분석 결과를 의사결정자에게 설득하는 능력",
+        "SQL · Python · R 등 분석 언어 능숙도"
+      ],
+      "answerIndex": 2,
+      "explanation": "Soft Skill = [통찰·소통·창의·다분야 협업·스토리텔링]. (3) 의 [의사결정자 설득·시각화] 가 Soft.\n나머지 (1·2·4) 는 Hard Skill — 분석·툴·기술 영역.",
+      "source": "QuestDP 변형 — Hard/Soft 구분",
+      "tags": ["데이터 사이언티스트", "Soft Skill", "회독2"]
+    },
+    {
+      "id": "adsp-1-3-cp-03-p2",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "가치 창조를 위한 데이터 사이언스",
+      "type": "multiple_choice",
+      "difficulty": 4,
+      "pass": 2,
+      "question": "데이터 사이언티스트의 7대 역량 “DIGITAL CAMERA” 중 “호기심·통찰력 기반의 직관적 판단” 에 해당하는 알파벳은?",
+      "choices": [
+        "C — Communication (소통)",
+        "I — Insight (통찰)",
+        "M — Math (수학)",
+        "R — R (분석 도구)"
+      ],
+      "answerIndex": 1,
+      "explanation": "DIGITAL CAMERA 7대 역량 (한 가지 매핑):\n· C: Communication (소통/협업)\n· A: Art (시각화·디자인)\n· M: Math (수학·통계)\n· E: Engineering (도구·시스템)\n· R: R / 분석 언어\n· I: Insight (호기심 기반 통찰) ✅\nA: Analytical (분석적 사고)\n→ 호기심·통찰 = I.",
+      "source": "QuestDP 변형 — 7대 역량 매칭",
+      "tags": ["DIGITAL CAMERA", "데이터 사이언티스트", "회독2"]
+    }
+  ]
+}

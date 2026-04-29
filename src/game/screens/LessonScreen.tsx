@@ -49,6 +49,8 @@ interface Props {
   topic: string;
   /** 진입 시 시작 step. 지정되면 single-step 모드. */
   initialStepIdx?: number;
+  /** N회독 차수 (LessonScreen 은 현재 무시 — DialogueLesson 만 reminder 분기). */
+  passNumber?: number;
   /** 레슨 완료 후 "실전 세트" 로 넘어갈 때. */
   onFinishGoToPractice: () => void;
   /** 상단 "Zone 으로". */
@@ -60,9 +62,13 @@ export default function LessonScreen({
   chapter,
   topic,
   initialStepIdx,
+  passNumber: _passNumber,
   onFinishGoToPractice,
   onBack,
 }: Props) {
+  // _passNumber 는 향후 reminder 카드 추가 시 사용. 현재는 대화형 dialogue 가 없는
+  // step 만 LessonScreen 으로 떨어지므로 회독 분기 우선순위 낮음.
+  void _passNumber;
   const isSingleStep = typeof initialStepIdx === 'number';
   const accent = SUBJECT_ACCENT[subject];
   const schema = SUBJECT_SCHEMAS[subject];

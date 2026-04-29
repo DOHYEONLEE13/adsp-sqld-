@@ -245,7 +245,7 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
               p.passNumber,
             )
           }
-          onSelectStep={(topic, stepIdx) => {
+          onSelectStep={(topic, stepIdx, passNumber) => {
             // lessonId 는 lesson lookup 으로. 잠금 검사 + 다음 step 자동 해금.
             const lesson = getLesson(screen.subject, screen.chapter, topic);
             const lessonId = lesson?.id ?? `${screen.subject}-${screen.chapter}`;
@@ -264,6 +264,7 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
               chapter: screen.chapter,
               topic,
               stepIdx,
+              passNumber,
             });
           }}
           onReviewIds={(p) =>
@@ -293,6 +294,7 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
           chapter={screen.chapter}
           topic={screen.topic}
           initialStepIdx={initialStepIdx}
+          passNumber={screen.passNumber ?? 1}
           onFinishGoToPractice={() =>
             startSession(
               screen.subject,
@@ -300,6 +302,9 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
               screen.topic,
               'random',
               'play',
+              undefined,
+              undefined,
+              screen.passNumber ?? 1,
             )
           }
           onBack={() =>

@@ -26,6 +26,8 @@ import SpeechBubble from './SpeechBubble';
 import OptionsPanel from './OptionsPanel';
 import FeedbackSheet from './FeedbackSheet';
 import PageAmbientBg from '../components/PageAmbientBg';
+import { getReminder } from '@/data/reminders';
+import { PASS_TIER_VISUAL } from '@/types/passes';
 
 interface Props {
   subject: Subject;
@@ -37,6 +39,11 @@ interface Props {
    * 직접 진입할 때 사용.
    */
   initialStepIdx?: number;
+  /**
+   * N회독 차수 (1~). 1=원본 dialogue. 2/3=reminder 카드 먼저 노출 후 풀이로.
+   * 기본 1.
+   */
+  passNumber?: number;
   onFinishGoToPractice: () => void;
   onBack: () => void;
 }
@@ -48,9 +55,11 @@ export default function DialogueLesson({
   chapter,
   topic,
   initialStepIdx,
+  passNumber = 1,
   onFinishGoToPractice,
   onBack,
 }: Props) {
+  const isReplay = passNumber > 1;
   const isSingleStep = typeof initialStepIdx === 'number';
   const lesson = useMemo(
     () => getLesson(subject, chapter, topic),
@@ -73,6 +82,8 @@ export default function DialogueLesson({
   const [phase, setPhase] = useState<Phase>('narrate');
   const [chosen, setChosen] = useState<number | null>(null);
   const [correct, setCorrect] = useState<boolean | null>(null);
+  // 회독 진입 시 reminder 카드 노출 여부. true 면 카드 화면, false 면 본 학습으로 진입.
+  const [showReminder, setShowReminder] = useState<boolean>(isReplay);
   const startedAtRef = useRef<number>(Date.now());
   const [xpToast, setXpToast] = useState<{ amount: number; key: number } | null>(
     null,
@@ -84,7 +95,8 @@ export default function DialogueLesson({
     setPhase('narrate');
     setChosen(null);
     setCorrect(null);
-  }, [stepIdx]);
+    if (isReplay) setShowReminder(true);
+  }, [stepIdx, isReplay]);
 
   if (!lesson) {
     return (
@@ -228,6 +240,100 @@ export default function DialogueLesson({
             ? '정답이야! 한 걸음 더!'
             : '괜찮아, 다시 보면 돼.'
           : '';
+
+  // ── 회독 진입 reminder 카드 — 2회독+ 만 ─────────────────
+  if (showReminder) {
+    const reminder = getReminder(step.id);
+    const tier = passNumber === 2 ? 'gold' : 'master';
+    const visual = PASS_TIER_VISUAL[tier];
+    return (
+      <section
+        className="relative min-h-screen text-cream flex flex-col isolate"
+        data-subject={subject}
+      >
+        <PageAmbientBg blur />
+        <TopBar progress={progress} onExit={onBack} />
+        <div className="flex-1 flex flex-col items-center justify-center px-5 md:px-8 py-10 max-w-[640px] mx-auto w-full">
+          <div className="mb-5">
+            <Ques pose={passNumber === 2 ? 'think' : 'lightbulb'} size={120} />
+          </div>
+          <span
+            className="kr-num inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] uppercase tracking-widest mb-3"
+            style={{
+              background: `${visual.color}33`,
+              border: `1px solid ${visual.color}`,
+              color: visual.color,
+              boxShadow: `0 0 14px ${visual.glow}`,
+            }}
+          >
+            {passNumber}회독
+          </span>
+          <h2 className="kr-heading text-[24px] md:text-[28px] text-center mb-3 leading-[1.2]">
+            {reminder?.headline ?? `${step.title}, 기억나?`}
+          </h2>
+          {reminder ? (
+            <>
+              <p className="kr-body text-[14px] md:text-[15px] text-cream/80 text-center leading-[1.65] mb-5 max-w-[480px]">
+                {reminder.summary}
+              </p>
+              <ul
+                className="w-full max-w-[480px] mb-6 px-5 py-4 rounded-2xl space-y-2"
+                style={{
+                  background: 'rgba(8,14,36,0.6)',
+                  border: '1px solid rgba(239,244,255,0.12)',
+                }}
+              >
+                {reminder.keyPoints.map((p, i) => (
+                  <li
+                    key={i}
+                    className="kr-body text-[12.5px] md:text-[13px] text-cream/85 leading-[1.55] flex items-start gap-2"
+                  >
+                    <span style={{ color: visual.color, marginTop: 2 }}>•</span>
+                    <span>{p}</span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            <p className="kr-body text-[13px] text-cream/65 text-center leading-[1.6] mb-6 max-w-[420px]">
+              이 개념의 짧은 요약은 아직 준비 중. 전체 다시 보기로 진행해도 좋아.
+            </p>
+          )}
+          <div className="flex gap-2 flex-wrap justify-center">
+            <button
+              type="button"
+              onClick={() => {
+                setShowReminder(false);
+                // 곧장 문제로 — narrate 단계 스킵
+                startedAtRef.current = Date.now();
+                setPhase('question');
+              }}
+              className="kr-num inline-flex items-center gap-2 text-[12px] uppercase tracking-widest px-5 py-3 rounded-full transition active:scale-[0.97]"
+              style={{
+                background: `${visual.color}22`,
+                border: `1.5px solid ${visual.color}`,
+                color: visual.color,
+              }}
+            >
+              확인했어 · 문제 풀기
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowReminder(false)}
+              className="kr-num inline-flex items-center gap-2 text-[12px] uppercase tracking-widest px-5 py-3 rounded-full transition active:scale-[0.97]"
+              style={{
+                background: 'rgba(239,244,255,0.06)',
+                border: '1px solid rgba(239,244,255,0.2)',
+                color: 'var(--cream)',
+              }}
+            >
+              전체 다시 보기
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section

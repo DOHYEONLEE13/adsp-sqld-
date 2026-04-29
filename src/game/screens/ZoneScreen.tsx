@@ -75,8 +75,8 @@ interface Props {
   subject: Subject;
   chapter: number;
   onStart: (params: StartParams) => void;
-  /** 특정 step 노드 클릭 → 그 step 만 단독 학습. */
-  onSelectStep: (topic: string, stepIdx: number) => void;
+  /** 특정 step 노드 클릭 → 그 step 만 단독 학습. passNumber 전달 (선택). */
+  onSelectStep: (topic: string, stepIdx: number, passNumber?: number) => void;
   /** 모의고사 오답 복습 — 특정 문항 ID 만 묶어 학습 모드 세션. */
   onReviewIds: (params: ReviewIdsParams) => void;
   onBack: () => void;
@@ -265,7 +265,7 @@ export default function ZoneScreen({
                   return w ? weaknessLevel(w) === 'weak' : false;
                 })()}
                 onSelectStep={(stepIdx) =>
-                  onSelectStep(lesson.topic, stepIdx)
+                  onSelectStep(lesson.topic, stepIdx, selectedPass)
                 }
               />
             ))}

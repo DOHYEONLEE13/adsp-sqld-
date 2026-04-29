@@ -10,8 +10,8 @@
  * 인증되었지만 마이그 미적용: 모든 stamps 빈 상태로 정상 노출 (BRONZE)
  */
 
-import { useState } from 'react';
-import { RotateCcw, Trophy, Loader2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { RotateCcw, Trophy, Loader2, Wrench } from 'lucide-react';
 import { SUBJECT_SCHEMAS } from '@/data/subjects';
 import type { Subject } from '@/types/question';
 import {
@@ -21,6 +21,7 @@ import {
   type PassTier,
 } from '@/types/passes';
 import { usePassSnapshot, resetPassProgress } from '@/game/passSync';
+import { DEV_UNLOCK_KEY, isDevUnlockEnabled } from '@/game/passes';
 import PassTierBadge from './PassTierBadge';
 
 const SUBJECT_LABEL: Record<Subject, string> = {
@@ -42,6 +43,29 @@ export default function PassSection() {
   const passSnap = usePassSnapshot();
   const [resetting, setResetting] = useState(false);
   const [resetMsg, setResetMsg] = useState<string | null>(null);
+
+  // ── 검수용 dev 토글 ──────────────────────────────────────
+  // localStorage 의 unlockAllPasses 플래그. ON 시 모든 회독 탭 강제 unlocked.
+  // 마이그 0013 적용 전 stamp 발급 불가 환경에서 검수하려고 추가.
+  const [devUnlock, setDevUnlock] = useState<boolean>(() => isDevUnlockEnabled());
+  useEffect(() => {
+    // 다른 탭에서 변경 시 동기화 (선택적)
+    const handler = () => setDevUnlock(isDevUnlockEnabled());
+    window.addEventListener('storage', handler);
+    return () => window.removeEventListener('storage', handler);
+  }, []);
+  const handleToggleDevUnlock = () => {
+    const next = !devUnlock;
+    if (next) {
+      window.localStorage.setItem(DEV_UNLOCK_KEY, '1');
+    } else {
+      window.localStorage.removeItem(DEV_UNLOCK_KEY);
+    }
+    setDevUnlock(next);
+    // 같은 탭 내에선 storage 이벤트 안 뜨므로 페이지 reload 권장 (탭 컴포넌트가 함수 호출 시점만 체크)
+    // → 사용자가 ZoneScreen 재진입 시 적용됨. 즉시 반영하려면 reload.
+    window.setTimeout(() => window.location.reload(), 200);
+  };
 
   const handleReset = async () => {
     if (!passSnap.authed) return;
@@ -97,6 +121,51 @@ export default function PassSection() {
             stamps={passSnap.stamps.filter((s) => s.subject === subject)}
           />
         ))}
+      </div>
+
+      {/* ── 검수용 dev 토글 ── */}
+      <div
+        className="pt-4 mb-3 border-t border-cream/10 flex items-start gap-2.5 px-3 py-2.5 rounded-xl"
+        style={{
+          background: devUnlock
+            ? 'rgba(252,211,77,0.08)'
+            : 'rgba(239,244,255,0.03)',
+          border: devUnlock
+            ? '1px solid rgba(252,211,77,0.4)'
+            : '1px solid rgba(239,244,255,0.1)',
+        }}
+      >
+        <Wrench
+          size={13}
+          className={devUnlock ? 'text-yellow-300/85 mt-0.5' : 'text-cream/45 mt-0.5'}
+          strokeWidth={2}
+        />
+        <div className="flex-1 min-w-0">
+          <div className="kr-num text-[10px] uppercase tracking-widest text-cream/65 mb-1">
+            검수 모드
+          </div>
+          <p className="kr-body text-[11.5px] text-cream/65 leading-[1.5]">
+            {devUnlock
+              ? '모든 회독 탭이 강제로 열려 있어요. 검수가 끝나면 끄세요.'
+              : '마이그 미적용 환경 또는 stamp 가 없는 상태에서 2·3회독 탭을 강제로 열어 UI 를 검수합니다. 페이지가 새로고침됩니다.'}
+          </p>
+          <button
+            type="button"
+            onClick={handleToggleDevUnlock}
+            className="kr-num text-[10px] uppercase tracking-widest mt-2 px-3 py-1.5 rounded-full transition active:scale-95"
+            style={{
+              background: devUnlock
+                ? 'rgba(252,211,77,0.2)'
+                : 'rgba(239,244,255,0.08)',
+              border: devUnlock
+                ? '1px solid rgba(252,211,77,0.6)'
+                : '1px solid rgba(239,244,255,0.2)',
+              color: devUnlock ? 'rgba(253,224,71,0.95)' : 'var(--cream)',
+            }}
+          >
+            {devUnlock ? '검수 모드 끄기' : '🔧 모든 회독 잠금 해제 (검수)'}
+          </button>
+        </div>
       </div>
 
       {/* ── 안내 메시지 + reset 버튼 ── */}

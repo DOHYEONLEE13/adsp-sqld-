@@ -81,11 +81,28 @@ export function chapterPassProgress(
 }
 
 /**
+ * 검수용 dev 토글 — localStorage 의 'questdp.dev.unlockAllPasses' 가 '1' 이면
+ * 모든 회독 자동 unlock. StatsPage 의 토글 버튼 또는 콘솔에서 직접 set.
+ * 마이그 0013 미적용 환경에서 stamp 가 발급 안 되어 영원히 잠금되는 문제 우회용.
+ */
+export const DEV_UNLOCK_KEY = 'questdp.dev.unlockAllPasses';
+
+export function isDevUnlockEnabled(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    return window.localStorage.getItem(DEV_UNLOCK_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
+/**
  * 특정 회독 차수가 진입 가능한가.
  *
  * 정책:
  *   - 1회독: 항상 unlocked.
  *   - N+1회독: N회독 stamp 가 해당 챕터에 존재해야 unlocked.
+ *   - dev 토글 ON 시 모든 회독 강제 unlocked.
  *
  * 추가로 in-progress / completed 정보를 반환.
  */
@@ -114,7 +131,8 @@ export function passUnlockState(
       s.passNumber === passNumber,
   );
 
-  if (passNumber === 1) {
+  // dev 토글 또는 1회독 = 항상 unlocked
+  if (isDevUnlockEnabled() || passNumber === 1) {
     return { unlocked: true, inProgress, completed };
   }
 

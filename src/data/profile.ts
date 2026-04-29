@@ -154,6 +154,34 @@ export function normalizeTag(tag: string): string {
   return tag.trim().toUpperCase();
 }
 
+/**
+ * 사용자 입력을 `Q-XXXX-XXXX` 포맷으로 자동 정형. 친구 추가 input 의 onChange 에서 호출.
+ *
+ *  - 영문/숫자만 남기고 대문자화
+ *  - 첫 글자가 Q 면 Q + 다음 글자들로 분할 (Q-XXXX-XXXX)
+ *  - 첫 글자가 Q 가 아니면 자동 prepend
+ *  - 8자리 (Q 다음) 까지 자동 dash 삽입
+ *  - 9자리 이상 입력 시 잘라내기 (10 char total — Q + 8 + 2 dashes)
+ *
+ * 예) "qabcd1234" → "Q-ABCD-1234"
+ *     "abcd1234" → "Q-ABCD-1234"
+ *     "Q-ABCD" + 사용자가 "1" 추가 → "Q-ABCD-1"
+ */
+export function formatTagInput(raw: string): string {
+  // 1) 영문/숫자만 남기고 대문자
+  const cleaned = raw.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (cleaned.length === 0) return '';
+
+  // 2) Q prefix 보장
+  const body = cleaned.startsWith('Q') ? cleaned.slice(1) : cleaned;
+  const truncated = body.slice(0, 8); // Q 뒤 8자리 한정
+
+  // 3) dash 삽입
+  if (truncated.length === 0) return 'Q-';
+  if (truncated.length <= 4) return `Q-${truncated}`;
+  return `Q-${truncated.slice(0, 4)}-${truncated.slice(4)}`;
+}
+
 // ── 변경 알림 (간단 pub/sub — 친구 페이지에서 displayName 변경 즉시 반영) ──
 
 const listeners = new Set<() => void>();
@@ -278,7 +306,19 @@ export function initProfileSync(): () => void {
     if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
       void pullFromSupabase();
     }
-    // SIGNED_OUT 시엔 localStorage 그대로 — 다음 로그인 때 다시 hydrate.
+    if (event === 'SIGNED_OUT') {
+      // 다른 계정으로 로그인할 수 있으니 stale 식별 캐시 비움.
+      // 다음 로그인 시 server pull 로 새 프로필이 들어옴. 게스트로만 쓰는 경우엔
+      // 빈 프로필 + 새 태그 자동 발급 로직이 그대로 작동.
+      try {
+        if (typeof window !== 'undefined') {
+          window.localStorage.removeItem(STORAGE_KEY);
+        }
+      } catch { /* 무시 */ }
+      // 메모리 cached snapshot 무효화
+      cachedSnapshot = null;
+      for (const cb of listeners) cb();
+    }
   });
 
   return () => {

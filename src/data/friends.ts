@@ -249,7 +249,7 @@ async function pullFromSupabase(): Promise<void> {
   notify();
 }
 
-/** RPC 호출 → 성공 시 pull 로 동기화. 결과는 즉시 표시되지 않고 다음 pull 에서. */
+/** RPC 호출 → 성공 시 pull + channel 재구성 (새 친구의 profile UPDATE 구독). */
 async function serverAddFriend(tag: string): Promise<void> {
   const sb = getSupabase();
   if (!sb) return;
@@ -262,6 +262,9 @@ async function serverAddFriend(tag: string): Promise<void> {
     const result = (data ?? [])[0] as { ok: boolean; reason: string | null } | undefined;
     if (result?.ok) {
       await pullFromSupabase();
+      // 친구 목록이 바뀜 → channel filter 가 stale → 재구성. 그래야 신규 친구의
+      // displayName/avatar UPDATE 이벤트가 들어옴.
+      void rebuildChannel();
     } else {
       // 서버가 거부 — 미리 넣은 placeholder 도 제거
       const local = load();
@@ -287,11 +290,16 @@ async function serverRemoveFriend(tag: string): Promise<void> {
       .eq('tag', tag)
       .maybeSingle();
     if (!friendRow) return;
+    // 양방향 삭제 (mutual friendship 모델) — 어느 쪽 row 든 둘 다 정리
     await sb
       .from('friendships')
       .delete()
-      .eq('user_id', sess.session.user.id)
-      .eq('friend_id', friendRow.id);
+      .or(
+        `and(user_id.eq.${sess.session.user.id},friend_id.eq.${friendRow.id}),` +
+        `and(user_id.eq.${friendRow.id},friend_id.eq.${sess.session.user.id})`,
+      );
+    // 친구 목록 변경 → channel filter 갱신
+    void rebuildChannel();
   } catch {
     /* 무시 */
   }
@@ -301,6 +309,54 @@ let _syncStarted = false;
 let _channelUnsub: (() => void) | null = null;
 
 /**
+ * 친구 profile UPDATE 구독 채널을 (재)구성. 친구 목록 변동 시마다 호출:
+ *   - 초기 로드 (initFriendsSync)
+ *   - SIGNED_IN
+ *   - addFriend / removeFriend 직후
+ * 기존 채널이 있으면 먼저 unsubscribe 하고 새 친구 ID 목록으로 재구독.
+ */
+async function rebuildChannel(): Promise<void> {
+  // 기존 채널 정리
+  _channelUnsub?.();
+  _channelUnsub = null;
+
+  const sb = getSupabase();
+  if (!sb) return;
+  const { data: sess } = await sb.auth.getSession();
+  if (!sess.session) return;
+
+  // 친구 ID 목록 (filter 용)
+  const { data: friendIds } = await sb
+    .from('friendships')
+    .select('friend_id')
+    .eq('user_id', sess.session.user.id);
+  const ids = (friendIds ?? []).map((r) => (r as { friend_id: string }).friend_id);
+
+  if (ids.length === 0) return;
+
+  // 친구 profile UPDATE 구독 — 친구가 displayName/XP/avatar/pass_tier 바꾸면 즉시 갱신
+  // 같은 channel 이름을 재사용하면 멱등 (Supabase 가 기존 한 인스턴스만 유지)
+  const channel = sb
+    .channel(`friends-profiles-${Date.now()}`)
+    .on(
+      'postgres_changes',
+      {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'profiles',
+        filter: `id=in.(${ids.join(',')})`,
+      },
+      () => {
+        void pullFromSupabase();
+      },
+    )
+    .subscribe();
+  _channelUnsub = () => {
+    sb.removeChannel(channel);
+  };
+}
+
+/**
  * mount 시 한 번 호출. auth 변화에 따라 pull + realtime 채널 관리.
  * cleanup 함수 반환 — App unmount 시 채널 끊음.
  */
@@ -308,57 +364,18 @@ export function initFriendsSync(): () => void {
   if (_syncStarted) return () => {};
   _syncStarted = true;
 
-  const setupChannel = async () => {
-    const sb = getSupabase();
-    if (!sb) return;
-    const { data: sess } = await sb.auth.getSession();
-    if (!sess.session) return;
-
-    // 친구 ID 목록 (filter 용)
-    const { data: friendIds } = await sb
-      .from('friendships')
-      .select('friend_id')
-      .eq('user_id', sess.session.user.id);
-    const ids = (friendIds ?? []).map((r) => (r as { friend_id: string }).friend_id);
-
-    // 친구 profile UPDATE 구독 — 친구가 XP/avatar 바꾸면 즉시 갱신
-    if (ids.length > 0) {
-      const channel = sb
-        .channel('friends-profiles')
-        .on(
-          'postgres_changes',
-          {
-            event: 'UPDATE',
-            schema: 'public',
-            table: 'profiles',
-            filter: `id=in.(${ids.join(',')})`,
-          },
-          () => {
-            void pullFromSupabase();
-          },
-        )
-        .subscribe();
-      _channelUnsub = () => {
-        sb.removeChannel(channel);
-      };
-    }
-  };
-
-  void pullFromSupabase().then(() => setupChannel());
+  void pullFromSupabase().then(() => rebuildChannel());
 
   const unsubAuth = onAuthStateChange((event) => {
     if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
-      void pullFromSupabase().then(() => {
-        // 채널 재구성 (친구 목록 변경 가능)
-        _channelUnsub?.();
-        _channelUnsub = null;
-        void setupChannel();
-      });
+      void pullFromSupabase().then(() => rebuildChannel());
     }
     if (event === 'SIGNED_OUT') {
       _channelUnsub?.();
       _channelUnsub = null;
-      // localStorage 그대로 — 다음 로그인 시 다시 hydrate
+      // 친구 목록 캐시도 비움 — 다른 계정으로 로그인 시 stale 안 보이게
+      save({ v: 1, list: [] });
+      notify();
     }
   });
 

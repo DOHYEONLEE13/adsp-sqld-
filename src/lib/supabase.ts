@@ -71,10 +71,27 @@ export async function signInWithOAuth(provider: OAuthProvider) {
   });
 }
 
+/**
+ * 로그아웃. 서버 세션 종료 + 사용자 식별성 캐시 (profile · friends · pendingRedirect
+ * · isAdmin) 정리. 학습 진도 (progress · bookmarks · examDates) 는 보존 — 다시 로그인
+ * 하지 않더라도 게스트로 같은 기기에서 이어 풀 수 있도록.
+ */
 export async function signOut() {
   const sb = getSupabase();
   if (!sb) return;
   await sb.auth.signOut();
+  if (typeof window !== 'undefined') {
+    const IDENTITY_KEYS = [
+      'questdp.profile.v1',
+      'questdp.friends.v1',
+      'questdp.auth.pendingRedirect.v1',
+      'questdp.passTier.lastShown.v1',
+    ];
+    for (const k of IDENTITY_KEYS) {
+      try { window.localStorage.removeItem(k); } catch { /* 무시 */ }
+    }
+    try { window.sessionStorage.removeItem('questdp.auth.redirectReason.v1'); } catch { /* 무시 */ }
+  }
 }
 
 /** 현재 세션 (synchronous cache). 미로그인이면 null. */

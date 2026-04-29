@@ -36,6 +36,7 @@ import {
   setDisplayName,
   isValidTag,
   normalizeTag,
+  formatTagInput,
   subscribeProfile,
   type MyProfile,
 } from '@/data/profile';
@@ -314,7 +315,7 @@ function AddFriendCard({ myTag }: { myTag: string }) {
         <input
           type="text"
           value={tagInput}
-          onChange={(e) => setTagInput(e.target.value)}
+          onChange={(e) => setTagInput(formatTagInput(e.target.value))}
           placeholder="Q-XXXX-XXXX"
           className="flex-1 min-w-[160px] bg-transparent outline-none kr-num text-[14px] tracking-wider px-3 py-2.5 rounded-lg"
           style={{

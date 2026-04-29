@@ -48,6 +48,7 @@ import { MobileTopBar, MobileBottomNav } from './components/MobileGameNav';
 import ProfileCustomizer from './components/ProfileCustomizer';
 import AuthCard from './components/AuthCard';
 import PageAmbientBg from './components/PageAmbientBg';
+import PassSection from '@/components/passes/PassSection';
 
 interface Props {
   onExit: () => void;
@@ -128,6 +129,9 @@ export default function StatsPage({ onExit }: Props) {
       <div className="mb-6">
         <ProfileCustomizer />
       </div>
+
+      {/* 회독 Pass Tier + Stamp 컬렉션 */}
+      <PassSection />
 
       {/* D-day — 항상 표시 (빈 상태에서도 설정 가능) */}
       <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">

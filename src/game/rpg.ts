@@ -224,13 +224,15 @@ export interface MasteryInfo {
   total: number;
 }
 
+// 토픽 "탐사도" — Pass Tier (BRONZE/SILVER/GOLD/PLATINUM/MASTER) 와 단어 충돌 회피.
+// 우주 탐험 메타포로 한국어 라벨링. enum 키·색상 토큰은 그대로 유지 (대규모 refactor 회피).
 const TIER_META: Record<MasteryTier, { label: string; color: string }> = {
   none: { label: '—', color: '#64748b' },
-  bronze: { label: 'Bronze', color: '#b45309' },
-  silver: { label: 'Silver', color: '#94a3b8' },
-  gold: { label: 'Gold', color: '#fbbf24' },
-  platinum: { label: 'Platinum', color: '#67e8f9' },
-  diamond: { label: 'Diamond', color: '#c084fc' },
+  bronze: { label: '신참', color: '#b45309' },
+  silver: { label: '탐사자', color: '#94a3b8' },
+  gold: { label: '베테랑', color: '#fbbf24' },
+  platinum: { label: '달인', color: '#67e8f9' },
+  diamond: { label: '우주인', color: '#c084fc' },
 };
 
 /** aggregate 결과를 티어로 매핑. mastered = 마지막에 맞춘 문항 수. */

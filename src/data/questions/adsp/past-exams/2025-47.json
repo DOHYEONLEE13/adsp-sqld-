@@ -214,11 +214,17 @@
       "choices": [
         "OLTP(Online Transaction Processing)",
         "OLAP(Online Analytical Processing)",
-        "DW(Data Warehouse)",
-        "DM(Data Mart)"
+        "DW(Data Warehouse) — 통합 분석 저장소",
+        "DM(Data Mart) — 부서별 부분 데이터셋"
       ],
       "answerIndex": 0,
-      "explanation": "OLTP = 실시간 트랜잭션(입력·수정·삭제) 중심. OLAP 은 다차원 분석(집계·조회)용. DW/DM 은 분석용 데이터 저장소."
+      "explanation": "OLTP = 실시간 트랜잭션(입력·수정·삭제) 중심. OLAP 은 다차원 분석(집계·조회)용. DW/DM 은 분석용 데이터 저장소.",
+      "_audit": {
+        "fixed": ["B2"],
+        "changed_fields": ["choices"],
+        "reason": "DW·DM 보기에 짧은 설명 추가해 정답과 길이 균형",
+        "audited_at": "2026-04-29"
+      }
     },
     {
       "id": "adsp-1-10",
@@ -350,13 +356,19 @@
       "type": "multiple_choice",
       "question": "상향식 접근 방식에 대한 설명으로 옳지 않은 것은?",
       "choices": [
-        "문제의 정의가 명확히 설정된 상태에서 진행되며, 해결책을 찾기 위한 분석이 이루어져야 하는 경우에 적합하다.",
+        "문제 정의가 명확한 상태에서 해결책을 찾는 분석에 적합하다.",
         "상향식 접근은 데이터로부터 새로운 패턴·통찰을 발견하는 데 적합하다.",
         "비지도학습과 같은 분석 방법이 자주 활용된다.",
         "기존 가설 없이 데이터 자체에서 출발하여 탐색적으로 진행된다."
       ],
       "answerIndex": 0,
-      "explanation": "지문은 '하향식' 설명. 상향식은 문제 정의가 모호한 상태에서 데이터로부터 출발해 탐색적으로 패턴을 찾아나가는 접근."
+      "explanation": "지문은 '하향식' 설명. 상향식은 문제 정의가 모호한 상태에서 데이터로부터 출발해 탐색적으로 패턴을 찾아나가는 접근.",
+      "_audit": {
+        "fixed": ["B2"],
+        "changed_fields": ["choices"],
+        "reason": "정답 길이 압축 (60→27자)",
+        "audited_at": "2026-04-29"
+      }
     },
     {
       "id": "adsp-2-16",
@@ -1083,12 +1095,18 @@
       "question": "혼합 분포 군집에서 최대 가능도 추정에 사용되는 알고리즘은?",
       "choices": [
         "EM(Expectation-Maximization) 알고리즘",
-        "K-means 알고리즘",
-        "DBSCAN 알고리즘",
-        "계층적 군집(Hierarchical Clustering) 알고리즘"
+        "K-means(K-Means Clustering) 알고리즘",
+        "DBSCAN(Density-Based) 알고리즘",
+        "Hierarchical(계층적 군집) 알고리즘"
       ],
       "answerIndex": 0,
-      "explanation": "혼합 분포 군집은 GMM(Gaussian Mixture Model) 형태. 잠재변수(소속 군집) 추정을 위해 E-step ↔ M-step 반복하는 EM 알고리즘을 사용."
+      "explanation": "혼합 분포 군집은 GMM(Gaussian Mixture Model) 형태. 잠재변수(소속 군집) 추정을 위해 E-step ↔ M-step 반복하는 EM 알고리즘을 사용.",
+      "_audit": {
+        "fixed": ["B2"],
+        "changed_fields": ["choices"],
+        "reason": "다른 보기에 정식 명칭 추가해 정답과 길이 균형",
+        "audited_at": "2026-04-29"
+      }
     },
     {
       "id": "adsp-3-46",
@@ -1157,13 +1175,19 @@
       "type": "multiple_choice",
       "question": "다음 중 군집분석(Clustering) 기법에 대한 설명으로 적절하지 않은 것은 무엇인가?",
       "choices": [
-        "K-평균 군집화(K-means Clustering)에서 초기 중심값(k 값)의 설정은 결과에 영향을 주지 않는다.",
+        "K-means 의 초기 중심값 설정은 결과에 영향을 주지 않는다.",
         "K-means 는 군집 내 거리 제곱합을 최소화하는 방향으로 군집을 형성한다.",
         "K-means++ 는 초기 중심값의 선택을 개선한 방법이다.",
         "K-means 는 이상치(outlier)에 민감하게 반응한다."
       ],
       "answerIndex": 0,
-      "explanation": "K-means 는 초기 중심값 설정에 따라 지역 최적해에 수렴할 수 있어 결과가 달라질 수 있음. K-means++ 가 이 문제를 완화하기 위해 제안된 이유."
+      "explanation": "K-means 는 초기 중심값 설정에 따라 지역 최적해에 수렴할 수 있어 결과가 달라질 수 있음. K-means++ 가 이 문제를 완화하기 위해 제안된 이유.",
+      "_audit": {
+        "fixed": ["B2"],
+        "changed_fields": ["choices"],
+        "reason": "정답 길이 압축",
+        "audited_at": "2026-04-29"
+      }
     },
     {
       "id": "adsp-3-49",

@@ -408,38 +408,98 @@ export const REMINDERS: Record<string, ConceptReminder> = {
 
   // ── ADSP Ch1 Topic 3 — 가치 창조 데이터 사이언스 ─────────
   'adsp-1-3-s1': {
-    headline: '데이터 사이언스 vs 통계학, 기억나?',
+    headline: 'DS 핵심 3축 "AI 비", 기억나?',
     summary:
-      '데이터 사이언스 = 비즈니스 문제 정의부터 의사결정자 전달까지 [총체적]. 통계학은 분석 단계의 엄밀성에 집중.',
+      '데이터 사이언스의 3꼭짓점 = Analytics(분석) + IT(정보기술) + Business(비즈니스). 첫 글자 [AI 비] 로 외움. 통계학보다 훨씬 넓은 판.',
     keyPoints: [
-      '데이터 사이언스 = Holistic 접근',
-      '문제 정의 → 데이터 수집 → 분석 → 시각화 → 전달',
-      '통계학 = 표본 추출·가설검정 등 분석 엄밀성',
-      '데이터 사이언스 ⊃ 통계학 (포함 관계)',
+      'A nalytics — 통계·머신러닝·모델링',
+      'I T — 도구·시스템·인프라·데이터 엔지니어링',
+      'B usiness — 도메인 이해·문제 정의·의사결정 연결',
+      '3꼭짓점의 교집합에서 데이터 사이언스 탄생',
     ],
   },
   'adsp-1-3-s2': {
-    headline: '데이터 사이언티스트 역량 (Hard·Soft), 기억나?',
+    headline: 'Hard Skill vs Soft Skill, 기억나?',
     summary:
-      'Hard 는 분석·툴·기술. Soft 는 통찰·소통·창의·시각화. 둘 다 필요하지만 상위 사이언티스트일수록 Soft 비중 ↑.',
+      'Hard = 배워서 익히는 기술 (모델·SQL·코딩). Soft = 태도·관점·소통 (통찰·스토리텔링·협력). 시험은 어느 쪽인지 매칭을 자주 묻는다.',
     keyPoints: [
-      'Hard: 통계, 머신러닝, SQL/Python/R, 분산 시스템',
-      'Soft: 호기심·통찰, 스토리텔링·시각화, 다분야 협업',
-      'IT·도메인·소통 3축',
-      '시각화·설득력이 의사결정 영향력의 핵심',
+      'Hard: 빅데이터 이론·기법, 분석 도구 숙련',
+      'Soft: 통찰력, 시각화·커뮤니케이션, 협력',
+      '핵심: "기술 vs 태도" 로 갈림',
+      '상위 사이언티스트일수록 Soft 비중 ↑',
     ],
   },
   'adsp-1-3-s3': {
-    headline: '7대 역량 DIGITAL CAMERA, 기억나?',
+    headline: 'DS 6역량 "Digital CA메라", 기억나?',
     summary:
-      'D-I-G-I-T-A-L 이 아니라 7대 역량 알파벳을 아우르는 암기 약자. C·A·M·E·R·A·I 매핑이 핵심.',
+      '데이터 사이언티스트 6대 역량 = C·A·M·E·R·A. Communication·Analytics·Math·Engineering·Research·Art.',
     keyPoints: [
-      'C: Communication (소통)',
-      'A: Art / Analytical (시각화·분석적)',
-      'M: Math (수학·통계)',
-      'E: Engineering (도구·시스템)',
-      'R: R / 분석 언어',
-      'I: Insight (호기심 기반 통찰)',
+      'C: Communication (전달·시각화)',
+      'A: Analytics (도메인 + 분석 기법)',
+      'M: Math (수학·통계·확률)',
+      'E: Engineering (시스템·코드·인프라)',
+      'R: Research (새 가설·기법 탐구)',
+      'A: Art (창의·디자인·통찰) — 함정: Management 아님',
+    ],
+  },
+  'adsp-1-3-s3-c': {
+    headline: '6역량 ① Communication, 기억나?',
+    summary: '분석 결과를 비즈니스 청중에 맞게 풀어내는 전달력. 시각화·스토리텔링·발표.',
+    keyPoints: [
+      '키워드: 전달·스토리텔링·발표',
+      '분석 결과 → 의사결정자에게 연결',
+      '통계·수식이면 Math',
+      '시스템·코드면 Engineering',
+    ],
+  },
+  'adsp-1-3-s3-a': {
+    headline: '6역량 ② Analytics, 기억나?',
+    summary: '도메인 이해 + 분석 기법 선택 능력. 어떤 비즈니스 문제에 어떤 모델·기법이 맞는지 판단.',
+    keyPoints: [
+      '키워드: 도메인 + 모델 선택',
+      '"이 문제엔 회귀? 분류? 군집?" 판단',
+      '순수 수학·통계만이면 Math',
+      '새 가설 R&D 면 Research',
+    ],
+  },
+  'adsp-1-3-s3-m': {
+    headline: '6역량 ③ Math, 기억나?',
+    summary: '통계·확률·선형대수·미적분 등 분석의 수학적 기반. 모델 가정·수식 유도·검정의 토대.',
+    keyPoints: [
+      '키워드: 확률·통계·선형대수·미적분',
+      '모델의 수학적 뼈대',
+      '코드·시스템이면 Engineering',
+      '발표·청중 설득이면 Communication',
+    ],
+  },
+  'adsp-1-3-s3-e': {
+    headline: '6역량 ④ Engineering, 기억나?',
+    summary: '데이터 파이프라인·DB·분산 처리·코드 구현 능력. 모델을 실제 서비스로 옮기는 데 필수.',
+    keyPoints: [
+      '키워드: 파이프라인·DB·시스템·코드',
+      '모델 → 서비스 배포(production)',
+      '수식·확률이면 Math',
+      '도메인 분석이면 Analytics',
+    ],
+  },
+  'adsp-1-3-s3-r': {
+    headline: '6역량 ⑤ Research, 기억나?',
+    summary: '기존 모델·기법으로 풀리지 않는 문제에 대해 새 가설·접근을 탐구하는 R&D 역량.',
+    keyPoints: [
+      '키워드: 새 가설·기법·논문·R&D',
+      '미해결 문제에 대한 탐색적 연구',
+      '검증된 기법 적용은 Analytics',
+      '시각화 전달은 Communication',
+    ],
+  },
+  'adsp-1-3-s3-art': {
+    headline: '6역량 ⑥ Art, 기억나?',
+    summary: '데이터에서 통찰·창의적 관점·미적 디자인을 끌어내는 비기술적 역량. 시각화 미감, 새 가치 발견의 직관.',
+    keyPoints: [
+      '키워드: 창의·통찰·디자인 감각',
+      '데이터에서 새 관점 발견',
+      '단순 발표는 Communication, 새 가설 R&D 는 Research',
+      '함정: Management 는 6역량에 포함 X',
     ],
   },
 };

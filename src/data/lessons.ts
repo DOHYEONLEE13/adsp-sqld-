@@ -1347,7 +1347,7 @@ const ADSP_1_3: Lesson = {
         {
           kind: 'intro',
           body:
-            '데이터 사이언스는 "데이터에서 가치를 뽑는 종합 예술". 통계학이 엄밀한 수식 위에서 움직인다면, 데이터 사이언스는 여기에 컴퓨터공학(속도)과 비즈니스(목적) 가 합쳐진 훨씬 넓은 판입니다.',
+            '데이터 사이언스는 "데이터에서 가치를 뽑는 종합 예술". 통계학이 엄밀한 수식 위에서 움직인다면, 데이터 사이언스는 여기에 컴퓨터공학(속도)과 비즈니스(목적) 가 합쳐진 훨씬 넓은 판입니다. 한 사람이 셋을 다 갖추기는 어렵고 보통 팀으로 협업합니다.',
         },
         {
           kind: 'callout',
@@ -1355,6 +1355,23 @@ const ADSP_1_3: Lesson = {
           title: '핵심 구성요소 — "AI 비"',
           body:
             'Analytics(분석) + IT(정보기술) + Business(비즈니스 컨설팅). 세 꼭짓점의 교집합에서 데이터 사이언스가 태어납니다.',
+        },
+        {
+          kind: 'table',
+          title: '3축 한눈에 — 무엇을 책임지나',
+          headers: ['축', '책임', '대표 활동', '핵심 도구'],
+          rows: [
+            ['Analytics', '데이터로 답을 찾아내기', '모델링·통계 분석·검정', 'Python·R·SAS'],
+            ['IT', '데이터를 다룰 인프라', '파이프라인·DB·분산 처리', 'SQL·Spark·클라우드'],
+            ['Business', '문제 정의·의사결정 연결', '도메인 이해·전략 수립', 'Tableau·발표·미팅'],
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 함정 — 통계학과의 관계',
+          body:
+            '"데이터 사이언스 = 통계학" 은 틀림. 통계학은 Analytics 한 축의 일부이고, 데이터 사이언스는 IT·Business 까지 포함하는 더 넓은 개념. 즉 데이터 사이언스 ⊃ 통계학.',
         },
       ],
     },
@@ -1398,19 +1415,38 @@ const ADSP_1_3: Lesson = {
       ],
       blocks: [
         {
+          kind: 'intro',
+          body:
+            '앞서 본 3축(Analytics·IT·Business) 을 더 잘게 쪼개 6가지 구체적 역량으로 표현한 것이 "Digital CA메라". 시험에선 6개 알파벳에 무엇이 매핑되는지·매핑 안 되는 단어가 무엇인지를 자주 묻습니다 — Management 가 단골 함정.',
+        },
+        {
           kind: 'callout',
           tone: 'mnemonic',
-          title: '"Digital CA메라"',
+          title: '암기법 — "Digital CA메라" (CAMERA)',
           body:
-            'Communication · Analytics · Math · Engineering · Research · Art. "Management" 는 포함되지 않음 — 함정.',
+            'C·A·M·E·R·A = Communication · Analytics · Math · Engineering · Research · Art. 6개 모두 영어 알파벳 첫 글자가 같아서 시험에 섞어 묻기 좋음. 답에 "Management" 가 보이면 즉시 오답 처리.',
+        },
+        {
+          kind: 'table',
+          title: '6역량 한눈에 — 어떤 일을 하나',
+          headers: ['역량', '한 줄 정의', '대표 활동'],
+          rows: [
+            ['Communication', '결과를 청중에게 전달', '시각화·스토리텔링·발표'],
+            ['Analytics', '도메인 + 분석 기법', '문제 정의·모델 선택'],
+            ['Math', '수학·통계 기반', '확률·선형대수·검정'],
+            ['Engineering', '시스템·코드 구현', '파이프라인·DB·배포'],
+            ['Research', '새 가설·기법 탐구', '논문·R&D·실험 설계'],
+            ['Art', '창의·디자인·통찰', '시각화 미감·새 관점 발견'],
+          ],
         },
         {
           kind: 'keypoints',
-          title: '의사결정 진화',
+          title: '의사결정의 진화 (참고)',
           items: [
             '직관 → 데이터 기반 → 예측 → 처방',
-            '예측 = 무슨 일이 일어날까',
-            '처방 = 그럼 무엇을 해야 할까',
+            '예측: "무슨 일이 일어날까?" (forecast)',
+            '처방: "그럼 무엇을 해야 할까?" (prescribe)',
+            '6역량 모두 갖춰야 처방까지 가능',
           ],
         },
       ],

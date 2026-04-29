@@ -13,10 +13,11 @@
  */
 
 import { useEffect, useState } from 'react';
-import { ArrowLeft, ShieldCheck, Sparkles } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import AuthCard from '@/game/components/AuthCard';
 import VideoBg from '@/components/ui/VideoBg';
 import { VIDEO_URLS } from '@/data/site';
+import Ques from '@/components/mascot/Ques';
 import {
   getSupabase,
   isSupabaseConfigured,
@@ -102,50 +103,37 @@ export default function LoginPage({ onBack }: Props) {
             else (window.location.hash = '');
           }}
           aria-label="홈으로"
-          className="inline-flex items-center gap-2 kr-heading uppercase text-[11px] tracking-widest text-cream/75 hover:text-neon transition mb-8"
+          className="inline-flex items-center gap-2 kr-heading uppercase text-[11px] tracking-widest text-cream/75 hover:text-neon transition mb-6"
         >
           <ArrowLeft size={14} strokeWidth={2.4} />
           홈으로
         </button>
 
-        <header className="mb-8 pb-6 border-b border-cream/15">
-          <div className="kr-heading uppercase text-[10px] tracking-widest text-neon/85 mb-3">
-            QuestDP · LOGIN REQUIRED
-          </div>
-          <h1 className="kr-heading text-[28px] md:text-[36px] leading-[1.15] mb-3 flex items-center gap-3">
-            <ShieldCheck size={24} className="text-neon" />
-            로그인이 필요한 페이지입니다
+        {/* 마스코트 + 헤딩 — 딱딱한 안내 대신 캐릭터가 인사 */}
+        <header className="flex flex-col items-center text-center mb-8 pb-6 border-b border-cream/15">
+          <Ques pose="wave" size={140} />
+          <h1 className="kr-heading text-[26px] md:text-[32px] leading-[1.2] mt-5">
+            먼저 로그인을 해주세요!
           </h1>
-          <p className="kr-body text-[14px] md:text-[15px] text-cream/70 leading-[1.65]">
-            학습 로드맵·진도·친구 비교·통계 페이지는 로그인 후에만 이용할 수
-            있어요. Google 계정으로 5초 안에 로그인 가능합니다.
+          <p className="kr-body text-[13.5px] md:text-[14.5px] text-cream/70 leading-[1.65] mt-3 max-w-[420px]">
+            Google 계정으로 5초만에 시작할 수 있어요. 진도·친구 비교·통계가
+            기기 사이에 동기화돼요.
+            {redirectReason === 'protected' && pendingTarget ? (
+              <>
+                <br />
+                <span className="text-cream/55">
+                  로그인 후 <span className="text-neon">{pendingTarget}</span>
+                  {' '}페이지로 자동 복귀합니다.
+                </span>
+              </>
+            ) : null}
           </p>
         </header>
-
-        {/* 안내 — 보호 라우트에서 redirect 됐을 때 강조 */}
-        {redirectReason === 'protected' ? (
-          <div
-            role="status"
-            className="mb-6 px-4 py-3 rounded-xl flex items-start gap-2.5 kr-body text-[13px] leading-[1.6]"
-            style={{
-              background: 'rgba(252,211,77,0.10)',
-              border: '1px solid rgba(252,211,77,0.4)',
-              color: 'rgba(253,224,71,0.95)',
-            }}
-          >
-            <Sparkles size={14} className="mt-0.5 shrink-0" />
-            <span>
-              {pendingTarget
-                ? `로그인이 완료되면 자동으로 [${pendingTarget}] 페이지로 돌아갑니다.`
-                : '로그인이 완료되면 학습 로드맵으로 이동합니다.'}
-            </span>
-          </div>
-        ) : null}
 
         <AuthCard />
 
         {!isSupabaseConfigured() ? (
-          <p className="kr-body text-[11px] text-cream/45 mt-4 leading-[1.55]">
+          <p className="kr-body text-[11px] text-cream/45 mt-4 leading-[1.55] text-center">
             ⚠ 로그인 환경이 아직 설정되지 않은 모드입니다. 환경 설정 후 다시
             시도해주세요.
           </p>

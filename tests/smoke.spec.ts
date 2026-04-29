@@ -45,7 +45,7 @@ test.describe('smoke', () => {
     });
     // LoginPage 의 안내 헤딩이 보여야
     await expect(
-      page.getByRole('heading', { name: /로그인이 필요한 페이지/ }),
+      page.getByRole('heading', { name: /먼저 로그인을 해주세요/ }),
     ).toBeVisible({ timeout: 5000 });
   });
 
@@ -87,7 +87,7 @@ test.describe('smoke', () => {
   test('5-login. /login 페이지 — Google 버튼 + 안내 노출', async ({ page }) => {
     await page.goto('/#/login');
     await expect(
-      page.getByRole('heading', { name: /로그인이 필요한 페이지/ }),
+      page.getByRole('heading', { name: /먼저 로그인을 해주세요/ }),
     ).toBeVisible();
     await expect(
       page.getByRole('button', { name: /Google 로 시작/i }),

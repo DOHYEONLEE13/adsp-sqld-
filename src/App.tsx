@@ -5,7 +5,8 @@ import AdminPage from './pages/AdminPage';
 import RedeemPage from './pages/RedeemPage';
 import RefundRequestPage from './pages/RefundRequestPage';
 import LoginPage from './pages/LoginPage';
-import AuthGuard from './components/auth/AuthGuard';
+// AuthGuard / authGuard.ts 인프라는 유지 — Phase B premium 결제 게이트에서 재사용.
+// 현재는 게스트 모드 (전 라우트 무료) 라 import 만 보류.
 import GamePage from './game/GamePage';
 import StatsPage from './game/StatsPage';
 import BookmarksPage from './game/BookmarksPage';
@@ -141,69 +142,61 @@ export default function App() {
   // 바뀌어도 영상이 처음부터 다시 시작되지 않게.  각 페이지의 PageAmbientBg
   // 가 controller 에 push/pop 만 해서 fade in/out 으로만 노출 토글한다.
   const renderRoute = () => {
-    // 보호 라우트 — AuthGuard 가 미로그인 시 #/login 으로 redirect.
-    // env 미설정 (게스트 모드) 시엔 가드 우회.
+    // 게스트 모드 = 기본. 무료 계정처럼 동작 (localStorage 진도).
+    // 로그인 게이트는 결제 시점 (Phase B Premium 업그레이드) 에만 등장.
+    // AuthGuard / LoginPage / authGuard.ts 인프라는 그대로 유지 → premium 게이트
+    // 에서 setPendingAuthRedirect + #/login 패턴 재사용.
     if (route === 'game') {
       return (
-        <AuthGuard>
-          <GamePage
-            // key 로 deep-link 진입 변화 시 GamePage 재마운트.
-            // ex) /game (chooser) ↔ /game/adsp 사이 이동 시 초기 화면이 갱신됨.
-            key={initialSubject ?? 'chooser'}
-            initialSubject={initialSubject}
-            onExitToLanding={() => {
-              window.location.hash = '';
-            }}
-          />
-        </AuthGuard>
+        <GamePage
+          // key 로 deep-link 진입 변화 시 GamePage 재마운트.
+          // ex) /game (chooser) ↔ /game/adsp 사이 이동 시 초기 화면이 갱신됨.
+          key={initialSubject ?? 'chooser'}
+          initialSubject={initialSubject}
+          onExitToLanding={() => {
+            window.location.hash = '';
+          }}
+        />
       );
     }
 
     if (route === 'stats') {
       return (
-        <AuthGuard>
-          <StatsPage
-            onExit={() => {
-              window.location.hash = '/game';
-            }}
-          />
-        </AuthGuard>
+        <StatsPage
+          onExit={() => {
+            window.location.hash = '/game';
+          }}
+        />
       );
     }
 
     if (route === 'quests') {
       return (
-        <AuthGuard>
-          <QuestsPage
-            onExit={() => {
-              window.location.hash = '/game';
-            }}
-          />
-        </AuthGuard>
+        <QuestsPage
+          onExit={() => {
+            window.location.hash = '/game';
+          }}
+        />
       );
     }
 
     if (route === 'friends') {
       return (
-        <AuthGuard>
-          <FriendsPage
-            onExit={() => {
-              window.location.hash = '/game';
-            }}
-          />
-        </AuthGuard>
+        <FriendsPage
+          onExit={() => {
+            window.location.hash = '/game';
+          }}
+        />
       );
     }
 
     if (route === 'bookmarks') {
       return (
-        <AuthGuard>
-          <BookmarksPage
-            onExit={() => {
-              window.location.hash = '/game';
-            }}
-          />
-        </AuthGuard>
+        <BookmarksPage
+          onExit={() => {
+            window.location.hash = '/game';
+          }}
+        />
       );
     }
 

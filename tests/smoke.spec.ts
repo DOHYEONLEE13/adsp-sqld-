@@ -1,18 +1,22 @@
 /**
  * smoke.spec.ts — 핵심 UX flow 가 깨지지 않았는지 빠르게 검증.
  *
- * 인증 X (게스트 모드) 로 진행. 인증 flow 는 Google OAuth 라
- * 별도 mock session injection 또는 Supabase test auth 가 필요해 다음 phase.
+ * 인증 모델 (2026-04-29 변경):
+ *   - 학습 로드맵·진도·통계 등 보호 라우트 (/game, /quests, /friends, /stats,
+ *     /bookmarks) 는 미로그인 사용자가 진입 시 #/login 으로 redirect
+ *   - Supabase env 미설정 (게스트 모드) 인 경우 가드 우회
+ *   - 본 테스트는 dev 서버 (.env 가 Supabase configured) 대상이라 보호 라우트는
+ *     로그인 페이지로 redirect 되는 것을 검증
  *
  * 검증 흐름:
  *   1. 랜딩 페이지 hero 노출
- *   2. 게임 진입 → Galaxy chooser
- *   3. ADSP 선택 → Planet (3 chapters)
- *   4. Chapter 1 → Zone (step path)
- *   5. 모바일 뷰포트 — 하단 nav 4 탭
- *   6. /quests 페이지 — 오늘의 퀘스트
- *   7. /friends 페이지 — guest 안내
- *   8. /stats 페이지 — AuthCard "Google 로 시작" 버튼
+ *   2. 보호 라우트 (/game, /game/sqld, /quests, /friends, /stats) — #/login 으로 redirect
+ *   3. /login 페이지 본문 + Google 버튼
+ *   4. 법적 페이지 — 정상 진입
+ *   5. 랜딩 헤더 — 로그인/지금 시작 노출
+ *   6. /admin — 게스트 거부
+ *   7. /redeem — 자체 AuthCard (게스트도 진입 가능)
+ *   8. /refund-request — 게스트도 진입 가능 (mailto fallback)
  */
 
 import { test, expect } from '@playwright/test';
@@ -21,7 +25,10 @@ test.describe('smoke', () => {
   test.beforeEach(async ({ page }) => {
     // 기존 localStorage 가 영향 안 주게 매번 깨끗하게
     await page.goto('/');
-    await page.evaluate(() => window.localStorage.clear());
+    await page.evaluate(() => {
+      window.localStorage.clear();
+      window.sessionStorage.clear();
+    });
     await page.reload();
   });
 
@@ -30,74 +37,61 @@ test.describe('smoke', () => {
     await expect(page.locator('body')).toContainText(/ADSP|SQLD|놀면서/);
   });
 
-  test('2. game chooser → ADSP planet → chapter zone', async ({ page }) => {
+  test('2. /game (보호) — 미로그인이면 #/login 으로 redirect', async ({ page }) => {
     await page.goto('/#/game');
-    // chooser 에 ADSP 카드
-    await expect(page.getByRole('button', { name: /ADSP/i }).first()).toBeVisible();
-    // ADSP 클릭 → SubjectInfoPanel
-    await page.getByRole('button', { name: /ADSP 선택/i }).click();
-    // "ADSP 플레이하기" 버튼이 나타나야 함
-    const playButton = page.getByRole('button', { name: /플레이하기/ });
-    await expect(playButton).toBeVisible({ timeout: 5000 });
-    await playButton.click();
-    // Planet 화면 — Chapter 1 노드
-    await expect(page.getByRole('button', { name: /Chapter 1/i })).toBeVisible({
-      timeout: 10_000,
+    // 짧게 권한 확인 → /login 으로 이동
+    await page.waitForFunction(() => window.location.hash === '#/login', null, {
+      timeout: 8000,
     });
-    // Chapter 1 클릭 → Zone
-    await page.getByRole('button', { name: /Chapter 1/i }).click();
-    // Zone 의 첫 step
-    await expect(page.getByText(/Step\s*1/i).first()).toBeVisible({ timeout: 5000 });
+    // LoginPage 의 안내 헤딩이 보여야
+    await expect(
+      page.getByRole('heading', { name: /로그인이 필요한 페이지/ }),
+    ).toBeVisible({ timeout: 5000 });
   });
 
-  test('2-SQLD. SQLD chooser → planet → zone (스키마 토픽 노출)', async ({ page }) => {
-    await page.goto('/#/game');
-    // SQLD 카드
-    await expect(page.getByRole('button', { name: /SQLD/i }).first()).toBeVisible();
-    await page.getByRole('button', { name: /SQLD 선택/i }).click();
-    // SubjectInfoPanel — SQLD 플레이하기
-    const playButton = page.getByRole('button', { name: /플레이하기/ });
-    await expect(playButton).toBeVisible({ timeout: 5000 });
-    await playButton.click();
-    // Planet — Chapter 1 (데이터 모델링의 이해), Chapter 2 (SQL 기본 및 활용)
-    await expect(page.getByRole('button', { name: /Chapter 1/i })).toBeVisible({
-      timeout: 10_000,
-    });
-    await expect(page.getByRole('button', { name: /Chapter 2/i })).toBeVisible();
-    // Chapter 1 → Zone
-    await page.getByRole('button', { name: /Chapter 1/i }).click();
-    // Step 1 (= 모델링의 3특징 + 3관점) 표시
-    await expect(page.getByText(/Step\s*1/i).first()).toBeVisible({ timeout: 5000 });
-  });
-
-  test('2-SQLD-deep. SQLD ch2 zone — SQL 기본/활용/관리 구문 3 토픽 모두 노출', async ({
+  test('2-deep. /game/sqld 직진 — 로그인 redirect 후 returnTo 보관', async ({
     page,
   }) => {
     await page.goto('/#/game/sqld');
-    await page.getByRole('button', { name: /Chapter 2/i }).click();
-    // ZoneScreen 의 step 라벨은 화면상 "STEP n" (대문자) — case-insensitive 매칭
-    await expect(page.getByText(/Step\s*1/i).first()).toBeVisible({ timeout: 5000 });
-    // 12+12+8 = 32 step 중 적어도 8개는 표시되어야 함 (스크롤 가능)
-    const stepCount = await page.getByText(/Step\s*\d+/i).count();
-    expect(stepCount).toBeGreaterThanOrEqual(8);
+    await page.waitForFunction(() => window.location.hash === '#/login', null, {
+      timeout: 8000,
+    });
+    // pendingAuthRedirect localStorage 에 원본 라우트 보관 확인
+    const pending = await page.evaluate(() =>
+      window.localStorage.getItem('questdp.auth.pendingRedirect.v1'),
+    );
+    expect(pending).toBe('/game/sqld');
   });
 
-  test('3. /quests 페이지 렌더', async ({ page }) => {
+  test('3. /quests (보호) — #/login redirect', async ({ page }) => {
     await page.goto('/#/quests');
-    await expect(page.getByRole('heading', { name: /오늘의 퀘스트/ }).first()).toBeVisible();
+    await page.waitForFunction(() => window.location.hash === '#/login', null, {
+      timeout: 8000,
+    });
   });
 
-  test('4. /friends 게스트 안내', async ({ page }) => {
+  test('4. /friends (보호) — #/login redirect', async ({ page }) => {
     await page.goto('/#/friends');
-    await expect(page.getByText(/친구 경쟁/)).toBeVisible();
-    // 본인 태그가 카드에 노출
-    await expect(page.locator('text=/Q-[A-Z0-9]{4}-[A-Z0-9]{4}/').first()).toBeVisible();
+    await page.waitForFunction(() => window.location.hash === '#/login', null, {
+      timeout: 8000,
+    });
   });
 
-  test('5. /stats AuthCard Google 버튼 노출', async ({ page }) => {
+  test('5. /stats (보호) — #/login redirect', async ({ page }) => {
     await page.goto('/#/stats');
-    // Google 로 시작 버튼
-    await expect(page.getByRole('button', { name: /Google 로 시작/i })).toBeVisible();
+    await page.waitForFunction(() => window.location.hash === '#/login', null, {
+      timeout: 8000,
+    });
+  });
+
+  test('5-login. /login 페이지 — Google 버튼 + 안내 노출', async ({ page }) => {
+    await page.goto('/#/login');
+    await expect(
+      page.getByRole('heading', { name: /로그인이 필요한 페이지/ }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: /Google 로 시작/i }),
+    ).toBeVisible();
   });
 
   test('7. 법적 페이지 — 개인정보·이용약관·환불·소개 라우트 정상 진입', async ({
@@ -112,7 +106,7 @@ test.describe('smoke', () => {
     }
   });
 
-  test('8. 랜딩 헤더 — 로그인 버튼 노출', async ({ page }) => {
+  test('8. 랜딩 헤더 — 로그인/지금 시작 버튼 노출', async ({ page }) => {
     await page.goto('/');
     // Supabase 미설정 환경이면 "지금 시작" 버튼, 설정되어 있으면 "로그인" 버튼
     const loginOrStart = page
@@ -136,17 +130,22 @@ test.describe('smoke', () => {
     await expect(guard.first()).toBeVisible({ timeout: 8000 });
   });
 
-  test('6. 모바일 하단 4-탭 nav (학습/퀘스트/친구/프로필)', async ({ page }) => {
-    await page.goto('/#/game/adsp');
-    // 모바일 뷰포트는 config 의 chromium-mobile project 에서 자동
-    const tabs = ['학습', '퀘스트', '친구', '프로필'];
-    for (const t of tabs) {
-      // aria-label 매칭 (모바일에서만 노출)
-      // skip if not on mobile viewport
-      const tab = page.getByRole('button', { name: t });
-      if (await tab.isVisible().catch(() => false)) {
-        await expect(tab).toBeVisible();
-      }
-    }
+  test('10. /redeem — 자체 AuthCard 처리 (게스트도 진입 가능)', async ({
+    page,
+  }) => {
+    await page.goto('/#/redeem');
+    // 보호 라우트가 아니므로 redirect 안 됨
+    await expect(
+      page.getByRole('heading', { name: /초대 코드/ }),
+    ).toBeVisible({ timeout: 5000 });
+  });
+
+  test('11. /refund-request — 게스트 mailto fallback 진입 가능', async ({
+    page,
+  }) => {
+    await page.goto('/#/refund-request');
+    await expect(
+      page.getByRole('heading', { name: /환불 요청/ }),
+    ).toBeVisible({ timeout: 5000 });
   });
 });

@@ -4,6 +4,8 @@ import LegalPage from './pages/LegalPage';
 import AdminPage from './pages/AdminPage';
 import RedeemPage from './pages/RedeemPage';
 import RefundRequestPage from './pages/RefundRequestPage';
+import LoginPage from './pages/LoginPage';
+import AuthGuard from './components/auth/AuthGuard';
 import GamePage from './game/GamePage';
 import StatsPage from './game/StatsPage';
 import BookmarksPage from './game/BookmarksPage';
@@ -21,6 +23,8 @@ import { initEnergySync } from './game/energy';
 import { initStepUnlocksSync } from './game/stepUnlocks';
 import type { LegalDoc } from './data/legal';
 import GlobalAmbientBg from './game/components/GlobalAmbientBg';
+import { onAuthStateChange } from './lib/supabase';
+import { consumePendingAuthRedirect } from './lib/authGuard';
 
 type Route =
   | 'landing'
@@ -32,7 +36,8 @@ type Route =
   | 'legal'
   | 'admin'
   | 'redeem'
-  | 'refund-request';
+  | 'refund-request'
+  | 'login';
 
 interface RouteState {
   route: Route;
@@ -65,6 +70,7 @@ function getRoute(): RouteState {
   if (hash.startsWith('/redeem')) return { route: 'redeem' };
   if (hash.startsWith('/refund-request'))
     return { route: 'refund-request' };
+  if (hash.startsWith('/login')) return { route: 'login' };
   if (hash.startsWith('/about'))
     return { route: 'legal', legalSlug: 'about' };
   if (hash.startsWith('/privacy'))
@@ -118,61 +124,86 @@ export default function App() {
     };
   }, []);
 
+  // OAuth 콜백 후 SIGNED_IN 이벤트 — 보호 라우트로 진입하려 했던 경우 자동 복귀.
+  // OAuth 는 window.location.origin 으로 redirect 되어 hash 가 비어 있으므로
+  // App 루트에서 한 번만 구독해 처리 (LoginPage 가 mount 되지 않아도 OK).
+  useEffect(() => {
+    const unsub = onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        // 의도된 라우트가 있으면 그곳으로, 없으면 현재 라우트 그대로 둠
+        consumePendingAuthRedirect();
+      }
+    });
+    return () => unsub();
+  }, []);
+
   // GlobalAmbientBg 는 라우트 전환과 무관하게 항상 마운트 — 페이지가
   // 바뀌어도 영상이 처음부터 다시 시작되지 않게.  각 페이지의 PageAmbientBg
   // 가 controller 에 push/pop 만 해서 fade in/out 으로만 노출 토글한다.
   const renderRoute = () => {
+    // 보호 라우트 — AuthGuard 가 미로그인 시 #/login 으로 redirect.
+    // env 미설정 (게스트 모드) 시엔 가드 우회.
     if (route === 'game') {
       return (
-        <GamePage
-          // key 로 deep-link 진입 변화 시 GamePage 재마운트.
-          // ex) /game (chooser) ↔ /game/adsp 사이 이동 시 초기 화면이 갱신됨.
-          key={initialSubject ?? 'chooser'}
-          initialSubject={initialSubject}
-          onExitToLanding={() => {
-            window.location.hash = '';
-          }}
-        />
+        <AuthGuard>
+          <GamePage
+            // key 로 deep-link 진입 변화 시 GamePage 재마운트.
+            // ex) /game (chooser) ↔ /game/adsp 사이 이동 시 초기 화면이 갱신됨.
+            key={initialSubject ?? 'chooser'}
+            initialSubject={initialSubject}
+            onExitToLanding={() => {
+              window.location.hash = '';
+            }}
+          />
+        </AuthGuard>
       );
     }
 
     if (route === 'stats') {
       return (
-        <StatsPage
-          onExit={() => {
-            window.location.hash = '/game';
-          }}
-        />
+        <AuthGuard>
+          <StatsPage
+            onExit={() => {
+              window.location.hash = '/game';
+            }}
+          />
+        </AuthGuard>
       );
     }
 
     if (route === 'quests') {
       return (
-        <QuestsPage
-          onExit={() => {
-            window.location.hash = '/game';
-          }}
-        />
+        <AuthGuard>
+          <QuestsPage
+            onExit={() => {
+              window.location.hash = '/game';
+            }}
+          />
+        </AuthGuard>
       );
     }
 
     if (route === 'friends') {
       return (
-        <FriendsPage
-          onExit={() => {
-            window.location.hash = '/game';
-          }}
-        />
+        <AuthGuard>
+          <FriendsPage
+            onExit={() => {
+              window.location.hash = '/game';
+            }}
+          />
+        </AuthGuard>
       );
     }
 
     if (route === 'bookmarks') {
       return (
-        <BookmarksPage
-          onExit={() => {
-            window.location.hash = '/game';
-          }}
-        />
+        <AuthGuard>
+          <BookmarksPage
+            onExit={() => {
+              window.location.hash = '/game';
+            }}
+          />
+        </AuthGuard>
       );
     }
 
@@ -212,6 +243,16 @@ export default function App() {
         <RefundRequestPage
           onBack={() => {
             window.location.hash = '/refund';
+          }}
+        />
+      );
+    }
+
+    if (route === 'login') {
+      return (
+        <LoginPage
+          onBack={() => {
+            window.location.hash = '';
           }}
         />
       );

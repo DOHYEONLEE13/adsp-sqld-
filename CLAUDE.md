@@ -356,11 +356,26 @@ npm run typecheck  # tsc --noEmit
 
 ---
 
-## 8. 사이드 토픽 — 보류 중
+## 8. 사업화 / 결제 / 세무 — 진행 상황
 
-### 사업화 / 결제 / 세무 (보류)
+### 현재 단계 (2026-04-29)
 
-- 2026-04-27 결정: **결제·사업자등록 보류**, 배포 + 콘텐츠 우선
-- 사용자가 "사업자 / 결제 / 토스 / 세금 / 부가세 / 종소세" 관련 질문을 다시 꺼내면
-  → **`docs/business-setup-roadmap.md`** 부터 펼치기. 그 문서에 모든 단계·서류·업종 코드·세금 캘린더 정리되어 있음
-- 자동화 산출물: **`scripts/monthly-report.mjs`** + `npm run report` — Supabase 데이터 → Excel 7-시트 보고서. service_role 키만 `.env.local` 에 추가하면 바로 동작
+| 단계 | 상태 |
+|---|---|
+| 사업자등록 | ✅ 완료 (2026-04-28 개업, 604-48-01123, 상호 "퀘스트디피", 525101 + 749609 간이과세) |
+| 통신판매업 신고 | ⏳ 진행 — 정부24. 신고증 발급되면 `COMPANY.ecommerceNumber` 갱신 |
+| 사업용 통장·카드 | ⏳ 진행 — 카카오뱅크/토스뱅크 사업자 |
+| 토스페이먼츠 가맹점 | ⏳ 통판신고증 발급 후 신청 ("디지털 콘텐츠" 카테고리) |
+| 자비스 회계 SaaS | ⏳ 사업용 카드 발급 후 |
+
+### 운영 정보 single source
+
+- 모든 법적 페이지 (about/privacy/terms/refund) + Footer 가 `src/data/site.ts` `COMPANY` 객체 한 곳을 참조
+- 정보 갱신 시 `COMPANY` 만 수정하면 자동 전파
+
+### 다음 단계 시 참고
+
+사용자가 "사업자 / 결제 / 토스 / 세금 / 부가세 / 종소세" 관련 작업 시작하면
+→ **`docs/business-setup-roadmap.md`** 부터 펼치기. 단계·서류·업종 코드·세금 캘린더 정리됨.
+
+자동화 산출물: **`scripts/monthly-report.mjs`** + `npm run report` — Supabase 데이터 → Excel 7-시트 보고서. service_role 키만 `.env.local` 에 추가하면 바로 동작.

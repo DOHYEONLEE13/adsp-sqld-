@@ -74,19 +74,24 @@ export const CTA: CtaContent = {
 };
 
 /**
- * 회사·운영자 정보. 사업자등록 전이면 placeholder 유지 + "준비 중" 표기.
- * 사업자등록 완료 시 실제 정보로 교체. 한국 전자상거래법상 표시 의무.
+ * 회사·운영자 정보. 약관·환불정책·푸터·개인정보처리방침 등 모든 법적 페이지가
+ * 이 한 객체를 참조하므로 — 정보가 바뀌면 여기 한 곳만 수정.
  */
 export const COMPANY = {
-  name: 'QuestDP',
+  /** 등록 상호 (사업자등록증 기재). 영문 브랜드명은 BRAND.nameEn. */
+  name: '퀘스트디피',
   representative: '이도현',
   /** 운영 전용 이메일 — 약관·정책·푸터·문의 모든 곳에서 이 한 곳을 참조. */
   email: 'questdpofficial@gmail.com',
   contact: '문의는 이메일로',
-  // 아래 항목들은 사업자등록 후 채워질 자리. 현재는 "준비 중" 명시.
-  businessNumber: '사업자등록 준비 중',
-  ecommerceNumber: '통신판매업 신고 준비 중',
-  address: '서울특별시 (정식 주소 등록 예정)',
+  /** 사업자등록번호 (XXX-XX-XXXXX). 2026-04-28 등록. */
+  businessNumber: '604-48-01123',
+  /** 통신판매업 신고번호. 결제 시작 시점에 정부24 신고 후 갱신. 그전엔 표시 안내. */
+  ecommerceNumber: '결제 서비스 준비 중',
+  /** 사업장 소재지 (도로명). 정확한 시·구·상세 번지는 등록증 기준으로 갱신. */
+  address: '판교로 20',
+  /** 개업일 (사업자등록 기준일). */
+  openedAt: '2026-04-28',
   hostingProvider: 'Cloudflare Pages',
   /** 약관·정책의 마지막 개정일. 변경 시 같이 갱신. */
   policyUpdatedAt: '2026-04-29',

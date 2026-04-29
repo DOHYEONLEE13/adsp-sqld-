@@ -30,6 +30,8 @@ import {
 } from '@/types/passes';
 import { usePassSnapshot, resetPassProgress } from '@/game/passSync';
 import { DEV_UNLOCK_KEY, isDevUnlockEnabled } from '@/game/passes';
+import { useMyProfile } from '@/data/profile';
+import { getSupabase, isSupabaseConfigured } from '@/lib/supabase';
 import PassTierBadge from './PassTierBadge';
 
 const SUBJECT_LABEL: Record<Subject, string> = {
@@ -54,6 +56,47 @@ export default function PassSection() {
 
   // ── Tier 룰 설명 collapsible ─────────────────────────────
   const [explainOpen, setExplainOpen] = useState(false);
+
+  // ── admin 권한 — 검수 모드 노출 가드 ───────────────────────
+  // useMyProfile 의 localStorage isAdmin 이 stale 일 수 있어 server 직접 fetch 도 병행.
+  // (Header AdminLink 와 동일 패턴)
+  const profile = useMyProfile();
+  const [serverAdmin, setServerAdmin] = useState<boolean | null>(null);
+  useEffect(() => {
+    if (!isSupabaseConfigured()) {
+      setServerAdmin(false);
+      return;
+    }
+    const sb = getSupabase();
+    if (!sb) {
+      setServerAdmin(false);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data: sess } = await sb.auth.getSession();
+        if (cancelled) return;
+        if (!sess.session) {
+          setServerAdmin(false);
+          return;
+        }
+        const { data } = await sb
+          .from('profiles')
+          .select('role')
+          .eq('id', sess.session.user.id)
+          .maybeSingle();
+        if (cancelled) return;
+        setServerAdmin(data?.role === 'admin');
+      } catch {
+        if (!cancelled) setServerAdmin(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  const isAdmin = profile.isAdmin || serverAdmin === true;
 
   // ── 검수용 dev 토글 ──────────────────────────────────────
   // localStorage 의 unlockAllPasses 플래그. ON 시 모든 회독 탭 강제 unlocked.
@@ -100,20 +143,22 @@ export default function PassSection() {
     }
   };
 
+  // 메인 카드 외곽 스타일 (explainer 패널과 공유)
+  const cardStyle: React.CSSProperties = {
+    background: 'rgba(8, 14, 36, 0.72)',
+    backdropFilter: 'blur(16px) saturate(120%)',
+    WebkitBackdropFilter: 'blur(16px) saturate(120%)',
+    border: '1px solid rgba(239, 244, 255, 0.12)',
+    boxShadow:
+      'inset 0 1px 0 rgba(255,255,255,0.08), 0 6px 24px rgba(0,0,0,0.35)',
+  };
+
   return (
+    <>
     <section
       aria-label="회독 진행도"
       className="rounded-[24px] p-5 md:p-6 mb-6 relative overflow-hidden"
-      style={{
-        // 가독성↑ — liquid-glass 보다 강한 blur + 더 어두운 배경 (배경 영상이
-        // 가까워서 글자와 명도 차가 작아 안 보였던 문제 해결)
-        background: 'rgba(8, 14, 36, 0.72)',
-        backdropFilter: 'blur(16px) saturate(120%)',
-        WebkitBackdropFilter: 'blur(16px) saturate(120%)',
-        border: '1px solid rgba(239, 244, 255, 0.12)',
-        boxShadow:
-          'inset 0 1px 0 rgba(255,255,255,0.08), 0 6px 24px rgba(0,0,0,0.35)',
-      }}
+      style={cardStyle}
     >
       {/* ── 헤더 + 현재 Tier ── */}
       <div className="flex items-start justify-between gap-4 flex-wrap mb-3">
@@ -123,38 +168,28 @@ export default function PassSection() {
             <h2 className="kr-heading uppercase text-[11px] tracking-widest text-cream/70">
               회독 Pass Tier
             </h2>
-            <button
-              type="button"
-              onClick={() => setExplainOpen((v) => !v)}
-              aria-expanded={explainOpen}
-              aria-controls="pass-tier-explain"
-              className="kr-num inline-flex items-center gap-1 text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full transition active:scale-95"
-              style={{
-                background: explainOpen
-                  ? 'rgba(111,255,0,0.14)'
-                  : 'rgba(239,244,255,0.06)',
-                border: explainOpen
-                  ? '1px solid rgba(111,255,0,0.45)'
-                  : '1px solid rgba(239,244,255,0.18)',
-                color: explainOpen ? '#6FFF00' : 'var(--cream)',
-              }}
-            >
-              <HelpCircle size={10} strokeWidth={2.4} />
-              어떻게 올라가요?
-              {explainOpen ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
-            </button>
           </div>
           <p className="kr-body text-[12.5px] text-cream/75 leading-[1.55]">
             {passSnap.authed
               ? PASS_TIER_MEANING[passSnap.tier]
               : '로그인 후 stamp · Tier 시스템 활성화. 같은 챕터를 여러 번 풀어 마스터를 향해.'}
           </p>
+          {/* 카드 안 헤더 영역 — Tier 원리 보기 작은 ghost 링크 */}
+          <button
+            type="button"
+            onClick={() => setExplainOpen((v) => !v)}
+            aria-expanded={explainOpen}
+            aria-controls="pass-tier-explain-panel"
+            className="kr-num inline-flex items-center gap-1 text-[10.5px] uppercase tracking-widest mt-2.5 transition opacity-75 hover:opacity-100"
+            style={{ color: explainOpen ? '#6FFF00' : 'rgba(239,244,255,0.85)' }}
+          >
+            <HelpCircle size={11} strokeWidth={2.4} />
+            TIER 원리 자세히 보기
+            {explainOpen ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
+          </button>
         </div>
         <PassTierBadge tier={passSnap.tier} size="lg" active showMeaning={false} />
       </div>
-
-      {/* ── Tier 룰 설명 (collapsible) ── */}
-      {explainOpen ? <TierRulesExplainer /> : null}
 
       {/* ── Stamp 그리드 ── */}
       <div className="space-y-4 mb-5">
@@ -167,52 +202,7 @@ export default function PassSection() {
         ))}
       </div>
 
-      {/* ── 검수용 dev 토글 ── */}
-      <div
-        className="pt-4 mb-3 border-t border-cream/10 flex items-start gap-2.5 px-3 py-2.5 rounded-xl"
-        style={{
-          background: devUnlock
-            ? 'rgba(252,211,77,0.08)'
-            : 'rgba(239,244,255,0.03)',
-          border: devUnlock
-            ? '1px solid rgba(252,211,77,0.4)'
-            : '1px solid rgba(239,244,255,0.1)',
-        }}
-      >
-        <Wrench
-          size={13}
-          className={devUnlock ? 'text-yellow-300/85 mt-0.5' : 'text-cream/45 mt-0.5'}
-          strokeWidth={2}
-        />
-        <div className="flex-1 min-w-0">
-          <div className="kr-num text-[10px] uppercase tracking-widest text-cream/65 mb-1">
-            검수 모드
-          </div>
-          <p className="kr-body text-[11.5px] text-cream/65 leading-[1.5]">
-            {devUnlock
-              ? '모든 회독 탭이 강제로 열려 있어요. 검수가 끝나면 끄세요.'
-              : '마이그 미적용 환경 또는 stamp 가 없는 상태에서 2·3회독 탭을 강제로 열어 UI 를 검수합니다. 페이지가 새로고침됩니다.'}
-          </p>
-          <button
-            type="button"
-            onClick={handleToggleDevUnlock}
-            className="kr-num text-[10px] uppercase tracking-widest mt-2 px-3 py-1.5 rounded-full transition active:scale-95"
-            style={{
-              background: devUnlock
-                ? 'rgba(252,211,77,0.2)'
-                : 'rgba(239,244,255,0.08)',
-              border: devUnlock
-                ? '1px solid rgba(252,211,77,0.6)'
-                : '1px solid rgba(239,244,255,0.2)',
-              color: devUnlock ? 'rgba(253,224,71,0.95)' : 'var(--cream)',
-            }}
-          >
-            {devUnlock ? '검수 모드 끄기' : '🔧 모든 회독 잠금 해제 (검수)'}
-          </button>
-        </div>
-      </div>
-
-      {/* ── 안내 메시지 + reset 버튼 ── */}
+      {/* ── 안내 메시지 + reset 버튼 (인증 사용자만) ── */}
       {passSnap.authed ? (
         <div className="pt-4 border-t border-cream/10">
           <button
@@ -240,6 +230,80 @@ export default function PassSection() {
         </p>
       )}
     </section>
+
+    {/* ── Tier 원리 자세히 보기 (collapsible) — 메인 카드 밖 별도 패널 ── */}
+    {explainOpen ? (
+      <section
+        id="pass-tier-explain-panel"
+        aria-label="Tier 룰 설명"
+        className="rounded-[24px] p-5 md:p-6 mb-6 relative overflow-hidden"
+        style={cardStyle}
+      >
+        <TierRulesExplainer />
+      </section>
+    ) : null}
+
+    {/* ── 검수 모드 — admin 전용. 메인 카드 밖 별도 패널 ── */}
+    {isAdmin ? (
+      <section
+        aria-label="검수 모드 (admin 전용)"
+        className="rounded-[24px] p-4 mb-6 flex items-start gap-2.5 relative overflow-hidden"
+        style={{
+          ...cardStyle,
+          background: devUnlock
+            ? 'rgba(252,211,77,0.10)'
+            : 'rgba(8, 14, 36, 0.72)',
+          border: devUnlock
+            ? '1px solid rgba(252,211,77,0.45)'
+            : '1px solid rgba(239,244,255,0.12)',
+        }}
+      >
+        <Wrench
+          size={14}
+          className={devUnlock ? 'text-yellow-300/85 mt-0.5' : 'text-cream/55 mt-0.5'}
+          strokeWidth={2}
+        />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="kr-num text-[10px] uppercase tracking-widest text-cream/70">
+              검수 모드
+            </span>
+            <span
+              className="kr-num text-[9px] uppercase tracking-widest px-1.5 py-0.5 rounded-full"
+              style={{
+                background: 'rgba(245,158,11,0.18)',
+                border: '1px solid rgba(245,158,11,0.5)',
+                color: '#fbbf24',
+              }}
+            >
+              ADMIN
+            </span>
+          </div>
+          <p className="kr-body text-[11.5px] text-cream/70 leading-[1.5]">
+            {devUnlock
+              ? '모든 회독 탭이 강제로 열려 있어요. 검수가 끝나면 끄세요.'
+              : '마이그 미적용·stamp 없는 상태에서 2·3회독 탭을 강제로 열어 UI 를 검수합니다. 페이지가 새로고침됩니다.'}
+          </p>
+          <button
+            type="button"
+            onClick={handleToggleDevUnlock}
+            className="kr-num text-[10px] uppercase tracking-widest mt-2 px-3 py-1.5 rounded-full transition active:scale-95"
+            style={{
+              background: devUnlock
+                ? 'rgba(252,211,77,0.22)'
+                : 'rgba(239,244,255,0.08)',
+              border: devUnlock
+                ? '1px solid rgba(252,211,77,0.6)'
+                : '1px solid rgba(239,244,255,0.22)',
+              color: devUnlock ? 'rgba(253,224,71,0.95)' : 'var(--cream)',
+            }}
+          >
+            {devUnlock ? '검수 모드 끄기' : '🔧 모든 회독 잠금 해제 (검수)'}
+          </button>
+        </div>
+      </section>
+    ) : null}
+    </>
   );
 }
 

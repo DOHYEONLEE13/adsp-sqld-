@@ -275,13 +275,17 @@ function MyTagCard({
 
 function AddFriendCard({ myTag }: { myTag: string }) {
   const [tagInput, setTagInput] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ tone: 'ok' | 'err'; msg: string } | null>(
     null,
   );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = addFriend(tagInput, myTag);
+    if (submitting) return;
+    setSubmitting(true);
+    const result = await addFriend(tagInput, myTag);
+    setSubmitting(false);
     if (result.ok) {
       setFeedback({ tone: 'ok', msg: '친구 추가 완료!' });
       setTagInput('');
@@ -296,7 +300,7 @@ function AddFriendCard({ myTag }: { myTag: string }) {
       };
       setFeedback({ tone: 'err', msg: map[result.reason] });
     }
-    window.setTimeout(() => setFeedback(null), 2400);
+    window.setTimeout(() => setFeedback(null), 3200);
   };
 
   const normalized = normalizeTag(tagInput);
@@ -329,7 +333,7 @@ function AddFriendCard({ myTag }: { myTag: string }) {
         />
         <button
           type="submit"
-          disabled={!isLikelyValid}
+          disabled={!isLikelyValid || submitting}
           className="kr-heading uppercase tracking-widest text-[12px] px-4 py-2.5 rounded-full transition active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
           style={{
             background: '#6FFF00',
@@ -337,7 +341,7 @@ function AddFriendCard({ myTag }: { myTag: string }) {
             letterSpacing: '0.16em',
           }}
         >
-          추가
+          {submitting ? '추가 중…' : '추가'}
         </button>
       </form>
       {feedback ? (

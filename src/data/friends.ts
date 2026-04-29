@@ -91,25 +91,35 @@ export type AddResult =
     };
 
 /**
- * 태그로 친구 추가.
- * - 로그인: RPC `add_friend_by_tag` → server 가 검증+insert. 성공 시 pull 로 실데이터 동기화.
- * - 게스트: localStorage 에 placeholder 만 저장.
+ * 태그로 친구 추가. **async** — 인증 사용자는 server RPC 결과까지 await 후 실제
+ * ok/error 를 반환. UI 가 명확한 토스트 노출 가능.
+ *
+ * 로그인 케이스 흐름:
+ *   1. 즉시 placeholder 추가 → UI 반응성
+ *   2. RPC `add_friend_by_tag` await
+ *   3. 거부 시 placeholder 제거 + 정확한 reason 반환
+ *   4. 성공 시 pull + channel rebuild + ok 반환
+ *
+ * 게스트 케이스: localStorage 만. 즉시 ok.
  */
-export function addFriend(rawTag: string, myTag: string): AddResult {
+export async function addFriend(rawTag: string, myTag: string): Promise<AddResult> {
   const tag = normalizeTag(rawTag);
   if (!isValidTag(tag)) return { ok: false, reason: 'invalid' };
   if (tag === myTag) return { ok: false, reason: 'self' };
 
+  const data = load();
+  if (data.list.some((f) => f.tag === tag)) {
+    return { ok: false, reason: 'duplicate' };
+  }
+
   const sb = getSupabase();
   if (sb) {
-    // 로그인 상태일 가능성 — server 통해 추가 시도. 비동기지만 즉시 반응을 위해
-    // 로컬엔 placeholder 먼저 넣고 background 로 push.
-    const data = load();
-    if (data.list.some((f) => f.tag === tag)) {
-      return { ok: false, reason: 'duplicate' };
+    const { data: sess } = await sb.auth.getSession();
+    if (!sess.session) {
+      return { ok: false, reason: 'unauthenticated' };
     }
-    void serverAddFriend(tag); // server 응답 후 pull 트리거
-    // 즉시 placeholder — 곧 실데이터로 덮임
+
+    // 즉시 placeholder — UI 가 친구 카드 옅게 노출하다 server 응답 후 실데이터 또는 제거
     data.list.push({
       tag,
       displayName: tag,
@@ -123,14 +133,49 @@ export function addFriend(rawTag: string, myTag: string): AddResult {
     });
     save(data);
     notify();
-    return { ok: true };
+
+    // server RPC await
+    try {
+      const { data: rpcData, error } = await sb.rpc('add_friend_by_tag', {
+        target_tag: tag,
+      });
+      if (error) {
+        // 네트워크/RPC 에러 — placeholder 제거
+        const local = load();
+        local.list = local.list.filter((f) => f.tag !== tag);
+        save(local);
+        notify();
+        return { ok: false, reason: 'network' };
+      }
+      const result = (rpcData ?? [])[0] as
+        | { ok: boolean; reason: string | null }
+        | undefined;
+      if (!result?.ok) {
+        // 서버 거부 — placeholder 제거 + 정확한 reason 반환
+        const local = load();
+        local.list = local.list.filter((f) => f.tag !== tag);
+        save(local);
+        notify();
+        const r = result?.reason;
+        if (r === 'not_found' || r === 'self' || r === 'duplicate' || r === 'unauthenticated') {
+          return { ok: false, reason: r };
+        }
+        return { ok: false, reason: 'network' };
+      }
+      // 성공 — pull 로 실데이터 가져오고 channel 재구성
+      await pullFromSupabase();
+      void rebuildChannel();
+      return { ok: true };
+    } catch {
+      const local = load();
+      local.list = local.list.filter((f) => f.tag !== tag);
+      save(local);
+      notify();
+      return { ok: false, reason: 'network' };
+    }
   }
 
   // 게스트
-  const data = load();
-  if (data.list.some((f) => f.tag === tag)) {
-    return { ok: false, reason: 'duplicate' };
-  }
   data.list.push({
     tag,
     displayName: tag,
@@ -249,33 +294,8 @@ async function pullFromSupabase(): Promise<void> {
   notify();
 }
 
-/** RPC 호출 → 성공 시 pull + channel 재구성 (새 친구의 profile UPDATE 구독). */
-async function serverAddFriend(tag: string): Promise<void> {
-  const sb = getSupabase();
-  if (!sb) return;
-  try {
-    const { data: sess } = await sb.auth.getSession();
-    if (!sess.session) return;
-    const { data, error } = await sb.rpc('add_friend_by_tag', { target_tag: tag });
-    if (error) return;
-    // RPC 가 성공하면 friendships 에 row 가 들어가 있음 → pull 로 새 친구 가져옴
-    const result = (data ?? [])[0] as { ok: boolean; reason: string | null } | undefined;
-    if (result?.ok) {
-      await pullFromSupabase();
-      // 친구 목록이 바뀜 → channel filter 가 stale → 재구성. 그래야 신규 친구의
-      // displayName/avatar UPDATE 이벤트가 들어옴.
-      void rebuildChannel();
-    } else {
-      // 서버가 거부 — 미리 넣은 placeholder 도 제거
-      const local = load();
-      local.list = local.list.filter((f) => f.tag !== tag);
-      save(local);
-      notify();
-    }
-  } catch {
-    /* 무시 — 다음 pull 에서 정합성 회복 */
-  }
-}
+// (serverAddFriend 함수는 addFriend 안 inline 처리로 통합되어 제거됨.
+//  참고: addFriend 가 await RPC → 결과로 placeholder 정리 + UI 토스트 처리)
 
 async function serverRemoveFriend(tag: string): Promise<void> {
   const sb = getSupabase();

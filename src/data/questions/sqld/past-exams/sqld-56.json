@@ -748,13 +748,19 @@
     "type": "multiple_choice",
     "question": "\"팀별로 키가 가장 작은 선수의 팀명·키\" 를 출력할 때 적절한 패턴은?",
     "choices": [
-      "GROUP BY 팀명 후 MIN(키) 한 번만",
-      "WHERE 키 < 180 조건 추가",
-      "단순 ORDER BY 키 ASC",
-      "인라인뷰 (SELECT 팀명, MIN(키) AS 최저 FROM T GROUP BY 팀명) 와 원본 테이블을 (팀명, 키=최저) 로 JOIN"
+      "GROUP BY 팀명 후 MIN(키) 한 번만 SELECT 한다",
+      "전체 테이블에 WHERE 키 < 180 조건만 추가한다",
+      "단순 ORDER BY 키 ASC 로 정렬한다",
+      "팀별 MIN(키) 인라인뷰와 원본을 (팀명, 키) JOIN"
     ],
     "answerIndex": 3,
-    "explanation": "GROUP BY 만 하면 팀명·MIN(키) 만 나오고 선수 정보가 없습니다. 인라인뷰로 팀별 최저값을 만들고 원본과 JOIN 해야 정확한 행 단위 결과."
+    "explanation": "GROUP BY 만 하면 팀명·MIN(키) 만 나오고 선수 정보(이름 등)는 없음. 인라인뷰로 팀별 최저값을 만들고 원본과 JOIN 해야 행 단위 결과를 얻을 수 있다.",
+    "_audit": {
+      "fixed": ["B2"],
+      "changed_fields": ["choices"],
+      "reason": "정답 길이 압축 (77→33자) + 다른 보기 문법 통일",
+      "audited_at": "2026-04-29"
+    }
   },
   {
     "id": "sqld-56-43",
@@ -843,13 +849,19 @@
     "type": "multiple_choice",
     "question": "매출이 높은 순서대로 직원을 출력하는 쿼리에서 ORDER BY 매출 만 작성하면 어떤 문제가 있는가?",
     "choices": [
-      "정렬되지 않는다",
-      "오류가 발생한다",
-      "낮은 순서대로(오름차순) 정렬된다 — DESC 가 빠짐",
+      "정렬이 전혀 적용되지 않는다",
+      "구문 오류가 발생한다",
+      "낮은 순서(오름차순)로 정렬 — DESC 누락",
       "매출이 NULL 인 행이 항상 맨 앞에 온다"
     ],
     "answerIndex": 2,
-    "explanation": "ORDER BY 의 기본은 ASC. 내림차순으로 원하면 DESC 명시 필수."
+    "explanation": "ORDER BY 의 기본은 ASC. 내림차순으로 원하면 DESC 명시 필수.",
+    "_audit": {
+      "fixed": ["B2"],
+      "changed_fields": ["choices"],
+      "reason": "정답 길이 압축 + 다른 보기 길이 보강해 균형",
+      "audited_at": "2026-04-29"
+    }
   },
   {
     "id": "sqld-56-48",
@@ -895,8 +907,14 @@
     "status": "ai-generated",
     "type": "multiple_choice",
     "question": "다음 SQL 실행 후 SELECT COUNT(*) FROM TAB1 WHERE COL1 = 4; 의 결과는? (앞 문항과 같은 시나리오, 행이 모두 별개로 INSERT 됨)\n\nCOL1 컬럼에 1,2,3 INSERT → SAVEPOINT SV1;\n4,5 INSERT → COMMIT;\n6 INSERT → ROLLBACK TO SAVEPOINT SV1;",
-    "choices": ["1", "2", "3", "오류 발생 + 6건 (커밋 후 SV1 사라짐)"],
+    "choices": ["1건 (4 만 매칭)", "2건 (4·5)", "3건 (1~3)", "ROLLBACK 오류 + 6건 (1~6)"],
     "answerIndex": 3,
-    "explanation": "COMMIT 직후 모든 SAVEPOINT 가 사라지므로 ROLLBACK TO SV1 은 \"존재하지 않는 SAVEPOINT\" 오류. COMMIT 직후 1~5 영구 반영. INSERT 6 도 그대로 남으므로 6건 (오류는 INSERT 6 이후 발생)."
+    "explanation": "COMMIT 직후 모든 SAVEPOINT 가 사라지므로 ROLLBACK TO SV1 은 '존재하지 않는 SAVEPOINT' 오류. COMMIT 직후 1~5 영구 반영. INSERT 6 도 그대로 남으므로 6건 (오류는 INSERT 6 이후 발생).",
+    "_audit": {
+      "fixed": ["B2"],
+      "changed_fields": ["choices"],
+      "reason": "다른 보기에 길이 보강 (1자→10자) — 정답과 균형",
+      "audited_at": "2026-04-29"
+    }
   }
 ]

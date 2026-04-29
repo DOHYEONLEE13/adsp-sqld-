@@ -13,10 +13,10 @@
 | **2** | `adsp/past-exams/2024-46.json` | 50 | ✅ 감사 + 즉시 수정 완료 | 0 (M4) / 50 (C2/4/5 보강 대기) |
 | **3** | `adsp/past-exams/2025-47.json` | 50 | ✅ 감사 + 즉시 수정 완료 | 0 (M4) / 50 (C2/4/5 보강 대기) |
 | **4** | `adsp/past-exams/2026-48.json` | 42 | ✅ 감사 + 즉시 수정 완료 | 0 (M4) / 42 (C2/4/5 보강 대기) |
-| 5 | `sqld/past-exams/54.json` | 50 | ⏳ | – |
-| 6 | `sqld/past-exams/55.json` | 50 | ⏳ | – |
-| 7 | `sqld/past-exams/56.json` | 50 | ⏳ | – |
-| 8 | `sqld/past-exams/57.json` | 50 | ⏳ | – |
+| **5** | `sqld/past-exams/sqld-54.json` | 50 | ✅ M4 8건 fix | 0 (M4) |
+| **6** | `sqld/past-exams/sqld-55.json` | 50 | ✅ M4 4건 fix | 0 (M4) |
+| **7** | `sqld/past-exams/sqld-56.json` | 50 | ✅ M4 3건 fix | 0 (M4) |
+| **8** | `sqld/past-exams/sqld-57.json` | 50 | ✅ M4 3건 fix | 0 (M4) |
 | 9 | `adsp/concept-practice.json` | 175 | ⏳ | – |
 | 10 | `sqld/concept-practice.json` | 50 | ⏳ | – |
 
@@ -230,7 +230,30 @@
 
 ---
 
-## Batch 5~10 — 진행 예정 (SQLD + concept-practice)
+## Batch 5~8 — SQLD 4회차 (200문)
+
+도메인 재구성 없이 **B2 (M4 길이 편향) 18건만 일괄 fix**. SQL 코드는 길이가 길어지기 쉬워 정답 보기 압축 + 다른 보기 형식 통일로 균형.
+
+| 배치 | 파일 | 수정 |
+|---|---|---:|
+| 5 | `sqld-54.json` | 8 (Q9·Q11·Q23·Q29·Q33·Q36·Q39·Q41) |
+| 6 | `sqld-55.json` | 4 (Q20·Q25·Q27·Q50) |
+| 7 | `sqld-56.json` | 3 (Q42·Q47·Q50) |
+| 8 | `sqld-57.json` | 3 (Q6·Q9·Q44) |
+
+전 18건 모두 `_audit` 메타 추가. 검증 결과: SQLD past-exam 4파일 M4 = **0**.
+
+---
+
+## ADSP+SQLD 8 배치 통합 결과
+
+- 8 배치 (392문 ai-generated): A4 25 + B2 30 + A1 1 = **56건 즉시 수정**
+- 392문 M4 = **0** (잔여 zero)
+- 전체 631문 결함: 152 → 81 (-47%)
+
+---
+
+## Batch 9~10 — concept-practice (225문) 진행 예정
 
 ---
 

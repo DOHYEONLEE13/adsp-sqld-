@@ -371,13 +371,19 @@
     "type": "multiple_choice",
     "question": "두 테이블 T1(3행) T2(3행) 가 매칭 키가 2개일 때 LEFT, FULL, RIGHT JOIN 결과 행 수의 일반적인 관계로 옳은 것은?",
     "choices": [
-      "LEFT = RIGHT < FULL",
-      "LEFT = RIGHT = FULL",
-      "FULL = LEFT + RIGHT",
-      "FULL = LEFT ∪ RIGHT — 매칭 안 되는 행을 양쪽 다 보존"
+      "LEFT = RIGHT < FULL (매칭만 동률)",
+      "LEFT = RIGHT = FULL (행 수 모두 같음)",
+      "FULL = LEFT + RIGHT (단순 합산)",
+      "FULL ⊇ LEFT ∪ RIGHT (비매칭 양쪽 보존)"
     ],
     "answerIndex": 3,
-    "explanation": "FULL OUTER 는 LEFT + RIGHT 의 합집합 (매칭만 중복 1번)이라 항상 ≥ LEFT, ≥ RIGHT. 매칭 키 수에 따라 다르지만 FULL 이 최대."
+    "explanation": "FULL OUTER 는 LEFT + RIGHT 의 합집합 (매칭만 중복 1번)이라 항상 ≥ LEFT, ≥ RIGHT. 매칭 키 수에 따라 다르지만 FULL 이 최대.",
+    "_audit": {
+      "fixed": ["B2"],
+      "changed_fields": ["choices"],
+      "reason": "다른 보기 길이 보강 — 모든 보기 같은 형식(SQL 비교 + 괄호 설명)으로 균형",
+      "audited_at": "2026-04-29"
+    }
   },
   {
     "id": "sqld-55-21",
@@ -467,12 +473,18 @@
     "question": "다음 쿼리의 결과 정렬 순서로 옳은 것은?\n\nSELECT *\nFROM (SELECT id, val,\n             ROW_NUMBER() OVER (ORDER BY val DESC) RN\n      FROM T)\nWHERE RN <= 2\nORDER BY RN DESC;",
     "choices": [
       "val 기준 오름차순으로 2개",
-      "RN=1 가장 위, RN=2 그 다음 (val DESC 동치)",
-      "RN=2 가 먼저 (val 두 번째 큰 값), RN=1 (val 가장 큰 값) 다음",
+      "RN=1 가장 위, 그 다음 RN=2",
+      "RN=2 가 먼저, 그 다음 RN=1",
       "정렬 보장되지 않음"
     ],
     "answerIndex": 2,
-    "explanation": "내부에서 val DESC 로 RN 매김 (큰 값=1, 그 다음=2). 외부에서 ORDER BY RN DESC → RN 큰 값(=2)이 먼저."
+    "explanation": "내부에서 val DESC 로 RN 매김 (큰 값=1, 그 다음=2). 외부에서 ORDER BY RN DESC → RN 큰 값(=2)이 먼저.",
+    "_audit": {
+      "fixed": ["B2"],
+      "changed_fields": ["choices"],
+      "reason": "정답 길이 압축 (46→20자)",
+      "audited_at": "2026-04-29"
+    }
   },
   {
     "id": "sqld-55-26",
@@ -508,13 +520,19 @@
     "type": "multiple_choice",
     "question": "\"계약이 한 번도 없는 고객\" 을 찾는 가장 안전한 SQL 은?",
     "choices": [
-      "SELECT * FROM 고객 WHERE 고객ID NOT IN (SELECT 고객ID FROM 계약)",
-      "SELECT * FROM 고객 c WHERE NOT EXISTS (SELECT 1 FROM 계약 t WHERE t.고객ID = c.고객ID)",
-      "SELECT * FROM 고객 INTERSECT SELECT * FROM 계약",
-      "SELECT * FROM 고객 c LEFT JOIN 계약 t USING(고객ID)"
+      "고객 WHERE 고객ID NOT IN (SELECT 고객ID FROM 계약 WHERE …)",
+      "고객 c WHERE NOT EXISTS (SELECT 1 FROM 계약 WHERE 고객ID=c.고객ID)",
+      "고객 INTERSECT 계약 (서로 다른 컬럼 구성으로 오류)",
+      "고객 c LEFT JOIN 계약 USING(고객ID) — 필터 없음"
     ],
     "answerIndex": 1,
-    "explanation": "NOT IN 은 서브쿼리에 NULL 이 섞이면 0행. NOT EXISTS 는 NULL 영향 없음 → 가장 안전."
+    "explanation": "NOT IN 은 서브쿼리에 NULL 이 섞이면 0행. NOT EXISTS 는 NULL 영향 없음 → 가장 안전. INTERSECT 와 LEFT JOIN 은 의도 자체가 다름.",
+    "_audit": {
+      "fixed": ["B2"],
+      "changed_fields": ["choices", "explanation"],
+      "reason": "보기 길이 균형 — 모든 보기에서 SELECT * 생략",
+      "audited_at": "2026-04-29"
+    }
   },
   {
     "id": "sqld-55-28",
@@ -965,8 +983,14 @@
     "status": "ai-generated",
     "type": "multiple_choice",
     "question": "다음 시나리오 후 SELECT * FROM TABLE50 의 결과 행 수는?\n\nINSERT INTO TABLE50 VALUES(1);\nINSERT INTO TABLE50 VALUES(2);\nINSERT INTO TABLE50 VALUES(3);\nSAVEPOINT SQL1;\nINSERT INTO TABLE50 VALUES(4);\nINSERT INTO TABLE50 VALUES(5);\nCOMMIT;\nINSERT INTO TABLE50 VALUES(6);\nROLLBACK TO SAVEPOINT SQL1;",
-    "choices": ["4", "5", "6", "오류 발생 + 6건 (커밋 후 SQL1 SAVEPOINT 무효)"],
+    "choices": ["4건 (1~3 + INSERT 6)", "5건 (1~5 그대로)", "3건 (1~3 만 남음)", "ROLLBACK 오류 + 6건 (1~6)"],
     "answerIndex": 3,
-    "explanation": "COMMIT 직후 모든 SAVEPOINT 가 사라집니다. ROLLBACK TO SAVEPOINT SQL1 은 \"존재하지 않는 SAVEPOINT\" 오류. COMMIT 으로 1~5 영구 반영, 그 뒤 INSERT 6 도 그대로 남아 총 6건."
+    "explanation": "COMMIT 직후 모든 SAVEPOINT 가 사라집니다. ROLLBACK TO SAVEPOINT SQL1 은 '존재하지 않는 SAVEPOINT' 오류. COMMIT 으로 1~5 영구 반영, 그 뒤 INSERT 6 도 그대로 남아 총 6건.",
+    "_audit": {
+      "fixed": ["B2"],
+      "changed_fields": ["choices"],
+      "reason": "다른 보기 길이 보강 (1자→10~15자) — 정답과 균형",
+      "audited_at": "2026-04-29"
+    }
   }
 ]

@@ -11,7 +11,15 @@
  */
 
 import { useEffect, useState } from 'react';
-import { RotateCcw, Trophy, Loader2, Wrench } from 'lucide-react';
+import {
+  RotateCcw,
+  Trophy,
+  Loader2,
+  Wrench,
+  ChevronDown,
+  ChevronUp,
+  HelpCircle,
+} from 'lucide-react';
 import { SUBJECT_SCHEMAS } from '@/data/subjects';
 import type { Subject } from '@/types/question';
 import {
@@ -43,6 +51,9 @@ export default function PassSection() {
   const passSnap = usePassSnapshot();
   const [resetting, setResetting] = useState(false);
   const [resetMsg, setResetMsg] = useState<string | null>(null);
+
+  // ── Tier 룰 설명 collapsible ─────────────────────────────
+  const [explainOpen, setExplainOpen] = useState(false);
 
   // ── 검수용 dev 토글 ──────────────────────────────────────
   // localStorage 의 unlockAllPasses 플래그. ON 시 모든 회독 탭 강제 unlocked.
@@ -92,18 +103,48 @@ export default function PassSection() {
   return (
     <section
       aria-label="회독 진행도"
-      className="liquid-glass rounded-[24px] p-5 md:p-6 mb-6"
+      className="rounded-[24px] p-5 md:p-6 mb-6 relative overflow-hidden"
+      style={{
+        // 가독성↑ — liquid-glass 보다 강한 blur + 더 어두운 배경 (배경 영상이
+        // 가까워서 글자와 명도 차가 작아 안 보였던 문제 해결)
+        background: 'rgba(8, 14, 36, 0.72)',
+        backdropFilter: 'blur(16px) saturate(120%)',
+        WebkitBackdropFilter: 'blur(16px) saturate(120%)',
+        border: '1px solid rgba(239, 244, 255, 0.12)',
+        boxShadow:
+          'inset 0 1px 0 rgba(255,255,255,0.08), 0 6px 24px rgba(0,0,0,0.35)',
+      }}
     >
       {/* ── 헤더 + 현재 Tier ── */}
-      <div className="flex items-start justify-between gap-4 flex-wrap mb-5">
+      <div className="flex items-start justify-between gap-4 flex-wrap mb-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2 mb-1.5">
-            <Trophy size={14} className="text-cream/55" />
-            <h2 className="kr-heading uppercase text-[11px] tracking-widest text-cream/55">
+            <Trophy size={14} className="text-cream/65" />
+            <h2 className="kr-heading uppercase text-[11px] tracking-widest text-cream/70">
               회독 Pass Tier
             </h2>
+            <button
+              type="button"
+              onClick={() => setExplainOpen((v) => !v)}
+              aria-expanded={explainOpen}
+              aria-controls="pass-tier-explain"
+              className="kr-num inline-flex items-center gap-1 text-[10px] uppercase tracking-widest px-2 py-0.5 rounded-full transition active:scale-95"
+              style={{
+                background: explainOpen
+                  ? 'rgba(111,255,0,0.14)'
+                  : 'rgba(239,244,255,0.06)',
+                border: explainOpen
+                  ? '1px solid rgba(111,255,0,0.45)'
+                  : '1px solid rgba(239,244,255,0.18)',
+                color: explainOpen ? '#6FFF00' : 'var(--cream)',
+              }}
+            >
+              <HelpCircle size={10} strokeWidth={2.4} />
+              어떻게 올라가요?
+              {explainOpen ? <ChevronUp size={10} /> : <ChevronDown size={10} />}
+            </button>
           </div>
-          <p className="kr-body text-[12.5px] text-cream/65 leading-[1.55]">
+          <p className="kr-body text-[12.5px] text-cream/75 leading-[1.55]">
             {passSnap.authed
               ? PASS_TIER_MEANING[passSnap.tier]
               : '로그인 후 stamp · Tier 시스템 활성화. 같은 챕터를 여러 번 풀어 마스터를 향해.'}
@@ -111,6 +152,9 @@ export default function PassSection() {
         </div>
         <PassTierBadge tier={passSnap.tier} size="lg" active showMeaning={false} />
       </div>
+
+      {/* ── Tier 룰 설명 (collapsible) ── */}
+      {explainOpen ? <TierRulesExplainer /> : null}
 
       {/* ── Stamp 그리드 ── */}
       <div className="space-y-4 mb-5">
@@ -200,6 +244,103 @@ export default function PassSection() {
 }
 
 // ----------------------------------------------------------------
+
+/**
+ * 처음 보는 사용자를 위한 Tier 룰 설명. 친근한 톤 + 단계별 풀이.
+ * 카드 형태로 collapsible 안에 노출.
+ */
+function TierRulesExplainer() {
+  return (
+    <div
+      id="pass-tier-explain"
+      className="mb-5 px-4 py-4 rounded-2xl"
+      style={{
+        background: 'rgba(111,255,0,0.06)',
+        border: '1px solid rgba(111,255,0,0.25)',
+      }}
+    >
+      <p className="kr-body text-[13px] text-cream/85 leading-[1.65] mb-3">
+        같은 챕터를 <b>여러 번</b> 풀수록 더 어려운 변형 문제가 등장하고, 누적
+        실력은 <b>훈장 (Tier)</b> 으로 표시됩니다. 회독 한 번 = 한 챕터를 75%
+        넘게 푸는 것.
+      </p>
+
+      <div className="space-y-2.5 mb-3">
+        <RuleRow num={1} title="문제 풀어 stamp 모으기">
+          어떤 챕터든 <b>정답률 75% 넘게</b> 풀면 그 챕터의 <b>1회독 stamp</b>{' '}
+          1개를 얻어요. 같은 회독 안에서 여러 세션 정답률은 합산돼요.
+        </RuleRow>
+        <RuleRow num={2} title="과목 단위로 회독 완성">
+          ADSP 또는 SQLD 한 과목의 <b>모든 챕터</b>에서 1회독 stamp 를 모으면
+          <b> SILVER 승급</b>! 알림으로 띄워드려요.
+        </RuleRow>
+        <RuleRow num={3} title="2회독 도전 = 다음 Tier">
+          1회독을 끝낸 챕터는 <b>2회독 탭</b>이 자동으로 열려요. 같은 개념인데
+          더 까다로운 변형 문제가 나옵니다. 한 번이라도 시작하면 <b>GOLD</b>
+          으로 올라가요.
+        </RuleRow>
+        <RuleRow num={4} title="모든 챕터 2회독 stamp = PLATINUM">
+          한 과목의 모든 챕터를 2회독 75% 까지 끝내면 PLATINUM. 거의 마스터한
+          단계에요.
+        </RuleRow>
+        <RuleRow num={5} title="두 과목 다 3회독 = MASTER">
+          ADSP·SQLD 둘 다 모든 챕터를 3회독까지 끝내면 최종 MASTER 훈장. 회독
+          시스템의 최정상이에요.
+        </RuleRow>
+      </div>
+
+      <div
+        className="px-3 py-2.5 rounded-xl"
+        style={{
+          background: 'rgba(8,14,36,0.4)',
+          border: '1px solid rgba(239,244,255,0.10)',
+        }}
+      >
+        <p className="kr-body text-[11.5px] text-cream/70 leading-[1.6]">
+          <b className="text-cream/85">Tip.</b> 한 번 올라간 Tier 는 절대
+          내려가지 않아요. 천천히 풀어도 OK. <br />
+          <b className="text-cream/85">Tip.</b> 2·3회독 잠금은 직전 회독 stamp
+          로만 풀려요. 챕터별로 독립적으로 진행돼요.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function RuleRow({
+  num,
+  title,
+  children,
+}: {
+  num: number;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex items-start gap-2.5">
+      <span
+        className="kr-num inline-flex items-center justify-center shrink-0 rounded-full text-[10px]"
+        style={{
+          width: 20,
+          height: 20,
+          background: 'rgba(111,255,0,0.18)',
+          border: '1px solid rgba(111,255,0,0.45)',
+          color: '#6FFF00',
+          fontWeight: 600,
+          marginTop: 1,
+        }}
+      >
+        {num}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="kr-heading text-[12px] text-cream/95 mb-0.5">{title}</div>
+        <p className="kr-body text-[12px] text-cream/70 leading-[1.6]">
+          {children}
+        </p>
+      </div>
+    </div>
+  );
+}
 
 function SubjectStampRow({
   subject,

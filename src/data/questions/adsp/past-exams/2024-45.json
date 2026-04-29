@@ -54,13 +54,19 @@
     "type": "multiple_choice",
     "question": "다음 중 데이터베이스의 특징으로 적절하지 않은 것은 무엇인가?",
     "choices": [
-      "데이터베이스는 통합된 데이터로 중복을 최소화한다.",
-      "데이터베이스는 여러 사용자가 공유하여 사용할 수 있다.",
-      "데이터베이스는 저장장치에 저장된 자료의 집합이다.",
-      "데이터베이스는 사용자 모두가 동일한 목적을 가지고 데이터를 활용하도록 설계된다."
+      "통합 데이터로 중복을 최소화한다.",
+      "여러 사용자가 공유하여 동시에 활용할 수 있다.",
+      "저장장치에 저장된 운영 자료의 집합이다.",
+      "모든 사용자가 동일한 목적으로만 사용해야 한다."
     ],
     "answerIndex": 3,
-    "explanation": "데이터베이스의 핵심 특징 중 하나는 '공용 데이터(shared data)'로서 여러 사용자가 서로 다른 목적을 가지고 공동으로 이용할 수 있다는 점이다."
+    "explanation": "데이터베이스의 핵심 특징 중 하나는 '공용 데이터(shared data)' — 여러 사용자가 서로 다른 목적으로 같은 데이터를 공동 이용할 수 있다는 점. 단일 목적 한정은 DB의 본질에 반한다.",
+    "_audit": {
+      "fixed": ["B2"],
+      "changed_fields": ["choices", "explanation"],
+      "reason": "정답 길이 압축 (60→22자) + 다른 보기와 길이 균형",
+      "audited_at": "2026-04-29"
+    }
   },
   {
     "id": "adsp-45-4",
@@ -208,7 +214,12 @@
     ],
     "answerIndex": 3,
     "explanation": "ADSP 교재 패러다임 상 해결 방안은 '동의에서 책임으로' 전환이다. 즉 사전 동의 강화가 아니라 '결과에 대한 책임 원칙', '알고리즘 접근권', '비식별화'가 정식 해결 방안이다.",
-    "needsAnswerVerification": true
+    "_audit": {
+      "fixed": [],
+      "changed_fields": [],
+      "reason": "1차 감사: 정답·해설 모두 ADSP 교재 표준과 일치 — needsAnswerVerification 플래그 제거",
+      "audited_at": "2026-04-29"
+    }
   },
   {
     "id": "adsp-45-11",
@@ -454,13 +465,19 @@
     "type": "multiple_choice",
     "question": "범주형 자료 분석에 대한 설명 중 틀린 것은 무엇인가?",
     "choices": [
-      "적합도 검정은 도수표 내 관찰 도수의 분산과 기대도수의 분산이 얼마나 일치하는지를 검정한다.",
+      "적합도 검정은 관찰 빈도의 '분산'과 기대 빈도의 '분산'이 일치하는지 검정한다.",
       "카이제곱 검정은 범주형 자료 간 독립성을 검정할 수 있다.",
-      "동질성 검정은 두 집단의 분포가 동일한지 검정한다.",
-      "분할표(교차표)를 사용하여 두 범주형 변수의 관계를 분석할 수 있다."
+      "동질성 검정은 두 집단 분포가 같은지 검정한다.",
+      "분할표(교차표)로 두 범주형 변수의 관계를 분석할 수 있다."
     ],
     "answerIndex": 0,
-    "explanation": "적합도 검정은 '분산'이 아니라 '빈도(관찰빈도 vs 기대빈도)'가 얼마나 일치하는지를 검정한다."
+    "explanation": "적합도 검정은 '분산'이 아니라 '빈도(관찰빈도 vs 기대빈도)'가 얼마나 일치하는지를 검정한다. χ² 통계량 = Σ(O−E)²/E.",
+    "_audit": {
+      "fixed": ["B2"],
+      "changed_fields": ["choices", "explanation"],
+      "reason": "정답 길이 압축 (51→37자) + 보기 길이 균형",
+      "audited_at": "2026-04-29"
+    }
   },
   {
     "id": "adsp-45-23",
@@ -517,13 +534,19 @@
     "type": "multiple_choice",
     "question": "시계열 분해에 대한 설명 중 잘못된 것은 무엇인가?",
     "choices": [
-      "경제나 자연현상으로 설명되는 주기를 가지고 변동하는 요인을 순환요인이라 한다.",
-      "추세 요인은 장기적인 증가 또는 감소 경향을 의미한다.",
-      "불규칙 요인은 설명되지 않는 예측 불가능한 변동이다.",
-      "시계열 데이터는 요인 분해 후 각 요인을 개별적으로 분석할 수 있다."
+      "경제·자연 현상으로 1년 내 주기적으로 반복하는 변동을 순환요인이라 한다.",
+      "추세 요인은 시계열의 장기적인 증가·감소 경향을 의미한다.",
+      "불규칙 요인은 설명되지 않는 예측 불가능한 무작위 변동이다.",
+      "시계열은 요인 분해 후 각 요인을 개별적으로 분석할 수 있다."
     ],
     "answerIndex": 0,
-    "explanation": "경제·자연현상에서 주기(보통 1년 이내)를 가지는 반복 변동은 '계절요인(Seasonal)'이다. 순환요인은 1년 이상의 불명확한 주기를 갖는 변동이다."
+    "explanation": "경제·자연현상에서 주기(보통 1년 이내)를 가지는 반복 변동은 '계절요인(Seasonal)'이다. 순환요인(Cyclic)은 1년 이상의 불명확한 주기를 갖는 변동.",
+    "_audit": {
+      "fixed": ["B2"],
+      "changed_fields": ["choices", "explanation"],
+      "reason": "정답 길이 압축 (43→38자) + 다른 보기 약간 보강해 균형",
+      "audited_at": "2026-04-29"
+    }
   },
   {
     "id": "adsp-45-26",
@@ -545,7 +568,12 @@
     ],
     "answerIndex": 0,
     "explanation": "회귀식 표기법은 f(x) = 절편 + 기울기·x. 절편 96.04, 기울기 1.97이 각각 올바른 자리에 위치해야 한다.",
-    "needsContextVerification": true
+    "_audit": {
+      "fixed": [],
+      "changed_fields": [],
+      "reason": "본문에 절편·기울기 값이 명시되어 외부 컨텍스트 없이 풀이 가능 — needsContextVerification 플래그 제거",
+      "audited_at": "2026-04-29"
+    }
   },
   {
     "id": "adsp-45-27",
@@ -600,16 +628,21 @@
     "source": "2024년 45회 ADSP 3과목",
     "status": "ai-generated",
     "type": "multiple_choice",
-    "question": "주성분 분석에 대한 설명으로 틀린 것은 무엇인가?",
+    "question": "주성분 분석(PCA)에 대한 설명으로 틀린 것은 무엇인가?",
     "choices": [
-      "변수별 중요도 가중치가 자동으로 산출되어 변수 선택에 그대로 사용할 수 있다.",
-      "차원 축소 기법 중 하나이다.",
-      "분산이 최대가 되는 방향으로 축(주성분)을 설정한다.",
-      "주성분들은 서로 직교(orthogonal)한다."
+      "원 변수별 중요도가 산출되어 변수 선택에 그대로 사용할 수 있다.",
+      "분산을 보존하는 방향으로 차원을 축소하는 기법이다.",
+      "분산이 최대가 되는 방향으로 새 축(주성분)을 설정한다.",
+      "주성분들은 서로 직교(orthogonal)한 관계를 가진다."
     ],
     "answerIndex": 0,
-    "explanation": "PCA는 변수 선택(feature selection)이 아닌 변수 변환(feature extraction) 기법이다. 로딩(loading) 값이 계산되긴 하나, 원 변수의 중요도 지표로 그대로 쓰기엔 한계가 있다.",
-    "needsAnswerVerification": true
+    "explanation": "PCA는 변수 선택(feature selection)이 아닌 변수 변환(feature extraction) 기법이다. 로딩(loading) 값이 계산되지만, 원 변수의 중요도 지표로 그대로 쓰기엔 한계가 있다.",
+    "_audit": {
+      "fixed": ["B2"],
+      "changed_fields": ["choices", "explanation"],
+      "reason": "정답 길이 압축 (44→32자) + 다른 보기 균형 + needsAnswerVerification 제거 (정답 확정)",
+      "audited_at": "2026-04-29"
+    }
   },
   {
     "id": "adsp-45-30",
@@ -617,21 +650,26 @@
     "chapter": 3,
     "chapterTitle": "데이터 분석",
     "topic": "주성분 분석 해석",
-    "subtopic": "변수 기여도 해석",
-    "difficulty": 4,
+    "subtopic": "PCA 결과 해석 원칙",
+    "difficulty": 3,
     "source": "2024년 45회 ADSP 3과목",
     "status": "ai-generated",
     "type": "multiple_choice",
-    "question": "주성분분석 결과(차량 데이터 등) 해석에 대한 설명으로 틀린 것은 무엇인가?",
+    "question": "주성분분석(PCA) 결과 해석에 대한 설명으로 틀린 것은 무엇인가?",
     "choices": [
-      "Javelin 변수의 영향력이 가장 크다.",
-      "첫 번째 주성분의 분산 설명력이 가장 크다.",
+      "각 주성분은 모두 동일한 크기의 분산을 설명한다.",
+      "첫 번째 주성분이 가장 큰 분산을 설명한다.",
       "누적 분산 설명률로 주성분 개수를 결정할 수 있다.",
       "스크리 플롯(Scree plot)으로 주성분 개수를 시각적으로 판단할 수 있다."
     ],
     "answerIndex": 0,
-    "explanation": "실제 데이터의 주성분 로딩에서 Javelin이 가장 큰 영향력을 갖지 않았다는 해석. 나머지 보기는 PCA의 일반 원칙으로 참이다.",
-    "needsContextVerification": true
+    "explanation": "주성분은 분산이 큰 순서로 추출되므로 PC1 > PC2 > PC3 … 순으로 설명력이 줄어든다. 모든 주성분의 분산이 같다는 설명은 PCA의 정의에 반한다.",
+    "_audit": {
+      "fixed": ["A4"],
+      "changed_fields": ["question", "choices", "answerIndex", "explanation", "subtopic"],
+      "reason": "외부 데이터(차량/Javelin) 없이 풀 수 없던 문제를 PCA 일반 원칙 문제로 재구성",
+      "audited_at": "2026-04-29"
+    }
   },
   {
     "id": "adsp-45-31",
@@ -644,15 +682,21 @@
     "source": "2024년 45회 ADSP 3과목",
     "status": "ai-generated",
     "type": "multiple_choice",
-    "question": "4분위수 해석으로 옳지 않은 것은 무엇인가? (Sales, Price 등 데이터)",
+    "question": "4분위수에 대한 해석으로 옳지 않은 것은 무엇인가?",
     "choices": [
-      "Sales의 25%는 'Sales의 Q1값'보다 크다.",
+      "데이터의 하위 25%는 Q1값보다 크다.",
       "Q3는 하위 75% 지점의 값이다.",
-      "IQR은 Q3 - Q1이다.",
-      "중위수는 Q2와 같다."
+      "IQR(사분위범위)은 Q3 − Q1로 계산한다.",
+      "중위수(median)는 Q2와 같다."
     ],
     "answerIndex": 0,
-    "explanation": "Q1은 하위 25% 지점이므로, 'Sales의 25%는 Q1보다 작다'가 올바르고 '크다'는 틀린 표현이다."
+    "explanation": "Q1은 하위 25% 지점이므로 '하위 25%는 Q1보다 작다'가 올바르다. '크다'로 표현한 보기는 정의에 반한다.",
+    "_audit": {
+      "fixed": ["B2"],
+      "changed_fields": ["question", "choices", "explanation"],
+      "reason": "정답 길이 압축 + 보기 길이 균형 (Sales/Price 외부 컨텍스트 제거)",
+      "audited_at": "2026-04-29"
+    }
   },
   {
     "id": "adsp-45-32",
@@ -686,16 +730,21 @@
     "source": "2024년 45회 ADSP 3과목",
     "status": "ai-generated",
     "type": "multiple_choice",
-    "question": "상관관계 프로그램 분석 결과 해석으로 틀린 것은 무엇인가?",
+    "question": "상관관계 분석 결과 해석에 대한 설명으로 틀린 것은 무엇인가?",
     "choices": [
-      "census와 balance 중 balance가 더 상관도가 크다.",
-      "절댓값이 클수록 상관관계가 강하다.",
-      "상관계수의 부호와 산점도의 기울기는 같은 방향이다.",
-      "상관관계가 인과관계를 의미하지는 않는다."
+      "상관계수의 절댓값이 작을수록 두 변수의 선형관계는 강하다.",
+      "상관계수의 절댓값이 클수록 상관관계가 강하다.",
+      "상관계수의 부호와 산점도 기울기 방향은 일치한다.",
+      "상관관계가 곧 인과관계를 의미하지는 않는다."
     ],
     "answerIndex": 0,
-    "explanation": "실제 데이터상 census의 상관계수가 더 컸다는 해석. 본 보기의 진위는 출제된 표/코드 결과를 기준으로 한다.",
-    "needsContextVerification": true
+    "explanation": "상관계수의 절댓값(|r|)이 1에 가까울수록 강한 선형관계, 0에 가까울수록 약한 선형관계다. 작을수록 강하다는 설명은 정의에 반한다.",
+    "_audit": {
+      "fixed": ["A4"],
+      "changed_fields": ["question", "choices", "answerIndex", "explanation"],
+      "reason": "외부 데이터(census/balance) 없이 풀 수 없던 문제를 상관계수 일반 해석 문제로 재구성",
+      "audited_at": "2026-04-29"
+    }
   },
   {
     "id": "adsp-45-34",
@@ -857,13 +906,19 @@
     "type": "multiple_choice",
     "question": "의사결정나무에 대한 설명으로 옳지 않은 것은 무엇인가?",
     "choices": [
-      "가지치기(Pruning)를 통해 학습 데이터 세트에서의 정확도를 높일 수 있다.",
-      "분류와 회귀 모두에 사용할 수 있다.",
-      "해석이 용이한 화이트박스 모델이다.",
-      "과적합 방지를 위해 가지치기를 수행한다."
+      "가지치기(Pruning)는 학습 데이터의 정확도를 더 높이기 위한 기법이다.",
+      "분류 문제와 회귀 문제 모두에 적용할 수 있다.",
+      "규칙 기반 분기 구조라 해석이 용이한 화이트박스 모델이다.",
+      "과적합 방지를 위해 가지치기 또는 최대 깊이 제한을 사용한다."
     ],
     "answerIndex": 0,
-    "explanation": "가지치기는 과적합 방지가 목적이며, 오히려 학습 데이터에 대한 정확도는 '낮아지는' 대신 '검증 데이터 성능'이 좋아진다."
+    "explanation": "가지치기는 과적합 방지가 목적이다. 학습 데이터 정확도는 오히려 '낮아지지만' 검증·테스트 데이터의 일반화 성능이 좋아진다.",
+    "_audit": {
+      "fixed": ["B2"],
+      "changed_fields": ["choices", "explanation"],
+      "reason": "정답 길이 압축 (45→34자) + 짧은 보기 보강해 균형",
+      "audited_at": "2026-04-29"
+    }
   },
   {
     "id": "adsp-45-42",
@@ -918,16 +973,21 @@
     "source": "2024년 45회 ADSP 3과목",
     "status": "ai-generated",
     "type": "multiple_choice",
-    "question": "덴드로그램에서 Height=2로 절단할 때, 몇 개의 클러스터를 가지는가?",
+    "question": "덴드로그램(dendrogram)에서 군집 개수를 결정하는 방법으로 옳은 것은 무엇인가?",
     "choices": [
-      "5개",
-      "3개",
-      "4개",
-      "6개"
+      "임의 높이에서 수평선을 그어 가로지르는 수직 가지 수가 군집 수가 된다.",
+      "덴드로그램에서 가장 긴 가지의 개수가 자동으로 군집 수와 같다.",
+      "데이터 전체 개수의 제곱근(√n) 값이 적정 군집 수다.",
+      "덴드로그램은 군집 개수와 무관한 단순 시각화 도구일 뿐이다."
     ],
     "answerIndex": 0,
-    "explanation": "덴드로그램을 특정 높이에서 수평선으로 자를 때, 그 선이 가로지르는 수직선의 수 = 클러스터 개수. 본 문제는 5개.",
-    "needsContextVerification": true
+    "explanation": "덴드로그램은 계층적 군집 결과를 트리로 시각화한 그림. 임의 높이에서 수평선을 그으면 그 선이 가로지르는 수직 가지 수 = 군집 수. 적정 군집 수는 가지 길이가 가장 길게 떨어진 지점에서 잘라 정한다.",
+    "_audit": {
+      "fixed": ["A4"],
+      "changed_fields": ["question", "choices", "answerIndex", "explanation"],
+      "reason": "외부 그림 없이 풀 수 없던 'Height=2 절단' 문제를 덴드로그램 절단 원리 일반 문제로 재구성",
+      "audited_at": "2026-04-29"
+    }
   },
   {
     "id": "adsp-45-45",

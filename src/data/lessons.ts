@@ -84,6 +84,15 @@ export type LessonBlock =
 // Step / Lesson
 // ================================================================
 
+export interface ConceptReminder {
+  /** "이거 기억나?" 같은 헤드라인. 한 줄. */
+  headline: string;
+  /** 핵심 요약. 2~3문장. 처음 학습이 아닌 복습 톤. */
+  summary: string;
+  /** 핵심 키워드/공식 3~5개 (불릿). */
+  keyPoints: string[];
+}
+
 export interface LessonStep {
   /** `<lessonId>-s<n>` — progress 추적/딥링크용. */
   id: string;
@@ -98,6 +107,11 @@ export interface LessonStep {
   dialogue?: DialogueTurn[];
   /** 이 개념을 막 배운 사람이 바로 풀 문제 id (concept-practice.json). */
   quizId: string;
+  /**
+   * 2회독+ 진입 시 노출되는 짧은 리마인더. 처음 학습 X, "이거 기억나?" 톤.
+   * 미정의 시 UI 가 첫 dialogue turn 또는 keypoints 로 fallback.
+   */
+  reminder?: ConceptReminder;
 }
 
 export interface Lesson {

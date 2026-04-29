@@ -132,12 +132,36 @@ export function createSession(opts: CreateSessionOptions): QuestSession | null {
   const chapterMeta = schema.chapters.find((c) => c.chapter === chapter);
   if (!chapterMeta) return null;
 
-  let pool = playableQuestions(subject).filter((q) => {
+  // 챕터·토픽 필터링
+  const baseChapterPool = playableQuestions(subject).filter((q) => {
     if (q.chapter !== chapter) return false;
     if (topic && canonicalTopic(subject, q.chapter, q.topic) !== topic)
       return false;
     return true;
   });
+  if (baseChapterPool.length === 0) return null;
+
+  // 회독별 풀 선택 — pass 필드가 매칭하는 문항만. 없으면 원본 (pass undefined 또는 1) 으로 fallback.
+  // 정책:
+  //   - 1회독: pass undefined 또는 1 (원본 문제)
+  //   - 2회독+: pass === passNumber 인 변형 문제. 부족하면 1회독 풀로 보충 (콘텐츠 점진 출시).
+  const isOriginal = (q: MultipleChoiceQuestion) => !q.pass || q.pass === 1;
+  const isPassMatch = (q: MultipleChoiceQuestion, p: number) => q.pass === p;
+  let pool: MultipleChoiceQuestion[];
+  if (passNumber === 1) {
+    pool = baseChapterPool.filter(isOriginal);
+  } else {
+    const variants = baseChapterPool.filter((q) => isPassMatch(q, passNumber));
+    if (variants.length >= size) {
+      pool = variants;
+    } else {
+      // 변형 부족 → 원본 보충 (사용자에게는 "변형 작성 진행 중" 안내가 ZoneScreen 에 보임)
+      const remaining = baseChapterPool.filter(
+        (q) => isOriginal(q) && !variants.some((v) => v.id === q.id),
+      );
+      pool = [...variants, ...remaining];
+    }
+  }
   if (pool.length === 0) return null;
 
   const store = getSnapshot();

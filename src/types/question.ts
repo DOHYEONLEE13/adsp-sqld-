@@ -48,6 +48,12 @@ export interface QuestionBase {
   status?: QuestionStatus;
   /** 4지선다 중 오답 선지가 아직 미완성인 경우 true. */
   needsDistractors?: boolean;
+  /**
+   * N회독 시스템에서 어느 차수에 출제될지. 기본 1 (1회독 = 원본 문제).
+   * 2 = 2회독용 변형 (더 어려운 distractor·응용 케이스).
+   * 3 = 3회독용 (최고난이도 또는 1·2회독 mix).
+   */
+  pass?: number;
 }
 
 export interface MultipleChoiceQuestion extends QuestionBase {

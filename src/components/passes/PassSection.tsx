@@ -241,27 +241,10 @@ export default function PassSection() {
         </div>
       ) : (
         <p className="kr-body text-[11px] text-cream/45 leading-[1.55] pt-4 border-t border-cream/10">
-          ⚠ 회독 진행은 현재 이 기기에만 저장돼요. 서버 동기화는 곧 활성화 예정.
+          ⚠ 로그인 후 stamp · Tier 가 서버에 영구 저장돼 다른 기기에서도 이어서
+          풀이할 수 있어요.
         </p>
       )}
-
-      {/* ── 1·2·3회독 변형 문제 미작성 안내 (지금만 노출) ── */}
-      <div
-        className="mt-4 px-3 py-2.5 rounded-xl flex items-start gap-2.5"
-        style={{
-          background: 'rgba(252,211,77,0.08)',
-          border: '1px solid rgba(252,211,77,0.3)',
-        }}
-      >
-        <span className="kr-num text-[14px] mt-0.5" aria-hidden>
-          📝
-        </span>
-        <p className="kr-body text-[11.5px] leading-[1.6]" style={{ color: 'rgba(253,224,71,0.92)' }}>
-          <b>알림</b> · 현재 1·2·3회독 모두 동일한 문제 풀에서 출제됩니다.
-          회독별 더 어려운 변형 문제는 콘텐츠 작성 진행 중이며, 완료 시
-          자동 적용됩니다.
-        </p>
-      </div>
     </section>
 
     {/* ── Tier 원리 자세히 보기 (collapsible) — 메인 카드 밖 별도 패널 ── */}

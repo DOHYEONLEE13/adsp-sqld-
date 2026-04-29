@@ -15,6 +15,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import type { QuestSession } from '../types';
+import { explanationToText } from '@/types/question';
 import { cx } from '@/lib/utils';
 import ScreenShell from '../components/ScreenShell';
 import PageAmbientBg from '../components/PageAmbientBg';
@@ -216,7 +217,7 @@ export default function QuestScreen({
             Study First
           </span>
           <p className="kr-body text-[14px] md:text-[15px] leading-[1.8] mt-3 text-cream/85 whitespace-pre-wrap">
-            {current.explanation}
+            {explanationToText(current.explanation)}
           </p>
           <div className="mt-6 flex justify-end">
             <button
@@ -386,7 +387,7 @@ export default function QuestScreen({
                 Explanation
               </span>
               <p className="kr-body text-[13px] md:text-[14px] leading-[1.8] text-cream/85 mt-2 whitespace-pre-wrap">
-                {current.explanation}
+                {explanationToText(current.explanation)}
               </p>
             </div>
           ) : null}

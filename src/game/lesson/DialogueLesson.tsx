@@ -28,6 +28,7 @@ import FeedbackSheet from './FeedbackSheet';
 import PageAmbientBg from '../components/PageAmbientBg';
 import { getReminder } from '@/data/reminders';
 import { PASS_TIER_VISUAL } from '@/types/passes';
+import { explanationToText } from '@/types/question';
 
 interface Props {
   subject: Subject;
@@ -481,7 +482,7 @@ export default function DialogueLesson({
             return (
               <FeedbackSheet
                 correct={correct}
-                explanation={quizQuestion.explanation}
+                explanation={explanationToText(quizQuestion.explanation)}
                 correctAnswerText={
                   !correct
                     ? quizQuestion.choices[quizQuestion.answerIndex]

@@ -8,7 +8,7 @@
   },
   "questions": [
     {
-      "id": "adsp-1-1",
+      "id": "adsp-r48-1-1",
       "subject": "adsp",
       "chapter": 1,
       "chapterTitle": "데이터 이해",
@@ -18,7 +18,11 @@
       "source": "2026년 48회 ADSP 1과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "SECI"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "SECI"
+      ],
       "type": "multiple_choice",
       "question": "다음은 SECI 모델의 지식 변환 과정에 대한 설명이다. 이 중 옳지 않은 것은 무엇인가?",
       "choices": [
@@ -31,7 +35,7 @@
       "explanation": "연결화(Combination)는 형식지 ↔ 형식지 변환 과정이며, 기존 형식지들을 조합·편집·체계화하여 새로운 '형식지'를 창출한다. 지문은 '암묵지 기반·새로운 암묵지 창출'로 SECI 정의와 정면으로 배치되어 오답."
     },
     {
-      "id": "adsp-1-2",
+      "id": "adsp-r48-1-2",
       "subject": "adsp",
       "chapter": 1,
       "chapterTitle": "데이터 이해",
@@ -42,7 +46,12 @@
       "status": "ai-generated",
       "needsDistractors": false,
       "needsAnswerVerification": true,
-      "tags": ["기출복원", "48회", "데이터유형", "정답추론"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "데이터유형",
+        "정답추론"
+      ],
       "type": "multiple_choice",
       "question": "다음은 정성적 데이터, 정량적 데이터 및 데이터의 일반적 특성에 대한 설명이다. 이 중 옳은 것만을 모두 고른 것은 무엇인가?\n<보기>\n(가) 정량적 데이터는 정성적 데이터에 비해 분석 및 활용에 더 많은 비용과 기술이 필요하다.\n(나) 정성적 데이터는 문자, 언어 등으로 구성되며 형태와 형식이 일정하지 않은 경우가 많다.\n(다) 정성적 데이터는 수치 형태로 표현되며, 정량적 데이터에 비해 저장과 분석이 용이하다.\n(라) 데이터는 현실 세계에서 관측된 존재적 사실을 기반으로 수집된다.\n(마) 데이터는 분석을 통해 추론·예측·의사결정의 근거로 활용되는 당위적 특성을 가진다.",
       "choices": [
@@ -55,7 +64,7 @@
       "explanation": "(가) 정성적 데이터가 더 많은 비용·기술 요구 → 오. (나) 정성적 데이터 정의 → 정. (다) 수치·용이는 정량적 데이터 성질 → 오. (라) 데이터의 '존재적 특성' → 정. (마) 데이터의 '당위적 특성' → 정. 따라서 (나), (라), (마). ※복원 시 정답 누락으로 추론한 결과이므로 검수 필요."
     },
     {
-      "id": "adsp-2-11",
+      "id": "adsp-r48-2-11",
       "subject": "adsp",
       "chapter": 2,
       "chapterTitle": "데이터 분석 기획",
@@ -65,7 +74,11 @@
       "source": "2026년 48회 ADSP 2과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "분석과제"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "분석과제"
+      ],
       "type": "multiple_choice",
       "question": "다음 중 분석 방법은 알고 있으나, 분석해야 할 대상이나 문제 정의가 명확하지 않은 경우에 해당하는 분석 과제 도출 유형으로 가장 적절한 것은 무엇인가?",
       "choices": [
@@ -78,7 +91,7 @@
       "explanation": "분석 대상·방법 2×2 매트릭스: 대상(known)/방법(known)=최적화, 대상(known)/방법(unknown)=솔루션, 대상(unknown)/방법(known)=통찰, 대상(unknown)/방법(unknown)=발견."
     },
     {
-      "id": "adsp-2-12",
+      "id": "adsp-r48-2-12",
       "subject": "adsp",
       "chapter": 2,
       "chapterTitle": "데이터 분석 기획",
@@ -88,7 +101,11 @@
       "source": "2026년 48회 ADSP 2과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "CRISP-DM"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "CRISP-DM"
+      ],
       "type": "multiple_choice",
       "question": "다음 중 CRISP-DM 분석 방법론의 '데이터 준비(Data Preparation)' 단계에 해당하지 않는 것은 무엇인가?",
       "choices": [
@@ -101,7 +118,7 @@
       "explanation": "데이터 탐색(Data Exploration)은 CRISP-DM 의 '데이터 이해(Data Understanding)' 단계 업무. 데이터 준비 단계는 선택·정제·구성·통합·포맷 변환으로 구성된다."
     },
     {
-      "id": "adsp-2-13",
+      "id": "adsp-r48-2-13",
       "subject": "adsp",
       "chapter": 2,
       "chapterTitle": "데이터 분석 기획",
@@ -111,7 +128,11 @@
       "source": "2026년 48회 ADSP 2과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "접근방식"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "접근방식"
+      ],
       "type": "multiple_choice",
       "question": "다음 중 상향식(Bottom-up) 접근 방식으로 데이터 분석을 수행할 때 가장 적절한 분석 방법은 무엇인가?",
       "choices": [
@@ -124,7 +145,7 @@
       "explanation": "상향식 접근은 문제 정의가 명확하지 않고 데이터로부터 패턴을 찾아나가는 방식 → 군집·연관규칙 등 비지도학습이 적합. 지도학습/회귀/가설검정은 하향식에 가깝다."
     },
     {
-      "id": "adsp-2-14",
+      "id": "adsp-r48-2-14",
       "subject": "adsp",
       "chapter": 2,
       "chapterTitle": "데이터 분석 기획",
@@ -134,7 +155,11 @@
       "source": "2026년 48회 ADSP 2과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "품질관리"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "품질관리"
+      ],
       "type": "multiple_choice",
       "question": "다음은 데이터 분석 프로젝트에서의 품질관리(Quality Management)에 대한 설명이다. 가장 적절한 것은 무엇인가?",
       "choices": [
@@ -147,7 +172,7 @@
       "explanation": "품질관리(QM)는 품질계획(QP) + 품질보증(QA) + 품질통제(QC)를 포괄하는 상위 개념. 품질검토·품질보증 활동을 모두 포함한다."
     },
     {
-      "id": "adsp-2-15",
+      "id": "adsp-r48-2-15",
       "subject": "adsp",
       "chapter": 2,
       "chapterTitle": "데이터 분석 기획",
@@ -157,7 +182,11 @@
       "source": "2026년 48회 ADSP 2과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "우선순위"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "우선순위"
+      ],
       "type": "multiple_choice",
       "question": "다음은 데이터 분석 과제의 우선순위 설정 기준에 대한 설명이다. 이 중 옳은 것만을 모두 고른 것은 무엇인가?\n(가) 데이터의 양과 범위를 조절하면 분석 과제의 시급성을 조절할 수 있다.\n(나) 새로운 분석 기술이나 도구의 등장은 분석 과제의 난이도에 영향을 미칠 수 있다.\n(다) 분석 수준의 고도화와 비용 증가는 분석 과제의 시급성을 높이는 요인이다.",
       "choices": [
@@ -170,7 +199,7 @@
       "explanation": "(가) 데이터 양·범위는 '난이도'에 영향을 주지 시급성과 직접 관계 없음. (나) 신기술·도구 도입은 난이도 감소/증가에 영향. (다) 고도화·비용 증가는 난이도를 높이는 요인이지 시급성과는 반비례적으로 작용할 수도 있음."
     },
     {
-      "id": "adsp-2-16",
+      "id": "adsp-r48-2-16",
       "subject": "adsp",
       "chapter": 2,
       "chapterTitle": "데이터 분석 기획",
@@ -180,7 +209,11 @@
       "source": "2026년 48회 ADSP 2과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "성숙도"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "성숙도"
+      ],
       "type": "multiple_choice",
       "question": "다음은 분석 성숙도(Analytics Maturity)에 대한 설명이다. 이 중 가장 적절하지 않은 것은 무엇인가?",
       "choices": [
@@ -193,7 +226,7 @@
       "explanation": "분석 성숙도 평가 자체는 조직 내부 역량에 대한 절대 평가. 유사 업종·경쟁사 비교는 성숙도와 준비도를 결합한 사분면(포지셔닝) 분석에 해당하며, 성숙도 평가의 구성 요소는 아니다."
     },
     {
-      "id": "adsp-2-17",
+      "id": "adsp-r48-2-17",
       "subject": "adsp",
       "chapter": 2,
       "chapterTitle": "데이터 분석 기획",
@@ -203,7 +236,11 @@
       "source": "2026년 48회 ADSP 2과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "마스터플랜"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "마스터플랜"
+      ],
       "type": "multiple_choice",
       "question": "다음은 데이터 분석 마스터플랜 수립 시 분석 과제의 우선순위를 결정하기 위한 고려 요소에 대한 설명이다. 이 중 우선순위 결정 요소로 적절하지 않은 것은 무엇인가?",
       "choices": [
@@ -216,7 +253,7 @@
       "explanation": "우선순위 결정 요소 = 전략적 중요도, 실행 용이성, 비즈니스 성과/ROI. '기술 적용 수준'은 우선순위가 아닌 '적용 범위·방식 결정 요소'(업무·데이터·기술 적용 수준)에 해당."
     },
     {
-      "id": "adsp-2-18",
+      "id": "adsp-r48-2-18",
       "subject": "adsp",
       "chapter": 2,
       "chapterTitle": "데이터 분석 기획",
@@ -226,7 +263,11 @@
       "source": "2026년 48회 ADSP 2과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "수준진단"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "수준진단"
+      ],
       "type": "multiple_choice",
       "question": "다음 중 분석 수준 진단(Level Assessment)을 위한 조사 대상으로 적절하지 않은 것은 무엇인가?",
       "choices": [
@@ -239,7 +280,7 @@
       "explanation": "분석 수준 진단은 준비도(Readiness)·성숙도(Maturity)를 파악하기 위해 분석 업무·인력·기법·데이터·문화·IT 인프라 등을 조사. '분석 성과'는 진단의 결과 지표이지 조사 대상이 아님."
     },
     {
-      "id": "adsp-2-19",
+      "id": "adsp-r48-2-19",
       "subject": "adsp",
       "chapter": 2,
       "chapterTitle": "데이터 분석 기획",
@@ -249,7 +290,11 @@
       "source": "2026년 48회 ADSP 2과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "조직구조"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "조직구조"
+      ],
       "type": "multiple_choice",
       "question": "다음은 분석 조직 구조 유형에 대한 설명이다. 이 중 적절하지 않은 것은 무엇인가?",
       "choices": [
@@ -262,7 +307,7 @@
       "explanation": "분산형은 각 부서에 분석 인력이 전담 배치되기 때문에 오히려 실무 적용 속도가 빠른 것이 강점. 지문은 반대로 서술되어 오답."
     },
     {
-      "id": "adsp-2-20",
+      "id": "adsp-r48-2-20",
       "subject": "adsp",
       "chapter": 2,
       "chapterTitle": "데이터 분석 기획",
@@ -272,7 +317,11 @@
       "source": "2026년 48회 ADSP 2과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "거버넌스"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "거버넌스"
+      ],
       "type": "multiple_choice",
       "question": "다음 중 데이터 거버넌스(Data Governance) 관리 체계 및 관련 업무에 대한 설명으로 적절하지 않은 것은 무엇인가?",
       "choices": [
@@ -285,7 +334,7 @@
       "explanation": "데이터 거버넌스 관리 체계 = 데이터 표준화 / 메타데이터 관리 / 데이터 품질 관리 / 데이터 저장소 관리 / 표준화 활동. '비용 관리'는 프로젝트 관리 영역."
     },
     {
-      "id": "adsp-3-21",
+      "id": "adsp-r48-3-21",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -295,7 +344,12 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "EDA", "R-chickwts"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "EDA",
+        "R-chickwts"
+      ],
       "type": "multiple_choice",
       "question": "chickwts 데이터는 여섯 가지 닭 사료 첨가물(feed)과 각 사료를 먹인 닭의 무게(weight)를 변수로 가진다. 아래는 사료 첨가물별 닭의 무게를 비교한 상자그림(Box Plot)이다. 이 상자그림을 바탕으로 한 설명 중 가장 적절하지 않은 것은 무엇인가?",
       "choices": [
@@ -308,7 +362,7 @@
       "explanation": "Box Plot 은 중앙값·사분위·IQR·이상값을 보여줄 뿐 각 그룹의 관측치 수(표본 크기)는 직접 나타내지 않는다."
     },
     {
-      "id": "adsp-3-22",
+      "id": "adsp-r48-3-22",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -318,7 +372,11 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "이상값"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "이상값"
+      ],
       "type": "multiple_choice",
       "question": "다음 중 데이터의 이상값(outlier) 탐지 및 처리 방법에 대한 설명으로 가장 적절하지 않은 것은 무엇인가?",
       "choices": [
@@ -331,7 +389,7 @@
       "explanation": "Box Plot 은 Q1, Q3 와 IQR(사분위 범위)을 기준으로 '1.5 × IQR' 범위를 벗어나는 값을 이상값으로 판단한다. 평균·표준편차 기준은 ESD·Z-score 방법."
     },
     {
-      "id": "adsp-3-23",
+      "id": "adsp-r48-3-23",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -341,7 +399,11 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "추론"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "추론"
+      ],
       "type": "multiple_choice",
       "question": "다음 중 통계적 추론(statistical inference)에 대한 설명으로 가장 적절하지 않은 것은 무엇인가?",
       "choices": [
@@ -354,7 +416,7 @@
       "explanation": "같은 가설이라도 표본 상황(모분산 여부, 표본 크기, 데이터 유형)에 따라 Z-검정·t-검정·카이제곱 검정 등 서로 다른 검정통계량을 선택할 수 있다."
     },
     {
-      "id": "adsp-3-24",
+      "id": "adsp-r48-3-24",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -364,7 +426,11 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "회귀진단"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "회귀진단"
+      ],
       "type": "multiple_choice",
       "question": "다음은 회귀분석에서 모형의 적절성을 확인하기 위한 질문과 그에 대한 판단 방법을 제시한 것이다. 이 중 가장 적절하지 않은 것은 무엇인가?",
       "choices": [
@@ -377,7 +443,7 @@
       "explanation": "설명변수 간 상관계수는 다중공선성 확인용. 모형 적합성은 결정계수, F-통계량, 잔차 분석으로 판단한다."
     },
     {
-      "id": "adsp-3-25",
+      "id": "adsp-r48-3-25",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -387,7 +453,11 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "척도"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "척도"
+      ],
       "type": "multiple_choice",
       "question": "다음 중 온도(섭씨, 화씨)나 각종 지수와 같이 절대영점이 존재하지 않는 데이터를 분류하는 데 가장 적절한 척도는 무엇인가?",
       "choices": [
@@ -400,7 +470,7 @@
       "explanation": "구간척도(Interval)는 간격은 의미 있으나 절대영점이 없는 척도. 비율척도는 절대영점이 있어 비율 비교가 가능(키, 무게, 금액)."
     },
     {
-      "id": "adsp-3-26",
+      "id": "adsp-r48-3-26",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -410,7 +480,11 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "가설검정"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "가설검정"
+      ],
       "type": "multiple_choice",
       "question": "다음은 가설검정(hypothesis testing)에 대한 설명이다. 이 중 가장 적절하지 않은 것은 무엇인가?",
       "choices": [
@@ -423,7 +497,7 @@
       "explanation": "p-value 가 작을수록 귀무가설을 '기각'한다. 지문은 '채택'으로 반대 서술."
     },
     {
-      "id": "adsp-3-27",
+      "id": "adsp-r48-3-27",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -433,7 +507,11 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "교차분석"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "교차분석"
+      ],
       "type": "multiple_choice",
       "question": "교차분석(cross-tabulation analysis)은 두 개 이상의 변수를 결합하여 자료의 빈도를 분석하는 기법이다. 다음 중 교차분석에 대한 설명으로 부적절한 것은 무엇인가?",
       "choices": [
@@ -446,7 +524,7 @@
       "explanation": "교차분석은 범주형 변수 간의 관계를 분석하는 기법. 연속형 변수는 범주화(구간화)한 후에만 적용 가능하다."
     },
     {
-      "id": "adsp-3-28",
+      "id": "adsp-r48-3-28",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -456,7 +534,11 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "상관계수"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "상관계수"
+      ],
       "type": "multiple_choice",
       "question": "두 확률변수 X 와 Y 의 상관계수가 0.5 일 때 다음 중 옳은 것은 무엇인가?",
       "choices": [
@@ -469,7 +551,7 @@
       "explanation": "상관계수는 평행이동(상수 덧셈)과 양의 스케일 변환(양의 상수 곱)에 불변. 상관계수 0 은 '선형 관계 없음'일 뿐 완전 독립을 의미하지 않는다."
     },
     {
-      "id": "adsp-3-29",
+      "id": "adsp-r48-3-29",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -479,7 +561,11 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "잔차분석"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "잔차분석"
+      ],
       "type": "multiple_choice",
       "question": "선형 회귀 모델을 구축한 후 수행한 잔차 분석 결과가 다음 그림과 같을 때, 해당 모델의 성능을 개선하기 위한 가장 적절한 조치는 무엇인가?",
       "choices": [
@@ -492,7 +578,7 @@
       "explanation": "잔차가 체계적인 패턴(곡선)을 보이면 선형 가정이 위배된 것. 다항 회귀·변수 변환 등 비선형 구조를 도입해야 함. 표본 추가·변수 추가는 근본 해결이 아님."
     },
     {
-      "id": "adsp-3-30",
+      "id": "adsp-r48-3-30",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -502,7 +588,11 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "신뢰구간"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "신뢰구간"
+      ],
       "type": "multiple_choice",
       "question": "다음 중 통계적 추론(statistical inference)에 대한 설명으로 가장 적절하지 않은 것은 무엇인가?",
       "choices": [
@@ -515,7 +605,7 @@
       "explanation": "신뢰수준(95% 등)은 '동일한 방법으로 반복 표본추출·구간추정을 했을 때 해당 구간이 모수를 포함할 비율'. '주어진 특정 구간이 모수를 포함할 확률'이라는 조건부 해석은 베이지안 관점이지 빈도주의 신뢰구간의 정의가 아님."
     },
     {
-      "id": "adsp-3-31",
+      "id": "adsp-r48-3-31",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -525,7 +615,12 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "t-검정", "R-sleep"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "t-검정",
+        "R-sleep"
+      ],
       "type": "multiple_choice",
       "question": "sleep 데이터는 두 종류의 수면유도제(group)에 대해 20명 환자의 수면 시간 증감(extra)을 기록한 자료이다. 아래의 두 집단 평균 비교 결과를 바탕으로 한 설명 중 가장 적절하지 않은 것은 무엇인가?",
       "choices": [
@@ -538,7 +633,7 @@
       "explanation": "일반적인 sleep 독립 t-검정의 p-value ≈ 0.079 로 5% 수준에서도 경계선이며 1% 에서는 기각 불가. 따라서 1% 유의수준에서 유의한 차이를 주장할 수 없음."
     },
     {
-      "id": "adsp-3-32",
+      "id": "adsp-r48-3-32",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -548,7 +643,11 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "PCA"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "PCA"
+      ],
       "type": "multiple_choice",
       "question": "다음은 주성분 분석(PCA)에 대한 설명이다. 이 중 옳지 않은 것은 무엇인가?",
       "choices": [
@@ -561,7 +660,7 @@
       "explanation": "주성분은 설명 분산(고유값)이 큰 순서대로 추출되므로 1st > 2nd > 3rd … 로 감소. '증가'는 틀림."
     },
     {
-      "id": "adsp-3-33",
+      "id": "adsp-r48-3-33",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -571,7 +670,12 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "다중회귀", "R-Hitters"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "다중회귀",
+        "R-Hitters"
+      ],
       "type": "multiple_choice",
       "question": "Hitters 데이터는 야구선수 322명의 기록과 연봉(Salary) 정보를 포함하고 있다. 다음은 여러 설명변수를 이용해 연봉을 설명하는 다중 선형회귀분석 결과이다. 아래 결과에 대한 설명으로 가장 적절하지 않은 것은 무엇인가?",
       "choices": [
@@ -584,7 +688,7 @@
       "explanation": "Hitters 회귀에서는 AtBat, Hits, Walks 등 다른 변수의 p-value 가 PutOuts 보다 낮은 경우가 있어 '가장 유의한 변수 = PutOuts'는 일반적으로 성립하지 않음."
     },
     {
-      "id": "adsp-3-34",
+      "id": "adsp-r48-3-34",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -594,7 +698,11 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "로지스틱"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "로지스틱"
+      ],
       "type": "multiple_choice",
       "question": "다음은 로지스틱 회귀분석(Logistic Regression)에 대한 설명이다. 이 중 가장 적절하지 않은 것은 무엇인가?",
       "choices": [
@@ -607,7 +715,7 @@
       "explanation": "로지스틱 회귀의 연결함수는 '로짓(logit) 함수' = ln(p/(1-p)). 시그모이드는 로짓의 역함수(반응함수)로 확률 변환에 쓰이지만 link function 은 아니다."
     },
     {
-      "id": "adsp-3-35",
+      "id": "adsp-r48-3-35",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -617,7 +725,11 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "상관계수"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "상관계수"
+      ],
       "type": "multiple_choice",
       "question": "다음은 두 개의 숫자형 변수 간의 관계를 파악하기 위한 척도에 대한 설명이다. 이 중 가장 적절하지 않은 것은 무엇인가?",
       "choices": [
@@ -630,7 +742,7 @@
       "explanation": "음의 상관계수는 '음의 선형관계'를 의미할 뿐 반비례(y = k/x)와 다르다. 반비례는 특정한 비선형 함수 관계."
     },
     {
-      "id": "adsp-3-36",
+      "id": "adsp-r48-3-36",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -640,7 +752,11 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "시계열"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "시계열"
+      ],
       "type": "multiple_choice",
       "question": "다음 중 분해 시계열(decomposition time series)을 구성하는 요소로 적절하지 않은 것은 무엇인가?",
       "choices": [
@@ -653,7 +769,7 @@
       "explanation": "분해 시계열 = 추세 + 순환 + 계절 + 불규칙 요인. '규칙요인'이라는 공식 구성 요소는 없다."
     },
     {
-      "id": "adsp-3-37",
+      "id": "adsp-r48-3-37",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -663,7 +779,12 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "단순회귀", "R-ChickWeight"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "단순회귀",
+        "R-ChickWeight"
+      ],
       "type": "multiple_choice",
       "question": "ChickWeight 데이터에서 Weight 를 종속변수로, Time 을 설명변수로 하는 단순선형회귀분석 결과에 대한 설명 중 올바르지 않은 것은 무엇인가?",
       "choices": [
@@ -676,7 +797,7 @@
       "explanation": "절편(Intercept)의 유의성은 회귀 결과표의 Intercept 행 p-value 로 확인 가능. '알 수 없다'는 틀림."
     },
     {
-      "id": "adsp-3-38",
+      "id": "adsp-r48-3-38",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -686,7 +807,12 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "시계열", "차분"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "시계열",
+        "차분"
+      ],
       "type": "multiple_choice",
       "question": "다음 중 추세가 존재하는 비정상 시계열을 정상 시계열로 변환하는 방법으로 가장 적절한 것은 무엇인가?",
       "choices": [
@@ -699,7 +825,7 @@
       "explanation": "추세 제거 = 차분(differencing). 계절성 제거 = 계절차분. 분산 안정화 = 로그 변환."
     },
     {
-      "id": "adsp-3-39",
+      "id": "adsp-r48-3-39",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -709,7 +835,11 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "데이터분할"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "데이터분할"
+      ],
       "type": "multiple_choice",
       "question": "다음은 데이터 분할(학습·검증·테스트 데이터)에 대한 설명이다. 이 중 옳지 않은 것은 무엇인가?",
       "choices": [
@@ -722,7 +852,7 @@
       "explanation": "최종 모델 성능 평가는 '테스트 데이터'. 검증 데이터는 하이퍼파라미터 튜닝·모델 선택을 위한 중간 평가용."
     },
     {
-      "id": "adsp-3-40",
+      "id": "adsp-r48-3-40",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -732,7 +862,11 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "데이터마이닝"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "데이터마이닝"
+      ],
       "type": "multiple_choice",
       "question": "아래 데이터 마이닝 추진 단계를 순서대로 나열한 것 중 가장 옳은 것은?\n(가) 데이터 준비\n(나) 목적 정의\n(다) 데이터 마이닝 기법 적용\n(라) 데이터 가공\n(마) 검증",
       "choices": [
@@ -745,7 +879,7 @@
       "explanation": "데이터 마이닝 5단계: 목적 정의 → 데이터 준비 → 데이터 가공 → 기법 적용 → 검증."
     },
     {
-      "id": "adsp-3-41",
+      "id": "adsp-r48-3-41",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -755,7 +889,11 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "의사결정나무"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "의사결정나무"
+      ],
       "type": "multiple_choice",
       "question": "다음은 의사결정나무 모형에 대한 설명이다. 이 중 가장 적절하지 않은 것은 무엇인가?",
       "choices": [
@@ -768,7 +906,7 @@
       "explanation": "회귀 트리는 잎 노드에 속한 샘플들의 평균으로 예측하므로 잎이 단일 샘플이 아닌 이상 100% 예측은 불가능. '항상'이라는 보편 양화는 틀림."
     },
     {
-      "id": "adsp-3-42",
+      "id": "adsp-r48-3-42",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -778,7 +916,11 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "신경망"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "신경망"
+      ],
       "type": "multiple_choice",
       "question": "인공신경망 모형에서 입력층에서 전달된 신호의 합을 출력값으로 변환하여 다음 층으로 전달하는 함수는 무엇인가?",
       "choices": [
@@ -791,7 +933,7 @@
       "explanation": "활성화 함수(activation function) = 가중합을 비선형 출력으로 변환하여 다음 층으로 전달. 예: 시그모이드, tanh, ReLU."
     },
     {
-      "id": "adsp-3-43",
+      "id": "adsp-r48-3-43",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -801,7 +943,11 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "거리측도"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "거리측도"
+      ],
       "type": "multiple_choice",
       "question": "다음 중 변수 간 상관관계를 고려하여 거리 측정을 수행하는 방법은 무엇인가?",
       "choices": [
@@ -814,7 +960,7 @@
       "explanation": "마할라노비스 거리는 공분산 행렬의 역행렬을 이용해 변수 간 상관구조를 반영. 유클리디언·맨하탄·민코프스키는 단순 좌표 기반 거리."
     },
     {
-      "id": "adsp-3-44",
+      "id": "adsp-r48-3-44",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -824,7 +970,11 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "평가지표"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "평가지표"
+      ],
       "type": "multiple_choice",
       "question": "아래 설명이 나타내는 평가 지표는 무엇인가?\n정밀도(precision)와 재현율(recall)은 한 지표의 값이 높아지면 다른 지표의 값이 낮아질 가능성이 높은 관계를 지니고 있다. (      )는 이러한 효과를 보정하기 위해 만든 지표이다.",
       "choices": [
@@ -837,7 +987,7 @@
       "explanation": "F1-score = 2·(Precision·Recall)/(Precision+Recall) = 정밀도와 재현율의 조화평균. 두 지표의 trade-off 를 균형 있게 반영."
     },
     {
-      "id": "adsp-3-45",
+      "id": "adsp-r48-3-45",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -847,7 +997,11 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "연관규칙"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "연관규칙"
+      ],
       "type": "multiple_choice",
       "question": "연관규칙 A→B 에 대한 지지도(support)의 계산식으로 올바른 것은 무엇인가?",
       "choices": [
@@ -860,7 +1014,7 @@
       "explanation": "지지도 Support(A→B) = P(A ∩ B). 신뢰도 = P(B|A). 향상도 = P(B|A)/P(B)."
     },
     {
-      "id": "adsp-3-46",
+      "id": "adsp-r48-3-46",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -870,7 +1024,12 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "결측값", "확률"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "결측값",
+        "확률"
+      ],
       "type": "multiple_choice",
       "question": "이름과 성별로 구성된 고객 데이터가 있다. 각 고객 데이터에서 이름 항목과 성별 항목은 각각 10% 의 확률로 결측값을 가진다고 하자. 이름과 성별의 결측 여부는 서로 독립적이며, 이름 또는 성별 중 하나라도 결측값이 존재하는 고객 데이터는 모두 삭제된다. 이때, 임의로 하나의 고객 데이터를 선택했을 때 해당 데이터가 삭제될 확률은 얼마인가?",
       "choices": [
@@ -883,7 +1042,7 @@
       "explanation": "삭제될 확률 = 1 − P(두 항목 모두 결측 아님) = 1 − (0.9 × 0.9) = 1 − 0.81 = 0.19 → 19%."
     },
     {
-      "id": "adsp-3-47",
+      "id": "adsp-r48-3-47",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -893,7 +1052,11 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "군집분석"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "군집분석"
+      ],
       "type": "multiple_choice",
       "question": "다음 중 군집 내 오차 제곱합(SSE)의 증가량을 최소화하는 군집분석 연결법은 무엇인가?",
       "choices": [
@@ -906,7 +1069,7 @@
       "explanation": "Ward's method 는 두 군집을 병합했을 때 발생하는 군집 내 SSE 증가량이 최소가 되도록 병합 쌍을 선택한다."
     },
     {
-      "id": "adsp-3-48",
+      "id": "adsp-r48-3-48",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -916,7 +1079,11 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "비지도"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "비지도"
+      ],
       "type": "multiple_choice",
       "question": "정형데이터마이닝 기법 중 반응변수(종속변수)가 없는 데이터의 구조를 파악하는 데 활용되는 기법은 무엇인가?",
       "choices": [
@@ -929,7 +1096,7 @@
       "explanation": "반응변수(y)가 없는 데이터 = 비지도 학습. 대표 기법 = 군집분석(K-means), 연관규칙, PCA 등."
     },
     {
-      "id": "adsp-3-49",
+      "id": "adsp-r48-3-49",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -939,7 +1106,12 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "연관규칙", "계산문제"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "연관규칙",
+        "계산문제"
+      ],
       "type": "multiple_choice",
       "question": "아래 거래에서 연관규칙 A→B 의 신뢰도(Confidence)는 얼마인가?\n품목           거래 건수\n[A]                100\n[B, D]             100\n[C]                100\n[A, B, C, D]    50\n[B, D]            200\n[A, B, D]       250\n[A, C]           200",
       "choices": [
@@ -952,7 +1124,7 @@
       "explanation": "전체 거래 = 1000. A 를 포함한 거래 = 100+50+250+200 = 600. A 와 B 동시 포함 = 50+250 = 300. Confidence(A→B) = 300/600 = 50%."
     },
     {
-      "id": "adsp-3-50",
+      "id": "adsp-r48-3-50",
       "subject": "adsp",
       "chapter": 3,
       "chapterTitle": "데이터 분석",
@@ -962,7 +1134,12 @@
       "source": "2026년 48회 ADSP 3과목",
       "status": "ai-generated",
       "needsDistractors": false,
-      "tags": ["기출복원", "48회", "연관규칙", "향상도"],
+      "tags": [
+        "기출복원",
+        "48회",
+        "연관규칙",
+        "향상도"
+      ],
       "type": "multiple_choice",
       "question": "연관규칙에서 향상도(Lift)에 대한 설명으로 가장 적절한 것은?",
       "choices": [

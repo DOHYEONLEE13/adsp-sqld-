@@ -14,7 +14,7 @@ import {
   StickyNote,
   Trash2,
 } from 'lucide-react';
-import type { MultipleChoiceQuestion, Subject } from '@/types/question';
+import { type MultipleChoiceQuestion, type Subject, explanationToText } from '@/types/question';
 import { ALL_QUESTIONS } from '@/lib/questions';
 import { SUBJECT_SCHEMAS } from '@/data/subjects';
 import { removeBookmark, setNote } from './bookmarks';
@@ -263,7 +263,7 @@ function BookmarkRow({
               </p>
               {question.explanation ? (
                 <p className="kr-body text-[12px] leading-[1.7] text-cream/65 mt-2 whitespace-pre-wrap">
-                  {question.explanation}
+                  {explanationToText(question.explanation)}
                 </p>
               ) : null}
             </div>

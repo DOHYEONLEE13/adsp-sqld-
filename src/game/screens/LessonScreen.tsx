@@ -691,7 +691,8 @@ interface QuizViewProps {
     question: string;
     choices: string[];
     answerIndex: number;
-    explanation?: string;
+    /** string 또는 ExplanationObj 모두 허용 — 호출 측이 이미 string 으로 변환했거나 객체 그대로. */
+    explanation?: string | import('@/types/question').ExplanationObj;
   };
   saved?: { chosen: number; correct: boolean };
   onChoose: (idx: number) => void;
@@ -799,7 +800,20 @@ function QuizView({ question, saved, onChoose }: QuizViewProps) {
           </div>
           {question.explanation ? (
             <p className="kr-body text-[13px] md:text-[14px] leading-[1.8] text-cream/88">
-              {question.explanation}
+              {(() => {
+                const e = question.explanation;
+                if (typeof e === 'string') return e;
+                const parts: string[] = [];
+                if (e.core_concept) parts.push(e.core_concept);
+                if (e.why_correct) parts.push(`✅ ${e.why_correct}`);
+                if (e.why_wrong) {
+                  for (const [k, v] of Object.entries(e.why_wrong)) {
+                    parts.push(`❌ ${k}번: ${v}`);
+                  }
+                }
+                if (e.tip) parts.push(`💡 ${e.tip}`);
+                return parts.join('\n\n');
+              })()}
             </p>
           ) : null}
         </div>

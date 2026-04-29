@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import Landing from './pages/Landing';
 import LegalPage from './pages/LegalPage';
 import AdminPage from './pages/AdminPage';
+import RedeemPage from './pages/RedeemPage';
+import RefundRequestPage from './pages/RefundRequestPage';
 import GamePage from './game/GamePage';
 import StatsPage from './game/StatsPage';
 import BookmarksPage from './game/BookmarksPage';
@@ -18,6 +20,7 @@ import { initExamDatesSync } from './game/examDate';
 import { initEnergySync } from './game/energy';
 import { initStepUnlocksSync } from './game/stepUnlocks';
 import type { LegalDoc } from './data/legal';
+import GlobalAmbientBg from './game/components/GlobalAmbientBg';
 
 type Route =
   | 'landing'
@@ -27,7 +30,9 @@ type Route =
   | 'quests'
   | 'friends'
   | 'legal'
-  | 'admin';
+  | 'admin'
+  | 'redeem'
+  | 'refund-request';
 
 interface RouteState {
   route: Route;
@@ -57,6 +62,9 @@ function getRoute(): RouteState {
   if (hash.startsWith('/stats')) return { route: 'stats' };
   if (hash.startsWith('/bookmarks')) return { route: 'bookmarks' };
   if (hash.startsWith('/admin')) return { route: 'admin' };
+  if (hash.startsWith('/redeem')) return { route: 'redeem' };
+  if (hash.startsWith('/refund-request'))
+    return { route: 'refund-request' };
   if (hash.startsWith('/about'))
     return { route: 'legal', legalSlug: 'about' };
   if (hash.startsWith('/privacy'))
@@ -110,80 +118,112 @@ export default function App() {
     };
   }, []);
 
-  if (route === 'game') {
-    return (
-      <GamePage
-        // key 로 deep-link 진입 변화 시 GamePage 재마운트.
-        // ex) /game (chooser) ↔ /game/adsp 사이 이동 시 초기 화면이 갱신됨.
-        key={initialSubject ?? 'chooser'}
-        initialSubject={initialSubject}
-        onExitToLanding={() => {
-          window.location.hash = '';
-        }}
-      />
-    );
-  }
+  // GlobalAmbientBg 는 라우트 전환과 무관하게 항상 마운트 — 페이지가
+  // 바뀌어도 영상이 처음부터 다시 시작되지 않게.  각 페이지의 PageAmbientBg
+  // 가 controller 에 push/pop 만 해서 fade in/out 으로만 노출 토글한다.
+  const renderRoute = () => {
+    if (route === 'game') {
+      return (
+        <GamePage
+          // key 로 deep-link 진입 변화 시 GamePage 재마운트.
+          // ex) /game (chooser) ↔ /game/adsp 사이 이동 시 초기 화면이 갱신됨.
+          key={initialSubject ?? 'chooser'}
+          initialSubject={initialSubject}
+          onExitToLanding={() => {
+            window.location.hash = '';
+          }}
+        />
+      );
+    }
 
-  if (route === 'stats') {
-    return (
-      <StatsPage
-        onExit={() => {
-          window.location.hash = '/game';
-        }}
-      />
-    );
-  }
+    if (route === 'stats') {
+      return (
+        <StatsPage
+          onExit={() => {
+            window.location.hash = '/game';
+          }}
+        />
+      );
+    }
 
-  if (route === 'quests') {
-    return (
-      <QuestsPage
-        onExit={() => {
-          window.location.hash = '/game';
-        }}
-      />
-    );
-  }
+    if (route === 'quests') {
+      return (
+        <QuestsPage
+          onExit={() => {
+            window.location.hash = '/game';
+          }}
+        />
+      );
+    }
 
-  if (route === 'friends') {
-    return (
-      <FriendsPage
-        onExit={() => {
-          window.location.hash = '/game';
-        }}
-      />
-    );
-  }
+    if (route === 'friends') {
+      return (
+        <FriendsPage
+          onExit={() => {
+            window.location.hash = '/game';
+          }}
+        />
+      );
+    }
 
-  if (route === 'bookmarks') {
-    return (
-      <BookmarksPage
-        onExit={() => {
-          window.location.hash = '/game';
-        }}
-      />
-    );
-  }
+    if (route === 'bookmarks') {
+      return (
+        <BookmarksPage
+          onExit={() => {
+            window.location.hash = '/game';
+          }}
+        />
+      );
+    }
 
-  if (route === 'legal' && legalSlug) {
-    return (
-      <LegalPage
-        slug={legalSlug}
-        onBack={() => {
-          window.location.hash = '';
-        }}
-      />
-    );
-  }
+    if (route === 'legal' && legalSlug) {
+      return (
+        <LegalPage
+          slug={legalSlug}
+          onBack={() => {
+            window.location.hash = '';
+          }}
+        />
+      );
+    }
 
-  if (route === 'admin') {
-    return (
-      <AdminPage
-        onBack={() => {
-          window.location.hash = '';
-        }}
-      />
-    );
-  }
+    if (route === 'admin') {
+      return (
+        <AdminPage
+          onBack={() => {
+            window.location.hash = '';
+          }}
+        />
+      );
+    }
 
-  return <Landing />;
+    if (route === 'redeem') {
+      return (
+        <RedeemPage
+          onBack={() => {
+            window.location.hash = '';
+          }}
+        />
+      );
+    }
+
+    if (route === 'refund-request') {
+      return (
+        <RefundRequestPage
+          onBack={() => {
+            window.location.hash = '/refund';
+          }}
+        />
+      );
+    }
+
+    return <Landing />;
+  };
+
+  return (
+    <>
+      <GlobalAmbientBg />
+      {renderRoute()}
+    </>
+  );
 }

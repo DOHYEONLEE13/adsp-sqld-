@@ -63,12 +63,20 @@ html,
 body {
   margin: 0;
   padding: 0;
-  background: var(--bg);
   color: var(--cream);
   font-family: 'Noto Sans KR', ui-monospace, SFMono-Regular, Menlo, Monaco,
     Consolas, monospace, sans-serif;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+}
+
+/* 폴백 색은 html(canvas) 에만 — body 에 두면 negative z-index 에 깔린
+   GlobalAmbientBg 비디오를 가려서 화면이 다시 단색이 됨. */
+html {
+  background: var(--bg);
+}
+body {
+  background: transparent;
 }
 
 a {

@@ -1,14 +1,19 @@
 /**
- * PageAmbientBg — Zone/Quests/Friends/Stats 공통 배경 비디오 + 가독성 오버레이.
+ * PageAmbientBg — 페이지가 ambient 배경을 원한다고 컨트롤러에 알리는 마커.
  *
- * `position: fixed` 로 뷰포트 전체에 깔리므로 컨텐츠 z-index 가 자동으로 위.
- * 다른 페이지의 배경과 충돌 없이 단독 사용. `aria-hidden` 처리.
+ * 실제 비디오 element 는 `GlobalAmbientBg` (App 루트에 단 1개) 에서 렌더하고,
+ * 여기는 `pushAmbient`/`popAmbient` 만 호출해 활성 상태와 blur 선호도를 갱신.
+ * 그래서 페이지 전환 시 비디오가 unmount → remount 되지 않아 영상이 끊김 없이
+ * 이어진다.
  *
- * `blur` prop: 영상에 직접 blur filter — 문제 풀 때 시선이 본문으로 가게.
+ * `blur` prop: 영상에 blur filter — 문제 풀 때 시선이 본문으로 가게.
+ *
+ * 사용처는 그대로 — 각 페이지 JSX 에 `<PageAmbientBg />` (또는 `<PageAmbientBg blur />`)
+ * 를 한 번 넣으면 됨. 렌더 결과는 `null`.
  */
 
-import VideoBg from '@/components/ui/VideoBg';
-import { VIDEO_URLS, VIDEO_POSTERS } from '@/data/site';
+import { useEffect } from 'react';
+import { popAmbient, pushAmbient } from './ambientBg';
 
 interface Props {
   /** 영상에 가벼운 blur 적용 (문제·읽기 화면용). 기본 false. */
@@ -16,26 +21,9 @@ interface Props {
 }
 
 export default function PageAmbientBg({ blur = false }: Props) {
-  return (
-    <div
-      aria-hidden
-      className="fixed inset-0 -z-10 pointer-events-none overflow-hidden"
-    >
-      <VideoBg
-        src={VIDEO_URLS.pageAmbient}
-        poster={VIDEO_POSTERS.pageAmbient}
-        fit="cover"
-        className={blur ? 'blur-md scale-110' : undefined}
-      />
-      {/* 가독성 오버레이 — 베이스 톤 vignette. 비디오가 살짝 비치게 톤다운 */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: blur
-            ? 'linear-gradient(180deg, rgba(1,8,40,0.65) 0%, rgba(1,8,40,0.78) 50%, rgba(1,8,40,0.88) 100%)'
-            : 'linear-gradient(180deg, rgba(1,8,40,0.55) 0%, rgba(1,8,40,0.65) 50%, rgba(1,8,40,0.78) 100%)',
-        }}
-      />
-    </div>
-  );
+  useEffect(() => {
+    pushAmbient(blur);
+    return () => popAmbient();
+  }, [blur]);
+  return null;
 }

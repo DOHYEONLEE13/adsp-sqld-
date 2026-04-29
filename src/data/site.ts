@@ -89,5 +89,5 @@ export const COMPANY = {
   address: '서울특별시 (정식 주소 등록 예정)',
   hostingProvider: 'Cloudflare Pages',
   /** 약관·정책의 마지막 개정일. 변경 시 같이 갱신. */
-  policyUpdatedAt: '2026-04-28',
+  policyUpdatedAt: '2026-04-29',
 } as const;

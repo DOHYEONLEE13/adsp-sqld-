@@ -195,6 +195,7 @@ export function createReviewSession(
     topic: null,
     flow: 'play',
     label: '복습',
+    passNumber: 1,
     questions: picked.map(shuffleChoices),
     index: 0,
     answers: [],

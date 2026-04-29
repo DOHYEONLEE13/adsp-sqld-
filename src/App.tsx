@@ -22,6 +22,7 @@ import { initBookmarksSync } from './game/bookmarks';
 import { initExamDatesSync } from './game/examDate';
 import { initEnergySync } from './game/energy';
 import { initStepUnlocksSync } from './game/stepUnlocks';
+import { initPassSync } from './game/passSync';
 import type { LegalDoc } from './data/legal';
 import GlobalAmbientBg from './game/components/GlobalAmbientBg';
 import { onAuthStateChange } from './lib/supabase';
@@ -118,6 +119,7 @@ export default function App() {
       initExamDatesSync(),
       initEnergySync(),
       initStepUnlocksSync(),
+      initPassSync(),
       initMigration(),
     ];
     return () => {

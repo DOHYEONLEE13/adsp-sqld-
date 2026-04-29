@@ -36,6 +36,7 @@ import { consumeEnergy } from './energy';
 import EnergyBlockModal from './components/EnergyBlockModal';
 import { isStepLocked, stepKey, unlockStepOnServer } from './stepUnlocks';
 import { useStepUnlocks } from './stepUnlocks';
+import { tryRecordPassCompletion } from './passSync';
 
 interface Props {
   /**
@@ -93,6 +94,7 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
     flow: FlowMode = 'play',
     size?: number,
     explicitLabel?: string,
+    passNumber: number = 1,
   ) => {
     void gateEnergy(() => {
       const labelMap: Record<string, string> = {
@@ -117,6 +119,7 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
         flow,
         size,
         label,
+        passNumber,
       });
       if (!session) return;
       setScreen({ kind: 'quest', session });
@@ -172,8 +175,15 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
   };
 
   // 세션이 끝날 때 딱 한 번 저장소에 반영한 뒤 result 로 전이.
+  // 추가: pass 시스템 — 챕터 단위 75% 도달했는지 서버에 검사 요청 (fire-and-forget).
+  //      서버가 stamp 발급하면 channel 으로 자동 반영. 미인증·미적용 환경 = no-op.
   const finalizeSession = (summary: QuestSummary) => {
     recordSessionSummary(summary);
+    void tryRecordPassCompletion(
+      summary.subject,
+      summary.chapter,
+      summary.passNumber ?? 1,
+    );
     setScreen({ kind: 'result', summary });
   };
 
@@ -232,6 +242,7 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
               p.flow,
               p.size,
               p.label,
+              p.passNumber,
             )
           }
           onSelectStep={(topic, stepIdx) => {

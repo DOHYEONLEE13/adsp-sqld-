@@ -10,7 +10,7 @@
  * Sololearn-스타일 path: 작은 원 노드 + 점선 connector. 3D bevel 없음.
  */
 
-import { type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import {
   ArrowLeft,
   BookOpen,
@@ -39,6 +39,15 @@ import {
   type MockExamProgress,
 } from '../mockExams';
 import { isStepLocked, useStepUnlocks } from '../stepUnlocks';
+import { usePassSnapshot } from '../passSync';
+import {
+  chapterPassProgress,
+  currentPassFor,
+  passUnlockState,
+  type PassSession,
+} from '../passes';
+import PassTabs from '@/components/passes/PassTabs';
+import { PASS_TIER_VISUAL } from '@/types/passes';
 
 const SUBJECT_ACCENT: Record<Subject, string> = {
   adsp: '#67e8f9',
@@ -53,6 +62,8 @@ export interface StartParams {
   size?: number;
   /** 결과 화면 라벨. */
   label?: string;
+  /** N회독 차수 — 미지정 시 1. */
+  passNumber?: number;
 }
 
 export interface ReviewIdsParams {
@@ -89,6 +100,66 @@ export default function ZoneScreen({
   const progress = useProgress();
   const reviewCount = reviewPoolSize(subject, chapter, null);
   const accent = SUBJECT_ACCENT[subject];
+
+  // ── Pass 시스템 통합 ───────────────────────────────────────
+  const passSnap = usePassSnapshot();
+  const passSessions: PassSession[] = useMemo(
+    () =>
+      progress.sessions
+        .filter((s) => s.subject !== undefined)
+        .map((s) => ({
+          subject: s.subject,
+          chapter: s.chapter,
+          passNumber: s.passNumber ?? 1,
+          total: s.total,
+          correctCount: s.correctCount,
+        })),
+    [progress.sessions],
+  );
+  const defaultPass = useMemo(
+    () => currentPassFor(passSessions, passSnap.stamps, subject, chapter),
+    [passSessions, passSnap.stamps, subject, chapter],
+  );
+  const [selectedPass, setSelectedPass] = useState<number>(defaultPass);
+  const [lockToast, setLockToast] = useState<string | null>(null);
+
+  // 탭 데이터 — 1·2·3회독 각각의 unlock/inProgress/completed 상태
+  const passTabs = useMemo(
+    () =>
+      [1, 2, 3].map((pass) => {
+        const u = passUnlockState(
+          passSessions,
+          passSnap.stamps,
+          subject,
+          chapter,
+          pass,
+        );
+        const prog = chapterPassProgress(
+          passSessions,
+          passSnap.stamps,
+          subject,
+          chapter,
+          pass,
+        );
+        return {
+          passNumber: pass,
+          unlocked: u.unlocked,
+          inProgress: u.inProgress,
+          completed: u.completed,
+          progress: prog.accuracy,
+        };
+      }),
+    [passSessions, passSnap.stamps, subject, chapter],
+  );
+
+  // 선택된 회독에 따라 path 색조 변환
+  const passTier = selectedPass === 1 ? 'bronze' : selectedPass === 2 ? 'gold' : 'master';
+  const passColor = PASS_TIER_VISUAL[passTier].color;
+  const pathAccent = selectedPass === 1 ? accent : passColor;
+
+  // onStart 호출 시 자동으로 selectedPass 주입
+  const onStartWithPass = (p: StartParams) =>
+    onStart({ ...p, passNumber: p.passNumber ?? selectedPass });
 
   return (
     <section className="relative min-h-screen text-cream isolate overflow-hidden">
@@ -134,7 +205,39 @@ export default function ZoneScreen({
             노드를 하나씩 따라가며 개념을 정복하세요. 한 노드 = 한 개의 짧은 step
             (개념 + 확인 문제 한 묶음).
           </p>
+
+          {/* ── 회독 탭 ── */}
+          <div className="mt-5">
+            <PassTabs
+              tabs={passTabs}
+              currentPass={selectedPass}
+              onSelect={(p) => setSelectedPass(p)}
+              onLockedClick={(p) => {
+                setLockToast(
+                  p === 2
+                    ? '1회독 정답률 75% 도달 후 2회독이 열려요.'
+                    : '직전 회독을 먼저 마쳐주세요.',
+                );
+                window.setTimeout(() => setLockToast(null), 2400);
+              }}
+            />
+          </div>
         </header>
+
+        {lockToast ? (
+          <div
+            role="status"
+            className="fixed top-20 left-1/2 -translate-x-1/2 z-40 px-4 py-2.5 rounded-full kr-num text-[12px] pointer-events-none"
+            style={{
+              background: 'rgba(20,32,46,0.96)',
+              color: 'var(--cream)',
+              border: '1px solid rgba(167,139,250,0.5)',
+              boxShadow: '0 4px 14px rgba(0,0,0,0.4)',
+            }}
+          >
+            🔒 {lockToast}
+          </div>
+        ) : null}
 
         {/* ============ 토픽 섹션별 step path ============ */}
         {lessons.length === 0 ? (
@@ -150,7 +253,7 @@ export default function ZoneScreen({
                 topic={lesson.topic}
                 lessonId={lesson.id}
                 steps={lesson.steps}
-                accent={accent}
+                accent={pathAccent}
                 progress={progress}
                 isWeak={(() => {
                   const w = topicWeaknessOf(
@@ -175,7 +278,7 @@ export default function ZoneScreen({
                   getMockProgress(subject, chapter, slot.label, progress)
                 }
                 onStart={(slot) =>
-                  onStart({
+                  onStartWithPass({
                     topic: null,
                     sampling: 'random',
                     flow: 'test',
@@ -208,7 +311,7 @@ export default function ZoneScreen({
                 icon={<Shuffle size={14} strokeWidth={2.4} />}
                 title={`전체 랜덤 · ${total}`}
                 onClick={() =>
-                  onStart({ topic: null, sampling: 'random', flow: 'play' })
+                  onStartWithPass({ topic: null, sampling: 'random', flow: 'play' })
                 }
                 accent="purple"
               />
@@ -216,7 +319,7 @@ export default function ZoneScreen({
                 icon={<Flame size={14} strokeWidth={2.4} />}
                 title="약점 집중"
                 onClick={() =>
-                  onStart({ topic: null, sampling: 'weakness', flow: 'play' })
+                  onStartWithPass({ topic: null, sampling: 'weakness', flow: 'play' })
                 }
                 accent="red"
               />
@@ -227,7 +330,7 @@ export default function ZoneScreen({
                 }
                 onClick={() =>
                   reviewCount > 0 &&
-                  onStart({ topic: null, sampling: 'review', flow: 'play' })
+                  onStartWithPass({ topic: null, sampling: 'review', flow: 'play' })
                 }
                 disabled={reviewCount === 0}
                 accent="neon"
@@ -236,7 +339,7 @@ export default function ZoneScreen({
                 icon={<BookOpen size={14} strokeWidth={2.4} />}
                 title="학습 모드"
                 onClick={() =>
-                  onStart({ topic: null, sampling: 'random', flow: 'learn' })
+                  onStartWithPass({ topic: null, sampling: 'random', flow: 'learn' })
                 }
                 accent="cyan"
               />
@@ -244,7 +347,7 @@ export default function ZoneScreen({
                 icon={<Clock size={14} strokeWidth={2.4} />}
                 title="시험 모드"
                 onClick={() =>
-                  onStart({ topic: null, sampling: 'random', flow: 'test' })
+                  onStartWithPass({ topic: null, sampling: 'random', flow: 'test' })
                 }
                 accent="amber"
               />

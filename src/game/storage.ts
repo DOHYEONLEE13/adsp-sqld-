@@ -52,6 +52,12 @@ export interface SessionRecord {
   label?: string;
   /** 이번 세션에서 틀린 문항 ID. 모의고사 오답 복습 진입점. */
   wrongQuestionIds?: string[];
+  /**
+   * N회독 차수 (1~). 미존재 (구 데이터) = 1.
+   * Pass 시스템: docs/n-pass-design.md 참고.
+   * 챕터 회독 완료 판정 + 친구 리더보드 진행 점에 사용.
+   */
+  passNumber?: number;
 }
 
 export interface ProgressStore {
@@ -217,6 +223,7 @@ export function recordSessionSummary(summary: QuestSummary): void {
     totalTimeMs: summary.totalTimeMs,
     label: summary.label,
     wrongQuestionIds: wrongQuestionIds.length > 0 ? wrongQuestionIds : undefined,
+    passNumber: summary.passNumber,
   };
 
   const sessions = [record, ...next.sessions].slice(0, MAX_SESSION_HISTORY);

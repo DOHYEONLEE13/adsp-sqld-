@@ -24,6 +24,8 @@ import {
   subscribeProfile,
   type MyProfile,
 } from '@/data/profile';
+import { usePassSnapshot } from '../passSync';
+import PassTierBadge from '@/components/passes/PassTierBadge';
 
 const SUBJECT_ACCENT: Record<Subject, string> = {
   adsp: '#67e8f9',
@@ -44,6 +46,7 @@ export function MobileTopBar({ subject }: TopProps) {
   const energy = useEnergy();
   const [shareOpen, setShareOpen] = useState(false);
   const [profile, setProfile] = useState<MyProfile>(() => getMyProfile());
+  const passSnap = usePassSnapshot();
   useEffect(() => {
     const unsub = subscribeProfile(() => setProfile(getMyProfile()));
     return () => {
@@ -102,17 +105,26 @@ export function MobileTopBar({ subject }: TopProps) {
             const isUnset =
               !profile.displayName || profile.displayName === profile.tag;
             return (
-              <span
-                className="kr-num text-[13px] truncate max-w-[110px] text-left"
-                style={{
-                  color: isUnset
-                    ? 'rgba(111,255,0,0.85)'
-                    : 'var(--cream)',
-                }}
-                title={isUnset ? '닉네임 설정하기' : profile.displayName}
-              >
-                {isUnset ? '닉네임 설정' : profile.displayName}
-              </span>
+              <div className="flex flex-col items-start min-w-0">
+                <span
+                  className="kr-num text-[13px] truncate max-w-[110px] text-left"
+                  style={{
+                    color: isUnset
+                      ? 'rgba(111,255,0,0.85)'
+                      : 'var(--cream)',
+                  }}
+                  title={isUnset ? '닉네임 설정하기' : profile.displayName}
+                >
+                  {isUnset ? '닉네임 설정' : profile.displayName}
+                </span>
+                {!isUnset && passSnap.authed ? (
+                  <PassTierBadge
+                    tier={passSnap.tier}
+                    size="xs"
+                    className="mt-0.5"
+                  />
+                ) : null}
+              </div>
             );
           })()}
         </button>

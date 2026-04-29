@@ -109,6 +109,11 @@ export interface CreateSessionOptions {
   flow?: FlowMode;
   /** 결과 요약 등에 쓰이는 라벨. */
   label?: string;
+  /**
+   * N회독 차수 (1~). 기본 1. Pass 시스템: docs/n-pass-design.md.
+   * 챕터 회독 완료 판정 + 친구 리더보드 진행 점에 사용.
+   */
+  passNumber?: number;
 }
 
 /** 세션 생성 — 조건에 맞는 문항을 섞고 선지도 섞어서 세팅. */
@@ -121,6 +126,7 @@ export function createSession(opts: CreateSessionOptions): QuestSession | null {
     sampling = 'random',
     flow = 'play',
     label,
+    passNumber = 1,
   } = opts;
   const schema = SUBJECT_SCHEMAS[subject];
   const chapterMeta = schema.chapters.find((c) => c.chapter === chapter);
@@ -165,6 +171,7 @@ export function createSession(opts: CreateSessionOptions): QuestSession | null {
     topic,
     flow,
     label,
+    passNumber,
     questions: randomized,
     index: 0,
     answers: [],
@@ -249,6 +256,7 @@ export function createDailyMissionSession(subject: Subject): QuestSession | null
     topic: null,
     flow: 'play',
     label: 'Daily Mission',
+    passNumber: 1,
     questions: final,
     index: 0,
     answers: [],
@@ -284,6 +292,7 @@ export function createMockExamSession(
     topic: null,
     flow: 'test',
     label: '모의고사',
+    passNumber: 1,
     questions: picked,
     index: 0,
     answers: [],
@@ -372,6 +381,7 @@ export function summarize(session: QuestSession): QuestSummary {
     accuracy: total === 0 ? 0 : correctCount / total,
     totalTimeMs,
     label: session.label,
+    passNumber: session.passNumber,
     answers,
   };
 }
@@ -390,8 +400,9 @@ export function createReviewFromIds(opts: {
   questionIds: string[];
   flow?: FlowMode;
   label?: string;
+  passNumber?: number;
 }): QuestSession | null {
-  const { subject, chapter, questionIds, flow = 'learn', label } = opts;
+  const { subject, chapter, questionIds, flow = 'learn', label, passNumber = 1 } = opts;
   if (questionIds.length === 0) return null;
   const schema = SUBJECT_SCHEMAS[subject];
   const chapterMeta = schema.chapters.find((c) => c.chapter === chapter);
@@ -416,6 +427,7 @@ export function createReviewFromIds(opts: {
     topic: null,
     flow,
     label,
+    passNumber,
     questions: randomized,
     index: 0,
     answers: [],

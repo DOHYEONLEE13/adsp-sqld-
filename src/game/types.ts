@@ -48,6 +48,12 @@ export interface QuestSession {
    * 비어 있으면 화면이 flow/topic 기반으로 fallback 합니다.
    */
   label?: string;
+  /**
+   * N회독 차수 (1~). 1이 기본 (1회독 진행 중).
+   * Pass 시스템: docs/n-pass-design.md 참고.
+   * 챕터 회독 완료 (정답률 ≥ 75%) 시 다음 회독 진입 가능.
+   */
+  passNumber: number;
   questions: MultipleChoiceQuestion[];
   /** 현재 풀고 있는 문제 index (0-based). */
   index: number;
@@ -76,6 +82,8 @@ export interface QuestSummary {
   totalTimeMs: number;
   /** 결과 화면·SessionRecord 에 표시될 라벨 (예: "챕터 1 모의고사 1"). */
   label?: string;
+  /** N회독 차수 (1~). Pass 시스템과 함께 chapter completion 판정에 사용. */
+  passNumber: number;
   answers: Array<
     QuestAnswer & {
       question: MultipleChoiceQuestion;

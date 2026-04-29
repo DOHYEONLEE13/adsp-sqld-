@@ -88,7 +88,26 @@ create policy pass_stamps_admin_read on public.pass_stamps
 -- INSERT/UPDATE/DELETE 는 SECURITY DEFINER RPC 만.
 
 -- ============================================================
--- 4. RPC: recompute_pass_tier — Tier 재계산
+-- 4. helper: rank_of — tier 순위 비교 (recompute_pass_tier 가 참조하므로 먼저 정의)
+-- ============================================================
+
+create or replace function public.rank_of(t text)
+returns integer
+language sql immutable
+set search_path = ''
+as $$
+  select case t
+    when 'bronze' then 1
+    when 'silver' then 2
+    when 'gold' then 3
+    when 'platinum' then 4
+    when 'master' then 5
+    else 0
+  end;
+$$;
+
+-- ============================================================
+-- 5. RPC: recompute_pass_tier — Tier 재계산
 -- ============================================================
 -- 입력: 본인. 호출 시점: stamp 변동 후.
 -- 정책:
@@ -153,8 +172,8 @@ begin
     else 'bronze'
   end;
 
-  -- 강등 방지: 현재보다 높은 tier 만 적용
-  if rank_of(candidate_tier) > rank_of(current_tier) then
+  -- 강등 방지: 현재보다 높은 tier 만 적용 (search_path = '' 이라 fully qualified 호출)
+  if public.rank_of(candidate_tier) > public.rank_of(coalesce(current_tier, 'bronze')) then
     update public.profiles
        set pass_tier = candidate_tier,
            pass_tier_updated_at = now()
@@ -164,22 +183,6 @@ begin
 
   return query select true, current_tier;
 end;
-$$;
-
--- helper: tier 순위 비교용
-create or replace function public.rank_of(t text)
-returns integer
-language sql immutable
-set search_path = ''
-as $$
-  select case t
-    when 'bronze' then 1
-    when 'silver' then 2
-    when 'gold' then 3
-    when 'platinum' then 4
-    when 'master' then 5
-    else 0
-  end;
 $$;
 
 revoke execute on function public.recompute_pass_tier() from public, anon;

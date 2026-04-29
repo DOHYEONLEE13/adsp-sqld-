@@ -458,14 +458,20 @@
       "difficulty": 3,
       "question": "데이터 거버넌스의 3대 구성요소로 올바르게 묶인 것은?",
       "choices": [
-        "비전 · 전략 · 실행계획",
-        "원칙(Principle) · 조직(Organization) · 프로세스(Process)",
-        "입력 · 처리 · 출력",
-        "데이터 · 정보 · 지식"
+        "비전 · 전략 · 단계별 실행계획",
+        "원칙(Principle) · 조직(Org) · 프로세스(Process)",
+        "입력 · 처리 · 출력 (IPO 모델)",
+        "데이터 · 정보 · 지식 (DIK 계층)"
       ],
       "answerIndex": 1,
       "explanation": "데이터 거버넌스는 관리 원칙 · 역할을 맡는 조직 · 실행 프로세스 3요소로 구성됩니다. 표준화·관리체계·저장소 관리·품질관리 활동이 프로세스 축에 담깁니다. 분석 거버넌스 5축(시·조·프·인·데) 과 혼동하지 마세요.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "_audit": {
+        "fixed": ["B2"],
+        "changed_fields": ["choices"],
+        "reason": "다른 보기 길이 보강해 균형",
+        "audited_at": "2026-04-29"
+      }
     },
 
     {
@@ -689,14 +695,20 @@
       "difficulty": 3,
       "question": "중심극한정리(CLT)에 대한 설명으로 옳은 것은?",
       "choices": [
-        "표본의 개별 관측값이 정규분포를 따른다",
-        "모집단 분포와 무관하게 n이 충분히 크면 표본평균의 분포가 정규에 가까워진다",
-        "모집단이 정규일 때만 성립한다",
-        "n이 작을수록 정규에 가까워진다"
+        "표본의 개별 관측값 자체가 정규분포를 따른다는 정리",
+        "모집단 분포와 무관하게 n이 충분히 크면 표본평균이 정규에 근사",
+        "모집단이 이미 정규일 때만 성립하는 제한적 정리",
+        "표본 크기 n이 작을수록 표본평균이 정규에 더 가까워진다"
       ],
       "answerIndex": 1,
       "explanation": "CLT는 \"표본평균\"의 분포에 대한 진술이며, 모집단 분포와 무관하게 n≥30 정도면 정규에 근사합니다.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "_audit": {
+        "fixed": ["B2"],
+        "changed_fields": ["choices"],
+        "reason": "정답 길이 압축 + 다른 보기 보강",
+        "audited_at": "2026-04-29"
+      }
     },
     {
       "id": "adsp-3-2-cp-05",
@@ -1265,14 +1277,20 @@
       "difficulty": 2,
       "question": "다음 중 분석 4유형의 \"Solution(방법 탐색)\" 에 해당하는 사례는?",
       "choices": [
-        "기존 추천 모델의 학습률만 미세 조정한다",
-        "고객 이탈 예측 목표는 분명하나 어떤 알고리즘이 적합한지 몰라 여러 후보를 비교한다",
-        "보유 군집 기법으로 새 적용 대상을 찾는다",
-        "신상품 콘셉트 자체를 데이터로부터 발굴한다"
+        "기존 추천 모델의 학습률 파라미터만 미세하게 조정한다",
+        "이탈 예측 목표는 분명하나 알고리즘 후보를 비교 중이다",
+        "보유한 군집 기법으로 새로운 적용 대상을 탐색한다",
+        "신상품 콘셉트 자체를 데이터로부터 새로 발굴한다"
       ],
       "answerIndex": 1,
       "explanation": "Solution 은 What 명확 + How 미정. 풀 문제는 분명하지만 방법(알고리즘·접근) 이 미정인 상태. 후보 비교가 핵심.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "_audit": {
+        "fixed": ["B2"],
+        "changed_fields": ["choices"],
+        "reason": "정답 길이 압축 + 다른 보기 보강",
+        "audited_at": "2026-04-29"
+      }
     },
     {
       "id": "adsp-2-1-cp-01-ins",
@@ -1419,14 +1437,20 @@
       "difficulty": 2,
       "question": "다음 중 하향식 접근의 \"문제 정의\" 단계에 해당하는 활동은?",
       "choices": [
-        "STEEP 으로 외부 환경 후보를 훑는다",
-        "\"매출 부진\" 을 \"6개월 후 이탈률 X% 감소\" 처럼 측정 가능한 분석 문제로 변환한다",
-        "여러 알고리즘 후보를 비교 검토한다",
+        "STEEP 으로 외부 환경 후보를 폭넓게 훑는다",
+        "비즈니스 문제를 측정 가능한 분석 문제로 변환한다",
+        "여러 알고리즘 후보를 비교 검토하여 선정한다",
         "예산·인력·기술 가용성을 점검해 진행 여부를 판단한다"
       ],
       "answerIndex": 1,
-      "explanation": "정의는 \"비즈니스 문제 → 분석 문제\" 의 변환 단계. 측정 가능한 목표·지표로 다시 쓰는 것이 핵심.",
-      "source": "개념 예제"
+      "explanation": "정의는 \"비즈니스 문제 → 분석 문제\" 의 변환 단계. 측정 가능한 목표·지표로 다시 쓰는 것이 핵심. (예: '매출 부진' → '6개월 후 이탈률 X% 감소')",
+      "source": "개념 예제",
+      "_audit": {
+        "fixed": ["B2"],
+        "changed_fields": ["choices", "explanation"],
+        "reason": "정답 길이 압축 + 다른 보기 보강",
+        "audited_at": "2026-04-29"
+      }
     },
     {
       "id": "adsp-2-1-cp-03-solve",
@@ -1438,14 +1462,20 @@
       "difficulty": 2,
       "question": "다음 중 하향식 접근의 \"해결방안 탐색\" 단계 활동은?",
       "choices": [
-        "내부·외부 관점으로 분석 후보 과제를 발굴한다",
-        "선정된 분석 문제에 대해 가능한 알고리즘·데이터·도구 조합을 비교 검토한다",
+        "내부·외부 관점으로 분석 후보 과제를 폭넓게 발굴한다",
+        "분석 문제에 대해 알고리즘·데이터·도구를 비교 검토한다",
         "예산·시스템·조직 측면 실행 가능성을 검증한다",
-        "비즈니스 문제를 측정 가능한 형태로 다시 쓴다"
+        "비즈니스 문제를 측정 가능한 분석 문제로 변환한다"
       ],
       "answerIndex": 1,
       "explanation": "해결방안 탐색은 후보 비교가 핵심. 후보 발굴=탐색, 변환=정의, 실행성 점검=타당성.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "_audit": {
+        "fixed": ["B2"],
+        "changed_fields": ["choices"],
+        "reason": "정답 길이 압축 + 다른 보기 보강",
+        "audited_at": "2026-04-29"
+      }
     },
     {
       "id": "adsp-2-1-cp-03-feas",
@@ -1457,14 +1487,20 @@
       "difficulty": 2,
       "question": "다음 중 하향식 접근의 \"타당성 검토\" 단계 활동은?",
       "choices": [
-        "STEEP 분석으로 외부 환경 변화를 훑는다",
+        "STEEP 분석으로 외부 환경 변화 후보를 훑는다",
         "분석 문제를 측정 가능한 지표로 다시 정의한다",
         "후보 알고리즘을 비교해 가장 적합한 모델을 고른다",
-        "ROI · 데이터 확보 가능성 · 조직 수용성 세 축으로 진행 가능성을 점검한다"
+        "ROI · 데이터 확보 · 조직 수용성 3축으로 점검한다"
       ],
       "answerIndex": 3,
       "explanation": "타당성 검토는 경제(ROI) · 기술(데이터·시스템) · 운영(조직·인력) 3축의 실행 가능성 점검. 모델 선정은 해결방안.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "_audit": {
+        "fixed": ["B2"],
+        "changed_fields": ["choices"],
+        "reason": "정답 길이 압축",
+        "audited_at": "2026-04-29"
+      }
     },
 
     {
@@ -1496,14 +1532,20 @@
       "difficulty": 2,
       "question": "다음 과제 중 \"Now × Difficult\"(시급·고난도) 에 해당하는 것은?",
       "choices": [
-        "이번 주 안에 끝낼 마케팅 KPI 보고서",
-        "3년 후 출시 예정 신상품 사전 시뮬레이션",
-        "당장 필요한 전사 데이터 통합 플랫폼 (대규모 시스템·인력 투자, 6개월+)",
-        "여유 있을 때 정리할 백오피스 보고 자동화"
+        "이번 주 안에 끝낼 마케팅 KPI 보고서 (단기·간단)",
+        "3년 후 출시 예정 신상품 사전 시뮬레이션 (장기·복잡)",
+        "당장 필요한 전사 데이터 통합 플랫폼 (대규모·6개월+)",
+        "여유 있을 때 정리할 백오피스 보고 자동화 (저우선)"
       ],
       "answerIndex": 2,
       "explanation": "지금 필요하지만 큰 투자가 필요한 과제 = Now × Difficult. 단기 Quick Win 은 Now × Easy.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "_audit": {
+        "fixed": ["B2"],
+        "changed_fields": ["choices"],
+        "reason": "다른 보기에 시급·난도 태그 추가해 길이 균형",
+        "audited_at": "2026-04-29"
+      }
     },
     {
       "id": "adsp-2-2-cp-01-fe",
@@ -1534,14 +1576,20 @@
       "difficulty": 2,
       "question": "다음 과제 중 \"Future × Difficult\"(후순위·중장기) 에 해당하는 것은?",
       "choices": [
-        "이번 주 끝낼 일별 매출 대시보드",
-        "당장 필요한 전사 데이터 플랫폼",
-        "여유 있을 때 처리할 사내 문서 색인 정비",
-        "10년 후 신사업용 대규모 시뮬레이션 모델 (지금 시작하기엔 비용·효용 낮음)"
+        "이번 주 끝낼 일별 매출 대시보드 (Now × Easy)",
+        "당장 필요한 전사 데이터 플랫폼 (Now × Difficult)",
+        "여유 있을 때 처리할 사내 문서 색인 정비 (FE)",
+        "10년 후 신사업용 대규모 시뮬레이션 모델 (장기·복잡)"
       ],
       "answerIndex": 3,
       "explanation": "장기 R&D 성격 + 큰 투자 + 즉각 효용 낮음 = Future × Difficult. 시급 + 큰 투자는 Now × Difficult.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "_audit": {
+        "fixed": ["B2"],
+        "changed_fields": ["choices"],
+        "reason": "정답 길이 압축 + 다른 보기에 4사분면 태그 추가",
+        "audited_at": "2026-04-29"
+      }
     },
 
     {
@@ -1611,14 +1659,20 @@
       "difficulty": 2,
       "question": "분석 성숙도 \"최적화(Optimization)\" 단계의 특징은?",
       "choices": [
-        "개인 차원의 비공식 시도",
-        "부서별 산발적 도입",
-        "전사 차원의 표준 플랫폼 운영",
-        "데이터 기반 의사결정이 디폴트로 자리잡고 분석 ROI 자체를 다시 최적화"
+        "개인 차원의 비공식 시도 (도입 단계)",
+        "특정 부서별 산발적 도입 (활용 단계)",
+        "전사 차원의 표준 플랫폼 운영 (확산)",
+        "분석이 디폴트가 되어 ROI 자체를 재최적화"
       ],
       "answerIndex": 3,
       "explanation": "최적화는 분석이 의사결정의 주류가 된 가장 성숙한 단계. 표준화·확산 단계는 그 전 단계.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "_audit": {
+        "fixed": ["B2"],
+        "changed_fields": ["choices"],
+        "reason": "정답 길이 압축 + 다른 보기에 단계명 추가",
+        "audited_at": "2026-04-29"
+      }
     },
 
     {
@@ -1650,14 +1704,20 @@
       "difficulty": 2,
       "question": "데이터 거버넌스 3요소 중 \"조직(Organization)\" 에 해당하는 활동은?",
       "choices": [
-        "전사 데이터 관리 헌법·정책을 작성한다",
-        "CDO · 데이터 스튜어드 · 데이터 오너의 R&R 과 보고 라인을 정의한다",
-        "메타데이터를 매일 갱신·운영한다",
-        "데이터 품질 점검 절차를 표준화한다"
+        "전사 데이터 관리 헌법·정책을 작성한다 (원칙)",
+        "CDO · 데이터 스튜어드 · 오너의 R&R 정의",
+        "메타데이터를 매일 갱신·운영한다 (프로세스)",
+        "데이터 품질 점검 절차를 표준화한다 (프로세스)"
       ],
       "answerIndex": 1,
       "explanation": "조직은 거버넌스 실행 인력·R&R 구조. 정책 정의=원칙, 일상 운영·표준 절차=프로세스.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "_audit": {
+        "fixed": ["B2"],
+        "changed_fields": ["choices"],
+        "reason": "정답 길이 압축 + 다른 보기에 카테고리 태그 추가",
+        "audited_at": "2026-04-29"
+      }
     },
     {
       "id": "adsp-2-2-cp-04-process",
@@ -1785,14 +1845,20 @@
       "difficulty": 2,
       "question": "다음 중 \"순서 척도(Ordinal)\" 의 예시는?",
       "choices": [
-        "혈액형",
-        "선호도 5단계 평점 (매우 만족 / 만족 / 보통 / 불만족 / 매우 불만족)",
-        "섭씨 온도",
-        "월 매출 (원)"
+        "혈액형 (A·B·O·AB)",
+        "선호도 5단계 평점 (매우 만족 ~ 매우 불만족)",
+        "섭씨 온도 (°C)",
+        "월 매출 (원, 0 시작)"
       ],
       "answerIndex": 1,
       "explanation": "순서 척도는 순위 비교는 가능하지만 간격이 일정하지 않음. 만족도 5단계가 전형. 매출·온도는 등간/비율, 혈액형은 명목.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "_audit": {
+        "fixed": ["B2"],
+        "changed_fields": ["choices"],
+        "reason": "정답 길이 압축 + 다른 보기에 부연 추가",
+        "audited_at": "2026-04-29"
+      }
     },
     {
       "id": "adsp-3-2-cp-01-interval",
@@ -2066,8 +2132,8 @@
 
     {"id":"adsp-3-1-cp-04-esd","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"R 기초와 데이터 마트","type":"multiple_choice","difficulty":2,"question":"다음 중 \"ESD(Extreme Studentized Deviate)\" 이상값 탐지 방법의 기준은?","choices":["Q1 − 1.5·IQR 미만 또는 Q3 + 1.5·IQR 초과","평균 ± 3σ 를 벗어난 값","주변 ε 반경 안 점이 적은 값","결측 비율이 30% 이상인 변수"],"answerIndex":1,"explanation":"ESD 는 정규 분포 가정에서 평균 ± 3σ 밖 점을 이상값으로. Q1·Q3 기반은 IQR, 밀도 기반은 DBScan.","source":"개념 예제"},
     {"id":"adsp-3-1-cp-04-iqr","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"R 기초와 데이터 마트","type":"multiple_choice","difficulty":2,"question":"다음 중 \"IQR 기반 이상값 탐지\" 의 경계값은?","choices":["평균 ± 2σ","평균 ± 3σ","Q1 − 1.5·IQR 미만 또는 Q3 + 1.5·IQR 초과","주변 ε 반경 점 개수"],"answerIndex":2,"explanation":"IQR 은 사분위수 기반. 분포 가정 없이 박스플롯과 짝. 평균 기반은 ESD/Z-Score, 밀도면 DBScan.","source":"개념 예제"},
-    {"id":"adsp-3-1-cp-04-z","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"R 기초와 데이터 마트","type":"multiple_choice","difficulty":2,"question":"다음 중 \"Z-Score 이상값 탐지\" 의 정의로 알맞은 것은?","choices":["밀도가 낮은 점을 이상값으로","Q1·Q3 기준 1.5·IQR 밖","|z| = |(x − μ)/σ| 가 임계값(보통 2 또는 3) 을 넘는 점","K-평균 클러스터 중심에서 가장 먼 점"],"answerIndex":2,"explanation":"Z-Score 는 표준화 점수가 임계값을 넘는 점. ESD 와 유사하지만 임계값이 더 유연. 밀도 기반은 DBScan.","source":"개념 예제"},
-    {"id":"adsp-3-1-cp-04-dbscan","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"R 기초와 데이터 마트","type":"multiple_choice","difficulty":2,"question":"다음 중 \"DBScan\" 이상값 탐지의 작동 원리는?","choices":["평균 ± 3σ 밖 판정","Q1·Q3 기반 1.5·IQR 경계","ε 반경 안 점 개수가 minPts 미만이면 noise(이상값) 로 판정","|z| > 2 또는 3"],"answerIndex":2,"explanation":"DBScan 은 밀도 기반. 군집 알고리즘이지만 어떤 클러스터에도 속하지 않는 점을 noise 로 분류. 평균·표준편차 기반은 ESD/Z-Score.","source":"개념 예제"},
+    {"id":"adsp-3-1-cp-04-z","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"R 기초와 데이터 마트","type":"multiple_choice","difficulty":2,"question":"다음 중 \"Z-Score 이상값 탐지\" 의 정의로 알맞은 것은?","choices":["밀도가 낮은 점을 이상값으로 판정 (밀도 기반)","Q1·Q3 기준 1.5·IQR 밖에 위치한 값","|z| = |(x − μ)/σ| 가 임계값(2~3)을 초과","K-평균 클러스터 중심에서 가장 먼 점"],"answerIndex":2,"explanation":"Z-Score 는 표준화 점수가 임계값을 넘는 점. ESD 와 유사하지만 임계값이 더 유연. 밀도 기반은 DBScan.","source":"개념 예제","_audit":{"fixed":["B2"],"changed_fields":["choices"],"reason":"정답 압축 + 다른 보기 보강","audited_at":"2026-04-29"}},
+    {"id":"adsp-3-1-cp-04-dbscan","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"R 기초와 데이터 마트","type":"multiple_choice","difficulty":2,"question":"다음 중 \"DBScan\" 이상값 탐지의 작동 원리는?","choices":["평균 ± 3σ 밖을 이상값으로 판정 (ESD)","Q1·Q3 기반 1.5·IQR 경계 밖 (IQR)","ε 반경 안 점이 minPts 미만이면 noise","|z| > 2 또는 3 (Z-Score)"],"answerIndex":2,"explanation":"DBScan 은 밀도 기반. 군집 알고리즘이지만 어떤 클러스터에도 속하지 않는 점을 noise 로 분류. 평균·표준편차 기반은 ESD/Z-Score.","source":"개념 예제","_audit":{"fixed":["B2"],"changed_fields":["choices"],"reason":"정답 압축 + 다른 보기에 알고리즘명 추가",  "audited_at":"2026-04-29"}},
 
     {"id":"adsp-3-3-cp-02-one","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"통계 분석 II","type":"multiple_choice","difficulty":2,"question":"다음 중 \"일표본(One-sample) t검정\" 의 상황에 해당하는 것은?","choices":["다이어트 전후 같은 사람의 체중 변화","A반 vs B반 평균 점수 비교","제품 평균 수명이 1000시간인지 검정","남녀 평균 키 비교"],"answerIndex":2,"explanation":"일표본은 한 집단 평균 vs 기준값. 같은 대상 전/후는 대응표본, 서로 다른 두 집단은 독립표본.","source":"개념 예제"},
     {"id":"adsp-3-3-cp-02-paired","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"통계 분석 II","type":"multiple_choice","difficulty":2,"question":"다음 중 \"대응표본(Paired) t검정\" 의 상황은?","choices":["서로 다른 A·B 두 집단의 평균 점수 비교","제품 평균 수명이 기준값과 같은지","같은 환자들의 약 복용 전·후 혈압 차이","남자 vs 여자 평균 키 차이"],"answerIndex":2,"explanation":"대응표본은 같은 대상의 두 시점·조건 비교. 서로 다른 두 집단이면 독립표본, 한 집단 vs 기준값은 일표본.","source":"개념 예제"},
@@ -2076,7 +2142,7 @@
     {"id":"adsp-3-4-cp-02-voting","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"정형 데이터 마이닝","type":"multiple_choice","difficulty":2,"question":"다음 중 \"Voting\" 앙상블의 정의로 알맞은 것은?","choices":["같은 알고리즘을 부트스트랩 샘플로 병렬 학습 → 평균","서로 다른 알고리즘 분류기·회귀기 예측을 다수결/평균으로 결합","약한 학습기를 순차로 학습하며 이전 오차에 가중치","베이스 모델 예측을 메타 모델의 입력으로"],"answerIndex":1,"explanation":"Voting 은 이질적 모델의 단순 다수결/평균. 부트스트랩이면 Bagging, 순차+오차 가중치면 Boosting, 메타 모델이면 Stacking.","source":"개념 예제"},
     {"id":"adsp-3-4-cp-02-bagging","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"정형 데이터 마이닝","type":"multiple_choice","difficulty":2,"question":"다음 중 \"Bagging\" 의 핵심 효과는?","choices":["분산을 줄여 과적합 완화","편향을 줄여 성능 향상","서로 다른 모델을 다수결로 결합","베이스 예측을 다시 입력으로 학습"],"answerIndex":0,"explanation":"Bagging 은 부트스트랩 샘플 + 병렬 학습으로 분산 감소. 편향 감소는 Boosting, 이질 모델 결합은 Voting, 메타 모델은 Stacking.","source":"개념 예제"},
     {"id":"adsp-3-4-cp-02-boosting","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"정형 데이터 마이닝","type":"multiple_choice","difficulty":2,"question":"다음 중 \"Boosting\" 의 학습 방식은?","choices":["부트스트랩 샘플로 병렬 학습","약한 학습기를 순차로 학습하며 이전 오차에 가중치","서로 다른 모델 다수결","예측을 메타 모델 입력으로"],"answerIndex":1,"explanation":"Boosting 은 순차 학습 + 오차 가중치 → 편향 감소. 병렬은 Bagging, 이질 결합은 Voting.","source":"개념 예제"},
-    {"id":"adsp-3-4-cp-02-stacking","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"정형 데이터 마이닝","type":"multiple_choice","difficulty":3,"question":"다음 중 \"Stacking\" 의 정의로 알맞은 것은?","choices":["부트스트랩 + 평균","순차 학습 + 가중치","여러 베이스 모델의 예측을 새 학습 데이터로 만들어 메타 모델이 최종 예측","단순 다수결"],"answerIndex":2,"explanation":"Stacking 은 베이스 → 메타 모델 층 구조. 단순 결합은 Voting, 부트스트랩은 Bagging, 순차+가중치는 Boosting.","source":"개념 예제"},
+    {"id":"adsp-3-4-cp-02-stacking","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"정형 데이터 마이닝","type":"multiple_choice","difficulty":3,"question":"다음 중 \"Stacking\" 의 정의로 알맞은 것은?","choices":["부트스트랩 샘플 + 평균 (Bagging)","순차 학습 + 오차 가중치 (Boosting)","베이스 모델 예측을 메타 모델 입력으로","단순 다수결 결합 (Voting)"],"answerIndex":2,"explanation":"Stacking 은 베이스 → 메타 모델 층 구조. 단순 결합은 Voting, 부트스트랩은 Bagging, 순차+가중치는 Boosting.","source":"개념 예제","_audit":{"fixed":["B2"],"changed_fields":["choices"],"reason":"정답 압축 + 다른 보기에 기법명 추가","audited_at":"2026-04-29"}},
 
     {"id":"adsp-3-4-cp-03-support","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"정형 데이터 마이닝","type":"multiple_choice","difficulty":2,"question":"연관분석에서 \"지지도(Support)\" 의 정의로 알맞은 것은?","choices":["A 와 B 가 함께 나타난 거래 비율 (전체 대비)","A 산 사람 중 B 산 비율","Lift = 신뢰도 / 전체 B 비율","최소 항목 수"],"answerIndex":0,"explanation":"지지도 = P(A∩B) = 동시 발생 비율. 조건부는 신뢰도, 비율 배수는 향상도.","source":"개념 예제"},
     {"id":"adsp-3-4-cp-03-confidence","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"정형 데이터 마이닝","type":"multiple_choice","difficulty":2,"question":"연관분석에서 \"신뢰도(Confidence)\" 의 정의로 알맞은 것은?","choices":["A 와 B 가 함께 나타난 거래 비율","A 산 사람들 중 B 도 산 비율 (조건부)","Lift = 신뢰도 / B 등장 비율","규칙의 길이"],"answerIndex":1,"explanation":"신뢰도 = P(B|A). 조건부 확률 의미. 동시 발생은 지지도, 배수는 향상도.","source":"개념 예제"},
@@ -2089,7 +2155,7 @@
     {"id":"adsp-2-1-cp-04-rad","subject":"adsp","chapter":2,"chapterTitle":"데이터 분석 기획","topic":"분석 기획","type":"multiple_choice","difficulty":2,"question":"다음 중 \"RAD(Rapid Application Development)\" 의 특징은?","choices":["엄격한 순차 진행","대형·고위험 위험 관리","짧은 사이클 + 빠른 결과 도출 우선","사회적 타당성 검토가 핵심"],"answerIndex":2,"explanation":"RAD 는 단기 사이클 + 빠른 결과. Agile 과 유사하지만 더 단기·결과 중심. 위험 관리는 Spiral, 순차는 Waterfall.","source":"개념 예제"},
 
     {"id":"adsp-1-1-cp-04-dw","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 \"Data Warehouse(DW)\" 의 특징은?","choices":["정형·반정형·비정형 모두를 raw 형태로 저장","운영 데이터를 ETL 후 주제별로 정돈한 분석 창고 (정형 중심)","데이터를 변환 없이 그대로 두는 저수지","거래 처리(OLTP) 전용 시스템"],"answerIndex":1,"explanation":"DW 는 ETL 후 정형 데이터를 분석 목적으로 정돈. raw·다양 형식까지 모두 담으면 Data Lake, 거래 처리는 OLTP.","source":"개념 예제"},
-    {"id":"adsp-1-1-cp-04-lake","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 \"Data Lake\" 의 특징은?","choices":["정형 데이터만 정돈해 저장","ETL 한 후 주제별 분석 창고","정형·반정형·비정형 모두 raw 형태로 적재 (Schema-on-read)","실시간 거래 처리 전용"],"answerIndex":2,"explanation":"Data Lake 는 변환 없이 raw 까지 담는 저장소. 정형 ETL 정돈은 DW, 거래 처리는 OLTP.","source":"개념 예제"},
+    {"id":"adsp-1-1-cp-04-lake","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 \"Data Lake\" 의 특징은?","choices":["정형 데이터만 정돈해 저장 (DW)","ETL 한 후 주제별로 정리한 분석 창고","모든 형태(정형~비정형) raw 그대로 적재","실시간 거래 처리(OLTP) 전용 시스템"],"answerIndex":2,"explanation":"Data Lake 는 변환 없이 raw 까지 담는 저장소(Schema-on-read). 정형 ETL 정돈은 DW, 거래 처리는 OLTP.","source":"개념 예제","_audit":{"fixed":["B2"],"changed_fields":["choices","explanation"],"reason":"정답 압축 + 다른 보기 보강","audited_at":"2026-04-29"}},
 
     {"id":"adsp-1-1-cp-05-dbms","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":1,"question":"다음 중 \"DBMS\" 의 역할로 알맞은 것은?","choices":["전사 자원 통합 관리","데이터베이스의 생성·조회·수정·백업 관리 SW","고객 이력·맞춤 마케팅","공급사슬 최적화"],"answerIndex":1,"explanation":"DBMS 는 데이터베이스 자체의 관리 SW. 전사 통합은 ERP, 고객은 CRM, 공급사슬은 SCM.","source":"개념 예제"},
     {"id":"adsp-1-1-cp-05-erp","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 \"ERP\" 의 정의로 알맞은 것은?","choices":["DB 관리 소프트웨어","생산·판매·재무·인사 등 전사 자원을 통합한 시스템","고객 이력 관리","BI 대시보드"],"answerIndex":1,"explanation":"ERP = 전사 자원 통합. DB 관리는 DBMS, 고객은 CRM, BI 는 의사결정 지원.","source":"개념 예제"},
@@ -2128,7 +2194,7 @@
 
     {"id":"adsp-3-1-cp-03-deletion","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"R 기초와 데이터 마트","type":"multiple_choice","difficulty":2,"question":"다음 중 결측 \"완전 제거\" 의 특징은?","choices":["여러 번 대치 후 결과 통합","결측이 있는 행을 통째 제외 — 간단하지만 정보 손실","평균·중앙값으로 채움","회귀·KNN 으로 예측"],"answerIndex":1,"explanation":"완전 제거 = Listwise/Pairwise Deletion. 단순 통계로 채우면 단순 대치, 다회는 다중, 모델은 모델 기반.","source":"개념 예제"},
     {"id":"adsp-3-1-cp-03-simple","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"R 기초와 데이터 마트","type":"multiple_choice","difficulty":2,"question":"다음 중 \"단순 대치\" 의 한계는?","choices":["계산이 너무 복잡함","분산을 과소평가해 통계적 추론을 왜곡할 수 있음","대치 횟수가 너무 많음","원 데이터 자체를 손상함"],"answerIndex":1,"explanation":"단순 대치(평균·중앙값) 는 변동성을 줄여 분산 과소평가. 다중 대치는 불확실성 반영해 보완.","source":"개념 예제"},
-    {"id":"adsp-3-1-cp-03-multiple","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"R 기초와 데이터 마트","type":"multiple_choice","difficulty":3,"question":"다음 중 \"다중 대치(MI)\" 의 핵심 아이디어는?","choices":["결측 행을 모두 삭제","평균으로 한 번 채움","M 회 다른 값으로 대치 → M 개 데이터셋 분석 → 통합으로 불확실성 반영","KNN 으로 한 번 예측"],"answerIndex":2,"explanation":"MI 는 여러 번 대치 + 통합으로 대치의 불확실성 자체를 결과에 반영. 단일 통계는 단순 대치.","source":"개념 예제"},
+    {"id":"adsp-3-1-cp-03-multiple","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"R 기초와 데이터 마트","type":"multiple_choice","difficulty":3,"question":"다음 중 \"다중 대치(MI)\" 의 핵심 아이디어는?","choices":["결측 행을 모두 삭제 (Listwise)","평균으로 한 번 채우기 (단순 대치)","M 회 대치 → M 데이터셋 분석 → 통합","KNN 으로 한 번 예측 (모델 기반)"],"answerIndex":2,"explanation":"MI 는 여러 번 대치 + 통합으로 대치의 불확실성 자체를 결과에 반영. 단일 통계는 단순 대치.","source":"개념 예제","_audit":{"fixed":["B2"],"changed_fields":["choices"],"reason":"정답 압축 + 다른 보기에 기법 태그","audited_at":"2026-04-29"}},
     {"id":"adsp-3-1-cp-03-model","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"R 기초와 데이터 마트","type":"multiple_choice","difficulty":2,"question":"다음 중 \"모델 기반 대치\" 에 해당하는 것은?","choices":["행 삭제","평균값으로 채움","회귀·KNN 등으로 다른 변수로부터 결측을 예측해 채움","무작위로 채움"],"answerIndex":2,"explanation":"모델 기반 = 회귀·KNN 예측. 단일 통계는 단순, 행 제거는 완전 제거, 다회는 다중.","source":"개념 예제"},
 
     {"id":"adsp-3-1-cp-05-vector","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"R 기초와 데이터 마트","type":"multiple_choice","difficulty":1,"question":"다음 중 R 의 \"vector\" 특징으로 알맞은 것은?","choices":["같은 타입의 1차원 묶음 (c() 로 생성)","서로 다른 타입을 한 객체에 혼합 가능","열마다 타입이 다른 표","2차원에 같은 타입을 담음"],"answerIndex":0,"explanation":"vector = 같은 타입 1차원. 다른 타입 혼합은 list, 열마다 다른 타입은 data.frame, 2차원 동일 타입은 matrix.","source":"개념 예제"},
@@ -2142,12 +2208,12 @@
     {"id":"adsp-3-3-cp-01-h0","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"통계 분석 II","type":"multiple_choice","difficulty":1,"question":"다음 중 \"귀무가설(H₀)\" 의 정의로 알맞은 것은?","choices":["\"차이가 있다 / 효과가 있다\" 는 주장","\"차이가 없다 / 효과가 없다\" 는 가정으로, 기각의 대상","유의수준 α","p-value 의 별명"],"answerIndex":1,"explanation":"H₀ = 차이/효과 없음의 가정. 차이 있음 주장은 H₁(대립), α 는 유의수준, p-value 는 별개.","source":"개념 예제"},
     {"id":"adsp-3-3-cp-01-h1","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"통계 분석 II","type":"multiple_choice","difficulty":1,"question":"다음 중 \"대립가설(H₁)\" 에 해당하는 것은?","choices":["\"차이가 없다\" 는 가정","연구자가 증명하고자 하는 \"차이가 있다 / 효과가 있다\" 의 주장","유의수준의 다른 이름","2종 오류 확률"],"answerIndex":1,"explanation":"H₁ = 증명 목표. \"없다\" 는 H₀, α 는 유의수준.","source":"개념 예제"},
     {"id":"adsp-3-3-cp-01-alpha","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"통계 분석 II","type":"multiple_choice","difficulty":2,"question":"다음 중 \"유의수준(α)\" 의 정의로 알맞은 것은?","choices":["H₀ 가 거짓일 때 채택할 위험","참인 H₀ 를 잘못 기각할 위험의 허용 한도 (1종 오류 한도)","p-value 의 절댓값","검정력의 다른 이름"],"answerIndex":1,"explanation":"α = 1종 오류 허용 한도 (보통 0.05). 2종 오류는 β, 검정력은 1−β.","source":"개념 예제"},
-    {"id":"adsp-3-3-cp-01-pvalue","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"통계 분석 II","type":"multiple_choice","difficulty":3,"question":"다음 중 \"p-value\" 의 정확한 정의는?","choices":["귀무가설이 참일 확률","H₀ 가 참이라고 가정할 때, 현재 데이터 또는 그보다 극단적인 결과가 나올 확률","대립가설이 참일 확률","유의수준의 다른 이름"],"answerIndex":1,"explanation":"p-value 는 \"H₀ 가정 하에서 우연히 현재 결과 이상 극단값이 나올 확률\". \"H₀ 가 참일 확률\" 이라는 흔한 오해 주의.","source":"개념 예제"},
+    {"id":"adsp-3-3-cp-01-pvalue","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"통계 분석 II","type":"multiple_choice","difficulty":3,"question":"다음 중 \"p-value\" 의 정확한 정의는?","choices":["귀무가설(H₀) 이 참일 확률 (흔한 오해)","H₀ 가정 하 현재 결과 이상 극단값이 나올 확률","대립가설(H₁) 이 참일 확률 (오해)","유의수준의 다른 이름 (헷갈리는 함정)"],"answerIndex":1,"explanation":"p-value 는 \"H₀ 가정 하에서 우연히 현재 결과 이상 극단값이 나올 확률\". \"H₀ 가 참일 확률\" 이라는 흔한 오해 주의.","source":"개념 예제","_audit":{"fixed":["B2"],"changed_fields":["choices"],"reason":"정답 압축 + 다른 보기에 함정 태그","audited_at":"2026-04-29"}},
     {"id":"adsp-3-3-cp-01-error","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"통계 분석 II","type":"multiple_choice","difficulty":3,"question":"다음 중 \"1종 오류\" 의 정의로 알맞은 것은?","choices":["H₀ 가 참인데 잘못 기각하는 것 (거짓 양성)","H₀ 가 거짓인데 채택하는 것 (놓침)","검정력","유의수준의 동의어"],"answerIndex":0,"explanation":"1종 오류 = α = H₀ 참인데 기각. 2종 오류는 β = H₀ 거짓인데 채택. 검정력 = 1 − β.","source":"개념 예제"},
 
     {"id":"adsp-3-4-cp-04-hier","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"정형 데이터 마이닝","type":"multiple_choice","difficulty":2,"question":"다음 중 \"계층적 군집\" 의 특징은?","choices":["K 를 미리 정해야 함","합병형/분할형으로 덴드로그램(트리) 을 형성","밀도 기반","확률적 클러스터 할당"],"answerIndex":1,"explanation":"계층적 = 덴드로그램, K 사전 지정 불필요. K 사전이면 K-means, 밀도 기반은 DBSCAN, 확률 할당은 EM.","source":"개념 예제"},
     {"id":"adsp-3-4-cp-04-kmeans","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"정형 데이터 마이닝","type":"multiple_choice","difficulty":2,"question":"다음 중 \"K-means\" 의 특징은?","choices":["밀도 기반, K 불필요","K 를 사전에 정하고 중심점 ↔ 점 거리로 반복 재배정","트리 구조 덴드로그램","확률 모델 기반"],"answerIndex":1,"explanation":"K-means = K 사전 지정 + 중심점 반복. 밀도면 DBSCAN, 트리는 계층적, 확률은 EM.","source":"개념 예제"},
-    {"id":"adsp-3-4-cp-04-dbscan","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"정형 데이터 마이닝","type":"multiple_choice","difficulty":2,"question":"다음 중 \"DBSCAN\" 의 강점은?","choices":["K 를 사전 정해야 함","K 사전 지정 불필요 + 비구형 클러스터 + noise(이상치) 자동 식별","트리 구조 출력","결측에 강함"],"answerIndex":1,"explanation":"DBSCAN = 밀도 기반, K 불필요, 이상치 강건. K 사전이면 K-means, 트리는 계층적.","source":"개념 예제"},
+    {"id":"adsp-3-4-cp-04-dbscan","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"정형 데이터 마이닝","type":"multiple_choice","difficulty":2,"question":"다음 중 \"DBSCAN\" 의 강점은?","choices":["K 를 사전에 정해야 작동 (K-means 처럼)","K 불필요 + 비구형 클러스터 + noise 자동 식별","계층적 트리 구조를 결과로 출력","결측·이상치 모두에 강건한 모델"],"answerIndex":1,"explanation":"DBSCAN = 밀도 기반, K 불필요, 이상치 강건. K 사전이면 K-means, 트리는 계층적.","source":"개념 예제","_audit":{"fixed":["B2"],"changed_fields":["choices"],"reason":"정답 압축 + 다른 보기 보강","audited_at":"2026-04-29"}},
     {"id":"adsp-3-4-cp-04-em-som","subject":"adsp","chapter":3,"chapterTitle":"데이터 분석","topic":"정형 데이터 마이닝","type":"multiple_choice","difficulty":3,"question":"다음 중 \"EM\" 군집의 핵심 아이디어는?","choices":["덴드로그램 합병","중심점 반복","가우시안 혼합 모델로 각 점이 클러스터에 속할 확률을 학습","밀도 기반"],"answerIndex":2,"explanation":"EM(Expectation-Maximization) = 확률적 군집 할당. 덴드로그램은 계층적, 중심 반복은 K-means, 밀도는 DBSCAN.","source":"개념 예제"}
   ]
 }

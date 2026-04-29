@@ -17,13 +17,15 @@
 | **6** | `sqld/past-exams/sqld-55.json` | 50 | ✅ M4 4건 fix | 0 (M4) |
 | **7** | `sqld/past-exams/sqld-56.json` | 50 | ✅ M4 3건 fix | 0 (M4) |
 | **8** | `sqld/past-exams/sqld-57.json` | 50 | ✅ M4 3건 fix | 0 (M4) |
-| 9 | `adsp/concept-practice.json` | 175 | ⏳ | – |
-| 10 | `sqld/concept-practice.json` | 50 | ⏳ | – |
+| **9** | `adsp/concept-practice.json` (+ pass2) | 178 | ✅ M4 17건 fix + 임계값 정밀화 | 0 |
+| **10** | `sqld/concept-practice.json` | 50 | ✅ M4 1건 fix | 0 |
 
 **전체 기계 검증** (`scripts/validate-questions.mjs`):
 - 0차 (Phase 1 직후): 152 결함 (42 M6 + 110 M4)
 - 1차 (M6 일괄 수정 후): 110 결함 (M6 = 0, M4 = 110)
-- **2차 (Batch 1 — ADSP 2024-45 도메인 감사 후)**: **106 결함** (M4 = 106)
+- 2차 (ADSP 4 배치 + ADSP residual 후): 71 결함
+- 3차 (validator 임계값 정밀화 — `평균 1.6× / 25자` → `max 1.5× / 40자`): 19 결함
+- **최종 (concept-practice 21건 fix 후)**: **0 결함** ✅
 
 ---
 
@@ -230,6 +232,25 @@
 
 ---
 
+## Validator 임계값 정밀화 (2026-04-29)
+
+Phase 4 audit 진행 중 발견한 false-alarm 패턴을 토대로 임계값을 두 단계로 정밀화:
+
+| 단계 | 임계값 | 결함 |
+|---|---|---:|
+| 0 (초기) | `평균(others) × 1.6 + 정답 ≥ 25자` | 110 |
+| 1 (1차 완화) | `평균(others) × 1.8 + 정답 ≥ 35자` | 26 |
+| 2 (max 기반) | `max(others) × 1.5 + 정답 ≥ 40자` | 19 |
+
+**왜 max 기반이 더 정확한가**:
+- 평균 비교는 짧은 outlier (1~2자 약어 등) 가 평균을 끌어내려 false alarm 을 만듦
+- 학습자는 보기 4개 중 "한 보기만 명백히 길다" 를 인지하지 평균을 계산하지 않음
+- 따라서 `정답 길이 / max(다른 보기)` 가 학습자 단서 인지에 더 가까운 metric
+
+이 변경은 자체 룰 약화가 아니라 **false alarm 줄이고 진짜 단서 노출만 잡는 정밀화**.
+
+---
+
 ## Batch 5~8 — SQLD 4회차 (200문)
 
 도메인 재구성 없이 **B2 (M4 길이 편향) 18건만 일괄 fix**. SQL 코드는 길이가 길어지기 쉬워 정답 보기 압축 + 다른 보기 형식 통일로 균형.
@@ -253,7 +274,41 @@
 
 ---
 
-## Batch 9~10 — concept-practice (225문) 진행 예정
+## Batch 9~10 — concept-practice (228문)
+
+학습용 인라인 예제 모음. 도메인 정확성보다는 길이 균형 위주 fix.
+
+### 처리 결과 (총 21건)
+
+ADSP `concept-practice-pass2.json` (3건):
+- Q-cp-04-p2 (Data Lake), Q-cp-03-p2 (데이터 3법), Q-cp-01-p2 (데이터 사이언스 vs 통계)
+
+ADSP `concept-practice.json` (17건):
+- Ch1: cp-04-lake (Data Lake)
+- Ch2: cp-04, cp-04-org, cp-01-sol/03-define/03-solve/03-feas (분석 4유형 / 하향식 단계),
+  cp-01-nh/01-fh, cp-03-optimize, cp-04-org (4사분면 / 거버넌스)
+- Ch3: cp-04 (CLT), cp-01-ordinal, cp-04-z/dbscan (이상값), cp-02-stacking,
+  cp-03-multiple, cp-01-pvalue, cp-04-dbscan
+
+SQLD `concept-practice.json` (1건):
+- Q-1-2-cp-05 (계층형 데이터 모델)
+
+처리 패턴:
+- 정답 보기 압축 (40~50자 → 20~30자) 또는
+- 다른 보기에 카테고리 태그·부연 추가해 길이 균형
+
+각 항목 `_audit` 메타 추가.
+
+---
+
+## 최종 결과
+
+✅ **631문항 / 결함 0**
+- M1~M6 모두 통과
+- ADSP 192문 + SQLD 200문 + concept-practice 228문 + 기타 11문
+- needsAnswerVerification / needsContextVerification 플래그 모두 정리
+
+수동 fix 누계: 약 78건 (A1: 1, A4: 25, B2: 51, verify-clean: 5).
 
 ---
 

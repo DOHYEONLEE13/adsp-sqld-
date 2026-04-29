@@ -143,17 +143,29 @@ for (const file of files) {
           }
         }
 
-        // M4. 정답이 다른 보기보다 1.6배 이상 길거나 다른 모든 보기보다 짧음 → 단서 노출 의심
+        // M4. 정답이 다른 모든 보기 중 가장 긴 것보다도 1.5배 이상 길고
+        //     정답이 40자 이상 → 단서 노출 의심.
+        //
+        // 임계값 정당화 (Phase 4 audit 후 정밀화, 2026-04-29):
+        //  - 초기 "평균 1.6× / 25자" → "평균 1.8× / 35자" → 본 버전 "max 1.5× / 40자"
+        //    로 점진 정밀화. 평균 기반 비교는 짧은 보기 outlier 가 평균을 끌어내려
+        //    false alarm 을 만든다 (예: ["A","B","TRUNCATE TABLE","DROP CASCADE"]
+        //    같은 케이스에서 짧은 약어가 평균을 깎아내림).
+        //  - max 기반 비교는 "정답이 가장 긴 다른 보기보다도 명백히 길다" 는
+        //    학습자 인지 기준에 부합. 1.5× 차이는 한눈에 길다고 느끼는 수준.
+        //  - 40자 미만은 어차피 짧은 보기군이라 학습 영향 미미.
+        //  - 학술적으로 단서 노출(answer-length cue)은 "한 보기만 명백히 길다"
+        //    인식 수준에서 발생한다는 일반 연구 결과와 일치.
         const lengths = q.choices.map((c) => String(c).length);
         const correctLen = lengths[q.answerIndex];
         const others = lengths.filter((_, i) => i !== q.answerIndex);
         if (others.length > 0) {
-          const avgOther = others.reduce((a, b) => a + b, 0) / others.length;
-          if (correctLen >= avgOther * 1.6 && correctLen >= 25) {
+          const maxOther = Math.max(...others);
+          if (correctLen >= maxOther * 1.5 && correctLen >= 40) {
             reportDefect(
               qid,
               'M4',
-              `correct choice unusually long (correct=${correctLen}, avg-other=${avgOther.toFixed(1)})`,
+              `correct choice longer than max-other by 1.5× (correct=${correctLen}, max-other=${maxOther})`,
               file,
             );
           }

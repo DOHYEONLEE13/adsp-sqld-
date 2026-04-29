@@ -32,6 +32,11 @@ export interface FriendEntry {
   lastSeenAt: number;
   /** 친구 추가 시점. */
   addedAt: number;
+  /**
+   * 친구의 회독 Pass Tier. 마이그 0013 미적용 환경 또는 게스트 placeholder
+   * 에선 'bronze' 로 fallback. profiles.pass_tier 의 직접 mirror.
+   */
+  passTier: 'bronze' | 'silver' | 'gold' | 'platinum' | 'master';
 }
 
 interface StoredFriends {
@@ -114,6 +119,7 @@ export function addFriend(rawTag: string, myTag: string): AddResult {
       streakDays: 0,
       lastSeenAt: 0,
       addedAt: Date.now(),
+      passTier: 'bronze',
     });
     save(data);
     notify();
@@ -134,6 +140,7 @@ export function addFriend(rawTag: string, myTag: string): AddResult {
     streakDays: 0,
     lastSeenAt: 0,
     addedAt: Date.now(),
+    passTier: 'bronze',
   });
   save(data);
   notify();
@@ -178,6 +185,8 @@ interface FriendRow {
   level: number;
   streak_days: number;
   last_seen_at: string;
+  /** 마이그 0013 적용 후 컬럼 존재. 미존재 시 null (graceful degrade). */
+  pass_tier?: string | null;
 }
 
 /** server 에서 친구 목록 + 진도 stat 까지 한 번에 fetch. RLS 가 자동 필터. */
@@ -189,18 +198,38 @@ async function pullFromSupabase(): Promise<void> {
 
   // friendships → profiles join. RLS policy `profiles_read_friends` 가 자동으로
   // 친구 row 만 노출. user_id 필터는 friendships RLS 가 처리.
-  const { data, error } = await sb
+  // pass_tier 컬럼이 마이그 0013 후에만 존재 — 미적용 환경 대비 두 단계로 시도.
+  // 1순위: pass_tier 포함. 2순위: 컬럼 부재 에러 → 기존 select 로 fallback.
+  // 동일 supabase-js 타입 추론 충돌 회피 위해 unknown 으로 narrow 후 처리.
+  let rawData: unknown = null;
+  const r1 = await sb
     .from('friendships')
     .select(
-      'friend_id, friend:profiles!friendships_friend_id_fkey(tag, display_name, avatar_pose, total_xp, level, streak_days, last_seen_at)',
+      'friend_id, friend:profiles!friendships_friend_id_fkey(tag, display_name, avatar_pose, total_xp, level, streak_days, last_seen_at, pass_tier)',
     )
     .order('created_at', { ascending: false });
-
-  if (error || !data) return;
+  if (!r1.error && r1.data) {
+    rawData = r1.data;
+  } else {
+    const r2 = await sb
+      .from('friendships')
+      .select(
+        'friend_id, friend:profiles!friendships_friend_id_fkey(tag, display_name, avatar_pose, total_xp, level, streak_days, last_seen_at)',
+      )
+      .order('created_at', { ascending: false });
+    if (r2.error || !r2.data) return;
+    rawData = r2.data;
+  }
+  const data = rawData as Array<unknown>;
 
   const list: FriendEntry[] = data.flatMap((row) => {
-    const f = (row as unknown as { friend: FriendRow | null }).friend;
+    const f = (row as { friend: FriendRow | null }).friend;
     if (!f) return [];
+    const validTiers = ['bronze', 'silver', 'gold', 'platinum', 'master'] as const;
+    type T = (typeof validTiers)[number];
+    const tier: T = validTiers.includes(f.pass_tier as T)
+      ? (f.pass_tier as T)
+      : 'bronze';
     return [
       {
         tag: f.tag,
@@ -211,6 +240,7 @@ async function pullFromSupabase(): Promise<void> {
         streakDays: f.streak_days ?? 0,
         lastSeenAt: f.last_seen_at ? Date.parse(f.last_seen_at) : 0,
         addedAt: 0,
+        passTier: tier,
       },
     ];
   });

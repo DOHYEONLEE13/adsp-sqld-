@@ -11,7 +11,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
-import { Copy, Trash2, UserPlus, Trophy, Zap, Flame } from 'lucide-react';
+import { Copy, Trash2, UserPlus, Trophy, Zap, Flame, ArrowUpDown } from 'lucide-react';
 import ScreenShell from './components/ScreenShell';
 import { MobileBottomNav } from './components/MobileGameNav';
 import PageAmbientBg from './components/PageAmbientBg';
@@ -19,6 +19,13 @@ import { useProgress } from './useProgress';
 import { computePlayerStats } from './rpg';
 import Ques from '@/components/mascot/Ques';
 import type { QuesPose } from '@/components/mascot/types';
+import { usePassSnapshot } from './passSync';
+import {
+  PASS_TIER_VISUAL,
+  PASS_TIER_ORDER,
+  type PassTier,
+} from '@/types/passes';
+import PassTierBadge from '@/components/passes/PassTierBadge';
 import {
   getSupabase,
   isSupabaseConfigured,
@@ -77,6 +84,11 @@ export default function FriendsPage({ onExit }: Props) {
     };
   }, []);
 
+  // 정렬 기준 — 4종 토글
+  type SortKey = 'tier' | 'xp' | 'streak' | 'recent';
+  const [sortKey, setSortKey] = useState<SortKey>('tier');
+  const passSnap = usePassSnapshot();
+
   // 내 진행상황도 리더보드에 합산해 보여주려고 합성.
   const board = useMemo(() => {
     const myRow = {
@@ -86,11 +98,40 @@ export default function FriendsPage({ onExit }: Props) {
       level: playerStats.level,
       totalXp: playerStats.totalXp,
       streakDays: playerStats.streakDays,
-      isMe: true,
+      lastSeenAt: Date.now(),
+      passTier: passSnap.tier,
+      isMe: true as const,
     };
-    const others = friends.map((f) => ({ ...f, isMe: false as const }));
-    return [myRow, ...others].sort((a, b) => b.totalXp - a.totalXp);
-  }, [me, playerStats, friends]);
+    const others = friends.map((f) => ({
+      tag: f.tag,
+      displayName: f.displayName,
+      avatarPose: f.avatarPose,
+      level: f.level,
+      totalXp: f.totalXp,
+      streakDays: f.streakDays,
+      lastSeenAt: f.lastSeenAt,
+      passTier: f.passTier,
+      isMe: false as const,
+    }));
+    const all = [myRow, ...others];
+    const tierRank = (t: PassTier) => PASS_TIER_ORDER.indexOf(t);
+    return all.sort((a, b) => {
+      switch (sortKey) {
+      case 'tier': {
+        const tr = tierRank(b.passTier) - tierRank(a.passTier);
+        if (tr !== 0) return tr;
+        return b.totalXp - a.totalXp;
+      }
+      case 'streak':
+        return b.streakDays - a.streakDays || b.totalXp - a.totalXp;
+      case 'recent':
+        return b.lastSeenAt - a.lastSeenAt;
+      case 'xp':
+      default:
+        return b.totalXp - a.totalXp;
+      }
+    });
+  }, [me, playerStats, friends, sortKey, passSnap.tier]);
 
   return (
     <ScreenShell
@@ -105,7 +146,7 @@ export default function FriendsPage({ onExit }: Props) {
 
       <AddFriendCard myTag={me.tag} />
 
-      <Leaderboard rows={board} />
+      <Leaderboard rows={board} sortKey={sortKey} onChangeSort={setSortKey} />
 
       {isSignedIn ? (
         <p className="kr-body text-[12px] text-cream/55 mt-4 leading-[1.65]">
@@ -321,30 +362,67 @@ interface BoardRow {
   level: number;
   totalXp: number;
   streakDays: number;
+  passTier: PassTier;
   isMe: boolean;
 }
 
-function Leaderboard({ rows }: { rows: BoardRow[] }) {
+type SortKey = 'tier' | 'xp' | 'streak' | 'recent';
+
+const SORT_LABEL: Record<SortKey, string> = {
+  tier: 'Tier 순',
+  xp: 'XP 순',
+  streak: '연속일 순',
+  recent: '최근 활동',
+};
+
+function Leaderboard({
+  rows,
+  sortKey,
+  onChangeSort,
+}: {
+  rows: BoardRow[];
+  sortKey: SortKey;
+  onChangeSort: (k: SortKey) => void;
+}) {
   return (
     <section
       className="liquid-glass rounded-[24px] p-5 md:p-6"
       aria-label="친구 리더보드"
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
         <h2 className="kr-heading text-[13px] uppercase tracking-widest text-cream/70 inline-flex items-center gap-2">
           <Trophy size={14} strokeWidth={2.4} />
           리더보드
         </h2>
-        <span className="kr-heading text-[10px] tracking-widest text-cream/45">
-          XP 순
-        </span>
+        <div className="inline-flex items-center gap-1 flex-wrap">
+          <ArrowUpDown size={11} className="text-cream/45" />
+          {(['tier', 'xp', 'streak', 'recent'] as SortKey[]).map((k) => (
+            <button
+              key={k}
+              type="button"
+              onClick={() => onChangeSort(k)}
+              className="kr-num text-[10px] uppercase tracking-widest px-2 py-1 rounded-full transition active:scale-[0.97]"
+              style={{
+                background:
+                  sortKey === k ? 'rgba(111,255,0,0.14)' : 'rgba(239,244,255,0.04)',
+                border:
+                  sortKey === k
+                    ? '1px solid rgba(111,255,0,0.45)'
+                    : '1px solid rgba(239,244,255,0.10)',
+                color: sortKey === k ? '#6FFF00' : 'rgba(239,244,255,0.55)',
+              }}
+            >
+              {SORT_LABEL[k]}
+            </button>
+          ))}
+        </div>
       </div>
 
       <ol className="flex flex-col gap-2">
         {rows.map((row, idx) => (
           <li
             key={row.tag}
-            className="rounded-[14px] px-4 py-3 flex items-center gap-3"
+            className="rounded-[14px] px-4 py-3 flex items-center gap-3 relative overflow-hidden"
             style={{
               background: row.isMe
                 ? 'rgba(111,255,0,0.08)'
@@ -354,6 +432,17 @@ function Leaderboard({ rows }: { rows: BoardRow[] }) {
                 : '1px solid rgba(239,244,255,0.06)',
             }}
           >
+            {/* Tier vertical accent — 좌측 4px 띠 */}
+            <span
+              aria-hidden
+              className="absolute left-0 top-0 bottom-0"
+              style={{
+                width: 4,
+                background: PASS_TIER_VISUAL[row.passTier].color,
+                opacity: row.passTier === 'bronze' ? 0.3 : 0.85,
+                boxShadow: row.passTier !== 'bronze' ? `0 0 8px ${PASS_TIER_VISUAL[row.passTier].glow}` : undefined,
+              }}
+            />
             <span
               className="shrink-0 w-7 h-7 rounded-full inline-flex items-center justify-center kr-num text-[12px]"
               style={{
@@ -399,6 +488,7 @@ function Leaderboard({ rows }: { rows: BoardRow[] }) {
                     나
                   </span>
                 ) : null}
+                <PassTierBadge tier={row.passTier} size="xs" />
               </div>
               <div className="flex items-center gap-2 kr-num text-[10px] text-cream/55 mt-0.5 flex-nowrap whitespace-nowrap">
                 <span className="inline-flex items-center gap-1 shrink-0">

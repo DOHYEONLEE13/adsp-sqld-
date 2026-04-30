@@ -47,14 +47,25 @@ export interface PricingPlan {
    * - premium-monthly : 월간 구독 (best value)
    */
   id: 'free' | 'premium-weekly' | 'premium-monthly';
+  /** 작은 태그 라벨 — 'PREMIUM' / 'FREE' 같은 카테고리. */
+  category?: string;
+  /** 큰 부제 — '월 구독' / '1주 단기' / '무료'. */
   tier: string;
+  /** 가격 본체 — '9,900' (원 단위 숫자만) 또는 '₩0'. */
   price: string;
+  /** 가격 뒤 단위 + 주기 — '원 / 월'·'원 / 주' 등. price 와 함께 한 줄로 렌더. */
+  priceSuffix?: string;
+  /**
+   * 가격 아래 작은 가치 안내 — '주당 ₩2,475 · 1주 단기 대비 약 50% 저렴'.
+   * neon 색으로 강조. 월 구독 카드의 차별 포인트 노출용.
+   */
+  valueNote?: string;
   description?: string;
-  /** 카드 우상단 작은 뱃지 (예: "BEST", "1주 체험"). 강조 카드 식별용. */
+  /** 카드 우상단 작은 뱃지 (예: "BEST", "단기"). 강조 카드 식별용. */
   badge?: string;
   /**
    * 카드 시각 강조 정도.
-   * - 'highlight' = neon 액센트 + 살짝 큰 그림자 (월간 추천 카드)
+   * - 'highlight' = neon 액센트 + glow + 살짝 들림 (월간 추천 카드)
    * - 기본 = 평면
    */
   emphasis?: 'highlight';

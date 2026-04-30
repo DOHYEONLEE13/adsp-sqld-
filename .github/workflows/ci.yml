@@ -26,7 +26,9 @@ jobs:
         with:
           # Cloudflare Pages 와 동일 (build log 의 nodejs@22.16.0)
           node-version: '22'
-          cache: 'npm'
+          # cache: 'npm' 은 package-lock.json 이 있어야 동작.
+          # lock 을 git 추적에서 제외했으므로 cache 비활성. 빌드는 좀 느려지지만
+          # 정상 동작이 우선.
 
       - name: npm install (OS 별 optional dep 차이 흡수)
         # 원래 npm ci 가 정확하지만, Windows 로컬 → Linux CI 의 OS 차이로

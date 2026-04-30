@@ -169,4 +169,101 @@ Cloudflare 한 곳만 빌드 검증하면, 거기가 침묵으로 실패할 때 
 
 ---
 
-마지막 갱신: 2026-04-30 · Phase 3 false completion 사고 직후 작성.
+## 부록 — 2026-04-30 후속 발견: RLS 무한 재귀가 실제 증상의 원인
+
+### 한 줄 요약
+
+> **Cloudflare 배포는 lock 파일 수정으로 풀렸지만, 사용자가 실제로 본 "동기화 실패" 는 6 migration 에 걸쳐 누적된 9개 admin RLS 정책의 자기참조 무한 재귀가 원인이었음. 두 사고는 별개이며, 1차 fix 가 2차 사고를 가렸음.**
+
+### 사건 재타임라인
+
+| 시점 | 사건 |
+|---|---|
+| ~22:23 | PR-2 lock sync 누락 → Cloudflare 동결 (1차 사고 = postmortem 본문) |
+| 다음날 13:38 | lock 파일 untrack + CI 가드 + GitHub Actions 패치 → 새 번들 (CG7kBY4b.js) deploy 성공 |
+| 14:00 | 사용자: "내 태그 ⚠️ 동기화 실패 재시도" — 새 코드 prod 도달 확인됨에도 sync 실패 지속 |
+| 14:10 | Supabase API 로그 확인 → `/profiles`, `/sessions`, `/question_stats`, `/pass_stamps`, `/friendships?select=...,profiles(...)` 가 모두 500 응답 |
+| 14:25 | RLS 정책 dump → `profiles_admin_read` 의 자기참조 EXISTS 발견 |
+| 14:28 | DB 직접 시뮬레이션 → `ERROR: 42P17: infinite recursion detected in policy for relation "profiles"` 결정적 증거 |
+| 14:30 | migration 0015 적용 → 9개 admin 정책 전부 `is_current_user_admin()` SECURITY DEFINER 함수로 교체 |
+| 14:32 | 시뮬레이션 재실행 → 정상 통과. Postgres 로그도 적용 시점 (1777559408) 이후 재귀 에러 0건 |
+
+### 근본 원인 (2차)
+
+**0009_admin_role.sql** 부터 일관된 패턴:
+
+```sql
+create policy profiles_admin_read on public.profiles
+  for select to authenticated
+  using (
+    exists (select 1 from public.profiles me
+            where me.id = (select auth.uid()) and me.role = 'admin')
+  );
+```
+
+`profiles` 의 RLS 정책 본체가 `profiles` 를 SELECT 함 → 그 SELECT 도 RLS 평가 받음 → 같은 정책이 다시 SELECT … → PostgreSQL 거부.
+
+같은 패턴이 누적된 8개:
+- `sessions_admin_read` (0009)
+- `question_stats_admin_read` (0009)
+- `redemption_codes_admin_all` (0011)
+- `premium_grants_admin_read` (0011)
+- `payments_admin_read` (0012)
+- `refund_requests_admin_read` (0012)
+- `refund_requests_admin_update` (0012)
+- `pass_stamps_admin_read` (0013)
+
+이들은 자기참조는 아니지만 admin 체크가 `profiles` 를 SELECT 하므로 → profiles RLS 가 평가되며 위 재귀에 휘말림 → 모든 동기화 호출이 한꺼번에 막힘.
+
+### 수정 (migration 0015)
+
+```sql
+create or replace function public.is_current_user_admin()
+returns boolean
+language sql stable security definer
+set search_path = ''
+as $$
+  select coalesce(
+    (select role = 'admin' from public.profiles where id = (select auth.uid())),
+    false
+  );
+$$;
+```
+
+`security definer` 가 RLS 우회 → 정책 본체가 다시 RLS 트리거하지 않음. 9개 정책 모두 이 함수 호출로 교체.
+
+### 검증 증거
+
+1. **DB 시뮬레이션 (apply 전)**: `ERROR: 42P17: infinite recursion detected in policy for relation "profiles"`
+2. **DB 시뮬레이션 (apply 후)**: 동일 query 정상 실행, count 결과 반환
+3. **Postgres 로그**: 시간순으로 봤을 때 1777559408 (apply 시점) 직전 60+ 회 재귀 에러 → apply 직후 0건
+4. **정책 dump (apply 후)**: 9개 정책 모두 `qual = "is_current_user_admin()"` 으로 갱신 확인
+
+### 이 사고에서 추가로 배운 것
+
+#### 6. 1차 fix 가 2차 증상을 가릴 수 있다
+
+Cloudflare 빌드를 풀어주니까 새 코드는 사용자에 닿았다. 하지만 그 새 코드가 호출하는 서버 query 가 또 다른 이유로 막혀있었다. 사용자가 보기엔 "여전히 동기화 안 됨" 이라 두 사고가 같은 사고로 보임. 실제론 별개.
+
+→ 교훈: 한 fix 가 끝나도 **사용자 가시 증상이 사라졌는지** 확인해야 한다. "내 fix 가 의도한 layer 가 풀렸음" ≠ "사용자 증상 사라짐".
+
+#### 7. RLS self-reference 는 typecheck/build 가 못 잡는다
+
+빌드는 통과한다. 단위 테스트도 통과한다. CI 도 통과한다. 실제 query 가 production DB 를 때리는 순간에만 터짐. 결과: 5단계 증거 (1~5) 가 다 ✅ 인데 6번 (사용자 화면) 만 ❌.
+
+→ 교훈: **production 의 권한·정책 변경 후엔 실제 query 1회 시뮬레이션** 이 6단계에 별도 항목으로 추가돼야 한다.
+
+#### 8. SECURITY DEFINER 함수가 RLS 우회 표준
+
+postgres RLS 패턴에서 정책 안에서 같은 테이블을 조회해야 할 땐 항상 `SECURITY DEFINER` 함수로 격리. `set search_path = ''` 와 `revoke from public, anon` 도 짝.
+
+### 6단계 증거 체크리스트 (보강)
+
+기존 6개에 1개 추가 — RLS 정책을 건드린 마이그레이션이 있을 때:
+
+- [ ] **DB 직접 시뮬레이션**: `SET LOCAL role TO authenticated; SET LOCAL request.jwt.claims TO ...; SELECT ... FROM <변경된 테이블>` 이 정상 통과하는가?
+- [ ] **Postgres 로그**: 적용 직전·직후 비교 시 새 에러 발생하지 않는가?
+
+---
+
+마지막 갱신: 2026-04-30 · Phase 3 false completion 사고 직후 작성. RLS 재귀 후속 사건은 부록에 추가.

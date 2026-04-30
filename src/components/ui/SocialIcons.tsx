@@ -1,12 +1,10 @@
-import { Github, Mail, Twitter } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { SOCIAL_LINKS } from '@/data/nav';
 import { cx } from '@/lib/utils';
 import type { SocialLink } from '@/types/site';
 
 const ICONS = {
   email: Mail,
-  twitter: Twitter,
-  github: Github,
 } as const;
 
 interface Props {

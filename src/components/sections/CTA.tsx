@@ -1,9 +1,9 @@
-import { ChevronRight, Gamepad2, Github, Mail, Twitter } from 'lucide-react';
+import { ChevronRight, Gamepad2, Mail } from 'lucide-react';
 import VideoBg from '@/components/ui/VideoBg';
 import { CTA as CTA_CONTENT } from '@/data/site';
 import { SOCIAL_LINKS } from '@/data/nav';
 
-const ICONS = { email: Mail, twitter: Twitter, github: Github } as const;
+const ICONS = { email: Mail } as const;
 
 /**
  * CTA 섹션 — 두 가지 레이아웃.

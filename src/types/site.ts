@@ -81,7 +81,11 @@ export interface CtaContent {
 }
 
 export interface SocialLink {
-  platform: 'email' | 'twitter' | 'github';
+  /**
+   * 현재는 email 만. 추후 X / 카카오 채널 / 인스타 등 추가 시 union 확장.
+   * (X·GitHub 는 의도적 제외 — 2026-05-01 결정.)
+   */
+  platform: 'email';
   href: string;
   label: string;
 }

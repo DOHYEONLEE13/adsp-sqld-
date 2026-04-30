@@ -10,6 +10,4 @@ export const NAV_LINKS: NavLink[] = [
 
 export const SOCIAL_LINKS: SocialLink[] = [
   { platform: 'email', href: `mailto:${COMPANY.email}`, label: 'Email' },
-  { platform: 'twitter', href: 'https://twitter.com', label: 'Twitter' },
-  { platform: 'github', href: 'https://github.com', label: 'GitHub' },
 ];

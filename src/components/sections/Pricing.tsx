@@ -1,25 +1,120 @@
 import { Check } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 import { PRICING_PLANS } from '@/data/pricing';
 import { cx } from '@/lib/utils';
 import type { PricingPlan } from '@/types/site';
 
 /**
- * Pricing — 3 카드 (무료 / 1주 / 월간) 그리드.
+ * Pricing — 3 카드 가로 슬라이드 (모든 폭).
  *
  * 디자인 원칙:
- *   - 명확한 typography hierarchy: category → tier → price → valueNote → desc → features
- *   - 가격을 '숫자' 와 '단위 / 주기' 로 분리 → 큰 숫자가 즉시 읽힘
- *   - 월 구독은 valueNote (neon) + glow border + 살짝 들림 으로 자연스럽게 추천
- *   - 평면 alpha · 단순 ▸ 글머리 → divider + Check 아이콘 으로 정돈된 인상
+ *   - 옆으로 스와이프 (모바일) / 트랙패드 가로 스크롤 (데스크톱) — 자연스러운 비교
+ *   - scroll-snap 으로 카드가 정중앙에 stop
+ *   - 도트 인디케이터 — 현재 보이는 카드 표시
+ *   - PC 에선 카드 폭이 작아져 단순 grid 보다 비교 어려울 수 있어 max 460px
+ *   - typography hierarchy: category → tier → price → valueNote → desc → features
+ *   - 체크 아이콘 — 모든 feature 동일 디자인 (highlight 와 일반 통일).
+ *     이전엔 두 톤이라 "어떤 건 강조 어떤 건 흐림" 으로 일관성 부족 → 사용자
+ *     "이거 할거면 다 해줘" 의 핵심.
  */
 export default function Pricing() {
+  const trackRef = useRef<HTMLDivElement | null>(null);
+  const [activeIdx, setActiveIdx] = useState(0);
+
+  // ── 어떤 카드가 viewport 가운데에 있는지 추적 ────────────────────────
+  // IntersectionObserver 로 threshold 0.55 → 절반 이상 보이면 active.
+  // 도트 인디케이터에 반영.
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const cards = Array.from(track.querySelectorAll<HTMLElement>('[data-pricing-card]'));
+    if (cards.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const idx = Number(entry.target.getAttribute('data-idx') ?? -1);
+            if (idx >= 0) setActiveIdx(idx);
+          }
+        }
+      },
+      {
+        root: track,
+        threshold: 0.55,
+      },
+    );
+    for (const card of cards) observer.observe(card);
+    return () => observer.disconnect();
+  }, []);
+
+  const scrollToIdx = (idx: number) => {
+    const track = trackRef.current;
+    if (!track) return;
+    const card = track.querySelector<HTMLElement>(`[data-idx="${idx}"]`);
+    if (!card) return;
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  };
+
   return (
     <section id="pricing" className="bg-base pt-16 pb-10">
-      <div className="max-w-layout mx-auto px-6 md:px-12">
-        <div className="grid gap-5 md:gap-6 grid-cols-1 md:grid-cols-3 items-stretch">
-          {PRICING_PLANS.map((plan) => (
-            <PricingCard key={plan.id} plan={plan} />
+      <div className="max-w-layout mx-auto">
+        {/*
+          가로 스크롤 트랙 — px 로 좌우 padding 두어 첫·마지막 카드도 가운데 snap 가능.
+          scroll-snap-type: x mandatory + scroll-snap-align: center.
+          스크롤바 숨김 (모바일 자연 / 데스크톱 트랙패드 친화).
+        */}
+        <div
+          ref={trackRef}
+          className="flex gap-4 md:gap-6 overflow-x-auto px-6 md:px-12 pb-6 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          style={{
+            scrollSnapType: 'x mandatory',
+            scrollPaddingLeft: '24px',
+            scrollPaddingRight: '24px',
+          }}
+        >
+          {PRICING_PLANS.map((plan, i) => (
+            <div
+              key={plan.id}
+              data-pricing-card
+              data-idx={i}
+              className="shrink-0 snap-center w-[88vw] sm:w-[60vw] md:w-[400px] max-w-[460px]"
+            >
+              <PricingCard plan={plan} />
+            </div>
           ))}
+        </div>
+
+        {/* 도트 인디케이터 — 현재 보이는 카드 강조 + 클릭으로 이동 */}
+        <div
+          className="flex items-center justify-center gap-2.5 mt-1"
+          role="tablist"
+          aria-label="요금제 카드 인디케이터"
+        >
+          {PRICING_PLANS.map((plan, i) => {
+            const isActive = activeIdx === i;
+            return (
+              <button
+                key={plan.id}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                aria-label={`${plan.tier} 카드로 이동`}
+                onClick={() => scrollToIdx(i)}
+                className="rounded-full transition-all duration-200 active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon/50"
+                style={{
+                  width: isActive ? 24 : 8,
+                  height: 8,
+                  background: isActive
+                    ? 'linear-gradient(90deg, #6FFF00, #9CFF3D)'
+                    : 'rgba(239,244,255,0.18)',
+                  boxShadow: isActive
+                    ? '0 0 10px rgba(111,255,0,0.4)'
+                    : 'none',
+                }}
+              />
+            );
+          })}
         </div>
       </div>
     </section>
@@ -33,7 +128,7 @@ function PricingCard({ plan }: { plan: PricingPlan }) {
   return (
     <div
       className={cx(
-        'liquid-glass rounded-[24px] p-7 md:p-8 relative flex flex-col',
+        'liquid-glass rounded-[24px] p-7 md:p-8 relative flex flex-col h-full',
         isHighlight && 'md:-translate-y-2',
       )}
       style={
@@ -61,7 +156,7 @@ function PricingCard({ plan }: { plan: PricingPlan }) {
         </span>
       )}
 
-      {/* 카테고리 (FREE / PREMIUM) — 작은 caps */}
+      {/* 카테고리 */}
       {plan.category && (
         <div
           className={cx(
@@ -73,12 +168,12 @@ function PricingCard({ plan }: { plan: PricingPlan }) {
         </div>
       )}
 
-      {/* Tier (월 구독 / 1주 단기 / 무료 플랜) */}
+      {/* Tier */}
       <h3 className="kr-heading text-[20px] md:text-[22px] text-cream mt-1.5 leading-[1.25] pr-16">
         {plan.tier}
       </h3>
 
-      {/* 가격 — 숫자(큰) + 단위·주기(작게) 분리 */}
+      {/* 가격 */}
       <div className="mt-5 flex items-baseline gap-1.5">
         <span
           className={cx(
@@ -96,11 +191,11 @@ function PricingCard({ plan }: { plan: PricingPlan }) {
         )}
       </div>
 
-      {/* 가치 안내 — neon, 월 구독 차별화 */}
+      {/* 가치 안내 */}
       {plan.valueNote && (
         <div
           className="kr-num text-[12px] mt-2 leading-[1.4] font-semibold"
-          style={{ color: '#9CFF3D' /* neon 보다 살짝 밝게 — 본문 톤 안 깨고 가독 */ }}
+          style={{ color: '#9CFF3D' }}
         >
           {plan.valueNote}
         </div>
@@ -113,11 +208,11 @@ function PricingCard({ plan }: { plan: PricingPlan }) {
         </p>
       )}
 
-      {/* 미세 divider */}
+      {/* divider */}
       <div className="my-5 h-px bg-cream/10" aria-hidden />
 
-      {/* 혜택 — Check 아이콘 + 본문 */}
-      <ul className="flex flex-col gap-2.5 list-none p-0 m-0">
+      {/* 혜택 — 모든 feature 동일 디자인 (체크 통일) */}
+      <ul className="flex flex-col gap-3 list-none p-0 m-0">
         {plan.features.map((f, i) => (
           <li
             key={i}
@@ -125,24 +220,15 @@ function PricingCard({ plan }: { plan: PricingPlan }) {
           >
             <span
               aria-hidden
-              className={cx(
-                'shrink-0 inline-flex items-center justify-center rounded-full mt-[2px]',
-                f.highlight
-                  ? 'bg-neon/20 text-neon w-[18px] h-[18px]'
-                  : 'bg-cream/8 text-cream/55 w-[16px] h-[16px]',
-              )}
+              className="shrink-0 inline-flex items-center justify-center rounded-full mt-[2px] w-[18px] h-[18px]"
+              style={{
+                background: 'rgba(111,255,0,0.15)',
+                color: '#9CFF3D',
+              }}
             >
-              <Check
-                size={f.highlight ? 11 : 10}
-                strokeWidth={3}
-                aria-hidden
-              />
+              <Check size={11} strokeWidth={3} aria-hidden />
             </span>
-            <span
-              className={cx(
-                f.highlight ? 'text-cream' : 'text-cream/80',
-              )}
-            >
+            <span className={cx(f.highlight ? 'text-cream' : 'text-cream/80')}>
               {f.text}
             </span>
           </li>

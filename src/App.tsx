@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState, useTransition } from 'react';
 import Landing from './pages/Landing';
 import type { Subject } from './types/question';
 import { getSnapshot } from './game/storage';
@@ -123,8 +123,18 @@ export default function App() {
   const [{ route, initialSubject, legalSlug }, setRouteState] =
     useState<RouteState>(() => getRoute());
 
+  // ── useTransition 으로 끊김 완화 ────────────────────────────────────
+  // 첫 탭 클릭 시 lazy chunk + 페이지 mount 비용이 합쳐져 1프레임 정지처럼
+  // 보이는 문제. React 18 의 useTransition 은 새 라우트가 준비될 때까지
+  // 이전 페이지를 화면에 유지 → 사용자는 끊김 없이 부드러운 전환 체감.
+  // (Suspense fallback null 과 함께 작동: chunk 가 mount 되기 전엔 이전
+  //  페이지가 보이고, mount 끝나면 즉시 교체.)
+  const [, startTransition] = useTransition();
+
   useEffect(() => {
-    const onHashChange = () => setRouteState(getRoute());
+    const onHashChange = () => {
+      startTransition(() => setRouteState(getRoute()));
+    };
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);

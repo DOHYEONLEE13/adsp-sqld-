@@ -15,15 +15,17 @@
 import {
   Flame,
   Zap,
-  Map,
-  Flag,
-  Trophy,
-  User,
   Infinity as InfinityIcon,
-  type LucideIcon,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState, type ComponentType, type ReactNode } from 'react';
+import {
+  BookTabIcon,
+  FlagTabIcon,
+  TrophyTabIcon,
+  UserTabIcon,
+  type TabIconProps,
+} from '@/components/nav/TabIcons';
 import type { Subject } from '@/types/question';
 import { useProgress } from '../useProgress';
 import { computePlayerStats } from '../rpg';
@@ -269,7 +271,7 @@ export function MobileBottomNav({
           tab="learn"
           active={active}
           accent={accent}
-          Icon={Map}
+          Icon={BookTabIcon}
           label="학습"
           onClick={() => {
             if (onLearn) {
@@ -283,7 +285,7 @@ export function MobileBottomNav({
           tab="quests"
           active={active}
           accent={accent}
-          Icon={Flag}
+          Icon={FlagTabIcon}
           label="퀘스트"
           onClick={() => {
             if (onQuests) {
@@ -297,7 +299,7 @@ export function MobileBottomNav({
           tab="trophy"
           active={active}
           accent={accent}
-          Icon={Trophy}
+          Icon={TrophyTabIcon}
           label="친구"
           onClick={() => {
             window.location.hash = '/friends';
@@ -307,7 +309,7 @@ export function MobileBottomNav({
           tab="profile"
           active={active}
           accent={accent}
-          Icon={User}
+          Icon={UserTabIcon}
           label="프로필"
           onClick={() => {
             window.location.hash = '/stats';
@@ -342,8 +344,11 @@ function Tab({
   tab: MobileNavTab;
   active: MobileNavTab;
   accent: string;
-  /** lucide 아이콘 컴포넌트. 활성 여부에 따라 fill·strokeWidth 가 동적으로 바뀜. */
-  Icon: LucideIcon;
+  /**
+   * 단일-path filled 실루엣 아이콘. lucide 아닌 src/components/nav/TabIcons 의
+   * 커스텀 컴포넌트만 사용. fill='currentColor' 라 button 의 color 가 자동 반영.
+   */
+  Icon: ComponentType<TabIconProps>;
   label: string;
   onClick?: () => void;
 }) {
@@ -396,17 +401,15 @@ function Tab({
             transition={{ type: 'spring', stiffness: 380, damping: 26 }}
           />
         )}
-        {/* ── 아이콘 — 활성 시 fill + strokeWidth ↑ ────────────────────────
-            도우어듀오 트릭: lucide outline 만 써도 fill 색을 살짝 더하면
-            "outline → 살짝 채워짐" 으로 자연스럽게 morph. */}
+        {/* ── 아이콘 — 단일 path filled 실루엣 ────────────────────────────
+            stroke 0 → path join/overlap 이 발생하지 않음. 따라서 비활성 (흐릿)
+            상태에서도 "선이 이어붙은 듯한 조잡함" 이 사라짐.
+            활성/비활성은 색상만 다름 — 부모 button 의 color 를 currentColor 로 받음.
+            활성 시 drop-shadow 로 살짝 떠오른 느낌. */}
         <Icon
           size={26}
-          strokeWidth={isActive ? 2.4 : 2}
-          fill={isActive ? `${accent}33` : 'none'}
           className="relative z-10"
           style={{
-            // strokeLinecap·Join 은 lucide 기본값 (round). 추가 처리 X.
-            // active 시 살짝 위로 더 들리는 느낌 — drop-shadow 로.
             filter: isActive ? `drop-shadow(0 1px 2px ${accent}66)` : 'none',
           }}
         />

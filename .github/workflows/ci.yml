@@ -1,0 +1,60 @@
+name: CI
+
+# 빌드 가드 — Cloudflare Pages 만 의존하면 build 실패를 못 알아챈다 (사이트는 옛 버전 그대로 노출).
+# main 으로 push 또는 PR 시 Cloudflare 와 동일한 npm ci → typecheck → build → test 순으로 검증.
+# 이 job 이 실패하면 Cloudflare 도 100% 실패한다고 보면 됨.
+#
+# 회고: 2026-04-30 PR-2 에서 package-lock.json 이 sync 안 된 채 push → Cloudflare 'npm ci' 실패 →
+#       이후 모든 deployment 가 옛 빌드 그대로 → 사용자에게 "단 하나도 동작 안 함" 보고 받음.
+#       이런 사고 재발 방지가 본 workflow 의 존재 이유.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          # Cloudflare Pages 와 동일 (build log 의 nodejs@22.16.0)
+          node-version: '22'
+          cache: 'npm'
+
+      - name: npm ci (Cloudflare Pages 와 동일 명령)
+        run: npm ci
+
+      - name: TypeScript 검사
+        run: npm run typecheck
+
+      - name: 단위 테스트
+        run: npm test
+
+      - name: 문제 은행 mechanical 검증
+        run: npm run audit
+
+      - name: Production build (Cloudflare 와 동일)
+        run: npm run build
+        env:
+          # CI 에선 dummy 값 — env 미설정 시 graceful degrade 되므로 빌드 자체는 통과
+          VITE_SUPABASE_URL: 'https://example.supabase.co'
+          VITE_SUPABASE_ANON_KEY: 'sb_publishable_dummy_for_ci_build_only'
+
+      - name: 새 코드 sanity check (회귀 방지)
+        run: |
+          # PR-1~10 의 핵심 식별자가 빌드 산출물에 실제로 포함됐는지 확인.
+          # 이 grep 들이 실패하면 tree-shake / 빌드 결손이 있는 것.
+          grep -q "pendingServerSync" dist/assets/*.js \
+            || (echo "❌ pendingServerSync 가 prod 번들에 없음" && exit 1)
+          grep -q "lastUserId" dist/assets/*.js \
+            || (echo "❌ lastUserId 가 prod 번들에 없음" && exit 1)
+          grep -q "오프라인 — 풀이는" dist/assets/*.js \
+            || (echo "❌ OfflineBanner 한글 문자열이 prod 번들에 없음" && exit 1)
+          echo "✅ 새 sync 코드가 prod 번들에 정상 포함됨"

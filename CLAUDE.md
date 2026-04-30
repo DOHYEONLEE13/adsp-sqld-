@@ -30,6 +30,17 @@ Galaxy(과목) → Planet(챕터) → Zone(토픽 로드맵)
 6. **모바일·태블릿 우선**. 데스크톱은 부차.
 7. **한국어 UI 전량**. 영문 용어는 괄호병기.
 8. **절대 복붙 파일 금지**: PDF, 교재 스캔, 타사 문제지 원문.
+9. **"수정 완료" 보고 전 5단계 증거 필수** (2026-04-30 false completion 사고 후 추가).
+   - 자세한 회고: `docs/postmortem-phase3-false-completion.md`
+   - **사이트가 떠 있음 ≠ 배포 성공**. Cloudflare 는 빌드 실패 시 옛 빌드를 그대로 유지함 (사이트 동결).
+   - "완료" 보고 전 다음 5가지 모두 ✅ 일 때만:
+     1. **Git**: 머지된 commit SHA + `git log questdp/main --oneline` 출력
+     2. **Local CI**: `npm ci && npm run typecheck && npm test && npm run build` 모두 pass (`npm install` 만으론 부족 — Cloudflare 와 동일하게 `npm ci`)
+     3. **CI workflow** (push 후): GitHub Actions `.github/workflows/ci.yml` build job status=success
+     4. **Cloudflare Deployment**: status=Success + commit SHA 일치
+     5. **번들 grep**: `curl <prod-url>/assets/index-*.js` 받아서 새 식별자 1건 이상
+   - 위 5단계 증거 없이 "수정 완료", "배포 완료", "동작 확인" 같은 보고 절대 금지.
+   - 사용자에게 검증 요청은 5단계 증거 확보 후에만.
 
 ---
 

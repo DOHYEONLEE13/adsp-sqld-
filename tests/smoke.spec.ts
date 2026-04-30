@@ -51,7 +51,8 @@ test.describe('smoke', () => {
     await page.getByRole('button', { name: /ADSP 선택/i }).click();
     // "ADSP 플레이하기" 버튼이 나타나야 함
     const playButton = page.getByRole('button', { name: /플레이하기/ });
-    await expect(playButton).toBeVisible({ timeout: 5000 });
+    // 4 worker 병렬 부하 + lazy chunk 다운로드 감안 — 10s.
+    await expect(playButton).toBeVisible({ timeout: 10_000 });
     await playButton.click();
     // Planet 화면 — Chapter 1 노드
     await expect(page.getByRole('button', { name: /Chapter 1/i })).toBeVisible({
@@ -70,7 +71,8 @@ test.describe('smoke', () => {
     await page.getByRole('button', { name: /SQLD 선택/i }).click();
     // SubjectInfoPanel — SQLD 플레이하기
     const playButton = page.getByRole('button', { name: /플레이하기/ });
-    await expect(playButton).toBeVisible({ timeout: 5000 });
+    // 4 worker 병렬 부하 + lazy chunk 다운로드 감안 — 10s.
+    await expect(playButton).toBeVisible({ timeout: 10_000 });
     await playButton.click();
     // Planet — Chapter 1, Chapter 2
     await expect(page.getByRole('button', { name: /Chapter 1/i })).toBeVisible({

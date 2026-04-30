@@ -106,28 +106,18 @@ function getRoute(): RouteState {
   return { route: 'landing' };
 }
 
-/** lazy chunk 로딩 중 표시되는 fallback. 이미 GlobalAmbientBg 가 배경을 잡고 있어 빈 div 면 충분. */
-function RouteSuspenseFallback() {
-  return (
-    <div
-      style={{
-        minHeight: '60vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-      aria-live="polite"
-      aria-busy="true"
-    >
-      <span
-        className="kr-num"
-        style={{ color: 'rgba(239,244,255,0.4)', fontSize: 12 }}
-      >
-        ···
-      </span>
-    </div>
-  );
-}
+/**
+ * Suspense fallback — 의도적 null.
+ *
+ * lazy chunk 다운로드 중에도 GlobalAmbientBg / OfflineBanner / TierUpgradeToast 가
+ * boundary 밖에 떠 있어 화면이 완전히 비지 않음. 빈 placeholder (`···` 등) 를
+ * 노출하면 cached chunk 의 unmount→mount 1프레임 gap 에서 "로딩 깜빡임" 으로 보임.
+ * null 이면 그 짧은 순간엔 배경만 보여 부드러운 전환.
+ *
+ * 첫 방문 페이지는 idle prefetch (App effect) 가 다운로드를 끝내 놓아서
+ * 실제 fallback 가 보이는 일은 거의 없음.
+ */
+const ROUTE_FALLBACK = null;
 
 export default function App() {
   const [{ route, initialSubject, legalSlug }, setRouteState] =
@@ -157,6 +147,31 @@ export default function App() {
     return () => {
       for (const u of unsubs) u();
     };
+  }, []);
+
+  // ── 핵심 탭 페이지 idle prefetch (A-9 lazy 도입의 부작용 보완) ─────────
+  // 사용자 보고: "탭 클릭 시 전체 화면이 아주 짧게 로딩되는 느낌".
+  // 원인: lazy() chunk 가 메모리에 없으면 Suspense fallback 1프레임 노출.
+  // 처방: 첫 paint 후 idle 시간에 5개 자주-방문 탭의 chunk 를 백그라운드 다운로드.
+  // 효과:
+  //   - 초기 진입 KB ↑ 0 (idle 후 다운로드 — first paint 느려지지 않음)
+  //   - 탭 첫 클릭부터 chunk 가 메모리에 있어 즉시 mount → 깜빡임 사라짐
+  // 모바일 네트워크 비용: 5개 합쳐도 gzip ~80KB. idle 시 다운이라 사용자 부담 X.
+  useEffect(() => {
+    const win = window as Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout?: number }) => number;
+    };
+    const schedule = win.requestIdleCallback
+      ? (cb: () => void) => win.requestIdleCallback!(cb, { timeout: 3000 })
+      : (cb: () => void) => window.setTimeout(cb, 1500);
+    schedule(() => {
+      // void 로 promise 무시 — 다운로드 실패 시에도 정상 navigation 시 lazy 가 다시 시도
+      void import('./game/GamePage');
+      void import('./game/StatsPage');
+      void import('./game/QuestsPage');
+      void import('./game/FriendsPage');
+      void import('./game/BookmarksPage');
+    });
   }, []);
 
   // OAuth 콜백 후 SIGNED_IN 이벤트 — 보호 라우트로 진입하려 했던 경우 자동 복귀.
@@ -299,7 +314,7 @@ export default function App() {
         Suspense 는 lazy 라우트 chunk 로딩 fallback.
       */}
       <ErrorBoundary label="route">
-        <Suspense fallback={<RouteSuspenseFallback />}>{renderRoute()}</Suspense>
+        <Suspense fallback={ROUTE_FALLBACK}>{renderRoute()}</Suspense>
       </ErrorBoundary>
       <TierUpgradeToast />
     </ToastProvider>

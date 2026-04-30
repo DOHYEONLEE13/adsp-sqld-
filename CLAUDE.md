@@ -97,7 +97,7 @@ Galaxy(과목) → Planet(챕터) → Zone(토픽 로드맵)
 
 - **ADsP 기출 4회차**: 2024-45, 2024-46, 2025-47, 2026-48
 - **ADsP 개념 예제 39개** (`concept-practice.json`) — LessonStep 과 1:1
-- **SQLD**: `sample.json` 하나뿐 (1문항). 사실상 비어있음
+- **SQLD**: 기출 4회차 (sqld-54 / 55 / 56 / 57, 각 50문 = **200문**) + `concept-practice.json` (50문, lesson step 과 1:1 매칭) + `sample.json` 1문. 합 **251문**.
 - 라이프사이클: `restored` / `ai-generated` / `draft` / `curated`. `isPlayable` 가 restored 제외.
 
 ### 4.3 게임 코어
@@ -111,21 +111,29 @@ Galaxy(과목) → Planet(챕터) → Zone(토픽 로드맵)
 ### 4.4 개념 학습 (중요 — 최근 대대적 개편)
 
 - **스텝 기반 마이크로 러닝** 으로 전환 완료
-- ADsP 시험범위 전면 커버 — **50 스텝 · 50 MCQ**
-  - Ch1 (데이터 이해): 12 스텝 — DIKW · SECI · 빅데이터 3V/5V · 데이터 3법 · DIGITAL·CA메라 · **기업 정보 시스템(DBMS·ERP·CRM·SCM·BI)**
-  - Ch2 (데이터 분석 기획): 11 스텝 — What×How · KDD/CRISP-DM · 하향식/상향식 · 우선순위 · 거버넌스 5축 · 성숙도 · **데이터 거버넌스 3요소**
-  - Ch3 (데이터 분석): 27 스텝 — 데이터 마트 · EDA · 결측·이상값 · **R 문법** · 척도·분포·추정량·CLT · **PCA · MDS** · 가설검정·t검정·회귀·다중공선성·시계열 · 과적합·앙상블·연관분석·군집·평가지표(+**Lift/Gain**) · **로지스틱 회귀 · 의사결정나무 · K-NN · 나이브베이즈 · SVM · 인공신경망/딥러닝**
+- **ADsP + SQLD 모두 시험범위 전면 커버** — 총 **218 스텝**
+  - **ADsP 168 스텝** (Ch1 39 + Ch2 45 + Ch3 84):
+    - Ch1 (데이터 이해): DIKW · 데이터 분류 3축 · SECI · DB 5특징·DW·Lake · 기업 정보 시스템 5종 + 빅데이터 3V/5V · 변화 4축 · 데이터 3법 · 비유·위기 + AI 비 3축 · Hard/Soft · Digital CA메라 6역량
+    - Ch2 (분석 기획): 분석 4유형 What×How · KDD/CRISP-DM · 하향식 4단계 · 방법론 5종 + 시급-난이도 4사분면 · 거버넌스 5축 · 성숙도 4단계 · 데이터 거버넌스 3요소 + 가치 3축 · 과제 정의서 · 준비도 6영역
+    - Ch3 (데이터 분석): R 기초 · EDA 4원칙 · 결측·이상값 4종 · R 자료구조 + 척도 4종 · 확률분포 · 추정량 4성질 · CLT · PCA · MDS + 가설검정 5용어 · t검정 3종 · 회귀 4가정 · 다중공선성 · 시계열 4성분 + 과적합 · 앙상블 4종 · 연관분석 · 군집 · 평가지표 + 6대 모델 (로지스틱 · 의사결정나무 · K-NN · NBC · SVM · 인공신경망)
+  - **SQLD 50 스텝** (Ch1 18 + Ch2 32):
+    - Ch1-1 모델링의 이해 (10): 모델링 3특징·단계·ANSI/SPARC·엔터티 5요건·분류·속성·관계·식별자·식별자 관계·키와 무결성
+    - Ch1-2 모델과 성능 (8): 이상현상·함수 종속·정규형 도부이결·반정규화·특수 관계·트랜잭션·NULL·식별자 선택
+    - Ch2-1 SQL 기본 (12): 4명령군·관계대수·실행 순서·ALIAS·문자/숫자/날짜 함수·집계·NULL 함수·CASE·WHERE·GROUP BY·ORDER BY
+    - Ch2-2 SQL 활용 (12): JOIN 4종·표기·CROSS/SELF·서브쿼리 6종·다중행·집합 연산자·ROLLUP/CUBE·윈도우 순위·집계·LAG/LEAD·TOP N·정규표현식
+    - Ch2-3 관리 구문 (8): DML·MERGE·TCL·AUTOCOMMIT·CREATE·ALTER/DROP/TRUNCATE·제약조건·DCL
 - 각 스텝: 개념 블록들 → 인라인 MCQ → 즉시 피드백 → 다음
 - **챕터 전체 진행바** (현재 위치 + 해결 비율 이중 레이어, sticky)
 - **이전/다음 스텝 네비게이션** — 직전 개념/예제로 왕복 가능
-- **암기법**: `callout tone: mnemonic` 블록으로 통일 (공표연내, 업데데이트모델평가전, 탐정해타, 도활확최, 원조프, 저잔재현, 선분정독, 추계순불, 불효일충, 지신향, 생고공의 …)
+- **암기법**: `callout tone: mnemonic` 블록으로 통일 (공표연내, 업데데이트모델평가전, 탐정해타, 도활확최, 원조프, 저잔재현, 선분정독, 추계순불, 불효일충, 지신향, 생고공의, 단추명, 개논물, 도부이결, 관차선, 유최불존, 프웨그하셀오 …)
+- **회독 시스템 reminder 완비** — `src/data/reminders.ts` 에 218 step 모두 reminder 작성. 2회독 진입 시 dialogue fallback 없이 적절한 복습 톤 reminder 노출.
 
 ### 4.5 토픽 정규화 (바로 직전 작업)
 
 - **`src/data/topicAlias.ts`** 신설. 기출에 등장하는 80+ 세부 토픽을 스키마 4-대분류로 매핑.
 - `getZones` 가 이제 항상 **SCHEMA 토픽 순서** 대로만 노드를 생성 (고정 4개). 미매핑 문항은 챕터 랜덤/약점 풀에는 남되 토픽 집계에서만 제외.
 - `createSession`, `reviewPoolSize`, `aggregateTopic`, `topicWeaknesses` 전부 canonical 비교로 일원화.
-- "레슨 준비 중" 폴백은 구조적으로 뜰 일 없음 (단, SQLD 는 레슨이 없으므로 여전히 폴백으로 빠짐 — 아래 TODO 참조).
+- "레슨 준비 중" 폴백은 구조적으로 뜰 일 없음. SQLD 도 50 스텝 lesson 완비되어 폴백 해소됨.
 
 ### 4.6 주변 기능
 
@@ -138,8 +146,8 @@ Galaxy(과목) → Planet(챕터) → Zone(토픽 로드맵)
 
 ### 🟥 P0 — 가장 가까운 구멍
 
-1. **SQLD 레슨 0개**. 과목 선택만 해도 풀 수 있는 문항이 `sample.json` 1개뿐이고 레슨도 없음. SQLD 클릭 시 현 UX 가 매우 빈약. 최소 SQL 기본 (SELECT/WHERE/GROUP BY/JOIN) 레슨 3~4개 + 예제 JSON 우선.
-2. **ADsP 스텝당 예제 1개 → 2~3개로 확장**. 현재 `concept-practice.json` 이 step 당 1문. 같은 개념을 다른 각도로 물어보는 드릴이 필요.
+1. ~~SQLD 레슨 0개~~ — **해결**. SQLD 50 step lesson + 50 reminder 완비 (2026-04-30).
+2. **ADsP·SQLD 스텝당 예제 1개 → 2~3개로 확장**. 현재 `concept-practice.json` 이 step 당 1문. 같은 개념을 다른 각도로 물어보는 드릴이 필요. 2회독 변형 문제는 ADSP Ch1 만 12개 작성됨 (`concept-practice-pass2.json`) — 나머지 챕터·SQLD 도 점진 확장 필요.
 3. **레슨 완료 축하 화면**. 마지막 스텝 예제까지 맞추면 "챕터 \[N\] 개념 클리어" 피드백 → 바로 실전 세트 유도. 현재는 "실전 세트로 마무리" 버튼이 작아서 임팩트 부족.
 
 ### 🟧 P1 — UX 완성도
@@ -310,8 +318,11 @@ create table step_unlocks (
 ### 개념 / 레슨 수정할 때
 
 - 개념 카드 추가/수정 → `src/data/lessons.ts`
-- 개념 예제 추가/수정 → `src/data/questions/adsp/concept-practice.json` (id 규칙: `adsp-<ch>-<topic>-cp-<nn>`)
+- 개념 예제 추가/수정 → `src/data/questions/<subject>/concept-practice.json` (id 규칙: `<subject>-<ch>-<topic>-cp-<nn>`)
 - LessonStep 과 예제의 `quizId` 는 반드시 1:1
+- **2회독 reminder 추가/수정 → `src/data/reminders.ts`** — 새 step 만들면 reminder 도 같이 작성 (없으면 dialogue fallback)
+- **2회독 변형 문제 → `src/data/questions/<subject>/concept-practice-pass2.json`** (현재 ADSP Ch1 만 12문)
+- **문제 은행 검증 → `npm run audit` 또는 `node scripts/validate-questions.mjs`** (M1~M6 mechanical 결함 검출)
 
 ### Zone 에 새 노드가 안 보일 때
 
@@ -348,11 +359,12 @@ npm run typecheck  # tsc --noEmit
 
 - 현재 워크트리: `C:\Users\이도현\Desktop\.claude\worktrees\hardcore-shamir-47f5ab`
 - 사용자 이메일: dohyeonlee13@gmail.com
-- 마지막 대규모 변경: 2026-04-23
-  - 스텝 기반 레슨 체계 전면 개편
-  - LessonScreen 재작성 (sticky 진행바 + 이전/다음 네비)
-  - 토픽 정규화 레이어 (`topicAlias.ts`) 도입
-- **세션 이어받을 때**: 이 문서 먼저 → `src/game/GamePage.tsx` → `src/data/lessons.ts` → `src/data/topicAlias.ts` 순으로 훑으면 30분 안에 손 들어간다.
+- 마지막 대규모 변경: **2026-04-30**
+  - **회독 시스템 전 챕터 감수 완료** — ADSP 168 step + SQLD 50 step 의 reminder 216개 신규/재작성 + 비교 표 7개 + 본문 보강 (Topic 2 변화 4축 sub-step 사례 보강)
+  - **문제 은행 Phase 4 audit 완료** — 631문항 (ADSP 380 + SQLD 251) 의 mechanical 결함 0 달성. M1~M6 검증 인프라 (`scripts/validate-questions.mjs`) + 도메인 감사 보고서 (`docs/AUDIT_REPORT.md`).
+  - **타입 체계 확장** — `src/types/question.ts` 의 `ExplanationObj` 신설 (rich 해설 점진 전환 가능). `explanationToText()` 헬퍼로 4 UI 컴포넌트 일원화.
+  - 2026-04-23: 스텝 기반 레슨 체계 전면 개편 + LessonScreen 재작성 + topicAlias 도입
+- **세션 이어받을 때**: 이 문서 먼저 → `src/game/GamePage.tsx` → `src/data/lessons.ts` (8,884줄) → `src/data/reminders.ts` (216 step) → `src/data/topicAlias.ts` 순으로 훑으면 30분 안에 손 들어간다.
 
 ---
 

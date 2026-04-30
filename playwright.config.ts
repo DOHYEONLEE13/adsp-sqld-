@@ -7,6 +7,9 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './tests',
   timeout: 30_000,
+  // expect() 의 toBeVisible/toContainText 등 retry assertion 의 최대 대기 시간.
+  // lazy 라우트 (App.tsx) 도입 후 chunk 다운로드 시간을 감안해 5s → 10s 로 상향.
+  expect: { timeout: 10_000 },
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,

@@ -1,17 +1,5 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import Landing from './pages/Landing';
-import LegalPage from './pages/LegalPage';
-import AdminPage from './pages/AdminPage';
-import RedeemPage from './pages/RedeemPage';
-import RefundRequestPage from './pages/RefundRequestPage';
-import LoginPage from './pages/LoginPage';
-// AuthGuard / authGuard.ts 인프라는 유지 — Phase B premium 결제 게이트에서 재사용.
-// 현재는 게스트 모드 (전 라우트 무료) 라 import 만 보류.
-import GamePage from './game/GamePage';
-import StatsPage from './game/StatsPage';
-import BookmarksPage from './game/BookmarksPage';
-import QuestsPage from './game/QuestsPage';
-import FriendsPage from './game/FriendsPage';
 import type { Subject } from './types/question';
 import { getSnapshot } from './game/storage';
 import { initProfileSync } from './data/profile';
@@ -30,6 +18,23 @@ import { onAuthStateChange } from './lib/supabase';
 import { consumePendingAuthRedirect } from './lib/authGuard';
 import TierUpgradeToast from './components/passes/TierUpgradeToast';
 import OfflineBanner from './components/sync/OfflineBanner';
+import ErrorBoundary from './components/ErrorBoundary';
+import { ToastProvider } from './components/ui/Toast';
+
+// ── lazy 라우트 — 첫 페이지 (Landing) 만 즉시 로드, 나머지는 진입 시 다운로드.
+//   결과: 게스트가 랜딩만 보면 GamePage·StatsPage·법적 페이지·관리자 페이지의
+//   chunk 가 모두 미다운로드. 첫 진입 번들 크기 ↓.
+//   AuthGuard / authGuard.ts 인프라는 유지 — Phase B premium 결제 게이트에서 재사용.
+const LegalPage = lazy(() => import('./pages/LegalPage'));
+const AdminPage = lazy(() => import('./pages/AdminPage'));
+const RedeemPage = lazy(() => import('./pages/RedeemPage'));
+const RefundRequestPage = lazy(() => import('./pages/RefundRequestPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const GamePage = lazy(() => import('./game/GamePage'));
+const StatsPage = lazy(() => import('./game/StatsPage'));
+const BookmarksPage = lazy(() => import('./game/BookmarksPage'));
+const QuestsPage = lazy(() => import('./game/QuestsPage'));
+const FriendsPage = lazy(() => import('./game/FriendsPage'));
 
 type Route =
   | 'landing'
@@ -99,6 +104,29 @@ function getRoute(): RouteState {
     return { route: 'game' };
   }
   return { route: 'landing' };
+}
+
+/** lazy chunk 로딩 중 표시되는 fallback. 이미 GlobalAmbientBg 가 배경을 잡고 있어 빈 div 면 충분. */
+function RouteSuspenseFallback() {
+  return (
+    <div
+      style={{
+        minHeight: '60vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+      aria-live="polite"
+      aria-busy="true"
+    >
+      <span
+        className="kr-num"
+        style={{ color: 'rgba(239,244,255,0.4)', fontSize: 12 }}
+      >
+        ···
+      </span>
+    </div>
+  );
 }
 
 export default function App() {
@@ -261,12 +289,19 @@ export default function App() {
   };
 
   return (
-    <>
+    <ToastProvider>
       <GlobalAmbientBg />
       <OfflineBanner />
-      {renderRoute()}
-      {/* Tier 승급 토스트 — 모든 라우트에서 동작 */}
+      {/*
+        ErrorBoundary 가 라우트 트리만 감싸기 — GlobalAmbientBg / OfflineBanner /
+        TierUpgradeToast / ToastProvider 는 boundary 밖에 둬서 라우트 에러 시에도
+        배경·토스트 시스템이 살아있도록.
+        Suspense 는 lazy 라우트 chunk 로딩 fallback.
+      */}
+      <ErrorBoundary label="route">
+        <Suspense fallback={<RouteSuspenseFallback />}>{renderRoute()}</Suspense>
+      </ErrorBoundary>
       <TierUpgradeToast />
-    </>
+    </ToastProvider>
   );
 }

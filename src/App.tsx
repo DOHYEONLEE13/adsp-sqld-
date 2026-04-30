@@ -18,6 +18,7 @@ import { initProfileSync } from './data/profile';
 import { initFriendsSync } from './data/friends';
 import { initMigration } from './lib/migrate';
 import { initSessionSync } from './game/sessionSync';
+import { initProgressSync } from './game/progressSync';
 import { initBookmarksSync } from './game/bookmarks';
 import { initExamDatesSync } from './game/examDate';
 import { initEnergySync } from './game/energy';
@@ -28,6 +29,7 @@ import GlobalAmbientBg from './game/components/GlobalAmbientBg';
 import { onAuthStateChange } from './lib/supabase';
 import { consumePendingAuthRedirect } from './lib/authGuard';
 import TierUpgradeToast from './components/passes/TierUpgradeToast';
+import OfflineBanner from './components/sync/OfflineBanner';
 
 type Route =
   | 'landing'
@@ -116,6 +118,7 @@ export default function App() {
       initProfileSync(),
       initFriendsSync(),
       initSessionSync(),
+      initProgressSync(),  // 다기기 동기화 (PR-4) — server → local pull
       initBookmarksSync(),
       initExamDatesSync(),
       initEnergySync(),
@@ -260,6 +263,7 @@ export default function App() {
   return (
     <>
       <GlobalAmbientBg />
+      <OfflineBanner />
       {renderRoute()}
       {/* Tier 승급 토스트 — 모든 라우트에서 동작 */}
       <TierUpgradeToast />

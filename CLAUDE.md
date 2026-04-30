@@ -69,7 +69,7 @@ Galaxy(과목) → Planet(챕터) → Zone(토픽 로드맵)
 | 파일 | 역할 |
 |---|---|
 | `src/data/subjects.ts` | **스키마 원천**. `SUBJECT_SCHEMAS` — 과목 → 챕터 → 토픽. UI 의 진실. |
-| `src/data/lessons.ts` | 스텝 기반 레슨 (10개 토픽 × 39 스텝 for ADsP). `LessonBlock` 6종 · `LessonStep{ id, title, blocks, quizId }` · `getLesson/getLessonsInChapter/getChapterSteps` · `getQuizQuestion` |
+| `src/data/lessons/` | 스텝 기반 레슨 — 챕터별 분할 (`adsp/ch1.ts`·`ch2.ts`·`ch3.ts` + `sqld/ch1-modeling.ts`·`ch2-sql.ts` + `types.ts` + `index.ts`). 호출측은 변경 0 — `@/data/lessons` import 가 자동으로 `index.ts` 해석. `LessonBlock` 6종 · `LessonStep{ id, title, blocks, quizId }` · `getLesson/getLessonsInChapter/getChapterSteps` · `getQuizQuestion`. 총 **15 lesson · 225 step**. |
 | `src/data/topicAlias.ts` | **기출 JSON 의 raw 토픽 → 스키마 토픽 정규화 테이블**. `canonicalTopic(subject, chapter, raw)` 가 유일한 매핑 API. 새 기출 추가 후 노드 카운트가 줄었으면 여기에 빠진 별칭 추가. |
 | `src/data/questions/*/**/*.json` | 문제 은행. `import.meta.glob(eager: true)` 로 자동 로드. |
 | `src/data/questions/adsp/concept-practice.json` | 39 MCQ — LessonStep.quizId 와 1:1 매칭. |
@@ -122,8 +122,8 @@ Galaxy(과목) → Planet(챕터) → Zone(토픽 로드맵)
 ### 4.4 개념 학습 (중요 — 최근 대대적 개편)
 
 - **스텝 기반 마이크로 러닝** 으로 전환 완료
-- **ADsP + SQLD 모두 시험범위 전면 커버** — 총 **218 스텝**
-  - **ADsP 168 스텝** (Ch1 39 + Ch2 45 + Ch3 84):
+- **ADsP + SQLD 모두 시험범위 전면 커버** — 총 **225 스텝** (15 lesson)
+  - **ADsP 175 스텝** (Ch1 46 + Ch2 45 + Ch3 84):
     - Ch1 (데이터 이해): DIKW · 데이터 분류 3축 · SECI · DB 5특징·DW·Lake · 기업 정보 시스템 5종 + 빅데이터 3V/5V · 변화 4축 · 데이터 3법 · 비유·위기 + AI 비 3축 · Hard/Soft · Digital CA메라 6역량
     - Ch2 (분석 기획): 분석 4유형 What×How · KDD/CRISP-DM · 하향식 4단계 · 방법론 5종 + 시급-난이도 4사분면 · 거버넌스 5축 · 성숙도 4단계 · 데이터 거버넌스 3요소 + 가치 3축 · 과제 정의서 · 준비도 6영역
     - Ch3 (데이터 분석): R 기초 · EDA 4원칙 · 결측·이상값 4종 · R 자료구조 + 척도 4종 · 확률분포 · 추정량 4성질 · CLT · PCA · MDS + 가설검정 5용어 · t검정 3종 · 회귀 4가정 · 다중공선성 · 시계열 4성분 + 과적합 · 앙상블 4종 · 연관분석 · 군집 · 평가지표 + 6대 모델 (로지스틱 · 의사결정나무 · K-NN · NBC · SVM · 인공신경망)
@@ -137,7 +137,7 @@ Galaxy(과목) → Planet(챕터) → Zone(토픽 로드맵)
 - **챕터 전체 진행바** (현재 위치 + 해결 비율 이중 레이어, sticky)
 - **이전/다음 스텝 네비게이션** — 직전 개념/예제로 왕복 가능
 - **암기법**: `callout tone: mnemonic` 블록으로 통일 (공표연내, 업데데이트모델평가전, 탐정해타, 도활확최, 원조프, 저잔재현, 선분정독, 추계순불, 불효일충, 지신향, 생고공의, 단추명, 개논물, 도부이결, 관차선, 유최불존, 프웨그하셀오 …)
-- **회독 시스템 reminder 완비** — `src/data/reminders.ts` 에 218 step 모두 reminder 작성. 2회독 진입 시 dialogue fallback 없이 적절한 복습 톤 reminder 노출.
+- **회독 시스템 reminder 완비** — `src/data/reminders.ts` 에 225 step 모두 reminder 작성. 2회독 진입 시 dialogue fallback 없이 적절한 복습 톤 reminder 노출.
 
 ### 4.5 토픽 정규화 (바로 직전 작업)
 
@@ -328,7 +328,7 @@ create table step_unlocks (
 
 ### 개념 / 레슨 수정할 때
 
-- 개념 카드 추가/수정 → `src/data/lessons.ts`
+- 개념 카드 추가/수정 → `src/data/lessons/<subject>/<chapter>.ts` (예: `adsp/ch1.ts`, `sqld/ch2-sql.ts`)
 - 개념 예제 추가/수정 → `src/data/questions/<subject>/concept-practice.json` (id 규칙: `<subject>-<ch>-<topic>-cp-<nn>`)
 - LessonStep 과 예제의 `quizId` 는 반드시 1:1
 - **2회독 reminder 추가/수정 → `src/data/reminders.ts`** — 새 step 만들면 reminder 도 같이 작성 (없으면 dialogue fallback)
@@ -344,7 +344,7 @@ create table step_unlocks (
 ### 새 토픽 추가할 때
 
 1. `src/data/subjects.ts` 의 `topics` 에 추가 (스키마 원천)
-2. `src/data/lessons.ts` 에 Lesson 작성
+2. `src/data/lessons/<subject>/<chapter>.ts` 에 `Lesson` 추가 + 같은 파일의 `*_LESSONS` 배열에 등록
 3. `src/data/questions/<subject>/concept-practice.json` 에 예제 추가 (quizId 매칭)
 4. `src/data/topicAlias.ts` 는 raw → 새 토픽 매핑 있으면 추가
 
@@ -370,12 +370,15 @@ npm run typecheck  # tsc --noEmit
 
 - 현재 워크트리: `C:\Users\이도현\Desktop\.claude\worktrees\hardcore-shamir-47f5ab`
 - 사용자 이메일: dohyeonlee13@gmail.com
-- 마지막 대규모 변경: **2026-04-30**
-  - **회독 시스템 전 챕터 감수 완료** — ADSP 168 step + SQLD 50 step 의 reminder 216개 신규/재작성 + 비교 표 7개 + 본문 보강 (Topic 2 변화 4축 sub-step 사례 보강)
+- 마지막 대규모 변경: **2026-05-01**
+  - **lessons.ts 챕터별 분할 (A-7 완료)** — 8968줄 단일 파일 → `src/data/lessons/{adsp,sqld}/<chapter>.ts` 5개 + `types.ts` + `index.ts`. 호출측 변경 0 (디렉터리 import 자동 해석). 평균 파일 1500줄 → 에디터·검색·PR 충돌 모두 가벼워짐.
+  - **다기기 동기화 RLS 사고 종결 (3-layer)** — Cloudflare lock sync (cc34a28) + admin SELECT 재귀 0015 + UPDATE 재귀 0016. 부록 (1)(2) 가 `docs/postmortem-phase3-false-completion.md` 에 기록됨.
+- 그 이전: **2026-04-30**
+  - **회독 시스템 전 챕터 감수 완료** — ADSP 175 step + SQLD 50 step 의 reminder 225개 신규/재작성 + 비교 표 7개 + 본문 보강 (Topic 2 변화 4축 sub-step 사례 보강)
   - **문제 은행 Phase 4 audit 완료** — 631문항 (ADSP 380 + SQLD 251) 의 mechanical 결함 0 달성. M1~M6 검증 인프라 (`scripts/validate-questions.mjs`) + 도메인 감사 보고서 (`docs/AUDIT_REPORT.md`).
   - **타입 체계 확장** — `src/types/question.ts` 의 `ExplanationObj` 신설 (rich 해설 점진 전환 가능). `explanationToText()` 헬퍼로 4 UI 컴포넌트 일원화.
   - 2026-04-23: 스텝 기반 레슨 체계 전면 개편 + LessonScreen 재작성 + topicAlias 도입
-- **세션 이어받을 때**: 이 문서 먼저 → `src/game/GamePage.tsx` → `src/data/lessons.ts` (8,884줄) → `src/data/reminders.ts` (216 step) → `src/data/topicAlias.ts` 순으로 훑으면 30분 안에 손 들어간다.
+- **세션 이어받을 때**: 이 문서 먼저 → `src/game/GamePage.tsx` → `src/data/lessons/index.ts` + 챕터별 분할 파일들 → `src/data/reminders.ts` (225 step) → `src/data/topicAlias.ts` 순으로 훑으면 30분 안에 손 들어간다.
 
 ---
 

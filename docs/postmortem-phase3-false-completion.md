@@ -261,9 +261,105 @@ postgres RLS 패턴에서 정책 안에서 같은 테이블을 조회해야 할 
 
 기존 6개에 1개 추가 — RLS 정책을 건드린 마이그레이션이 있을 때:
 
-- [ ] **DB 직접 시뮬레이션**: `SET LOCAL role TO authenticated; SET LOCAL request.jwt.claims TO ...; SELECT ... FROM <변경된 테이블>` 이 정상 통과하는가?
+- [ ] **DB 직접 시뮬레이션 (SELECT)**: `SET LOCAL role TO authenticated; SET LOCAL request.jwt.claims TO ...; SELECT ... FROM <변경된 테이블>` 이 정상 통과하는가?
+- [ ] **DB 직접 시뮬레이션 (UPDATE)**: 사용자가 직접 호출하는 모든 mutation 도 시뮬레이션. UPDATE 의 with_check 가 RLS 재귀 유발하지 않는지 별도 검증.
 - [ ] **Postgres 로그**: 적용 직전·직후 비교 시 새 에러 발생하지 않는가?
 
 ---
 
-마지막 갱신: 2026-04-30 · Phase 3 false completion 사고 직후 작성. RLS 재귀 후속 사건은 부록에 추가.
+## 부록 (2) — 2026-04-30 후속의 후속: profiles UPDATE 재귀
+
+### 한 줄 요약
+
+> **0015 으로 SELECT 재귀는 풀렸으나, 사용자 보고 "이름이 옳게 저장 안됨" 의 원인은 `profiles_update_self` 의 `with_check` 절이 보호 컬럼 변조 방지 목적으로 7개 self-SELECT 를 사용해 또다른 재귀를 일으킨 것. column-level GRANT 로 보호를 옮겨서 정책을 단순화.**
+
+### 사건 재타임라인
+
+| 시점 | 사건 |
+|---|---|
+| 14:30 | 0015 적용 → SELECT 재귀 풀림. 친구 페이지·동기화 배너 정상화 |
+| ~14:35 | 사용자 검증 1차 보고: "친구 추가는 동작함. 하지만 이름 수정 시 옳게 저장 안됨" |
+| 14:36 | 진단 — `profiles_update_self` 의 with_check dump → 7개 self-SELECT 발견 |
+| 14:37 | DB 시뮬레이션 → `UPDATE profiles SET display_name = 'TEST'` 도 ERROR 42P17 |
+| 14:42 | migration 0016 적용 → 정책 단순화 + 컬럼 단위 GRANT 로 보호 분리 |
+| 14:43 | 검증: display_name UPDATE 통과, total_xp UPDATE 권한 거부 (의도대로) |
+
+### 근본 원인 (3차)
+
+**0002_rls.sql** 의 `profiles_update_self` 의 with_check 절이 보호 컬럼 변조 방지 목적으로 작성됨:
+
+```sql
+WITH CHECK (
+  id = auth.uid()
+  AND tag = (SELECT tag FROM profiles WHERE id = auth.uid())
+  AND total_xp = (SELECT total_xp FROM profiles WHERE id = auth.uid())
+  AND level = (SELECT level FROM profiles WHERE id = auth.uid())
+  AND streak_days = (SELECT streak_days FROM profiles WHERE id = auth.uid())
+  AND energy_count = (SELECT energy_count FROM profiles WHERE id = auth.uid())
+  AND is_premium = (SELECT is_premium FROM profiles WHERE id = auth.uid())
+  AND premium_until = (SELECT premium_until FROM profiles WHERE id = auth.uid())
+)
+```
+
+의도는 좋다 — "사용자가 자기 row 만 update 하되, 보호 컬럼 (XP·레벨·streak·에너지·premium) 은 못 건드리게". 그러나 self-SELECT 7개가 RLS 재평가를 트리거 → 무한 재귀.
+
+### 사용자 가시 흐름 (왜 "저장 안 됨" 으로 보였나)
+
+1. 사용자가 닉네임 입력 → "저장" 클릭
+2. `setDisplayName(draft)` 가 localStorage 즉시 갱신 + notify → UI 가 새 이름 표시 ✅
+3. fire-and-forget `pushToSupabase({display_name})` → 서버가 ERROR 42P17 응답 → 클라이언트 try/catch 가 무시
+4. 사용자는 저장된 듯 보임. 다른 페이지 이동 OK
+5. 새로고침 / 탭 visibilitychange → `pullFromSupabase()` 호출 → 서버가 옛 닉네임 그대로 fetch → localStorage 가 옛 값으로 덮어쓰임
+6. 사용자: "어 이름이 다시 빈 값으로 돌아감" = "저장 안 됨"
+
+### 수정 (migration 0016)
+
+#### 1) 정책 단순화
+```sql
+drop policy if exists profiles_update_self on public.profiles;
+create policy profiles_update_self on public.profiles
+  for update to authenticated
+  using (id = (select auth.uid()))
+  with check (id = (select auth.uid()));
+```
+재귀의 원인인 7개 self-SELECT 를 제거. 본인 row 만 update 가능 보장은 유지.
+
+#### 2) 컬럼 단위 GRANT 로 변조 방지 이전
+```sql
+revoke update on public.profiles from authenticated;
+grant  update (display_name, avatar_pose) on public.profiles to authenticated;
+```
+- 사용자 직접 UPDATE: `display_name`, `avatar_pose` 만 가능. 다른 컬럼은 PostgreSQL 권한 에러로 거부.
+- SECURITY DEFINER RPC (`bump_progress`, `consume_energy` 등): owner 권한이라 모든 컬럼 update 가능. 변화 0.
+
+### 검증 증거
+
+1. **DB 시뮬레이션 (apply 전)**: `UPDATE profiles SET display_name = 'TEST'` → ERROR 42P17
+2. **DB 시뮬레이션 (apply 후)**: 동일 query 통과, RETURNING 으로 새 값 확인
+3. **보호 컬럼 변조 시도 (apply 후)**: `UPDATE profiles SET total_xp = 99999` → ERROR 42501 permission denied (의도대로)
+4. **정책 dump (apply 후)**: `qual = "id = auth.uid()"`, `with_check = "id = auth.uid()"` — self-SELECT 0건
+
+### 추가로 배운 것
+
+#### 9. RLS with_check 안에 self-SELECT 절대 금지
+
+postgres RLS 의 `with_check` 는 INSERT·UPDATE 의 새 row 검증용. 그 안에서 같은 테이블을 SELECT 하면 거의 항상 재귀를 부른다. 변조 방지 목적이라면 다음 중 하나:
+
+- **컬럼 단위 GRANT** (이번 fix 가 채택). PostgreSQL 표준이라 안전.
+- **BEFORE UPDATE 트리거** + OLD/NEW 비교. 트리거는 RLS 와 격리되어 재귀 없음.
+- **읽기 전용 테이블로 분리** + RPC 만 mutation. 가장 견고하지만 invasive.
+
+self-SELECT 는 사람 눈엔 자연스러워 보이지만 RLS 평가 모델에선 항상 위험.
+
+#### 10. 다단계 RLS 사고는 한 번에 다 안 드러남
+
+이번 사고는 3차로 나눔:
+1. lock 파일 → Cloudflare 빌드 동결 (1차)
+2. profiles_admin_read 자기참조 → SELECT 재귀 (2차, 0015)
+3. profiles_update_self with_check 자기참조 → UPDATE 재귀 (3차, 0016)
+
+각 layer 가 풀려야 다음 layer 가 보인다. **한 번 fix 했다고 끝이 아니고**, 사용자 가시 증상이 완전히 사라졌는지 매번 확인.
+
+---
+
+마지막 갱신: 2026-04-30 · Phase 3 false completion 사고 직후 작성. RLS 재귀 부록 (1) (2) 추가.

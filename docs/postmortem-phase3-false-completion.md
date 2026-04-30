@@ -82,13 +82,20 @@ package-lock.json:
 
 ## 수정한 것
 
-### 1. lock 재생성 + 로컬 `npm ci` 재현 (2026-04-30)
-```bash
-npm install                   # lock 완전 재생성 (esbuild 0.28.x 27개 entry 추가)
-rm -rf node_modules
-npm ci                        # Cloudflare 와 동일 — pass 확인
-npm run build                 # production build pass
-```
+### 1. lock 재생성 시도 → Windows OS 한계 발견 (2026-04-30 1차)
+- `rm package-lock.json && npm install` 시도
+- 결과: Windows npm 이 자기 OS 의 optional deps 만 lock 에 적음
+- linux platform 들 (`@esbuild/aix-ppc64`, `@esbuild/linux-x64` 등) entry 누락
+- Cloudflare/GitHub Actions (linux) 의 `npm ci` 가 또 거부
+
+### 1-b. 근본 fix: package-lock.json 을 git 추적에서 제외 (2026-04-30 2차)
+- `.gitignore` 에 `package-lock.json` 추가
+- `git rm --cached package-lock.json`
+- 효과:
+  - Cloudflare Pages 가 lock 없을 때 `npm install` 자동 사용 (`npm ci` 대신)
+  - OS 차이 흡수
+  - 매 빌드마다 같은 dep tree 보장은 약화 (patch version 차이 가능)
+- Tradeoff 수용: reproducible vs 동작. 동작 우선.
 
 ### 2. GitHub Actions CI 가드 도입 (`.github/workflows/ci.yml`)
 - main push / PR 시 자동 실행:

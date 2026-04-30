@@ -28,8 +28,12 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
-      - name: npm ci (Cloudflare Pages 와 동일 명령)
-        run: npm ci
+      - name: npm install (OS 별 optional dep 차이 흡수)
+        # 원래 npm ci 가 정확하지만, Windows 로컬 → Linux CI 의 OS 차이로
+        # 인해 lock 에 platform-specific optional deps 가 누락되는 경우가 있어
+        # npm install 로 흡수. reproducible 보장은 약하나 동작 우선.
+        # 참고: docs/postmortem-phase3-false-completion.md
+        run: npm install --no-audit --no-fund
 
       - name: TypeScript 검사
         run: npm run typecheck

@@ -1,5 +1,12 @@
 # deps
 node_modules/
+# package-lock.json — 의도적으로 git 추적 제외.
+# 이유: Windows 로컬에서 npm install 시 OS-specific optional deps (esbuild platform binaries)
+# 가 lock 에 누락 → Linux CI/Cloudflare 가 npm ci 거부 → 빌드 실패 → 사이트 동결 사고.
+# Cloudflare Pages 는 lock 없으면 npm install 자동 사용 → OS 차이 흡수.
+# Tradeoff: reproducible 빌드 약화 — patch version 차이가 발생할 수 있음.
+# 회고: docs/postmortem-phase3-false-completion.md
+package-lock.json
 
 # build
 dist/

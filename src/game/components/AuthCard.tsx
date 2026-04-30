@@ -104,7 +104,7 @@ export default function AuthCard() {
       >
         <CloudOff size={18} className="text-cream/50 shrink-0" />
         <p className="kr-body text-[12px] text-cream/65 leading-[1.55]">
-          Supabase 미설정 — 로컬 모드로 동작 중. 진도가 이 기기에만 저장돼요.
+          Supabase 미설정 — 로컬 모드. 진도가 이 브라우저에만 저장돼요 (캐시 삭제 시 사라짐).
         </p>
       </section>
     );
@@ -168,7 +168,7 @@ export default function AuthCard() {
           <div className="flex items-center gap-2 mb-3">
             <CloudOff size={14} className="text-cream/50" />
             <span className="kr-num text-[10px] uppercase tracking-widest text-cream/55">
-              게스트 모드 — 진도가 이 기기에만 저장돼요
+              게스트 모드 — 진도가 이 브라우저에만 저장 (캐시 삭제 시 사라짐)
             </span>
           </div>
           <button

@@ -650,8 +650,12 @@ function SubjectInfoPanel({
               className="kr-body text-[12px] leading-[1.55]"
               style={{ color: 'rgba(255,205,120,0.95)' }}
             >
-              게스트 모드 — 진도가 이 기기에만 저장돼요. 다른 기기에서 이어
-              학습하려면{' '}
+              게스트 모드 — 진도가{' '}
+              <strong style={{ color: '#FFCB6E', fontWeight: 700 }}>
+                이 브라우저에만
+              </strong>{' '}
+              저장돼요. 캐시 삭제 · 다른 기기 · 시크릿 모드에선 사라집니다.
+              안전하게 보관하려면{' '}
               <a
                 href="#/login"
                 onClick={(e) => e.stopPropagation()}
@@ -660,7 +664,7 @@ function SubjectInfoPanel({
               >
                 로그인
               </a>
-              이 필요합니다.
+              을 권장합니다.
             </p>
           </div>
         )}

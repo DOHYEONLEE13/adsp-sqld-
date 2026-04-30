@@ -20,6 +20,7 @@ import { computePlayerStats } from './rpg';
 import Ques from '@/components/mascot/Ques';
 import type { QuesPose } from '@/components/mascot/types';
 import { usePassSnapshot } from './passSync';
+import ProfileSyncSkeleton from '@/components/profile/ProfileSyncSkeleton';
 import {
   PASS_TIER_VISUAL,
   PASS_TIER_ORDER,
@@ -143,9 +144,18 @@ export default function FriendsPage({ onExit }: Props) {
       exitLabel="돌아가기"
       ambient={<PageAmbientBg />}
     >
-      <MyTagCard profile={me} onRename={(n) => setDisplayName(n)} />
+      <MyTagCard
+        profile={me}
+        onRename={(n) => {
+          const result = setDisplayName(n);
+          if (!result.ok && result.reason === 'sync-not-ready') {
+            window.alert('프로필 동기화가 완료되지 않았어요. 잠시 후 다시 시도해주세요.');
+          }
+        }}
+      />
 
-      <AddFriendCard myTag={me.tag} />
+      {/* 동기화 중에는 myTag 가 빈 문자열 — AddFriendCard 자체를 가림 */}
+      {me.pendingServerSync ? null : <AddFriendCard myTag={me.tag} />}
 
       <Leaderboard rows={board} sortKey={sortKey} onChangeSort={setSortKey} />
 
@@ -205,7 +215,12 @@ function MyTagCard({
       </h2>
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="min-w-0">
-          {editing ? (
+          {profile.pendingServerSync ? (
+            <ProfileSyncSkeleton
+              width="w-44"
+              failed={profile.syncStatus === 'failed'}
+            />
+          ) : editing ? (
             <div className="flex items-center gap-2">
               <input
                 type="text"
@@ -240,22 +255,31 @@ function MyTagCard({
           )}
         </div>
         <div className="flex items-center gap-2">
-          <code
-            className="kr-num text-[13px] md:text-[14px] px-3 py-2 rounded-lg select-all"
-            style={{
-              background: 'rgba(255,176,32,0.14)',
-              border: '1px solid rgba(255,176,32,0.45)',
-              color: '#FFB020',
-              letterSpacing: '0.02em',
-            }}
-          >
-            {profile.tag}
-          </code>
+          {profile.pendingServerSync ? (
+            <ProfileSyncSkeleton
+              width="w-32"
+              failed={profile.syncStatus === 'failed'}
+              showRetry={false}
+            />
+          ) : (
+            <code
+              className="kr-num text-[13px] md:text-[14px] px-3 py-2 rounded-lg select-all"
+              style={{
+                background: 'rgba(255,176,32,0.14)',
+                border: '1px solid rgba(255,176,32,0.45)',
+                color: '#FFB020',
+                letterSpacing: '0.02em',
+              }}
+            >
+              {profile.tag}
+            </code>
+          )}
           <button
             type="button"
             onClick={handleCopy}
+            disabled={profile.pendingServerSync}
             aria-label="태그 복사"
-            className="inline-flex items-center gap-1.5 kr-heading text-[11px] uppercase tracking-widest px-3 py-2 rounded-full transition active:scale-95"
+            className="inline-flex items-center gap-1.5 kr-heading text-[11px] uppercase tracking-widest px-3 py-2 rounded-full transition active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
             style={{
               background: copied ? '#6FFF00' : 'rgba(111,255,0,0.12)',
               border: `1px solid ${copied ? '#6FFF00' : 'rgba(111,255,0,0.4)'}`,

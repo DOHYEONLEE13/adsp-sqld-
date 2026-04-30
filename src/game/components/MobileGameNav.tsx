@@ -26,6 +26,7 @@ import {
 } from '@/data/profile';
 import { usePassSnapshot } from '../passSync';
 import PassTierBadge from '@/components/passes/PassTierBadge';
+import ProfileSyncSkeleton from '@/components/profile/ProfileSyncSkeleton';
 
 const SUBJECT_ACCENT: Record<Subject, string> = {
   adsp: '#67e8f9',
@@ -102,6 +103,17 @@ export function MobileTopBar({ subject }: TopProps) {
             <Ques pose={profile.avatarPose} size={40} animated={false} />
           </span>
           {(() => {
+            // 인증된 상태에서 server pull 결과 도착 전 — skeleton 노출
+            if (profile.pendingServerSync) {
+              return (
+                <div className="flex flex-col items-start min-w-0">
+                  <ProfileSyncSkeleton
+                    width="w-20"
+                    failed={profile.syncStatus === 'failed'}
+                  />
+                </div>
+              );
+            }
             const isUnset =
               !profile.displayName || profile.displayName === profile.tag;
             return (

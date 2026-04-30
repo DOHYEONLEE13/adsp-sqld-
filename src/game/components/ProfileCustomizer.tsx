@@ -20,6 +20,7 @@ import {
   subscribeProfile,
   type MyProfile,
 } from '@/data/profile';
+import ProfileSyncSkeleton from '@/components/profile/ProfileSyncSkeleton';
 import type { QuesPose } from '@/components/mascot/types';
 
 const POSE_LABELS: Record<QuesPose, string> = {
@@ -74,7 +75,20 @@ export default function ProfileCustomizer() {
           <div className="kr-heading uppercase text-[10px] tracking-widest text-cream/55 mb-1">
             나의 프로필
           </div>
-          {editingName ? (
+          {profile.pendingServerSync ? (
+            // 동기화 중 — skeleton + 안내
+            <div className="flex flex-col items-start gap-1.5 mt-1">
+              <ProfileSyncSkeleton
+                width="w-40"
+                failed={profile.syncStatus === 'failed'}
+              />
+              <ProfileSyncSkeleton
+                width="w-28"
+                failed={profile.syncStatus === 'failed'}
+                showRetry={false}
+              />
+            </div>
+          ) : editingName ? (
             <div className="flex items-center gap-2">
               <input
                 type="text"
@@ -89,7 +103,11 @@ export default function ProfileCustomizer() {
               <button
                 type="button"
                 onClick={() => {
-                  setDisplayName(draft);
+                  const result = setDisplayName(draft);
+                  if (!result.ok && result.reason === 'sync-not-ready') {
+                    window.alert('프로필 동기화가 완료되지 않았어요. 잠시 후 다시 시도해주세요.');
+                    return;
+                  }
                   setEditingName(false);
                 }}
                 aria-label="이름 저장"
@@ -137,12 +155,14 @@ export default function ProfileCustomizer() {
               </button>
             </div>
           )}
-          <code
-            className="kr-num text-[12px] mt-1 inline-block"
-            style={{ color: '#FFB020', letterSpacing: '0.02em' }}
-          >
-            {profile.tag}
-          </code>
+          {profile.pendingServerSync ? null : (
+            <code
+              className="kr-num text-[12px] mt-1 inline-block"
+              style={{ color: '#FFB020', letterSpacing: '0.02em' }}
+            >
+              {profile.tag}
+            </code>
+          )}
         </div>
       </div>
 
@@ -158,7 +178,13 @@ export default function ProfileCustomizer() {
               <button
                 key={pose}
                 type="button"
-                onClick={() => setAvatarPose(pose)}
+                disabled={profile.pendingServerSync}
+                onClick={() => {
+                  const result = setAvatarPose(pose);
+                  if (!result.ok && result.reason === 'sync-not-ready') {
+                    window.alert('프로필 동기화가 완료되지 않았어요. 잠시 후 다시 시도해주세요.');
+                  }
+                }}
                 aria-label={`아바타 — ${POSE_LABELS[pose]}`}
                 aria-pressed={isActive}
                 className="aspect-square rounded-[14px] inline-flex items-center justify-center transition active:scale-95"

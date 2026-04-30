@@ -43,6 +43,20 @@ export interface MyProfile {
   /** 운영자 권한. server 의 profiles.role 동기화. 게스트는 항상 false. */
   isAdmin: boolean;
   createdAt: number;
+  /**
+   * 인증된 상태에서 server pull 이 아직 완료 안 됨 (혹은 실패) 표시.
+   * UI 는 이 플래그가 true 면 tag/displayName 노출 금지 — skeleton 으로 대체.
+   * 임시(client-generated) 태그 노출 방지의 핵심 가드.
+   */
+  pendingServerSync: boolean;
+  /**
+   * 마지막 server pull 의 결과:
+   *  - 'idle': 아직 시도 안 함 (게스트 또는 mount 직후)
+   *  - 'pending': retry 중
+   *  - 'ok': 성공 — server 데이터로 덮어쓰임
+   *  - 'failed': 5회 retry 모두 실패 — fallback UX 노출
+   */
+  syncStatus: 'idle' | 'pending' | 'ok' | 'failed';
 }
 
 interface StoredProfile {
@@ -91,57 +105,126 @@ function saveStored(p: StoredProfile) {
   }
 }
 
+// ─── Auth 상태 + sync 상태 (메모리 캐시) ────────────────────────────
+//
+// pendingServerSync 의 진실 = 인증 상태 × syncStatus.
+// useMyProfile 이 호출될 때마다 함수형으로 계산.
+
+let _isAuthenticated = false;
+let _syncStatus: 'idle' | 'pending' | 'ok' | 'failed' = 'idle';
+
+/** 외부 (initProfileSync) 가 인증 상태 변경 시 호출. */
+function setAuthState(authed: boolean): void {
+  _isAuthenticated = authed;
+  if (!authed) _syncStatus = 'idle';
+  notify();
+}
+
+function setSyncStatus(s: 'idle' | 'pending' | 'ok' | 'failed'): void {
+  _syncStatus = s;
+  notify();
+}
+
 /**
  * 내 프로필을 가져온다. 없으면 생성. 항상 동일한 태그를 돌려줌.
  *
- * Supabase 마이그레이션 후: 이 함수만 `select * from profiles where id = auth.uid()`
- * 로 교체하면 됨. 로컬 캐시는 ETag 처럼 활용.
+ * 가드: 인증된 상태에서 syncStatus 가 'ok' 가 아니면 — 즉 server pull 결과를
+ * 못 받은 상태 — pendingServerSync=true 를 반환해 UI 가 tag/displayName 노출
+ * 차단할 수 있도록 한다. 임시(client-generated) 태그 절대 노출 X 의 핵심.
  */
 export function getMyProfile(): MyProfile {
   const stored = loadStored();
+  // 게스트 모드 (미인증) — 임시 태그 OK (사용자가 게스트로 진행 가능)
+  if (!_isAuthenticated) {
+    if (stored) {
+      return {
+        tag: stored.tag,
+        displayName: stored.displayName || stored.tag,
+        avatarPose: stored.avatarPose ?? DEFAULT_AVATAR_POSE,
+        isAdmin: stored.role === 'admin',
+        createdAt: stored.createdAt,
+        pendingServerSync: false,
+        syncStatus: 'idle',
+      };
+    }
+    // 게스트 첫 진입 — 임시 태그 발급 (게스트 모드 한정)
+    const fresh: StoredProfile = {
+      v: 1,
+      tag: generateTag(),
+      displayName: '',
+      avatarPose: DEFAULT_AVATAR_POSE,
+      createdAt: Date.now(),
+    };
+    saveStored(fresh);
+    return {
+      tag: fresh.tag,
+      displayName: fresh.displayName || fresh.tag,
+      avatarPose: fresh.avatarPose ?? DEFAULT_AVATAR_POSE,
+      isAdmin: false,
+      createdAt: fresh.createdAt,
+      pendingServerSync: false,
+      syncStatus: 'idle',
+    };
+  }
+
+  // 인증 상태 — server pull 결과를 기다리는 중
+  // stored 가 있어도 syncStatus 가 'ok' 가 아니면 pendingServerSync=true
+  // (UI 가 skeleton 으로 처리)
+  const syncDone = _syncStatus === 'ok';
   if (stored) {
     return {
-      tag: stored.tag,
-      displayName: stored.displayName || stored.tag,
+      tag: syncDone ? stored.tag : '',
+      displayName: syncDone ? stored.displayName || stored.tag : '',
       avatarPose: stored.avatarPose ?? DEFAULT_AVATAR_POSE,
       isAdmin: stored.role === 'admin',
       createdAt: stored.createdAt,
+      pendingServerSync: !syncDone,
+      syncStatus: _syncStatus,
     };
   }
-  const fresh: StoredProfile = {
-    v: 1,
-    tag: generateTag(),
+  // stored 없음 = 인증됐지만 아직 pull 한 번도 안 됨
+  // 임시 태그를 절대 발급 X — 빈 값 + pendingServerSync=true
+  return {
+    tag: '',
     displayName: '',
     avatarPose: DEFAULT_AVATAR_POSE,
-    createdAt: Date.now(),
-  };
-  saveStored(fresh);
-  return {
-    tag: fresh.tag,
-    displayName: fresh.displayName || fresh.tag,
-    avatarPose: fresh.avatarPose ?? DEFAULT_AVATAR_POSE,
     isAdmin: false,
-    createdAt: fresh.createdAt,
+    createdAt: 0,
+    pendingServerSync: true,
+    syncStatus: _syncStatus,
   };
 }
 
-/** 표시 이름 변경. 빈 문자열이면 태그를 사용. */
-export function setDisplayName(name: string) {
+/**
+ * 표시 이름 변경. 빈 문자열이면 태그를 사용.
+ *
+ * 가드: 인증된 상태인데 syncStatus != 'ok' 면 차단 — sync 안 된 상태에서
+ * 의도와 다른 row 에 push 가 갈 위험을 차단. 게스트는 그대로 OK.
+ */
+export function setDisplayName(name: string): { ok: boolean; reason?: string } {
+  if (_isAuthenticated && _syncStatus !== 'ok') {
+    return { ok: false, reason: 'sync-not-ready' };
+  }
   const stored = loadStored();
-  if (!stored) return;
+  if (!stored) return { ok: false, reason: 'no-stored' };
   saveStored({ ...stored, displayName: name.trim() });
   notify();
   // 서버 동기화 (인증돼 있을 때만, fire-and-forget)
   void pushToSupabase({ display_name: name.trim() });
+  return { ok: true };
 }
 
-/** 아바타 포즈 변경. */
-export function setAvatarPose(pose: QuesPose) {
+/** 아바타 포즈 변경. setDisplayName 과 동일 가드. */
+export function setAvatarPose(pose: QuesPose): { ok: boolean; reason?: string } {
+  if (_isAuthenticated && _syncStatus !== 'ok') {
+    return { ok: false, reason: 'sync-not-ready' };
+  }
   const stored = loadStored();
-  if (!stored) return;
+  if (!stored) return { ok: false, reason: 'no-stored' };
   saveStored({ ...stored, avatarPose: pose });
   notify();
   void pushToSupabase({ avatar_pose: pose });
+  return { ok: true };
 }
 
 /** 입력값이 유효한 태그 형식인지. */
@@ -231,14 +314,23 @@ function notify() {
 /**
  * 서버 프로필을 fetch 해 localStorage 에 덮어씌움. 인증돼 있을 때만.
  *
- * 트리거 race 대응 — `auth.users` insert 직후 `profiles` 행이 만들어지지 않은
- * 상태에서 select 하면 빈 응답. 한 번 더 짧게 대기 후 retry (총 2회 시도).
+ * 5회 retry (지수 backoff: 350ms·700ms·1500ms·3000ms·6000ms · 총 ~11.5초)
+ * — 트리거 race / 네트워크 일시 실패 모두 흡수.
+ *
+ * 모두 실패 시 syncStatus='failed' 로 전환 → UI 가 fallback (재시도 버튼) 노출.
  */
+const RETRY_DELAYS_MS = [350, 700, 1500, 3000, 6000];
+
 async function pullFromSupabase(): Promise<void> {
   const sb = getSupabase();
   if (!sb) return;
   const { data: sess } = await sb.auth.getSession();
-  if (!sess.session) return;
+  if (!sess.session) {
+    setAuthState(false);
+    return;
+  }
+  setAuthState(true);
+  setSyncStatus('pending');
 
   const fetchOnce = () =>
     sb
@@ -247,27 +339,38 @@ async function pullFromSupabase(): Promise<void> {
       .eq('id', sess.session!.user.id)
       .maybeSingle();
 
-  let { data, error } = await fetchOnce();
-  if ((!data || error) && !error) {
-    // 트리거가 아직 안 돈 경우 — 짧게 대기 후 1회 retry
-    await new Promise((r) => setTimeout(r, 350));
-    ({ data, error } = await fetchOnce());
+  for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt++) {
+    const { data, error } = await fetchOnce();
+    if (!error && data) {
+      // 성공 — localStorage 덮어쓰기
+      const local = loadStored();
+      const role: 'user' | 'admin' =
+        data.role === 'admin' ? 'admin' : 'user';
+      saveStored({
+        v: 1,
+        tag: data.tag,
+        displayName: data.display_name ?? '',
+        avatarPose: (data.avatar_pose as QuesPose) ?? DEFAULT_AVATAR_POSE,
+        role,
+        createdAt:
+          local?.createdAt ?? Date.parse(data.created_at) ?? Date.now(),
+      });
+      setSyncStatus('ok');
+      return;
+    }
+    // 실패 — 다음 retry 까지 대기 (마지막 시도는 대기 X)
+    if (attempt < RETRY_DELAYS_MS.length) {
+      await new Promise((r) => setTimeout(r, RETRY_DELAYS_MS[attempt]));
+    }
   }
-  if (error || !data) return;
 
-  // 서버 응답 → localStorage 덮어쓰기
-  const local = loadStored();
-  const role: 'user' | 'admin' =
-    data.role === 'admin' ? 'admin' : 'user';
-  saveStored({
-    v: 1,
-    tag: data.tag,
-    displayName: data.display_name ?? '',
-    avatarPose: (data.avatar_pose as QuesPose) ?? DEFAULT_AVATAR_POSE,
-    role,
-    createdAt: local?.createdAt ?? Date.parse(data.created_at) ?? Date.now(),
-  });
-  notify();
+  // 모든 retry 실패
+  setSyncStatus('failed');
+}
+
+/** 외부 (UI 의 [재시도] 버튼) 에서 수동 트리거. */
+export async function retryProfileSync(): Promise<void> {
+  await pullFromSupabase();
 }
 
 /** 부분 업데이트를 server 에 PATCH (인증돼 있을 때만). 실패해도 무시. */
@@ -294,6 +397,10 @@ let _syncStarted = false;
 /**
  * 앱 mount 시 한 번 호출. auth 상태 구독 → 로그인 시 server 프로필 hydrate,
  * 로그아웃 시 캐시 그대로 (게스트 모드 전환).
+ *
+ * 추가 트리거 (PR-6):
+ *  - window.online: 네트워크 복귀 시 syncStatus='failed' 면 재시도
+ *  - document.visibilitychange: 탭 다시 보일 때 동일
  */
 export function initProfileSync(): () => void {
   if (_syncStarted) return () => {};
@@ -307,6 +414,7 @@ export function initProfileSync(): () => void {
       void pullFromSupabase();
     }
     if (event === 'SIGNED_OUT') {
+      setAuthState(false);
       // 다른 계정으로 로그인할 수 있으니 stale 식별 캐시 비움.
       // 다음 로그인 시 server pull 로 새 프로필이 들어옴. 게스트로만 쓰는 경우엔
       // 빈 프로필 + 새 태그 자동 발급 로직이 그대로 작동.
@@ -321,8 +429,26 @@ export function initProfileSync(): () => void {
     }
   });
 
+  // 네트워크 복귀·탭 가시화 시 실패 상태면 재시도
+  const onRecover = () => {
+    if (_syncStatus === 'failed') void pullFromSupabase();
+  };
+  const onVisibility = () => {
+    if (document.visibilityState === 'visible' && _syncStatus !== 'ok') {
+      void pullFromSupabase();
+    }
+  };
+  if (typeof window !== 'undefined') {
+    window.addEventListener('online', onRecover);
+    document.addEventListener('visibilitychange', onVisibility);
+  }
+
   return () => {
     unsub();
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('online', onRecover);
+      document.removeEventListener('visibilitychange', onVisibility);
+    }
     _syncStarted = false;
   };
 }

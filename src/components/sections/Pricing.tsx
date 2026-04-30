@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react';
+import { Check, ArrowRight } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { PRICING_PLANS } from '@/data/pricing';
 import { cx } from '@/lib/utils';
@@ -212,7 +212,7 @@ function PricingCard({ plan }: { plan: PricingPlan }) {
       <div className="my-5 h-px bg-cream/10" aria-hidden />
 
       {/* 혜택 — 모든 feature 동일 디자인 (체크 통일) */}
-      <ul className="flex flex-col gap-3 list-none p-0 m-0">
+      <ul className="flex flex-col gap-3 list-none p-0 m-0 mb-6">
         {plan.features.map((f, i) => (
           <li
             key={i}
@@ -234,6 +234,88 @@ function PricingCard({ plan }: { plan: PricingPlan }) {
           </li>
         ))}
       </ul>
+
+      {/* CTA — 카드 하단 고정 (mt-auto). PG 등록 전이라 placeholder 동작 */}
+      <div className="mt-auto pt-2">
+        <PricingCTA plan={plan} isHighlight={isHighlight} />
+      </div>
     </div>
+  );
+}
+
+/**
+ * PricingCTA — 결제하기 버튼.
+ *
+ * 현 시점 (Phase B 결제 게이트 도입 전): 클릭 시 alert 안내 — '결제 시스템 준비
+ * 중. 곧 오픈됩니다'. PG 등록·webhook 연동 완료 후 실제 Toss SDK 호출로 교체
+ * (B-4 작업 — `src/lib/payments.ts` initiatePremiumCheckout 사용 예정).
+ *
+ * 디자인 차별:
+ *   - 무료 (id='free')               → 'guest' 톤 outline 버튼, 라벨 '지금 시작하기'
+ *   - 프리미엄 (highlight=BEST)      → solid neon, 라벨 '월 구독 결제하기' (강조)
+ *   - 프리미엄 (1주 단기)             → outline neon, 라벨 '1주 단기 결제하기'
+ */
+function PricingCTA({
+  plan,
+  isHighlight,
+}: {
+  plan: PricingPlan;
+  isHighlight: boolean;
+}) {
+  const isPaid = plan.id !== 'free';
+  const label = !isPaid
+    ? '지금 시작하기'
+    : plan.id === 'premium-monthly'
+      ? '월 구독 결제하기'
+      : '1주 단기 결제하기';
+
+  const handleClick = () => {
+    if (!isPaid) {
+      // 무료: 게임 진입
+      window.location.hash = '/game';
+      return;
+    }
+    // PG 미등록 시점 안내. Phase B 가맹점 활성 후 Toss SDK 로 교체.
+    window.alert(
+      '결제 시스템 준비 중입니다.\n곧 오픈 예정 — 사업자/PG 가맹점 활성 직후 정식 결제 가능.\n(클릭 동작은 정상 등록되어 있습니다.)',
+    );
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      aria-label={label}
+      className="kr-num w-full inline-flex items-center justify-center gap-1.5 rounded-full font-bold transition active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neon/60"
+      style={
+        isHighlight
+          ? {
+              padding: '13px 18px',
+              background: 'linear-gradient(180deg, #6FFF00 0%, #5BD600 100%)',
+              color: '#010828',
+              fontSize: 14,
+              boxShadow:
+                '0 8px 24px -6px rgba(111,255,0,0.55), inset 0 1px 0 rgba(255,255,255,0.25)',
+            }
+          : isPaid
+            ? {
+                padding: '12px 18px',
+                background: 'rgba(111,255,0,0.08)',
+                color: '#9CFF3D',
+                fontSize: 13,
+                border: '1.5px solid rgba(111,255,0,0.4)',
+              }
+            : {
+                padding: '12px 18px',
+                background: 'rgba(239,244,255,0.06)',
+                color: 'var(--cream)',
+                fontSize: 13,
+                border: '1.5px solid rgba(239,244,255,0.18)',
+              }
+      }
+    >
+      <span>{label}</span>
+      <ArrowRight size={14} strokeWidth={2.6} aria-hidden />
+    </button>
   );
 }

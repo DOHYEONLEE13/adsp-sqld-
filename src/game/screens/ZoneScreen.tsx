@@ -481,20 +481,32 @@ function StepNode({
           aria-disabled={locked}
           className="w-11 h-11 md:w-12 md:h-12 rounded-full inline-flex items-center justify-center transition shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-neon"
           style={{
-            background: completed ? accent : 'transparent',
+            // 잠금 step 도 어두운 별 사진 배경 위에서 보이도록 살짝 어두운 backdrop
+            // 추가 (transparent → rgba(1,8,40,0.45)). 활성 step 은 그대로 transparent.
+            background: completed
+              ? accent
+              : locked
+                ? 'rgba(1,8,40,0.45)'
+                : 'transparent',
             border: completed
               ? `2px solid ${accent}`
               : attempted
                 ? `2px solid ${accent}aa`
                 : locked
-                  ? '1.5px solid rgba(239,244,255,0.12)'
+                  ? '1.5px solid rgba(239,244,255,0.18)'
                   : `1.5px solid rgba(239,244,255,0.22)`,
             color: completed
               ? '#010828'
               : locked
-                ? 'rgba(239,244,255,0.4)'
+                ? 'rgba(239,244,255,0.6)'
                 : 'rgba(239,244,255,0.85)',
-            opacity: locked && !completed ? 0.55 : 1,
+            // 0.55 → 0.7 — 잠금 표현 유지하되 가독성 ↑
+            opacity: locked && !completed ? 0.7 : 1,
+            // 별 사진 배경의 밝은 영역에서도 동그라미 안 글자/Lock 아이콘이 묻히지 않게
+            textShadow:
+              completed
+                ? 'none'
+                : '0 1px 2px rgba(0,0,0,0.5)',
           }}
         >
           {completed ? (
@@ -527,28 +539,44 @@ function StepNode({
         onClick={onClick}
         aria-disabled={locked}
         className="flex-1 text-left pb-6 md:pb-7 group"
-        style={{ opacity: locked && !completed ? 0.55 : 1 }}
+        // 0.55 → 0.7 — 잠금이라도 텍스트 읽힘. 디자인은 그대로 무딘 톤 유지.
+        style={{ opacity: locked && !completed ? 0.7 : 1 }}
       >
         <h4
           className="kr-body font-medium text-[13px] md:text-[14px] tracking-[-0.005em] leading-[1.4] group-hover:text-neon transition"
-          style={{ color: completed ? 'rgba(239,244,255,0.9)' : 'var(--cream)' }}
+          style={{
+            color: completed ? 'rgba(239,244,255,0.9)' : 'var(--cream)',
+            // 별 사진 배경에서도 한글이 묻히지 않게 — 미세한 어두운 그림자.
+            // 0.5 alpha 정도라 시각적으로 거의 안 보이지만 contrast 가 살아남.
+            textShadow: '0 1px 3px rgba(1,8,40,0.7), 0 0 1px rgba(0,0,0,0.4)',
+          }}
         >
           {title}
         </h4>
-        <div className="mt-1 flex items-center gap-2 kr-body text-[10.5px] text-cream/55">
+        <div
+          className="mt-1 flex items-center gap-2 kr-body text-[10.5px]"
+          style={{
+            color: 'rgba(239,244,255,0.7)',
+            // 메타 라벨도 동일 — 작은 글자라 더 필요.
+            textShadow: '0 1px 2px rgba(1,8,40,0.6)',
+          }}
+        >
           {completed ? (
             <span style={{ color: accent }}>✓ 완료</span>
           ) : attempted ? (
-            <span className="text-cream/65">진행 중</span>
+            <span style={{ color: 'rgba(239,244,255,0.85)' }}>진행 중</span>
           ) : locked ? (
-            <span className="text-cream/45 inline-flex items-center gap-1">
+            <span
+              className="inline-flex items-center gap-1"
+              style={{ color: 'rgba(239,244,255,0.7)' }}
+            >
               <Lock size={9} strokeWidth={2.6} />
               앞 단계 먼저
             </span>
           ) : (
-            <span className="text-cream/45">시작 전</span>
+            <span style={{ color: 'rgba(239,244,255,0.7)' }}>시작 전</span>
           )}
-          <span className="text-cream/30">·</span>
+          <span style={{ color: 'rgba(239,244,255,0.4)' }}>·</span>
           <span className="kr-num uppercase tracking-widest text-[9px]">
             STEP {n}
           </span>

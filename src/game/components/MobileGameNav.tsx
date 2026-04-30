@@ -12,7 +12,16 @@
  * - ⚡ level — 현재 레벨
  */
 
-import { Flame, Zap, Map, Flag, Trophy, User, Infinity as InfinityIcon } from 'lucide-react';
+import {
+  Flame,
+  Zap,
+  Map,
+  Flag,
+  Trophy,
+  User,
+  Infinity as InfinityIcon,
+  type LucideIcon,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useEffect, useState, type ReactNode } from 'react';
 import type { Subject } from '@/types/question';
@@ -260,7 +269,7 @@ export function MobileBottomNav({
           tab="learn"
           active={active}
           accent={accent}
-          icon={<Map size={26} strokeWidth={2} />}
+          Icon={Map}
           label="학습"
           onClick={() => {
             if (onLearn) {
@@ -274,7 +283,7 @@ export function MobileBottomNav({
           tab="quests"
           active={active}
           accent={accent}
-          icon={<Flag size={26} strokeWidth={2} />}
+          Icon={Flag}
           label="퀘스트"
           onClick={() => {
             if (onQuests) {
@@ -288,7 +297,7 @@ export function MobileBottomNav({
           tab="trophy"
           active={active}
           accent={accent}
-          icon={<Trophy size={26} strokeWidth={2} />}
+          Icon={Trophy}
           label="친구"
           onClick={() => {
             window.location.hash = '/friends';
@@ -298,7 +307,7 @@ export function MobileBottomNav({
           tab="profile"
           active={active}
           accent={accent}
-          icon={<User size={26} strokeWidth={2} />}
+          Icon={User}
           label="프로필"
           onClick={() => {
             window.location.hash = '/stats';
@@ -310,30 +319,31 @@ export function MobileBottomNav({
 }
 
 /**
- * Tab — 도우어듀오 톤 microinteraction.
+ * Tab — 도우어듀오 톤 microinteraction + 3D 아이콘.
  *
- * 비활성 → 활성 전환 시:
- *  1) translateY(0 → -3px) + scale(1 → 1.08) spring 으로 살짝 위로 떠오름
- *  2) 알약 배경(pill)이 fade/scale 로 등장
- *  3) 라벨 색상·굵기 동시 전환
- * Press 시:
- *  - whileTap 으로 scale 0.92 즉각 반응 (CSS active 보다 부드러움)
- * Spring 파라미터는 이미 사용 중인 EnergyBlockModal/Ques 와 통일 (stiffness 400, damping 17).
+ * 비활성 → 활성 전환:
+ *  1) translateY(0 → -4px) + scale(1 → 1.08) spring (살짝 위로 떠오름)
+ *  2) 3D pill 배경: radial 하이라이트 + 외부 glow + inset 깊이감
+ *  3) 아이콘 자체 변화 — strokeWidth 2 → 2.4 + fill 추가 (outline → 살짝 채워짐)
+ *  4) 라벨 굵기 500 → 700
+ * Press: whileTap scale 0.92 (CSS active 보다 GPU 가속 spring).
+ * Spring 톤: stiffness 400 / damping 17 — EnergyBlockModal·Ques 와 통일.
  *
- * 색상은 prop accent 그대로 — 과목 톤 (adsp 청록 / sqld 보라) 자동 반영.
+ * 색상은 prop accent — 과목 톤 (adsp 청록 / sqld 보라) 자동 반영.
  */
 function Tab({
   tab,
   active,
   accent,
-  icon,
+  Icon,
   label,
   onClick,
 }: {
   tab: MobileNavTab;
   active: MobileNavTab;
   accent: string;
-  icon: ReactNode;
+  /** lucide 아이콘 컴포넌트. 활성 여부에 따라 fill·strokeWidth 가 동적으로 바뀜. */
+  Icon: LucideIcon;
   label: string;
   onClick?: () => void;
 }) {
@@ -349,28 +359,57 @@ function Tab({
         color: isActive ? accent : 'rgba(239,244,255,0.42)',
       }}
     >
-      {/* 아이콘 영역 — pill 배경 + spring */}
+      {/* 아이콘 영역 — 3D pill 배경 + spring */}
       <motion.span
         className="relative inline-flex items-center justify-center w-14 h-9"
         animate={{
-          y: isActive ? -3 : 0,
+          y: isActive ? -4 : 0,
           scale: isActive ? 1.08 : 1,
         }}
         transition={{ type: 'spring', stiffness: 400, damping: 17 }}
         whileTap={{ scale: 0.92 }}
       >
-        {/* pill 배경 — 활성 시에만 mount, AnimatePresence 없이도 spring entrance 자연스러움 */}
+        {/* ── 3D pill 배경 (활성 시) ────────────────────────────────────────
+            CLAUDE.md "3D 버튼 패턴" 의 미니어처 버전:
+              - radial-gradient 상단 highlight (8% white)
+              - linear-gradient 본체 (accent 계열 12-22% alpha)
+              - 외부 glow (box-shadow 0 0 14px accent/40%)
+              - inset 1px 위쪽 highlight + inset -2px 아래쪽 그림자 → 깊이감
+            결과: 단순 alpha 배경 → "솟아오른 알약" 으로 보임. */}
         {isActive && (
           <motion.span
             aria-hidden
             className="absolute inset-0 rounded-full"
-            style={{ background: `${accent}24` /* 14% alpha — 채도 살짝 더 vivid */ }}
+            style={{
+              background: `
+                radial-gradient(circle at 50% 0%, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0) 55%),
+                linear-gradient(180deg, ${accent}30 0%, ${accent}1a 100%)
+              `,
+              boxShadow: `
+                0 0 14px ${accent}55,
+                inset 0 1px 0 rgba(255,255,255,0.12),
+                inset 0 -2px 0 rgba(0,0,0,0.18)
+              `,
+            }}
             initial={{ opacity: 0, scale: 0.6 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ type: 'spring', stiffness: 380, damping: 26 }}
           />
         )}
-        <span className="relative z-10">{icon}</span>
+        {/* ── 아이콘 — 활성 시 fill + strokeWidth ↑ ────────────────────────
+            도우어듀오 트릭: lucide outline 만 써도 fill 색을 살짝 더하면
+            "outline → 살짝 채워짐" 으로 자연스럽게 morph. */}
+        <Icon
+          size={26}
+          strokeWidth={isActive ? 2.4 : 2}
+          fill={isActive ? `${accent}33` : 'none'}
+          className="relative z-10"
+          style={{
+            // strokeLinecap·Join 은 lucide 기본값 (round). 추가 처리 X.
+            // active 시 살짝 위로 더 들리는 느낌 — drop-shadow 로.
+            filter: isActive ? `drop-shadow(0 1px 2px ${accent}66)` : 'none',
+          }}
+        />
       </motion.span>
 
       {/* 라벨 — 항상 노출. 활성 시 굵기 ↑ */}

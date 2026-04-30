@@ -15,11 +15,13 @@ import {
   ArrowRight,
   BarChart3,
   ChevronRight,
+  Info,
   ListTodo,
   RotateCcw,
   Star,
   X,
 } from 'lucide-react';
+import { getSupabase, onAuthStateChange } from '@/lib/supabase';
 import { SUBJECT_SCHEMAS } from '@/data/subjects';
 import type { Subject } from '@/types/question';
 import { playableCount } from '../session';
@@ -541,6 +543,19 @@ function SubjectInfoPanel({
   const subjectAccent = SUBJECT_ACCENT[subject];
   const subjectAccentRgb = SUBJECT_ACCENT_RGB[subject];
 
+  // 게스트 여부 — 미인증이면 진도가 이 기기에만 저장된다는 안내 노출.
+  // 다른 페이지(FriendsPage·AuthCard) 와 동일한 패턴.
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  useEffect(() => {
+    const sb = getSupabase();
+    if (!sb) return;
+    sb.auth.getSession().then(({ data }) => setIsSignedIn(!!data.session));
+    const unsub = onAuthStateChange((_e, s) => setIsSignedIn(!!s));
+    return () => {
+      unsub();
+    };
+  }, []);
+
   return (
     <div className="panel-slide-up">
       <div
@@ -608,6 +623,47 @@ function SubjectInfoPanel({
         </div>
 
         <ProgressBadge agg={agg} />
+
+        {/*
+          게스트 안내 — 미로그인 사용자에게 진도 저장 범위 알림.
+          다기기 동기화 사고 (postmortem-phase3) 의 사용자 보호 차원에서:
+            "게스트 진행도 OK, 단 이 기기에만 저장" 을 명확히 노출.
+          톤: 경고 X, 정보 안내 (amber #FFB020 — profile tag 색과 통일).
+          launching 중엔 숨겨서 시각적 잡음 방지.
+        */}
+        {!isSignedIn && !launching && (
+          <div
+            className="mt-4 p-3 rounded-[12px] flex items-start gap-2.5"
+            role="note"
+            style={{
+              background: 'rgba(255,176,32,0.08)',
+              border: '1px solid rgba(255,176,32,0.28)',
+            }}
+          >
+            <Info
+              size={14}
+              strokeWidth={2.4}
+              aria-hidden
+              style={{ color: '#FFB020', marginTop: 2, flexShrink: 0 }}
+            />
+            <p
+              className="kr-body text-[12px] leading-[1.55]"
+              style={{ color: 'rgba(255,205,120,0.95)' }}
+            >
+              게스트 모드 — 진도가 이 기기에만 저장돼요. 다른 기기에서 이어
+              학습하려면{' '}
+              <a
+                href="#/login"
+                onClick={(e) => e.stopPropagation()}
+                className="kr-num underline"
+                style={{ color: '#FFB020', fontWeight: 700 }}
+              >
+                로그인
+              </a>
+              이 필요합니다.
+            </p>
+          </div>
+        )}
 
         <div className="mt-5 flex items-center gap-2">
           <button

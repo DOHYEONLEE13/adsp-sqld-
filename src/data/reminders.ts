@@ -1800,6 +1800,530 @@ export const REMINDERS: Record<string, ConceptReminder> = {
       '딥 = 은닉층 깊게 + dropout 으로 과적합 방지',
     ],
   },
+
+  // ===================================================================
+  // SQLD · 1과목 · 데이터 모델링의 이해
+  // ===================================================================
+
+  'sqld-1-1-s1': {
+    headline: '모델링 3특징 + 3관점, 기억나?',
+    summary: '특징 = 단순화·추상화·명확화 ("단추명"). 관점 = 데이터(무엇)·프로세스(어떻게)·데이터/프로세스 상관 (사용).',
+    keyPoints: [
+      '특징: 단순화·추상화·명확화 (단추명)',
+      '데이터 관점: 무엇 (엔터티·속성)',
+      '프로세스 관점: 어떻게 (업무 흐름)',
+      '상관 관점: 사용 시 결합',
+    ],
+  },
+  'sqld-1-1-s2': {
+    headline: '모델링 단계 "개논물", 기억나?',
+    summary: '개념적 → 논리적 → 물리적. 추상화 ↓ 구체화 ↑. 논리적 단계가 재사용성 가장 높음.',
+    keyPoints: [
+      '개념적: 핵심 엔터티·관계만 (추상)',
+      '논리적: 정규화·키·재사용성 ↑',
+      '물리적: DBMS·인덱스·스토리지',
+      '암기법: 개·논·물',
+    ],
+  },
+  'sqld-1-1-s3': {
+    headline: 'ANSI/SPARC 3계층 + 독립성, 기억나?',
+    summary: '외부(사용자별 뷰) · 개념(전사 통합) · 내부(물리 저장) 3계층. 논리적·물리적 독립성으로 변경 영향 분리.',
+    keyPoints: [
+      '외부: 사용자별 뷰 (View)',
+      '개념: 전사 통합 (Schema)',
+      '내부: 물리 저장 (DB Storage)',
+      '독립성: 논리적·물리적 2종',
+    ],
+  },
+  'sqld-1-1-s4': {
+    headline: '엔터티 5요건, 기억나?',
+    summary: '업무 필요·식별성·2개 이상 인스턴스·속성 보유·관계 보유. "영속 저장" 은 요건 X (함정).',
+    keyPoints: [
+      '① 업무에 필요',
+      '② 유일하게 식별',
+      '③ 인스턴스 2개 이상',
+      '④ 속성 보유',
+      '⑤ 다른 엔터티와 관계',
+    ],
+  },
+  'sqld-1-1-s5': {
+    headline: '엔터티 분류 (유무형 / 발생시점), 기억나?',
+    summary: '유무형: 유형·개념·사건 ("개사유"). 발생시점: 기본·중심·행위 (3가지). "관계 엔터티" 는 분류명에 없음.',
+    keyPoints: [
+      '유무형 3종: 유형·개념·사건 (개사유)',
+      '발생시점 3종: 기본·중심·행위',
+      '함정: "관계 엔터티" 분류명 X',
+      '관계 엔터티는 별개 (M:N 해소)',
+    ],
+  },
+  'sqld-1-1-s6': {
+    headline: '속성 3×3×3 분류, 기억나?',
+    summary: '특성(기본·설계·파생) × 분해(단순·복합·다중값) × 도메인. 파생 = 계산·변형으로 생성.',
+    keyPoints: [
+      '특성: 기본·설계·파생',
+      '분해: 단순·복합·다중값',
+      '파생 = 다른 속성에서 계산 (나이, 합계)',
+      '다중값 = 1NF 위반 (분리 필요)',
+    ],
+  },
+  'sqld-1-1-s7': {
+    headline: '관계 "관차선" + 교차 엔터티, 기억나?',
+    summary: '관계 구성요소 = 관계명·차수(Cardinality)·선택사양(Optionality). M:N 은 교차 엔터티로 해소.',
+    keyPoints: [
+      '관계명·차수·선택사양 (관차선)',
+      '차수: 1:1 / 1:M / M:N',
+      '선택사양: 필수(Mandatory)·선택(Optional)',
+      'M:N 은 교차 엔터티(Junction) 로 해소',
+    ],
+  },
+  'sqld-1-1-s8': {
+    headline: '식별자 분류 + 주식별자 4요건, 기억나?',
+    summary: '분류 4: 대표성/스스로/속성수/대체여부. 주식별자 4요건 = 유일성·최소성·불변성·존재성 ("유최불존").',
+    keyPoints: [
+      '분류 4: 주/보조·내부/외부·단일/복합·본질/인조',
+      '주식별자 4요건: 유최불존',
+      '존재성 = NOT NULL',
+      '의미성은 4요건에 없음 (함정)',
+    ],
+  },
+  'sqld-1-1-s9': {
+    headline: '식별자 vs 비식별자 관계, 기억나?',
+    summary: '식별자 관계 = 부모 PK 가 자식 PK 일부. 비식별자 = 일반 속성. IE 표기: 식별자 실선·비식별자 점선.',
+    keyPoints: [
+      '식별자: 부모 PK → 자식 PK 일부 (강한 관계)',
+      '비식별자: 부모 PK → 자식 일반 속성 (약한 관계)',
+      'IE 표기: 식별자 실선 / 비식별자 점선',
+      '식별자도 1:1 또는 1:M 모두 가능',
+    ],
+  },
+  'sqld-1-1-s10': {
+    headline: '키 5종 + 무결성 3종, 기억나?',
+    summary: '키: 후보·기본·대체·외래·슈퍼. 무결성: 개체(PK)·참조(FK)·도메인(CHECK·NOT NULL·DEFAULT).',
+    keyPoints: [
+      '키 5: 후보·기본·대체·외래·슈퍼',
+      '무결성 3: 개체(PK NOT NULL+UNIQUE)',
+      '참조(FK)·도메인(타입·CHECK)',
+      'FK = 외부식별자 (내부 X)',
+    ],
+  },
+
+  // ── SQLD Topic 1-2 — 데이터 모델과 성능 ─────────────────
+  'sqld-1-2-s1': {
+    headline: '이상 현상 "삽삭갱", 기억나?',
+    summary: '삽입(Insertion)·삭제(Deletion)·갱신(Update) 이상. 정규화의 동기 — 중복 제거로 해소. 조회는 부작용 X.',
+    keyPoints: [
+      '삽입: 의도 외 데이터 강제 입력',
+      '삭제: 의도 외 데이터 함께 사라짐',
+      '갱신: 일부만 변경되어 불일치',
+      '함정: 조회 이상 X',
+    ],
+  },
+  'sqld-1-2-s2': {
+    headline: '함수적 종속 — 완전/부분/이행, 기억나?',
+    summary: 'A → B = A 가 B 결정. 완전 = PK 전체에 종속, 부분 = PK 일부만, 이행 = 간접 (A→B→C).',
+    keyPoints: [
+      '완전 함수 종속 = 2NF 만족 조건',
+      '부분 함수 종속 = 2NF 위반 (제거 → 2NF)',
+      '이행 함수 종속 = 3NF 위반 (제거 → 3NF)',
+      '결정자 = A, 종속자 = B',
+    ],
+  },
+  'sqld-1-2-s3': {
+    headline: '정규형 "도부이결", 기억나?',
+    summary: '1NF(도메인 원자값)·2NF(부분 종속 제거)·3NF(이행 종속 제거)·BCNF(결정자=후보키). 단계마다 한 가지씩 제거.',
+    keyPoints: [
+      '1NF: 원자값 (다중값 분리)',
+      '2NF: 부분 함수 종속 제거',
+      '3NF: 이행 함수 종속 제거',
+      'BCNF: 모든 결정자가 후보키',
+      '암기법: 도·부·이·결',
+    ],
+  },
+  'sqld-1-2-s4': {
+    headline: '반정규화 — 언제·어떻게·대가, 기억나?',
+    summary: '조회 성능 ↑ 목적으로 의도적 중복·통합. JOIN 횟수 ↓ 효과. 갱신 부담 ↑ + 일관성 리스크 ↑ 가 대가.',
+    keyPoints: [
+      '언제: 조회 성능 병목 시',
+      '방법: 컬럼 중복·테이블 통합·파생 컬럼·요약 테이블',
+      '대가: 갱신 부담 + 일관성 리스크',
+      '정규화 → 반정규화 (검토 후 적용)',
+    ],
+  },
+  'sqld-1-2-s5': {
+    headline: '특수 관계 — 계층형/상호배타/순환, 기억나?',
+    summary: '계층형 = 자기 참조 (사원-상사). 상호배타 = 둘 중 하나만. 순환 = 같은 엔터티 내 반복.',
+    keyPoints: [
+      '계층형: 같은 테이블 자기 참조',
+      '도구: CONNECT BY (Oracle), 셀프 조인',
+      '상호배타: 한 자식 여러 부모 후보 중 1',
+      '순환: 부모-자식이 같은 엔터티 (조직도)',
+    ],
+  },
+  'sqld-1-2-s6': {
+    headline: '트랜잭션 ACID + 격리수준, 기억나?',
+    summary: 'Atomicity·Consistency·Isolation·Durability. 격리수준 4종 = Read Uncommitted < RC < RR < Serializable.',
+    keyPoints: [
+      'A: 원자성 (All or Nothing)',
+      'C: 일관성 (제약 위반 X)',
+      'I: 고립성 (동시 트랜잭션 간섭 X)',
+      'D: 지속성 (커밋 후 영구)',
+      '격리수준: RU·RC·RR·Serializable',
+    ],
+  },
+  'sqld-1-2-s7': {
+    headline: 'NULL — 본성·산술·집계·정렬, 기억나?',
+    summary: 'NULL = 미지의 값. 산술 → NULL. 비교 → UNKNOWN. COUNT(*) 만 NULL 포함, 다른 집계는 무시.',
+    keyPoints: [
+      '산술: NULL + 1 = NULL',
+      '비교: NULL = NULL → UNKNOWN',
+      'COUNT(*) 포함, COUNT(컬럼)·SUM·AVG 무시',
+      'Oracle ASC: NULLS LAST / DESC: NULLS FIRST',
+    ],
+  },
+  'sqld-1-2-s8': {
+    headline: '본질식별자 vs 인조식별자, 기억나?',
+    summary: '본질 = 업무에 자연 존재 (주민번호·사업자번호). 인조 = 인위 생성 (시퀀스·UUID). 변경 리스크 적은 인조가 일반적.',
+    keyPoints: [
+      '본질: 업무 자연 식별자 (주민·사업자)',
+      '인조: 인위 일련번호·UUID',
+      '인조 장점: 변경 리스크 ↓·개인정보 X',
+      '인조 단점: 의미 X·인덱스 부담',
+    ],
+  },
+
+  // ===================================================================
+  // SQLD · 2과목 · SQL 기본 및 활용
+  // ===================================================================
+
+  'sqld-2-1-s1': {
+    headline: 'SQL 4명령군, 기억나?',
+    summary: 'DDL(정의)·DML(조작)·DCL(권한)·TCL(트랜잭션). 자동 COMMIT 여부 차이.',
+    keyPoints: [
+      'DDL: CREATE/ALTER/DROP/TRUNCATE (자동 COMMIT)',
+      'DML: SELECT/INSERT/UPDATE/DELETE/MERGE',
+      'DCL: GRANT/REVOKE',
+      'TCL: COMMIT/ROLLBACK/SAVEPOINT',
+    ],
+  },
+  'sqld-2-1-s2': {
+    headline: '관계대수 6종, 기억나?',
+    summary: 'SQL 의 수학적 뿌리. σ(선택)·π(투영)·∪(합)·∩(교)·−(차)·×(곱) + ⋈(JOIN).',
+    keyPoints: [
+      'σ Selection (행) ↔ WHERE',
+      'π Projection (열) ↔ SELECT 컬럼',
+      '∪ Union ↔ UNION',
+      '∩ Intersect ↔ INTERSECT',
+      '× Cartesian ↔ CROSS JOIN',
+    ],
+  },
+  'sqld-2-1-s3': {
+    headline: 'SELECT 실행 순서 "프웨그하셀오", 기억나?',
+    summary: 'FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY. SELECT 가 5번째라 ALIAS 는 ORDER BY 에서만.',
+    keyPoints: [
+      '논리적 처리 순서: FWGHSO',
+      'WHERE: 행 필터 (집계 X)',
+      'HAVING: 그룹 필터 (집계 O)',
+      'ALIAS: ORDER BY 에서만 사용 가능',
+    ],
+  },
+  'sqld-2-1-s4': {
+    headline: 'ALIAS · DISTINCT · 문자열 연결, 기억나?',
+    summary: 'AS 생략 가능. DISTINCT = 중복 제거. 문자열 연결 = || (Oracle) / + (SQL Server) / CONCAT.',
+    keyPoints: [
+      'ALIAS: AS 생략 가능, 공백·특문 시 ""',
+      'DISTINCT: 모든 컬럼 조합 중복 제거',
+      'Oracle 연결: \'A\' || \'B\'',
+      'SQL Server: + / 표준: CONCAT()',
+    ],
+  },
+  'sqld-2-1-s5': {
+    headline: '문자 함수 SUBSTR/TRIM/REPLACE/INSTR, 기억나?',
+    summary: 'SUBSTR(s, 시작, 길이)·TRIM(공백 제거)·REPLACE(s, 찾을, 바꿀)·INSTR(s, 찾을) 위치.',
+    keyPoints: [
+      'SUBSTR: 1-based, 음수 = 뒤에서',
+      'SUBSTR 길이 음수 → NULL',
+      'INSTR: 못 찾으면 0',
+      'REPLACE 두 번째 인자 NULL → 원본',
+    ],
+  },
+  'sqld-2-1-s6': {
+    headline: '숫자/날짜/변환 함수, 기억나?',
+    summary: 'ROUND·TRUNC·MOD·CEIL/FLOOR. SYSDATE·ADD_MONTHS·MONTHS_BETWEEN. TO_CHAR·TO_DATE·TO_NUMBER.',
+    keyPoints: [
+      'ROUND(x, n): 반올림 (n=음수=10의 자리)',
+      'TRUNC(x, n): 버림',
+      'CEIL(x): 올림 / FLOOR(x): 내림',
+      '변환 3총사: TO_CHAR·TO_DATE·TO_NUMBER',
+    ],
+  },
+  'sqld-2-1-s7': {
+    headline: '집계 함수 + NULL 함정, 기억나?',
+    summary: 'SUM·AVG·MIN·MAX·COUNT. COUNT(*) 만 NULL 포함, 나머지 무시. AVG 분모도 NULL 제외.',
+    keyPoints: [
+      'COUNT(*): NULL 포함 (전체 행)',
+      'COUNT(컬럼): NULL 무시',
+      'SUM/AVG/MIN/MAX: NULL 무시',
+      'AVG 분모도 NULL 제외 → 평균 다름',
+    ],
+  },
+  'sqld-2-1-s8': {
+    headline: 'NULL 처리 함수 4종, 기억나?',
+    summary: 'NVL(a, b): NULL→b. NVL2(a, x, y): NOT NULL=x, NULL=y. NULLIF(a, b): a=b면 NULL. COALESCE: 첫 NOT NULL.',
+    keyPoints: [
+      'NVL(a, b): a NULL → b',
+      'NVL2(a, x, y): NOT NULL=x, NULL=y',
+      'NULLIF(a, b): a=b → NULL, 다르면 a',
+      'COALESCE(a,b,c,…): 첫 NOT NULL',
+    ],
+  },
+  'sqld-2-1-s9': {
+    headline: 'CASE / DECODE, 기억나?',
+    summary: 'CASE 두 형태 = Simple(WHEN 값) · Searched(WHEN 조건). DECODE 는 Oracle 전용 등가 비교.',
+    keyPoints: [
+      'Simple CASE: WHEN 값 (=비교)',
+      'Searched CASE: WHEN 조건 (IS NULL 가능)',
+      'Simple CASE WHEN NULL → 동작 X',
+      'DECODE(값, x, …, default): NULL 비교 가능',
+    ],
+  },
+  'sqld-2-1-s10': {
+    headline: 'WHERE — 비교/조건/LIKE/NULL, 기억나?',
+    summary: '비교 연산자·논리 연산자·BETWEEN·IN·LIKE·IS NULL. 우선순위: NOT > AND > OR.',
+    keyPoints: [
+      'BETWEEN a AND b: a≤x≤b (포함)',
+      'IN: 다중 등가 (NOT IN + NULL 함정)',
+      'LIKE: % (다수)·_ (단일) 와일드카드',
+      'IS NULL (= NULL X — UNKNOWN)',
+      '우선순위: NOT > AND > OR',
+    ],
+  },
+  'sqld-2-1-s11': {
+    headline: 'GROUP BY · HAVING, 기억나?',
+    summary: 'GROUP BY = 그룹화. HAVING = 그룹 결과 필터 (집계 사용). WHERE 는 그룹 전 행 필터.',
+    keyPoints: [
+      'WHERE: 행 필터 (집계 X)',
+      'GROUP BY: 그룹화',
+      'HAVING: 그룹 필터 (집계 O)',
+      '실행 순서: WHERE → GROUP BY → HAVING',
+    ],
+  },
+  'sqld-2-1-s12': {
+    headline: 'ORDER BY + NULL 정렬, 기억나?',
+    summary: 'ASC 기본·생략 가능. Oracle: ASC=NULLS LAST, DESC=NULLS FIRST. SQL Server는 ASC=NULLS FIRST.',
+    keyPoints: [
+      '기본 ASC (생략 가능)',
+      'ALIAS·컬럼번호·집계 모두 사용 가능',
+      'Oracle: ASC NULL 끝, DESC NULL 앞',
+      'SQL Server: ASC NULL 앞 (반대)',
+    ],
+  },
+
+  // ── SQLD Topic 2-2 — SQL 활용 ────────────────────────
+  'sqld-2-2-s1': {
+    headline: 'JOIN 4종, 기억나?',
+    summary: 'INNER (매칭만)·LEFT (왼쪽 모두)·RIGHT (오른쪽 모두)·FULL OUTER (양쪽 모두). 매칭 없는 쪽 NULL.',
+    keyPoints: [
+      'INNER: 양쪽 매칭만',
+      'LEFT OUTER: 왼쪽 모두 + 오른쪽 매칭',
+      'RIGHT OUTER: 오른쪽 모두 + 왼쪽 매칭',
+      'FULL OUTER: 양쪽 모두 (비매칭은 NULL)',
+    ],
+  },
+  'sqld-2-2-s2': {
+    headline: 'JOIN 표기 NATURAL/USING/ON, 기억나?',
+    summary: 'ON = 가장 명시적·표현식. USING = 같은 이름 컬럼 1개. NATURAL = 같은 이름 자동 매칭.',
+    keyPoints: [
+      'ON: 표현식 (A.id = B.id) — 가장 명시',
+      'USING(컬럼): 같은 이름 컬럼 명시',
+      'NATURAL: 같은 이름 자동 매칭',
+      '함정: ON (단일 컬럼명) X — 표현식 필수',
+    ],
+  },
+  'sqld-2-2-s3': {
+    headline: 'CROSS JOIN · SELF JOIN, 기억나?',
+    summary: 'CROSS = 카티시안 곱 (M×N). SELF = 같은 테이블 별칭으로 두 번 — 셀프 조인.',
+    keyPoints: [
+      'CROSS: 모든 쌍 = M × N 행',
+      'SELF: 같은 테이블 두 별칭 (A·B)',
+      'SELF 용도: 계층 구조·이전/이후 비교',
+      'CROSS + 조건 = 사실상 INNER',
+    ],
+  },
+  'sqld-2-2-s4': {
+    headline: '서브쿼리 6종, 기억나?',
+    summary: '위치별: 스칼라(SELECT절·1×1)·인라인뷰(FROM절)·중첩(WHERE절). 결과별: 단일행·다중행·다중컬럼.',
+    keyPoints: [
+      '스칼라: SELECT 절 — 한 행 한 컬럼',
+      '인라인 뷰: FROM 절 — 임시 테이블',
+      '중첩(Nested): WHERE 절 — 조건용',
+      '상호연관: 바깥 행마다 재실행',
+    ],
+  },
+  'sqld-2-2-s5': {
+    headline: '다중행 비교 EXISTS/IN/ANY/ALL, 기억나?',
+    summary: 'EXISTS = 존재 여부. IN = 등가 매칭. ANY = OR 비교. ALL = AND 비교.',
+    keyPoints: [
+      'EXISTS: 서브쿼리 결과 존재만 검사',
+      'IN: 값 = 서브쿼리 행 중 하나',
+      'ANY/SOME: 비교 연산자 + 하나라도',
+      'ALL: 모든 비교 만족',
+      '함정: NOT IN + NULL → 0행',
+    ],
+  },
+  'sqld-2-2-s6': {
+    headline: '집합 연산자 4종, 기억나?',
+    summary: 'UNION (합·중복 제거)·UNION ALL (합·중복 유지)·INTERSECT (교)·MINUS/EXCEPT (차).',
+    keyPoints: [
+      'UNION: 합 + 중복 제거',
+      'UNION ALL: 합 + 중복 유지 (빠름)',
+      'INTERSECT: 교집합',
+      'MINUS(Oracle)·EXCEPT(SQL Server): 차',
+    ],
+  },
+  'sqld-2-2-s7': {
+    headline: '그룹 함수 ROLLUP/CUBE/GROUPING SETS, 기억나?',
+    summary: 'ROLLUP(a,b): (a,b),(a),() 소계+총계. CUBE: 모든 부분집합. GROUPING SETS: 원하는 조합 명시.',
+    keyPoints: [
+      'ROLLUP(a,b): (a,b)·(a)·() — 순서 의존',
+      'CUBE(a,b): (a,b)·(a)·(b)·() — 순서 무관',
+      'GROUPING SETS: 직접 명시',
+      'ROLLUP 컬럼 순서 ≠ 결과 순서',
+    ],
+  },
+  'sqld-2-2-s8': {
+    headline: '윈도우 순위 — RANK/DENSE/ROW_NUMBER, 기억나?',
+    summary: 'ROW_NUMBER = 동률 없이 순번. RANK = 동률 같은 순위 + 다음 건너뜀. DENSE_RANK = 건너뛰지 않음.',
+    keyPoints: [
+      'ROW_NUMBER: 1,2,3,4,5 (동률 없음)',
+      'RANK: 1,2,2,4,4 (동률 + 건너뜀)',
+      'DENSE_RANK: 1,2,2,3,3 (건너뛰지 않음)',
+      'OVER (ORDER BY ...) 필수',
+    ],
+  },
+  'sqld-2-2-s9': {
+    headline: '윈도우 집계 + PARTITION BY, 기억나?',
+    summary: 'OVER() = 전체. OVER(PARTITION BY x) = x 별 그룹. GROUP BY 와 달리 행 수 유지.',
+    keyPoints: [
+      'PARTITION BY: 그룹별 윈도우',
+      'GROUP BY: 행 수 ↓ vs 윈도우: 행 수 유지',
+      '누적합: SUM(...) OVER (ORDER BY ...)',
+      '"각 행 옆에 그룹 평균" 은 윈도우만',
+    ],
+  },
+  'sqld-2-2-s10': {
+    headline: 'LAG/LEAD/FIRST_VALUE + ROWS/RANGE, 기억나?',
+    summary: 'LAG(이전 행)·LEAD(다음 행)·FIRST/LAST_VALUE. ROWS = 행 단위·RANGE = 값 단위 윈도우.',
+    keyPoints: [
+      'LAG(col, n): n행 이전 값',
+      'LEAD(col, n): n행 이후 값',
+      'ROWS: 행 개수 단위',
+      'RANGE: 정렬 키 값 단위',
+    ],
+  },
+  'sqld-2-2-s11': {
+    headline: 'TOP N · 계층형 · PIVOT/UNPIVOT, 기억나?',
+    summary: 'TOP N = ROWNUM·FETCH FIRST·TOP. 계층형 = CONNECT BY PRIOR·LEVEL. PIVOT = 행→열, UNPIVOT = 열→행.',
+    keyPoints: [
+      'TOP N: ROWNUM(Oracle)·FETCH FIRST·TOP(SS)',
+      '계층형 Oracle: CONNECT BY PRIOR + START WITH',
+      'PIVOT: LONG → WIDE',
+      'UNPIVOT: WIDE → LONG',
+    ],
+  },
+  'sqld-2-2-s12': {
+    headline: '정규표현식 + Oracle 함수 5종, 기억나?',
+    summary: '? 0~1, * 0+, + 1+, {m,} m+. Oracle: REGEXP_LIKE·REGEXP_REPLACE·REGEXP_INSTR·REGEXP_SUBSTR·REGEXP_COUNT.',
+    keyPoints: [
+      '? = 0 또는 1회',
+      '* = 0회 이상',
+      '+ = 1회 이상',
+      '{m,n} = m~n 회',
+      'Oracle 함수 5: LIKE·REPLACE·INSTR·SUBSTR·COUNT',
+    ],
+  },
+
+  // ── SQLD Topic 2-3 — 관리 구문 ────────────────────────
+  'sqld-2-3-s1': {
+    headline: 'DML 3총사 INSERT/UPDATE/DELETE, 기억나?',
+    summary: 'INSERT (행 추가)·UPDATE (값 변경)·DELETE (행 삭제). 모두 ROLLBACK 가능 (DML).',
+    keyPoints: [
+      'INSERT INTO t (cols) VALUES (vals)',
+      'UPDATE t SET col=val WHERE …',
+      'DELETE FROM t WHERE …',
+      'WHERE 누락 시 모든 행 영향 (위험)',
+    ],
+  },
+  'sqld-2-3-s2': {
+    headline: 'MERGE — UPSERT, 기억나?',
+    summary: 'MATCHED → UPDATE / NOT MATCHED → INSERT. 단일 SQL·단일 트랜잭션. ETL·증분 동기화 단골.',
+    keyPoints: [
+      'MERGE INTO 대상 USING 소스 ON (조건)',
+      'WHEN MATCHED: UPDATE',
+      'WHEN NOT MATCHED: INSERT',
+      '단일 트랜잭션·원자적',
+    ],
+  },
+  'sqld-2-3-s3': {
+    headline: 'TCL — COMMIT/ROLLBACK/SAVEPOINT, 기억나?',
+    summary: 'COMMIT = 영구 반영. ROLLBACK = 취소. SAVEPOINT = 부분 롤백 지점. COMMIT 후 SAVEPOINT 사라짐.',
+    keyPoints: [
+      'COMMIT: 영구 반영',
+      'ROLLBACK: 트랜잭션 취소',
+      'SAVEPOINT 이름: 부분 롤백 지점',
+      '함정: COMMIT 후 SAVEPOINT 모두 사라짐',
+    ],
+  },
+  'sqld-2-3-s4': {
+    headline: 'AUTOCOMMIT — Oracle vs SQL Server, 기억나?',
+    summary: 'Oracle: AUTOCOMMIT OFF·DDL 만 자동 커밋. SQL Server: AUTOCOMMIT ON·매 SQL 별 커밋.',
+    keyPoints: [
+      'Oracle DML: AUTOCOMMIT OFF (명시 필요)',
+      'Oracle DDL: 자동 COMMIT (직전 DML 포함)',
+      'SQL Server: 기본 AUTOCOMMIT ON',
+      'DDL 후엔 직전 DML ROLLBACK 불가',
+    ],
+  },
+  'sqld-2-3-s5': {
+    headline: 'CREATE TABLE + 데이터 타입 + 제약, 기억나?',
+    summary: 'CREATE TABLE t (col TYPE 제약, …). 타입: NUMBER·VARCHAR2·DATE 등. 제약: PK·FK·NOT NULL·CHECK·DEFAULT·UNIQUE.',
+    keyPoints: [
+      '문법: CREATE TABLE t (컬럼 타입 제약)',
+      '타입: NUMBER·VARCHAR2·DATE·CLOB',
+      '제약 6: PK·FK·NOT NULL·CHECK·DEFAULT·UNIQUE',
+      'Oracle 컬럼명 30자 이내',
+    ],
+  },
+  'sqld-2-3-s6': {
+    headline: 'ALTER · DROP · TRUNCATE, 기억나?',
+    summary: 'ALTER = 구조 변경 (ADD/MODIFY/DROP COLUMN). DROP = 테이블 삭제. TRUNCATE = 모든 행 삭제·구조 유지.',
+    keyPoints: [
+      'ALTER ADD/MODIFY/DROP COLUMN',
+      'DROP TABLE: 데이터+구조 삭제',
+      'TRUNCATE: 모든 행 (DDL·자동 COMMIT)',
+      'DELETE: 일부 행 + ROLLBACK 가능 (DML)',
+    ],
+  },
+  'sqld-2-3-s7': {
+    headline: '제약조건 6종 + CTAS + VIEW, 기억나?',
+    summary: '제약 6 = PK·FK·NOT NULL·CHECK·DEFAULT·UNIQUE. CTAS = CREATE TABLE AS SELECT (NOT NULL 만 복사).',
+    keyPoints: [
+      '제약 6: PK·FK·NOT NULL·CHECK·DEFAULT·UNIQUE',
+      'CTAS: 데이터 + NOT NULL 만 복사',
+      'PK·FK·UNIQUE 등은 별도 ALTER 추가',
+      'VIEW: 가상 테이블 (저장 X·SELECT 정의)',
+    ],
+  },
+  'sqld-2-3-s8': {
+    headline: 'DCL — GRANT/REVOKE + OPTION, 기억나?',
+    summary: 'GRANT = 권한 부여, REVOKE = 회수. WITH GRANT OPTION (객체) — 회수 시 연쇄. WITH ADMIN OPTION (시스템) — 회수해도 유지.',
+    keyPoints: [
+      'GRANT 권한 ON 객체 TO 사용자',
+      'WITH GRANT OPTION: 객체 권한·연쇄 회수',
+      'WITH ADMIN OPTION: 시스템 권한·연쇄 X',
+      '객체 권한 = SELECT/INSERT 등',
+      '시스템 권한 = CREATE TABLE 등',
+    ],
+  },
 };
 
 /** stepId 로 reminder 조회. 없으면 undefined → UI 측 fallback. */

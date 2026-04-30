@@ -41,10 +41,23 @@ export interface PricingFeature {
 }
 
 export interface PricingPlan {
-  id: 'free' | 'premium';
+  /**
+   * - free            : 무료 플랜
+   * - premium-weekly  : 1주 단기 (시험 직전 집중)
+   * - premium-monthly : 월간 구독 (best value)
+   */
+  id: 'free' | 'premium-weekly' | 'premium-monthly';
   tier: string;
   price: string;
   description?: string;
+  /** 카드 우상단 작은 뱃지 (예: "BEST", "1주 체험"). 강조 카드 식별용. */
+  badge?: string;
+  /**
+   * 카드 시각 강조 정도.
+   * - 'highlight' = neon 액센트 + 살짝 큰 그림자 (월간 추천 카드)
+   * - 기본 = 평면
+   */
+  emphasis?: 'highlight';
   features: PricingFeature[];
   ctaLabel?: string;
   ctaHref?: string;

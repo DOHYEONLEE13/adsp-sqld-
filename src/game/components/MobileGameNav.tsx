@@ -13,6 +13,7 @@
  */
 
 import { Flame, Zap, Map, Flag, Trophy, User, Infinity as InfinityIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useEffect, useState, type ReactNode } from 'react';
 import type { Subject } from '@/types/question';
 import { useProgress } from '../useProgress';
@@ -308,6 +309,19 @@ export function MobileBottomNav({
   );
 }
 
+/**
+ * Tab — 도우어듀오 톤 microinteraction.
+ *
+ * 비활성 → 활성 전환 시:
+ *  1) translateY(0 → -3px) + scale(1 → 1.08) spring 으로 살짝 위로 떠오름
+ *  2) 알약 배경(pill)이 fade/scale 로 등장
+ *  3) 라벨 색상·굵기 동시 전환
+ * Press 시:
+ *  - whileTap 으로 scale 0.92 즉각 반응 (CSS active 보다 부드러움)
+ * Spring 파라미터는 이미 사용 중인 EnergyBlockModal/Ques 와 통일 (stiffness 400, damping 17).
+ *
+ * 색상은 prop accent 그대로 — 과목 톤 (adsp 청록 / sqld 보라) 자동 반영.
+ */
 function Tab({
   tab,
   active,
@@ -330,22 +344,48 @@ function Tab({
       onClick={onClick}
       aria-label={label}
       aria-current={isActive ? 'page' : undefined}
-      className="flex flex-col items-center justify-center py-3 transition active:scale-95"
+      className="relative flex flex-col items-center justify-center py-2.5 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-0"
       style={{
-        color: isActive ? accent : 'rgba(239,244,255,0.4)',
+        color: isActive ? accent : 'rgba(239,244,255,0.42)',
       }}
     >
-      <span
-        className="inline-flex items-center justify-center w-12 h-9 rounded-[12px]"
-        style={{
-          background: isActive ? `${accent}1f` : 'transparent',
-          border: isActive
-            ? `2px solid ${accent}`
-            : '2px solid transparent',
+      {/* 아이콘 영역 — pill 배경 + spring */}
+      <motion.span
+        className="relative inline-flex items-center justify-center w-14 h-9"
+        animate={{
+          y: isActive ? -3 : 0,
+          scale: isActive ? 1.08 : 1,
         }}
+        transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+        whileTap={{ scale: 0.92 }}
       >
-        {icon}
-      </span>
+        {/* pill 배경 — 활성 시에만 mount, AnimatePresence 없이도 spring entrance 자연스러움 */}
+        {isActive && (
+          <motion.span
+            aria-hidden
+            className="absolute inset-0 rounded-full"
+            style={{ background: `${accent}24` /* 14% alpha — 채도 살짝 더 vivid */ }}
+            initial={{ opacity: 0, scale: 0.6 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: 'spring', stiffness: 380, damping: 26 }}
+          />
+        )}
+        <span className="relative z-10">{icon}</span>
+      </motion.span>
+
+      {/* 라벨 — 항상 노출. 활성 시 굵기 ↑ */}
+      <motion.span
+        className="kr-num text-[10.5px] mt-1 leading-none tracking-[0.02em]"
+        style={{
+          fontWeight: isActive ? 700 : 500,
+        }}
+        animate={{
+          y: isActive ? -2 : 0,
+        }}
+        transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+      >
+        {label}
+      </motion.span>
     </button>
   );
 }

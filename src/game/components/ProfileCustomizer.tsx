@@ -9,7 +9,7 @@
  * setAvatarPose / setDisplayName 만 서버 호출로 교체.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pencil, Check } from 'lucide-react';
 import Ques from '@/components/mascot/Ques';
 import {
@@ -47,6 +47,50 @@ export default function ProfileCustomizer() {
   const [draft, setDraft] = useState(profile.displayName);
   useEffect(() => setDraft(profile.displayName), [profile.displayName]);
 
+  // ── 아바타 포즈: "미리보기 후 명시적 저장" 패턴 ──────────────────────────
+  // 사용자가 8개 포즈 중 마음껏 눌러볼 수 있도록 클릭은 draftAvatarPose 만 갱신.
+  // [저장하기] 클릭 시에만 setAvatarPose 가 localStorage + Supabase 에 push.
+  // 효과:
+  //   - 사용자: 탐색 부담 ↓ (실수로 확정될 우려 X)
+  //   - 서버:  N 회 클릭 → 1 회 write (다기기 sync 트래픽 감소)
+  const [draftAvatarPose, setDraftAvatarPose] = useState<QuesPose>(
+    profile.avatarPose,
+  );
+  // 외부에서 profile.avatarPose 가 변하면 (다른 기기 sync · 새로 fetch) draft 도
+  // 따라가게. 단, "사용자가 draft 만 바꾸고 아직 저장 안 한 상태" 에선 외부 변경을
+  // 흡수하지 않도록 마지막으로 본 server pose 를 ref 로 추적해서 비교.
+  const lastSeenServerPoseRef = useRef<QuesPose>(profile.avatarPose);
+  useEffect(() => {
+    const externalChanged =
+      profile.avatarPose !== lastSeenServerPoseRef.current;
+    const userHasUnsavedDraft =
+      draftAvatarPose !== lastSeenServerPoseRef.current;
+    if (externalChanged && !userHasUnsavedDraft) {
+      // 외부 변경만 있고 사용자 draft 는 없음 → 흡수
+      setDraftAvatarPose(profile.avatarPose);
+    }
+    lastSeenServerPoseRef.current = profile.avatarPose;
+    // 의도적으로 draftAvatarPose 는 deps 에서 제외 — draft 변경이 effect 를
+    // 다시 트리거하면 저장 직후 사이클이 꼬임.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile.avatarPose]);
+
+  const avatarChanged = draftAvatarPose !== profile.avatarPose;
+
+  const onSaveAvatar = () => {
+    if (!avatarChanged) return;
+    const result = setAvatarPose(draftAvatarPose);
+    if (!result.ok && result.reason === 'sync-not-ready') {
+      window.alert(
+        '프로필 동기화가 완료되지 않았어요. 잠시 후 다시 시도해주세요.',
+      );
+    }
+  };
+
+  const onCancelAvatar = () => {
+    setDraftAvatarPose(profile.avatarPose);
+  };
+
   // 닉네임 미설정 — 빈 값이거나 자동 생성된 태그 그대로면 "미설정" 으로 본다.
   const isNameUnset =
     !profile.displayName || profile.displayName === profile.tag;
@@ -68,7 +112,8 @@ export default function ProfileCustomizer() {
             border: '1.5px solid rgba(253,128,46,0.4)',
           }}
         >
-          <Ques pose={profile.avatarPose} size={76} animated={false} />
+          {/* 큰 아바타는 draft 를 미리보기 — 저장 전이라도 어떻게 보일지 즉시 확인 */}
+          <Ques pose={draftAvatarPose} size={76} animated={false} />
         </div>
 
         <div className="flex-1 min-w-0">
@@ -166,35 +211,36 @@ export default function ProfileCustomizer() {
         </div>
       </div>
 
-      {/* 포즈 선택 그리드 */}
+      {/* 포즈 선택 그리드 — 클릭은 draft 만 갱신. 저장은 별도 버튼. */}
       <div className="mt-5">
         <div className="kr-heading uppercase text-[10px] tracking-widest text-cream/55 mb-2">
           아바타 표정
         </div>
         <div className="grid grid-cols-4 gap-2 md:gap-3">
           {AVATAR_POSES.map((pose) => {
-            const isActive = pose === profile.avatarPose;
+            const isDraft = pose === draftAvatarPose;
+            const isSaved = pose === profile.avatarPose;
             return (
               <button
                 key={pose}
                 type="button"
                 disabled={profile.pendingServerSync}
                 onClick={() => {
-                  const result = setAvatarPose(pose);
-                  if (!result.ok && result.reason === 'sync-not-ready') {
-                    window.alert('프로필 동기화가 완료되지 않았어요. 잠시 후 다시 시도해주세요.');
-                  }
+                  // 미리보기만 — server write X. 사용자는 마음껏 눌러볼 수 있음.
+                  setDraftAvatarPose(pose);
                 }}
-                aria-label={`아바타 — ${POSE_LABELS[pose]}`}
-                aria-pressed={isActive}
+                aria-label={`아바타 — ${POSE_LABELS[pose]}${isSaved ? ' (저장됨)' : ''}${isDraft && !isSaved ? ' (선택 중)' : ''}`}
+                aria-pressed={isDraft}
                 className="aspect-square rounded-[14px] inline-flex items-center justify-center transition active:scale-95"
                 style={{
-                  background: isActive
+                  background: isDraft
                     ? 'rgba(111,255,0,0.12)'
                     : 'rgba(239,244,255,0.04)',
-                  border: isActive
+                  border: isDraft
                     ? '2px solid #6FFF00'
-                    : '2px solid rgba(239,244,255,0.08)',
+                    : isSaved
+                      ? '2px dashed rgba(111,255,0,0.35)' // 현재 저장된 포즈는 점선 hint
+                      : '2px solid rgba(239,244,255,0.08)',
                 }}
               >
                 <Ques pose={pose} size={56} animated={false} />
@@ -202,9 +248,56 @@ export default function ProfileCustomizer() {
             );
           })}
         </div>
-        <p className="kr-body text-[11px] text-cream/50 mt-2 leading-[1.55]">
-          현재 선택한 표정이 친구 리더보드에서도 표시됩니다.
-        </p>
+
+        {/* 저장 / 취소 — 변경된 경우에만 강조 노출 */}
+        <div className="mt-3 flex items-center gap-2 min-h-[36px]">
+          {avatarChanged ? (
+            <>
+              <button
+                type="button"
+                onClick={onSaveAvatar}
+                disabled={profile.pendingServerSync}
+                aria-label="아바타 저장"
+                className="kr-num inline-flex items-center gap-1.5 px-4 py-2 rounded-full transition active:scale-95 disabled:opacity-50"
+                style={{
+                  background: '#6FFF00',
+                  color: '#010828',
+                  fontSize: 13,
+                  fontWeight: 700,
+                }}
+              >
+                <Check size={14} strokeWidth={2.6} />
+                <span>저장하기</span>
+              </button>
+              <button
+                type="button"
+                onClick={onCancelAvatar}
+                aria-label="선택 취소"
+                className="kr-num px-3 py-2 rounded-full transition active:scale-95"
+                style={{
+                  background: 'transparent',
+                  color: 'var(--cream)',
+                  fontSize: 12,
+                  opacity: 0.65,
+                  border: '1px solid rgba(239,244,255,0.18)',
+                }}
+              >
+                취소
+              </button>
+              <span
+                className="kr-body ml-1"
+                style={{ fontSize: 11, color: 'rgba(239,244,255,0.55)' }}
+                aria-live="polite"
+              >
+                저장하지 않으면 사라져요
+              </span>
+            </>
+          ) : (
+            <p className="kr-body text-[11px] text-cream/50 leading-[1.55]">
+              현재 선택한 표정이 친구 리더보드에서도 표시됩니다.
+            </p>
+          )}
+        </div>
       </div>
     </section>
   );

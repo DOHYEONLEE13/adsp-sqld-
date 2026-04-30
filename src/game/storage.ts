@@ -15,6 +15,7 @@ import type { Subject } from '@/types/question';
 import type { QuestSummary } from './types';
 import { pushSessionToServer } from './sessionSync';
 import { pushQuestionStatToServer } from './questionStatSync';
+import { pushProgressMetaToServer } from './progressMetaSync';
 
 const STORAGE_KEY = 'questdp.progress.v1';
 const SCHEMA_VERSION = 1 as const;
@@ -261,6 +262,11 @@ export function recordSingleAnswer(
   if (stat) {
     void pushQuestionStatToServer(questionId, stat);
   }
+  // lessonXp 변동 시 server profiles.lesson_xp 도 push (max 비교는 서버 RPC 가 아닌 단순
+  // update — 다른 기기 race 시 mergeProgress 의 max(server, local) 가 보호).
+  if (xpAwarded > 0) {
+    void pushProgressMetaToServer({ lesson_xp: nextLessonXp });
+  }
 
   return xpAwarded;
 }
@@ -270,9 +276,19 @@ export function resetProgress(): void {
   commit(emptyStore());
 }
 
+/**
+ * progressSync.pullProgress() 가 머지 후 호출. server↔local 통합 store 로
+ * 한꺼번에 교체. 직접 호출 금지 — 외부에선 progressSync 만 사용.
+ */
+export function replaceFromMerge(merged: ProgressStore): void {
+  commit(merged);
+}
+
 /** Daily Mission 시작 시점 기록. */
 export function markDailyMissionStarted(): void {
-  commit({ ...current, lastDailyMissionAt: Date.now() });
+  const now = Date.now();
+  commit({ ...current, lastDailyMissionAt: now });
+  void pushProgressMetaToServer({ last_daily_mission_at: new Date(now).toISOString() });
 }
 
 /**
@@ -281,6 +297,7 @@ export function markDailyMissionStarted(): void {
  */
 export function setActiveSubject(subject: Subject): void {
   commit({ ...current, activeSubject: subject, updatedAt: Date.now() });
+  void pushProgressMetaToServer({ active_subject: subject });
 }
 
 /**
@@ -292,6 +309,7 @@ export function clearActiveSubject(): void {
   const { activeSubject: _drop, ...rest } = current;
   void _drop;
   commit({ ...rest, updatedAt: Date.now() });
+  void pushProgressMetaToServer({ active_subject: null });
 }
 
 // ----------------------------------------------------------------

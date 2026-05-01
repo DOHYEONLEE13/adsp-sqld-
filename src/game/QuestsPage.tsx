@@ -12,7 +12,7 @@ import DailyQuestsCard from './components/DailyQuestsCard';
 import { useProgress } from './useProgress';
 import { computePlayerStats } from './rpg';
 import { getTodayQuests } from './dailyQuests';
-import { MobileBottomNav } from './components/MobileGameNav';
+import { MobileBottomNav, MobileTopBar } from './components/MobileGameNav';
 import PageAmbientBg from './components/PageAmbientBg';
 
 interface Props {
@@ -33,6 +33,10 @@ export default function QuestsPage({ onExit }: Props) {
       exitLabel="돌아가기"
       ambient={<PageAmbientBg />}
     >
+      {/* 모바일 상단 내비 — 닉네임/요금제/streak/XP/⚡ 통합 (다른 탭과 일관) */}
+      <MobileTopBar />
+      <div className="md:hidden h-14" aria-hidden />
+
       {/* 상단 — 현재 XP 요약 (퀘스트가 곧 XP 원천이라 함께 노출) */}
       <section
         className="liquid-glass rounded-[20px] px-5 py-4 md:px-6 md:py-5 mb-6 flex items-center justify-between gap-4"

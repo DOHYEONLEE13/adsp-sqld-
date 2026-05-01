@@ -13,7 +13,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Copy, Trash2, UserPlus, Trophy, Zap, Flame, ArrowUpDown } from 'lucide-react';
 import ScreenShell from './components/ScreenShell';
-import { MobileBottomNav } from './components/MobileGameNav';
+import { MobileBottomNav, MobileTopBar } from './components/MobileGameNav';
 import PageAmbientBg from './components/PageAmbientBg';
 import { useProgress } from './useProgress';
 import { computePlayerStats } from './rpg';
@@ -144,6 +144,10 @@ export default function FriendsPage({ onExit }: Props) {
       exitLabel="돌아가기"
       ambient={<PageAmbientBg />}
     >
+      {/* 모바일 상단 내비 — 닉네임/요금제/streak/XP/⚡ 통합 (다른 탭과 일관) */}
+      <MobileTopBar />
+      <div className="md:hidden h-14" aria-hidden />
+
       <MyTagCard
         profile={me}
         onRename={(n) => {

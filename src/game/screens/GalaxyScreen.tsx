@@ -751,7 +751,7 @@ function SubjectInfoPanel({
 }
 
 // ----------------------------------------------------------------
-// 학습 모드 패널 — 처음 학습 vs 복습 (2회독)
+// 학습 모드 패널 — Ques 마스코트가 묻고 사용자가 답하는 대화 형식
 // ----------------------------------------------------------------
 
 interface StudyModePanelProps {
@@ -762,8 +762,9 @@ interface StudyModePanelProps {
 }
 
 /**
- * 사용자가 한 번 답하면 localStorage 에 저장. 이후엔 [선택됨] 상태로 표시되며
- * 변경 가능. 미답 시 [플레이하기] 가 disabled (panel 의 button 측 처리).
+ * 미선택 (mode=undefined) 시 — Ques 마스코트가 'think' 포즈 (?-모션) 로 등장해
+ * 말풍선으로 묻고, 두 답 카드를 노출.
+ * 한 번 답하면 작은 chip 으로 축소 — 변경 가능 (눌러서 다시 묻는 모드).
  *
  * 'review' 선택 시 — GamePage 의 startSession 이 자동 passNumber=2 로 시작:
  *   · 변형 문제 (concept-practice-pass2) 우선
@@ -776,27 +777,57 @@ function StudyModePanel({
   subjectAccent,
   subjectAccentRgb,
 }: StudyModePanelProps) {
-  const isUnselected = mode === undefined;
+  const [editing, setEditing] = useState(mode === undefined);
+  // mode 외부에서 바뀌면 editing 도 동기화 (selecting → 자동 close)
+  useEffect(() => {
+    if (mode !== undefined) setEditing(false);
+  }, [mode]);
 
-  return (
-    <div className="mt-4">
-      <div
-        className="kr-num text-[10px] uppercase tracking-[0.18em] mb-2"
-        style={{
-          color: isUnselected ? subjectAccent : 'rgba(239,244,255,0.45)',
-        }}
-      >
-        학습 모드 {isUnselected && '— 선택해주세요'}
+  // 이미 선택됨 + 변경 안 하는 중 → 작은 chip
+  if (!editing && mode !== undefined) {
+    return (
+      <div className="mt-4 flex items-center gap-2">
+        <span
+          className="kr-num text-[10px] uppercase tracking-[0.18em]"
+          style={{ color: 'rgba(239,244,255,0.45)' }}
+        >
+          학습 모드
+        </span>
+        <button
+          type="button"
+          onClick={() => setEditing(true)}
+          aria-label="학습 모드 변경"
+          className="kr-num inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] transition active:scale-95 hover:brightness-110"
+          style={{
+            background: `rgba(${subjectAccentRgb}, 0.16)`,
+            color: subjectAccent,
+            border: `1px solid ${subjectAccent}55`,
+            fontWeight: 600,
+          }}
+        >
+          {mode === 'review' ? '복습 (2회독)' : '처음 학습'}
+          <span style={{ opacity: 0.55 }}>변경</span>
+        </button>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        <ModeButton
-          active={mode === 'first'}
-          subjectAccent={subjectAccent}
-          subjectAccentRgb={subjectAccentRgb}
-          title="처음 학습"
-          desc="개념부터 차근차근. 원본 문제로 진행."
-          onClick={() => onSelect('first')}
-        />
+    );
+  }
+
+  // 미선택 또는 변경 중 — 마스코트 + 말풍선 + 두 답
+  return (
+    <div className="mt-5">
+      <div className="flex items-start gap-3 md:gap-4">
+        <div className="shrink-0">
+          <Ques pose="think" size={72} animated />
+        </div>
+        <div className="flex-1 pt-1">
+          <SpeechBubble
+            text={'복습용으로 이용하실건가요?\n아니면 [개념부터 천천히] 이용하실건가요?'}
+            placement="right"
+          />
+        </div>
+      </div>
+
+      <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
         <ModeButton
           active={mode === 'review'}
           subjectAccent={subjectAccent}
@@ -804,6 +835,14 @@ function StudyModePanel({
           title="복습 (2회독)"
           desc="변형 문제 우선 + 빠른 진도. 시험 임박용."
           onClick={() => onSelect('review')}
+        />
+        <ModeButton
+          active={mode === 'first'}
+          subjectAccent={subjectAccent}
+          subjectAccentRgb={subjectAccentRgb}
+          title="개념부터 천천히"
+          desc="원본 문제 + 대화형 학습. 처음 시작용."
+          onClick={() => onSelect('first')}
         />
       </div>
     </div>

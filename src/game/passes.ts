@@ -103,6 +103,9 @@ export function isDevUnlockEnabled(): boolean {
  *   - 1회독: 항상 unlocked.
  *   - N+1회독: N회독 stamp 가 해당 챕터에 존재해야 unlocked.
  *   - dev 토글 ON 시 모든 회독 강제 unlocked.
+ *   - opts.forceUnlocked=true (e.g. studyMode='review') 도 강제 unlocked.
+ *     사용자가 명시적으로 "복습용" 모드를 선택했다는 건 다른 곳에서 1회독을
+ *     이미 했다는 의미 → QuestDP 안 stamp 가 없어도 2회독부터 진입 허용.
  *
  * 추가로 in-progress / completed 정보를 반환.
  */
@@ -112,6 +115,7 @@ export function passUnlockState(
   subject: Subject,
   chapter: number,
   passNumber: number,
+  opts?: { forceUnlocked?: boolean },
 ): PassUnlockState {
   if (passNumber < 1) {
     return { unlocked: false, inProgress: false, completed: false };
@@ -131,8 +135,12 @@ export function passUnlockState(
       s.passNumber === passNumber,
   );
 
-  // dev 토글 또는 1회독 = 항상 unlocked
-  if (isDevUnlockEnabled() || passNumber === 1) {
+  // dev 토글 / 1회독 / studyMode='review' 강제 = 항상 unlocked
+  if (
+    opts?.forceUnlocked ||
+    isDevUnlockEnabled() ||
+    passNumber === 1
+  ) {
     return { unlocked: true, inProgress, completed };
   }
 

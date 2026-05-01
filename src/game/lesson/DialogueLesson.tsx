@@ -253,7 +253,11 @@ export default function DialogueLesson({
         data-subject={subject}
       >
         <PageAmbientBg blur />
-        <TopBar progress={progress} onExit={onBack} />
+        <TopBar
+          progress={progress}
+          stepProgress={innerProgress}
+          onExit={onBack}
+        />
         <div className="flex-1 flex flex-col items-center justify-center px-5 md:px-8 py-10 max-w-[640px] mx-auto w-full">
           <div className="mb-5">
             <Ques pose={passNumber === 2 ? 'think' : 'lightbulb'} size={120} />

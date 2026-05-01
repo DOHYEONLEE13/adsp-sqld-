@@ -32,7 +32,7 @@ export const PRICING_PLANS: PricingPlan[] = [
   },
   {
     id: 'premium-weekly',
-    category: 'PREMIUM',
+    category: 'PRO',
     tier: '1주 단기',
     price: '4,900',
     priceSuffix: '원 / 주',
@@ -49,7 +49,7 @@ export const PRICING_PLANS: PricingPlan[] = [
   },
   {
     id: 'premium-monthly',
-    category: 'PREMIUM',
+    category: 'MAX',
     tier: '월 구독',
     price: '9,900',
     priceSuffix: '원 / 월',

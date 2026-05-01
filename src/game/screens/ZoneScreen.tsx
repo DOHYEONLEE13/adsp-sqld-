@@ -46,6 +46,7 @@ import {
   passUnlockState,
   type PassSession,
 } from '../passes';
+import { getStudyMode } from '../studyMode';
 import PassTabs from '@/components/passes/PassTabs';
 import { PASS_TIER_VISUAL } from '@/types/passes';
 
@@ -120,7 +121,11 @@ export default function ZoneScreen({
     () => currentPassFor(passSessions, passSnap.stamps, subject, chapter),
     [passSessions, passSnap.stamps, subject, chapter],
   );
-  const [selectedPass, setSelectedPass] = useState<number>(defaultPass);
+  // studyMode='review' 면 2회독부터 시작이 자연스러움 (사용자가 다른 곳에서
+  // 1회독을 했다는 의미 → QuestDP 안 stamp 없어도 2회독 unlocked).
+  const isReviewMode = getStudyMode(subject) === 'review';
+  const initialPass = isReviewMode ? Math.max(defaultPass, 2) : defaultPass;
+  const [selectedPass, setSelectedPass] = useState<number>(initialPass);
   const [lockToast, setLockToast] = useState<string | null>(null);
 
   // 탭 데이터 — 1·2·3회독 각각의 unlock/inProgress/completed 상태
@@ -133,6 +138,8 @@ export default function ZoneScreen({
           subject,
           chapter,
           pass,
+          // review 모드: 2회독은 강제 unlocked (3회독 이상은 정상 정책)
+          { forceUnlocked: isReviewMode && pass === 2 },
         );
         const prog = chapterPassProgress(
           passSessions,
@@ -149,7 +156,7 @@ export default function ZoneScreen({
           progress: prog.accuracy,
         };
       }),
-    [passSessions, passSnap.stamps, subject, chapter],
+    [passSessions, passSnap.stamps, subject, chapter, isReviewMode],
   );
 
   // 선택된 회독에 따라 path 색조 변환

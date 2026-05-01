@@ -1,12 +1,10 @@
 /**
  * FeedbackSheet — 답안 채점 직후 하단에서 슬라이드업되는 피드백 + 계속 버튼.
  *
- * 듀오링고와 동일 패턴: 초록(정답) / 빨간(오답) 배경, 해설 텍스트, 우측 CTA.
- * 오답 시 "정답은 <텍스트>" 를 보조 라인으로 표시.
+ * 듀오링고와 동일 패턴: 초록(정답) / 빨간(오답) 배경, 헤딩 + 정답 reveal + CTA.
  *
- * 모바일에선 해설이 좁은 폭 + line-clamp-3 으로 잘려 핵심을 못 보던 문제 →
- * '정답 상세 보기' 토글로 expansion 모드 추가. expansion 시 풀 텍스트 + 해설
- * 마크다운식 강조 영역까지 노출.
+ * 모바일 간결화: 헤딩 한 줄(끊김 없이) + 정답 reveal + 강조된 '정답 상세 보기'
+ * 토글만 노출. 해설 풀텍스트는 토글을 눌렀을 때만 expansion 영역에서 보여줌.
  */
 
 import { CheckCircle2, ChevronDown, ChevronUp, XCircle } from 'lucide-react';
@@ -40,10 +38,9 @@ export default function FeedbackSheet({
     ? 'rgba(111,255,0,0.12)'
     : 'rgba(248,113,113,0.12)';
 
-  // 정답 상세 보기 — 오답일 때 더 가치 있음 (해설 풀텍스트 노출)
+  // 정답 상세 보기 — 기본은 접힘. 메인은 헤딩 + 정답만, 풀 해설은 토글 후 expansion.
   const [expanded, setExpanded] = useState(false);
-  // 해설이 line-clamp-3 보다 짧으면 토글 의미 없음 — 대략 90 chars 이하
-  const hasLongExplanation = (explanation?.length ?? 0) > 90;
+  const hasExplanation = !!explanation && explanation.trim().length > 0;
 
   return (
     <motion.div
@@ -58,69 +55,75 @@ export default function FeedbackSheet({
         borderTop: `2px solid ${accent}`,
       }}
     >
-      <div className="mx-auto max-w-[820px] px-5 py-5 md:px-8 md:py-6 flex flex-col gap-3">
-        {/* 메인 줄 — 아이콘 + 헤딩 + 요약 + CTA */}
-        <div className="flex items-start gap-3 md:items-center md:gap-6">
-          <div
-            className="shrink-0 inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full"
-            style={{ background: accent, color: '#010828' }}
-          >
-            {correct ? (
-              <CheckCircle2 size={22} strokeWidth={2.6} />
-            ) : (
-              <XCircle size={22} strokeWidth={2.6} />
-            )}
-          </div>
-
-          <div className="flex-1 min-w-0">
+      <div className="mx-auto max-w-[820px] px-5 py-4 md:px-8 md:py-6 flex flex-col gap-3">
+        {/*
+          메인 줄 — 모바일은 세로 stack (헤딩→버튼 순서),
+          md+ 는 한 줄 가로 배치. 모바일에서 CTA 가 옆에 끼면 텍스트 영역이
+          너무 좁아져 정답 reveal/토글이 줄바꿈되던 문제 해결.
+        */}
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-6">
+          <div className="flex items-start gap-3 flex-1 min-w-0">
             <div
-              className="kr-heading uppercase tracking-widest text-[12px] md:text-[13px]"
-              style={{ color: accent }}
+              className="shrink-0 inline-flex items-center justify-center w-10 h-10 md:w-12 md:h-12 rounded-full"
+              style={{ background: accent, color: '#010828' }}
             >
-              {correct ? '정답!' : '다시 확인해볼까?'}
+              {correct ? (
+                <CheckCircle2 size={22} strokeWidth={2.6} />
+              ) : (
+                <XCircle size={22} strokeWidth={2.6} />
+              )}
             </div>
-            {explanation ? (
-              <p
-                className={
-                  'kr-body text-[12.5px] md:text-[13.5px] text-cream/85 leading-[1.55] mt-1 ' +
-                  (expanded ? '' : 'line-clamp-2 md:line-clamp-3')
-                }
-              >
-                {explanation}
-              </p>
-            ) : null}
-            {!correct && correctAnswerText ? (
-              <p className="kr-body text-[12px] md:text-[13px] text-cream/60 mt-1">
-                정답은{' '}
-                <span style={{ color: '#6FFF00' }}>{correctAnswerText}</span>
-              </p>
-            ) : null}
 
-            {/* 정답 상세 보기 토글 — 모바일에서 해설 잘림 해결 */}
-            {hasLongExplanation ? (
-              <button
-                type="button"
-                onClick={() => setExpanded((v) => !v)}
-                aria-expanded={expanded}
-                className="kr-num inline-flex items-center gap-1 text-[11px] mt-2 transition active:scale-95"
-                style={{ color: accent, opacity: 0.85 }}
+            <div className="flex-1 min-w-0">
+              <div
+                className="kr-heading uppercase tracking-widest text-[12px] md:text-[13px] whitespace-nowrap"
+                style={{ color: accent }}
               >
-                {expanded ? (
-                  <>
-                    <ChevronUp size={12} strokeWidth={2.6} />
-                    <span>접기</span>
-                  </>
-                ) : (
-                  <>
-                    <ChevronDown size={12} strokeWidth={2.6} />
-                    <span>정답 상세 보기</span>
-                  </>
-                )}
-              </button>
-            ) : null}
+                {correct ? '정답!' : '다시 확인해볼까?'}
+              </div>
+              {!correct && correctAnswerText ? (
+                <p className="kr-body text-[12.5px] md:text-[13px] text-cream/75 mt-1 leading-[1.5]">
+                  정답:{' '}
+                  <span style={{ color: '#6FFF00', fontWeight: 600 }}>
+                    {correctAnswerText}
+                  </span>
+                </p>
+              ) : null}
+
+              {/* 정답 상세 보기 토글 — 강조 버튼.
+                  기본 헤딩만 보이고 풀 해설은 이 버튼을 눌러야 expansion 으로 노출.
+                  사용자가 "여기를 누르면 자세한 답이 나온다" 를 인지하도록 배경 +
+                  테두리 + chevron 으로 actionable 하게. */}
+              {hasExplanation ? (
+                <button
+                  type="button"
+                  onClick={() => setExpanded((v) => !v)}
+                  aria-expanded={expanded}
+                  className="kr-heading uppercase tracking-widest inline-flex items-center gap-1.5 text-[11px] md:text-[12px] mt-2.5 px-3.5 py-2 rounded-full transition active:scale-95 hover:brightness-110 whitespace-nowrap"
+                  style={{
+                    background: `${accent}24`,
+                    border: `1.5px solid ${accent}`,
+                    color: accent,
+                    boxShadow: `0 4px 14px -6px ${accent}`,
+                  }}
+                >
+                  {expanded ? (
+                    <>
+                      <ChevronUp size={14} strokeWidth={2.8} />
+                      <span>접기</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>정답 상세 보기</span>
+                      <ChevronDown size={14} strokeWidth={2.8} />
+                    </>
+                  )}
+                </button>
+              ) : null}
+            </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0 justify-end">
             {secondaryCtaLabel && onSecondary ? (
               <button
                 type="button"

@@ -466,19 +466,20 @@ export default function DialogueLesson({
         {phase === 'narrate' && groupSteps.length > 1 ? (
           <nav
             aria-label="개념 진행"
-            className="mt-8 max-w-[420px] mx-auto"
+            className="mt-10 max-w-[420px] mx-auto"
           >
             <div
-              className="kr-num text-[10px] uppercase tracking-[0.18em] mb-2.5"
+              className="kr-num text-[10px] uppercase tracking-[0.18em] mb-3.5"
               style={{ color: 'rgba(239,244,255,0.45)' }}
             >
               개념 진행 · {currentInGroup + 1} / {groupSteps.length}
             </div>
-            <ol className="flex flex-col gap-3.5 list-none p-0 m-0 relative">
+            <ol className="flex flex-col gap-6 md:gap-5 list-none p-0 m-0 relative">
               {/*
                 좌측 세로 가이드 라인 — 마커 뒤(z-0) 에 깔리고, 마커는 z-10 + solid
-                background (var(--base) = #010828) 로 라인을 가림. 이전엔 마커가
-                반투명이라 라인이 뚫고 보여 '저렴한' 느낌.
+                background (var(--base) = #010828) 로 라인을 가림. gap 이 늘어나도
+                top/bottom 은 마커 반지름(7px)+여유 정도로 두면 라인이 마커 사이만
+                채움.
               */}
               <span
                 aria-hidden

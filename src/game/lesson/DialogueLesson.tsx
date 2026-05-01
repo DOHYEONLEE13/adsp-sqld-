@@ -474,11 +474,15 @@ export default function DialogueLesson({
             >
               개념 진행 · {currentInGroup + 1} / {groupSteps.length}
             </div>
-            <ol className="flex flex-col gap-1.5 list-none p-0 m-0 relative">
-              {/* 좌측 세로 가이드 라인 */}
+            <ol className="flex flex-col gap-3.5 list-none p-0 m-0 relative">
+              {/*
+                좌측 세로 가이드 라인 — 마커 뒤(z-0) 에 깔리고, 마커는 z-10 + solid
+                background (var(--base) = #010828) 로 라인을 가림. 이전엔 마커가
+                반투명이라 라인이 뚫고 보여 '저렴한' 느낌.
+              */}
               <span
                 aria-hidden
-                className="absolute top-3 bottom-3 left-[7px] w-px"
+                className="absolute top-3 bottom-3 left-[7px] w-px z-0"
                 style={{ background: 'rgba(239,244,255,0.08)' }}
               />
               {groupSteps.map((s, i) => {
@@ -498,19 +502,22 @@ export default function DialogueLesson({
                       style={{
                         width: current ? 16 : 14,
                         height: current ? 16 : 14,
+                        // background 를 base 색 (#010828) 으로 깔고 그 위에 색상 layer
+                        // → 라인이 마커 뒤에서 잘려 보임. 이전엔 alpha 0.18 등으로
+                        //   투명도가 있어 라인이 뚫고 보였음.
                         background: current
                           ? 'var(--subject-accent)'
                           : completed
-                            ? 'rgba(111,255,0,0.18)'
-                            : 'rgba(239,244,255,0.06)',
+                            ? 'linear-gradient(#010828, #010828) padding-box, rgba(111,255,0,0.22) border-box'
+                            : 'linear-gradient(#010828, #010828) padding-box, rgba(239,244,255,0.06) border-box',
                         border: current
                           ? '2px solid var(--subject-accent)'
                           : completed
-                            ? '1.5px solid rgba(111,255,0,0.5)'
-                            : '1.5px solid rgba(239,244,255,0.18)',
+                            ? '1.5px solid rgba(111,255,0,0.55)'
+                            : '1.5px solid rgba(239,244,255,0.22)',
                         boxShadow: current
-                          ? '0 0 10px var(--subject-accent)'
-                          : 'none',
+                          ? '0 0 12px var(--subject-accent), 0 0 0 3px rgba(1,8,40,1)'
+                          : `0 0 0 3px var(--base, #010828)`,
                         color: completed ? '#9CFF3D' : 'transparent',
                       }}
                     >

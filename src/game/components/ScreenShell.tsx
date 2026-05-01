@@ -22,6 +22,8 @@ interface Props {
   transparentBg?: boolean;
   /** ambient 배경을 section 내부에 마운트하고 싶을 때. */
   ambient?: ReactNode;
+  /** 헤더 우상단 영역 (예: PlanTag) — title 과 같은 줄에 absolute 위치. */
+  topRight?: ReactNode;
   children: ReactNode;
 }
 
@@ -34,6 +36,7 @@ export default function ScreenShell({
   backgroundImage,
   transparentBg,
   ambient,
+  topRight,
   children,
 }: Props) {
   return (
@@ -62,7 +65,12 @@ export default function ScreenShell({
         </>
       ) : null}
       <div className="relative mx-auto w-full max-w-layout px-6 md:px-10 lg:px-16 py-10 md:py-14 lg:py-20">
-        <header className="mb-10 md:mb-14">
+        <header className="mb-10 md:mb-14 relative">
+          {/* topRight — PlanTag 등 우상단 floating 요소 */}
+          {topRight ? (
+            <div className="absolute top-0 right-0 z-10">{topRight}</div>
+          ) : null}
+
           {onExit ? (
             <button
               type="button"

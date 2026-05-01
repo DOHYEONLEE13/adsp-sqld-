@@ -34,6 +34,7 @@ import { topicWeaknesses, weaknessLevel } from './weakness';
 import { formatDuration } from './session';
 import { cx } from '@/lib/utils';
 import { aggregateChapter } from './aggregate';
+import PlanTag from '@/components/ui/PlanTag';
 import {
   daysUntil,
   getAllExamDates,
@@ -106,6 +107,7 @@ export default function StatsPage({ onExit }: Props) {
       onExit={onExit}
       exitLabel="돌아가기"
       ambient={<PageAmbientBg />}
+      topRight={<PlanTag size="md" />}
     >
       {/* 모바일 상/하단 내비 */}
       <MobileTopBar />

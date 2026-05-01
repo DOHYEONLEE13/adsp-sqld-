@@ -513,20 +513,32 @@ function StreakCalendar({
 }
 
 function ChapterMasteryRow({ row }: { row: ChapterMasteryRow }) {
-  const pct = Math.round(row.accuracy * 100);
+  // 마스터리 = '챕터를 얼마나 정복했나' = 진도 (solved/total) 가 메인.
+  // 이전엔 정답률 (accuracy) 을 메인 % 로 표시해 사용자가 '1/90 문항' 과 매치
+  // 안 되는 67% 가 보여 혼란. 진도 % 를 메인으로, 정답률은 부가 정보로.
   const solvedPct =
     row.total === 0 ? 0 : Math.round((row.solved / row.total) * 100);
+  const accuracyPct = Math.round(row.accuracy * 100);
+  const empty = row.total === 0;
+  const noProgress = row.solved === 0;
+
   return (
     <div>
-      <div className="flex items-center justify-between mb-1.5">
-        <span className="kr-body text-[12px] text-cream/80 truncate pr-2">
+      <div className="flex items-center justify-between mb-1.5 gap-2">
+        <span className="kr-body text-[12px] text-cream/80 truncate flex-1 min-w-0">
           Ch {row.chapter} · {row.title}
         </span>
         <span
-          className="kr-heading text-[11px] tabular-nums shrink-0"
-          style={{ color: row.total === 0 ? 'rgba(239,244,255,0.3)' : accuracyAccent(row.accuracy) }}
+          className="kr-num text-[11px] tabular-nums shrink-0 font-bold"
+          style={{
+            color: empty
+              ? 'rgba(239,244,255,0.3)'
+              : noProgress
+                ? 'rgba(239,244,255,0.55)'
+                : 'var(--cream)',
+          }}
         >
-          {row.total === 0 ? '—' : `${pct}%`}
+          {empty ? '—' : `${solvedPct}%`}
         </span>
       </div>
       <div
@@ -534,23 +546,34 @@ function ChapterMasteryRow({ row }: { row: ChapterMasteryRow }) {
         style={{ background: 'rgba(239, 244, 255, 0.08)' }}
       >
         <div
-          className="absolute inset-y-0 left-0 transition-[width] duration-500"
+          className="absolute inset-y-0 left-0 transition-[width] duration-500 rounded-full"
           style={{
             width: `${solvedPct}%`,
-            background: 'rgba(239, 244, 255, 0.18)',
-          }}
-        />
-        <div
-          className="absolute inset-y-0 left-0 transition-[width] duration-500"
-          style={{
-            width: `${pct}%`,
-            background: accuracyAccent(row.accuracy),
+            background: noProgress
+              ? 'rgba(239,244,255,0.18)'
+              : accuracyAccent(row.accuracy),
+            boxShadow: noProgress
+              ? 'none'
+              : `0 0 8px ${accuracyAccent(row.accuracy)}55`,
           }}
         />
       </div>
-      <p className="kr-body text-[10px] text-cream/40 mt-1">
-        {row.solved} / {row.total} 문항 탐사
-      </p>
+      <div className="flex items-center justify-between mt-1 gap-2">
+        <p
+          className="kr-body text-[10px]"
+          style={{ color: 'rgba(239,244,255,0.4)' }}
+        >
+          {row.solved} / {row.total} 문항 탐사
+        </p>
+        {!noProgress && !empty ? (
+          <p
+            className="kr-num text-[10px] tabular-nums shrink-0"
+            style={{ color: accuracyAccent(row.accuracy) }}
+          >
+            정답률 {accuracyPct}%
+          </p>
+        ) : null}
+      </div>
     </div>
   );
 }

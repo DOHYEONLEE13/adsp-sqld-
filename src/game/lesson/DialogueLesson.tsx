@@ -595,7 +595,7 @@ export default function DialogueLesson({
             if (hasNext) {
               ctaLabel = '다음 단계';
               onContinue = handleNextStep;
-              secondaryCtaLabel = '존으로';
+              secondaryCtaLabel = '← 돌아가기';
               onSecondary = handleBackToZone;
             } else if (isSingleStep) {
               ctaLabel = '존으로 돌아가기';
@@ -603,7 +603,7 @@ export default function DialogueLesson({
             } else {
               ctaLabel = '실전 세트로';
               onContinue = handleNextStep;
-              secondaryCtaLabel = '존으로';
+              secondaryCtaLabel = '← 돌아가기';
               onSecondary = handleBackToZone;
             }
             return (

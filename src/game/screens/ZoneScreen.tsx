@@ -253,8 +253,13 @@ export default function ZoneScreen({
               빠른 진입
             </div>
             <div
-              className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-              style={{ scrollSnapType: 'x proximity' }}
+              className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              style={{
+                scrollSnapType: 'x proximity',
+                // 첫·마지막 chip 이 컨테이너 가장자리에서 잘리지 않도록 양쪽 4px 여유.
+                paddingInline: '4px',
+                marginInline: '-4px',
+              }}
             >
               <ModeChip
                 icon={<Shuffle size={14} strokeWidth={2.4} />}
@@ -848,7 +853,7 @@ function ModeChip({ icon, title, onClick, disabled, accent }: ModeChipProps) {
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="liquid-glass kr-heading inline-flex items-center gap-2 whitespace-nowrap text-[11px] md:text-[12px] uppercase tracking-widest px-3.5 py-2.5 rounded-full hover:bg-white/10 transition disabled:opacity-40 disabled:cursor-not-allowed"
+      className="liquid-glass kr-heading inline-flex items-center gap-2 whitespace-nowrap shrink-0 text-[11px] md:text-[12px] uppercase tracking-widest px-3.5 py-2.5 rounded-full hover:bg-white/10 transition disabled:opacity-40 disabled:cursor-not-allowed"
     >
       <span style={{ color: fg }} className="inline-flex">
         {icon}

@@ -123,12 +123,35 @@ export default function DialogueLesson({
 
   const quizQuestion = getQuizQuestion(step.quizId);
 
+  // ── Sub-step group trail ─────────────────────────────────────────────
+  // step.id 패턴: '<lesson>-s<N>' (그룹 헤더) 또는 '<lesson>-s<N>-<sub>'.
+  // 같은 그룹의 step 들을 묶어 trail 노출 — 사용자가 "DIKW 5 단계 중 어디" 인지 인지.
+  const groupKey = (id: string): string => {
+    const m = id.match(/^(.+-s\d+)(?:-[a-zA-Z]+)?$/);
+    return m ? m[1] : id;
+  };
+  const currentGroupKey = groupKey(step.id);
+  const groupSteps = lesson.steps.filter(
+    (s) => groupKey(s.id) === currentGroupKey,
+  );
+  const currentInGroup = groupSteps.findIndex((s) => s.id === step.id);
+
+  // step.title 에서 trail 라벨 추출 — ' — ' 와 ' (' 앞부분만.
+  // 예: 'DIKW ① 데이터 (Data) — raw 값' → 'DIKW ① 데이터'
+  const shortLabel = (title: string): string => {
+    let s = title.split(' — ')[0];
+    s = s.split(' (')[0];
+    return s.trim();
+  };
+
   // 진행도: 챕터 전체 대비 (현재 스텝 + phase 진척률)
   const chapterIdx = topicOffset + stepIdx;
   const chapterTotal = chapterSteps.length;
+  // turnIdx + 1 — 첫 turn 에서도 step bar 가 살짝 차게 (1/N+1 ≈ 8%).
+  // 0/N+1 = 0% 라 width 0 이라 사용자가 'step bar 가 안 보임' 으로 인지하던 문제.
   const innerProgress =
     phase === 'narrate' && hasDialogue
-      ? turnIdx / (dialogue.length + 1)
+      ? (turnIdx + 1) / (dialogue.length + 1)
       : phase === 'question'
         ? dialogue.length / (dialogue.length + 1)
         : 1;
@@ -426,6 +449,70 @@ export default function DialogueLesson({
               <ChevronRight size={16} strokeWidth={2.6} />
             </button>
           </div>
+        ) : null}
+
+        {/*
+          Sub-step trail — 그룹 안 5단계 (DIKW 등) 위치 표시.
+          narrate 단계만 노출 (문제 풀 때는 선지가 우선이라 숨김).
+          그룹 step 1개뿐이면 안 보임 (의미 없음).
+        */}
+        {phase === 'narrate' && groupSteps.length > 1 ? (
+          <nav
+            aria-label="개념 진행"
+            className="mt-8 -mx-5 md:-mx-8 px-5 md:px-8 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            <ol className="flex items-center gap-1.5 justify-center min-w-max mx-auto list-none p-0">
+              {groupSteps.map((s, i) => {
+                const completed = i < currentInGroup;
+                const current = i === currentInGroup;
+                const label = shortLabel(s.title);
+                return (
+                  <li key={s.id} className="flex items-center gap-1.5">
+                    <span
+                      title={s.title}
+                      aria-current={current ? 'step' : undefined}
+                      className="kr-num inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] transition"
+                      style={{
+                        background: current
+                          ? 'var(--subject-accent)'
+                          : completed
+                            ? 'rgba(111,255,0,0.12)'
+                            : 'rgba(239,244,255,0.05)',
+                        color: current
+                          ? '#010828'
+                          : completed
+                            ? '#9CFF3D'
+                            : 'rgba(239,244,255,0.55)',
+                        border: current
+                          ? '1.5px solid var(--subject-accent)'
+                          : completed
+                            ? '1px solid rgba(111,255,0,0.25)'
+                            : '1px solid rgba(239,244,255,0.12)',
+                        fontWeight: current ? 700 : 500,
+                        boxShadow: current
+                          ? '0 4px 14px -4px var(--subject-accent)'
+                          : 'none',
+                      }}
+                    >
+                      <span aria-hidden style={{ opacity: 0.85 }}>
+                        {completed ? '✓' : current ? '•' : i + 1}
+                      </span>
+                      <span className="whitespace-nowrap">{label}</span>
+                    </span>
+                    {i < groupSteps.length - 1 ? (
+                      <span
+                        aria-hidden
+                        className="text-[10px]"
+                        style={{ color: 'rgba(239,244,255,0.25)' }}
+                      >
+                        ›
+                      </span>
+                    ) : null}
+                  </li>
+                );
+              })}
+            </ol>
+          </nav>
         ) : null}
 
         {/* question / feedback 단계 — 4지선다 */}

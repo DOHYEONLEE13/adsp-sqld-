@@ -246,6 +246,64 @@ export default function ZoneScreen({
           </div>
         ) : null}
 
+        {/* ============ 빠른 진입 chip row (모드 5종, 상단) ============ */}
+        {total > 0 ? (
+          <section className="mb-8 md:mb-10" aria-label="풀이 모드 빠른 진입">
+            <div className="kr-num text-[10px] uppercase tracking-[0.18em] text-cream/45 mb-2.5">
+              빠른 진입
+            </div>
+            <div
+              className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              style={{ scrollSnapType: 'x proximity' }}
+            >
+              <ModeChip
+                icon={<Shuffle size={14} strokeWidth={2.4} />}
+                title={`전체 랜덤 · ${total}`}
+                onClick={() =>
+                  onStartWithPass({ topic: null, sampling: 'random', flow: 'play' })
+                }
+                accent="purple"
+              />
+              <ModeChip
+                icon={<Flame size={14} strokeWidth={2.4} />}
+                title="약점 집중"
+                onClick={() =>
+                  onStartWithPass({ topic: null, sampling: 'weakness', flow: 'play' })
+                }
+                accent="red"
+              />
+              <ModeChip
+                icon={<RefreshCcw size={14} strokeWidth={2.4} />}
+                title={
+                  reviewCount > 0 ? `오답 복습 · ${reviewCount}` : '오답 복습'
+                }
+                onClick={() =>
+                  reviewCount > 0 &&
+                  onStartWithPass({ topic: null, sampling: 'review', flow: 'play' })
+                }
+                disabled={reviewCount === 0}
+                accent="neon"
+              />
+              <ModeChip
+                icon={<BookOpen size={14} strokeWidth={2.4} />}
+                title="학습 모드"
+                onClick={() =>
+                  onStartWithPass({ topic: null, sampling: 'random', flow: 'learn' })
+                }
+                accent="cyan"
+              />
+              <ModeChip
+                icon={<Clock size={14} strokeWidth={2.4} />}
+                title="시험 모드"
+                onClick={() =>
+                  onStartWithPass({ topic: null, sampling: 'random', flow: 'test' })
+                }
+                accent="amber"
+              />
+            </div>
+          </section>
+        ) : null}
+
         {/* ============ 토픽 섹션별 step path ============ */}
         {lessons.length === 0 ? (
           <div className="liquid-glass rounded-[20px] p-8 text-center kr-body text-cream/70">
@@ -304,63 +362,7 @@ export default function ZoneScreen({
           </div>
         )}
 
-        {/* ============ 챕터 전체 풀이 모드 (chip row) ============ */}
-        {total > 0 ? (
-          <section className="mt-4">
-            <h2 className="kr-heading text-[11px] uppercase tracking-widest text-cream/60 mb-1">
-              또 다른 풀이 모드
-            </h2>
-            <p className="kr-body text-[11px] text-cream/55 mb-4 leading-[1.55]">
-              토픽 가리지 않고 챕터 전체로 풀기.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <ModeChip
-                icon={<Shuffle size={14} strokeWidth={2.4} />}
-                title={`전체 랜덤 · ${total}`}
-                onClick={() =>
-                  onStartWithPass({ topic: null, sampling: 'random', flow: 'play' })
-                }
-                accent="purple"
-              />
-              <ModeChip
-                icon={<Flame size={14} strokeWidth={2.4} />}
-                title="약점 집중"
-                onClick={() =>
-                  onStartWithPass({ topic: null, sampling: 'weakness', flow: 'play' })
-                }
-                accent="red"
-              />
-              <ModeChip
-                icon={<RefreshCcw size={14} strokeWidth={2.4} />}
-                title={
-                  reviewCount > 0 ? `오답 복습 · ${reviewCount}` : '오답 복습'
-                }
-                onClick={() =>
-                  reviewCount > 0 &&
-                  onStartWithPass({ topic: null, sampling: 'review', flow: 'play' })
-                }
-                disabled={reviewCount === 0}
-                accent="neon"
-              />
-              <ModeChip
-                icon={<BookOpen size={14} strokeWidth={2.4} />}
-                title="학습 모드"
-                onClick={() =>
-                  onStartWithPass({ topic: null, sampling: 'random', flow: 'learn' })
-                }
-                accent="cyan"
-              />
-              <ModeChip
-                icon={<Clock size={14} strokeWidth={2.4} />}
-                title="시험 모드"
-                onClick={() =>
-                  onStartWithPass({ topic: null, sampling: 'random', flow: 'test' })
-                }
-                accent="amber"
-              />
-            </div>
-          </section>
-        ) : null}
+        {/* 챕터 전체 풀이 모드는 상단 '빠른 진입' 으로 이동 (사용자 요청 2026-05). */}
       </div>
     </section>
   );

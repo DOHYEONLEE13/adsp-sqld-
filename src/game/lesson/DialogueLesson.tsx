@@ -12,7 +12,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Subject } from '@/types/question';
 import {
   getChapterSteps,
@@ -452,60 +452,96 @@ export default function DialogueLesson({
         ) : null}
 
         {/*
-          Sub-step trail — 그룹 안 5단계 (DIKW 등) 위치 표시.
+          Sub-step trail — 그룹 안 단계 (DIKW 5단계 등) 세로 배치.
           narrate 단계만 노출 (문제 풀 때는 선지가 우선이라 숨김).
           그룹 step 1개뿐이면 안 보임 (의미 없음).
+
+          시각:
+            ✓ DIKW 피라미드        ← 완료
+            ✓ DIKW ① 데이터        ← 완료
+            ● DIKW ② 정보  [현재]  ← 현재 (subject-accent 강조 + dot 더 큼)
+            ○ DIKW ③ 지식         ← 미진행
+            ○ DIKW ④ 지혜         ← 미진행
         */}
         {phase === 'narrate' && groupSteps.length > 1 ? (
           <nav
             aria-label="개념 진행"
-            className="mt-8 -mx-5 md:-mx-8 px-5 md:px-8 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="mt-8 max-w-[420px] mx-auto"
           >
-            <ol className="flex items-center gap-1.5 justify-center min-w-max mx-auto list-none p-0">
+            <div
+              className="kr-num text-[10px] uppercase tracking-[0.18em] mb-2.5"
+              style={{ color: 'rgba(239,244,255,0.45)' }}
+            >
+              개념 진행 · {currentInGroup + 1} / {groupSteps.length}
+            </div>
+            <ol className="flex flex-col gap-1.5 list-none p-0 m-0 relative">
+              {/* 좌측 세로 가이드 라인 */}
+              <span
+                aria-hidden
+                className="absolute top-3 bottom-3 left-[7px] w-px"
+                style={{ background: 'rgba(239,244,255,0.08)' }}
+              />
               {groupSteps.map((s, i) => {
                 const completed = i < currentInGroup;
                 const current = i === currentInGroup;
                 const label = shortLabel(s.title);
                 return (
-                  <li key={s.id} className="flex items-center gap-1.5">
+                  <li
+                    key={s.id}
+                    className="flex items-center gap-3 relative"
+                    aria-current={current ? 'step' : undefined}
+                  >
+                    {/* 좌측 마커 — 완료/현재/미진행 */}
                     <span
-                      title={s.title}
-                      aria-current={current ? 'step' : undefined}
-                      className="kr-num inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-[11px] transition"
+                      aria-hidden
+                      className="shrink-0 inline-flex items-center justify-center rounded-full relative z-10 transition-all"
                       style={{
+                        width: current ? 16 : 14,
+                        height: current ? 16 : 14,
                         background: current
                           ? 'var(--subject-accent)'
                           : completed
-                            ? 'rgba(111,255,0,0.12)'
-                            : 'rgba(239,244,255,0.05)',
-                        color: current
-                          ? '#010828'
-                          : completed
-                            ? '#9CFF3D'
-                            : 'rgba(239,244,255,0.55)',
+                            ? 'rgba(111,255,0,0.18)'
+                            : 'rgba(239,244,255,0.06)',
                         border: current
-                          ? '1.5px solid var(--subject-accent)'
+                          ? '2px solid var(--subject-accent)'
                           : completed
-                            ? '1px solid rgba(111,255,0,0.25)'
-                            : '1px solid rgba(239,244,255,0.12)',
-                        fontWeight: current ? 700 : 500,
+                            ? '1.5px solid rgba(111,255,0,0.5)'
+                            : '1.5px solid rgba(239,244,255,0.18)',
                         boxShadow: current
-                          ? '0 4px 14px -4px var(--subject-accent)'
+                          ? '0 0 10px var(--subject-accent)'
                           : 'none',
+                        color: completed ? '#9CFF3D' : 'transparent',
                       }}
                     >
-                      <span aria-hidden style={{ opacity: 0.85 }}>
-                        {completed ? '✓' : current ? '•' : i + 1}
-                      </span>
-                      <span className="whitespace-nowrap">{label}</span>
+                      {completed ? (
+                        <Check size={9} strokeWidth={3.4} />
+                      ) : null}
                     </span>
-                    {i < groupSteps.length - 1 ? (
+
+                    {/* 라벨 */}
+                    <span
+                      title={s.title}
+                      className="kr-body text-[12.5px] leading-tight flex-1"
+                      style={{
+                        color: current
+                          ? 'var(--subject-accent)'
+                          : completed
+                            ? 'rgba(239,244,255,0.85)'
+                            : 'rgba(239,244,255,0.5)',
+                        fontWeight: current ? 700 : completed ? 500 : 400,
+                      }}
+                    >
+                      {label}
+                    </span>
+
+                    {/* 우측 — 현재일 때만 progress % */}
+                    {current ? (
                       <span
-                        aria-hidden
-                        className="text-[10px]"
-                        style={{ color: 'rgba(239,244,255,0.25)' }}
+                        className="kr-num text-[10px] tabular-nums shrink-0"
+                        style={{ color: 'var(--subject-accent)' }}
                       >
-                        ›
+                        {Math.round(innerProgress * 100)}%
                       </span>
                     ) : null}
                   </li>

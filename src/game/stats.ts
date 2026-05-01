@@ -7,6 +7,7 @@
 
 import type { Subject } from '@/types/question';
 import type { ProgressStore, SessionRecord } from './storage';
+import { ALL_QUESTIONS } from '@/lib/questions';
 
 // ------------------------------------------------------------------
 // 시간 헬퍼 — 로컬 자정 기준.
@@ -160,16 +161,40 @@ export interface SubjectBreakdown {
   totalTimeMs: number;
 }
 
+/**
+ * 과목별 정답률 — questionStats 기반으로 lesson 인라인 풀이 + session 풀이 모두 합산.
+ *
+ * 이전엔 store.sessions 만 봐서 lesson step 의 단답 풀이 (questionStats 만 갱신,
+ * session 0) 가 누락 → 사용자가 lesson 만 풀어도 '데이터 없음' 으로 표시되던 문제.
+ *
+ * 수정:
+ *   - totalAttempts / totalCorrect: questionStats 기반 (모든 풀이 통합)
+ *   - sessionCount / totalTimeMs:    sessions 기반 (시간은 세션에만 있음)
+ *   - accuracy:                      questionStats 의 정답률
+ *
+ * 즉, 사용자가 lesson 단발 풀이만 해도 정답률이 표시됨. 세션 카운트는 따로.
+ */
 export function computeSubjectBreakdown(store: ProgressStore): SubjectBreakdown[] {
   const byKey = new Map<Subject, SubjectBreakdown>();
+
+  // 1) questionStats 기반 — 모든 문제 풀이 통합 (lesson + session 양쪽)
+  for (const [qid, stat] of Object.entries(store.questionStats)) {
+    const q = ALL_QUESTIONS.find((x) => x.id === qid);
+    if (!q) continue;
+    const cur = byKey.get(q.subject) ?? emptyBreakdown(q.subject);
+    cur.totalAttempts += stat.attempts;
+    cur.totalCorrect += stat.correct;
+    byKey.set(q.subject, cur);
+  }
+
+  // 2) session 기반 부가 정보 — sessionCount, totalTimeMs (questionStats 엔 없음)
   for (const s of store.sessions) {
     const cur = byKey.get(s.subject) ?? emptyBreakdown(s.subject);
     cur.sessionCount += 1;
-    cur.totalAttempts += s.total;
-    cur.totalCorrect += s.correctCount;
     cur.totalTimeMs += s.totalTimeMs;
     byKey.set(s.subject, cur);
   }
+
   for (const b of byKey.values()) {
     b.accuracy = b.totalAttempts === 0 ? 0 : b.totalCorrect / b.totalAttempts;
   }

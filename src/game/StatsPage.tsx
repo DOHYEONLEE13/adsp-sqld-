@@ -12,8 +12,6 @@
 
 import { useMemo, useState } from 'react';
 import {
-  Activity,
-  Award,
   BarChart3,
   Calendar,
   CalendarClock,
@@ -31,14 +29,11 @@ import {
   computeKpi,
   computeSubjectBreakdown,
   recentDailyTrend,
-  recentSessions,
 } from './stats';
 import { topicWeaknesses, weaknessLevel } from './weakness';
 import { formatDuration } from './session';
 import { cx } from '@/lib/utils';
-import { computePlayerStats } from './rpg';
 import { aggregateChapter } from './aggregate';
-import { computeBadges } from './badges';
 import {
   daysUntil,
   getAllExamDates,
@@ -66,14 +61,7 @@ export default function StatsPage({ onExit }: Props) {
   const [examDates, setExamDatesState] = useState(() => getAllExamDates());
 
   const kpi = useMemo(() => computeKpi(progress), [progress]);
-  const trend = useMemo(() => recentDailyTrend(progress, 7), [progress]);
   const subjects = useMemo(() => computeSubjectBreakdown(progress), [progress]);
-  const sessions = useMemo(() => recentSessions(progress, 10), [progress]);
-  const playerStats = useMemo(() => computePlayerStats(progress), [progress]);
-  const badges = useMemo(
-    () => computeBadges(progress, playerStats),
-    [progress, playerStats],
-  );
   const calendar = useMemo(() => recentDailyTrend(progress, 30), [progress]);
   const chapterMastery = useMemo(() => {
     const result: Record<Subject, ChapterMasteryRow[]> = { adsp: [], sqld: [] };
@@ -187,19 +175,8 @@ export default function StatsPage({ onExit }: Props) {
             />
           </section>
 
-          {/* 7일 추이 */}
-          <section className="liquid-glass rounded-[24px] p-5 md:p-6 mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="kr-heading text-[13px] uppercase tracking-widest text-cream/70 inline-flex items-center gap-2">
-                <Activity size={14} strokeWidth={2.4} />
-                최근 7일 추이
-              </h2>
-              <span className="kr-body text-[11px] text-cream/50">
-                바 높이 = 풀이 수 · 컬러 = 정답률
-              </span>
-            </div>
-            <TrendBars trend={trend} />
-          </section>
+          {/* 7일 추이 / 업적 뱃지 / 최근 세션 — 사용자 결정 (2026-05) 으로 제거.
+              간소화 우선. 데이터 추가될 때 다시 보강 검토. */}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             {/* 과목별 */}
@@ -302,67 +279,6 @@ export default function StatsPage({ onExit }: Props) {
             </div>
           </section>
 
-          {/* 뱃지 그리드 */}
-          <section className="liquid-glass rounded-[24px] p-5 md:p-6 mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="kr-heading text-[13px] uppercase tracking-widest text-cream/70 inline-flex items-center gap-2">
-                <Award size={14} strokeWidth={2.4} />
-                업적 뱃지
-              </h2>
-              <span className="kr-body text-[11px] text-cream/50">
-                {badges.filter((b) => b.isEarned).length} / {badges.length} 획득
-              </span>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-              {badges.map((b) => (
-                <BadgeTile key={b.id} badge={b} />
-              ))}
-            </div>
-          </section>
-
-          {/* 최근 세션 */}
-          <section className="liquid-glass rounded-[24px] p-5 md:p-6 mb-8">
-            <h2 className="kr-heading text-[13px] uppercase tracking-widest text-cream/70 mb-4">
-              최근 세션
-            </h2>
-            <div className="flex flex-col gap-2">
-              {sessions.map((s) => {
-                const acc = s.total === 0 ? 0 : s.correctCount / s.total;
-                return (
-                  <div
-                    key={s.at}
-                    className="flex items-center justify-between gap-3 rounded-[14px] px-4 py-3"
-                    style={{ background: 'rgba(239,244,255,0.04)' }}
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="kr-heading text-[13px] uppercase truncate">
-                        {s.chapterTitle}
-                        {s.topic ? (
-                          <span className="text-cream/60"> · {s.topic}</span>
-                        ) : (
-                          <span className="text-cream/40"> · 전체 믹스</span>
-                        )}
-                      </p>
-                      <p className="kr-body text-[11px] text-cream/50 mt-0.5">
-                        {SUBJECT_LABEL[s.subject]} · {formatRelativeTime(s.at)}
-                      </p>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <span
-                        className="kr-heading text-[14px]"
-                        style={{ color: accuracyAccent(acc) }}
-                      >
-                        {s.correctCount}/{s.total}
-                      </span>
-                      <p className="kr-body text-[10px] text-cream/50">
-                        {formatDuration(s.totalTimeMs)}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
         </>
       )}
 
@@ -639,42 +555,6 @@ function ChapterMasteryRow({ row }: { row: ChapterMasteryRow }) {
   );
 }
 
-function BadgeTile({
-  badge,
-}: {
-  badge: { id: string; name: string; description: string; icon: string; isEarned: boolean };
-}) {
-  return (
-    <div
-      className={cx(
-        'rounded-[14px] p-3 flex flex-col items-center gap-1.5 transition',
-        badge.isEarned ? 'liquid-glass' : 'opacity-40',
-      )}
-      style={
-        badge.isEarned
-          ? { boxShadow: '0 0 20px -8px rgba(111, 255, 0, 0.5)' }
-          : { background: 'rgba(239,244,255,0.04)' }
-      }
-      title={badge.description}
-    >
-      <span
-        className={cx(
-          'text-[28px] leading-none',
-          badge.isEarned ? '' : 'grayscale',
-        )}
-      >
-        {badge.icon}
-      </span>
-      <span className="kr-heading text-[10px] uppercase tracking-widest text-center leading-tight">
-        {badge.name}
-      </span>
-      <span className="kr-body text-[9px] text-cream/50 text-center leading-snug">
-        {badge.description}
-      </span>
-    </div>
-  );
-}
-
 function Kpi({
   icon,
   label,
@@ -749,53 +629,6 @@ function SubjectRow({
   );
 }
 
-function TrendBars({
-  trend,
-}: {
-  trend: ReturnType<typeof recentDailyTrend>;
-}) {
-  const max = Math.max(1, ...trend.map((b) => b.attempts));
-  return (
-    <div className="flex items-end gap-2 h-[120px]">
-      {trend.map((b) => {
-        const h = b.attempts === 0 ? 4 : Math.max(6, (b.attempts / max) * 100);
-        const label = new Date(b.day).toLocaleDateString(undefined, {
-          weekday: 'short',
-        });
-        return (
-          <div
-            key={b.day}
-            className="flex-1 flex flex-col items-center gap-2"
-          >
-            <div className="w-full flex items-end" style={{ height: '100%' }}>
-              <div
-                className="w-full rounded-t-md transition-[height] duration-500"
-                style={{
-                  height: `${h}%`,
-                  background:
-                    b.attempts === 0
-                      ? 'rgba(239, 244, 255, 0.08)'
-                      : accuracyAccent(b.accuracy),
-                  opacity: b.attempts === 0 ? 0.5 : 0.85,
-                }}
-                title={`${b.attempts}문항 · ${Math.round(b.accuracy * 100)}%`}
-              />
-            </div>
-            <span
-              className={cx(
-                'kr-heading text-[10px] uppercase tracking-widest',
-                'text-cream/50',
-              )}
-            >
-              {label}
-            </span>
-          </div>
-        );
-      })}
-    </div>
-  );
-}
-
 // ------------------------------------------------------------------
 // 유틸 — 컬러 · 상대시간
 // ------------------------------------------------------------------
@@ -812,14 +645,4 @@ function weaknessColor(score: number): string {
   return '#6FFF00';
 }
 
-function formatRelativeTime(ts: number, now: number = Date.now()): string {
-  const diff = now - ts;
-  const minute = 60 * 1000;
-  const hour = 60 * minute;
-  const day = 24 * hour;
-  if (diff < minute) return '방금 전';
-  if (diff < hour) return `${Math.floor(diff / minute)}분 전`;
-  if (diff < day) return `${Math.floor(diff / hour)}시간 전`;
-  if (diff < 7 * day) return `${Math.floor(diff / day)}일 전`;
-  return new Date(ts).toLocaleDateString();
-}
+// formatRelativeTime — 최근 세션 섹션 제거로 미사용. 향후 재도입 시 git history 참조.

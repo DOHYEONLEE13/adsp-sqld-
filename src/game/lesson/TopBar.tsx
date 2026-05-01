@@ -12,9 +12,10 @@ interface Props {
 
 export default function TopBar({ progress, onExit }: Props) {
   const clamped = Math.max(0, Math.min(1, progress));
+  const percent = Math.round(clamped * 100);
   return (
     <div className="sticky top-0 z-30 bg-base/85 backdrop-blur-md">
-      <div className="mx-auto max-w-[820px] flex items-center gap-4 px-5 py-3 md:px-8 md:py-4">
+      <div className="mx-auto max-w-[820px] flex items-center gap-3 md:gap-4 px-5 py-3 md:px-8 md:py-4">
         <button
           type="button"
           onClick={onExit}
@@ -24,7 +25,14 @@ export default function TopBar({ progress, onExit }: Props) {
           <X size={20} strokeWidth={2.4} />
         </button>
 
-        <div className="flex-1 h-3 md:h-3.5 rounded-full bg-white/10 relative overflow-hidden">
+        <div
+          className="flex-1 h-3 md:h-3.5 rounded-full bg-white/10 relative overflow-hidden"
+          role="progressbar"
+          aria-valuenow={percent}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label={`레슨 진행률 ${percent}%`}
+        >
           <div
             className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-500 ease-out"
             style={{
@@ -43,6 +51,18 @@ export default function TopBar({ progress, onExit }: Props) {
             }}
           />
         </div>
+
+        {/* 진행률 % — tabular-nums 로 자릿수 변경 시 흔들림 방지 */}
+        <span
+          className="kr-num shrink-0 tabular-nums text-[12px] md:text-[13px] font-bold w-[42px] text-right"
+          style={{
+            color: percent >= 100 ? '#9CFF3D' : 'var(--subject-accent, #67e8f9)',
+            textShadow: '0 1px 2px rgba(0,0,0,0.4)',
+          }}
+          aria-hidden
+        >
+          {percent}%
+        </span>
       </div>
     </div>
   );

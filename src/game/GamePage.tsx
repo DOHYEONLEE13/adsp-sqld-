@@ -22,6 +22,7 @@ import {
   recordSessionSummary,
   setActiveSubject,
 } from './storage';
+import { passNumberFor } from './studyMode';
 import GalaxyScreen from './screens/GalaxyScreen';
 import PlanetScreen from './screens/PlanetScreen';
 import ZoneScreen, { type StartParams } from './screens/ZoneScreen';
@@ -94,7 +95,13 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
     flow: FlowMode = 'play',
     size?: number,
     explicitLabel?: string,
-    passNumber: number = 1,
+    /**
+     * 명시 안 하면 사용자의 학습 모드 (studyMode) 기반 자동 결정:
+     *   - 'review' (복습용) → 2 (변형 문제 우선)
+     *   - 그 외 / 미설정     → 1
+     * 호출측이 명시적으로 회독 차수를 지정하면 그대로 사용.
+     */
+    passNumber: number = passNumberFor(subject),
   ) => {
     void gateEnergy(() => {
       const labelMap: Record<string, string> = {

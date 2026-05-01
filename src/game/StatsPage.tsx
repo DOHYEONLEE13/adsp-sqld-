@@ -42,6 +42,7 @@ import { computeBadges } from './badges';
 import {
   daysUntil,
   getAllExamDates,
+  getUpcomingPresets,
   setExamDate,
 } from './examDate';
 import { MobileTopBar, MobileBottomNav } from './components/MobileGameNav';
@@ -476,10 +477,66 @@ function DdayCard({
           {formatExamDate(ymd)} 예정
         </p>
       ) : (
-        <p className="kr-body text-[11px] text-cream/50 mt-2">
-          시험 날짜를 지정하면 카운트다운이 표시됩니다.
-        </p>
+        <>
+          <p className="kr-body text-[11px] text-cream/50 mt-2">
+            시험 날짜를 지정하면 카운트다운이 표시됩니다.
+          </p>
+          {/*
+            2026 회차 프리셋 — 한국데이터산업진흥원 공식 일정.
+            클릭 한 번으로 시험일 자동 설정.
+          */}
+          <PresetChips subject={subject} accent={accent} onPick={onChange} />
+        </>
       )}
+    </div>
+  );
+}
+
+function PresetChips({
+  subject,
+  accent,
+  onPick,
+}: {
+  subject: Subject;
+  accent: string;
+  onPick: (ymd: string) => void;
+}) {
+  const presets = getUpcomingPresets(subject);
+  if (presets.length === 0) {
+    return (
+      <p className="kr-body text-[10.5px] text-cream/40 mt-2">
+        2026 시험 일정이 모두 종료됐습니다. 2027 일정 발표 후 추가 예정.
+      </p>
+    );
+  }
+  return (
+    <div className="mt-3">
+      <div className="kr-num text-[10px] uppercase tracking-[0.18em] text-cream/45 mb-1.5">
+        2026 회차 빠른 설정
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        {presets.map((p) => (
+          <button
+            key={p.date}
+            type="button"
+            onClick={() => onPick(p.date)}
+            aria-label={`${p.round} 시험일 ${p.display} 로 설정`}
+            className="kr-num inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10.5px] transition active:scale-95"
+            style={{
+              background: `${accent}14`,
+              color: accent,
+              border: `1px solid ${accent}33`,
+              fontWeight: 600,
+            }}
+          >
+            <span>{p.round}</span>
+            <span className="text-cream/50">·</span>
+            <span className="kr-body text-cream/70 font-normal">
+              {p.display.split(' ')[0].slice(5)}
+            </span>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

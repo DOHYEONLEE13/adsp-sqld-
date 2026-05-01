@@ -29,6 +29,7 @@ import ProgressBadge from '../components/ProgressBadge';
 import { aggregateSubject } from '../aggregate';
 import { useProgress } from '../useProgress';
 import { useBookmarks } from '../useBookmarks';
+import { getStudyMode, setStudyMode, type StudyMode } from '../studyMode';
 import { computePlayerStats, type PlayerStats } from '../rpg';
 import Ques from '@/components/mascot/Ques';
 import SpeechBubble from '@/game/lesson/SpeechBubble';
@@ -556,6 +557,16 @@ function SubjectInfoPanel({
     };
   }, []);
 
+  // 학습 모드 — 과목별 첫 진입 시 1회 묻고, 이후엔 기억된 값 사용.
+  // 'review' 면 GamePage 가 자동으로 passNumber=2 로 시작 (studyMode.passNumberFor).
+  const [studyMode, setStudyModeState] = useState<StudyMode | undefined>(() =>
+    getStudyMode(subject),
+  );
+  const handleStudyModeSelect = (mode: StudyMode) => {
+    setStudyMode(subject, mode);
+    setStudyModeState(mode);
+  };
+
   return (
     <div className="panel-slide-up">
       <div
@@ -625,6 +636,17 @@ function SubjectInfoPanel({
         <ProgressBadge agg={agg} />
 
         {/*
+          학습 모드 — 첫 방문 시 1회 묻고, 이후엔 기억. 'review' 면 GamePage 의
+          모든 createSession 이 자동으로 passNumber=2 로 시작 (변형 문제 우선).
+        */}
+        <StudyModePanel
+          mode={studyMode}
+          onSelect={handleStudyModeSelect}
+          subjectAccent={subjectAccent}
+          subjectAccentRgb={subjectAccentRgb}
+        />
+
+        {/*
           게스트 안내 — 미로그인 사용자에게 진도 저장 범위 알림.
           다기기 동기화 사고 (postmortem-phase3) 의 사용자 보호 차원에서:
             "게스트 진행도 OK, 단 이 기기에만 저장" 을 명확히 노출.
@@ -673,7 +695,12 @@ function SubjectInfoPanel({
           <button
             type="button"
             onClick={onPlay}
-            disabled={launching || total === 0}
+            disabled={launching || total === 0 || !studyMode}
+            aria-label={
+              !studyMode
+                ? '학습 모드를 먼저 선택해주세요'
+                : `${subject.toUpperCase()} 플레이하기`
+            }
             className="kr-heading uppercase tracking-widest text-[12px] md:text-[13px] px-5 py-3 rounded-full inline-flex items-center gap-2 transition hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed flex-1 justify-center"
             style={{
               background: subjectAccent,
@@ -720,6 +747,122 @@ function SubjectInfoPanel({
         </button>
       </div>
     </div>
+  );
+}
+
+// ----------------------------------------------------------------
+// 학습 모드 패널 — 처음 학습 vs 복습 (2회독)
+// ----------------------------------------------------------------
+
+interface StudyModePanelProps {
+  mode: StudyMode | undefined;
+  onSelect: (mode: StudyMode) => void;
+  subjectAccent: string;
+  subjectAccentRgb: string;
+}
+
+/**
+ * 사용자가 한 번 답하면 localStorage 에 저장. 이후엔 [선택됨] 상태로 표시되며
+ * 변경 가능. 미답 시 [플레이하기] 가 disabled (panel 의 button 측 처리).
+ *
+ * 'review' 선택 시 — GamePage 의 startSession 이 자동 passNumber=2 로 시작:
+ *   · 변형 문제 (concept-practice-pass2) 우선
+ *   · 부족하면 원본 문제로 보충 (session.ts 의 기존 N회독 로직)
+ *   · 챕터 회독 stamp / Pass Tier 시스템 자연스럽게 연결
+ */
+function StudyModePanel({
+  mode,
+  onSelect,
+  subjectAccent,
+  subjectAccentRgb,
+}: StudyModePanelProps) {
+  const isUnselected = mode === undefined;
+
+  return (
+    <div className="mt-4">
+      <div
+        className="kr-num text-[10px] uppercase tracking-[0.18em] mb-2"
+        style={{
+          color: isUnselected ? subjectAccent : 'rgba(239,244,255,0.45)',
+        }}
+      >
+        학습 모드 {isUnselected && '— 선택해주세요'}
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <ModeButton
+          active={mode === 'first'}
+          subjectAccent={subjectAccent}
+          subjectAccentRgb={subjectAccentRgb}
+          title="처음 학습"
+          desc="개념부터 차근차근. 원본 문제로 진행."
+          onClick={() => onSelect('first')}
+        />
+        <ModeButton
+          active={mode === 'review'}
+          subjectAccent={subjectAccent}
+          subjectAccentRgb={subjectAccentRgb}
+          title="복습 (2회독)"
+          desc="변형 문제 우선 + 빠른 진도. 시험 임박용."
+          onClick={() => onSelect('review')}
+        />
+      </div>
+    </div>
+  );
+}
+
+function ModeButton({
+  active,
+  subjectAccent,
+  subjectAccentRgb,
+  title,
+  desc,
+  onClick,
+}: {
+  active: boolean;
+  subjectAccent: string;
+  subjectAccentRgb: string;
+  title: string;
+  desc: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className="text-left rounded-[14px] p-3 transition active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-0"
+      style={{
+        background: active
+          ? `rgba(${subjectAccentRgb}, 0.16)`
+          : 'rgba(239,244,255,0.04)',
+        border: active
+          ? `1.5px solid ${subjectAccent}`
+          : '1.5px solid rgba(239,244,255,0.12)',
+        boxShadow: active
+          ? `0 0 0 3px rgba(${subjectAccentRgb}, 0.12), inset 0 1px 0 rgba(255,255,255,0.06)`
+          : 'none',
+      }}
+    >
+      <div
+        className="kr-heading text-[13px] uppercase tracking-[0.06em]"
+        style={{
+          color: active ? subjectAccent : 'rgba(239,244,255,0.92)',
+          fontWeight: 700,
+        }}
+      >
+        {title}
+      </div>
+      <div
+        className="kr-body text-[11.5px] mt-1 leading-[1.45]"
+        style={{
+          color: active
+            ? 'rgba(239,244,255,0.85)'
+            : 'rgba(239,244,255,0.55)',
+        }}
+      >
+        {desc}
+      </div>
+    </button>
   );
 }
 

@@ -13,6 +13,50 @@ import { getSupabase, onAuthStateChange } from '@/lib/supabase';
 
 const STORAGE_KEY = 'questdp.examDates.v1';
 
+// ─── 시험일 프리셋 ──────────────────────────────────────────────────────
+// 한국데이터산업진흥원 공식 일정 — 2026 년 4 회차 ADSP / SQLD.
+// 사용자가 [회차 선택] 으로 클릭 한 번에 D-day 설정 가능.
+// 2027 일정 발표 시 이 배열에 추가.
+
+export interface ExamPreset {
+  subject: Subject;
+  /** "제48회" 같이 회차 표기 — UI 라벨에 사용. */
+  round: string;
+  /** YYYY-MM-DD — getExamDate / setExamDate 와 동일 포맷. */
+  date: string;
+  /** 사람이 읽는 표시 — "2026.02.07 (토)" 등. */
+  display: string;
+}
+
+export const EXAM_PRESETS: ExamPreset[] = [
+  // ADSP 2026
+  { subject: 'adsp', round: '제48회', date: '2026-02-07', display: '2026.02.07 (토)' },
+  { subject: 'adsp', round: '제49회', date: '2026-05-17', display: '2026.05.17 (일)' },
+  { subject: 'adsp', round: '제50회', date: '2026-08-08', display: '2026.08.08 (토)' },
+  { subject: 'adsp', round: '제51회', date: '2026-10-31', display: '2026.10.31 (토)' },
+  // SQLD 2026
+  { subject: 'sqld', round: '제60회', date: '2026-03-07', display: '2026.03.07 (토)' },
+  { subject: 'sqld', round: '제61회', date: '2026-05-31', display: '2026.05.31 (일)' },
+  { subject: 'sqld', round: '제62회', date: '2026-08-22', display: '2026.08.22 (토)' },
+  { subject: 'sqld', round: '제63회', date: '2026-11-14', display: '2026.11.14 (토)' },
+];
+
+/** 과목별 다가오는 시험 프리셋 (오늘 이후만, 가까운 순). */
+export function getUpcomingPresets(
+  subject: Subject,
+  now: number = Date.now(),
+): ExamPreset[] {
+  const today = new Date(now);
+  today.setHours(0, 0, 0, 0);
+  return EXAM_PRESETS.filter((p) => {
+    if (p.subject !== subject) return false;
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(p.date);
+    if (!m) return false;
+    const exam = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    return exam.getTime() >= today.getTime();
+  });
+}
+
 type ExamDates = Partial<Record<Subject, string>>;
 
 function load(): ExamDates {

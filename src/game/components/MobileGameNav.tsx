@@ -39,6 +39,7 @@ import {
 import { usePassSnapshot } from '../passSync';
 import PassTierBadge from '@/components/passes/PassTierBadge';
 import ProfileSyncSkeleton from '@/components/profile/ProfileSyncSkeleton';
+import PlanTag from '@/components/ui/PlanTag';
 
 const SUBJECT_ACCENT: Record<Subject, string> = {
   adsp: '#67e8f9',
@@ -152,7 +153,9 @@ export function MobileTopBar({ subject }: TopProps) {
             );
           })()}
         </button>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 md:gap-4">
+          {/* 요금제 라벨 — 클릭 시 /#pricing */}
+          <PlanTag size="sm" />
           <Stat
             icon={<Flame size={20} fill="#cbd5e1" strokeWidth={0} />}
             value={stats.streakDays}

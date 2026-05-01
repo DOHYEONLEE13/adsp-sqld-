@@ -47,7 +47,6 @@ import {
   type PassSession,
 } from '../passes';
 import { getStudyMode } from '../studyMode';
-import PlanTag from '@/components/ui/PlanTag';
 import PassTabs from '@/components/passes/PassTabs';
 import { PASS_TIER_VISUAL } from '@/types/passes';
 
@@ -189,12 +188,7 @@ export default function ZoneScreen({
 
       <div className="relative mx-auto w-full max-w-[760px] px-5 md:px-8 lg:px-10 pt-20 pb-28 min-h-screen">
         {/* ============ Header ============ */}
-        <header className="mb-10 md:mb-12 relative">
-          {/* 우상단 PlanTag — 학습 섹션 사용자 요금제 노출 */}
-          <div className="absolute top-0 right-0 z-10">
-            <PlanTag size="sm" />
-          </div>
-
+        <header className="mb-10 md:mb-12">
           <button
             type="button"
             onClick={onBack}

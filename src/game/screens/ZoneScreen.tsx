@@ -40,6 +40,7 @@ import {
 } from '../mockExams';
 import { isStepLocked, useStepUnlocks } from '../stepUnlocks';
 import { isFinaleStep, isFinaleStepLocked } from '../finale';
+import { useDevUnlockFlags } from '../useDevUnlockFlags';
 import { usePassSnapshot } from '../passSync';
 import {
   chapterPassProgress,
@@ -400,6 +401,10 @@ function TopicSection({
   onSelectStep,
 }: TopicSectionProps) {
   const lockSnap = useStepUnlocks();
+  // dev unlock 토글이 변경되면 즉시 재렌더 — isStepLocked / isFinaleStepLocked
+  // 가 함수 호출 시점에 localStorage 를 읽으므로 hook 결과 사용 안 해도 됨.
+  // 단지 변경 감지 → 재렌더 트리거 목적.
+  useDevUnlockFlags();
   return (
     <section>
       {/* 섹션 헤더 — caps eyebrow + 토픽 이름 + hairline */}

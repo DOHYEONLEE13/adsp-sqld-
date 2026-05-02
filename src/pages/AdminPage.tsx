@@ -16,11 +16,7 @@ import { getSupabase, isSupabaseConfigured } from '@/lib/supabase';
 import { useMyProfile } from '@/data/profile';
 import VideoBg from '@/components/ui/VideoBg';
 import { VIDEO_URLS } from '@/data/site';
-import { DEV_UNLOCK_KEY, isDevUnlockEnabled } from '@/game/passes';
-import {
-  DEV_UNLOCK_STEPS_KEY,
-  isDevUnlockStepsEnabled,
-} from '@/game/stepUnlocks';
+import { setDevUnlockFlags, useDevUnlockFlags } from '@/game/useDevUnlockFlags';
 
 interface UserRow {
   id: string;
@@ -83,25 +79,14 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
   const isAdminFinal = profile.isAdmin || serverAdmin === true;
 
   // ── 검수 모드 — 모든 회독·step 잠금해제 토글 ─────────────────
-  // pass + step 두 잠금 시스템을 동시에 ON/OFF.
-  const [bypassActive, setBypassActive] = useState<boolean>(
-    () => isDevUnlockEnabled() && isDevUnlockStepsEnabled(),
-  );
+  // pass + step 두 잠금 시스템을 동시에 ON/OFF. 즉시 반영 (reload 불필요).
+  const devUnlock = useDevUnlockFlags();
+  const bypassActive = devUnlock.passes && devUnlock.steps;
   const handleToggleBypass = () => {
     const next = !bypassActive;
-    if (typeof window !== 'undefined') {
-      if (next) {
-        window.localStorage.setItem(DEV_UNLOCK_KEY, '1');
-        window.localStorage.setItem(DEV_UNLOCK_STEPS_KEY, '1');
-      } else {
-        window.localStorage.removeItem(DEV_UNLOCK_KEY);
-        window.localStorage.removeItem(DEV_UNLOCK_STEPS_KEY);
-      }
-    }
-    setBypassActive(next);
-    // ZoneScreen 의 isStepLocked 가 함수 호출 시점에 localStorage 읽으므로
-    // 즉시 반영하려면 reload (PassSection 과 동일 패턴).
-    window.setTimeout(() => window.location.reload(), 200);
+    setDevUnlockFlags({ passes: next, steps: next });
+    // 같은 탭 내 모든 useDevUnlockFlags 구독자에게 즉시 알림 — ZoneScreen 의
+    // 잠금 표시가 실시간으로 풀리고, 다음 step 클릭 시 toast 없이 진입.
   };
 
   // 비-admin 진입 시 홈으로 (clientside guard)
@@ -369,17 +354,18 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
                   strokeWidth={2.6}
                   className={bypassActive ? 'text-neon' : 'text-cream/55'}
                 />
-                검수 도구 — 모든 회독·step 잠금해제
+                모든 회독 잠금해제 (검수)
               </h3>
               <p className="kr-body text-[12px] text-cream/65 leading-[1.7]">
-                토글 ON 시 이전 step 클리어 여부 + N회독 stamp 보유 여부와 무관하게
-                모든 콘텐츠가 열람 가능해집니다. 검수·QA 용도로만 사용. 다시 OFF
-                하면 정상 잠금 정책으로 복원됩니다 (페이지 자동 reload).
+                토글 ON 시 <strong>이전 step 클리어 여부</strong> +{' '}
+                <strong>N회독 stamp 보유 여부</strong> +{' '}
+                <strong>마무리 step 완주 조건</strong> 과 무관하게 모든
+                콘텐츠가 즉시 열람 가능해집니다. 검수·QA 용도. OFF 시 정상
+                잠금 정책으로 즉시 복원 (reload 불필요).
               </p>
               <p className="kr-body text-[11px] text-cream/45 mt-2 leading-[1.6]">
-                저장 위치: localStorage.{DEV_UNLOCK_KEY} ·{' '}
-                {DEV_UNLOCK_STEPS_KEY} (디바이스별 — 다른 기기에선 별도 토글
-                필요).
+                저장 위치: localStorage (디바이스별 — 다른 기기에선 별도 토글
+                필요). 같은 탭 내 ZoneScreen / GamePage 가 즉시 재렌더링됩니다.
               </p>
             </div>
             <button

@@ -39,6 +39,7 @@ import { isStepLocked, stepKey, unlockStepOnServer } from './stepUnlocks';
 import { useStepUnlocks } from './stepUnlocks';
 import { isFinaleStep, isFinaleStepLocked } from './finale';
 import { useProgress } from './useProgress';
+import { useDevUnlockFlags } from './useDevUnlockFlags';
 import { tryRecordPassCompletion } from './passSync';
 
 interface Props {
@@ -63,6 +64,9 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
   const [lockToast, setLockToast] = useState<string | null>(null);
   const stepLockSnap = useStepUnlocks();
   const progress = useProgress();
+  // dev unlock 토글 변경 시 즉시 재렌더 — onSelectStep 의 잠금 검사에 즉시 반영.
+  // 반환값은 사용하지 않고 단지 hook 구독으로 hook 변화 시 컴포넌트 재렌더만 유도.
+  useDevUnlockFlags();
 
   /**
    * 에너지 1 차감 후 callback. 게스트·프리미엄·env 미설정 = 무조건 진행.

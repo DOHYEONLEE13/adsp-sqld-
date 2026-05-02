@@ -52,7 +52,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s1-data',
-      title: 'DIKW ① 데이터 (Data) — 가공 전 raw 값',
+      title: 'DIKW ① 데이터 (Data) — 가공 전 원시 값',
       quizId: 'adsp-1-1-cp-01b',
       dialogue: [
         { pose: 'wave', text: '첫 단계, [데이터] 야.' },
@@ -64,7 +64,7 @@ const ADSP_1_1: Lesson = {
         {
           kind: 'intro',
           body:
-            '데이터(Data) 는 측정·관찰·기록의 결과 그 자체입니다. 어떤 의미나 해석도 붙지 않은 raw 값이에요. 마트에 가서 가격표를 본 그 순간, 체중계 위에 올라가서 숫자가 표시된 그 순간 — 그게 데이터입니다.',
+            '데이터(Data) 는 측정·관찰·기록의 결과 그 자체입니다. 어떤 의미나 해석도 붙지 않은 원시 값이에요. 마트에 가서 가격표를 본 그 순간, 체중계 위에 올라가서 숫자가 표시된 그 순간 — 그게 데이터입니다.',
         },
         {
           kind: 'section',
@@ -484,19 +484,76 @@ const ADSP_1_1: Lesson = {
     // ─── SECI — 1 step → 5 substeps (암묵·형식 + 4 변환) ───
     {
       id: 'adsp-1-1-s3',
-      title: '암묵지 · 형식지 · SECI 개요',
+      title: '암묵지 · 형식지 — 두 가지 지식',
       quizId: 'adsp-1-1-cp-03',
       dialogue: [
-        { pose: 'wave', text: '[자전거 타는 법] 을 책으로 옮길 수 있을까?' },
-        { pose: 'think', text: '몸이 배운 노하우가 [암묵지]. 글로 정리되면 [형식지]. 조직은 이 변환으로 성장해.' },
-        { pose: 'happy', text: '변환은 [4단계] — 공동화·표출화·연결화·내면화. "[공표연내]".' },
-        { pose: 'idle', text: '먼저 암묵지/형식지 구분부터 확인.' },
+        { pose: 'wave', text: '[자전거 타는 법] 을\n책으로 옮길 수 있을까?' },
+        { pose: 'think', text: '몸이 배운 노하우 = [암묵지].\n글로 정리되면 = [형식지].' },
+        {
+          pose: 'happy',
+          text: '예시:\n· 자전거 타는 법 → 암묵지\n· 자전거 타는 법을 적은 매뉴얼 → 형식지',
+        },
+        { pose: 'idle', text: '암묵지/형식지 구분 문제부터 풀어보자!' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            '자전거 타는 법은 책으로 옮기기 어렵지만 누구나 탈 수 있습니다. 몸이 배운 노하우 — 이게 암묵지. 매뉴얼·논문처럼 글로 정리된 게 형식지. 조직은 둘 사이를 4가지 방식으로 순환시키며 지식을 키웁니다 (SECI).',
+            '자전거 타는 법은 책으로 옮기기 어렵지만 누구나 탈 수 있습니다. 몸이 배운 노하우 — 이게 [암묵지]. 매뉴얼·논문처럼 글로 정리된 게 [형식지]. 두 종류 지식의 구분이 ADsP 시험의 출발점입니다.',
+        },
+        {
+          kind: 'section',
+          title: '① 암묵지 (Tacit Knowledge)',
+          body:
+            '머리·몸 안에 있어 [말로 다 옮기기 어려운] 노하우. 직접 따라해보거나 옆에서 보며 익혀야 전해집니다. 예: 자전거 타는 법, 베테랑 셰프의 칼질 감, 운동 선수의 폼 감각.',
+        },
+        {
+          kind: 'section',
+          title: '② 형식지 (Explicit Knowledge)',
+          body:
+            '글·도식·매뉴얼로 [명확히 표현된] 지식. 누구든 읽으면 바로 전해집니다. 예: 입문서, 표준 작업 매뉴얼, 위키피디아 항목, 논문, 레시피북.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '구분 팁',
+          body:
+            '"글·도식으로 정리됐나?" → YES 면 형식지. "옆에 붙어 따라해야 익히나?" → YES 면 암묵지.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s3-seci',
+      title: 'SECI 4단계 — "공표연내"',
+      quizId: 'adsp-1-1-cp-03-mapping',
+      dialogue: [
+        { pose: 'wave', text: '암묵지 ↔ 형식지 변환은\n[4단계] 로 진행돼.' },
+        {
+          pose: 'think',
+          text: '① [공]동화 (S) — 암묵→암묵\n② [표]출화 (E) — 암묵→형식\n③ [연]결화 (C) — 형식→형식\n④ [내]면화 (I) — 형식→암묵',
+        },
+        {
+          pose: 'lightbulb',
+          text: '앞 글자만 따서\n"[공표연내]" 라고 외워!',
+        },
+        { pose: 'idle', text: '4단계 매핑 문제를 풀어보자!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'SECI 모델 — 암묵지와 형식지가 [4단계] 로 순환하며 조직의 지식이 자란다는 이론. 4단계 영문 첫 글자가 S·E·C·I 라서 SECI. 한국어로는 [공표연내] 로 외웁니다.',
+        },
+        {
+          kind: 'table',
+          title: '4단계 한 줄 요약',
+          headers: ['단계', '방향', '한 줄 의미'],
+          rows: [
+            ['공동화 (S)', '암묵 → 암묵', '몸·머리 노하우가 옆 사람에게 그대로'],
+            ['표출화 (E)', '암묵 → 형식', '머릿속 노하우를 글·매뉴얼로 꺼냄'],
+            ['연결화 (C)', '형식 → 형식', '이미 있는 글들을 합쳐 새 자료로'],
+            ['내면화 (I)', '형식 → 암묵', '글·교본 반복 → 자기 몸·머리에 체화'],
+          ],
         },
         {
           kind: 'callout',
@@ -513,28 +570,31 @@ const ADSP_1_1: Lesson = {
       quizId: 'adsp-1-1-cp-03-S',
       dialogue: [
         { pose: 'wave', text: '첫 단계 [공동화] — 암묵지 → 암묵지.' },
-        { pose: 'think', text: '말이나 글 없이 [몸에서 몸으로] 전해지는 단계야.' },
-        { pose: 'happy', text: '예를 들어 신입사원이 선배 옆에 붙어 어깨너머로 일을 배우는 OJT 가 전형이야.' },
+        { pose: 'think', text: '말이나 글 없이\n[몸에서 몸으로] 전해지는 단계야.' },
+        {
+          pose: 'happy',
+          text: '예: 동아리 선배가 후배에게\n악기 연주법을 옆에서 보여주며\n어깨너머로 가르치는 거.',
+        },
         { pose: 'idle', text: '공동화 예시를 한 번 골라봐.' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            '공동화(Socialization) — 머리 속이나 몸에 있는 노하우(암묵지) 가 다른 사람의 머리·몸으로 그대로 옮겨가는 단계입니다. 중요한 건 "글로 적힌 게 없다" 는 점이에요. 같이 일하며 보고 따라하고, 시행착오를 옆에서 지켜보며 익힙니다.',
+            '공동화(Socialization) — 머리 속이나 몸에 있는 노하우(암묵지) 가 다른 사람의 머리·몸으로 그대로 옮겨가는 단계입니다. 중요한 건 "글로 적힌 게 없다" 는 점이에요. 같이 보고 따라하고, 시행착오를 옆에서 지켜보며 익힙니다.',
         },
         {
           kind: 'section',
           title: '구체 사례로 감잡기',
           body:
-            '신입 요리사가 셰프 옆에서 1년간 어깨너머로 칼질을 익히는 경우 / 신입사원이 사수와 같이 출장 다니며 거래처 응대법을 몸으로 배우는 경우 / 숙련 기술자가 후배에게 "이 정도 압력으로 잡아야 해" 하며 손에 쥐어주는 경우. 모두 글이나 영상이 아닌 "함께 있어야만" 전해지는 지식.',
+            '동아리 선배가 후배에게 악기 연주법을 옆에서 보여주며 가르치는 경우 / 운동부 선배가 후배의 자세를 직접 잡아주며 폼을 익히게 하는 경우 / 학원 강의에서 강사 옆에 앉아 풀이 흐름을 따라가며 감을 잡는 경우. 모두 글이나 영상이 아닌 "함께 있어야만" 전해지는 지식.',
         },
         {
           kind: 'callout',
           tone: 'tip',
           title: '시험 식별 키워드',
           body:
-            '"OJT", "도제식", "현장 어깨너머", "동행 학습". 어딘가에 매뉴얼이나 문서가 등장하면 공동화 아님 — 표출화/연결화/내면화로 가야 합니다.',
+            '"어깨너머", "옆에서 직접 보여주며", "도제식". 어딘가에 매뉴얼이나 문서가 등장하면 공동화 아님 — 표출화/연결화/내면화로 가야 합니다.',
         },
       ],
     },
@@ -606,8 +666,14 @@ const ADSP_1_1: Lesson = {
       quizId: 'adsp-1-1-cp-03-I',
       dialogue: [
         { pose: 'wave', text: '넷째 [내면화] — 형식지 → 암묵지.' },
-        { pose: 'think', text: '매뉴얼·교본을 읽고 직접 따라하다 [몸에 배는] 단계야. 표출화의 반대 방향.' },
-        { pose: 'happy', text: '신입이 매뉴얼대로 6개월 연습해서 손에 익는 게 전형이야.' },
+        {
+          pose: 'think',
+          text: '매뉴얼·교본을 읽고 직접 따라하다\n[몸으로 익혀서\n자신의 것으로 만드는] 단계야.\n표출화의 반대 방향.',
+        },
+        {
+          pose: 'happy',
+          text: '예: 매뉴얼대로 6개월 연습해서\n손에 익어 매뉴얼 없이도\n자연스러워지는 것.',
+        },
         { pose: 'idle', text: '내면화 예시를 한 번 골라봐.' },
       ],
       blocks: [
@@ -631,93 +697,669 @@ const ADSP_1_1: Lesson = {
         },
       ],
     },
-    // ─── DB 특징 + DW/Data Lake — 1 step → 3 substeps (특징 5종 통합 + DW + Data Lake) ───
     {
-      id: 'adsp-1-1-s4',
-      title: 'DB 5특징 — "공·통·저·변" + 실시간',
-      quizId: 'adsp-1-1-cp-04',
+      id: 'adsp-1-1-s3-summary',
+      title: 'SECI 종합 — 4단계 매핑',
+      quizId: 'adsp-1-1-cp-03-seci',
       dialogue: [
-        { pose: 'wave', text: '엑셀과 DB 차이는 [5가지 성질].' },
-        { pose: 'think', text: '[공]용·[통]합·[저]장·[변]화 + [실시간]. "공통저변 + 실시간".' },
-        { pose: 'idle', text: '5성질을 한꺼번에 골라봐.' },
+        { pose: 'wave', text: 'SECI 4단계를\n전부 살펴봤어!' },
+        {
+          pose: 'lightbulb',
+          text: '암묵·형식 방향이 헷갈릴 땐\n[공표연내] 순서를 떠올려:\n공동화 → 표출화 → 연결화 → 내면화.',
+        },
+        {
+          pose: 'happy',
+          text: '시험에선 [사례 → 단계 매핑] 이\n가장 자주 등장해.\n예시 하나로 마무리하자!',
+        },
+        { pose: 'idle', text: '아래 사례가 어느 단계인지 골라봐!' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            '엑셀 파일과 진짜 데이터베이스(DB) 의 차이는 단순히 "용량이 크냐" 가 아니라 5가지 본질적 성질로 갈립니다. 같은 학생 명단이라도, 엑셀 파일은 한 번에 한 사람만 열 수 있고 누군가 수정하면 다른 사람은 모르지만, DB 는 여러 사람이 동시에 보고 누군가의 수정이 즉시 반영됩니다.',
+            'SECI 4단계 종합 정리. 시험에선 사례를 하나 던져주고 어느 단계인지 묻는 [매핑] 문제가 가장 흔합니다. 핵심은 "지식의 출발점과 도착점이 암묵인지 형식인지" 를 빠르게 가르는 것.',
         },
         {
           kind: 'table',
-          title: 'DB 5특징 한눈에',
-          headers: ['특징', '의미', '엑셀과 차이'],
+          title: '한 줄 매핑 복습',
+          headers: ['단계', '방향', '대표 사례'],
           rows: [
-            ['공용', '여러 사용자가 동시에 공유·접근', '엑셀: 한 번에 한 사람만 열기'],
-            ['통합', '동일 데이터의 중복을 최소화', '엑셀: 부서마다 같은 정보 반복 저장'],
-            ['저장', '디스크에 영속 — 전원 꺼져도 유지', '엑셀: 파일 단위 저장 — 분실 위험'],
-            ['변화', '수정·삽입·삭제가 즉시 반영', '엑셀: 누군가의 수정을 다른 사람은 모름'],
-            ['실시간', '요청 즉시 응답 (초 이내)', '엑셀: 큰 파일은 열기·저장 자체가 느림'],
-          ],
-        },
-        {
-          kind: 'callout',
-          tone: 'mnemonic',
-          title: '암기법: "공통저변 + 실시간"',
-          body:
-            '앞 글자 4개 = [공통저변]. 거기에 "실시간 처리" 까지. 시험에선 "DB 의 특징이 아닌 것" 으로 자주 출제 — 5가지 외 다른 보기가 정답.',
-        },
-      ],
-    },
-    {
-      id: 'adsp-1-1-s4-dw',
-      title: 'DW (Data Warehouse) — 분석 창고',
-      quizId: 'adsp-1-1-cp-04-dw',
-      dialogue: [
-        { pose: 'wave', text: 'DW — 운영계 데이터를 [ETL] 해서 정돈한 분석 창고.' },
-        { pose: 'think', text: '주제별·시간별로 정형 데이터만 담음. OLAP 을 위한 읽기 전용.' },
-        { pose: 'idle', text: 'DW 의 특징을 골라봐.' },
-      ],
-      blocks: [
-        {
-          kind: 'intro',
-          body:
-            'Data Warehouse 는 운영 시스템(OLTP) 데이터를 ETL 후 주제별로 정돈한 분석 창고입니다. 주로 정형 데이터, OLAP·BI 가 사용. 운영 시스템에 영향을 안 주려고 별도 저장소에 모으는 게 핵심.',
-        },
-        {
-          kind: 'keypoints',
-          title: 'DW 의 핵심 용어 — 한 줄로',
-          items: [
-            'ETL = Extract(추출) → Transform(변환) → Load(적재). 운영 DB 의 raw 를 읽어 분석 형태로 가공 후 DW 에 저장하는 파이프라인.',
-            '주제별 정돈 = 부서·테이블 단위가 아니라 "매출", "고객", "재고" 같은 분석 주제별로 묶어 저장.',
-            '시간별 정돈 = 같은 매출 데이터도 일·주·월 단위로 미리 집계해서 보관 → 시계열 분석이 빠름.',
-            'Schema-on-Write = 저장하는 시점에 컬럼·타입을 미리 결정. 정형 데이터만 가능.',
-            'OLAP = Online Analytical Processing — 다차원 집계·조회가 주 작업.',
-            'BI = Business Intelligence — 의사결정용 시각화 도구. DW 의 주 사용자.',
+            ['공동화 (S)', '암묵 → 암묵', '동아리 선배가 어깨너머로 가르침'],
+            ['표출화 (E)', '암묵 → 형식', '장인의 노하우 → 매뉴얼 제작'],
+            ['연결화 (C)', '형식 → 형식', '여러 보고서 → 전사 백서'],
+            ['내면화 (I)', '형식 → 암묵', '매뉴얼 반복 → 자연스러워짐'],
           ],
         },
         {
           kind: 'callout',
           tone: 'tip',
-          title: '시험 키워드 — DW 만의 시그널',
+          title: '시험 1순위 — 표출화',
           body:
-            '"ETL 후 주제별·시간별 정돈", "OLAP·BI 분석용", "Schema-on-Write". 정형·반정형·비정형 모두 raw 로 담는다 → Data Lake. 실시간 거래 처리 → OLTP.',
+            '4단계 중 시험에 가장 자주 등장하는 건 [표출화] (암묵 → 형식). "장인의 노하우를 매뉴얼로", "베테랑의 비법을 가이드북으로" 같은 표현이 나오면 표출화입니다.',
         },
       ],
     },
+    // ─── DB 특징 — 1 step → 5 substeps (overview + 공/통/저/변) ───
     {
-      id: 'adsp-1-1-s4-lake',
-      title: 'Data Lake — 정제 전 저수지',
-      quizId: 'adsp-1-1-cp-04-lake',
+      id: 'adsp-1-1-s4',
+      title: 'DB 4특징 — "공통저변"',
+      quizId: 'adsp-1-1-cp-04',
       dialogue: [
-        { pose: 'wave', text: 'Data Lake — 정제 전 원시까지 다 담음.' },
-        { pose: 'think', text: '정형·반정형·비정형 모두 raw 로 저장.' },
-        { pose: 'idle', text: 'Data Lake 의 특징을 골라봐.' },
+        { pose: 'wave', text: '[DB] 는 [데이터베이스] 야!' },
+        {
+          pose: 'think',
+          text: '동시에 여러 사용자의 요구에 대응하여\n데이터를 체계적으로 저장·관리할 수 있도록\n설계된 [데이터의 집합] 이야.',
+        },
+        {
+          pose: 'lightbulb',
+          text: 'DB 의 특징은 4가지:\n· [통합된] 데이터\n· [저장된] 데이터\n· [공용] 데이터\n· [변화하는] 데이터',
+        },
+        { pose: 'happy', text: '앞 글자만 따서\n[공통저변] 으로 외우자!' },
+        { pose: 'idle', text: 'DB 의 특징으로 옳지 않은 것을 골라봐!' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            'Data Lake 는 정형뿐 아니라 반정형·비정형·raw 데이터까지 형태 변환 없이 적재하는 저장소입니다. DW 와의 결정적 차이는 "Schema-on-Read" — 저장할 땐 구조를 안 정하고 읽을(분석할) 때 비로소 구조를 입힙니다. 사진·영상·로그 같은 비정형도 모두 그대로 받습니다.',
+            '데이터베이스(DB) 는 동시에 여러 사용자의 요구에 대응하여 데이터를 체계적으로 저장·관리할 수 있도록 설계된 [데이터의 집합] 입니다. 4가지 본질 특징이 ADsP 시험 단골 — [공통저변] 으로 외우면 끝.',
+        },
+        {
+          kind: 'table',
+          title: 'DB 4특징 한눈에',
+          headers: ['특징', '한 줄 의미'],
+          rows: [
+            ['공용 데이터', '여러 사용자가 다른 목적으로 공동 이용'],
+            ['통합된 데이터', '동일 데이터가 중복되지 않음'],
+            ['저장된 데이터', '저장매체에 저장되어 있음'],
+            ['변화하는 데이터', '추가·삭제·수정에도 정확한 데이터 유지'],
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'mnemonic',
+          title: '암기법 — "공통저변"',
+          body:
+            '[공]용 · [통]합 · [저]장 · [변]화. 시험에선 "DB 의 특징이 아닌 것" 으로 자주 출제 — 4가지 외 다른 보기 (예: 분산성, 정규성) 가 정답.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s4-share',
+      title: 'DB ① 공용 — 여러 사용자 공동 이용',
+      quizId: 'adsp-1-1-cp-04-share',
+      dialogue: [
+        { pose: 'wave', text: 'DB 첫 특징 — [공용 데이터]!' },
+        {
+          pose: 'think',
+          text: '여러 사용자가 [다른 목적] 으로\n같은 데이터를 [공동 이용] 하는 거야.',
+        },
+        {
+          pose: 'happy',
+          text: '예: 한 학생의 정보를\n· [학사팀] 은 성적 관리로\n· [도서관] 은 대출 확인으로\n· [학생식당] 은 식권 발급으로 사용',
+        },
+        { pose: 'idle', text: '공용 데이터 사례를 골라봐!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '공용 데이터(Shared Data) — 여러 사용자가 [다른 목적] 으로 같은 데이터를 동시에 공유하며 사용한다는 특징입니다. 부서/사용자마다 같은 데이터를 따로 보관하지 않고 한 곳에 두고 다 같이 보는 게 핵심.',
+        },
+        {
+          kind: 'section',
+          title: '대표 사례',
+          body:
+            '· 학생 정보 DB 를 학사팀(성적), 도서관(대출), 식당(식권) 이 같이 사용 · 회사 직원 DB 를 인사팀(평가), 회계팀(급여), IT팀(계정) 이 같이 사용. 한 데이터를 여러 부서가 다른 시각으로 함께 활용.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '식별 팁',
+          body:
+            '"여러 사람이 동시에 사용", "다른 목적으로 같이 활용" 같은 표현이 등장하면 공용 데이터.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s4-int',
+      title: 'DB ② 통합 — 데이터 중복 X',
+      quizId: 'adsp-1-1-cp-04-int',
+      dialogue: [
+        { pose: 'wave', text: 'DB 둘째 특징 — [통합된 데이터]!' },
+        {
+          pose: 'think',
+          text: '동일한 데이터가\n[중복되지 않는] 게 핵심이야.',
+        },
+        {
+          pose: 'happy',
+          text: '예: 학생 한 명의 주소가\n학사·도서관·식당 시스템에\n각각 따로 저장되지 않고\n[한 곳에만] 저장 — 다 같이 참조.',
+        },
+        { pose: 'idle', text: '통합된 데이터 사례를 골라봐!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '통합된 데이터(Integrated Data) — 같은 정보가 여러 곳에 흩어져 [중복 저장] 되지 않고 한 곳에 단일하게 보관됩니다. 중복이 없으면 갱신할 때도 한 번만 고치면 모든 부서가 자동으로 최신값을 봅니다.',
+        },
+        {
+          kind: 'section',
+          title: '대표 사례',
+          body:
+            '· 학생 주소를 한 테이블에만 저장 — 학사·도서관·식당 시스템이 모두 같은 곳을 참조 · 회사 거래처 정보를 단일 마스터 테이블로 관리 — 영업·구매·회계 부서가 한 곳을 본다. 중복이 없어 일관성 유지가 자동으로 됨.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '식별 팁',
+          body:
+            '"중복 없이", "한 곳에 모아서", "단일 보관" 같은 표현이 등장하면 통합된 데이터.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s4-stored',
+      title: 'DB ③ 저장 — 저장매체에 보관',
+      quizId: 'adsp-1-1-cp-04-stored',
+      dialogue: [
+        { pose: 'wave', text: 'DB 셋째 특징 — [저장된 데이터]!' },
+        {
+          pose: 'think',
+          text: '데이터가 [저장매체] 에\n물리적으로 보관되어 있다는 의미야.',
+        },
+        {
+          pose: 'happy',
+          text: '예: [하드디스크·SSD·서버] 같은\n저장 장치에 보관되어\n전원이 꺼져도 사라지지 않음.',
+        },
+        { pose: 'idle', text: '저장된 데이터 사례를 골라봐!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '저장된 데이터(Stored Data) — 메모리 위의 임시 데이터가 아니라 [저장매체] (하드디스크·SSD·서버) 에 영속적으로 보관됩니다. 전원이 꺼져도 사라지지 않고, 필요할 때마다 다시 꺼내 볼 수 있는 게 핵심.',
+        },
+        {
+          kind: 'section',
+          title: '대표 사례',
+          body:
+            '· 회사 ERP 의 매출 기록이 서버 하드디스크에 영구 저장 · 학교 학적 정보가 데이터센터 SSD 에 보관 · 은행 거래 내역이 백업까지 다중 저장. 모두 컴퓨터를 껐다 켜도 데이터가 그대로.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '식별 팁',
+          body:
+            '"저장매체에 보관", "영속적", "전원 꺼져도 유지" 같은 표현이 등장하면 저장된 데이터.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s4-change',
+      title: 'DB ④ 변화 — 추가·삭제·수정에도 정확',
+      quizId: 'adsp-1-1-cp-04-change',
+      dialogue: [
+        { pose: 'wave', text: 'DB 마지막 특징 — [변화하는 데이터]!' },
+        {
+          pose: 'think',
+          text: '새 데이터 [추가] · [삭제] · [수정] 이\n계속 일어나도 항상\n[정확한 데이터] 가 유지돼.',
+        },
+        {
+          pose: 'happy',
+          text: '예: 학생이 입학·졸업·전과로\n데이터가 매일 바뀌지만\nDB 는 항상 [최신·정확한] 상태.',
+        },
+        { pose: 'idle', text: '변화하는 데이터 사례를 골라봐!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '변화하는 데이터(Operational/Changing Data) — 데이터에 새 행이 추가되고, 기존 값이 수정되며, 일부가 삭제되어도 DB 전체는 항상 [정확하고 일관된] 최신 상태를 유지합니다. 운영 중인 시스템에서 끊임없이 변화하는 게 본질.',
+        },
+        {
+          kind: 'section',
+          title: '대표 사례',
+          body:
+            '· 학생 입학(추가) / 졸업(상태 변경) / 전과(수정) 가 매일 일어나도 학적 DB 는 항상 정확 · 쇼핑몰의 주문 추가·취소·환불이 실시간으로 반영되어도 재고·매출이 일치 · 은행 거래가 끊임없이 들어와도 잔고가 정확.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '식별 팁',
+          body:
+            '"추가·삭제·수정에도 정확", "끊임없이 갱신", "운영계의 변화" 같은 표현이 등장하면 변화하는 데이터.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s4-dw',
+      group: 'adsp-1-1-s4-dw',
+      title: 'DW (Data Warehouse) — 분석 창고',
+      quizId: 'adsp-1-1-cp-04-dw',
+      dialogue: [
+        {
+          pose: 'wave',
+          text: '[DW] 는 [Data Warehouse],\n한국어로 [데이터 웨어하우스] 야!',
+        },
+        {
+          pose: 'think',
+          text: '사전적 정의:\n다양한 시스템의 데이터를\n[주제 지향적·시계열적] 으로 통합한,\n[의사결정 지원용] 데이터의 집합.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '쉽게 말하면 — 여기저기 흩어진\n데이터를 [한 분석 창고] 에\n모아 정돈한 곳이야!',
+        },
+        {
+          pose: 'happy',
+          text: '구성요소 ① [ETL]:\n매장(운영 시스템)에서 물건(데이터)을\n[가져와서 → 다듬어서 → 창고에 넣는]\n트럭+직원 같은 흐름.',
+        },
+        {
+          pose: 'happy',
+          text: '구성요소 ② [ODS]:\n매장에서 매번 직접 가져오면 부담되니까,\n사이에 둔 [임시 보관소] 야.',
+        },
+        {
+          pose: 'idle',
+          text: '장점: 통합된 데이터로 빠른 분석.\n단점: 구축·유지비 큼,\n실시간성 부족.',
+        },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Data Warehouse(DW) 는 다양한 운영 시스템의 데이터를 주제 지향적·시계열적으로 통합한, 의사결정 지원용 데이터의 집합입니다. 운영 시스템(ERP·CRM·회계 등) 의 원시 데이터를 ETL 로 가공해 한 곳에 모아 BI·OLAP 분석에 쓰입니다.',
+        },
+        {
+          kind: 'section',
+          title: '핵심 구성요소 — 창고 비유로 이해하기',
+          body:
+            '· [ETL] (Extract·Transform·Load): 운영 시스템 → DW 로 데이터를 옮기는 [트럭+직원]. 매장에서 물건을 가져와서(Extract) → 분석에 맞게 다듬어서(Transform) → 창고에 넣는(Load) 흐름. 주기적으로 (보통 밤마다) 실행. · [ODS] (Operational Data Store): 매장과 창고 사이의 [임시 보관소]. 매장에서 매번 직접 창고로 옮기면 부담이 크니까 잠깐 모아두는 곳.',
+        },
+        {
+          kind: 'section',
+          title: '장점 vs 단점',
+          body:
+            '· 장점: 흩어진 데이터의 [통합] · 빠른 분석 · 운영계와 분리되어 영향 없음 · 일관된 KPI. · 단점: 구축·유지비 큼 · 실시간성 부족 (ETL 주기 지연) · 정형 데이터 중심이라 비정형 처리는 Data Lake 가 적합.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 키워드',
+          body:
+            '"운영계의 데이터를 ETL 후 통합", "주제 지향적·시계열적", "BI·OLAP 분석용". 원시·비정형까지 다 담으면 Data Lake, 실시간 거래는 OLTP.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s4-dw-purpose',
+      group: 'adsp-1-1-s4-dw',
+      title: 'DW 목적 — 통합 의사결정 지원',
+      quizId: 'adsp-1-1-cp-04-dw-purpose',
+      dialogue: [
+        { pose: 'wave', text: 'DW 의 [목적] 알아보자!' },
+        {
+          pose: 'think',
+          text: '흩어진 데이터를 [한 곳에 모아서]\n쉽게 분석하고 결정할 수 있게\n도와주는 거야!',
+        },
+        {
+          pose: 'happy',
+          text: '예: 분식집 사장님이\n매출(POS)·재고(엑셀)·단골(쿠폰) 정보를\n각각 다른 곳에 적어두면 헷갈리지?',
+        },
+        {
+          pose: 'lightbulb',
+          text: '그걸 [한 화면] 에 모아 보면\n"이번 주 떡볶이 잘 팔렸네 →\n재료 더 시켜야지!" 같은\n[결정] 이 [쉽게] 돼!',
+        },
+        { pose: 'idle', text: 'DW 의 목적을 골라봐!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'DW 의 핵심 목적은 [흩어진 데이터를 한 곳에 모아 쉽게 분석·결정] 할 수 있게 하는 것입니다. 부서마다, 시스템마다 따로 흩어진 데이터를 한 곳에서 정돈해서 같은 화면에서 전체 그림을 보게 만듭니다.',
+        },
+        {
+          kind: 'section',
+          title: '쉬운 비유 — 분식집 사장님',
+          body:
+            '· 매출은 POS 기, 재고는 엑셀, 단골은 쿠폰 앱 — 데이터가 따로 흩어져 있으면 "이번 주 떡볶이가 잘 팔렸나?" 한 번 보기도 어려움. · 한 화면에 다 모아 보면 "떡볶이 매출 ↑ → 재료 추가 주문" 같은 결정이 즉시 가능. · 회사도 같은 원리 — 마케팅·재무·영업 데이터를 한 곳에 모아 한 화면에서 본다.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 키워드',
+          body:
+            '"흩어진 데이터의 통합", "한 곳에 모아 쉽게 분석", "의사결정 지원". 거래 처리는 OLTP, 원시 탐색은 Data Lake.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s4-dw-features',
+      group: 'adsp-1-1-s4-dw',
+      title: 'DW 주요특징 — 주제·통합·시계열·비휘발',
+      quizId: 'adsp-1-1-cp-04-dw-features',
+      dialogue: [
+        { pose: 'wave', text: 'DW 의 [주요특징 4가지]!' },
+        {
+          pose: 'think',
+          text: '① [주제 지향성]: 부서 X,\n[주제별] 정리 (고객·매출·재고).',
+        },
+        {
+          pose: 'lightbulb',
+          text: '② [데이터 통합]: 여러 시스템을\n[일관된 형식] 으로 통합.',
+        },
+        {
+          pose: 'happy',
+          text: '③ [시계열성]: 시간 따른 변화 기록\n(분기·연도 비교 가능).',
+        },
+        {
+          pose: 'idle',
+          text: '④ [비휘발성] ★중요:\n한 번 적재되면 [수정·삭제 X],\n읽기 전용으로 유지!',
+        },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'DW 의 [주요특징 4가지] — 주제 지향성·데이터 통합·시계열성·비휘발성. 이 4가지가 운영 DB(OLTP) 와 가장 크게 갈리는 지점이고, 시험에 단골로 매핑 문제로 등장합니다.',
+        },
+        {
+          kind: 'table',
+          title: '주요특징 한눈에',
+          headers: ['특징', '의미'],
+          rows: [
+            ['주제 지향성', '부서·테이블이 아닌 분석 주제별 정리 (고객·매출·재고)'],
+            ['데이터 통합', '여러 운영계의 데이터를 일관된 형식으로 통합'],
+            ['시계열성', '시간 흐름에 따른 변화 기록 — 분기·연도 비교 가능'],
+            ['비휘발성', '한 번 적재된 데이터는 수정·삭제 X, 읽기 전용 유지'],
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: '★ 비휘발성 — 시험 1순위',
+          body:
+            '4가지 특징 중 [비휘발성] 이 시험에 가장 자주 등장. 한 번 들어온 데이터는 수정·삭제 없이 보존됩니다 (insert·read 만 가능). 운영계와의 가장 큰 차이.',
+        },
+      ],
+    },
+    // ─── DM (Data Mart) — 3 substeps ───
+    {
+      id: 'adsp-1-1-s4-dm',
+      group: 'adsp-1-1-s4-dm',
+      title: 'DM (Data Mart) — 부서별 작은 창고',
+      quizId: 'adsp-1-1-cp-04-dm',
+      dialogue: [
+        {
+          pose: 'wave',
+          text: '[DM] 은 [Data Mart],\n한국어로 [데이터 마트] 야!',
+        },
+        {
+          pose: 'think',
+          text: '사전적 정의:\n특정 [부서·주제] 에 특화된\n[작은 규모] 의 데이터 저장소.\nDW 의 부분집합.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '쉽게 말하면 — DW 가 학교\n[도서관 전체] 라면,\nDM 은 [학과별 자료실] 이야!',
+        },
+        {
+          pose: 'happy',
+          text: '핵심 차이:\n· DW = [전사 통합] 큰 창고\n· DM = [부서·주제 특화] 작은 창고',
+        },
+        {
+          pose: 'idle',
+          text: '장점: 빠른 구축·저비용·부서 자율성.\n단점: 데이터 일관성 약함, 사일로 위험.',
+        },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Data Mart(DM) 는 특정 부서·주제에 특화된 [작은 규모] 의 데이터 저장소로, DW 의 부분집합입니다. 큰 회사 전체의 통합 분석은 DW, 마케팅·재무·인사 같은 한 부서의 빠른 분석은 DM 이 담당.',
+        },
+        {
+          kind: 'section',
+          title: '쉬운 비유 — 학교 도서관 vs 학과 자료실',
+          body:
+            '· DW = 학교 [도서관 전체] (모든 학과 자료가 통합된 큰 창고). 모든 학생이 와서 자기 분야 자료를 찾을 수 있지만 규모가 크고 복잡. · DM = 각 [학과별 자료실] (자기 학과 자료만 모아둔 작은 창고). 학과 학생은 빠르게 찾을 수 있고 운영도 가벼움.',
+        },
+        {
+          kind: 'section',
+          title: '장점 vs 단점',
+          body:
+            '· 장점: 빠른 구축 · 저비용 · 부서 자율성 (DW 보다 가볍게 운영). · 단점: 부서마다 따로 만들면 [데이터 일관성] 이 약해지고, 같은 KPI 가 부서마다 다른 값을 내는 [사일로 (silo)] 위험.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 키워드',
+          body:
+            '"부서·주제 특화", "DW 의 부분집합", "작은 규모", "빠른 구축". 전사 통합은 DW, 원시 모음은 Data Lake.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s4-dm-purpose',
+      group: 'adsp-1-1-s4-dm',
+      title: 'DM 목적 — 부서별 빠른 분석',
+      quizId: 'adsp-1-1-cp-04-dm-purpose',
+      dialogue: [
+        { pose: 'wave', text: 'DM 의 [목적] 알아보자!' },
+        {
+          pose: 'think',
+          text: '부서·주제 단위로\n[빠르게 분석] 하고\n[부서 자율성] 을 확보하는 거야.',
+        },
+        {
+          pose: 'happy',
+          text: '예: 분식집 본점이 통합 데이터(DW)\n외에 매장별·메뉴별 작은 데이터(DM)\n를 따로 두면, 매장 매니저가\n자기 매장 것만 [빠르게] 본다!',
+        },
+        {
+          pose: 'lightbulb',
+          text: '빠른 구축 + 저비용 덕에\n부서가 [자율적] 으로 운영 가능.',
+        },
+        { pose: 'idle', text: 'DM 의 목적을 골라봐!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'DM 의 핵심 목적은 [부서·주제 단위로 빠르게 분석] 할 수 있게 하는 것입니다. DW 의 거대한 창고에서 자기 부서 데이터를 찾는 것보다, 부서가 자기 데이터만 작게 가져 빠르게 결정하는 데 강점.',
+        },
+        {
+          kind: 'section',
+          title: '쉬운 비유 — 분식집 매장 매니저',
+          body:
+            '· 분식집 본점은 모든 매장 데이터를 통합한 DW 운영. · 그런데 매장 매니저는 자기 매장의 매출·재고·단골만 빠르게 보고 싶음 → 매장별 DM. · 메뉴 담당자는 메뉴별 매출·재료 소진만 보고 싶음 → 메뉴별 DM. 부서/주제 단위 빠른 분석.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 키워드',
+          body:
+            '"부서별 빠른 분석", "주제별 특화", "부서 자율성", "빠른 구축". 전사 통합은 DW, 원시 보존은 Data Lake.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s4-dm-features',
+      group: 'adsp-1-1-s4-dm',
+      title: 'DM 유형 — 종속형 / 독립형',
+      quizId: 'adsp-1-1-cp-04-dm-features',
+      dialogue: [
+        { pose: 'wave', text: 'DM 은 [2가지 유형] 이 있어!' },
+        {
+          pose: 'think',
+          text: '① [종속형 (Dependent)]:\nDW 에서 추출해 부서로 분배.\n→ 일관성 ↑',
+        },
+        {
+          pose: 'lightbulb',
+          text: '② [독립형 (Independent)]:\n운영계에서 직접 만듦.\n→ 빠르지만 일관성 ↓',
+        },
+        {
+          pose: 'happy',
+          text: '한 줄 비교:\n"DW 가 있으면 종속형,\nDW 없이 운영계 직접이면 독립형!"',
+        },
+        { pose: 'idle', text: 'DM 유형 매칭 문제를 풀어보자!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'DM 은 데이터를 어디에서 가져오느냐에 따라 [종속형(Dependent)] 과 [독립형(Independent)] 으로 나뉩니다. 시험에 단골로 매핑 문제로 등장.',
+        },
+        {
+          kind: 'table',
+          title: '종속형 vs 독립형 비교',
+          headers: ['유형', '데이터 출처', '특징'],
+          rows: [
+            ['종속형 (Dependent)', 'DW 에서 추출', '일관성 ↑ (DW 와 동일 정의), 구축 약간 느림'],
+            ['독립형 (Independent)', '운영계에서 직접', '빠른 구축, 부서별 자율성, 일관성 ↓ (사일로 위험)'],
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 키워드',
+          body:
+            '"DW 에서 추출 → 종속형", "운영계 직접 → 독립형". 종속형은 일관성, 독립형은 속도가 강점.',
+        },
+      ],
+    },
+    // ─── Data Lake — 3 substeps (overview / 목적 / 특징) ───
+    {
+      id: 'adsp-1-1-s4-lake',
+      group: 'adsp-1-1-s4-lake',
+      title: 'Data Lake — 정제 전 저수지',
+      quizId: 'adsp-1-1-cp-04-lake',
+      dialogue: [
+        {
+          pose: 'wave',
+          text: '[Data Lake] 는 [데이터 호수] —\n정제 전 원시까지 다 담아!',
+        },
+        {
+          pose: 'think',
+          text: '사전적 정의:\n정형·반정형·비정형 데이터를\n[가공 없이 원시 상태] 로 저장하는\n[대규모 저장소].',
+        },
+        {
+          pose: 'lightbulb',
+          text: '쉽게 말하면 — DW 가\n[요리된 음식 창고] 라면,\nLake 는 [요리 전 식재료 창고]!',
+        },
+        {
+          pose: 'happy',
+          text: '받는 종류:\n사진 · 영상 · SNS 글 · 로그 같은\n[비정형] 까지 다 OK!',
+        },
+        {
+          pose: 'idle',
+          text: '장점: 모든 형태 OK + 유연.\n단점: 관리 안 하면 [Data Swamp] (늪).',
+        },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Data Lake 는 정형뿐 아니라 반정형·비정형까지 형태 변환 없이 원시 상태로 적재하는 대규모 저장소입니다. 사진·영상·로그·SNS 글 같은 비정형도 다 받습니다.',
+        },
+        {
+          kind: 'section',
+          title: '쉬운 비유 — 식재료 창고 vs 요리된 음식 창고',
+          body:
+            '· DW = [요리된 음식 창고] (정형 데이터만, 분석에 바로 사용 가능). · Data Lake = [요리 전 식재료 창고] (사진·영상·SNS 글·로그까지 원시 그대로). 무엇을 요리할지 미리 정하지 않고 일단 식재료부터 다 받아두는 셈.',
+        },
+        {
+          kind: 'section',
+          title: '장점 vs 단점',
+          body:
+            '· 장점: 모든 형태 데이터 수용 · 미래 분석 가능성 열어둠 · 데이터 사이언티스트 친화. · 단점: 거버넌스·메타데이터 관리가 약하면 [Data Swamp] (데이터 늪) 가 되어 아무도 못 쓰는 쓰레기 더미가 됨.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 키워드',
+          body:
+            '"원시 그대로 적재", "정형·반정형·비정형 모두", "Schema-on-Read", "Data Swamp 위험". 정형 ETL 적재는 DW.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s4-lake-purpose',
+      group: 'adsp-1-1-s4-lake',
+      title: 'Data Lake 목적 — 원시 보존 + 다양한 분석',
+      quizId: 'adsp-1-1-cp-04-lake-purpose',
+      dialogue: [
+        { pose: 'wave', text: 'Data Lake 의 [목적] 알아보자!' },
+        {
+          pose: 'think',
+          text: '모든 형태 데이터를\n[일단 원시로 보존] 해서,\n미래의 [다양한 분석] 에 활용해.',
+        },
+        {
+          pose: 'happy',
+          text: '비유: 당장 어떻게 분석할지 몰라도\n사진·영상·SNS 글·로그를 다 받아두고,\n나중에 [ML·비정형 분석] 등에 사용!',
+        },
+        {
+          pose: 'lightbulb',
+          text: '데이터 사이언티스트의\n[놀이터] 라고 불려.',
+        },
+        { pose: 'idle', text: 'Lake 의 목적을 골라봐!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Data Lake 의 핵심 목적은 [모든 형태 데이터를 원시로 일단 보존] 해 미래의 다양한 분석 가능성을 열어두는 것입니다. DW 처럼 분석 형태를 미리 정해 가공하는 게 아니라, 일단 받고 분석은 나중에.',
+        },
+        {
+          kind: 'section',
+          title: '활용 사례',
+          body:
+            '· 머신러닝 학습 데이터 — 사진·영상·텍스트를 원시로 모아두고 모델별로 다르게 가공. · 로그 탐색 — 서버·앱·IoT 로그를 통째로 받아두고 사고 발생 시 거꾸로 추적. · SNS 글 분석 — 트윗·인스타·블로그 글을 모아 감성·트렌드 분석. 모두 미리 가공이 어렵거나 의미 없는 원시 데이터.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 키워드',
+          body:
+            '"원시 보존", "미래 다양한 분석", "데이터 사이언티스트", "ML·비정형 분석". 정형 리포트는 DW, 부서 빠른 분석은 DM.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s4-lake-features',
+      group: 'adsp-1-1-s4-lake',
+      title: 'Data Lake 특징 — Schema-on-Read',
+      quizId: 'adsp-1-1-cp-04-lake-features',
+      dialogue: [
+        { pose: 'wave', text: 'Data Lake 의 [주요특징]!' },
+        {
+          pose: 'think',
+          text: '① [Schema-on-Read]:\n저장 시엔 구조 X,\n[읽을 때] 비로소 구조 적용.\nDW 의 정반대!',
+        },
+        {
+          pose: 'lightbulb',
+          text: '② 정형·반정형·비정형\n[모두 원시 그대로] 저장.',
+        },
+        {
+          pose: 'happy',
+          text: '③ 대규모 저장 (HDFS·S3 같은\n[분산 저장] 기술 사용).',
+        },
+        {
+          pose: 'idle',
+          text: '★ 함정 [Data Swamp]:\n메타데이터·거버넌스 안 하면\n늪이 돼서 아무도 못 써!',
+        },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'Data Lake 의 주요특징 — Schema-on-Read · 모든 형태 원시 · 대규모 분산 저장 · Data Swamp 위험. DW 와 정반대 지점이 시험 단골.',
+        },
+        {
+          kind: 'table',
+          title: '4 특징 한눈에',
+          headers: ['특징', '의미'],
+          rows: [
+            ['Schema-on-Read', '저장 시 구조 X, 읽을 때 적용 (DW 의 정반대)'],
+            ['모든 형태 원시', '정형·반정형·비정형 변환 없이 그대로'],
+            ['대규모 저장', 'HDFS·S3 같은 분산 저장 기술'],
+            ['Data Swamp 위험', '메타데이터·거버넌스 약하면 늪이 됨'],
+          ],
         },
         {
           kind: 'table',
@@ -728,7 +1370,7 @@ const ADSP_1_1: Lesson = {
             ['스키마 적용 시점', 'Schema-on-Write (저장 시)', 'Schema-on-Read (분석 시)'],
             ['주 사용자', 'BI 분석가·경영진', '데이터 사이언티스트·엔지니어'],
             ['활용 목적', '정형 리포트·대시보드', '머신러닝·로그 탐색·실험'],
-            ['데이터 가공', 'ETL 후 적재', 'raw 그대로 적재'],
+            ['데이터 가공', 'ETL 후 적재', '원시 그대로 적재'],
           ],
         },
         {
@@ -742,167 +1384,665 @@ const ADSP_1_1: Lesson = {
             ['예시 시스템', 'ERP·CRM 운영 DB', 'DW·BI 분석 환경'],
           ],
         },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: '★ Data Swamp — 시험 함정',
+          body:
+            '원시를 다 받아도 메타데이터·거버넌스 가 약하면 [Data Swamp] (데이터 늪) 가 됩니다. 누가 무슨 데이터를 언제 넣었는지 모르면 아무도 못 쓰는 쓰레기 더미. Lake 의 단골 함정.',
+        },
       ],
     },
-    // ─── 기업 정보 시스템 5종 — 1 step → 6 substeps ───
+    // ─── OLAP / OLTP — 6 substeps (overview / 목적 / 특징 × 2 concepts) ───
     {
-      id: 'adsp-1-1-s5',
-      title: '기업 정보 시스템 — "생고공의" 개요',
-      quizId: 'adsp-1-1-cp-05',
+      id: 'adsp-1-1-s4-olap',
+      group: 'adsp-1-1-s4-olap-oltp',
+      title: 'OLAP — 분석 처리',
+      quizId: 'adsp-1-1-cp-04-olap',
       dialogue: [
-        { pose: 'wave', text: '회사 부서마다 다른 데이터 → 통합 시스템 필요.' },
-        { pose: 'think', text: '5종: [DBMS] · [ERP] · [CRM] · [SCM] · [BI].' },
-        { pose: 'idle', text: '먼저 5 시스템 매칭 + DBMS 유형.' },
+        {
+          pose: 'wave',
+          text: '[OLAP] = [O]nline\n[A]nalytical [P]rocessing,\n한국어로 [온라인 분석 처리] 야!',
+        },
+        {
+          pose: 'think',
+          text: '사전적 정의:\n다차원 데이터를\n[빠르게 집계·조회] 할 수 있도록\n설계된 [분석 시스템].',
+        },
+        {
+          pose: 'lightbulb',
+          text: '쉽게 말하면 — 매장 매니저가\n매출 보고서를 [지역 × 시기 × 상품]\n같이 [여러 각도] 로 동시에 보는 도구!',
+        },
+        {
+          pose: 'happy',
+          text: 'DW 와 짝꿍:\n· DW = 데이터 모아둔 [창고]\n· OLAP = 그 창고를 다양한\n각도로 보는 [도구]',
+        },
+        { pose: 'idle', text: 'OLAP 정의 문제를 풀어보자!' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            '회사가 커지면 부서마다 데이터가 따로 쌓이고, 같은 고객 정보가 영업·마케팅·CS 에 중복 저장됩니다. 이를 통합·표준화하기 위한 5가지 정보 시스템이 시험에 자주 등장 — DBMS 가 가장 아래 인프라, 그 위에 ERP·CRM·SCM 이 영역별로 올라가고, BI 는 그 데이터들을 의사결정으로 연결합니다.',
+            'OLAP(Online Analytical Processing) 은 다차원 데이터를 빠르게 집계·조회할 수 있도록 설계된 분석 시스템입니다. DW 와 짝꿍 — DW 가 데이터 창고라면 OLAP 은 그 창고를 다양한 각도로 보는 도구.',
+        },
+        {
+          kind: 'section',
+          title: '쉬운 비유 — 매출 보고서',
+          body:
+            '매장 매니저가 매출을 [지역 × 시기 × 상품] 같이 여러 축으로 동시에 본다고 상상해보세요. "이번 달 강남점 떡볶이 매출", "지난 분기 전체 콜라 매출", "올해 모든 매장의 평균 객단가" — 같은 데이터를 다양한 시각으로 자르며 보는 것이 OLAP.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 키워드',
+          body:
+            '"다차원 분석", "빠른 집계·조회", "BI·의사결정 지원". 거래 처리는 OLTP, 정형 분석 창고는 DW.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s4-olap-purpose',
+      group: 'adsp-1-1-s4-olap-oltp',
+      title: 'OLAP 목적 — 다차원 분석 + 의사결정',
+      quizId: 'adsp-1-1-cp-04-olap-purpose',
+      dialogue: [
+        { pose: 'wave', text: 'OLAP 의 [목적] 알아보자!' },
+        {
+          pose: 'think',
+          text: '다차원 데이터를\n[빠르게 집계·조회] 해서\n[의사결정] 을 지원해.',
+        },
+        {
+          pose: 'happy',
+          text: '비유 — 매출을 "지역 × 시기 × 상품"\n[여러 축] 으로 동시에 보면,\n경영진이 빠르게 결정 내릴 수 있어!',
+        },
+        {
+          pose: 'lightbulb',
+          text: '시계열·주제별 분석에\n특히 강점.',
+        },
+        { pose: 'idle', text: 'OLAP 목적을 골라봐!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'OLAP 의 핵심 목적은 [다차원 데이터를 빠르게 집계·조회] 해 의사결정을 지원하는 것입니다. 시계열 비교, 부서·지역·상품 같은 주제별 시각화에 강점.',
+        },
+        {
+          kind: 'section',
+          title: '활용 사례',
+          body:
+            '· 분기별 매출 추이 대시보드 — 지난해 대비 성장률 한눈에 · 지역×상품별 매출 히트맵 — 어느 매장이 어떤 상품을 잘 파는지 · 전사 KPI 리포트 — 마케팅·재무·영업 지표를 한 화면에. 모두 다차원 시각이 필요한 분석.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 키워드',
+          body:
+            '"다차원 분석·집계", "의사결정 지원", "시계열 비교". 즉시 거래 처리는 OLTP, 부서별 빠른 분석은 DM.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s4-olap-features',
+      group: 'adsp-1-1-s4-olap-oltp',
+      title: 'OLAP 특징 — 비정규화·집계 쿼리',
+      quizId: 'adsp-1-1-cp-04-olap-features',
+      dialogue: [
+        { pose: 'wave', text: 'OLAP 의 [특징·구조·쿼리·사용자·예시]!' },
+        {
+          pose: 'think',
+          text: '① 데이터 구조: [비정규화]\n+ [다차원 (cube)]\n② 쿼리: [select·aggregate]\n복잡한 분석 (긴 응답 OK)',
+        },
+        {
+          pose: 'lightbulb',
+          text: '③ 사용자: [BI 분석가·경영진]\n④ 예시: 분기 매출 대시보드,\nKPI 리포트, 시계열 분석',
+        },
+        {
+          pose: 'happy',
+          text: '핵심 — [읽기 전용]\n+ [시계열·집계] 강함!',
+        },
+        { pose: 'idle', text: 'OLAP 특징 문제를 풀어보자!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'OLAP 의 주요특징 — [비정규화 다차원 구조] · [복잡한 집계 쿼리] · [BI 분석가·경영진 사용] · [긴 응답 시간 OK]. 모두 OLTP 와 정반대 지점.',
         },
         {
           kind: 'table',
-          title: '기업 정보 시스템 5종 — 한눈에',
-          headers: ['시스템', '풀네임', '담당 영역', '대표 사례'],
+          title: 'OLAP 한눈에',
+          headers: ['항목', '값'],
           rows: [
-            ['DBMS', 'DataBase Management System', '데이터 저장·관리 인프라', 'Oracle·MySQL·PostgreSQL'],
-            ['ERP', 'Enterprise Resource Planning', '회사 안 — 생산·재무·인사 통합', 'SAP·Oracle ERP'],
-            ['CRM', 'Customer Relationship Management', '고객 접점 — 마케팅·캠페인', 'Salesforce'],
-            ['SCM', 'Supply Chain Management', '공급사슬 — 조달·재고·물류', 'SAP SCM'],
-            ['BI', 'Business Intelligence', '의사결정 — 대시보드·리포트', 'Tableau·Power BI'],
+            ['데이터 구조', '비정규화·다차원 (cube)'],
+            ['쿼리 특성', 'select·aggregate (긴 분석 쿼리, 초~분)'],
+            ['사용자', 'BI 분석가·경영진·기획자'],
+            ['예시', '분기 매출 대시보드 · KPI 리포트 · 시계열 분석'],
           ],
         },
         {
           kind: 'callout',
-          tone: 'mnemonic',
-          title: '"생고공의" 흐름',
+          tone: 'tip',
+          title: '시험 키워드',
           body:
-            'ERP(생산·전사) → CRM(고객) → SCM(공급사슬) → BI(의사결정). 모두 DBMS 위에서 작동. ERP 는 회사 안쪽, CRM·SCM 은 회사 바깥(고객·협력사) 접점, BI 는 그 데이터를 가공해 결정에 쓰는 도구.',
+            '"비정규화 다차원", "집계 쿼리", "읽기 위주", "BI 분석가". OLTP 는 정규화 + 짧은 트랜잭션 + 일반 사용자.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s4-oltp',
+      group: 'adsp-1-1-s4-olap-oltp',
+      title: 'OLTP — 트랜잭션 처리',
+      quizId: 'adsp-1-1-cp-04-oltp',
+      dialogue: [
+        {
+          pose: 'wave',
+          text: '[OLTP] = [O]nline\n[T]ransaction [P]rocessing,\n한국어로 [온라인 트랜잭션 처리] 야!',
         },
         {
-          kind: 'keypoints',
-          title: 'DBMS 유형 4가지',
-          items: [
-            '계층형 (Hierarchical): 트리 구조 1:N — 한 부모-여러 자식. 예전 IBM IMS.',
-            '망형 (Network): 한 자식이 여러 부모를 가질 수 있음. 복잡한 관계 표현.',
-            '관계형 (RDB): 테이블·SQL — 현대 가장 널리 쓰임 (Oracle·MySQL·PostgreSQL).',
-            'NoSQL: 대용량·비정형 대응 — 키-값·문서·그래프 등 (MongoDB·Redis).',
+          pose: 'think',
+          text: '사전적 정의:\n실시간으로 들어오는\n[거래 (트랜잭션)] 을\n[즉시 처리] 하는 시스템.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '쉽게 말하면 — 카페 [POS] 에서\n주문 → 결제 → 영수증\n같이 [짧은 거래] 를 빠르게 처리!',
+        },
+        {
+          pose: 'happy',
+          text: 'OLAP 의 정반대:\n· OLAP = 분석용 (읽기 위주)\n· OLTP = 운영용\n(insert·update·delete 위주)',
+        },
+        { pose: 'idle', text: 'OLTP 정의 문제!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'OLTP(Online Transaction Processing) 은 실시간으로 들어오는 거래를 즉시 처리하는 운영 시스템입니다. ms 단위 빠른 응답이 핵심. ERP·CRM·은행 거래·쇼핑몰 주문 같은 운영계 시스템이 모두 OLTP.',
+        },
+        {
+          kind: 'section',
+          title: '쉬운 비유 — 카페 POS',
+          body:
+            '카페에서 손님이 주문하면 즉시 POS 에 입력 → 카드 결제 → 영수증 출력 → 재고 차감. 이 한 거래가 ms 단위로 끝나야 다음 손님을 받을 수 있음. 거래 하나하나가 짧고 빠르게 처리되는 게 OLTP 의 본질.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 키워드',
+          body:
+            '"실시간 트랜잭션", "ms 응답", "운영계 시스템", "ACID 무결성". 분석은 OLAP, raw 보존은 Lake.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s4-oltp-purpose',
+      group: 'adsp-1-1-s4-olap-oltp',
+      title: 'OLTP 목적 — 즉시 처리 + 일관성',
+      quizId: 'adsp-1-1-cp-04-oltp-purpose',
+      dialogue: [
+        { pose: 'wave', text: 'OLTP 의 [목적] 알아보자!' },
+        {
+          pose: 'think',
+          text: '실시간 거래를 [즉시 처리] 하면서\n[데이터 일관성] 을 유지하는 거야.',
+        },
+        {
+          pose: 'happy',
+          text: '비유 — ATM 에서 출금하면\n즉시 잔액 차감,\n쇼핑몰 결제하면 즉시 재고 감소.\n[ms 단위] 로 빠르게!',
+        },
+        {
+          pose: 'lightbulb',
+          text: '핵심 — [트랜잭션 무결성]\n([ACID] 보장).',
+        },
+        { pose: 'idle', text: 'OLTP 목적을 골라봐!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'OLTP 의 핵심 목적은 [실시간 거래를 즉시 처리] 하면서 [데이터 일관성] 을 유지하는 것입니다. ms 단위 응답 + ACID 무결성 보장이 본질.',
+        },
+        {
+          kind: 'section',
+          title: '활용 사례',
+          body:
+            '· 은행 ATM 출금 — 잔액 즉시 차감, 동시 출금 충돌 방지 · 쇼핑몰 결제 — 재고 즉시 감소, 중복 주문 차단 · ERP 운영 — 입고/출고 실시간 반영. 모두 짧고 빠른 거래가 끊임없이 들어와도 데이터가 항상 정확.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '★ ACID — OLTP 의 핵심',
+          body:
+            'ACID = [A]tomicity(원자성) · [C]onsistency(일관성) · [I]solation(고립성) · [D]urability(영속성). OLTP 가 보장해야 할 트랜잭션 4 속성. 시험 단골.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s4-oltp-features',
+      group: 'adsp-1-1-s4-olap-oltp',
+      title: 'OLTP 특징 — 정규화·짧은 트랜잭션',
+      quizId: 'adsp-1-1-cp-04-oltp-features',
+      dialogue: [
+        { pose: 'wave', text: 'OLTP 의 [특징·구조·쿼리·사용자·예시]!' },
+        {
+          pose: 'think',
+          text: '① 데이터 구조: [정규화] (3NF) 정형\n② 쿼리: 짧은 [insert·update·delete]\n+ 단순 select (ms)',
+        },
+        {
+          pose: 'lightbulb',
+          text: '③ 사용자: [일반 사용자·운영 직원]\n④ 예시: 은행 거래·쇼핑몰 주문·\nERP 입출고',
+        },
+        {
+          pose: 'happy',
+          text: '핵심 — [데이터 일관성] (ACID)\n+ [짧은 트랜잭션].',
+        },
+        { pose: 'idle', text: 'OLTP 특징 문제!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'OLTP 의 주요특징 — [정규화 정형] · [짧은 트랜잭션] · [일반 사용자·운영 직원] · [ms 응답]. OLAP 와 정반대 지점.',
+        },
+        {
+          kind: 'table',
+          title: 'OLTP 한눈에',
+          headers: ['항목', '값'],
+          rows: [
+            ['데이터 구조', '정규화 (3NF) 된 정형 데이터'],
+            ['쿼리 특성', '짧은 insert·update·delete + 단순 select (ms)'],
+            ['사용자', '일반 사용자·운영 직원·고객'],
+            ['예시', '은행 거래 · 쇼핑몰 주문 · ERP 입출고'],
           ],
+        },
+        {
+          kind: 'table',
+          title: 'OLAP vs OLTP — 한눈에',
+          headers: ['축', 'OLAP (분석)', 'OLTP (운영)'],
+          rows: [
+            ['목적', '다차원 분석·의사결정', '실시간 거래 처리'],
+            ['데이터 구조', '비정규화·다차원', '정규화 (3NF)'],
+            ['쿼리', '복잡한 select·aggregate', '짧은 insert·update·delete'],
+            ['응답 시간', '초~분 (긴 분석)', 'ms (짧은 트랜잭션)'],
+            ['사용자', 'BI 분석가·경영진', '일반 사용자·운영 직원'],
+            ['예시', 'KPI 대시보드·시계열', '은행·쇼핑몰·ERP'],
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 키워드',
+          body:
+            '"정규화 정형", "짧은 트랜잭션", "ACID", "운영계". OLAP 는 비정규화 + 집계 + 분석.',
+        },
+      ],
+    },
+    // ─── 기업 데이터베이스 7종 — 1 step → 8 substeps (DBMS·ERP·CRM·SCM·KMS·BI·BA) ───
+    {
+      id: 'adsp-1-1-s5',
+      title: '기업 데이터베이스 — 7종 개요',
+      quizId: 'adsp-1-1-cp-05',
+      dialogue: [
+        {
+          pose: 'wave',
+          text: '회사가 커지면 부서마다 데이터가\n따로 쌓여서 헷갈려.\n[통합 시스템] 이 필요해!',
+        },
+        {
+          pose: 'think',
+          text: '기업 데이터베이스 [7종]:\n[DBMS] · [ERP] · [CRM] · [SCM] ·\n[KMS] · [BI] · [BA]',
+        },
+        {
+          pose: 'lightbulb',
+          text: '두 갈래로 나뉘어:\n· [운영계 4]: DBMS·ERP·CRM·SCM\n· [지식·분석계 3]: KMS·BI·BA',
+        },
+        {
+          pose: 'happy',
+          text: '흐름:\n[DBMS] (인프라) 위에\n[ERP·CRM·SCM] (운영) →\n[KMS] (지식) → [BI] (시각화) →\n[BA] (예측·분석)',
+        },
+        { pose: 'idle', text: '7종 매칭 문제를 풀어보자!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '회사가 커지면 부서마다 데이터가 따로 쌓이고, 같은 고객 정보가 영업·마케팅·CS 에 중복 저장됩니다. 이를 통합·표준화하기 위한 7가지 [기업 데이터베이스] 시스템이 시험 단골 — 인프라(DBMS) 위에 운영계(ERP·CRM·SCM) 가 올라가고, 그 위에서 지식·분석계(KMS·BI·BA) 가 의사결정으로 연결합니다.',
+        },
+        {
+          kind: 'table',
+          title: '기업 데이터베이스 7종 — 한눈에',
+          headers: ['시스템', '풀네임', '담당 영역', '대표 사례'],
+          rows: [
+            ['DBMS', 'DataBase Management System', '데이터 저장·관리 인프라', 'Oracle·MySQL·PostgreSQL'],
+            ['ERP', 'Enterprise Resource Planning', '전사 자원 — 생산·재무·인사 통합', 'SAP·Oracle ERP'],
+            ['CRM', 'Customer Relationship Management', '고객 접점 — 마케팅·서비스', 'Salesforce'],
+            ['SCM', 'Supply Chain Management', '공급사슬 — 조달·재고·물류', 'SAP SCM'],
+            ['KMS', 'Knowledge Management System', '지식·노하우 축적·공유', 'Confluence·Notion·MS SharePoint'],
+            ['BI', 'Business Intelligence', '의사결정 — 대시보드·리포트', 'Tableau·Power BI'],
+            ['BA', 'Business Analytics', '예측·처방 — 통계·ML 고급 분석', 'SAS·Python·R 기반'],
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 키워드 — 운영계 vs 분석계',
+          body:
+            '운영계(DBMS·ERP·CRM·SCM) 는 [업무 처리·실행], 분석계(KMS·BI·BA) 는 [지식·의사결정 지원]. 시험에서 "이 시스템의 주 목적은?" 으로 단골 등장.',
         },
       ],
     },
     {
       id: 'adsp-1-1-s5-dbms',
-      title: '기업 시스템 ① DBMS',
+      title: '① DBMS — 데이터베이스 관리 시스템',
       quizId: 'adsp-1-1-cp-05-dbms',
       dialogue: [
-        { pose: 'wave', text: 'DBMS — 모든 시스템의 기반.' },
-        { pose: 'think', text: '데이터베이스 생성·조회·수정·백업 소프트웨어.' },
-        { pose: 'idle', text: 'DBMS 의 역할을 골라봐.' },
+        {
+          pose: 'wave',
+          text: '[DBMS] = [D]ata[B]ase\n[M]anagement [S]ystem,\n한국어로 [데이터베이스 관리 시스템]!',
+        },
+        {
+          pose: 'think',
+          text: '데이터베이스의\n[생성·조회·수정·삭제·백업]\n을 담당하는 소프트웨어.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜 만들어졌나 — 파일만으론 부족!\n동시 접근·트랜잭션·백업·권한까지\n책임지려면 전용 SW 필요.',
+        },
+        {
+          pose: 'happy',
+          text: '비유: [모든 기업 시스템의 기반]\nERP·CRM·SCM·KMS·BI·BA 모두\nDBMS 위에서 동작.',
+        },
+        { pose: 'idle', text: 'DBMS 역할 문제!' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            'DBMS(DataBase Management System) 는 데이터베이스의 생성·조회·수정·삭제·백업을 담당하는 소프트웨어. ERP·CRM·SCM·BI 모두 DBMS 위에서 동작.',
+            'DBMS(DataBase Management System) 는 데이터베이스의 생성·조회·수정·삭제·백업을 담당하는 소프트웨어. 다른 모든 기업 시스템(ERP·CRM·SCM·KMS·BI·BA) 의 기반.',
         },
         {
-          kind: 'section',
+          kind: 'keypoints',
+          title: 'DBMS 유형 4가지',
+          items: [
+            '계층형 (Hierarchical): 트리 구조 1:N — 예전 IBM IMS.',
+            '망형 (Network): 자식이 여러 부모 가능 — 복잡 관계 표현.',
+            '관계형 (RDB): 테이블·SQL — 현대 표준 (Oracle·MySQL·PostgreSQL).',
+            'NoSQL: 대용량·비정형 대응 — 키-값·문서·그래프 (MongoDB·Redis).',
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
           title: '시험 키워드',
           body:
-            '"DB 관리 SW", "Oracle·MySQL·PostgreSQL". 전사 통합 업무는 ERP, 고객 관리는 CRM.',
+            '"DB 관리 SW", "동시 접근·트랜잭션·백업". 전사 통합 업무는 ERP, 고객은 CRM, 분석은 BI/BA.',
         },
       ],
     },
     {
       id: 'adsp-1-1-s5-erp',
-      title: '기업 시스템 ② ERP',
+      title: '② ERP — 전사 자원 관리',
       quizId: 'adsp-1-1-cp-05-erp',
       dialogue: [
-        { pose: 'wave', text: 'ERP — Enterprise Resource Planning.' },
-        { pose: 'think', text: '생산·판매·재무·인사 등 전사 업무를 하나로 통합.' },
-        { pose: 'idle', text: 'ERP 의 정의를 골라봐.' },
+        {
+          pose: 'wave',
+          text: '[ERP] = [E]nterprise\n[R]esource [P]lanning,\n한국어로 [전사적 자원 관리]!',
+        },
+        {
+          pose: 'think',
+          text: '생산·판매·재무·인사 등\n[전사 업무를 하나로 통합] 한 시스템.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜 만들어졌나 — 부서별 시스템 따로 돌면\n같은 직원·매출 데이터가 [중복·불일치].\n전사 통합으로 한 곳에서 결정!',
+        },
+        {
+          pose: 'happy',
+          text: '비유: [회사 전체를 하나로 묶는 OS]\n인사팀이 직원 등록 → 회계·생산이\n자동으로 같은 정보 사용.\n대표: SAP · Oracle ERP.',
+        },
+        { pose: 'idle', text: 'ERP 정의 문제!' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            'ERP 는 생산·판매·재무·인사 등 전사적 자원을 하나의 시스템으로 통합해 부서 간 데이터 일관성을 확보합니다. 대표: SAP · Oracle ERP.',
+            'ERP(Enterprise Resource Planning) 는 생산·판매·재무·인사 등 전사적 자원을 하나의 시스템으로 통합해 부서 간 데이터 일관성을 확보합니다. 대표: SAP · Oracle ERP.',
         },
         {
           kind: 'section',
+          title: '왜 ERP 가 필요한가',
+          body:
+            '· 부서별 시스템이 따로 돌면 같은 직원·매출 데이터가 부서마다 다른 값으로 저장 → 일관성 깨짐. · 한 부서가 데이터 갱신해도 다른 부서는 모름 → 의사결정 늦어짐. · ERP 는 한 곳에 두고 모든 부서가 같은 데이터를 본다 → 자동 일관성.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
           title: '시험 키워드',
           body:
-            '"전사 자원 통합", "생산·재무·인사 통합". 고객 관리만이면 CRM, 공급사슬만이면 SCM.',
+            '"전사 자원 통합", "생산·재무·인사 통합". 고객 관리는 CRM, 공급사슬은 SCM, 분석은 BI.',
         },
       ],
     },
     {
       id: 'adsp-1-1-s5-crm',
-      title: '기업 시스템 ③ CRM',
+      title: '③ CRM — 고객 관계 관리',
       quizId: 'adsp-1-1-cp-05-crm',
       dialogue: [
-        { pose: 'wave', text: 'CRM — Customer Relationship Management.' },
-        { pose: 'think', text: '고객 이력·성향 관리, 맞춤 마케팅·서비스.' },
-        { pose: 'idle', text: 'CRM 의 정의를 골라봐.' },
+        {
+          pose: 'wave',
+          text: '[CRM] = [C]ustomer\n[R]elationship [M]anagement,\n한국어로 [고객 관계 관리]!',
+        },
+        {
+          pose: 'think',
+          text: '고객 정보·구매 이력·접점 데이터를\n통합 관리해 [맞춤 마케팅·서비스].',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜 만들어졌나 — 신규 고객 확보가\n기존 고객 유지보다 [5배 비싸].\n단골을 잘 챙기는 게 가성비 ↑!',
+        },
+        {
+          pose: 'happy',
+          text: '비유: [단골 카페 사장님의\n디지털 손님 카드]\n"이 손님은 라떼만 마셔" 같은\n패턴을 시스템이 기억.\n대표: Salesforce.',
+        },
+        { pose: 'idle', text: 'CRM 정의 문제!' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            'CRM 은 고객 정보·구매 이력·접점 데이터를 통합 관리해 개인화된 마케팅·서비스 제공을 지원. 대표: Salesforce.',
+            'CRM(Customer Relationship Management) 은 고객 정보·구매 이력·접점 데이터를 통합 관리해 개인화된 마케팅·서비스를 지원. 대표: Salesforce · HubSpot.',
         },
         {
           kind: 'section',
+          title: '왜 CRM 이 필요한가',
+          body:
+            '· 마케팅 비용 측면: 신규 고객 1명 확보 ≈ 기존 고객 5명 유지. → 단골 잘 챙기는 게 효율적. · 같은 고객이 여러 부서(영업·마케팅·CS) 와 접점 → 부서마다 정보 따로 가지면 고객 경험 망가짐. CRM 으로 통합.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
           title: '시험 키워드',
           body:
-            '"고객 관리", "맞춤 마케팅". 공급자·재고면 SCM, 의사결정 BI.',
+            '"고객 관리", "맞춤 마케팅". 전사 자원은 ERP, 공급사슬은 SCM, 의사결정은 BI.',
         },
       ],
     },
     {
       id: 'adsp-1-1-s5-scm',
-      title: '기업 시스템 ④ SCM',
+      title: '④ SCM — 공급망 관리',
       quizId: 'adsp-1-1-cp-05-scm',
       dialogue: [
-        { pose: 'wave', text: 'SCM — Supply Chain Management.' },
-        { pose: 'think', text: '원자재 조달 → 생산 → 유통 공급사슬 최적화.' },
-        { pose: 'idle', text: 'SCM 의 정의를 골라봐.' },
+        {
+          pose: 'wave',
+          text: '[SCM] = [S]upply [C]hain\n[M]anagement,\n한국어로 [공급망 관리]!',
+        },
+        {
+          pose: 'think',
+          text: '원자재 조달 → 생산 → 유통 까지\n[공급사슬 전체] 의 흐름을\n[최적화].',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜 만들어졌나 — 협력사마다 정보 따로면\n[재고 과다·결품·납기 지연] 발생.\n흐름 전체를 보고 최적화해야 해.',
+        },
+        {
+          pose: 'happy',
+          text: '비유: [분식집 김밥]\n김 농가 → 본점 창고 → 매장 →\n손님 식탁까지의 전체 흐름.\n대표: SAP SCM.',
+        },
+        { pose: 'idle', text: 'SCM 정의 문제!' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            'SCM 은 원자재 조달부터 생산·유통·반품까지 공급사슬 전체를 통합 관리해 재고·납기·비용을 최적화. 협력사 정보 공유가 핵심.',
+            'SCM(Supply Chain Management) 은 원자재 조달부터 생산·유통·반품까지 공급사슬 전체를 통합 관리해 재고·납기·비용을 최적화합니다. 협력사 정보 공유가 핵심.',
         },
         {
           kind: 'section',
+          title: '왜 SCM 이 필요한가',
+          body:
+            '· 협력사마다 재고·생산 정보 따로 두면 본사가 흐름을 못 봄 → 재고 과다 또는 결품. · 한 단계만 늦어도 전체 납기 지연. → 협력사·생산·유통 전체를 한 흐름으로 보고 최적화. · 코로나 같은 외부 충격 시 어디가 막혔는지 즉시 파악 가능.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
           title: '시험 키워드',
           body:
-            '"공급사슬 최적화", "조달·재고·물류". 고객 접점이면 CRM, 의사결정 대시보드면 BI.',
+            '"공급사슬 최적화", "조달·재고·물류". 고객 접점은 CRM, 전사 자원은 ERP, 의사결정 시각화는 BI.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s5-kms',
+      title: '⑤ KMS — 지식 관리 시스템',
+      quizId: 'adsp-1-1-cp-05-kms',
+      dialogue: [
+        {
+          pose: 'wave',
+          text: '[KMS] = [K]nowledge\n[M]anagement [S]ystem,\n한국어로 [지식 관리 시스템]!',
+        },
+        {
+          pose: 'think',
+          text: '조직의 [지식·노하우] 를\n체계적으로 [축적·공유] 하는 시스템.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜 만들어졌나 — 직원 퇴사하면\n노하우가 같이 사라져버려.\n신입은 또 처음부터 배워야 해 →\n지식을 [회사에 남겨두자]!',
+        },
+        {
+          pose: 'happy',
+          text: '비유: [회사 위키피디아]\n[SECI] 의 암묵 ↔ 형식 변환을\n시스템화한 게 KMS!\n대표: Confluence · Notion · SharePoint.',
+        },
+        { pose: 'idle', text: 'KMS 정의 문제!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'KMS(Knowledge Management System) 는 조직의 지식·노하우·문서·매뉴얼을 체계적으로 축적·공유하는 시스템입니다. SECI 모델 (암묵지 ↔ 형식지 4단계 변환) 을 시스템 형태로 구현한 것이 KMS — 직원 개인의 노하우를 조직 자산으로.',
+        },
+        {
+          kind: 'section',
+          title: '왜 KMS 가 필요한가',
+          body:
+            '· 직원 퇴사 시 머릿속 노하우(암묵지) 가 회사를 떠남 → KMS 에 정리해두면 조직에 남음. · 신입이 매번 처음부터 배우면 학습 비용 ↑ → KMS 의 매뉴얼·문서로 빠르게 학습. · SECI [표출화] (암묵 → 형식) 를 시스템적으로 지원.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 키워드',
+          body:
+            '"지식·노하우 축적", "조직 자산화", "SECI 와 연관". 고객은 CRM, 전사 자원은 ERP, 의사결정은 BI.',
         },
       ],
     },
     {
       id: 'adsp-1-1-s5-bi',
-      title: '기업 시스템 ⑤ BI',
+      title: '⑥ BI — 비즈니스 인텔리전스',
       quizId: 'adsp-1-1-cp-05-bi',
       dialogue: [
-        { pose: 'wave', text: 'BI — Business Intelligence.' },
-        { pose: 'think', text: '쌓인 데이터를 대시보드·리포트로 가공 → 의사결정.' },
-        { pose: 'idle', text: 'BI 의 정의를 골라봐.' },
+        {
+          pose: 'wave',
+          text: '[BI] = [B]usiness\n[I]ntelligence,\n한국어로 [비즈니스 인텔리전스]!',
+        },
+        {
+          pose: 'think',
+          text: '쌓인 데이터를 [대시보드·리포트] 로\n가공 → [의사결정 지원].',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜 만들어졌나 — 데이터가 많아도\n시각화 안 되면 [인사이트 X].\n사람이 바로 보고 이해할 형태로\n바꿔야 결정에 쓸 수 있어!',
+        },
+        {
+          pose: 'happy',
+          text: '비유: [회사 데이터의 운전 계기판]\n"지금/과거 무슨 일이 일어났나"\n를 한눈에. 대표: Tableau · Power BI.',
+        },
+        { pose: 'idle', text: 'BI 정의 문제!' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            'BI 는 데이터를 다차원 분석·리포트·대시보드로 시각화해 경영 의사결정을 지원. 대표: Tableau · Power BI · Looker.',
+            'BI(Business Intelligence) 는 데이터를 다차원 분석·리포트·대시보드로 시각화해 경영 의사결정을 지원합니다. 대표: Tableau · Power BI · Looker.',
         },
         {
           kind: 'section',
+          title: '왜 BI 가 필요한가',
+          body:
+            '· DW 에 데이터가 잔뜩 쌓여도 표·숫자로만 보면 패턴 안 보임 → 시각화 필수. · 경영진은 "지금 매출이 어떻게 되고 있나" 를 한눈에 보고 빠르게 결정해야 함. · OLAP + BI 가 짝꿍 — OLAP 으로 다차원 집계, BI 로 시각화.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
           title: '시험 키워드',
           body:
-            '"대시보드·리포트", "의사결정 지원". 운영 통합이면 ERP, 고객 관리면 CRM.',
+            '"대시보드·리포트", "의사결정 지원", "지금/과거 분석". 운영 통합은 ERP, 고객은 CRM, 예측은 BA.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-1-s5-ba',
+      title: '⑦ BA — 비즈니스 분석',
+      quizId: 'adsp-1-1-cp-05-ba',
+      dialogue: [
+        {
+          pose: 'wave',
+          text: '[BA] = [B]usiness\n[A]nalytics,\n한국어로 [비즈니스 분석]!',
+        },
+        {
+          pose: 'think',
+          text: 'BI 의 발전형 — 통계·예측·ML 까지\n포함한 [고급 분석] 시스템.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜 만들어졌나 — BI 는\n"지금/과거 무슨 일이 났나" 까지.\nBA 는 "[왜·앞으로 어떻게]" 까지\n예측·처방을 해줘!',
+        },
+        {
+          pose: 'happy',
+          text: '비유:\n· BI = [백미러] (과거를 본다)\n· BA = [네비게이션]\n(앞을 예측·처방해준다)\n대표 도구: SAS · Python · R.',
+        },
+        { pose: 'idle', text: 'BA 정의 문제!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'BA(Business Analytics) 는 BI 의 발전형으로, 통계·예측 모델·머신러닝까지 포함한 고급 분석 시스템입니다. BI 가 "과거/현재 무슨 일이 일어났나" 라면, BA 는 "왜 일어났고, 앞으로 어떻게 될 것인지, 어떻게 대응할 것인지" 까지 답합니다.',
+        },
+        {
+          kind: 'table',
+          title: 'BI vs BA — 한눈에',
+          headers: ['축', 'BI (Business Intelligence)', 'BA (Business Analytics)'],
+          rows: [
+            ['관점', '과거·현재 (Descriptive)', '왜·미래·처방 (Diagnostic·Predictive·Prescriptive)'],
+            ['방법', '대시보드·리포트·시각화', '통계·예측 모델·ML'],
+            ['질문', '"무슨 일이 일어났나?"', '"왜 일어났나? 앞으로 어떻게?"'],
+            ['도구', 'Tableau·Power BI', 'SAS·Python·R'],
+            ['비유', '백미러', '네비게이션'],
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 키워드',
+          body:
+            '"예측·처방 분석", "통계·ML 포함", "미래 지향". BI 는 과거/현재 시각화. ERP·CRM·SCM 은 운영계.',
         },
       ],
     },
@@ -919,33 +2059,127 @@ const ADSP_1_2: Lesson = {
   hook: '3V·5V… 숫자만 외우지 말고, 왜 "가치" 로 이어지는지.',
   estimatedMinutes: 8,
   steps: [
+    // ─── 빅데이터 출현 배경 — 5가지 요인 ───
+    {
+      id: 'adsp-1-2-s0',
+      title: '빅데이터 출현 배경 — 5가지 요인',
+      quizId: 'adsp-1-2-cp-bg',
+      dialogue: [
+        {
+          pose: 'wave',
+          text: '본격 학습 전에 — [왜 지금이\n빅데이터 시대] 일까?\n[5가지 출현 배경] 을 알아보자!',
+        },
+        {
+          pose: 'think',
+          text: '① [저장 기술] 발전 + 가격 폭락!\n옛날엔 1GB 가 몇십만 원이었는데,\n지금은 1TB 가 몇만 원이야.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '② [병렬 처리] 기술 발달!\nHadoop · Spark 로\n여러 컴퓨터가 동시에 일을 나눠 해.',
+        },
+        {
+          pose: 'happy',
+          text: '③ [인터넷 속도] 증가!\nGB 영상도 몇 초 만에 다운돼.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '④ [클라우드 컴퓨팅] 인프라!\nAWS · GCP 가\n서버를 빌려주는 시대야.',
+        },
+        {
+          pose: 'happy',
+          text: '⑤ [IoT · 모바일] 시대!\n스마트폰 · 시계 · 자동차까지\n모든 기기가 [데이터를 생산] 해.',
+        },
+        { pose: 'idle', text: '5가지 출현 배경 문제를 풀어보자!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '빅데이터 시대는 어느 한 사건이 아니라 [5가지 기술 요인] 이 동시에 발달하면서 가능해졌습니다. 데이터를 [싸게 저장] 하고, [빠르게 처리] 하고, [멀리 전송] 하고, [어디서나 빌려쓰며], [모든 기기가 만들어내는] 환경이 만들어졌어요.',
+        },
+        {
+          kind: 'table',
+          title: '빅데이터 출현 5요인',
+          headers: ['요인', '핵심', '대표 기술/사례'],
+          rows: [
+            ['① 저장 기술 발전 + 가격 ↓', '데이터를 싸게 많이 저장', 'HDD · SSD · 분산 스토리지'],
+            ['② 병렬 처리 기술 발달', '여러 컴퓨터가 일 나눠 처리', 'Hadoop · Spark · MapReduce'],
+            ['③ 인터넷 속도 증가', '대용량 데이터 빠른 전송', '5G · 광케이블'],
+            ['④ 클라우드 컴퓨팅 (인프라)', '서버를 빌려쓰는 시대', 'AWS · GCP · Azure'],
+            ['⑤ IoT · 모바일 시대', '모든 기기가 데이터 생산', '스마트폰 · IoT 센서 · 웨어러블'],
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 키워드 — "5가지가 동시에"',
+          body:
+            '시험에선 "다음 중 빅데이터 출현 배경이 아닌 것" 으로 자주 출제. 보기에 [표본 추출·정형화 기술] 같은 정반대 개념을 넣어 함정으로 만듦. 5가지 (저장·병렬·인터넷·클라우드·IoT) 만 외우면 됩니다.',
+        },
+      ],
+    },
     // ─── 3V · 데이터 단위 — 1 step → 4 substeps ───
     {
       id: 'adsp-1-2-s1',
-      title: '빅데이터 단위 · 3V/5V 개요',
-      quizId: 'adsp-1-2-cp-01',
+      title: '빅데이터 단위 — "패지" 암기',
+      quizId: 'adsp-1-2-cp-01-units',
       dialogue: [
-        { pose: 'wave', text: '스마트폰 10분이 인류 1만 년 분량을 넘는다고 해.' },
-        { pose: 'think', text: '단위 KB·MB·GB·TB·PB·EB·ZB·YB — 단계마다 1024배.' },
-        { pose: 'happy', text: '"빅" 의 정의는 가트너 [3V]: Volume · Variety · Velocity.' },
-        { pose: 'idle', text: '단위·3V 개요부터 확인!' },
+        {
+          pose: 'wave',
+          text: '오늘은 [데이터의 단위] 와,\n빅데이터를 정의하는 [3V] 를\n같이 배워볼 거야!',
+        },
+        {
+          pose: 'think',
+          text: '데이터 단위:\nKB · MB · GB · TB ·\nPB · EB · ZB · YB.\n단계마다 [1024배].',
+        },
+        {
+          pose: 'lightbulb',
+          text: '큰 단위 한국어:\n· PB = [페타]바이트\n· EB = [엑사]바이트\n· ZB = [제타]바이트\n· YB = [요타]바이트',
+        },
+        {
+          pose: 'happy',
+          text: '암기 팁 — PB · EB · ZB · YB 의\n앞 글자 [P · E · Z · Y] →\n"[패지]" 로 외우자!',
+        },
+        { pose: 'idle', text: '단위 암기 문제를 풀어보자!' },
       ],
       blocks: [
         {
           kind: 'callout',
           tone: 'mnemonic',
-          title: '데이터 단위',
+          title: '데이터 단위 + "패지" 암기',
           body:
-            'KB → MB → GB → TB → PB(페타) → EB(엑사) → ZB(제타) → YB(요타). 단계마다 1024배. PB 이상을 빅데이터 영역으로 봅니다.',
+            'KB → MB → GB → TB → PB(페타) → EB(엑사) → ZB(제타) → YB(요타). 단계마다 1024배. PB 이상을 빅데이터 영역으로 봅니다. 앞 글자 P·E·Z·Y → "[패지]" 로 외우면 끝.',
         },
+      ],
+    },
+    {
+      id: 'adsp-1-2-s1-3v',
+      title: '빅데이터 3V — 가트너의 정의',
+      quizId: 'adsp-1-2-cp-01',
+      dialogue: [
+        {
+          pose: 'wave',
+          text: '이번엔 [빅데이터의 정의]!\n가트너가 [3V] 로 정의했어.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '· [Volume] (규모)\n· [Variety] (다양성)\n· [Velocity] (속도)\n3가지가 동시에 필요해.',
+        },
+        {
+          pose: 'happy',
+          text: '확장도 있어 —\n· 3V + Value · Veracity = [5V]\n· + Validity · Volatility = [7V]',
+        },
+        { pose: 'idle', text: '3V 잘 외웠는지 확인해보자!' },
+      ],
+      blocks: [
         {
           kind: 'table',
           title: '가트너의 3V',
-          headers: ['V', '의미', '예시'],
+          headers: ['V', '한국어', '예시'],
           rows: [
-            ['Volume', '데이터의 양', 'PB 로그'],
-            ['Variety', '형태의 다양성', '정형+이미지+센서'],
-            ['Velocity', '생성·처리 속도', '초당 수만 건'],
+            ['Volume', '규모', 'PB 단위 로그'],
+            ['Variety', '다양성', '정형 + 이미지 + 센서'],
+            ['Velocity', '속도', '초당 수만 건'],
           ],
         },
         {
@@ -1050,56 +2284,91 @@ const ADSP_1_2: Lesson = {
         },
       ],
     },
-    // ─── 빅데이터 변화 4축 — 1 step → 5 substeps ───
+    // ─── 빅데이터가 만들어내는 변화 — 4축 (전후양상) ───
     {
       id: 'adsp-1-2-s2',
-      title: '빅데이터 변화 — 4축 개요',
+      title: '빅데이터가 만들어내는 변화 — 4축 개요',
       quizId: 'adsp-1-2-cp-02',
       dialogue: [
-        { pose: 'wave', text: '빅데이터로 분석 패러다임이 4축에서 뒤집혔어.' },
-        { pose: 'think', text: '[표본→전수] · [질→양] · [인과→상관] · [이론→데이터].' },
-        { pose: 'idle', text: '먼저 4축 비교 매트릭스.' },
+        {
+          pose: 'wave',
+          text: '빅데이터로 분석 패러다임이\n[4축에서 뒤집혔어]!',
+        },
+        {
+          pose: 'think',
+          text: '① 규모: 표본조사 → [전수]조사\n② 처리: 사전처리 → 사[후]처리\n③ 품질: 질 → [양]\n④ 관점: 인과관계 → [상]관관계',
+        },
+        {
+          pose: 'lightbulb',
+          text: '변화 후 상태의 첫 글자만 모으면\n[전 · 후 · 양 · 상] →\n"[전후양상]" 으로 외우자! ★',
+        },
+        {
+          pose: 'happy',
+          text: '각 축은 [독립적] 이야.\n시험에 섞어서 묻는 함정 주의!',
+        },
+        { pose: 'idle', text: '4축 매칭 문제를 풀어보자!' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            '빅데이터 시대 이전엔 데이터가 비싸고 분석 도구도 비쌌습니다. 그래서 작은 표본을 정성스럽게 모으고, 가설을 먼저 세우고, "왜 그런가" 의 인과를 밝히는 방식이 표준이었어요. 지금은 저장·연산 비용이 폭락해 4가지 축에서 분석의 디폴트가 뒤집혔습니다. 시험에선 "이전 → 이후" 매칭을 자주 묻습니다.',
+            '빅데이터 시대 이전엔 데이터가 비싸고 분석 도구도 비쌌습니다. 그래서 작은 표본을 정성스럽게 모으고, 데이터를 미리 정제하고, "왜 그런가" 의 인과를 밝히는 방식이 표준이었어요. 지금은 저장·연산 비용이 폭락해 4가지 축에서 분석의 디폴트가 뒤집혔습니다.',
         },
         {
           kind: 'table',
           title: '변화 4축 — 이전 vs 이후',
-          headers: ['축', '이전 (전통적 통계)', '이후 (빅데이터)'],
+          headers: ['축', '이전 (전통)', '이후 (빅데이터)', '암기'],
           rows: [
-            ['규모', '표본(Sample)', '전수(Population)'],
-            ['품질', '질(Quality)', '양(Quantity)'],
-            ['관점', '인과(Causation)', '상관(Correlation)'],
-            ['접근', '이론 기반 (가설 우선)', '데이터 기반 (패턴 발굴)'],
+            ['규모', '표본조사', '전수조사', '전'],
+            ['처리', '사전처리', '사후처리', '후'],
+            ['품질', '질 (Quality)', '양 (Quantity)', '양'],
+            ['관점', '인과관계', '상관관계', '상'],
           ],
+        },
+        {
+          kind: 'callout',
+          tone: 'mnemonic',
+          title: '★ 암기법 — "전후양상"',
+          body:
+            '변화 후 상태의 첫 글자: 전수조사 · 사후처리 · 양 · 상관관계 → [전·후·양·상] = "전후양상". 4축 매칭 문제의 황금 열쇠. 시험에 단골.',
         },
         {
           kind: 'callout',
           tone: 'tip',
           title: '시험 함정 — 축은 4개로 독립',
           body:
-            '예를 들어 "표본 → 전수" 는 규모 축, "인과 → 상관" 은 관점 축. 서로 다른 축의 변화를 섞어서 묻는 게 단골 함정입니다. 어느 축의 변화인지 라벨을 먼저 붙이고 답을 고르세요.',
+            '예: "표본조사 → 전수조사" 는 규모 축, "인과관계 → 상관관계" 는 관점 축. 서로 다른 축의 변화를 섞어서 묻는 게 단골 함정. 어느 축의 변화인지 라벨을 먼저 붙이세요.',
         },
       ],
     },
     {
       id: 'adsp-1-2-s2-scale',
-      title: '변화 ① 표본 → 전수',
+      title: '변화 ① 표본조사 → 전수조사',
       quizId: 'adsp-1-2-cp-02-scale',
       dialogue: [
-        { pose: 'wave', text: '첫 축 [규모] — 작은 표본 → 전수 데이터.' },
-        { pose: 'think', text: '저장·연산 비용 하락 → 전수 다루기 가능.' },
-        { pose: 'idle', text: '규모 축의 이전/이후를 골라봐.' },
+        {
+          pose: 'wave',
+          text: '첫 축 [규모] —\n[표본조사 → 전수조사]!',
+        },
+        {
+          pose: 'think',
+          text: '원래는 [표본조사] 가 효율적이었어.\n전체를 다 조사하긴 너무 비싸서\n일부만 추려 보던 거야.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '근데 빅데이터 시대 —\n저장·연산 비용이 [폭락] 하면서\n[전수조사] 가 가능해진 거지!',
+        },
+        {
+          pose: 'happy',
+          text: '예: 카드사 5천만 회원\n전체 1년치 거래 5억 건을\n[다 분석] 하는 사기 탐지 모델!',
+        },
+        { pose: 'idle', text: '규모 축 문제!' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            '"전수 조사"란 모집단(예: 전체 가입자) 의 한 명도 빠짐없이 다 분석하는 것이고, "표본 조사"는 그중 일부만 추려 분석하는 것입니다. 전통적 통계학은 비용 때문에 표본을 강제했지만, 빅데이터 시대엔 가입자 1억 명 거래 로그도 다 다룰 수 있게 됐어요.',
+            '[표본조사] 는 모집단(예: 전체 가입자) 의 일부만 추려 분석하는 것. [전수조사] 는 한 명도 빠짐없이 다 분석하는 것. 전통적 통계학은 비용 때문에 표본조사를 강제했지만, 빅데이터 시대엔 가입자 1억 명 거래 로그도 다 다룰 수 있게 됐어요.',
         },
         {
           kind: 'section',
@@ -1111,31 +2380,95 @@ const ADSP_1_2: Lesson = {
           kind: 'section',
           title: '구체 사례',
           body:
-            '예전: 백화점이 고객 1만 명 표본 추출 → 만족도 설문 → 결과 일반화. 지금: 카드사 5천만 회원 전체의 1년치 거래 5억 건을 다 다루며 사기 탐지 모델 학습. 표본 추정의 오차 자체가 사라지고, 희소한 사례(예: 0.001% 의 사기 거래) 도 그대로 잡힙니다.',
+            '예전: 백화점이 고객 1만 명 표본조사 → 만족도 설문 → 결과 일반화. 지금: 카드사 5천만 회원 전체의 1년치 거래 5억 건을 다 다루며 사기 탐지 모델 학습. 표본 추정의 오차 자체가 사라지고, 희소한 사례(예: 0.001% 의 사기 거래) 도 그대로 잡힙니다.',
         },
         {
           kind: 'callout',
           tone: 'tip',
           title: '시험 키워드',
           body:
-            '"표본 → 전수", "Sample → Population", "전수 조사 가능". 인과·상관 축, 질·양 축, 이론·데이터 축은 별개의 변화 — 섞어서 묻는 함정 주의.',
+            '"표본조사 → 전수조사", "Sample → Population". 처리 축(사전→사후), 품질 축(질→양), 관점 축(인과→상관) 은 별개 — 섞어서 묻는 함정 주의.',
         },
       ],
     },
     {
-      id: 'adsp-1-2-s2-quality',
-      title: '변화 ② 질 → 양',
-      quizId: 'adsp-1-2-cp-02-quality',
+      id: 'adsp-1-2-s2-process',
+      title: '변화 ② 사전처리 → 사후처리',
+      quizId: 'adsp-1-2-cp-02-process',
       dialogue: [
-        { pose: 'wave', text: '둘째 축 [품질] — 질 우선 → 양 우선.' },
-        { pose: 'think', text: '깔끔한 소수 데이터 < 잡음 섞여도 풍부한 다량.' },
-        { pose: 'idle', text: '품질 축의 변화를 골라봐.' },
+        {
+          pose: 'wave',
+          text: '둘째 축 [처리] —\n[사전처리 → 사후처리]!',
+        },
+        {
+          pose: 'think',
+          text: '원래는 데이터를 저장 [전] 에\n정제·변환을 다 끝냈어.\nETL 같은 [사전처리] 가 표준.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '근데 빅데이터 시대 —\n일단 [원시] 로 다 받고\n[분석할 때 처리] 하는\n[사후처리] 가 표준이 됐어!',
+        },
+        {
+          pose: 'happy',
+          text: '예: 분식집 비유 —\n[사전처리] = 재료 미리 손질해서 보관.\n[사후처리] = 재료 그대로 두고\n주문 들어올 때 그때 손질!',
+        },
+        { pose: 'idle', text: '처리 축 문제!' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            '"질" 이란 데이터가 얼마나 깔끔한지 — 결측·오타·이상치가 없는지를 말합니다. 전통 통계에선 작은 표본에서도 정확한 결론을 내야 했기에 데이터 정제에 큰 비중을 뒀어요. 빅데이터에선 양이 워낙 많아 일부 잡음이 평균에 묻혀버리는 효과가 생겨, 정제보다 양 확보가 우선이 됐습니다.',
+            '[사전처리] 는 데이터 저장 전에 미리 정제·변환·정규화를 끝내는 방식 (DW 의 ETL · Schema-on-Write). [사후처리] 는 일단 원시(raw) 그대로 받아 두고 분석 시점에 비로소 가공하는 방식 (Data Lake 의 Schema-on-Read). 빅데이터 시대엔 다양한 형태의 데이터가 미리 정제하기 어려울 만큼 폭증해 사후처리가 표준이 됐습니다.',
+        },
+        {
+          kind: 'section',
+          title: '왜 변했나 — 데이터의 다양성·속도',
+          body:
+            '· 정형(엑셀)·반정형(JSON)·비정형(영상·SNS 글) 이 동시에 쏟아져 → 미리 정제할 시간이 없음. · 분석 목적이 미리 안 정해진 경우 (탐색·ML 실험) 가 늘면서 → 일단 받고 나중에 처리. · 클라우드 저장 비용이 싸져서 → "정제해서 줄이지 말고 다 받아두자".',
+        },
+        {
+          kind: 'section',
+          title: '구체 사례',
+          body:
+            '· DW (사전처리): 운영 시스템 데이터를 ETL → 스키마 맞춰 저장. · Data Lake (사후처리): 사진·영상·로그를 원시 그대로 저장 → ML 학습 시 비로소 가공. · SNS 분석: 트윗을 일단 다 받고, 감성 분석 모델로 나중에 처리.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 키워드',
+          body:
+            '"사전처리 → 사후처리", "Schema-on-Write → Schema-on-Read". 규모(표본→전수), 품질(질→양), 관점(인과→상관) 은 별개 — 섞어서 묻는 함정 주의.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-2-s2-quality',
+      title: '변화 ③ 질 → 양',
+      quizId: 'adsp-1-2-cp-02-quality',
+      dialogue: [
+        {
+          pose: 'wave',
+          text: '셋째 축 [품질] —\n[질 → 양]!',
+        },
+        {
+          pose: 'think',
+          text: '원래는 깔끔한 [질 좋은] 소수 데이터\n가 분석에 더 유리했어.\n잡음·결측 정제가 핵심이었지.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '근데 빅데이터 시대 —\n[양이 압도적] 으로 많아지면서\n잡음이 평균에 묻혀버려!',
+        },
+        {
+          pose: 'happy',
+          text: '예: ChatGPT 같은 LLM 도\n정제된 소량보다 [잡음 섞인 인터넷 전체]\n로 더 똑똑해졌어.',
+        },
+        { pose: 'idle', text: '품질 축 문제!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '[질] 이란 데이터가 얼마나 깔끔한지 — 결측·오타·이상치가 없는지를 말합니다. 전통 통계에선 작은 표본에서도 정확한 결론을 내야 했기에 데이터 정제에 큰 비중을 뒀어요. 빅데이터에선 [양] 이 워낙 많아 일부 잡음이 평균에 묻혀버리는 효과가 생겨, 정제보다 양 확보가 우선이 됐습니다.',
         },
         {
           kind: 'section',
@@ -1148,96 +2481,98 @@ const ADSP_1_2: Lesson = {
           tone: 'tip',
           title: '시험 키워드',
           body:
-            '"질 → 양", "Quality → Quantity", "잡음 허용", "정제보다 규모". 규모(표본/전수) 와 별개 축이라는 점이 함정 — 두 축이 비슷해 보이지만 다른 변화입니다.',
+            '"질 → 양", "Quality → Quantity", "잡음 허용", "정제보다 규모". 규모(표본조사→전수조사) 와 별개 축이라는 점이 함정 — 두 축이 비슷해 보이지만 다른 변화.',
         },
       ],
     },
     {
       id: 'adsp-1-2-s2-corr',
-      title: '변화 ③ 인과 → 상관',
+      title: '변화 ④ 인과관계 → 상관관계',
       quizId: 'adsp-1-2-cp-02-corr',
       dialogue: [
-        { pose: 'wave', text: '셋째 축 [관점] — 인과 → 상관.' },
-        { pose: 'think', text: '"왜?" 보다 "함께 움직이나?" 만으로도 의사결정 가능.' },
-        { pose: 'idle', text: '관점 축의 변화를 골라봐.' },
+        {
+          pose: 'wave',
+          text: '넷째 축 [관점] —\n[인과관계 → 상관관계]!',
+        },
+        {
+          pose: 'think',
+          text: '[인과관계] = "A 가 B 의 원인" —\n전통 과학이 증명해야 했던 관계.\nA 를 바꾸면 B 가 바뀜.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '[상관관계] = "A 와 B 가 함께 변한다"\n원인은 몰라도 [의사결정엔 충분]\n빅데이터 시대의 새 표준!',
+        },
+        {
+          pose: 'happy',
+          text: '예: "허리케인 예보 직전 →\n스트로베리 팝타르트 매출 7배".\n왜인지 몰라도 매대 채워놓으면 OK.',
+        },
+        { pose: 'idle', text: '관점 축 문제!' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            '인과(Causation) = "A 가 B 의 원인이다" — A 를 바꾸면 B 가 바뀐다는 직접적 영향 관계. 상관(Correlation) = "A 와 B 가 함께 변한다" — 둘이 동시 변하지만 무엇이 원인인지는 모름. 전통 과학은 인과를 증명해야 결론을 내렸지만, 빅데이터 시대엔 상관만으로도 마케팅·운영 결정엔 충분합니다.',
+            '[인과관계](Causation) = "A 가 B 의 원인이다" — A 를 바꾸면 B 가 바뀐다는 직접적 영향 관계. [상관관계](Correlation) = "A 와 B 가 함께 변한다" — 둘이 동시 변하지만 무엇이 원인인지는 모름. 전통 과학은 인과관계를 증명해야 결론을 내렸지만, 빅데이터 시대엔 상관관계만으로도 마케팅·운영 결정엔 충분합니다.',
         },
         {
           kind: 'section',
           title: '구체 사례 — 상관만으로 충분한 경우',
           body:
-            '월마트가 분석해보니 "허리케인 예보 직전 → 스트로베리 팝타르트 매출 7배 증가". 왜 사람들이 폭풍에 대비해 팝타르트를 사는지 인과는 모르지만, 매대를 미리 채워놓으면 매출이 오릅니다. 상관만으로 의사결정 OK. / 넷플릭스 추천: "이 영화 본 사람은 저 영화도 본다" — 왜 그런 취향 패턴인지 몰라도 추천 효과는 충분.',
+            '월마트 분석: "허리케인 예보 직전 → 스트로베리 팝타르트 매출 7배 증가". 왜 사람들이 폭풍에 대비해 팝타르트를 사는지 인과관계는 모르지만, 매대를 미리 채워놓으면 매출이 오릅니다. 상관관계만으로 의사결정 OK. / 넷플릭스 추천: "이 영화 본 사람은 저 영화도 본다" — 왜 그런 취향 패턴인지 몰라도 추천 효과는 충분.',
         },
         {
           kind: 'callout',
           tone: 'warn',
           title: '주의 — "원인 무관" 은 아님',
           body:
-            '시험 함정: "빅데이터 시대엔 인과관계가 무의미해졌다" 라는 보기는 틀림. 정답은 "상관만으로도 의사결정 가능" — 인과는 여전히 가치 있지만, 상관만 있어도 활용 가능한 영역이 늘어났다는 뜻.',
-        },
-      ],
-    },
-    {
-      id: 'adsp-1-2-s2-data',
-      title: '변화 ④ 이론 → 데이터',
-      quizId: 'adsp-1-2-cp-02-data',
-      dialogue: [
-        { pose: 'wave', text: '넷째 축 [접근] — 이론 → 데이터.' },
-        { pose: 'think', text: '가설 먼저 → 데이터로 확인 vs 데이터에서 패턴 발굴.' },
-        { pose: 'idle', text: '접근 축의 변화를 골라봐.' },
-      ],
-      blocks: [
-        {
-          kind: 'intro',
-          body:
-            '"이론 기반"은 분석가가 먼저 가설을 세우고 ("월요일에 매출이 더 높을 것이다") 데이터로 검증하는 방식. "데이터 기반"은 가설 없이 풍부한 데이터에서 알고리즘이 직접 패턴을 찾아주는 방식. 데이터가 폭증하고 머신러닝이 발달하면서 후자가 가능해졌습니다.',
-        },
-        {
-          kind: 'section',
-          title: '구체 사례',
-          body:
-            '이론 기반: 마케터가 "20대가 30대보다 SNS 광고에 반응이 클 것" 이라는 가설을 세우고 A/B 테스트로 검증. 데이터 기반: 추천 알고리즘이 사용자 1억 명의 행동 로그에서 "이런 패턴을 가진 사람은 이런 상품을 산다" 같은 규칙을 자동 발견 — 분석가가 미리 가설을 세우지 않은 새로운 패턴이 튀어나옴.',
-        },
-        {
-          kind: 'callout',
-          tone: 'tip',
-          title: '시험 키워드 — 인과/상관 축과 혼동 주의',
-          body:
-            '"이론 → 데이터", "Theory → Data-driven", "가설 우선 → 패턴 발굴". 인과/상관 축과 비슷해 보이지만 다른 차원 — 이 축은 "분석을 어떻게 시작하느냐", 인과/상관은 "결론의 형태가 무엇이냐" 의 차이.',
+            '시험 함정: "빅데이터 시대엔 인과관계가 무의미해졌다" 라는 보기는 [틀림]. 정답은 "상관관계만으로도 의사결정 가능" — 인과관계는 여전히 가치 있지만, 상관관계만 있어도 활용 가능한 영역이 늘어났다는 뜻.',
         },
       ],
     },
     // ─── 데이터 3법 (개정신) — 1 step → 4 substeps ───
     {
       id: 'adsp-1-2-s3',
-      title: '데이터 3법 — "개·정·신" 개요',
+      title: '데이터 3법 — "개정신" 개요',
       quizId: 'adsp-1-2-cp-03',
       dialogue: [
-        { pose: 'wave', text: '2020년 개정으로 가명정보 활용 가능.' },
-        { pose: 'think', text: '3법 "[개정신]" — 개인정보보호법 · 정보통신망법 · 신용정보법.' },
-        { pose: 'idle', text: '먼저 3법 + 정보 카테고리 개요.' },
+        { pose: 'wave', text: '이번에는 [데이터 3법] 을 배워보자!' },
+        {
+          pose: 'think',
+          text: '데이터 처리에 관한 [3가지 법]:\n· [개인정보보호법]\n· [정보통신망법]\n· [신용정보법]',
+        },
+        {
+          pose: 'lightbulb',
+          text: '줄여서 [개정신] 으로 외우자!',
+        },
+        {
+          pose: 'happy',
+          text: '2020년 개정 — [가명정보] 개념이\n추가돼서, 동의 없이도\n통계·연구에 쓸 수 있게 됐어.',
+        },
+        { pose: 'idle', text: '3법 매칭 문제를 풀어보자!' },
       ],
       blocks: [
         {
           kind: 'callout',
           tone: 'mnemonic',
-          title: '"개·정·신"',
+          title: '★ 암기법 — "개정신"',
           body:
-            '개인정보보호법 · 정보통신망법 · 신용정보법. 2020년 개정으로 "가명정보" 개념 도입.',
+            '[개]인정보보호법 · [정]보통신망법 · [신]용정보법 → 앞 글자 "[개정신]". 2020년 개정으로 [가명정보] 개념이 추가돼 통계·연구·공익 목적으로 동의 없이 활용 가능.',
         },
         {
           kind: 'keypoints',
           title: '3종 정보 카테고리',
           items: [
-            '개인정보: 직접 식별 — 원칙적으로 동의 필요',
-            '가명정보: 추가정보 없이는 식별 불가 — 통계·연구·공익 한정 동의 없이 활용 가능',
-            '익명정보: 식별 불가능 — 개인정보보호법 대상 외',
+            '[개인정보]: 직접 식별 가능 — 원칙적으로 동의 필요',
+            '[가명정보]: 추가정보 없이는 식별 불가 — 통계·연구·공익 한정 동의 없이 활용 가능',
+            '[익명정보]: 식별 불가능 — 개인정보보호법 대상 외',
           ],
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 키워드',
+          body:
+            '"개정신", "가명정보", "2020년 개정". 통신비밀보호법·금융거래법 같은 다른 법은 3법에 포함되지 않음 — 함정 주의.',
         },
       ],
     },
@@ -1246,15 +2581,26 @@ const ADSP_1_2: Lesson = {
       title: '데이터 3법 ① 개인정보보호법',
       quizId: 'adsp-1-2-cp-03-pipa',
       dialogue: [
-        { pose: 'wave', text: '첫째 [개인정보보호법] — 개인정보 처리 일반.' },
-        { pose: 'think', text: '수집·이용·제공·파기의 원칙. 일반법.' },
-        { pose: 'idle', text: '개인정보보호법 영역을 골라봐.' },
+        { pose: 'wave', text: '첫째는 [개인정보보호법]!' },
+        {
+          pose: 'think',
+          text: '모든 [개인정보 처리] 에 대한\n[일반법] 이야.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜 만들어졌나 — 정보주체의\n[동의·열람·정정·삭제] 권리를\n보장하기 위해서야.',
+        },
+        {
+          pose: 'happy',
+          text: '예: 회사가 직원의 주민번호·연락처를\n수집·이용할 때\n따라야 하는 법!',
+        },
+        { pose: 'idle', text: '개인정보보호법 영역 문제!' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            '개인정보보호법은 모든 개인정보 처리에 대한 일반법. 정보주체의 동의·열람·정정·삭제 권리, 처리자의 안전조치 의무 등을 규정.',
+            '개인정보보호법은 모든 개인정보 처리에 대한 [일반법]. 정보주체의 동의·열람·정정·삭제 권리, 처리자의 안전조치 의무 등을 규정. 통신·금융 같은 특정 영역은 추가로 정보통신망법·신용정보법 적용.',
         },
         {
           kind: 'section',
@@ -1269,15 +2615,26 @@ const ADSP_1_2: Lesson = {
       title: '데이터 3법 ② 정보통신망법',
       quizId: 'adsp-1-2-cp-03-net',
       dialogue: [
-        { pose: 'wave', text: '둘째 [정보통신망법] — 통신서비스 특화.' },
-        { pose: 'think', text: '온라인 서비스·웹사이트·앱에서의 개인정보 보호 강화.' },
-        { pose: 'idle', text: '정보통신망법 영역을 골라봐.' },
+        { pose: 'wave', text: '둘째는 [정보통신망법]!' },
+        {
+          pose: 'think',
+          text: '온라인 [통신서비스] 영역에\n특화된 법이야.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜 만들어졌나 — 웹사이트·앱·SNS\n같은 온라인 환경에서\n[이용자 보호] 를 강화하려고.',
+        },
+        {
+          pose: 'happy',
+          text: '예: 네이버·인스타그램 같은\n[정보통신서비스 제공자] 가\n따라야 하는 법!',
+        },
+        { pose: 'idle', text: '정보통신망법 영역 문제!' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            '정보통신망법은 정보통신서비스 제공자(웹사이트·앱·SNS 등) 의 개인정보 보호 의무·이용자 보호 조치를 규정.',
+            '정보통신망법은 정보통신서비스 제공자(웹사이트·앱·SNS 등) 의 개인정보 보호 의무·이용자 보호 조치를 규정. 일반 개인정보보호법 위에 통신서비스 특화 규정이 추가된 형태.',
         },
         {
           kind: 'section',
@@ -1292,9 +2649,20 @@ const ADSP_1_2: Lesson = {
       title: '데이터 3법 ③ 신용정보법',
       quizId: 'adsp-1-2-cp-03-credit',
       dialogue: [
-        { pose: 'wave', text: '셋째 [신용정보법] — 금융·신용 영역.' },
-        { pose: 'think', text: '신용평가·금융거래의 신용정보 처리 규제.' },
-        { pose: 'idle', text: '신용정보법 영역을 골라봐.' },
+        { pose: 'wave', text: '셋째는 [신용정보법]!' },
+        {
+          pose: 'think',
+          text: '[금융·신용] 정보 처리에\n특화된 법이야.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜 만들어졌나 — 신용평가·금융거래\n같은 민감한 신용정보를\n[엄격히 규제] 하기 위해서야.',
+        },
+        {
+          pose: 'happy',
+          text: '예: [마이데이터]\n(본인신용정보관리업) 의\n근거 법이야!',
+        },
+        { pose: 'idle', text: '신용정보법 영역 문제!' },
       ],
       blocks: [
         {
@@ -1310,18 +2678,36 @@ const ADSP_1_2: Lesson = {
         },
       ],
     },
+    // ─── 빅데이터 비유 4종 + 위기·대응 — 1 step → 6 substeps ───
     {
       id: 'adsp-1-2-s4',
-      title: '빅데이터 비유 · 위기요인',
+      title: '빅데이터 비유 — 4가지 개요',
       quizId: 'adsp-1-2-cp-04',
       dialogue: [
-        { pose: 'wave', text: '빅데이터가 뭐와 닮았다고들 할까? [4가지 비유]가 시험에 자주 나와.' },
-        { pose: 'think', text: '[산업혁명 석탄·철](원동력) · [원유](정제해야 쓸모) · [렌즈](관찰·발견) · [플랫폼](토대).' },
-        { pose: 'lightbulb', text: '근데 위기도 있어 — [사생활 침해] · [책임원칙 훼손] · [데이터 오용(과신)].' },
-        { pose: 'happy', text: '대응은 "[동의제 → 책임제]", "결과 기반 책임", "알고리즘 [접근·감사] 허용".' },
-        { pose: 'idle', text: '비유 4개와 위기-대응 짝 정리 끝, 문제!' },
+        {
+          pose: 'wave',
+          text: '이번에는 [빅데이터를 뭐에 비유] 하는지 배워보자!',
+        },
+        {
+          pose: 'think',
+          text: '시험에 자주 나오는 [4가지 비유]:\n· [산업혁명 석탄·철]\n· [원유]\n· [렌즈]\n· [플랫폼]',
+        },
+        {
+          pose: 'lightbulb',
+          text: '각 비유는 빅데이터의\n[다른 면] 을 강조해.\n어느 면을 강조하는지가 핵심!',
+        },
+        {
+          pose: 'happy',
+          text: '이어서 4개 비유를 하나씩\n자세히 살펴볼 거야!',
+        },
+        { pose: 'idle', text: '4가지 비유 매칭 문제!' },
       ],
       blocks: [
+        {
+          kind: 'intro',
+          body:
+            '빅데이터가 가진 여러 성격을 이해하기 위해 4가지 대표 비유가 사용됩니다. 각 비유는 빅데이터의 다른 면 (원동력 / 가공 / 관찰 / 토대) 을 강조해요. 시험에선 "이 비유가 강조하는 것은?" 이나 "이 사례에 맞는 비유는?" 으로 자주 등장.',
+        },
         {
           kind: 'table',
           title: '4가지 비유와 강조점',
@@ -1329,19 +2715,216 @@ const ADSP_1_2: Lesson = {
           rows: [
             ['산업혁명 석탄·철', '사회를 근본적으로 바꾸는 원동력'],
             ['원유', '정제해야 쓸모 있어진다'],
-            ['렌즈', '세상을 새롭게 관찰·발견하게 해준다'],
+            ['렌즈', '세상을 새롭게 관찰·발견'],
             ['플랫폼', '다른 서비스가 그 위에서 자라는 토대'],
           ],
         },
         {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 키워드',
+          body:
+            '"원동력 → 석탄·철", "정제 → 원유", "관찰·발견 → 렌즈", "토대·기반 → 플랫폼". 각 비유마다 강조점 매칭이 핵심.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-2-s4-coal',
+      title: '비유 ① 산업혁명 석탄·철',
+      quizId: 'adsp-1-2-cp-04-coal',
+      dialogue: [
+        {
+          pose: 'wave',
+          text: '첫째 비유 — [산업혁명 석탄·철]!',
+        },
+        {
+          pose: 'think',
+          text: '강조점: 사회를 근본적으로 바꾸는\n[원동력] 이라는 거야.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜? — 18세기 산업혁명이\n[석탄·철] 덕에 가능했듯,\n21세기는 빅데이터가 사회·경제를\n[근본적으로 바꾸고] 있어.',
+        },
+        {
+          pose: 'happy',
+          text: '예: 학교가 종이·연필 시대 →\n컴퓨터·스마트폰 시대로 바뀐 것처럼\n사회 전체가 변하는 [원동력]!',
+        },
+        { pose: 'idle', text: '산업혁명 비유 문제!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '산업혁명 석탄·철 비유는 빅데이터를 [사회를 근본적으로 바꾸는 원동력] 으로 봅니다. 18세기 산업혁명이 석탄·철 같은 새로운 자원으로 인해 가능했듯이, 21세기 사회·경제 변혁의 핵심 자원이 빅데이터라는 시각.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 키워드',
+          body:
+            '"원동력", "사회 변혁", "산업혁명 비교". 정제·가공 강조면 원유, 관찰·발견이면 렌즈, 토대면 플랫폼.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-2-s4-oil',
+      title: '비유 ② 원유',
+      quizId: 'adsp-1-2-cp-04-oil',
+      dialogue: [
+        {
+          pose: 'wave',
+          text: '둘째 비유 — [원유]!',
+        },
+        {
+          pose: 'think',
+          text: '강조점: [정제해야 쓸모] 가 생긴다는 거야.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜? — 원유는 그 자체로 못 써.\n정제소에서 [휘발유·경유·플라스틱]\n으로 가공해야 비로소 쓸모 생김.\n빅데이터도 [분석·가공] 거쳐야 가치 생겨!',
+        },
+        {
+          pose: 'happy',
+          text: '예: 김 농가에서 갓 딴 김 →\n굽고 자르고 양념해야\n김밥용 김이 되는 것과 같아!',
+        },
+        { pose: 'idle', text: '원유 비유 문제!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '원유 비유는 빅데이터를 [정제해야 가치가 생기는 자원] 으로 봅니다. 원시 데이터(raw) 그대로는 쓸모가 없고, 분석·가공·정제 과정을 거쳐야 비로소 의사결정·서비스에 활용 가능. 데이터 사이언티스트의 역할이 정제소처럼 중요하다는 의미.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 키워드',
+          body:
+            '"정제", "가공해야 쓸모", "raw → 가치". 사회 변혁이면 석탄·철, 관찰·발견이면 렌즈, 토대면 플랫폼.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-2-s4-lens',
+      title: '비유 ③ 렌즈',
+      quizId: 'adsp-1-2-cp-04-lens',
+      dialogue: [
+        {
+          pose: 'wave',
+          text: '셋째 비유 — [렌즈]!',
+        },
+        {
+          pose: 'think',
+          text: '강조점: 세상을 [새롭게 관찰·발견]\n하게 해준다는 거야.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜? — 현미경 발명으로 [세균] 을\n발견했듯이, 빅데이터로 그동안\n안 보이던 [패턴·트렌드] 를 발견해!',
+        },
+        {
+          pose: 'happy',
+          text: '예: 안경을 처음 쓰면\n안 보이던 글자가 보이는 것처럼\n빅데이터는 [숨은 패턴] 을\n드러나게 해줘.',
+        },
+        { pose: 'idle', text: '렌즈 비유 문제!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '렌즈 비유는 빅데이터를 [세상을 새롭게 관찰·발견하게 해주는 도구] 로 봅니다. 현미경이 미생물을, 망원경이 천체를 발견하게 해줬듯이, 빅데이터는 인간의 직관으로는 안 보이던 패턴·트렌드·연관성을 드러나게 합니다.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 키워드',
+          body:
+            '"관찰", "발견", "현미경", "안 보이던 패턴". 사회 변혁이면 석탄·철, 정제면 원유, 토대면 플랫폼.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-2-s4-platform',
+      title: '비유 ④ 플랫폼',
+      quizId: 'adsp-1-2-cp-04-platform',
+      dialogue: [
+        {
+          pose: 'wave',
+          text: '넷째 비유 — [플랫폼]!',
+        },
+        {
+          pose: 'think',
+          text: '강조점: 다른 서비스가 그 위에서\n자라는 [토대·기반] 이라는 거야.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜? — 빅데이터 자체보다\n그 위에서 [AI · 추천 · 자율주행]\n같은 새 서비스가 자라.\n데이터가 [생태계의 기반]!',
+        },
+        {
+          pose: 'happy',
+          text: '예: 분식집의 [김] 처럼 —\n김밥 · 라면떡볶이 · 만두까지\n여러 메뉴의 [공통 기반] 이 되는 것!',
+        },
+        { pose: 'idle', text: '플랫폼 비유 문제!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '플랫폼 비유는 빅데이터를 [다른 서비스가 그 위에서 자라는 토대] 로 봅니다. 빅데이터 자체보다는 그것을 활용해 만들어지는 AI·추천 시스템·자율주행 등의 응용 서비스가 만들어지는 기반. 생태계의 토대가 되는 자원이라는 시각.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '시험 키워드',
+          body:
+            '"토대", "기반", "생태계", "다른 서비스의 기초". 사회 변혁이면 석탄·철, 정제면 원유, 관찰이면 렌즈.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-2-s4-crisis',
+      title: '빅데이터 위기·대응 — 3가지 짝',
+      quizId: 'adsp-1-2-cp-04-crisis',
+      dialogue: [
+        {
+          pose: 'wave',
+          text: '비유는 다 봤고 — 빅데이터의\n[그림자] 도 알아야 해.',
+        },
+        {
+          pose: 'think',
+          text: '[3가지 위기]:\n① 사생활 침해\n② 책임원칙 훼손\n③ 데이터 오용·과신',
+        },
+        {
+          pose: 'lightbulb',
+          text: '각 위기마다 [대응책] 이 짝지어져:\n① 사생활 → [동의제 → 책임제]\n② 책임원칙 → [결과 기반 책임]\n③ 오용 → [알고리즘 접근·감사]',
+        },
+        {
+          pose: 'happy',
+          text: '쉽게 말하면 — "동의 받아도\n결과로 책임지자" + "알고리즘이\n무슨 짓 하는지 [열어보자]"!',
+        },
+        { pose: 'idle', text: '위기-대응 매칭 문제!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '빅데이터는 강력한 만큼 [3가지 위기] 도 동반합니다. (1) 사생활 침해 — 데이터 수집·결합으로 개인 식별 위험. (2) 책임원칙 훼손 — 데이터 기반 자동 결정의 책임 모호. (3) 데이터 오용·과신 — 통계적 결론을 절대시 (Garbage In, Garbage Out). 각 위기마다 정해진 [대응책] 이 시험에 자주 매칭으로 등장.',
+        },
+        {
           kind: 'table',
-          title: '위기요인 · 대응',
+          title: '3가지 위기 · 대응 짝',
           headers: ['위기', '대응'],
           rows: [
-            ['사생활 침해', '동의제 → 책임제 전환'],
-            ['책임원칙 훼손', '결과 기반 책임원칙 고수'],
-            ['데이터 오용(과신)', '알고리즘 접근·감사 허용'],
+            ['① 사생활 침해', '동의제 → 책임제 전환'],
+            ['② 책임원칙 훼손', '결과 기반 책임원칙 고수'],
+            ['③ 데이터 오용·과신', '알고리즘 접근·감사 허용'],
           ],
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: '★ 시험 단골 — 위기-대응 매칭',
+          body:
+            '"사생활 → 동의제 → 책임제", "책임 → 결과 기반", "오용 → 알고리즘 감사". 짝이 거꾸로 묶이거나 다른 위기와 섞이는 게 함정.',
         },
       ],
     },
@@ -1363,11 +2946,23 @@ const ADSP_1_3: Lesson = {
       title: '핵심 3축 — "AI 비"',
       quizId: 'adsp-1-3-cp-01',
       dialogue: [
-        { pose: 'wave', text: '[데이터 사이언스]는 통계학보다 훨씬 넓은 판이야.' },
-        { pose: 'think', text: '통계가 [수식]이라면 DS는 여기에 [컴퓨터공학](속도)과 [비즈니스](목적)까지 합쳐져.' },
-        { pose: 'lightbulb', text: '핵심 3축 = [A]nalytics · [I]T · [B]usiness. 첫 글자 "[AI 비]" 로 외우자!' },
-        { pose: 'happy', text: '세 꼭짓점의 [교집합]에서 데이터 사이언스가 태어나는 거야.' },
-        { pose: 'idle', text: '이 3축, 문제로 확인해보자.' },
+        {
+          pose: 'wave',
+          text: '이번에는 [데이터 사이언스] 의\n핵심 3축을 배워보자!',
+        },
+        {
+          pose: 'think',
+          text: '비유 — 통계학이 [요리책 레시피] 라면,\nDS 는 [재료 고르기 + 조리 + 손님 응대]\n까지 합친 [종합 식당 운영] 이야.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '핵심 3축:\n· [A]nalytics (분석)\n· [I]T (정보기술)\n· [B]usiness (비즈니스)',
+        },
+        {
+          pose: 'happy',
+          text: '첫 글자만 따서\n"[AI 비]" 로 외우자!\n세 꼭짓점의 [교집합] 에서 DS 가 태어나.',
+        },
+        { pose: 'idle', text: '3축 문제로 확인해보자!' },
       ],
       blocks: [
         {
@@ -1406,10 +3001,22 @@ const ADSP_1_3: Lesson = {
       title: 'Hard Skill vs Soft Skill',
       quizId: 'adsp-1-3-cp-02',
       dialogue: [
-        { pose: 'wave', text: '데이터 사이언티스트의 역량은 두 부류로 나뉘어.' },
-        { pose: 'think', text: '[Hard Skill] — 배워서 익히는 기술. 머신러닝, SQL, 프로그래밍.' },
-        { pose: 'lightbulb', text: '[Soft Skill] — 태도·관점·커뮤니케이션. [통찰], [스토리텔링], [협력].' },
-        { pose: 'happy', text: '시험은 "어떤 역량이 어느 쪽이냐" 매칭을 자주 물어. Hard = 기술, Soft = 태도!' },
+        {
+          pose: 'wave',
+          text: '데이터 사이언티스트의 역량은\n[두 부류] 로 나뉘어!',
+        },
+        {
+          pose: 'think',
+          text: '[Hard Skill] — 배워서 익히는 [기술]:\n머신러닝 · SQL · 프로그래밍.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '[Soft Skill] — [태도·관점] :\n통찰 · 스토리텔링 · 협력.',
+        },
+        {
+          pose: 'happy',
+          text: '비유 — 자전거 같아!\n· Hard = 페달 밟는 [기술]\n· Soft = 어디로 갈지 [방향 감각]',
+        },
         { pose: 'idle', text: '역량 매칭 문제로 체크!' },
       ],
       blocks: [
@@ -1429,15 +3036,29 @@ const ADSP_1_3: Lesson = {
         },
       ],
     },
-    // ─── Digital CA메라 6역량 — 1 step → 7 substeps (overview + 6 역량) ───
+    // ─── Digital CAMERA 6역량 — 1 step → 7 substeps (overview + 6 역량) ───
     {
       id: 'adsp-1-3-s3',
-      title: 'DS 6역량 — "Digital CA메라" 개요',
+      title: 'DS 6역량 — "Digital CAMERA" 개요',
       quizId: 'adsp-1-3-cp-03',
       dialogue: [
-        { pose: 'wave', text: '데이터 사이언티스트 6역량 — "Digital CA메라".' },
-        { pose: 'think', text: '[C]·[A]·[M]·[E]·[R]·[A] — Comm·Analytics·Math·Eng·Research·Art.' },
-        { pose: 'idle', text: '먼저 6역량 매핑 + 함정.' },
+        {
+          pose: 'wave',
+          text: '이번에는 [데이터 사이언티스트 6역량]\n을 배워보자!',
+        },
+        {
+          pose: 'think',
+          text: '[C·A·M·E·R·A] 6개:\n· Communication\n· Analytics · Math\n· Engineering · Research · Art',
+        },
+        {
+          pose: 'lightbulb',
+          text: '줄여서 [Digital CAMERA]\n로 외우자!',
+        },
+        {
+          pose: 'happy',
+          text: '★ 시험 함정 — 답에 [Management]\n가 보이면 [즉시 오답]!\n6역량에 안 들어가.',
+        },
+        { pose: 'idle', text: '6역량 매칭 문제!' },
       ],
       blocks: [
         {
@@ -1482,15 +3103,26 @@ const ADSP_1_3: Lesson = {
       title: '6역량 ① Communication',
       quizId: 'adsp-1-3-cp-03-c',
       dialogue: [
-        { pose: 'wave', text: '첫째 [Communication] — 분석 결과 전달력.' },
-        { pose: 'think', text: '시각화·스토리텔링·이해관계자 설득.' },
-        { pose: 'idle', text: 'Communication 영역을 골라봐.' },
+        { pose: 'wave', text: '첫째 — [Communication]!' },
+        {
+          pose: 'think',
+          text: '분석 결과를 청중에게\n[전달] 하는 능력이야.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜 중요? — 아무리 좋은 분석도\n경영진·이해관계자가 [이해] 못 하면\n의사결정으로 못 이어져.',
+        },
+        {
+          pose: 'happy',
+          text: '예: 친구에게 [시험 공부 비법] 을\n설명할 때 — 핵심만 골라 자기 말로,\n그림까지 그려가며 설득하는 거!',
+        },
+        { pose: 'idle', text: 'Communication 영역 문제!' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            'Communication 은 분석 결과를 비즈니스 청중에 맞게 풀어내는 역량 — 시각화·스토리텔링·발표.',
+            'Communication 은 분석 결과를 비즈니스 청중에 맞게 풀어내는 역량 — 시각화·스토리텔링·발표. 아무리 정확한 분석이라도 의사결정자에게 전달되지 않으면 가치가 없습니다.',
         },
         {
           kind: 'section',
@@ -1505,15 +3137,26 @@ const ADSP_1_3: Lesson = {
       title: '6역량 ② Analytics',
       quizId: 'adsp-1-3-cp-03-a',
       dialogue: [
-        { pose: 'wave', text: '둘째 [Analytics] — 분석 기법·도메인 지식.' },
-        { pose: 'think', text: '도메인 문제 정의 + 적합한 분석 방법 선택.' },
-        { pose: 'idle', text: 'Analytics 영역을 골라봐.' },
+        { pose: 'wave', text: '둘째 — [Analytics]!' },
+        {
+          pose: 'think',
+          text: '[도메인 이해] + [적합한 분석 기법]\n선택 능력이야.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜 필요? — 같은 데이터라도\n어떤 모델·기법이 맞는지 판단해야\n쓸모 있는 답이 나와.',
+        },
+        {
+          pose: 'happy',
+          text: '예: 의사가 환자 증상 듣고\n[혈액검사? CT? MRI?]\n적절히 고르는 것과 같아!',
+        },
+        { pose: 'idle', text: 'Analytics 영역 문제!' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            'Analytics 는 도메인 이해 + 분석 기법 선택 능력. 어떤 비즈니스 문제에 어떤 모델·기법이 맞는지 판단하는 역량.',
+            'Analytics 는 [도메인 이해 + 분석 기법 선택] 능력. 어떤 비즈니스 문제에 어떤 모델·기법이 맞는지 판단하는 역량. 의사가 진료 전 환자 증상 듣고 검사·치료법 선택하는 것과 비슷.',
         },
         {
           kind: 'section',
@@ -1528,15 +3171,26 @@ const ADSP_1_3: Lesson = {
       title: '6역량 ③ Math (수학·통계)',
       quizId: 'adsp-1-3-cp-03-m',
       dialogue: [
-        { pose: 'wave', text: '셋째 [Math] — 수학·통계 이론.' },
-        { pose: 'think', text: '확률·선형대수·미적분이 모델의 뼈대.' },
-        { pose: 'idle', text: 'Math 영역을 골라봐.' },
+        { pose: 'wave', text: '셋째 — [Math]!' },
+        {
+          pose: 'think',
+          text: '[확률 · 통계 · 선형대수 · 미적분]\n분석의 [수학적 토대].',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜? — 모델 가정·수식 유도·검정\n모두 수학에 기반해.\n수학 약하면 모델 [신뢰성] X.',
+        },
+        {
+          pose: 'happy',
+          text: '예: 자동차 엔진의 [기름] 같아 —\n안 보이지만 그게 없으면\n엔진이 안 돌아!',
+        },
+        { pose: 'idle', text: 'Math 영역 문제!' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            'Math 는 통계·확률·선형대수·미적분 등 분석의 수학적 기반. 모델 가정·수식 유도·검정의 토대.',
+            'Math 는 [통계·확률·선형대수·미적분] 등 분석의 수학적 기반. 모델 가정·수식 유도·검정의 토대. 자동차 엔진의 기름처럼 안 보이지만 모든 분석 활동이 그 위에서 돌아갑니다.',
         },
         {
           kind: 'section',
@@ -1551,15 +3205,26 @@ const ADSP_1_3: Lesson = {
       title: '6역량 ④ Engineering',
       quizId: 'adsp-1-3-cp-03-e',
       dialogue: [
-        { pose: 'wave', text: '넷째 [Engineering] — 데이터·시스템 구축.' },
-        { pose: 'think', text: '파이프라인·DB·인프라·코드 구현.' },
-        { pose: 'idle', text: 'Engineering 영역을 골라봐.' },
+        { pose: 'wave', text: '넷째 — [Engineering]!' },
+        {
+          pose: 'think',
+          text: '[데이터 파이프라인 · DB · 분산 처리]\n시스템 구축 능력이야.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜 필요? — 모델 만들어도\n[실제 서비스로] 옮기려면\n인프라·코드가 필요해.',
+        },
+        {
+          pose: 'happy',
+          text: '예: 식당 주방 같아 —\n[좋은 재료 · 좋은 도구 · 잘 짜인 시스템]\n이 있어야 요리가 나오는 것!',
+        },
+        { pose: 'idle', text: 'Engineering 영역 문제!' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            'Engineering 은 데이터 파이프라인·DB·분산 처리·코드 구현 능력. 모델을 실제 서비스로 옮기는 데 필수.',
+            'Engineering 은 [데이터 파이프라인 · DB · 분산 처리 · 코드 구현] 능력. 모델을 실제 서비스로 옮기는 데 필수. 식당 주방처럼 좋은 도구·시스템이 있어야 요리(분석 결과) 가 손님(사용자) 에게 전달됩니다.',
         },
         {
           kind: 'section',
@@ -1574,15 +3239,26 @@ const ADSP_1_3: Lesson = {
       title: '6역량 ⑤ Research',
       quizId: 'adsp-1-3-cp-03-r',
       dialogue: [
-        { pose: 'wave', text: '다섯째 [Research] — 새 가설·기법 탐구.' },
-        { pose: 'think', text: '논문·신기법 도입, R&D 적 사고.' },
-        { pose: 'idle', text: 'Research 영역을 골라봐.' },
+        { pose: 'wave', text: '다섯째 — [Research]!' },
+        {
+          pose: 'think',
+          text: '[새 가설·기법] 을 탐구하는\nR&D 적 사고야.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜? — 기존 모델로 안 풀리는 문제\n앞에서 [새 접근] 을 만들어야 해.\n논문·실험 설계가 필요.',
+        },
+        {
+          pose: 'happy',
+          text: '예: [새 메뉴를 개발하는 셰프] —\n기존 레시피로 안 되는 새 시도를\n실험·검증하는 거야!',
+        },
+        { pose: 'idle', text: 'Research 영역 문제!' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            'Research 는 기존 모델·기법으로 풀리지 않는 문제에 대해 새 가설·접근을 탐구하는 R&D 역량.',
+            'Research 는 기존 모델·기법으로 풀리지 않는 문제에 대해 [새 가설·접근] 을 탐구하는 R&D 역량. 새 메뉴 개발하는 셰프처럼, 기존 레시피로 안 되는 새 시도를 실험·검증.',
         },
         {
           kind: 'section',
@@ -1597,21 +3273,39 @@ const ADSP_1_3: Lesson = {
       title: '6역량 ⑥ Art (디자인·창의)',
       quizId: 'adsp-1-3-cp-03-art',
       dialogue: [
-        { pose: 'wave', text: '여섯째 [Art] — 통찰·창의·디자인 감각.' },
-        { pose: 'think', text: '데이터에서 새 관점·디자인을 끌어내는 능력.' },
-        { pose: 'idle', text: 'Art 영역을 골라봐.' },
+        { pose: 'wave', text: '여섯째 — [Art]!' },
+        {
+          pose: 'think',
+          text: '[창의 · 통찰 · 디자인 미감]\n비기술적 역량이야.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜? — 같은 데이터도\n[어떻게 보여줄지] 새 관점·디자인이\n결과 임팩트를 좌우해.',
+        },
+        {
+          pose: 'happy',
+          text: '예: [인테리어 디자이너] 같아 —\n같은 공간도 어떻게 꾸미느냐로\n전혀 다른 느낌!\n★ 함정: [Management] 는 6역량에 X.',
+        },
+        { pose: 'idle', text: 'Art 영역 문제!' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            'Art 는 데이터에서 통찰·창의적 관점·미적 디자인을 끌어내는 비기술적 역량. 시각화 미감, 새 가치 발견의 직관.',
+            'Art 는 데이터에서 [통찰·창의적 관점·미적 디자인] 을 끌어내는 비기술적 역량. 시각화 미감, 새 가치 발견의 직관. 인테리어 디자이너가 같은 공간을 다르게 꾸미듯, 같은 데이터에서 새 관점을 발견.',
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: '★ 시험 함정 — Management 는 6역량 X',
+          body:
+            'Digital CAMERA 6역량 (Communication·Analytics·Math·Engineering·Research·Art) 에 [Management] 는 들어가지 않습니다. 답에 Management 가 보이면 즉시 오답 처리.',
         },
         {
           kind: 'section',
           title: '시험 키워드',
           body:
-            '"창의·통찰", "디자인 감각". 단순 발표면 Communication, 새 가설 R&D 면 Research. Management 는 6역량에 없음 — 시험 함정.',
+            '"창의·통찰", "디자인 감각". 단순 발표면 Communication, 새 가설 R&D 면 Research. Management 는 6역량에 없음.',
         },
       ],
     },

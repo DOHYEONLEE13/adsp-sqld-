@@ -124,15 +124,17 @@ export default function DialogueLesson({
   const quizQuestion = getQuizQuestion(step.quizId);
 
   // ── Sub-step group trail ─────────────────────────────────────────────
-  // step.id 패턴: '<lesson>-s<N>' (그룹 헤더) 또는 '<lesson>-s<N>-<sub>'.
+  // 명시적 step.group 우선. 없으면 id 의 `-s\d+` prefix 가 그룹 키.
   // 같은 그룹의 step 들을 묶어 trail 노출 — 사용자가 "DIKW 5 단계 중 어디" 인지 인지.
-  const groupKey = (id: string): string => {
-    const m = id.match(/^(.+-s\d+)(?:-[a-zA-Z]+)?$/);
-    return m ? m[1] : id;
+  // s4 안에서 DB / DW / DM / Lake 가 4개 그룹으로 분리되도록 group 필드 사용.
+  const groupKey = (s: typeof step): string => {
+    if (s.group) return s.group;
+    const m = s.id.match(/^(.+-s\d+)(?:-[a-zA-Z][a-zA-Z0-9-]*)?$/);
+    return m ? m[1] : s.id;
   };
-  const currentGroupKey = groupKey(step.id);
+  const currentGroupKey = groupKey(step);
   const groupSteps = lesson.steps.filter(
-    (s) => groupKey(s.id) === currentGroupKey,
+    (s) => groupKey(s) === currentGroupKey,
   );
   const currentInGroup = groupSteps.findIndex((s) => s.id === step.id);
 

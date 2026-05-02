@@ -128,6 +128,44 @@
       "chapterTitle": "데이터 이해",
       "topic": "데이터의 이해",
       "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "다음 중 [암묵지] 의 예시로 가장 알맞은 것은?",
+      "choices": [
+        "자전거 타는 법을 정리한 입문 책",
+        "동아리 선배가 어깨너머로 보여주는 악기 연주 노하우",
+        "회사의 표준 업무 매뉴얼",
+        "위키피디아 백과사전 항목"
+      ],
+      "answerIndex": 1,
+      "explanation": "암묵지는 머리·몸에 있어 말로 다 옮기기 어려운 노하우 — 어깨너머 학습이 전형. 책·매뉴얼·백과사전은 모두 글로 정리된 형식지.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-1-1-cp-03-mapping",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 이해",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "SECI 4단계 [공표연내] 의 한국어를 바르게 짝지은 것은?",
+      "choices": [
+        "공동화 → 표출화 → 연결화 → 내면화",
+        "공유화 → 표현화 → 연계화 → 내장화",
+        "공동화 → 표현화 → 연결화 → 내장화",
+        "공유화 → 표출화 → 연계화 → 내면화"
+      ],
+      "answerIndex": 0,
+      "explanation": "SECI = Socialization(공동화) → Externalization(표출화) → Combination(연결화) → Internalization(내면화). 앞 글자만 따서 [공표연내] 로 외웁니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-1-1-cp-03-seci",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 이해",
+      "type": "multiple_choice",
       "difficulty": 3,
       "question": "SECI 모델에서 \"장인이 현장에서 쌓은 노하우를 매뉴얼로 정리\"하는 과정은?",
       "choices": [
@@ -137,7 +175,7 @@
         "내면화 (Internalization)"
       ],
       "answerIndex": 1,
-      "explanation": "암묵지를 형식지로 옮기는 단계가 표출화(Externalization)입니다. \"공표연내\" 순서로 기억합니다.",
+      "explanation": "머릿속·몸의 노하우(암묵지) 를 매뉴얼(형식지) 로 꺼내는 단계가 [표출화](Externalization). 암묵 → 형식. \"공표연내\" 순서로 기억.",
       "source": "개념 예제"
     },
     {
@@ -148,15 +186,91 @@
       "topic": "데이터의 이해",
       "type": "multiple_choice",
       "difficulty": 2,
-      "question": "데이터베이스의 특징 \"공통저변\"에 해당하지 않는 것은?",
+      "question": "다음 중 DB 의 특징 [공통저변] 에 해당하지 않는 것은?",
       "choices": [
-        "공용성 — 여러 사용자가 동시에 공유",
-        "통합성 — 데이터 중복 최소화",
-        "정규성 — 모든 값이 정규분포를 따름",
-        "저장성 — 영속적으로 보관"
+        "공용 데이터 — 여러 사용자가 다른 목적으로 공동 이용",
+        "통합된 데이터 — 동일 데이터가 중복되지 않음",
+        "정규화된 데이터 — 모든 값이 정규분포를 따름",
+        "변화하는 데이터 — 추가·삭제·수정에도 정확함"
       ],
       "answerIndex": 2,
-      "explanation": "\"공통저변\"은 공용·통합·저장·변화를 뜻합니다. 통계적 정규성과는 무관합니다.",
+      "explanation": "[공통저변] 은 공용·통합·저장·변화 4가지를 뜻합니다. 통계적 정규성은 DB 의 특징이 아닙니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-1-1-cp-04-share",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 이해",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "다음 중 DB 의 [공용 데이터] 특징을 가장 잘 설명한 것은?",
+      "choices": [
+        "한 사람이 한 번에 한 파일씩만 열 수 있다",
+        "여러 사용자가 다른 목적으로 같은 데이터를 함께 사용한다",
+        "전원이 꺼져도 데이터가 사라지지 않는다",
+        "추가·삭제·수정에도 항상 정확함을 유지한다"
+      ],
+      "answerIndex": 1,
+      "explanation": "공용 데이터는 여러 사용자가 [다른 목적] 으로 같은 데이터를 [공동 이용] 하는 특징. 학생 정보를 학사·도서관·식당이 같이 쓰는 게 전형. 영속 보관은 저장, 정확 유지는 변화.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-1-1-cp-04-int",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 이해",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "다음 중 DB 의 [통합된 데이터] 특징을 가장 잘 설명한 것은?",
+      "choices": [
+        "여러 사용자가 동시에 같은 데이터를 사용한다",
+        "동일한 데이터가 여러 곳에 중복되지 않는다",
+        "데이터가 저장매체에 영구 보관된다",
+        "데이터의 변화에도 정확성이 유지된다"
+      ],
+      "answerIndex": 1,
+      "explanation": "통합된 데이터는 같은 정보가 여러 곳에 [중복 저장] 되지 않고 한 곳에 단일 보관되는 특징. 학생 주소를 한 테이블에만 두고 학사·도서관·식당이 모두 그곳을 참조하는 게 전형.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-1-1-cp-04-stored",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 이해",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "다음 중 DB 의 [저장된 데이터] 특징을 가장 잘 설명한 것은?",
+      "choices": [
+        "여러 부서가 다른 목적으로 같이 쓴다",
+        "중복 없이 단일 보관된다",
+        "하드디스크·SSD 같은 저장매체에 영구 보관된다",
+        "운영 중 끊임없이 추가·삭제·수정된다"
+      ],
+      "answerIndex": 2,
+      "explanation": "저장된 데이터는 [저장매체] (하드디스크·SSD·서버) 에 영속 보관되어 전원이 꺼져도 사라지지 않는 특징. ERP 매출 기록·학적 정보·은행 거래가 모두 해당.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-1-1-cp-04-change",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 이해",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "다음 중 DB 의 [변화하는 데이터] 특징을 가장 잘 설명한 것은?",
+      "choices": [
+        "여러 부서가 같은 데이터를 다른 목적으로 사용한다",
+        "동일 정보가 한 곳에만 단일 저장된다",
+        "전원이 꺼져도 사라지지 않는다",
+        "추가·삭제·수정이 계속 일어나도 정확한 데이터가 유지된다"
+      ],
+      "answerIndex": 3,
+      "explanation": "변화하는 데이터는 추가·삭제·수정이 끊임없이 일어나도 항상 [정확하고 일관된] 최신 상태를 유지한다는 특징. 학생 입학/졸업/전과, 쇼핑몰 주문/환불, 은행 거래가 모두 해당.",
       "source": "개념 예제"
     },
     {
@@ -167,18 +281,56 @@
       "topic": "데이터의 이해",
       "type": "multiple_choice",
       "difficulty": 2,
-      "question": "기업의 생산·판매·재무·인사 등 전사 업무를 하나의 통합 시스템으로 관리하도록 지원하는 것은?",
+      "question": "다음 중 [기업 데이터베이스 7종] 에 해당하지 않는 것은?",
       "choices": [
-        "CRM (고객 관계 관리)",
-        "ERP (전사적 자원관리)",
-        "SCM (공급망 관리)",
-        "BI (비즈니스 인텔리전스)"
+        "ERP (전사적 자원 관리)",
+        "KMS (지식 관리 시스템)",
+        "BA (비즈니스 분석)",
+        "SQL (구조화 질의 언어)"
       ],
-      "answerIndex": 1,
-      "explanation": "ERP 는 생산·재고·회계·인사 등 부서별로 흩어진 업무를 한 시스템으로 통합해 전사 자원을 효율적으로 배분합니다. CRM 은 고객, SCM 은 공급사슬, BI 는 의사결정 지원이 중심입니다.",
+      "answerIndex": 3,
+      "explanation": "기업 데이터베이스 7종은 [DBMS·ERP·CRM·SCM·KMS·BI·BA]. SQL 은 RDB 를 다루는 [질의 언어] 일 뿐 시스템 자체가 아닙니다. ERP 는 전사 자원, KMS 는 지식 관리, BA 는 예측·분석.",
       "source": "개념 예제"
     },
 
+    {
+      "id": "adsp-1-2-cp-bg",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 가치와 미래",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "다음 중 [빅데이터 출현 배경] 으로 옳지 않은 것은?",
+      "choices": [
+        "저장 기술 발전과 저장 비용 하락",
+        "병렬·분산 처리 기술 발달 (Hadoop·Spark)",
+        "표본 추출 통계 기법의 표준화",
+        "IoT·모바일 보급으로 모든 기기가 데이터를 생산"
+      ],
+      "answerIndex": 2,
+      "explanation": "빅데이터 출현 5요인은 [① 저장 기술 발전 + 가격 ↓, ② 병렬 처리 기술 발달, ③ 인터넷 속도 증가, ④ 클라우드 컴퓨팅 (인프라), ⑤ IoT·모바일 시대]. [표본 추출] 은 오히려 빅데이터 시대에 [전수(Population) 분석] 으로 가는 변화의 반대편 — 출현 배경이 아닙니다.",
+      "source": "개념 예제"
+    },
+    {
+      "id": "adsp-1-2-cp-01-units",
+      "subject": "adsp",
+      "chapter": 1,
+      "chapterTitle": "데이터 이해",
+      "topic": "데이터의 가치와 미래",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "다음 중 데이터 단위의 [크기 순서] 로 알맞지 않은 것은?",
+      "choices": [
+        "KB < MB < GB < TB",
+        "TB < PB < EB < ZB",
+        "PB < EB < ZB < YB",
+        "ZB < EB < YB < PB"
+      ],
+      "answerIndex": 3,
+      "explanation": "실제 단위 크기 순서: KB < MB < GB < TB < PB(페타) < EB(엑사) < ZB(제타) < YB(요타). 단계마다 1024배. D 는 ZB > EB 이고 YB > PB 이라 모두 어긋남. 큰 단위 4개는 \"패지\" (P·E·Z·Y) 로 암기.",
+      "source": "개념 예제"
+    },
     {
       "id": "adsp-1-2-cp-01",
       "subject": "adsp",
@@ -205,16 +357,16 @@
       "chapterTitle": "데이터 이해",
       "topic": "데이터의 가치와 미래",
       "type": "multiple_choice",
-      "difficulty": 3,
-      "question": "빅데이터 시대의 분석 패러다임 변화로 올바른 것은?",
+      "difficulty": 2,
+      "question": "다음 중 빅데이터 시대로 오면서 일어난 변화로 [옳지 않은 것] 은?",
       "choices": [
-        "전수 분석 → 표본 분석",
-        "상관관계 중심 → 인과관계 중심",
-        "질 우선 → 양 우선",
-        "데이터 기반 → 이론 기반"
+        "표본조사 → 전수조사",
+        "사전처리 → 사후처리",
+        "사후처리 → 사전처리",
+        "인과관계 → 상관관계"
       ],
       "answerIndex": 2,
-      "explanation": "빅데이터 시대에는 표본→전수, 인과→상관, 질→양, 이론→데이터 방향으로 변화했습니다.",
+      "explanation": "빅데이터 시대 변화 4축의 방향: [표본조사→전수조사], [사전처리→사후처리], [질→양], [인과관계→상관관계]. C 는 처리 축의 방향이 거꾸로 — 사후처리에서 사전처리로 가는 게 아니라 사전 → 사후 가 맞음. 변화 후 상태 [전·후·양·상] = \"전후양상\" 으로 암기.",
       "source": "개념 예제"
     },
     {
@@ -224,16 +376,16 @@
       "chapterTitle": "데이터 이해",
       "topic": "데이터의 가치와 미래",
       "type": "multiple_choice",
-      "difficulty": 3,
-      "question": "데이터 3법 개정으로 도입된 개념으로, 추가정보 없이는 특정 개인을 식별할 수 없도록 가공된 정보를 가리키는 용어는?",
+      "difficulty": 2,
+      "question": "다음 중 [데이터 3법 (개정신)] 을 바르게 나열한 것은?",
       "choices": [
-        "익명정보",
-        "개인정보",
-        "가명정보",
-        "민감정보"
+        "개인정보보호법 · 정보통신망법 · 신용정보법",
+        "개인정보보호법 · 통신비밀보호법 · 신용정보법",
+        "개인정보보호법 · 정보통신망법 · 금융거래법",
+        "개인정보법 · 인터넷법 · 신용정보법"
       ],
-      "answerIndex": 2,
-      "explanation": "가명정보는 통계작성·과학연구·공익적 기록보존 목적으로는 정보주체 동의 없이 처리할 수 있습니다.",
+      "answerIndex": 0,
+      "explanation": "데이터 3법 = [개인정보보호법] · [정보통신망법] · [신용정보법]. 줄여서 \"개정신\" 으로 외움. 통신비밀보호법·금융거래법 같은 다른 법은 데이터 3법에 포함되지 않음.",
       "source": "개념 예제"
     },
     {
@@ -244,17 +396,22 @@
       "topic": "데이터의 가치와 미래",
       "type": "multiple_choice",
       "difficulty": 2,
-      "question": "빅데이터를 \"가공을 거쳐야 비로소 쓸모가 생긴다\"는 의미로 가장 잘 표현하는 비유는?",
+      "question": "다음 중 빅데이터 [비유와 강조점] 짝이 [잘못된 것] 은?",
       "choices": [
-        "석탄과 철",
-        "원유",
-        "렌즈",
-        "플랫폼"
+        "산업혁명 석탄·철 — 사회를 근본적으로 바꾸는 원동력",
+        "원유 — 정제해야 쓸모 있어진다",
+        "렌즈 — 세상을 새롭게 관찰·발견",
+        "플랫폼 — 정확한 측정을 위한 도구"
       ],
-      "answerIndex": 1,
-      "explanation": "원유는 정제 과정이 없으면 쓸모가 없다는 점에서 가공 필요성을 강조하는 비유입니다.",
+      "answerIndex": 3,
+      "explanation": "[플랫폼] 비유의 강조점은 [다른 서비스가 그 위에서 자라는 토대·기반]. \"정확한 측정 도구\" 는 빅데이터 비유 강조점이 아님 (오히려 렌즈에 가까운 표현이지만, 렌즈도 \"정확한 측정\" 보다는 \"새로운 관찰·발견\" 이 정확).",
       "source": "개념 예제"
     },
+    {"id":"adsp-1-2-cp-04-coal","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 가치와 미래","type":"multiple_choice","difficulty":2,"question":"다음 중 빅데이터를 [산업혁명 석탄·철] 에 비유하는 이유로 알맞은 것은?","choices":["정제해야 쓸모 있어진다","사회를 근본적으로 바꾸는 원동력","세상을 새롭게 관찰·발견하게 해준다","다른 서비스가 그 위에서 자라는 토대"],"answerIndex":1,"explanation":"산업혁명 석탄·철 비유의 강조점은 [사회를 근본적으로 바꾸는 원동력]. 18세기 산업혁명이 석탄·철로 가능했듯이 21세기 사회·경제 변혁의 핵심 자원이 빅데이터. 정제 강조는 원유, 관찰·발견은 렌즈, 토대는 플랫폼.","source":"개념 예제"},
+    {"id":"adsp-1-2-cp-04-oil","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 가치와 미래","type":"multiple_choice","difficulty":2,"question":"다음 중 빅데이터를 [원유] 에 비유하는 이유로 알맞은 것은?","choices":["사회를 근본적으로 바꾸는 원동력","정제·가공해야 비로소 쓸모가 생긴다","세상을 새롭게 관찰·발견하게 해준다","다른 서비스의 기반이 된다"],"answerIndex":1,"explanation":"원유 비유의 강조점은 [정제·가공해야 쓸모]. 원시(raw) 데이터는 그 자체로 쓸모 X — 분석·가공을 거쳐야 가치 생김. 김 농가의 김이 김밥용 김으로 가공되는 것과 같음. 사회 변혁은 석탄·철, 관찰은 렌즈, 토대는 플랫폼.","source":"개념 예제"},
+    {"id":"adsp-1-2-cp-04-lens","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 가치와 미래","type":"multiple_choice","difficulty":2,"question":"다음 중 빅데이터를 [렌즈] 에 비유하는 이유로 알맞은 것은?","choices":["사회를 근본적으로 바꾸는 원동력","정제해야 쓸모 있어진다","세상을 새롭게 관찰·발견하게 해준다","다른 서비스의 토대가 된다"],"answerIndex":2,"explanation":"렌즈 비유의 강조점은 [새로운 관찰·발견]. 현미경이 세균을, 망원경이 천체를 발견하게 해줬듯 빅데이터로 안 보이던 패턴·트렌드 발견. 사회 변혁은 석탄·철, 정제는 원유, 토대는 플랫폼.","source":"개념 예제"},
+    {"id":"adsp-1-2-cp-04-platform","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 가치와 미래","type":"multiple_choice","difficulty":2,"question":"다음 중 빅데이터를 [플랫폼] 에 비유하는 이유로 알맞은 것은?","choices":["사회를 근본적으로 바꾸는 원동력","정제해야 쓸모 있어진다","세상을 새롭게 관찰·발견하게 해준다","다른 서비스가 그 위에서 자라는 토대·기반이 된다"],"answerIndex":3,"explanation":"플랫폼 비유의 강조점은 [토대·기반]. 빅데이터 위에서 AI·추천 시스템·자율주행 같은 새 서비스가 자람. 분식집의 김이 김밥·라면떡볶이·만두의 공통 기반인 것과 같음. 사회 변혁은 석탄·철, 정제는 원유, 관찰은 렌즈.","source":"개념 예제"},
+    {"id":"adsp-1-2-cp-04-crisis","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 가치와 미래","type":"multiple_choice","difficulty":3,"question":"다음 중 빅데이터 [위기-대응] 짝이 [잘못된 것] 은?","choices":["사생활 침해 — 동의제에서 책임제로 전환","책임원칙 훼손 — 결과 기반 책임원칙 고수","데이터 오용·과신 — 알고리즘 접근·감사 허용","데이터 부족 — 더 많은 데이터 수집"],"answerIndex":3,"explanation":"빅데이터 위기 3가지는 [① 사생활 침해, ② 책임원칙 훼손, ③ 데이터 오용·과신]. \"데이터 부족\" 은 빅데이터 시대의 위기가 아님 — 오히려 데이터가 너무 많은 게 빅데이터 시대 — 함정. ①②③ 의 대응은 모두 정확.","source":"개념 예제"},
 
     {
       "id": "adsp-1-3-cp-01",
@@ -302,15 +459,15 @@
       "topic": "가치 창조를 위한 데이터 사이언스",
       "type": "multiple_choice",
       "difficulty": 2,
-      "question": "데이터 사이언티스트의 요구 역량 암기법 \"Digital CA메라\" 에 포함되지 않는 것은?",
+      "question": "다음 중 [DS 6역량 (Digital CAMERA)] 에 [속하지 않는] 것은?",
       "choices": [
-        "Communication",
-        "Math",
-        "Research",
-        "Management"
+        "Communication (전달·시각화)",
+        "Math (수학·통계)",
+        "Research (새 가설·기법)",
+        "Management (관리·경영)"
       ],
       "answerIndex": 3,
-      "explanation": "Digital CA메라 = Communication · Analytics · Math · Engineering · Research · Art. Management 는 포함되지 않습니다.",
+      "explanation": "Digital CAMERA 6역량 = [C]ommunication · [A]nalytics · [M]ath · [E]ngineering · [R]esearch · [A]rt. [Management] 는 6역량에 포함되지 않음 — 시험 단골 함정.",
       "source": "개념 예제"
     },
 
@@ -1199,7 +1356,7 @@
       "difficulty": 2,
       "question": "다음 중 SECI 모델의 \"공동화(Socialization)\" 에 해당하는 사례는?",
       "choices": [
-        "신입사원이 선배 옆에서 OJT 로 어깨너머 일을 배운다",
+        "동아리 선배가 후배 옆에서 직접 보여주며 악기 연주법을 가르친다",
         "장인이 자신의 노하우를 매뉴얼로 정리해 공유한다",
         "팀별 분석 보고서를 모아 전사 표준 백서를 만든다",
         "표준 매뉴얼을 보고 수개월 실습해 자기 것으로 만든다"
@@ -2230,19 +2387,34 @@
     {"id":"adsp-2-1-cp-04-agile","subject":"adsp","chapter":2,"chapterTitle":"데이터 분석 기획","topic":"분석 기획","type":"multiple_choice","difficulty":2,"question":"다음 중 \"Agile\" 방법론에 가장 적합한 상황은?","choices":["요구가 명확하고 끝까지 변경 없는 프로젝트","사용자 요구가 자주 바뀌는 환경에서 짧은 반복으로 빠르게 개선","대형·고위험 시스템에서 매 단계 위험을 평가","장기 단일 시제품 검증"],"answerIndex":1,"explanation":"Agile 은 짧은 스프린트 + 변경 수용 → 요구 변화 잦은 환경에 적합. 명확·고정이면 Waterfall, 위험 관리면 Spiral.","source":"개념 예제"},
     {"id":"adsp-2-1-cp-04-rad","subject":"adsp","chapter":2,"chapterTitle":"데이터 분석 기획","topic":"분석 기획","type":"multiple_choice","difficulty":2,"question":"다음 중 \"RAD(Rapid Application Development)\" 의 특징은?","choices":["엄격한 순차 진행","대형·고위험 위험 관리","짧은 사이클 + 빠른 결과 도출 우선","사회적 타당성 검토가 핵심"],"answerIndex":2,"explanation":"RAD 는 단기 사이클 + 빠른 결과. Agile 과 유사하지만 더 단기·결과 중심. 위험 관리는 Spiral, 순차는 Waterfall.","source":"개념 예제"},
 
-    {"id":"adsp-1-1-cp-04-dw","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 \"Data Warehouse(DW)\" 의 특징은?","choices":["정형·반정형·비정형 모두를 raw 형태로 저장","운영 데이터를 ETL 후 주제별로 정돈한 분석 창고 (정형 중심)","데이터를 변환 없이 그대로 두는 저수지","거래 처리(OLTP) 전용 시스템"],"answerIndex":1,"explanation":"DW 는 ETL 후 정형 데이터를 분석 목적으로 정돈. raw·다양 형식까지 모두 담으면 Data Lake, 거래 처리는 OLTP.","source":"개념 예제"},
-    {"id":"adsp-1-1-cp-04-lake","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 \"Data Lake\" 의 특징은?","choices":["정형 데이터만 정돈해 저장 (DW)","ETL 한 후 주제별로 정리한 분석 창고","모든 형태(정형~비정형) raw 그대로 적재","실시간 거래 처리(OLTP) 전용 시스템"],"answerIndex":2,"explanation":"Data Lake 는 변환 없이 raw 까지 담는 저장소(Schema-on-read). 정형 ETL 정돈은 DW, 거래 처리는 OLTP.","source":"개념 예제","_audit":{"fixed":["B2"],"changed_fields":["choices","explanation"],"reason":"정답 압축 + 다른 보기 보강","audited_at":"2026-04-29"}},
+    {"id":"adsp-1-1-cp-04-dw","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 DW 의 구성요소 [ETL] 의 역할로 알맞은 것은?","choices":["매장과 창고 사이의 임시 보관소","데이터를 가져와서 다듬은 뒤 창고에 넣는 흐름","분석 결과를 그래프·차트로 보여주는 도구","회사 전체 자원을 통합 관리하는 시스템"],"answerIndex":1,"explanation":"ETL = Extract·Transform·Load. 운영 시스템에서 데이터를 [가져와서(추출) → 다듬어서(변환) → 창고(DW)에 넣는(적재)] 흐름. 매장↔창고 사이 임시 보관소는 ODS, 시각화는 BI, 전사 자원은 ERP.","source":"개념 예제"},
+    {"id":"adsp-1-1-cp-04-dw-purpose","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 DW 의 목적으로 가장 알맞은 것은?","choices":["주문·결제 같은 거래를 실시간으로 처리한다","흩어진 데이터를 한 곳에 모아 쉽게 분석·결정할 수 있게 한다","사진·영상 같은 원시 데이터를 그대로 모아둔다","고객별로 맞춤 광고를 자동으로 보낸다"],"answerIndex":1,"explanation":"DW 는 흩어진 데이터를 [한 곳에 모아] 쉽게 분석·결정하도록 돕는 것이 목적. 분식집 비유로 — 매출/재고/단골을 따로 두지 않고 한 화면에서 같이 보는 것. 실시간 거래는 OLTP, 원시 모음은 Data Lake, 맞춤 광고는 CRM.","source":"개념 예제"},
+    {"id":"adsp-1-1-cp-04-dw-features","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":3,"question":"다음 중 DW 의 주요특징 [비휘발성] 을 가장 잘 설명한 것은?","choices":["부서별이 아닌 주제별로 정리한다","여러 시스템의 데이터를 일관된 형식으로 통합한다","시간 흐름에 따라 변화를 기록해 시계열 분석이 가능하다","한 번 적재된 데이터는 수정·삭제 없이 읽기 전용으로 유지된다"],"answerIndex":3,"explanation":"비휘발성(Non-volatile) 은 한 번 적재된 데이터를 수정·삭제하지 않고 읽기 전용으로 유지하는 특징. 주제별은 주제 지향성, 통합은 데이터 통합, 시간 기록은 시계열성.","source":"개념 예제"},
+    {"id":"adsp-1-1-cp-04-dm","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 [DM (Data Mart)] 의 정의로 가장 알맞은 것은?","choices":["회사 전체 데이터를 통합한 큰 분석 창고","특정 부서·주제에 특화된 작은 규모의 저장소","정형·반정형·비정형 원시 데이터를 그대로 모아둔 저장소","실시간 거래를 처리하는 운영 시스템"],"answerIndex":1,"explanation":"DM = Data Mart. 특정 부서·주제에 특화된 [작은 규모] 저장소로 DW 의 부분집합. 학교 도서관(DW) vs 학과 자료실(DM) 비유. 전사 통합은 DW, 원시 모음은 Data Lake, 거래는 OLTP.","source":"개념 예제"},
+    {"id":"adsp-1-1-cp-04-dm-purpose","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 [DM] 의 목적으로 가장 알맞은 것은?","choices":["전사 데이터를 모두 통합해 일관된 의사결정을 지원한다","부서·주제 단위로 빠르게 분석할 수 있게 한다","원시 데이터를 일단 보존해 미래 분석 가능성을 열어둔다","고객별로 맞춤 광고를 자동으로 보낸다"],"answerIndex":1,"explanation":"DM 은 [부서·주제 단위 빠른 분석] 과 [부서 자율성] 이 목적. 분식집 매장 매니저가 자기 매장 데이터만 빠르게 보는 비유. 전사 통합은 DW, 원시 보존은 Data Lake, 맞춤 광고는 CRM.","source":"개념 예제"},
+    {"id":"adsp-1-1-cp-04-dm-features","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":3,"question":"다음 중 운영 시스템에서 데이터를 직접 추출해 만든 부서 DM 의 유형은?","choices":["종속형 (Dependent DM)","독립형 (Independent DM)","집중형 (Centralized DM)","분산형 (Distributed DM)"],"answerIndex":1,"explanation":"운영계에서 직접 데이터를 가져오면 [독립형(Independent)] DM. 빠른 구축이 강점이지만 일관성이 약함. DW 에서 추출하면 [종속형(Dependent)]. 집중형·분산형은 DM 유형 아님.","source":"개념 예제"},
+    {"id":"adsp-1-1-cp-04-lake","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 [Data Lake] 의 정의로 가장 알맞은 것은?","choices":["정형 데이터만 ETL 후 주제별로 정리한 분석 창고","정형·반정형·비정형 데이터를 원시 그대로 다 받는 식재료 창고","부서·주제별로 특화된 작은 규모의 저장소","주문·결제 같은 거래를 실시간으로 처리하는 시스템"],"answerIndex":1,"explanation":"Data Lake 는 정형·반정형·비정형 모두를 [원시 상태] 로 다 받는 대규모 저장소. 요리된 음식 창고(DW) vs 식재료 창고(Lake) 비유. 정형 분석 창고는 DW, 부서 특화는 DM, 거래 처리는 OLTP.","source":"개념 예제"},
+    {"id":"adsp-1-1-cp-04-lake-purpose","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 [Data Lake] 의 목적으로 가장 알맞은 것은?","choices":["흩어진 정형 데이터를 통합해 일관된 KPI 를 산출한다","원시 데이터를 일단 보존해 미래 다양한 분석에 활용할 수 있게 한다","부서별로 데이터를 분리해 빠르게 분석한다","주문·결제 같은 거래를 실시간으로 처리한다"],"answerIndex":1,"explanation":"Data Lake 의 목적은 [모든 형태 데이터를 원시 로 일단 보존] 해 미래 ML·로그 탐색·SNS 분석 등 다양한 가능성을 열어두는 것. 정형 통합은 DW, 부서 분석은 DM, 거래는 OLTP.","source":"개념 예제"},
+    {"id":"adsp-1-1-cp-04-lake-features","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":3,"question":"Data Lake 의 [Schema-on-Read] 가 의미하는 것은?","choices":["저장하는 시점에 컬럼·타입 같은 구조를 미리 결정한다","읽을 (분석할) 시점에 비로소 데이터에 구조를 적용한다","데이터를 한 번 저장하면 수정·삭제할 수 없다","여러 사용자가 동시에 같은 데이터를 공유한다"],"answerIndex":1,"explanation":"Schema-on-Read 는 [저장 시엔 구조 X, 읽을 때 적용]. DW 의 Schema-on-Write 와 정반대. 저장 시 결정은 DW, 수정 X 는 DW 비휘발성, 동시 공유는 DB 공용 데이터.","source":"개념 예제"},
+    {"id":"adsp-1-1-cp-04-olap","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 [OLAP (Online Analytical Processing)] 에 대한 설명으로 알맞은 것은?","choices":["다차원 데이터를 빠르게 집계·조회하는 분석 시스템","실시간 거래를 ms 단위로 처리하는 운영 시스템","비정형 원시 데이터를 그대로 모아둔 저장소","부서별로 특화된 작은 규모의 분석 창고"],"answerIndex":0,"explanation":"OLAP = Online Analytical Processing (온라인 분석 처리). 다차원 데이터를 빠르게 집계·조회해 의사결정을 지원하는 분석 시스템. 실시간 거래는 OLTP, 원시 모음은 Data Lake, 부서 특화는 DM.","source":"개념 예제"},
+    {"id":"adsp-1-1-cp-04-olap-purpose","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 [OLAP] 의 목적으로 가장 알맞은 것은?","choices":["짧은 트랜잭션을 ms 단위로 즉시 처리한다","다차원 데이터를 빠르게 집계·조회해 의사결정을 지원한다","원시 데이터를 일단 보존해 미래 분석 가능성을 열어둔다","부서·주제 단위로 빠른 분석 환경을 제공한다"],"answerIndex":1,"explanation":"OLAP 의 목적은 [다차원 분석 + 의사결정 지원]. 매출을 지역×시기×상품 같은 여러 축으로 동시에 보고 빠르게 결정. 즉시 거래는 OLTP, 원시 보존은 Lake, 부서 분석은 DM.","source":"개념 예제"},
+    {"id":"adsp-1-1-cp-04-olap-features","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":3,"question":"다음 중 [OLAP] 의 특징으로 알맞은 것은?","choices":["정규화된 정형 + 짧은 insert·update·delete 트랜잭션","비정규화·다차원 구조 + 복잡한 집계 쿼리 (긴 응답 OK)","원시 비정형 + Schema-on-Read","부서·주제 특화 + 작은 규모"],"answerIndex":1,"explanation":"OLAP 는 [비정규화·다차원] 구조에 [복잡한 집계 쿼리] (select·aggregate, 초~분). 사용자는 BI 분석가·경영진. 정규화·짧은 트랜잭션은 OLTP, 원시 비정형은 Lake.","source":"개념 예제"},
+    {"id":"adsp-1-1-cp-04-oltp","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 [OLTP (Online Transaction Processing)] 에 대한 설명으로 알맞은 것은?","choices":["다차원 데이터를 빠르게 집계·조회하는 분석 시스템","실시간 거래(트랜잭션) 를 ms 단위로 즉시 처리하는 운영 시스템","원시 데이터를 형태 변환 없이 모아둔 저장소","부서별로 특화된 작은 규모의 분석 창고"],"answerIndex":1,"explanation":"OLTP = Online Transaction Processing (온라인 트랜잭션 처리). 카페 POS 처럼 실시간 거래를 ms 단위로 즉시 처리하는 운영 시스템. 분석은 OLAP, 원시 보존은 Lake, 부서 특화는 DM.","source":"개념 예제"},
+    {"id":"adsp-1-1-cp-04-oltp-purpose","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 [OLTP] 의 목적으로 가장 알맞은 것은?","choices":["다차원 시계열 분석으로 의사결정을 지원한다","실시간 거래를 즉시 처리하면서 데이터 일관성을 유지한다","원시 데이터를 일단 보존해 미래 분석에 활용한다","부서별로 빠른 분석을 제공한다"],"answerIndex":1,"explanation":"OLTP 의 목적은 [실시간 거래 즉시 처리 + 데이터 일관성 (ACID)]. ATM 출금 → 즉시 잔액 차감, 쇼핑몰 결제 → 즉시 재고 감소. 분석은 OLAP, 원시 보존은 Lake, 부서 분석은 DM.","source":"개념 예제"},
+    {"id":"adsp-1-1-cp-04-oltp-features","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":3,"question":"다음 중 [OLTP] 의 특징으로 알맞은 것은?","choices":["비정규화·다차원 구조 + 긴 분석 쿼리","정규화 (3NF) 된 정형 + 짧은 insert·update·delete 트랜잭션","원시 비정형 + Schema-on-Read","부서·주제 특화 + 작은 규모"],"answerIndex":1,"explanation":"OLTP 는 [정규화 (3NF) 정형] 구조에 [짧은 트랜잭션] (ms 응답). 사용자는 일반 사용자·운영 직원. 비정규화·집계 쿼리는 OLAP, 원시 비정형은 Lake.","source":"개념 예제"},
 
-    {"id":"adsp-1-1-cp-05-dbms","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":1,"question":"다음 중 \"DBMS\" 의 역할로 알맞은 것은?","choices":["전사 자원 통합 관리","데이터베이스의 생성·조회·수정·백업 관리 SW","고객 이력·맞춤 마케팅","공급사슬 최적화"],"answerIndex":1,"explanation":"DBMS 는 데이터베이스 자체의 관리 SW. 전사 통합은 ERP, 고객은 CRM, 공급사슬은 SCM.","source":"개념 예제"},
-    {"id":"adsp-1-1-cp-05-erp","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 \"ERP\" 의 정의로 알맞은 것은?","choices":["DB 관리 소프트웨어","생산·판매·재무·인사 등 전사 자원을 통합한 시스템","고객 이력 관리","BI 대시보드"],"answerIndex":1,"explanation":"ERP = 전사 자원 통합. DB 관리는 DBMS, 고객은 CRM, BI 는 의사결정 지원.","source":"개념 예제"},
-    {"id":"adsp-1-1-cp-05-crm","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 \"CRM\" 의 핵심 목적은?","choices":["전사 자원 통합","고객 이력·성향 관리로 맞춤 마케팅·서비스","공급사슬 최적화","대시보드·리포트로 의사결정 지원"],"answerIndex":1,"explanation":"CRM = 고객 관계 관리. 전사 통합은 ERP, 공급사슬은 SCM, 대시보드는 BI.","source":"개념 예제"},
-    {"id":"adsp-1-1-cp-05-scm","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 \"SCM\" 의 핵심 영역은?","choices":["DB 관리","고객 맞춤 마케팅","원자재 조달 → 생산 → 유통의 공급사슬 최적화","BI 대시보드"],"answerIndex":2,"explanation":"SCM = 공급사슬 관리. 고객은 CRM, 전사 자원은 ERP, 의사결정 시각화는 BI.","source":"개념 예제"},
-    {"id":"adsp-1-1-cp-05-bi","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 \"BI\" 의 핵심 역할은?","choices":["DB 자체 관리","공급사슬 최적화","쌓인 데이터를 대시보드·리포트로 가공해 의사결정 지원","고객 이력 관리"],"answerIndex":2,"explanation":"BI = 의사결정 지원 시각화·리포트. 운영 통합은 ERP, 고객은 CRM, 공급사슬은 SCM.","source":"개념 예제"},
+    {"id":"adsp-1-1-cp-05-dbms","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":1,"question":"다음 중 [DBMS (DataBase Management System)] 의 역할로 알맞은 것은?","choices":["전사 자원 통합 관리","데이터베이스의 생성·조회·수정·백업을 담당하는 관리 SW","고객 이력·맞춤 마케팅","공급사슬 최적화"],"answerIndex":1,"explanation":"DBMS 는 데이터베이스 자체의 [관리 SW] (모든 기업 시스템의 기반). 전사 통합은 ERP, 고객은 CRM, 공급사슬은 SCM.","source":"개념 예제"},
+    {"id":"adsp-1-1-cp-05-erp","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 [ERP (Enterprise Resource Planning)] 의 정의로 알맞은 것은?","choices":["DB 관리 소프트웨어","생산·판매·재무·인사 등 전사 자원을 하나로 통합한 시스템","고객 이력 관리","대시보드 시각화"],"answerIndex":1,"explanation":"ERP = 전사적 자원 관리. 부서별 시스템 따로 돌면 데이터가 중복·불일치 → 한 시스템으로 통합. DB 관리는 DBMS, 고객은 CRM, 대시보드는 BI.","source":"개념 예제"},
+    {"id":"adsp-1-1-cp-05-crm","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 [CRM (Customer Relationship Management)] 의 핵심 목적은?","choices":["전사 자원 통합","고객 이력·접점 데이터를 통합 관리해 맞춤 마케팅·서비스","공급사슬 최적화","조직의 지식·노하우 축적"],"answerIndex":1,"explanation":"CRM = 고객 관계 관리. 신규 고객 확보가 기존 고객 유지보다 5배 비싸므로 단골 잘 챙기는 게 효율적. 전사 통합은 ERP, 공급사슬은 SCM, 지식은 KMS.","source":"개념 예제"},
+    {"id":"adsp-1-1-cp-05-scm","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 [SCM (Supply Chain Management)] 의 핵심 영역은?","choices":["DB 관리","고객 맞춤 마케팅","원자재 조달 → 생산 → 유통의 공급사슬 전체 최적화","대시보드·리포트로 의사결정 지원"],"answerIndex":2,"explanation":"SCM = 공급망 관리. 협력사마다 정보 따로면 재고 과다·결품 발생 → 흐름 전체를 보고 최적화. 고객은 CRM, 전사 자원은 ERP, 의사결정 시각화는 BI.","source":"개념 예제"},
+    {"id":"adsp-1-1-cp-05-kms","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 [KMS (Knowledge Management System)] 의 정의로 알맞은 것은?","choices":["전사 자원 통합 관리","고객 관계 관리","조직의 지식·노하우를 체계적으로 축적·공유하는 시스템","원자재·물류 최적화"],"answerIndex":2,"explanation":"KMS = 지식 관리 시스템. 직원 퇴사 시 노하우 사라지지 않도록 회사에 남기는 시스템 (회사 위키피디아). SECI 모델의 표출화/연결화를 시스템화한 것. 전사 자원은 ERP, 고객은 CRM, 공급사슬은 SCM.","source":"개념 예제"},
+    {"id":"adsp-1-1-cp-05-bi","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":2,"question":"다음 중 [BI (Business Intelligence)] 의 핵심 역할은?","choices":["DB 자체 관리","공급사슬 최적화","쌓인 데이터를 대시보드·리포트로 가공해 과거·현재 의사결정 지원","통계·예측·ML 로 미래 예측·처방"],"answerIndex":2,"explanation":"BI 는 [과거·현재 시각화]. 회사 데이터의 [운전 계기판] — 지금 무슨 일이 일어났나. 미래 예측은 BA. 운영 통합은 ERP, 고객은 CRM.","source":"개념 예제"},
+    {"id":"adsp-1-1-cp-05-ba","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 이해","type":"multiple_choice","difficulty":3,"question":"다음 중 [BA (Business Analytics)] 가 BI 와 가장 다른 점은?","choices":["대시보드·리포트로 시각화한다","과거 데이터를 표로 정리한다","통계·예측 모델·ML 까지 포함해 미래 예측·처방 분석을 한다","DB 자체를 관리한다"],"answerIndex":2,"explanation":"BA 는 BI 의 발전형 — [통계·예측·ML] 까지 포함. BI = 백미러 (과거·현재), BA = 네비게이션 (미래·처방). 시각화/표 정리는 BI, DB 관리는 DBMS.","source":"개념 예제"},
 
-    {"id":"adsp-1-2-cp-02-scale","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 가치와 미래","type":"multiple_choice","difficulty":2,"question":"빅데이터 변화 4축 중 \"규모\" 축의 변화는?","choices":["인과 → 상관","표본(Sample) → 전수(Population)","질(Quality) → 양(Quantity)","이론 → 데이터 기반"],"answerIndex":1,"explanation":"규모 축은 표본 → 전수. 관점은 인과→상관, 품질은 질→양, 접근은 이론→데이터.","source":"개념 예제"},
-    {"id":"adsp-1-2-cp-02-quality","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 가치와 미래","type":"multiple_choice","difficulty":2,"question":"빅데이터 변화 4축 중 \"품질\" 축의 변화는?","choices":["인과 → 상관","표본 → 전수","질(Quality) 우선 → 양(Quantity) 우선","이론 → 데이터"],"answerIndex":2,"explanation":"품질 축은 질→양. 규모는 표본→전수, 관점은 인과→상관, 접근은 이론→데이터.","source":"개념 예제"},
-    {"id":"adsp-1-2-cp-02-corr","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 가치와 미래","type":"multiple_choice","difficulty":2,"question":"빅데이터 변화 4축 중 \"관점\" 축의 변화는?","choices":["인과(Causation) → 상관(Correlation)","표본 → 전수","질 → 양","이론 → 데이터"],"answerIndex":0,"explanation":"관점 축은 인과→상관. \"왜?\" 보다 \"함께 움직이나?\" 만으로 의사결정 가능. 규모는 표본→전수.","source":"개념 예제"},
-    {"id":"adsp-1-2-cp-02-data","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 가치와 미래","type":"multiple_choice","difficulty":2,"question":"빅데이터 변화 4축 중 \"접근\" 축의 변화는?","choices":["표본 → 전수","질 → 양","인과 → 상관","이론 기반 → 데이터 기반"],"answerIndex":3,"explanation":"접근 축은 이론→데이터. 가설→검증 보다 데이터에서 패턴 발굴. 인과/상관 축과 별개.","source":"개념 예제"},
+    {"id":"adsp-1-2-cp-02-scale","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 가치와 미래","type":"multiple_choice","difficulty":2,"question":"빅데이터 변화 4축 중 [규모] 축의 변화는?","choices":["인과관계 → 상관관계","표본조사 → 전수조사","질 → 양","사전처리 → 사후처리"],"answerIndex":1,"explanation":"규모 축은 [표본조사 → 전수조사]. 저장·연산 비용 폭락으로 모집단 전체를 다 분석할 수 있게 됨. 관점은 인과→상관, 품질은 질→양, 처리는 사전→사후.","source":"개념 예제"},
+    {"id":"adsp-1-2-cp-02-process","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 가치와 미래","type":"multiple_choice","difficulty":2,"question":"빅데이터 변화 4축 중 [처리] 축의 변화는?","choices":["표본조사 → 전수조사","사전처리 → 사후처리","질 → 양","인과관계 → 상관관계"],"answerIndex":1,"explanation":"처리 축은 [사전처리 → 사후처리]. 저장 전 ETL 정제(Schema-on-Write) → 원시 그대로 받고 분석 시 처리(Schema-on-Read). Data Lake 가 대표.","source":"개념 예제"},
+    {"id":"adsp-1-2-cp-02-quality","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 가치와 미래","type":"multiple_choice","difficulty":2,"question":"빅데이터 변화 4축 중 [품질] 축의 변화는?","choices":["인과관계 → 상관관계","표본조사 → 전수조사","질(Quality) → 양(Quantity)","사전처리 → 사후처리"],"answerIndex":2,"explanation":"품질 축은 [질 → 양]. 양이 워낙 많아 일부 잡음이 평균에 묻히는 효과. 규모는 표본→전수, 관점은 인과→상관, 처리는 사전→사후.","source":"개념 예제"},
+    {"id":"adsp-1-2-cp-02-corr","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 가치와 미래","type":"multiple_choice","difficulty":2,"question":"빅데이터 변화 4축 중 [관점] 축의 변화는?","choices":["인과관계(Causation) → 상관관계(Correlation)","표본조사 → 전수조사","질 → 양","사전처리 → 사후처리"],"answerIndex":0,"explanation":"관점 축은 [인과관계 → 상관관계]. \"왜?\" 보다 \"함께 움직이나?\" 만으로 의사결정 가능. 변화 후 상태 [전·후·양·상] = \"전후양상\".","source":"개념 예제"},
 
     {"id":"adsp-1-2-cp-03-pipa","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 가치와 미래","type":"multiple_choice","difficulty":2,"question":"다음 중 \"개인정보보호법\" 의 영역에 가장 가까운 것은?","choices":["통신서비스 제공자의 이용자 보호","모든 개인정보 처리에 대한 일반법","금융·신용정보 처리 규제","공급사슬의 데이터 공유"],"answerIndex":1,"explanation":"개인정보보호법은 일반법. 통신서비스 특화는 정보통신망법, 금융·신용은 신용정보법.","source":"개념 예제"},
     {"id":"adsp-1-2-cp-03-net","subject":"adsp","chapter":1,"chapterTitle":"데이터 이해","topic":"데이터의 가치와 미래","type":"multiple_choice","difficulty":2,"question":"다음 중 \"정보통신망법\" 의 영역은?","choices":["일반 개인정보 처리 원칙","웹·앱·SNS 등 정보통신서비스 제공자의 개인정보 보호 의무","금융 신용평가 정보 처리","조직 내부 인사 데이터"],"answerIndex":1,"explanation":"정보통신망법은 통신서비스 영역 특화. 일반 처리는 개인정보보호법, 신용정보면 신용정보법.","source":"개념 예제"},

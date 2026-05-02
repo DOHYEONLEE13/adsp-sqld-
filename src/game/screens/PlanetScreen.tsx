@@ -40,6 +40,9 @@ import { topicWeaknessesInChapter, weaknessLevel } from '../weakness';
 import type { ProgressStore } from '../storage';
 import { MobileTopBar, MobileBottomNav } from '../components/MobileGameNav';
 import PageAmbientBg from '../components/PageAmbientBg';
+import BookmarkedConceptsList from '../components/BookmarkedConceptsList';
+import { useResolvedBookmarks } from '../useConceptBookmarks';
+import { Bookmark } from 'lucide-react';
 
 const SUBJECT_ACCENT: Record<Subject, string> = {
   adsp: '#67e8f9',
@@ -115,6 +118,9 @@ export default function PlanetScreen({
             있습니다.
           </p>
         </header>
+
+        {/* === 북마크한 개념 (이 과목만 필터) — 있을 때만 노출 === */}
+        <BookmarkedConceptsSection subject={subject} accent={accent} />
 
         {/* === 로드맵 — 중앙(모바일) / 우측(lg+) 오버레이 === */}
         <div className="flex justify-center lg:justify-end lg:pr-4 xl:pr-10">
@@ -451,3 +457,35 @@ function ChapterNode({
     </>
   );
 }
+
+// ----------------------------------------------------------------
+// BookmarkedConceptsSection — header 아래 작은 카드. 북마크 있을 때만 렌더.
+// ----------------------------------------------------------------
+function BookmarkedConceptsSection({
+  subject,
+  accent,
+}: {
+  subject: Subject;
+  accent: string;
+}) {
+  const all = useResolvedBookmarks();
+  const filtered = all.filter((b) => b.lesson.subject === subject);
+  if (filtered.length === 0) return null;
+
+  return (
+    <section
+      className="mb-10 md:mb-14 max-w-[560px]"
+      aria-label="북마크한 개념"
+    >
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="kr-heading uppercase text-[10px] tracking-widest inline-flex items-center gap-2 text-cream/75">
+          <Bookmark size={11} strokeWidth={2.6} fill={accent} style={{ color: accent }} />
+          북마크한 개념
+          <span className="text-cream/45 tabular-nums">· {filtered.length}</span>
+        </h2>
+      </div>
+      <BookmarkedConceptsList subject={subject} limit={5} />
+    </section>
+  );
+}
+

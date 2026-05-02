@@ -296,6 +296,8 @@ export default function DialogueLesson({
         <TopBar
           progress={progress}
           stepProgress={innerProgress}
+          stepId={step.id}
+          accent={visual.color}
           onExit={onBack}
         />
         <div className="flex-1 flex flex-col items-center justify-center px-5 md:px-8 py-10 max-w-[640px] mx-auto w-full">
@@ -390,7 +392,12 @@ export default function DialogueLesson({
       data-subject={subject}
     >
       <PageAmbientBg blur />
-      <TopBar progress={progress} onExit={onBack} />
+      <TopBar
+        progress={progress}
+        stepId={step.id}
+        accent={subject === 'sqld' ? '#c084fc' : '#67e8f9'}
+        onExit={onBack}
+      />
 
       {/* XP 획득 토스트 */}
       {xpToast ? (

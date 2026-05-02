@@ -1,26 +1,39 @@
 /**
- * TopBar — X(나가기) + 진행바.
+ * TopBar — X(나가기) + 진행바 + 북마크 토글.
  *
  * 두 가지 진행률을 한꺼번에 노출:
  *   1) progress:     챕터 전체 진행률 (모든 step 포함, 두꺼운 메인 바)
  *   2) stepProgress: 현재 진행 중인 개념(step) 안의 진척 (얇은 보조 바)
  *
- * 사용자가 "이 개념을 얼마나 보고 있는지" + "챕터에서 어디쯤 와 있는지" 둘 다 볼 수 있게.
+ * stepId 가 있으면 우측에 ★ 북마크 토글 — 개념을 즐겨찾기하면 PlanetScreen /
+ * StatsPage 의 "북마크한 개념" 섹션에서 다시 열람 가능.
  */
 
 import { X } from 'lucide-react';
+import ConceptBookmarkButton from '../components/ConceptBookmarkButton';
 
 interface Props {
   /** 챕터 전체 진행률 0~1. */
   progress: number;
   /** 현재 step 안의 micro 진행률 0~1. 미지정 시 step 바 숨김. */
   stepProgress?: number;
+  /** 현재 step 의 id — 북마크 토글용. 없으면 버튼 숨김. */
+  stepId?: string;
+  /** 과목 색상 (북마크 활성 색). */
+  accent?: string;
   onExit: () => void;
 }
 
-export default function TopBar({ progress, stepProgress, onExit }: Props) {
+export default function TopBar({
+  progress,
+  stepProgress,
+  stepId,
+  accent,
+  onExit,
+}: Props) {
   const chapter = Math.max(0, Math.min(1, progress));
-  const step = stepProgress === undefined ? null : Math.max(0, Math.min(1, stepProgress));
+  const step =
+    stepProgress === undefined ? null : Math.max(0, Math.min(1, stepProgress));
   const chapterPct = Math.round(chapter * 100);
   const stepPct = step === null ? null : Math.round(step * 100);
 
@@ -69,7 +82,9 @@ export default function TopBar({ progress, stepProgress, onExit }: Props) {
               className="kr-num shrink-0 tabular-nums text-[12px] md:text-[13px] font-bold w-[42px] text-right"
               style={{
                 color:
-                  chapterPct >= 100 ? '#9CFF3D' : 'var(--subject-accent, #67e8f9)',
+                  chapterPct >= 100
+                    ? '#9CFF3D'
+                    : 'var(--subject-accent, #67e8f9)',
                 textShadow: '0 1px 2px rgba(0,0,0,0.4)',
               }}
               aria-hidden
@@ -110,6 +125,11 @@ export default function TopBar({ progress, stepProgress, onExit }: Props) {
             </div>
           )}
         </div>
+
+        {/* 북마크 토글 — 우측 끝. stepId 없으면 자리만 차지하지 않게 숨김. */}
+        {stepId ? (
+          <ConceptBookmarkButton stepId={stepId} accent={accent} size="md" />
+        ) : null}
       </div>
     </div>
   );

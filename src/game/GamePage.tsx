@@ -52,12 +52,47 @@ interface Props {
   onExitToLanding: () => void;
 }
 
+/**
+ * 다른 화면 (StatsPage / PlanetScreen 의 북마크 카드) 에서 점프 요청을 보낸
+ * 경우 sessionStorage 에 기록된 deep-link 를 한 번 소비. 마운트 시 GameScreen
+ * 초기값을 lesson 으로 덮음.
+ */
+interface PendingConceptOpen {
+  subject: Subject;
+  chapter: number;
+  topic: string;
+  stepIdx: number;
+  stepId: string;
+}
+function consumePendingConceptOpen(): PendingConceptOpen | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.sessionStorage.getItem('questdp.pendingConceptOpen');
+    if (!raw) return null;
+    window.sessionStorage.removeItem('questdp.pendingConceptOpen');
+    return JSON.parse(raw) as PendingConceptOpen;
+  } catch {
+    return null;
+  }
+}
+
 export default function GamePage({ initialSubject, onExitToLanding }: Props) {
-  const [screen, setScreen] = useState<GameScreen>(() =>
-    initialSubject
+  const [screen, setScreen] = useState<GameScreen>(() => {
+    const pending = consumePendingConceptOpen();
+    if (pending && pending.subject === initialSubject) {
+      return {
+        kind: 'lesson',
+        subject: pending.subject,
+        chapter: pending.chapter,
+        topic: pending.topic,
+        stepIdx: pending.stepIdx,
+        passNumber: 1,
+      };
+    }
+    return initialSubject
       ? { kind: 'planet', subject: initialSubject }
-      : { kind: 'galaxy' },
-  );
+      : { kind: 'galaxy' };
+  });
   const [energyBlock, setEnergyBlock] = useState<{ retryAfterSec: number } | null>(
     null,
   );

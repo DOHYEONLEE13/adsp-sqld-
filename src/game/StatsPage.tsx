@@ -13,6 +13,7 @@
 import { useMemo, useState } from 'react';
 import {
   BarChart3,
+  Bookmark,
   Calendar,
   CalendarClock,
   Flame,
@@ -45,6 +46,8 @@ import ProfileCustomizer from './components/ProfileCustomizer';
 import AuthCard from './components/AuthCard';
 import PageAmbientBg from './components/PageAmbientBg';
 import PassSection from '@/components/passes/PassSection';
+import BookmarkedConceptsList from './components/BookmarkedConceptsList';
+import { useResolvedBookmarks } from './useConceptBookmarks';
 
 interface Props {
   onExit: () => void;
@@ -118,6 +121,9 @@ export default function StatsPage({ onExit }: Props) {
       <div className="mb-6">
         <ProfileCustomizer />
       </div>
+
+      {/* 북마크한 개념 — 양 과목 모두 (학습 화면 우상단 ★ 로 추가) */}
+      <BookmarkedConceptsCard />
 
       {/* 회독 Pass Tier + Stamp 컬렉션 */}
       <PassSection />
@@ -669,3 +675,31 @@ function weaknessColor(score: number): string {
 }
 
 // formatRelativeTime — 최근 세션 섹션 제거로 미사용. 향후 재도입 시 git history 참조.
+
+// ----------------------------------------------------------------
+// BookmarkedConceptsCard — 프로필 영역. 양 과목 (ADsP + SQLD) 모두 노출.
+// 클릭 시 해당 step 의 LessonScreen 으로 jump (sessionStorage handoff).
+// ----------------------------------------------------------------
+function BookmarkedConceptsCard() {
+  const all = useResolvedBookmarks();
+  return (
+    <section
+      className="liquid-glass rounded-[24px] p-5 md:p-6 mb-6"
+      aria-label="북마크한 개념"
+    >
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="kr-heading text-[13px] uppercase tracking-widest text-cream/70 inline-flex items-center gap-2">
+          <Bookmark size={13} strokeWidth={2.6} />
+          북마크한 개념
+        </h2>
+        <span
+          className="kr-heading text-[11px] tabular-nums"
+          style={{ color: 'rgba(239,244,255,0.6)' }}
+        >
+          {all.length}개
+        </span>
+      </div>
+      <BookmarkedConceptsList limit={8} />
+    </section>
+  );
+}

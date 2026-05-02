@@ -17,8 +17,8 @@ interface Props {
   progress: number;
   /** 현재 step 안의 micro 진행률 0~1. 미지정 시 step 바 숨김. */
   stepProgress?: number;
-  /** 현재 step 의 id — 북마크 토글용. 없으면 버튼 숨김. */
-  stepId?: string;
+  /** 현재 step 의 quizId — 북마크 토글용 (questionId 단위). 없으면 버튼 숨김 (review step). */
+  questionId?: string;
   /** 과목 색상 (북마크 활성 색). */
   accent?: string;
   onExit: () => void;
@@ -27,7 +27,7 @@ interface Props {
 export default function TopBar({
   progress,
   stepProgress,
-  stepId,
+  questionId,
   accent,
   onExit,
 }: Props) {
@@ -126,10 +126,12 @@ export default function TopBar({
           )}
         </div>
 
-        {/* 북마크 토글 — 우측 끝. stepId 없으면 자리만 차지하지 않게 숨김. */}
-        {stepId ? (
-          <ConceptBookmarkButton stepId={stepId} accent={accent} size="md" />
-        ) : null}
+        {/* 북마크 토글 — 우측 끝. questionId 없으면 (review step) 자동 숨김. */}
+        <ConceptBookmarkButton
+          questionId={questionId}
+          accent={accent}
+          size="md"
+        />
       </div>
     </div>
   );

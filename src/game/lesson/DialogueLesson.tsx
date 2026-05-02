@@ -80,15 +80,32 @@ export default function DialogueLesson({
 
   const [stepIdx, setStepIdx] = useState(initialStepIdx ?? 0);
   const [turnIdx, setTurnIdx] = useState(0);
-  const [phase, setPhase] = useState<Phase>('narrate');
+  // 북마크 카드에서 점프해온 경우 narration 스킵 → 곧장 question phase 로.
+  // sessionStorage 의 'questdp.pendingLessonPhase' 가 'question' 이면 한 번만 소비.
+  const initialPhase = ((): Phase => {
+    if (typeof window === 'undefined') return 'narrate';
+    try {
+      const v = window.sessionStorage.getItem('questdp.pendingLessonPhase');
+      if (v === 'question') {
+        window.sessionStorage.removeItem('questdp.pendingLessonPhase');
+        return 'question';
+      }
+    } catch {
+      /* 무시 */
+    }
+    return 'narrate';
+  })();
+  const [phase, setPhase] = useState<Phase>(initialPhase);
   const [chosen, setChosen] = useState<number | null>(null);
   const [correct, setCorrect] = useState<boolean | null>(null);
   // 회독 진입 시 reminder 카드 노출 여부. true 면 카드 화면, false 면 본 학습으로 진입.
   // review step (id 끝이 `-review`) 은 첫 진입에도 강제로 카드 노출.
+  // 단, 북마크 점프 (initialPhase='question') 인 경우엔 reminder 도 스킵 — 사용자가
+  // [문제 풀이] 의도로 진입했으므로 곧장 quiz 화면이 자연스러움.
   const initialStep = lesson?.steps[initialStepIdx ?? 0];
   const initialIsReview = initialStep?.id.endsWith('-review') ?? false;
   const [showReminder, setShowReminder] = useState<boolean>(
-    isReplay || initialIsReview,
+    initialPhase === 'question' ? false : isReplay || initialIsReview,
   );
   const startedAtRef = useRef<number>(Date.now());
   const [xpToast, setXpToast] = useState<{ amount: number; key: number } | null>(
@@ -296,7 +313,7 @@ export default function DialogueLesson({
         <TopBar
           progress={progress}
           stepProgress={innerProgress}
-          stepId={step.id}
+          questionId={step.quizId}
           accent={visual.color}
           onExit={onBack}
         />
@@ -394,7 +411,7 @@ export default function DialogueLesson({
       <PageAmbientBg blur />
       <TopBar
         progress={progress}
-        stepId={step.id}
+        questionId={step.quizId}
         accent={subject === 'sqld' ? '#c084fc' : '#67e8f9'}
         onExit={onBack}
       />

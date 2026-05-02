@@ -42,7 +42,6 @@ import { MobileTopBar, MobileBottomNav } from '../components/MobileGameNav';
 import PageAmbientBg from '../components/PageAmbientBg';
 import BookmarkedConceptsList from '../components/BookmarkedConceptsList';
 import { useResolvedBookmarks } from '../useConceptBookmarks';
-import { Bookmark } from 'lucide-react';
 
 const SUBJECT_ACCENT: Record<Subject, string> = {
   adsp: '#67e8f9',
@@ -459,7 +458,7 @@ function ChapterNode({
 }
 
 // ----------------------------------------------------------------
-// BookmarkedConceptsSection — header 아래 작은 카드. 북마크 있을 때만 렌더.
+// BookmarkedConceptsSection — collapsible 헤더 + 토글 시 리스트 펼침.
 // ----------------------------------------------------------------
 function BookmarkedConceptsSection({
   subject,
@@ -469,22 +468,21 @@ function BookmarkedConceptsSection({
   accent: string;
 }) {
   const all = useResolvedBookmarks();
-  const filtered = all.filter((b) => b.lesson.subject === subject);
-  if (filtered.length === 0) return null;
+  const filtered = all.filter((b) => b.subject === subject);
+  if (filtered.length === 0) return null; // 빈 상태면 섹션 자체 숨김
 
   return (
     <section
       className="mb-10 md:mb-14 max-w-[560px]"
-      aria-label="북마크한 개념"
+      aria-label="북마크한 문제"
     >
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="kr-heading uppercase text-[10px] tracking-widest inline-flex items-center gap-2 text-cream/75">
-          <Bookmark size={11} strokeWidth={2.6} fill={accent} style={{ color: accent }} />
-          북마크한 개념
-          <span className="text-cream/45 tabular-nums">· {filtered.length}</span>
-        </h2>
-      </div>
-      <BookmarkedConceptsList subject={subject} limit={5} />
+      <BookmarkedConceptsList
+        subject={subject}
+        accent={accent}
+        limit={12}
+        defaultOpen={false}
+        headerLabel="북마크한 문제"
+      />
     </section>
   );
 }

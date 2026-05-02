@@ -13,7 +13,6 @@
 import { useMemo, useState } from 'react';
 import {
   BarChart3,
-  Bookmark,
   Calendar,
   CalendarClock,
   Flame,
@@ -47,7 +46,6 @@ import AuthCard from './components/AuthCard';
 import PageAmbientBg from './components/PageAmbientBg';
 import PassSection from '@/components/passes/PassSection';
 import BookmarkedConceptsList from './components/BookmarkedConceptsList';
-import { useResolvedBookmarks } from './useConceptBookmarks';
 
 interface Props {
   onExit: () => void;
@@ -678,28 +676,20 @@ function weaknessColor(score: number): string {
 
 // ----------------------------------------------------------------
 // BookmarkedConceptsCard — 프로필 영역. 양 과목 (ADsP + SQLD) 모두 노출.
+// 토글 가능한 collapsible 리스트 — 기본 collapsed (긴 리스트 화면 점령 방지).
 // 클릭 시 해당 step 의 LessonScreen 으로 jump (sessionStorage handoff).
 // ----------------------------------------------------------------
 function BookmarkedConceptsCard() {
-  const all = useResolvedBookmarks();
   return (
     <section
       className="liquid-glass rounded-[24px] p-5 md:p-6 mb-6"
-      aria-label="북마크한 개념"
+      aria-label="북마크한 문제"
     >
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="kr-heading text-[13px] uppercase tracking-widest text-cream/70 inline-flex items-center gap-2">
-          <Bookmark size={13} strokeWidth={2.6} />
-          북마크한 개념
-        </h2>
-        <span
-          className="kr-heading text-[11px] tabular-nums"
-          style={{ color: 'rgba(239,244,255,0.6)' }}
-        >
-          {all.length}개
-        </span>
-      </div>
-      <BookmarkedConceptsList limit={8} />
+      <BookmarkedConceptsList
+        limit={20}
+        defaultOpen={false}
+        headerLabel="북마크한 문제"
+      />
     </section>
   );
 }

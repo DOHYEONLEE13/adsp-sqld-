@@ -1,27 +1,29 @@
 /**
- * ConceptBookmarkButton — DialogueLesson 상단의 별 토글.
+ * ConceptBookmarkButton — DialogueLesson 상단의 별 토글 (questionId 단위).
  *
- * 클릭 시 step.id 의 북마크 ON/OFF. 별이 채워지면 등록, 비어있으면 미등록.
+ * questionId 가 없는 step (예: review step) 에서는 자동으로 null 반환 → 버튼 숨김.
  */
 
 import { Bookmark } from 'lucide-react';
-import { useConceptBookmarks } from '../useConceptBookmarks';
-import { toggleConceptBookmark } from '../conceptBookmarks';
+import { useBookmarks } from '../useBookmarks';
+import { toggleBookmark } from '../bookmarks';
 
 export default function ConceptBookmarkButton({
-  stepId,
+  questionId,
   accent = '#67e8f9',
   size = 'md',
 }: {
-  stepId: string;
+  /** undefined / 빈 문자열 = 북마크 불가 → 버튼 자동 숨김. */
+  questionId?: string;
   accent?: string;
   size?: 'sm' | 'md';
 }) {
-  const snap = useConceptBookmarks();
-  const active = snap.ids.has(stepId);
+  const snap = useBookmarks();
+  if (!questionId) return null;
+  const active = snap.ids.has(questionId);
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    toggleConceptBookmark(stepId);
+    toggleBookmark(questionId);
   };
   const px = size === 'sm' ? 28 : 36;
   const ip = size === 'sm' ? 14 : 18;
@@ -30,7 +32,7 @@ export default function ConceptBookmarkButton({
       type="button"
       onClick={handleClick}
       aria-pressed={active}
-      aria-label={active ? '북마크 해제' : '이 개념 북마크'}
+      aria-label={active ? '북마크 해제' : '이 문제 북마크'}
       className="inline-flex items-center justify-center rounded-full transition active:scale-[0.92] focus:outline-none focus-visible:ring-2 focus-visible:ring-neon"
       style={{
         width: px,

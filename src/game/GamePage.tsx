@@ -55,14 +55,18 @@ interface Props {
 /**
  * 다른 화면 (StatsPage / PlanetScreen 의 북마크 카드) 에서 점프 요청을 보낸
  * 경우 sessionStorage 에 기록된 deep-link 를 한 번 소비. 마운트 시 GameScreen
- * 초기값을 lesson 으로 덮음.
+ * 초기값을 lesson 으로 덮고, phase='question' 인 경우 DialogueLesson 이
+ * narration 스킵하고 곧장 문제로 진입하도록 별도 sessionStorage 에 표시.
  */
 interface PendingConceptOpen {
   subject: Subject;
   chapter: number;
-  topic: string;
+  topic: string | null;
   stepIdx: number;
   stepId: string;
+  questionId?: string;
+  /** 'question' = 도착 즉시 narration 스킵 후 question phase. 'narrate' (기본) = 일반. */
+  phase?: 'narrate' | 'question';
 }
 function consumePendingConceptOpen(): PendingConceptOpen | null {
   if (typeof window === 'undefined') return null;
@@ -79,7 +83,14 @@ function consumePendingConceptOpen(): PendingConceptOpen | null {
 export default function GamePage({ initialSubject, onExitToLanding }: Props) {
   const [screen, setScreen] = useState<GameScreen>(() => {
     const pending = consumePendingConceptOpen();
-    if (pending && pending.subject === initialSubject) {
+    if (pending && pending.subject === initialSubject && pending.topic) {
+      // phase='question' 이면 DialogueLesson 진입 즉시 narration 스킵 표식.
+      if (pending.phase === 'question' && typeof window !== 'undefined') {
+        window.sessionStorage.setItem(
+          'questdp.pendingLessonPhase',
+          'question',
+        );
+      }
       return {
         kind: 'lesson',
         subject: pending.subject,

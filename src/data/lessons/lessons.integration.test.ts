@@ -31,13 +31,13 @@ import {
 import { SUBJECT_SCHEMAS } from '../subjects';
 
 describe('lessons split — 전수 무결성 검증', () => {
-  it('1. ALL_LESSONS 가 15 lesson · 257 step', () => {
+  it('1. ALL_LESSONS 가 15 lesson · 300 step', () => {
     expect(ALL_LESSONS.length).toBe(15);
     const totalSteps = ALL_LESSONS.reduce(
       (sum, l) => sum + l.steps.length,
       0,
     );
-    expect(totalSteps).toBe(257);
+    expect(totalSteps).toBe(300);
   });
 
   it('2. 모든 lesson 이 getLesson(subject, chapter, topic) 으로 역조회됨', () => {
@@ -60,9 +60,11 @@ describe('lessons split — 전수 무결성 검증', () => {
   });
 
   it('3. 모든 step.quizId 가 getQuizQuestion 으로 MCQ 매칭됨', () => {
+    // 단, quizId 가 없는 review (그룹 복습) step 은 검증 대상 아님.
     const broken: string[] = [];
     for (const lesson of ALL_LESSONS) {
       for (const step of lesson.steps) {
+        if (!step.quizId) continue; // review step skip
         const q = getQuizQuestion(step.quizId);
         if (!q) {
           broken.push(
@@ -210,6 +212,6 @@ describe('lessons split — 전수 무결성 검증', () => {
       0,
     );
     expect(chapterSum).toBe(lessonSum);
-    expect(chapterSum).toBe(257);
+    expect(chapterSum).toBe(300);
   });
 });

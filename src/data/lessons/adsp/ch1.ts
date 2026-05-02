@@ -183,6 +183,28 @@ const ADSP_1_1: Lesson = {
         },
       ],
     },
+    {
+      id: 'adsp-1-1-s1-review',
+      title: 'DIKW 피라미드 — 4단계 복습',
+      quizId: 'adsp-1-1-cp-01a',
+      group: 'adsp-1-1-s1',
+      dialogue: [
+        { pose: 'wave', text: '[DIKW 피라미드 — 4단계] 복습 시간이야!' },
+        { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
+        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
+        { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '복습 체크리스트',
+          body:
+            '바로 직전 스텝들에서 배운 개념·암기법·함정을 한 번 더 떠올리며 다음 그룹으로 넘어가요. 잘 안 떠오르는 항목이 있으면 이전 스텝으로 돌아가 확인하세요.',
+        },
+      ],
+    },
     // ─── 데이터 3가지 분류 기준 — 1 step → 4 substeps ───
     // ─── 데이터 3가지 분류 기준 — 1 step → 4 substeps (beginner-friendly 보강) ───
     {
@@ -481,6 +503,28 @@ const ADSP_1_1: Lesson = {
         },
       ],
     },
+    {
+      id: 'adsp-1-1-s2-review',
+      title: '데이터 분류 — 3축 동시 적용 복습',
+      quizId: 'adsp-1-1-cp-02',
+      group: 'adsp-1-1-s2',
+      dialogue: [
+        { pose: 'wave', text: '[데이터 분류 — 3축 동시 적용] 복습 시간이야!' },
+        { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
+        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
+        { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '복습 체크리스트',
+          body:
+            '바로 직전 스텝들에서 배운 개념·암기법·함정을 한 번 더 떠올리며 다음 그룹으로 넘어가요. 잘 안 떠오르는 항목이 있으면 이전 스텝으로 돌아가 확인하세요.',
+        },
+      ],
+    },
     // ─── SECI — 1 step → 5 substeps (암묵·형식 + 4 변환) ───
     {
       id: 'adsp-1-1-s3',
@@ -524,7 +568,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s3-seci',
-      title: 'SECI 4단계 — "공표연내"',
+      title: 'SECI 4단계',
       quizId: 'adsp-1-1-cp-03-mapping',
       dialogue: [
         { pose: 'wave', text: '암묵지 ↔ 형식지 변환은\n[4단계] 로 진행돼.' },
@@ -739,10 +783,32 @@ const ADSP_1_1: Lesson = {
         },
       ],
     },
+    {
+      id: 'adsp-1-1-s3-review',
+      title: '암묵지 · 형식지 — 두 가지 지식 복습',
+      quizId: 'adsp-1-1-cp-03',
+      group: 'adsp-1-1-s3',
+      dialogue: [
+        { pose: 'wave', text: '[암묵지 · 형식지 — 두 가지 지식] 복습 시간이야!' },
+        { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
+        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
+        { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '복습 체크리스트',
+          body:
+            '바로 직전 스텝들에서 배운 개념·암기법·함정을 한 번 더 떠올리며 다음 그룹으로 넘어가요. 잘 안 떠오르는 항목이 있으면 이전 스텝으로 돌아가 확인하세요.',
+        },
+      ],
+    },
     // ─── DB 특징 — 1 step → 5 substeps (overview + 공/통/저/변) ───
     {
       id: 'adsp-1-1-s4',
-      title: 'DB 4특징 — "공통저변"',
+      title: 'DB 4특징',
       quizId: 'adsp-1-1-cp-04',
       dialogue: [
         { pose: 'wave', text: '[DB] 는 [데이터베이스] 야!' },
@@ -1675,6 +1741,28 @@ const ADSP_1_1: Lesson = {
         },
       ],
     },
+    {
+      id: 'adsp-1-1-s4-review',
+      title: 'DB 4특징 복습',
+      quizId: 'adsp-1-1-cp-04',
+      group: 'adsp-1-1-s4',
+      dialogue: [
+        { pose: 'wave', text: '[DB 4특징] 복습 시간이야!' },
+        { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
+        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
+        { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '복습 체크리스트',
+          body:
+            '바로 직전 스텝들에서 배운 개념·암기법·함정을 한 번 더 떠올리며 다음 그룹으로 넘어가요. 잘 안 떠오르는 항목이 있으면 이전 스텝으로 돌아가 확인하세요.',
+        },
+      ],
+    },
     // ─── 기업 데이터베이스 7종 — 1 step → 8 substeps (DBMS·ERP·CRM·SCM·KMS·BI·BA) ───
     {
       id: 'adsp-1-1-s5',
@@ -2046,6 +2134,28 @@ const ADSP_1_1: Lesson = {
         },
       ],
     },
+    {
+      id: 'adsp-1-1-s5-review',
+      title: '기업 데이터베이스 — 7종 복습',
+      quizId: 'adsp-1-1-cp-05',
+      group: 'adsp-1-1-s5',
+      dialogue: [
+        { pose: 'wave', text: '[기업 데이터베이스 — 7종] 복습 시간이야!' },
+        { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
+        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
+        { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '복습 체크리스트',
+          body:
+            '바로 직전 스텝들에서 배운 개념·암기법·함정을 한 번 더 떠올리며 다음 그룹으로 넘어가요. 잘 안 떠오르는 항목이 있으면 이전 스텝으로 돌아가 확인하세요.',
+        },
+      ],
+    },
   ],
 };
 
@@ -2121,7 +2231,7 @@ const ADSP_1_2: Lesson = {
     // ─── 3V · 데이터 단위 — 1 step → 4 substeps ───
     {
       id: 'adsp-1-2-s1',
-      title: '빅데이터 단위 — "패지" 암기',
+      title: '빅데이터 단위 암기',
       quizId: 'adsp-1-2-cp-01-units',
       dialogue: [
         {
@@ -2193,7 +2303,7 @@ const ADSP_1_2: Lesson = {
     },
     {
       id: 'adsp-1-2-s1-volume',
-      title: '3V ① Volume — "데이터가 너무 많다"',
+      title: '3V ① Volume',
       quizId: 'adsp-1-2-cp-01-volume',
       dialogue: [
         { pose: 'wave', text: '첫째 V, [Volume] — 그냥 [양] 이야.' },
@@ -2224,7 +2334,7 @@ const ADSP_1_2: Lesson = {
     },
     {
       id: 'adsp-1-2-s1-variety',
-      title: '3V ② Variety — "형태가 너무 제각각"',
+      title: '3V ② Variety',
       quizId: 'adsp-1-2-cp-01-variety',
       dialogue: [
         { pose: 'wave', text: '둘째 V, [Variety] — 형태의 [다양성].' },
@@ -2255,7 +2365,7 @@ const ADSP_1_2: Lesson = {
     },
     {
       id: 'adsp-1-2-s1-velocity',
-      title: '3V ③ Velocity — "쉴 새 없이 들어온다"',
+      title: '3V ③ Velocity',
       quizId: 'adsp-1-2-cp-01-velocity',
       dialogue: [
         { pose: 'wave', text: '셋째 V, [Velocity] — 생성·처리 [속도].' },
@@ -2281,6 +2391,28 @@ const ADSP_1_2: Lesson = {
           title: '식별 팁 — "실시간 / 스트리밍" 이 핵심',
           body:
             '"실시간", "스트리밍", "초당 N 건", "즉시 판단" 이 키워드면 Velocity. 배치 처리만 등장하면 Velocity 가 아님 — 단순히 양이 많은 Volume 일 가능성.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-2-s1-review',
+      title: '빅데이터 단위 암기 복습',
+      quizId: 'adsp-1-2-cp-01-units',
+      group: 'adsp-1-2-s1',
+      dialogue: [
+        { pose: 'wave', text: '[빅데이터 단위 암기] 복습 시간이야!' },
+        { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
+        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
+        { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '복습 체크리스트',
+          body:
+            '바로 직전 스텝들에서 배운 개념·암기법·함정을 한 번 더 떠올리며 다음 그룹으로 넘어가요. 잘 안 떠오르는 항목이 있으면 이전 스텝으로 돌아가 확인하세요.',
         },
       ],
     },
@@ -2529,10 +2661,32 @@ const ADSP_1_2: Lesson = {
         },
       ],
     },
+    {
+      id: 'adsp-1-2-s2-review',
+      title: '빅데이터가 만들어내는 변화 — 4축 복습',
+      quizId: 'adsp-1-2-cp-02',
+      group: 'adsp-1-2-s2',
+      dialogue: [
+        { pose: 'wave', text: '[빅데이터가 만들어내는 변화 — 4축] 복습 시간이야!' },
+        { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
+        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
+        { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '복습 체크리스트',
+          body:
+            '바로 직전 스텝들에서 배운 개념·암기법·함정을 한 번 더 떠올리며 다음 그룹으로 넘어가요. 잘 안 떠오르는 항목이 있으면 이전 스텝으로 돌아가 확인하세요.',
+        },
+      ],
+    },
     // ─── 데이터 3법 (개정신) — 1 step → 4 substeps ───
     {
       id: 'adsp-1-2-s3',
-      title: '데이터 3법 — "개정신" 개요',
+      title: '데이터 3법 개요',
       quizId: 'adsp-1-2-cp-03',
       dialogue: [
         { pose: 'wave', text: '이번에는 [데이터 3법] 을 배워보자!' },
@@ -2675,6 +2829,28 @@ const ADSP_1_2: Lesson = {
           title: '시험 키워드',
           body:
             '"금융·신용정보", "마이데이터". 일반 개인정보면 개인정보보호법, 통신서비스면 정보통신망법.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-2-s3-review',
+      title: '데이터 3법 복습',
+      quizId: 'adsp-1-2-cp-03',
+      group: 'adsp-1-2-s3',
+      dialogue: [
+        { pose: 'wave', text: '[데이터 3법] 복습 시간이야!' },
+        { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
+        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
+        { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '복습 체크리스트',
+          body:
+            '바로 직전 스텝들에서 배운 개념·암기법·함정을 한 번 더 떠올리며 다음 그룹으로 넘어가요. 잘 안 떠오르는 항목이 있으면 이전 스텝으로 돌아가 확인하세요.',
         },
       ],
     },
@@ -2928,6 +3104,28 @@ const ADSP_1_2: Lesson = {
         },
       ],
     },
+    {
+      id: 'adsp-1-2-s4-review',
+      title: '빅데이터 비유 — 4가지 복습',
+      quizId: 'adsp-1-2-cp-04',
+      group: 'adsp-1-2-s4',
+      dialogue: [
+        { pose: 'wave', text: '[빅데이터 비유 — 4가지] 복습 시간이야!' },
+        { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
+        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
+        { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '복습 체크리스트',
+          body:
+            '바로 직전 스텝들에서 배운 개념·암기법·함정을 한 번 더 떠올리며 다음 그룹으로 넘어가요. 잘 안 떠오르는 항목이 있으면 이전 스텝으로 돌아가 확인하세요.',
+        },
+      ],
+    },
   ],
 };
 
@@ -2943,7 +3141,7 @@ const ADSP_1_3: Lesson = {
   steps: [
     {
       id: 'adsp-1-3-s1',
-      title: '핵심 3축 — "AI 비"',
+      title: '핵심 3축',
       quizId: 'adsp-1-3-cp-01',
       dialogue: [
         {
@@ -3039,7 +3237,7 @@ const ADSP_1_3: Lesson = {
     // ─── Digital CAMERA 6역량 — 1 step → 7 substeps (overview + 6 역량) ───
     {
       id: 'adsp-1-3-s3',
-      title: 'DS 6역량 — "Digital CAMERA" 개요',
+      title: 'DS 6역량 개요',
       quizId: 'adsp-1-3-cp-03',
       dialogue: [
         {
@@ -3306,6 +3504,28 @@ const ADSP_1_3: Lesson = {
           title: '시험 키워드',
           body:
             '"창의·통찰", "디자인 감각". 단순 발표면 Communication, 새 가설 R&D 면 Research. Management 는 6역량에 없음.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-1-3-s3-review',
+      title: 'DS 6역량 복습',
+      quizId: 'adsp-1-3-cp-03',
+      group: 'adsp-1-3-s3',
+      dialogue: [
+        { pose: 'wave', text: '[DS 6역량] 복습 시간이야!' },
+        { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
+        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
+        { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '복습 체크리스트',
+          body:
+            '바로 직전 스텝들에서 배운 개념·암기법·함정을 한 번 더 떠올리며 다음 그룹으로 넘어가요. 잘 안 떠오르는 항목이 있으면 이전 스텝으로 돌아가 확인하세요.',
         },
       ],
     },

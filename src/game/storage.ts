@@ -80,6 +80,20 @@ export interface ProgressStore {
    * 무한 XP 가 쌓이지 않게 함. 세트 완주 보너스 (정확도·스트릭) 는 sessions 에서 별도.
    */
   lessonXp?: number;
+  /**
+   * 학습 모드 (LessonScreen / DialogueLesson) inline 풀이의 일별 집계.
+   * 일일 퀘스트 (volume / variety) + streak 계산에 sessions 와 함께 활용.
+   * key = 'YYYY-MM-DD' (로컬 자정 기준). 30일 초과분은 자동 정리.
+   */
+  lessonAttemptsByDay?: Record<
+    string,
+    { total: number; bySubject: Partial<Record<Subject, number>> }
+  >;
+  /**
+   * 일일 퀘스트 3종 모두 완료 시 보너스 XP (+50) 청구한 날짜 (YYYY-MM-DD).
+   * 같은 날 중복 지급 방지. 오늘이 아니면 다음 청구 가능.
+   */
+  dailyBonusClaimedAt?: string;
   createdAt: number;
   updatedAt: number;
 }
@@ -117,6 +131,8 @@ function loadStore(): ProgressStore {
       lastDailyMissionAt: parsed.lastDailyMissionAt,
       activeSubject: parsed.activeSubject,
       lessonXp: parsed.lessonXp,
+      lessonAttemptsByDay: parsed.lessonAttemptsByDay ?? {},
+      dailyBonusClaimedAt: parsed.dailyBonusClaimedAt,
       createdAt: parsed.createdAt ?? Date.now(),
       updatedAt: parsed.updatedAt ?? Date.now(),
     };
@@ -235,6 +251,60 @@ export function recordSessionSummary(summary: QuestSummary): void {
 }
 
 /**
+ * questionId 에서 subject 추출. 형식 `<subject>-<chapter>-...` 이라
+ * 첫 segment 가 subject. 알 수 없으면 undefined.
+ */
+function subjectFromQuestionId(questionId: string): Subject | undefined {
+  const seg = questionId.split('-')[0];
+  if (seg === 'adsp' || seg === 'sqld') return seg;
+  return undefined;
+}
+
+/** epoch ms → 'YYYY-MM-DD' (로컬 자정 기준). */
+function dayKey(at: number): string {
+  const d = new Date(at);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${dd}`;
+}
+
+/**
+ * lessonAttemptsByDay 에 오늘 +1. 30일 초과 자동 정리.
+ * sessions 와 별개 카운터이므로 일일 퀘스트 / streak 계산에 합쳐 사용.
+ */
+function bumpLessonAttempt(
+  store: ProgressStore,
+  questionId: string,
+  at: number,
+): ProgressStore {
+  const subject = subjectFromQuestionId(questionId);
+  const key = dayKey(at);
+  const prev = store.lessonAttemptsByDay ?? {};
+  const today = prev[key] ?? { total: 0, bySubject: {} };
+  const nextToday = {
+    total: today.total + 1,
+    bySubject: {
+      ...today.bySubject,
+      ...(subject
+        ? { [subject]: (today.bySubject[subject] ?? 0) + 1 }
+        : {}),
+    },
+  };
+  // 30일 초과 자동 정리 — 자정 기준 30일 전 이전 day key 제거.
+  const cutoff = new Date(at);
+  cutoff.setHours(0, 0, 0, 0);
+  cutoff.setDate(cutoff.getDate() - 30);
+  const cutoffKey = dayKey(cutoff.getTime());
+  const cleaned: typeof prev = {};
+  for (const [k, v] of Object.entries(prev)) {
+    if (k >= cutoffKey) cleaned[k] = v;
+  }
+  cleaned[key] = nextToday;
+  return { ...store, lessonAttemptsByDay: cleaned };
+}
+
+/**
  * 레슨 스텝의 단일 문제 응답 기록.
  * Quest 세션이 아닌 개념 학습 중 즉석 풀이도 같은 stat 으로 누적됩니다.
  * 같은 문제의 [첫 정답] 에만 +XP_PER_LESSON_CORRECT 부여.
@@ -253,8 +323,10 @@ export function recordSingleAnswer(
     correct && (!prevStat || prevStat.correct === 0);
   const xpAwarded = isFirstCorrect ? XP_PER_LESSON_CORRECT : 0;
 
-  const next = applyAnswer(current, questionId, { correct, timeMs, at });
+  let next = applyAnswer(current, questionId, { correct, timeMs, at });
   const nextLessonXp = (current.lessonXp ?? 0) + xpAwarded;
+  // 일일 퀘스트 / streak 계산용 — 학습 모드 풀이도 일별로 집계.
+  next = bumpLessonAttempt(next, questionId, at);
   commit({ ...next, lessonXp: nextLessonXp, updatedAt: at });
 
   // 서버에도 반영 (인증돼 있을 때만, fire-and-forget). question_stats 는 PUT-style.
@@ -269,6 +341,40 @@ export function recordSingleAnswer(
   }
 
   return xpAwarded;
+}
+
+/** 일일 퀘스트 3종 모두 완료 시 부여되는 보너스 XP. 같은 날 1회 한정. */
+export const XP_DAILY_BONUS = 50;
+
+/**
+ * 일일 퀘스트 보너스 XP 청구. 오늘 이미 청구했으면 0 반환.
+ * 호출 측 (QuestsPage) 가 3종 완료 여부를 판단 후 호출. 같은 날 중복 청구는
+ * 자동 차단 (dailyBonusClaimedAt 에 오늘 날짜 마킹).
+ *
+ * @returns 지급된 XP (이미 청구했으면 0).
+ */
+export function claimDailyQuestBonus(): number {
+  const at = Date.now();
+  const todayKey = dayKey(at);
+  if (current.dailyBonusClaimedAt === todayKey) return 0;
+  const nextLessonXp = (current.lessonXp ?? 0) + XP_DAILY_BONUS;
+  commit({
+    ...current,
+    lessonXp: nextLessonXp,
+    dailyBonusClaimedAt: todayKey,
+    updatedAt: at,
+  });
+  // 서버에 lessonXp 푸시 — 인증돼 있을 때만.
+  void pushProgressMetaToServer({ lesson_xp: nextLessonXp });
+  return XP_DAILY_BONUS;
+}
+
+/** 오늘 이미 보너스 청구했는지. */
+export function hasDailyBonusBeenClaimedToday(
+  store: ProgressStore,
+  now: number = Date.now(),
+): boolean {
+  return store.dailyBonusClaimedAt === dayKey(now);
 }
 
 /** 개발자/사용자용 리셋 (#/stats 에 연결 예정). */

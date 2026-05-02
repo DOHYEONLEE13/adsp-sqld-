@@ -146,6 +146,8 @@ export default function LessonScreen({
   const chapterSolvedCount = useMemo(() => {
     let n = 0;
     for (const entry of chapterSteps) {
+      // review (quiz-less) step 은 풀이 카운트에서 제외.
+      if (!entry.step.quizId) continue;
       const stat = progress.questionStats[entry.step.quizId];
       // 최근에 맞혔고 오답 streak 가 0 이면 "풀었음" 으로 간주.
       if (stat && stat.correct > 0 && stat.lastCorrect) n++;
@@ -157,7 +159,9 @@ export default function LessonScreen({
   const chapterRatio =
     chapterTotal === 0 ? 0 : (chapterIdx + 1) / chapterTotal;
 
-  const quizQuestion = getQuizQuestion(currentStep.quizId);
+  const quizQuestion = currentStep.quizId
+    ? getQuizQuestion(currentStep.quizId)
+    : null;
   const savedQuiz = quizState[stepIdx];
 
   // --- handlers ---

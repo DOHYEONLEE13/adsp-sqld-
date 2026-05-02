@@ -84,7 +84,12 @@ export default function DialogueLesson({
   const [chosen, setChosen] = useState<number | null>(null);
   const [correct, setCorrect] = useState<boolean | null>(null);
   // 회독 진입 시 reminder 카드 노출 여부. true 면 카드 화면, false 면 본 학습으로 진입.
-  const [showReminder, setShowReminder] = useState<boolean>(isReplay);
+  // review step (id 끝이 `-review`) 은 첫 진입에도 강제로 카드 노출.
+  const initialStep = lesson?.steps[initialStepIdx ?? 0];
+  const initialIsReview = initialStep?.id.endsWith('-review') ?? false;
+  const [showReminder, setShowReminder] = useState<boolean>(
+    isReplay || initialIsReview,
+  );
   const startedAtRef = useRef<number>(Date.now());
   const [xpToast, setXpToast] = useState<{ amount: number; key: number } | null>(
     null,
@@ -96,8 +101,11 @@ export default function DialogueLesson({
     setPhase('narrate');
     setChosen(null);
     setCorrect(null);
-    if (isReplay) setShowReminder(true);
-  }, [stepIdx, isReplay]);
+    // 새 step 이 review 면 reminder 카드 강제 노출. 그 외엔 isReplay 모드일 때만.
+    const nextStep = lesson?.steps[stepIdx];
+    const nextIsReview = nextStep?.id.endsWith('-review') ?? false;
+    if (isReplay || nextIsReview) setShowReminder(true);
+  }, [stepIdx, isReplay, lesson]);
 
   if (!lesson) {
     return (
@@ -121,7 +129,10 @@ export default function DialogueLesson({
   const hasDialogue = dialogue.length > 0;
   const turn = hasDialogue ? dialogue[Math.min(turnIdx, dialogue.length - 1)] : null;
 
-  const quizQuestion = getQuizQuestion(step.quizId);
+  // 그룹 끝 review step — id 가 `-review` 로 끝나면 무조건 2회독 UX 강제 (reminder
+  // 카드 + 그룹 overview quiz 재사용). 강제 노출은 useEffect/initial state 에서
+  // 처리하므로 여기서 별도 분기 불필요.
+  const quizQuestion = step.quizId ? getQuizQuestion(step.quizId) : null;
 
   // ── Sub-step group trail ─────────────────────────────────────────────
   // 명시적 step.group 우선. 없으면 id 의 `-s\d+` prefix 가 그룹 키.
@@ -168,7 +179,11 @@ export default function DialogueLesson({
       setTurnIdx(turnIdx + 1);
       return;
     }
-    // 마지막 대사 → 질문으로
+    // 마지막 대사 → 질문으로 (quizId 없는 step 은 그냥 다음 step 진행)
+    if (!quizQuestion) {
+      handleNextStep();
+      return;
+    }
     startedAtRef.current = Date.now();
     setPhase('question');
   };
@@ -334,7 +349,11 @@ export default function DialogueLesson({
               type="button"
               onClick={() => {
                 setShowReminder(false);
-                // 곧장 문제로 — narrate 단계 스킵
+                // quiz 없는 step (드물게) → 바로 다음 step. 일반/review 는 곧장 문제로.
+                if (!quizQuestion) {
+                  handleNextStep();
+                  return;
+                }
                 startedAtRef.current = Date.now();
                 setPhase('question');
               }}
@@ -345,7 +364,7 @@ export default function DialogueLesson({
                 color: visual.color,
               }}
             >
-              확인했어 · 문제 풀기
+              {quizQuestion ? '확인했어 · 문제 풀기' : '확인했어 · 다음 스텝'}
             </button>
             <button
               type="button"

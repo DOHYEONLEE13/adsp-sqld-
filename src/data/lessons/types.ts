@@ -95,8 +95,12 @@ export interface LessonStep {
    * 이 활성화됨. blocks 는 "📖 상세보기" 바텀시트에서 그대로 재사용.
    */
   dialogue?: DialogueTurn[];
-  /** 이 개념을 막 배운 사람이 바로 풀 문제 id (concept-practice.json). */
-  quizId: string;
+  /**
+   * 이 개념을 막 배운 사람이 바로 풀 문제 id (concept-practice.json).
+   * 그룹 마지막 "복습" step 처럼 quiz 가 없는 step 은 생략 가능.
+   * 부재 = review 전용 step (UI 가 quiz phase 를 스킵하고 다음 step CTA 만 노출).
+   */
+  quizId?: string;
   /**
    * 명시적 sub-step 그룹 키. 미지정 시 id 의 `-s\d+` prefix 가 그룹.
    * 한 lesson 안에서 여러 주제 패밀리 (예: s4 안의 DB / DW / DM / Lake)

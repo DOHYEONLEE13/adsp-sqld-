@@ -16,10 +16,20 @@ const ADSP_2_1: Lesson = {
       title: '분석 4유형 — What × How (개요)',
       quizId: 'adsp-2-1-cp-01',
       dialogue: [
-        { pose: 'wave', text: '분석 프로젝트 실패 1위 — 엉뚱한 방법을 엉뚱한 문제에.' },
-        { pose: 'think', text: '두 축: [What] (풀 것이 분명?) × [How] (푸는 법 아는?).' },
-        { pose: 'happy', text: '4 칸: Optimization · Solution · Insight · Discovery.' },
-        { pose: 'idle', text: '먼저 매트릭스 구조부터.' },
+        { pose: 'wave', text: '이번에는 [분석 4유형] 을 배워보자!' },
+        {
+          pose: 'think',
+          text: '분석의 첫 단추는\n[What × How] 매트릭스야:\n· What = 풀 것이 분명?\n· How = 푸는 방법을 안다?',
+        },
+        {
+          pose: 'lightbulb',
+          text: '2 × 2 = [4유형]:\n· Optimization · Solution\n· Insight · Discovery',
+        },
+        {
+          pose: 'happy',
+          text: '시험 단골 — 사례 → 유형 매칭!\n각 유형의 What/How 구분이 핵심.',
+        },
+        { pose: 'idle', text: '4유형 매칭 문제!' },
       ],
       blocks: [
         {
@@ -42,13 +52,26 @@ const ADSP_2_1: Lesson = {
     },
     {
       id: 'adsp-2-1-s1-opt',
-      title: '4유형 ① Optimization — "둘 다 안다"',
+      title: '4유형 ① Optimization',
       quizId: 'adsp-2-1-cp-01-opt',
       dialogue: [
-        { pose: 'wave', text: '[Optimization] — 풀 [문제] 도 알고, 푸는 [방법] 도 안다.' },
-        { pose: 'think', text: '이미 굴러가는 시스템을 [더 잘 굴러가게] 하는 거.' },
-        { pose: 'happy', text: '예: 택배 회사가 이미 쓰는 경로 최적화 모델의 파라미터만 조정해 비용 5% 추가 절감.' },
-        { pose: 'idle', text: 'Optimization 예시를 골라봐.' },
+        {
+          pose: 'wave',
+          text: '첫째 [Optimization] —\nWhat ○ × How ○!',
+        },
+        {
+          pose: 'think',
+          text: '둘 다 안다.\n[지금 시스템] 을 미세 조정해\n[효율] 을 더 짜내는 거야.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜 "둘 다 안다" 면 그냥 하면 되지?\n→ 큰 변화는 위험.\n[점진 개선] 으로 ROI ↑.',
+        },
+        {
+          pose: 'happy',
+          text: '비유: 시험 점수 80 → 85.\n공부법은 같은데 [미세 조정] 으로\n점수 올리는 것!\n쿠팡 배송 5% 절감도 같은 식.',
+        },
+        { pose: 'idle', text: 'Optimization 사례 문제!' },
       ],
       blocks: [
         {
@@ -73,13 +96,26 @@ const ADSP_2_1: Lesson = {
     },
     {
       id: 'adsp-2-1-s1-sol',
-      title: '4유형 ② Solution — "문제는 알지만 방법을 모른다"',
+      title: '4유형 ② Solution',
       quizId: 'adsp-2-1-cp-01-sol',
       dialogue: [
-        { pose: 'wave', text: '[Solution] — 풀 [문제] 는 분명, 푸는 [방법] 이 미정.' },
-        { pose: 'think', text: '예: "고객 이탈을 예측하자" 는 분명한데, 어떤 모델로 풀어야 할진 아직 정해지지 않았어.' },
-        { pose: 'happy', text: '여러 후보(로지스틱·랜덤포레스트·XGBoost) 를 비교해 가장 잘 맞는 걸 고르는 단계.' },
-        { pose: 'idle', text: 'Solution 예시를 골라봐.' },
+        {
+          pose: 'wave',
+          text: '둘째 [Solution] —\nWhat ○ × How ✗!',
+        },
+        {
+          pose: 'think',
+          text: '[문제는 분명] —\n그런데 [방법] 이 아직 안 정해진 상태야.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜 필요? — 같은 문제도\n모델·기법이 여러 개.\n[비교·검증] 해서 가장 맞는 걸 선택!',
+        },
+        {
+          pose: 'happy',
+          text: '비유: "이번 시험 점수 올려야 해" — 분명.\n근데 [강의? 모의고사? 인강?]\n어떤 방법이 효과 좋을지 비교!',
+        },
+        { pose: 'idle', text: 'Solution 사례 문제!' },
       ],
       blocks: [
         {
@@ -104,13 +140,26 @@ const ADSP_2_1: Lesson = {
     },
     {
       id: 'adsp-2-1-s1-ins',
-      title: '4유형 ③ Insight — "방법은 있지만 풀 대상이 없다"',
+      title: '4유형 ③ Insight',
       quizId: 'adsp-2-1-cp-01-ins',
       dialogue: [
-        { pose: 'wave', text: '[Insight] — 푸는 [방법] 은 안다, 풀 [대상] 이 미정.' },
-        { pose: 'think', text: '"우리 회사 데이터로 뭐 재미난 거 없을까?" 식이야.' },
-        { pose: 'happy', text: '예: 보유한 회원 데이터에서 새로운 고객 세그먼트(VIP·휴면·신규맘) 를 발굴.' },
-        { pose: 'idle', text: 'Insight 예시를 골라봐.' },
+        {
+          pose: 'wave',
+          text: '셋째 [Insight] —\nWhat ✗ × How ○!',
+        },
+        {
+          pose: 'think',
+          text: '[방법은 익숙] —\n그런데 [어디 적용할지] 가 미정인 상태야.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜? — 데이터가 쌓였는데\n"여기서 뭐 재미난 거 없을까?"\n탐색하다 [숨은 패턴] 발견!',
+        },
+        {
+          pose: 'happy',
+          text: '비유: 모의고사 5회 본 후\n"어, 매번 비슷한 실수 패턴이?"\n→ 약점 영역 [발굴]!',
+        },
+        { pose: 'idle', text: 'Insight 사례 문제!' },
       ],
       blocks: [
         {
@@ -135,13 +184,26 @@ const ADSP_2_1: Lesson = {
     },
     {
       id: 'adsp-2-1-s1-dis',
-      title: '4유형 ④ Discovery — "둘 다 모른다"',
+      title: '4유형 ④ Discovery',
       quizId: 'adsp-2-1-cp-01-dis',
       dialogue: [
-        { pose: 'wave', text: '[Discovery] — 풀 [문제] 도, 푸는 [방법] 도 모른다.' },
-        { pose: 'think', text: '신규 사업·미지의 시장이라 [가설부터] 세워야 해.' },
-        { pose: 'happy', text: '예: 메타버스 사업을 처음 시작하는 회사 — 어떤 데이터를 쌓아 어떤 가치를 낼지 자체가 미정.' },
-        { pose: 'idle', text: 'Discovery 예시를 골라봐.' },
+        {
+          pose: 'wave',
+          text: '넷째 [Discovery] —\nWhat ✗ × How ✗!',
+        },
+        {
+          pose: 'think',
+          text: '[가설부터] 세워야 하는 단계야.\n둘 다 막막한 상태.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜? — 신사업·신영역 진입 시\n"무엇을 풀지" 도 "어떻게 풀지" 도\n전부 [탐험] 부터 시작!',
+        },
+        {
+          pose: 'happy',
+          text: '비유: 진로 자체를 모름 —\n"내가 뭘 잘하는지부터 알아야겠다!"\n메타버스 같은 신사업 진출도 같은 식.',
+        },
+        { pose: 'idle', text: 'Discovery 사례 문제!' },
       ],
       blocks: [
         {
@@ -164,15 +226,48 @@ const ADSP_2_1: Lesson = {
         },
       ],
     },
+    {
+      id: 'adsp-2-1-s1-review',
+      title: '분석 4유형 — What × How 복습',
+      quizId: 'adsp-2-1-cp-01',
+      group: 'adsp-2-1-s1',
+      dialogue: [
+        { pose: 'wave', text: '[분석 4유형 — What × How] 복습 시간이야!' },
+        { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
+        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
+        { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '복습 체크리스트',
+          body:
+            '바로 직전 스텝들에서 배운 개념·암기법·함정을 한 번 더 떠올리며 다음 그룹으로 넘어가요. 잘 안 떠오르는 항목이 있으면 이전 스텝으로 돌아가 확인하세요.',
+        },
+      ],
+    },
     // ─── KDD vs CRISP-DM — 1 step → 3 substeps (overview + KDD + CRISP) ───
     {
       id: 'adsp-2-1-s2',
       title: '분석 프로세스 — KDD vs CRISP-DM 개요',
       quizId: 'adsp-2-1-cp-02',
       dialogue: [
-        { pose: 'wave', text: '분석 프로세스 두 표준 — [KDD] 5단계 · [CRISP-DM] 6단계.' },
-        { pose: 'think', text: '큰 틀은 같지만 단계 수·이름이 다름.' },
-        { pose: 'idle', text: '먼저 비교 매트릭스부터.' },
+        { pose: 'wave', text: '이번에는 [분석 프로세스] 를 배워보자!' },
+        {
+          pose: 'think',
+          text: '대표 두 가지:\n· [KDD] = 5단계 (학술적)\n· [CRISP-DM] = 6단계 (산업적)',
+        },
+        {
+          pose: 'lightbulb',
+          text: '비유 — 요리!\n· KDD: [식재료] 보고 메뉴 결정\n· CRISP-DM: [손님 주문] 듣고 시작',
+        },
+        {
+          pose: 'happy',
+          text: '시험 단골 — 단계 수·이름·순서 매칭!\nCRISP-DM 6단계는\n[업데데이트모델평가전] 으로 외우자.',
+        },
+        { pose: 'idle', text: 'KDD vs CRISP-DM 비교 문제!' },
       ],
       blocks: [
         {
@@ -195,9 +290,20 @@ const ADSP_2_1: Lesson = {
       title: 'KDD 5단계',
       quizId: 'adsp-2-1-cp-02-kdd',
       dialogue: [
-        { pose: 'wave', text: '[KDD] 5단계: 선택·전처리·변환·마이닝·해석/평가.' },
-        { pose: 'think', text: '학술적 색채. 데이터부터 시작 (업무이해 단계 없음).' },
-        { pose: 'idle', text: 'KDD 단계 순서를 골라봐.' },
+        { pose: 'wave', text: '[KDD] 5단계 — 학술 표준!' },
+        {
+          pose: 'think',
+          text: '[선택 → 전처리 → 변환\n→ 마이닝 → 해석/평가]\n5 단계.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜? — 1996년 학자들이\n"Knowledge Discovery in\nDatabase" 를 표준화한 거야.',
+        },
+        {
+          pose: 'happy',
+          text: '비유: 식재료 잔뜩 보고 —\n"이 재료들로 뭘 만들 수 있나?"\n[데이터 → 지식] 발견 흐름!',
+        },
+        { pose: 'idle', text: 'KDD 단계 순서 문제!' },
       ],
       blocks: [
         {
@@ -215,12 +321,23 @@ const ADSP_2_1: Lesson = {
     },
     {
       id: 'adsp-2-1-s2-crisp',
-      title: 'CRISP-DM 6단계 — "업데데이트모델평가전"',
+      title: 'CRISP-DM 6단계',
       quizId: 'adsp-2-1-cp-02-crisp',
       dialogue: [
-        { pose: 'wave', text: '[CRISP-DM] 6단계: 업무→데이터이해→준비→모델링→평가→전개.' },
-        { pose: 'think', text: '"[업데데이트모델평가전]" 그대로 시험에 나옴.' },
-        { pose: 'idle', text: 'CRISP-DM 단계 순서를 골라봐.' },
+        { pose: 'wave', text: '[CRISP-DM] 6단계 — 산업 표준!' },
+        {
+          pose: 'think',
+          text: '[업무이해 → 데이터이해\n→ 데이터준비 → 모델링\n→ 평가 → 전개]\n6 단계.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜? — KDD 가 데이터부터라면\nCRISP-DM 은 [업무이해] 부터.\n"비즈니스 문제 → 데이터" 흐름.',
+        },
+        {
+          pose: 'happy',
+          text: '암기법: [업데데이트모델평가전].\n비유: 식당 — 손님 주문 듣고\n식재료 준비 → 요리 → 평가 → 서빙!',
+        },
+        { pose: 'idle', text: 'CRISP-DM 단계 순서 문제!' },
       ],
       blocks: [
         {
@@ -237,15 +354,48 @@ const ADSP_2_1: Lesson = {
         },
       ],
     },
+    {
+      id: 'adsp-2-1-s2-review',
+      title: '분석 프로세스 — KDD vs CRISP-DM 복습',
+      quizId: 'adsp-2-1-cp-02',
+      group: 'adsp-2-1-s2',
+      dialogue: [
+        { pose: 'wave', text: '[분석 프로세스 — KDD vs CRISP-DM] 복습 시간이야!' },
+        { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
+        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
+        { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '복습 체크리스트',
+          body:
+            '바로 직전 스텝들에서 배운 개념·암기법·함정을 한 번 더 떠올리며 다음 그룹으로 넘어가요. 잘 안 떠오르는 항목이 있으면 이전 스텝으로 돌아가 확인하세요.',
+        },
+      ],
+    },
     // ─── 하향식 4단계 — 1 step → 5 substeps ───
     {
       id: 'adsp-2-1-s3',
-      title: '하향식 접근 — "탐·정·해·타" 개요',
+      title: '하향식 접근 개요',
       quizId: 'adsp-2-1-cp-03',
       dialogue: [
-        { pose: 'wave', text: '문제가 분명할 때 쓰는 정석 — [하향식 접근].' },
-        { pose: 'think', text: '4단계: [탐]색 → [정]의 → [해]결방안 → [타]당성. "[탐정해타]" 로 외워.' },
-        { pose: 'idle', text: '먼저 4단계 순서를 확인.' },
+        { pose: 'wave', text: '이번에는 [하향식 접근] 을 배워보자!' },
+        {
+          pose: 'think',
+          text: '문제가 분명할 때 정석 — 4단계:\n· [탐]색\n· [정]의\n· [해]결방안\n· [타]당성',
+        },
+        {
+          pose: 'lightbulb',
+          text: '줄여서 [탐정해타] 로 외우자!',
+        },
+        {
+          pose: 'happy',
+          text: '비유: 진로 결정 같아!\n넓게 후보 [탐색] → 측정 가능 [정의]\n→ 방법 [해결] → 가능한지 [타당].',
+        },
+        { pose: 'idle', text: '탐정해타 4단계 순서 문제!' },
       ],
       blocks: [
         {
@@ -264,13 +414,23 @@ const ADSP_2_1: Lesson = {
     },
     {
       id: 'adsp-2-1-s3-explore',
-      title: '하향식 ① 문제 [탐]색 — "넓게 훑는다"',
+      title: '하향식 ① 문제 탐색',
       quizId: 'adsp-2-1-cp-03-explore',
       dialogue: [
-        { pose: 'wave', text: '첫 단계 [탐] — 어떤 문제들이 있는지 [넓게] 모으는 단계.' },
-        { pose: 'think', text: '회사 안(업·제·고·에) + 회사 밖(STEEP) 두 렌즈로 빠짐없이 둘러봐.' },
-        { pose: 'happy', text: '예: "신상품 매출 침체" / "고객 이탈 가속" / "원자재 가격 변동" 같은 후보들을 줄줄이 적는 단계야.' },
-        { pose: 'idle', text: '탐색 단계 행동을 골라봐.' },
+        { pose: 'wave', text: '① [탐색] — 후보를 넓게 훑어!' },
+        {
+          pose: 'think',
+          text: '[후보를 넓게] 모으는 단계.\n내부 환경 + 외부 환경 둘 다 봐.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜? — 좁게 보면 더 좋은 후보를 놓침.\n· 내부 [업·제·고·에]\n  (업무·제품·고객·에코)\n· 외부 [STEEP]\n  (사회·기술·경제·환경·정치)',
+        },
+        {
+          pose: 'happy',
+          text: '비유: 진로 결정 시 —\n"의사·교사·개발자·디자이너·창업..."\n다 적어보는 거랑 같아!',
+        },
+        { pose: 'idle', text: '탐색 단계 행동 문제!' },
       ],
       blocks: [
         {
@@ -295,13 +455,23 @@ const ADSP_2_1: Lesson = {
     },
     {
       id: 'adsp-2-1-s3-define',
-      title: '하향식 ② 문제 [정]의 — "측정 가능하게 다시 쓴다"',
+      title: '하향식 ② 문제 정의',
       quizId: 'adsp-2-1-cp-03-define',
       dialogue: [
-        { pose: 'wave', text: '둘째 [정] — 후보 중 하나를 골라 [숫자로 풀 수 있게] 다시 써.' },
-        { pose: 'think', text: '"매출 부진" 은 분석 문제 아냐. "다음 달 이탈 확률 예측 → 이탈률 5%↓" 가 분석 문제.' },
-        { pose: 'happy', text: '비즈니스 언어 → 데이터·지표 언어로 [번역] 하는 단계.' },
-        { pose: 'idle', text: '정의 단계 행동을 골라봐.' },
+        { pose: 'wave', text: '② [정의] — 측정 가능하게!' },
+        {
+          pose: 'think',
+          text: '후보 중 하나를 골라\n[숫자로 풀 수 있게] 명확히 정의해.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜? — "매출 부진" 같은 막연한 표현으론\n해결 못 함. [측정 가능한 KPI] 로\n번역해야 풀 수 있어!',
+        },
+        {
+          pose: 'happy',
+          text: '비유: "좋은 직장" (모호)\n→ "연봉 X 이상 + 워라밸 Y\n+ 출퇴근 Z 분 이내" (측정 가능)!',
+        },
+        { pose: 'idle', text: '정의 단계 행동 문제!' },
       ],
       blocks: [
         {
@@ -326,13 +496,23 @@ const ADSP_2_1: Lesson = {
     },
     {
       id: 'adsp-2-1-s3-solve',
-      title: '하향식 ③ [해]결방안 탐색 — "어떤 방법으로?"',
+      title: '하향식 ③ 해결방안 탐색',
       quizId: 'adsp-2-1-cp-03-solve',
       dialogue: [
-        { pose: 'wave', text: '셋째 [해] — 정의된 문제에 [어떤 도구·기법] 으로 답을 낼지 비교.' },
-        { pose: 'think', text: '예: "이탈 예측" 을 로지스틱·랜덤포레스트·XGBoost 중 무엇으로 풀까?' },
-        { pose: 'happy', text: '실행은 아직. "이걸 쓸 수 있을까?" 까지의 검토 단계.' },
-        { pose: 'idle', text: '해결방안 단계 행동을 골라봐.' },
+        { pose: 'wave', text: '③ [해결방안] — 어떤 방법으로?' },
+        {
+          pose: 'think',
+          text: '정의된 문제를 [어떤 도구·기법] 으로\n풀지 비교 검토하는 단계.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜? — 같은 문제도 여러 풀이법.\n로지·랜포·XGB 비교하듯,\n"가장 맞는" 기법을 선택!',
+        },
+        {
+          pose: 'happy',
+          text: '비유: "연봉 X" 가 목표면 —\n[전공 살리기? 고시? 자격증? 인턴?]\n방법을 비교!',
+        },
+        { pose: 'idle', text: '해결방안 단계 문제!' },
       ],
       blocks: [
         {
@@ -357,13 +537,23 @@ const ADSP_2_1: Lesson = {
     },
     {
       id: 'adsp-2-1-s3-feas',
-      title: '하향식 ④ [타]당성 검토 — "정말 굴러갈까?"',
+      title: '하향식 ④ 타당성 검토',
       quizId: 'adsp-2-1-cp-03-feas',
       dialogue: [
-        { pose: 'wave', text: '마지막 [타] — 실행 직전 [3축] 으로 실행 가능성 최종 점검.' },
-        { pose: 'think', text: '경제적(돈 되나?) · 기술적(만들 수 있나?) · 운영적(조직이 받아들이나?).' },
-        { pose: 'happy', text: '한 축이라도 빨간불이면 다시 정의·해결방안으로 회귀.' },
-        { pose: 'idle', text: '타당성 검토 활동을 골라봐.' },
+        { pose: 'wave', text: '④ [타당성 검토] — 정말 굴러갈까?' },
+        {
+          pose: 'think',
+          text: '실행 직전 [3축] 으로 점검:\n· [경제] (돈)\n· [기술] (만들 수 있나)\n· [운영] (조직이 돌릴 수 있나)',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜? — 한 축이라도 빨간불이면\n실행해도 망함. 미리 [회귀] 해서\n다른 후보 검토!',
+        },
+        {
+          pose: 'happy',
+          text: '비유: "고시" 정했는데 —\n돈 부족? 시험 너무 어려움?\n부모님 반대?\n한 축 빨간불이면 재고!',
+        },
+        { pose: 'idle', text: '타당성 단계 문제!' },
       ],
       blocks: [
         {
@@ -386,15 +576,48 @@ const ADSP_2_1: Lesson = {
         },
       ],
     },
+    {
+      id: 'adsp-2-1-s3-review',
+      title: '하향식 접근 복습',
+      quizId: 'adsp-2-1-cp-03',
+      group: 'adsp-2-1-s3',
+      dialogue: [
+        { pose: 'wave', text: '[하향식 접근] 복습 시간이야!' },
+        { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
+        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
+        { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '복습 체크리스트',
+          body:
+            '바로 직전 스텝들에서 배운 개념·암기법·함정을 한 번 더 떠올리며 다음 그룹으로 넘어가요. 잘 안 떠오르는 항목이 있으면 이전 스텝으로 돌아가 확인하세요.',
+        },
+      ],
+    },
     // ─── 분석 방법론 5종 — 1 step → 6 substeps ───
     {
       id: 'adsp-2-1-s4',
       title: '분석 방법론 5종 — 개요',
       quizId: 'adsp-2-1-cp-04',
       dialogue: [
-        { pose: 'wave', text: '분석 방법론 5종 (SW공학에서 넘어옴).' },
-        { pose: 'think', text: '[Waterfall] · [Prototype] · [Spiral] · [Agile] · [RAD].' },
-        { pose: 'idle', text: '먼저 5종 매칭 + 상황별 선택.' },
+        { pose: 'wave', text: '이번에는 [분석 방법론 5종] 을 배워보자!' },
+        {
+          pose: 'think',
+          text: 'SW 공학에서 넘어온 5종:\n· [Waterfall]\n· [Prototype]\n· [Spiral]\n· [Agile]\n· [RAD]',
+        },
+        {
+          pose: 'lightbulb',
+          text: '각 방법론은 [상황별로] 강점이 달라.\n시험은 "어떤 상황에 어떤 방법론?"\n매칭이 핵심!',
+        },
+        {
+          pose: 'happy',
+          text: '비유: 시험 공부 전략 같아!\n계획적(Waterfall) / 시제품(Prototype) /\n위험 점검(Spiral) /\n짧은 스프린트(Agile) / 단기(RAD)',
+        },
+        { pose: 'idle', text: '방법론 매칭 문제!' },
       ],
       blocks: [
         {
@@ -413,13 +636,23 @@ const ADSP_2_1: Lesson = {
     },
     {
       id: 'adsp-2-1-s4-waterfall',
-      title: '방법론 ① Waterfall — "물 흐르듯, 되돌릴 수 없다"',
+      title: '방법론 ① Waterfall',
       quizId: 'adsp-2-1-cp-04-waterfall',
       dialogue: [
-        { pose: 'wave', text: '첫째 [Waterfall] — 순차적으로 한 단계씩 [되돌릴 수 없게] 흘러감.' },
-        { pose: 'think', text: '분석 → 설계 → 구현 → 테스트 → 배포. 다음 단계로 가면 끝.' },
-        { pose: 'happy', text: '예: 정부·관공서 시스템 — 요구사항이 법적으로 고정돼 있어 변경이 거의 없음.' },
-        { pose: 'idle', text: 'Waterfall 적용 상황을 골라봐.' },
+        { pose: 'wave', text: '① [Waterfall] — 순차, 되돌릴 수 없다!' },
+        {
+          pose: 'think',
+          text: '[분석 → 설계 → 구현\n→ 테스트 → 배포]\n한 단계씩, 되돌리지 않음.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜 쓰임? — 요구사항 명확 +\n변경 거의 없을 때.\n정부·관공서 같은 [고정 요구] 시스템.',
+        },
+        {
+          pose: 'happy',
+          text: '비유: 시험 공부 — 1주차 1단원,\n2주차 2단원... 이미 정한 계획대로\n끝까지! 중간 변경 X.',
+        },
+        { pose: 'idle', text: 'Waterfall 사례 문제!' },
       ],
       blocks: [
         {
@@ -444,13 +677,23 @@ const ADSP_2_1: Lesson = {
     },
     {
       id: 'adsp-2-1-s4-prototype',
-      title: '방법론 ② Prototype — "일단 만들어 보여주고 피드백"',
+      title: '방법론 ② Prototype',
       quizId: 'adsp-2-1-cp-04-prototype',
       dialogue: [
-        { pose: 'wave', text: '둘째 [Prototype] — 일단 [시제품] 부터 만들어 사용자한테 보여줘.' },
-        { pose: 'think', text: '요구사항이 모호할 때 "이런 거예요?" 하고 빠르게 보여주며 피드백.' },
-        { pose: 'happy', text: '예: 신규 모바일 앱의 와이어프레임 → 사용성 테스트 → 다시 수정하는 사이클.' },
-        { pose: 'idle', text: 'Prototype 적용 상황을 골라봐.' },
+        { pose: 'wave', text: '② [Prototype] — 시제품 만들고 피드백!' },
+        {
+          pose: 'think',
+          text: '일단 [시제품] 부터 만들어\n사용자 반응 보고 개선하는\n반복 사이클이야.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜? — 요구사항이 [모호] 할 때.\n말로 설명하기 어려운 걸\n[시제품으로 빠르게 검증]!',
+        },
+        {
+          pose: 'happy',
+          text: '비유: 시험 공부 — 일단 [모의고사] 풀고\n약점 파악 후 본격 공부 시작!\n앱 와이어프레임도 같은 식.',
+        },
+        { pose: 'idle', text: 'Prototype 사례 문제!' },
       ],
       blocks: [
         {
@@ -475,13 +718,23 @@ const ADSP_2_1: Lesson = {
     },
     {
       id: 'adsp-2-1-s4-spiral',
-      title: '방법론 ③ Spiral — "반복 + 매 회 위험 점검"',
+      title: '방법론 ③ Spiral',
       quizId: 'adsp-2-1-cp-04-spiral',
       dialogue: [
-        { pose: 'wave', text: '셋째 [Spiral] — 반복은 하는데 매 사이클마다 [위험 평가] 가 끼어 있어.' },
-        { pose: 'think', text: '대형·신기술·예산 큰 프로젝트에서 사용. 한 사이클 망치면 손실이 크거든.' },
-        { pose: 'happy', text: '예: 우주항공·국방·자율주행 — 매 단계 "이게 안전한가?" 를 통과해야 다음 단계.' },
-        { pose: 'idle', text: 'Spiral 적용 상황을 골라봐.' },
+        { pose: 'wave', text: '③ [Spiral] — 반복 + 매 회 위험 점검!' },
+        {
+          pose: 'think',
+          text: '[반복하는데] 매 사이클마다\n[위험 평가] 를 함.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜? — 대형·고위험 프로젝트\n(우주항공·국방·자율주행).\n매번 점검 안 하면 큰 손실 위험!',
+        },
+        {
+          pose: 'happy',
+          text: '비유: 모의고사 매번 본 후\n[난이도·약점 점검] → 다음 학습.\n점진적으로 난이도 올림.',
+        },
+        { pose: 'idle', text: 'Spiral 사례 문제!' },
       ],
       blocks: [
         {
@@ -506,13 +759,23 @@ const ADSP_2_1: Lesson = {
     },
     {
       id: 'adsp-2-1-s4-agile',
-      title: '방법론 ④ Agile — "2~4주 스프린트로 변화 수용"',
+      title: '방법론 ④ Agile',
       quizId: 'adsp-2-1-cp-04-agile',
       dialogue: [
-        { pose: 'wave', text: '넷째 [Agile] — [2~4주 단위 스프린트] 로 짧게 끊어 만들고 [변경] 수용.' },
-        { pose: 'think', text: '한 스프린트 끝나면 동작하는 결과물 + 사용자 피드백 → 다음 스프린트 계획 조정.' },
-        { pose: 'happy', text: '예: 토스·카카오의 SaaS 프로덕트 — 격주로 새 기능 출시·실험·롤백.' },
-        { pose: 'idle', text: 'Agile 적용 상황을 골라봐.' },
+        { pose: 'wave', text: '④ [Agile] — 2~4주 스프린트!' },
+        {
+          pose: 'think',
+          text: '[짧은 스프린트] (2~4주) 마다\n결과물 + 피드백 + 개선.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜? — 요구사항이 [자주 바뀌는]\n환경. 한 스프린트에서 결과물 내고\n다음 스프린트에 반영!',
+        },
+        {
+          pose: 'happy',
+          text: '비유: 시험 공부 —\n매주 단위로 목표·평가.\n토스·카카오 격주 배포도 같은 식!',
+        },
+        { pose: 'idle', text: 'Agile 사례 문제!' },
       ],
       blocks: [
         {
@@ -537,13 +800,23 @@ const ADSP_2_1: Lesson = {
     },
     {
       id: 'adsp-2-1-s4-rad',
-      title: '방법론 ⑤ RAD — "60~90일 안에 끝"',
+      title: '방법론 ⑤ RAD',
       quizId: 'adsp-2-1-cp-04-rad',
       dialogue: [
-        { pose: 'wave', text: '다섯째 [RAD] — Rapid Application Development. [60~90일] 단기 결과.' },
-        { pose: 'think', text: '미리 만든 [모듈·컴포넌트] 를 빠르게 조립해 단기 완성.' },
-        { pose: 'happy', text: '예: 고객사가 "분기 안에 데모 시스템 필요" 라고 짧은 데드라인 명시한 경우.' },
-        { pose: 'idle', text: 'RAD 적용 상황을 골라봐.' },
+        { pose: 'wave', text: '⑤ [RAD] — 60~90일 안에 끝!' },
+        {
+          pose: 'think',
+          text: '[Rapid Application Development]\n— 모듈·컴포넌트를 빠르게 조립해\n단기 (60~90일) 완성.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '왜? — 분기 안에 데모·결과물이\n필요한 [짧은 시간 압박] 상황.\n지속 반복(Agile) 과는 다름!',
+        },
+        {
+          pose: 'happy',
+          text: '비유: 시험 임박 — [60일 만에 끝]!\n핵심만 빠르게! 깊게 못 가지만\n시간 안에 결과물 도출.',
+        },
+        { pose: 'idle', text: 'RAD 사례 문제!' },
       ],
       blocks: [
         {
@@ -566,6 +839,28 @@ const ADSP_2_1: Lesson = {
         },
       ],
     },
+    {
+      id: 'adsp-2-1-s4-review',
+      title: '분석 방법론 5종 — 복습',
+      quizId: 'adsp-2-1-cp-04',
+      group: 'adsp-2-1-s4',
+      dialogue: [
+        { pose: 'wave', text: '[분석 방법론 5종 —] 복습 시간이야!' },
+        { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
+        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
+        { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '복습 체크리스트',
+          body:
+            '바로 직전 스텝들에서 배운 개념·암기법·함정을 한 번 더 떠올리며 다음 그룹으로 넘어가요. 잘 안 떠오르는 항목이 있으면 이전 스텝으로 돌아가 확인하세요.',
+        },
+      ],
+    },
   ],
 };
 
@@ -585,9 +880,11 @@ const ADSP_2_2: Lesson = {
       title: '과제 우선순위 — 시급성 × 난이도 (개요)',
       quizId: 'adsp-2-2-cp-01',
       dialogue: [
-        { pose: 'wave', text: '과제 100개? 한 번에 못 해. 순서가 필요.' },
-        { pose: 'think', text: '두 축: [시급성] (지금?) × [난이도] (어려움?).' },
-        { pose: 'idle', text: '먼저 4사분면 구조를 확인.' },
+        { pose: 'wave', text: '이번에는 [과제 우선순위] 정하는 법을 배워보자!' },
+        { pose: 'think', text: '두 축으로 나누면 4사분면:\n· [시급성] = 지금? 미래?\n· [난이도] = 쉬움? 어려움?' },
+        { pose: 'lightbulb', text: '왜 4사분면? — 자원이 한정되니까\n뭐부터 할지 [순서] 를 정해야 해.' },
+        { pose: 'happy', text: '비유: 시험 D-day 과제 우선순위 같아!\n오늘 시험인 단어 vs 한 달 후 미적분.\n뭘 먼저 할지 떠오르지?' },
+        { pose: 'idle', text: '4사분면 매칭 문제!' },
       ],
       blocks: [
         {
@@ -609,13 +906,14 @@ const ADSP_2_2: Lesson = {
     },
     {
       id: 'adsp-2-2-s1-now-easy',
-      title: '우선순위 ① Now × Easy — "지금 + 쉬움 = 즉시 착수"',
+      title: '우선순위 ① Now × Easy',
       quizId: 'adsp-2-2-cp-01-ne',
       dialogue: [
-        { pose: 'wave', text: '[Now × Easy] = 1순위. 망설일 이유가 없어.' },
-        { pose: 'think', text: '효과는 빨리 나오고 비용·시간은 적게 드는 [Quick Win] 영역.' },
-        { pose: 'happy', text: '예: 이미 있는 매출 데이터로 [지난달 vs 이번달] 대시보드 만들기.' },
-        { pose: 'idle', text: '1순위에 해당하는 과제를 골라봐.' },
+        { pose: 'wave', text: '① [Now × Easy] — 즉시 착수!' },
+        { pose: 'think', text: '[지금 필요] 한데 [쉬워서]\n빨리 결과 나오는 과제.\nROI 최고, 1순위.' },
+        { pose: 'lightbulb', text: '왜 1순위? — 빨리 작은 성공\n→ 다음 과제 추진력.\n[Quick Win] 이라 부름.' },
+        { pose: 'happy', text: '비유: 내일 시험 — 단어 100개 외우기.\n쉽고 효과 즉각, 일단 이거부터!\n실무 예: 대시보드 자동화·간단 KPI 리포트.' },
+        { pose: 'idle', text: 'Now × Easy 사례 문제!' },
       ],
       blocks: [
         {
@@ -640,13 +938,14 @@ const ADSP_2_2: Lesson = {
     },
     {
       id: 'adsp-2-2-s1-now-hard',
-      title: '우선순위 ② Now × Difficult — "지금 필요한데 어려움 = 장기 투자"',
+      title: '우선순위 ② Now × Difficult',
       quizId: 'adsp-2-2-cp-01-nh',
       dialogue: [
-        { pose: 'wave', text: '[Now × Difficult] — 지금 꼭 필요한데 [큰 투자] 가 필요해.' },
-        { pose: 'think', text: '바로 끝낼 순 없으니 [단계적 로드맵] 으로 쪼개서 진행.' },
-        { pose: 'happy', text: '예: 전사 데이터 플랫폼 구축 — 1년짜리지만 모든 분석의 토대가 됨.' },
-        { pose: 'idle', text: '이 칸에 맞는 과제를 골라봐.' },
+        { pose: 'wave', text: '② [Now × Difficult] — 어려워도 지금!' },
+        { pose: 'think', text: '[지금 필요] 한데 [어려운] 과제.\n오래 걸려도 미루면 안 돼.' },
+        { pose: 'lightbulb', text: '왜? — 지금 안 풀면\n[비즈니스 큰 손실].\n자원 [집중 투입] 으로 돌파.' },
+        { pose: 'happy', text: '비유: 내일 시험인데 미적분 단원 —\n어려워도 지금 매달려야 해!\n실무 예: 전사 DW 구축·대형 ML 모델.' },
+        { pose: 'idle', text: 'Now × Difficult 사례 문제!' },
       ],
       blocks: [
         {
@@ -671,13 +970,14 @@ const ADSP_2_2: Lesson = {
     },
     {
       id: 'adsp-2-2-s1-fut-easy',
-      title: '우선순위 ③ Future × Easy — "미래용 + 쉬움 = 3순위"',
+      title: '우선순위 ③ Future × Easy',
       quizId: 'adsp-2-2-cp-01-fe',
       dialogue: [
-        { pose: 'wave', text: '[Future × Easy] — 미래에 쓸만하고 부담도 적음.' },
-        { pose: 'think', text: '지금 [급한 건 아님]. 자원 여유 있을 때 처리하는 [보너스] 영역.' },
-        { pose: 'happy', text: '예: 보유 고객 만족도 데이터로 워드클라우드 만들기 — 흥미로운데 당장 의사결정에 안 쓰임.' },
-        { pose: 'idle', text: '이 칸 과제를 골라봐.' },
+        { pose: 'wave', text: '③ [Future × Easy] — 천천히 진행!' },
+        { pose: 'think', text: '[당장은 아닌데] [쉬운] 과제.\n급하지 않아 3순위.' },
+        { pose: 'lightbulb', text: '왜 미룸? — 자원은 한정.\n[Now] 칸이 비었을 때\n슬슬 챙겨도 충분.' },
+        { pose: 'happy', text: '비유: 한 달 후 시험 — 영어 듣기\n매일 10분씩 천천히.\n실무 예: 사내 위키 정비·부서 보고 양식 표준화.' },
+        { pose: 'idle', text: 'Future × Easy 사례 문제!' },
       ],
       blocks: [
         {
@@ -702,13 +1002,14 @@ const ADSP_2_2: Lesson = {
     },
     {
       id: 'adsp-2-2-s1-fut-hard',
-      title: '우선순위 ④ Future × Difficult — "미래용 + 어려움 = 후순위"',
+      title: '우선순위 ④ Future × Difficult',
       quizId: 'adsp-2-2-cp-01-fh',
       dialogue: [
-        { pose: 'wave', text: '[Future × Difficult] — 미래에 쓸만한데 [큰 투자] 가 필요해.' },
-        { pose: 'think', text: '당장 효용은 작고 비용은 큼 → [중장기 R&D] 로 분류.' },
-        { pose: 'happy', text: '예: 양자컴퓨팅 기반 추천 엔진 — 5년 R&D, 지금은 ROI 거의 없음.' },
-        { pose: 'idle', text: '이 칸 과제를 골라봐.' },
+        { pose: 'wave', text: '④ [Future × Difficult] — 후순위!' },
+        { pose: 'think', text: '[당장도 아니고] [어려운] 과제.\n맨 뒤로 미뤄.' },
+        { pose: 'lightbulb', text: '왜? — 지금 손대면 [자원 낭비].\n시급 과제 끝낸 후\n장기 로드맵에 편입.' },
+        { pose: 'happy', text: '비유: 한 달 후 시험 + 어려운 단원 —\n쉬운 거부터 끝내고 나서 천천히.\n실무 예: R&D 시뮬레이션·신기술 PoC.' },
+        { pose: 'idle', text: 'Future × Difficult 사례 문제!' },
       ],
       blocks: [
         {
@@ -731,15 +1032,39 @@ const ADSP_2_2: Lesson = {
         },
       ],
     },
+    {
+      id: 'adsp-2-2-s1-review',
+      title: '과제 우선순위 — 시급성 × 난이도 복습',
+      quizId: 'adsp-2-2-cp-01',
+      group: 'adsp-2-2-s1',
+      dialogue: [
+        { pose: 'wave', text: '[과제 우선순위 — 시급성 × 난이도] 복습 시간이야!' },
+        { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
+        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
+        { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '복습 체크리스트',
+          body:
+            '바로 직전 스텝들에서 배운 개념·암기법·함정을 한 번 더 떠올리며 다음 그룹으로 넘어가요. 잘 안 떠오르는 항목이 있으면 이전 스텝으로 돌아가 확인하세요.',
+        },
+      ],
+    },
     // ─── 분석 거버넌스 5축 (시조프인데) — 1 step → 6 substeps ───
     {
       id: 'adsp-2-2-s2',
-      title: '분석 거버넌스 — "시·조·프·인·데" 개요',
+      title: '분석 거버넌스 개요',
       quizId: 'adsp-2-2-cp-02',
       dialogue: [
-        { pose: 'wave', text: '분석 거버넌스 5축 — 조직이 분석을 체계적으로 돌리는 틀.' },
-        { pose: 'think', text: '"[시조프인데]" — 시스템 · 조직 · 프로세스 · 인력 · 데이터.' },
-        { pose: 'idle', text: '먼저 5축 + 함정 ("마케팅" 미포함).' },
+        { pose: 'wave', text: '이번에는 [분석 거버넌스 5축] 을 배워보자!' },
+        { pose: 'think', text: '[시조프인데] 5가지:\n· [시]스템 · [조]직 · [프]로세스\n· [인]력 · [데]이터' },
+        { pose: 'lightbulb', text: '줄여서 [시조프인데] 로 외우자!\n"시조 폼인데" — 한 번 들으면\n안 잊혀.\n주의 — "마케팅" 은 [없음] (함정).' },
+        { pose: 'happy', text: '비유: 동아리·스터디 굴리려면\n5가지 다 있어야 함 —\n도구·사람 묶음·절차·멤버·콘텐츠.' },
+        { pose: 'idle', text: '시조프인데 5축 매칭 문제!' },
       ],
       blocks: [
         {
@@ -763,9 +1088,11 @@ const ADSP_2_2: Lesson = {
       title: '거버넌스 ① 시스템 (Infra)',
       quizId: 'adsp-2-2-cp-02-system',
       dialogue: [
-        { pose: 'wave', text: '첫 축 [시스템] — IT 인프라.' },
-        { pose: 'think', text: '분석 플랫폼·DB·BI 도구 등 기술 기반.' },
-        { pose: 'idle', text: '시스템 축 영역을 골라봐.' },
+        { pose: 'wave', text: '① [시스템] — 분석 도구·인프라!' },
+        { pose: 'think', text: '[Infrastructure] —\n분석 환경, 도구, 플랫폼.' },
+        { pose: 'lightbulb', text: '왜 필요? — 좋은 [도구] 없으면\n분석가도 손발 묶임.\nDW·BI·ML 플랫폼 등.' },
+        { pose: 'happy', text: '비유: 스터디의 [노션·인강 플랫폼·구글 드라이브] —\n도구가 받쳐줘야 굴러가.\n실무 예: Snowflake·Tableau·Databricks.' },
+        { pose: 'idle', text: '시스템 영역 문제!' },
       ],
       blocks: [
         {
@@ -786,9 +1113,11 @@ const ADSP_2_2: Lesson = {
       title: '거버넌스 ② 조직 (Organization)',
       quizId: 'adsp-2-2-cp-02-org',
       dialogue: [
-        { pose: 'wave', text: '둘째 [조직] — 분석을 책임지는 부서·체계.' },
-        { pose: 'think', text: 'CDO · 데이터 분석팀 · CoE 같은 R&R 구조.' },
-        { pose: 'idle', text: '조직 축 영역을 골라봐.' },
+        { pose: 'wave', text: '② [조직] — R&R 누가 뭘?' },
+        { pose: 'think', text: '[Organization] —\n역할·책임 (R&R) 구조.' },
+        { pose: 'lightbulb', text: '왜? — "데이터 누가 책임?" 모호하면\n아무도 안 함.\n[CDO·CoE] 같은 전담 조직 필요.' },
+        { pose: 'happy', text: '비유: 동아리 [회장·총무·팀장] —\n역할 정해야 굴러가.\n실무 예: CDO (최고데이터책임자) · 데이터 분석 CoE.' },
+        { pose: 'idle', text: '조직 영역 문제!' },
       ],
       blocks: [
         {
@@ -809,9 +1138,11 @@ const ADSP_2_2: Lesson = {
       title: '거버넌스 ③ 프로세스 (Process)',
       quizId: 'adsp-2-2-cp-02-process',
       dialogue: [
-        { pose: 'wave', text: '셋째 [프로세스] — 분석 작업 흐름·표준.' },
-        { pose: 'think', text: '과제 발굴 → 수행 → 평가의 표준화된 순서.' },
-        { pose: 'idle', text: '프로세스 축 영역을 골라봐.' },
+        { pose: 'wave', text: '③ [프로세스] — 일하는 절차!' },
+        { pose: 'think', text: '[Process] —\n분석 요청·승인·수행·배포 절차.' },
+        { pose: 'lightbulb', text: '왜? — 절차 없으면\n[중복·누락·갈등].\n표준화된 워크플로우 필수.' },
+        { pose: 'happy', text: '비유: 스터디 [매주 모임 → 진도 체크 → 과제] —\n루틴 있어야 진척돼.\n실무 예: 요청 → 승인 → 분석 → 배포.' },
+        { pose: 'idle', text: '프로세스 영역 문제!' },
       ],
       blocks: [
         {
@@ -832,9 +1163,11 @@ const ADSP_2_2: Lesson = {
       title: '거버넌스 ④ 인력 (Resource)',
       quizId: 'adsp-2-2-cp-02-resource',
       dialogue: [
-        { pose: 'wave', text: '넷째 [인력] — 분석가 역량·교육.' },
-        { pose: 'think', text: '데이터 사이언티스트 채용·육성·교육.' },
-        { pose: 'idle', text: '인력 축 영역을 골라봐.' },
+        { pose: 'wave', text: '④ [인력] — 사람의 역량!' },
+        { pose: 'think', text: '[People / Resource] —\n분석 전문성·교육·채용.' },
+        { pose: 'lightbulb', text: '왜? — 도구·조직 갖춰도\n[사람 못하면] 무용지물.\n교육·채용·온보딩.' },
+        { pose: 'happy', text: '비유: 스터디의 [멤버·멘토·강사] —\n사람이 있어야 모임 성립.\n실무 예: 데이터 사이언티스트 채용·사내 분석 교육.' },
+        { pose: 'idle', text: '인력 영역 문제!' },
       ],
       blocks: [
         {
@@ -855,9 +1188,11 @@ const ADSP_2_2: Lesson = {
       title: '거버넌스 ⑤ 데이터 (Data)',
       quizId: 'adsp-2-2-cp-02-data',
       dialogue: [
-        { pose: 'wave', text: '다섯째 [데이터] — 데이터 자체의 관리.' },
-        { pose: 'think', text: '데이터 표준화·품질·메타데이터 — 데이터 거버넌스 3요소(원조프) 와 연결.' },
-        { pose: 'idle', text: '데이터 축 영역을 골라봐.' },
+        { pose: 'wave', text: '⑤ [데이터] — 분석의 연료!' },
+        { pose: 'think', text: '[Data] —\n표준화·품질·메타데이터 관리.' },
+        { pose: 'lightbulb', text: '왜? — 데이터 [품질] 나쁘면\n분석 결과도 쓰레기.\n"Garbage In, Garbage Out".' },
+        { pose: 'happy', text: '비유: 스터디의 [출석부·성적표·약점 노트] —\n기록이 정확해야 분석 가능.\n실무 예: 데이터 표준·품질 관리·메타 카탈로그.' },
+        { pose: 'idle', text: '데이터 영역 문제!' },
       ],
       blocks: [
         {
@@ -873,15 +1208,39 @@ const ADSP_2_2: Lesson = {
         },
       ],
     },
+    {
+      id: 'adsp-2-2-s2-review',
+      title: '분석 거버넌스 복습',
+      quizId: 'adsp-2-2-cp-02',
+      group: 'adsp-2-2-s2',
+      dialogue: [
+        { pose: 'wave', text: '[분석 거버넌스] 복습 시간이야!' },
+        { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
+        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
+        { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '복습 체크리스트',
+          body:
+            '바로 직전 스텝들에서 배운 개념·암기법·함정을 한 번 더 떠올리며 다음 그룹으로 넘어가요. 잘 안 떠오르는 항목이 있으면 이전 스텝으로 돌아가 확인하세요.',
+        },
+      ],
+    },
     // ─── 성숙도 4단계 (도활확최) — 1 step → 5 substeps ───
     {
       id: 'adsp-2-2-s3',
-      title: '분석 성숙도 — "도·활·확·최" 개요',
+      title: '분석 성숙도 개요',
       quizId: 'adsp-2-2-cp-03',
       dialogue: [
-        { pose: 'wave', text: '조직의 분석 [성숙도] 4단계.' },
-        { pose: 'think', text: '"[도활확최]" — 도입 · 활용 · 확산 · 최적화.' },
-        { pose: 'idle', text: '먼저 4단계 순서를 잡자.' },
+        { pose: 'wave', text: '이번에는 [분석 성숙도 4단계] 를 배워보자!' },
+        { pose: 'think', text: '[도입 → 활용 → 확산 → 최적화]\n조직 분석 수준의 진화.' },
+        { pose: 'lightbulb', text: '줄여서 [도활확최]! 외우기 쉬움.\n주의 — [준비도(Readiness)] 와\n헷갈리지 말 것 (별개 축).' },
+        { pose: 'happy', text: '비유: 학생 공부 진화 —\n혼자 노트 → 학원 → 학교 전체 시스템\n→ AI 맞춤 학습.' },
+        { pose: 'idle', text: '도활확최 4단계 문제!' },
       ],
       blocks: [
         {
@@ -902,13 +1261,14 @@ const ADSP_2_2: Lesson = {
     },
     {
       id: 'adsp-2-2-s3-intro',
-      title: '성숙도 ① [도]입 — "한두 명이 시작"',
+      title: '성숙도 ① 도입',
       quizId: 'adsp-2-2-cp-03-intro',
       dialogue: [
-        { pose: 'wave', text: '첫 단계 [도]입 — 회사에 [한두 명] 만 분석을 해본 단계.' },
-        { pose: 'think', text: '예산·표준·플랫폼 다 없음. 그저 호기심 많은 직원이 엑셀로 시도하는 수준.' },
-        { pose: 'happy', text: '예: 마케팅 한 직원이 자기 노트북에서 엑셀로 캠페인 효과 분석 — 동료들은 무관심.' },
-        { pose: 'idle', text: '도입 단계 특징을 골라봐.' },
+        { pose: 'wave', text: '① [도입] — 막 시작!' },
+        { pose: 'think', text: '[Introduction] —\n분석을 [개인·비공식] 적으로 시도.' },
+        { pose: 'lightbulb', text: '왜 1단계? — 조직이 분석 가치를\n[인지하기 시작] 하는 시점.\n도구·조직 미흡.' },
+        { pose: 'happy', text: '비유: 처음 공부 시작 —\n혼자 노트 정리하는 수준.\n실무 예: 직원 개인이 엑셀로 분석.' },
+        { pose: 'idle', text: '도입 단계 문제!' },
       ],
       blocks: [
         {
@@ -933,13 +1293,14 @@ const ADSP_2_2: Lesson = {
     },
     {
       id: 'adsp-2-2-s3-adopt',
-      title: '성숙도 ② [활]용 — "한두 부서가 정기적으로"',
+      title: '성숙도 ② 활용',
       quizId: 'adsp-2-2-cp-03-adopt',
       dialogue: [
-        { pose: 'wave', text: '둘째 [활]용 — [부서 단위] 로 분석이 정기 업무가 됨.' },
-        { pose: 'think', text: '단, 부서마다 [도구·표준] 이 제각각. 마케팅은 R, 영업은 엑셀, 재무는 SAS.' },
-        { pose: 'happy', text: '예: 마케팅팀에 분석 담당자 2명이 정규직으로 배치돼 매주 캠페인 성과를 정리해 공유.' },
-        { pose: 'idle', text: '활용 단계 특징을 골라봐.' },
+        { pose: 'wave', text: '② [활용] — 부분적 정착!' },
+        { pose: 'think', text: '[Adoption] —\n[일부 부서] 가 분석을 정기적으로 사용.' },
+        { pose: 'lightbulb', text: '왜? — 도입에서 성과 나오면\n[부서 단위] 로 도구·프로세스 확보.\n전사 X — 도구·표준 부서별 다름.' },
+        { pose: 'happy', text: '비유: 학원 정기 수업 —\n특정 영역만 체계적.\n실무 예: 마케팅·영업팀이 BI 도구 사용.' },
+        { pose: 'idle', text: '활용 단계 문제!' },
       ],
       blocks: [
         {
@@ -964,13 +1325,14 @@ const ADSP_2_2: Lesson = {
     },
     {
       id: 'adsp-2-2-s3-diffuse',
-      title: '성숙도 ③ [확]산 — "전사 표준 플랫폼"',
+      title: '성숙도 ③ 확산',
       quizId: 'adsp-2-2-cp-03-diffuse',
       dialogue: [
-        { pose: 'wave', text: '셋째 [확]산 — [전사] 차원의 표준 플랫폼·거버넌스 도입.' },
-        { pose: 'think', text: '도구가 통일되고 데이터도 한 곳에 모임. 거버넌스 정책도 발효.' },
-        { pose: 'happy', text: '예: 전사 데이터 플랫폼 (Snowflake + Tableau) 구축, 모든 부서가 이걸로 통일.' },
-        { pose: 'idle', text: '확산 단계 특징을 골라봐.' },
+        { pose: 'wave', text: '③ [확산] — 전사 사용!' },
+        { pose: 'think', text: '[Diffusion] —\n[전사 차원] 으로 분석 인프라·문화 확산.' },
+        { pose: 'lightbulb', text: '왜? — 부서 성공 사례가\n[조직 전체] 로 퍼짐.\n거버넌스·표준 정립.' },
+        { pose: 'happy', text: '비유: 학교 전체 모의고사 시스템 —\n모든 학생이 같은 플랫폼.\n실무 예: 전사 DW + Tableau + 데이터 거버넌스 정립.' },
+        { pose: 'idle', text: '확산 단계 문제!' },
       ],
       blocks: [
         {
@@ -995,13 +1357,14 @@ const ADSP_2_2: Lesson = {
     },
     {
       id: 'adsp-2-2-s3-optimize',
-      title: '성숙도 ④ [최]적화 — "분석이 의사결정의 디폴트"',
+      title: '성숙도 ④ 최적화',
       quizId: 'adsp-2-2-cp-03-optimize',
       dialogue: [
-        { pose: 'wave', text: '마지막 [최]적화 — 분석이 [모든 의사결정의 기본값] 이 됨.' },
-        { pose: 'think', text: '"감으로 결정" 은 거의 사라지고, 데이터 근거 없으면 회의에서 통과 안 됨.' },
-        { pose: 'happy', text: '예: Netflix·Amazon — 추천·가격·재고 모두 알고리즘이 1차 결정, 사람은 검증만.' },
-        { pose: 'idle', text: '최적화 단계 특징을 골라봐.' },
+        { pose: 'wave', text: '④ [최적화] — 분석이 디폴트!' },
+        { pose: 'think', text: '[Optimization] —\n[모든 의사결정] 에 분석 + 자동화 + AI.' },
+        { pose: 'lightbulb', text: '왜 끝판? — 분석이 [기본 옵션].\n실시간·자동화·예측 모델로\n[경쟁 우위] 확보.' },
+        { pose: 'happy', text: '비유: AI 맞춤 학습 —\n약점만 골라 자동 추천.\n실무 예: Netflix 추천 · Toss 실시간 의사결정 · Amazon 가격.' },
+        { pose: 'idle', text: '최적화 단계 문제!' },
       ],
       blocks: [
         {
@@ -1024,15 +1387,39 @@ const ADSP_2_2: Lesson = {
         },
       ],
     },
+    {
+      id: 'adsp-2-2-s3-review',
+      title: '분석 성숙도 복습',
+      quizId: 'adsp-2-2-cp-03',
+      group: 'adsp-2-2-s3',
+      dialogue: [
+        { pose: 'wave', text: '[분석 성숙도] 복습 시간이야!' },
+        { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
+        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
+        { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '복습 체크리스트',
+          body:
+            '바로 직전 스텝들에서 배운 개념·암기법·함정을 한 번 더 떠올리며 다음 그룹으로 넘어가요. 잘 안 떠오르는 항목이 있으면 이전 스텝으로 돌아가 확인하세요.',
+        },
+      ],
+    },
     // ─── 데이터 거버넌스 3요소 (원조프) — 1 step → 4 substeps ───
     {
       id: 'adsp-2-2-s4',
-      title: '데이터 거버넌스 — "원·조·프" 개요',
+      title: '데이터 거버넌스 개요',
       quizId: 'adsp-2-2-cp-04',
       dialogue: [
-        { pose: 'wave', text: '[분석 거버넌스] ≠ [데이터 거버넌스] — 시험 함정 1위.' },
-        { pose: 'think', text: '데이터 거버넌스는 데이터 자체를 공용 자산으로 관리하는 규범. 3요소 "[원조프]".' },
-        { pose: 'idle', text: '먼저 두 거버넌스 구분부터.' },
+        { pose: 'wave', text: '이번에는 [데이터 거버넌스 3요소] 를 배워보자!' },
+        { pose: 'think', text: '[원칙 · 조직 · 프로세스]\n3가지.' },
+        { pose: 'lightbulb', text: '줄여서 [원조프]! 외우기 쉬움.\n주의 — 분석 거버넌스 (시조프인데, 5축) 와\n[다름]! 시험 함정 1위.' },
+        { pose: 'happy', text: '비유: 학교 도서관 운영 —\n규칙·사서·대출 절차\n3가지로 굴러가.' },
+        { pose: 'idle', text: '원조프 3요소 문제!' },
       ],
       blocks: [
         {
@@ -1051,13 +1438,14 @@ const ADSP_2_2: Lesson = {
     },
     {
       id: 'adsp-2-2-s4-principle',
-      title: '데이터 거버넌스 ① [원]칙 — "회사의 헌법"',
+      title: '데이터 거버넌스 ① 원칙',
       quizId: 'adsp-2-2-cp-04-principle',
       dialogue: [
-        { pose: 'wave', text: '첫 요소 [원]칙 — 데이터를 다루는 [회사 헌법] 같은 규범.' },
-        { pose: 'think', text: '"누가 어떤 데이터를 어떤 조건으로 볼 수 있나" — 모든 결정의 출발점.' },
-        { pose: 'happy', text: '예: "고객 개인정보는 마케팅 목적 외 사용 금지", "재무 데이터는 임원 이상만 접근".' },
-        { pose: 'idle', text: '원칙 영역의 활동을 골라봐.' },
+        { pose: 'wave', text: '① [원칙] — 헌법 같은 규칙!' },
+        { pose: 'think', text: '[Principle] —\n데이터 사용·관리의 [최상위 가이드].' },
+        { pose: 'lightbulb', text: '왜? — 원칙 없으면 [제멋대로].\n"고객 정보 마케팅 외 금지"\n같은 큰 틀이 필요.' },
+        { pose: 'happy', text: '비유: 도서관 [음식 반입 금지] —\n헌법처럼 모두에게 적용되는 큰 규칙.\n실무 예: 데이터 보안·개인정보 보호 원칙.' },
+        { pose: 'idle', text: '원칙 영역 문제!' },
       ],
       blocks: [
         {
@@ -1082,13 +1470,14 @@ const ADSP_2_2: Lesson = {
     },
     {
       id: 'adsp-2-2-s4-org',
-      title: '데이터 거버넌스 ② [조]직 — "누가 책임지나"',
+      title: '데이터 거버넌스 ② 조직',
       quizId: 'adsp-2-2-cp-04-org',
       dialogue: [
-        { pose: 'wave', text: '둘째 [조]직 — 데이터 거버넌스를 [실행할 사람·역할] 구조.' },
-        { pose: 'think', text: '원칙은 그냥 종이 — 책임자가 있어야 굴러가.' },
-        { pose: 'happy', text: '대표 역할: CDO(Chief Data Officer), 데이터 오너, 데이터 스튜어드.' },
-        { pose: 'idle', text: '조직 영역 활동을 골라봐.' },
+        { pose: 'wave', text: '② [조직] — 데이터 책임자!' },
+        { pose: 'think', text: '[Organization] —\n데이터 [전담 역할]\n(CDO·Owner·Steward).' },
+        { pose: 'lightbulb', text: '왜? — 데이터 [책임자] 없으면\n품질·보안 모두 모호.\n명확한 R&R 필요.' },
+        { pose: 'happy', text: '비유: 도서관 [사서·도우미] —\n책임자가 명확.\n실무 예: CDO (전사) · Data Owner (도메인) · Steward (실무).' },
+        { pose: 'idle', text: '조직 영역 문제!' },
       ],
       blocks: [
         {
@@ -1113,13 +1502,14 @@ const ADSP_2_2: Lesson = {
     },
     {
       id: 'adsp-2-2-s4-process',
-      title: '데이터 거버넌스 ③ [프]로세스 — "매일 굴러가는 절차"',
+      title: '데이터 거버넌스 ③ 프로세스',
       quizId: 'adsp-2-2-cp-04-process',
       dialogue: [
-        { pose: 'wave', text: '셋째 [프]로세스 — 원칙을 [매일 굴리는] 실행 절차.' },
-        { pose: 'think', text: '데이터 표준화, 품질 점검, 메타데이터 운영, 백업·아카이브 관리.' },
-        { pose: 'happy', text: '예: 매주 월요일 데이터 품질 점검 회의, 신규 테이블 등록 시 표준 코드 검토.' },
-        { pose: 'idle', text: '프로세스 영역 활동을 골라봐.' },
+        { pose: 'wave', text: '③ [프로세스] — 데이터 라이프사이클!' },
+        { pose: 'think', text: '[Process] —\n표준화·품질·메타·백업\n4대 활동.' },
+        { pose: 'lightbulb', text: '왜? — 데이터는\n[생성→사용→폐기] 전 과정\n관리해야 신뢰 확보.' },
+        { pose: 'happy', text: '비유: 도서관 [대출·반납·분실 처리] —\n절차 따라 운영.\n실무 예: 데이터 표준 등록·품질 검증·메타 관리·백업/폐기.' },
+        { pose: 'idle', text: '프로세스 영역 문제!' },
       ],
       blocks: [
         {
@@ -1146,6 +1536,28 @@ const ADSP_2_2: Lesson = {
         },
       ],
     },
+    {
+      id: 'adsp-2-2-s4-review',
+      title: '데이터 거버넌스 복습',
+      quizId: 'adsp-2-2-cp-04',
+      group: 'adsp-2-2-s4',
+      dialogue: [
+        { pose: 'wave', text: '[데이터 거버넌스] 복습 시간이야!' },
+        { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
+        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
+        { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '복습 체크리스트',
+          body:
+            '바로 직전 스텝들에서 배운 개념·암기법·함정을 한 번 더 떠올리며 다음 그룹으로 넘어가요. 잘 안 떠오르는 항목이 있으면 이전 스텝으로 돌아가 확인하세요.',
+        },
+      ],
+    },
   ],
 };
 
@@ -1165,9 +1577,11 @@ const ADSP_2_3: Lesson = {
       title: '타당성 3요소 — 개요',
       quizId: 'adsp-2-3-cp-01',
       dialogue: [
-        { pose: 'wave', text: '하향식 마지막 [타당성] 은 3축으로 분리.' },
-        { pose: 'think', text: '[경제적] · [기술적] · [운영적] — 사회적 타당성은 함정.' },
-        { pose: 'idle', text: '먼저 3축 구분.' },
+        { pose: 'wave', text: '이번에는 [타당성 3축] 을 배워보자!' },
+        { pose: 'think', text: '[경제적·기술적·운영적] 3가지로\n분석 과제를 점검.' },
+        { pose: 'lightbulb', text: '왜? — 한 축이라도 빨간불이면\n실행해도 망함.\n주의 — "사회적 타당성" 은 [없음] (함정).' },
+        { pose: 'happy', text: '비유: 학원 등록 전 3축 체크 —\n학원비·강의 수준·부모님 허락\n셋 다 OK 여야 등록 결정!' },
+        { pose: 'idle', text: '타당성 3축 매칭 문제!' },
       ],
       blocks: [
         {
@@ -1184,9 +1598,11 @@ const ADSP_2_3: Lesson = {
       title: '타당성 ① 경제적 (Economic)',
       quizId: 'adsp-2-3-cp-01-econ',
       dialogue: [
-        { pose: 'wave', text: '첫 [경제적] — 비용·편익(ROI).' },
-        { pose: 'think', text: '투자 대비 수익이 양인지 검증.' },
-        { pose: 'idle', text: '경제적 타당성 활동을 골라봐.' },
+        { pose: 'wave', text: '① [경제적] — 비용 vs 편익!' },
+        { pose: 'think', text: '[Economic] —\n투자 대비 수익 (ROI) 분석.' },
+        { pose: 'lightbulb', text: '왜? — "돈 안 되면" 시작 X.\n비용 < 편익 이어야 진행.' },
+        { pose: 'happy', text: '비유: 학원비 100만원 vs\n성적 점수 향상 가치.\n실무 예: 투자 1억 → 연 3억 절감.' },
+        { pose: 'idle', text: '경제적 타당성 문제!' },
       ],
       blocks: [
         {
@@ -1207,9 +1623,11 @@ const ADSP_2_3: Lesson = {
       title: '타당성 ② 기술적 (Technical)',
       quizId: 'adsp-2-3-cp-01-tech',
       dialogue: [
-        { pose: 'wave', text: '둘째 [기술적] — 데이터·알고리즘·시스템.' },
-        { pose: 'think', text: '필요한 데이터·기술 가용성 점검.' },
-        { pose: 'idle', text: '기술적 타당성 활동을 골라봐.' },
+        { pose: 'wave', text: '② [기술적] — 만들 수 있나?' },
+        { pose: 'think', text: '[Technical] —\n데이터·알고리즘·시스템 가용성.' },
+        { pose: 'lightbulb', text: '왜? — 좋은 아이디어도\n데이터 70%만 있거나 인프라 부족하면\n실행 X.' },
+        { pose: 'happy', text: '비유: 그 학원이 우리 동네에 있나,\n강의 수준 우리에게 맞나.\n실무 예: 필요 데이터·플랫폼 점검.' },
+        { pose: 'idle', text: '기술적 타당성 문제!' },
       ],
       blocks: [
         {
@@ -1230,9 +1648,11 @@ const ADSP_2_3: Lesson = {
       title: '타당성 ③ 운영적 (Operational)',
       quizId: 'adsp-2-3-cp-01-ops',
       dialogue: [
-        { pose: 'wave', text: '셋째 [운영적] — 조직·인력·프로세스.' },
-        { pose: 'think', text: '결과를 받아 운영할 조직 준비도 점검.' },
-        { pose: 'idle', text: '운영적 타당성 활동을 골라봐.' },
+        { pose: 'wave', text: '③ [운영적] — 사람들이 받아들일까?' },
+        { pose: 'think', text: '[Operational] —\n조직·인력·프로세스 수용 가능성.' },
+        { pose: 'lightbulb', text: '왜? — "기술은 되는데 사람이 못 받음"\n케이스 흔함. 변화 관리 필수.' },
+        { pose: 'happy', text: '비유: 부모님 허락 받았나,\n시간 빼낼 수 있나.\n실무 예: 보안·규제·내부 저항 점검.' },
+        { pose: 'idle', text: '운영적 타당성 문제!' },
       ],
       blocks: [
         {
@@ -1249,15 +1669,37 @@ const ADSP_2_3: Lesson = {
       ],
     },
     {
+      id: 'adsp-2-3-s1-review',
+      title: '타당성 3요소 — 복습',
+      quizId: 'adsp-2-3-cp-01',
+      group: 'adsp-2-3-s1',
+      dialogue: [
+        { pose: 'wave', text: '[타당성 3요소 —] 복습 시간이야!' },
+        { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
+        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
+        { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '복습 체크리스트',
+          body:
+            '바로 직전 스텝들에서 배운 개념·암기법·함정을 한 번 더 떠올리며 다음 그룹으로 넘어가요. 잘 안 떠오르는 항목이 있으면 이전 스텝으로 돌아가 확인하세요.',
+        },
+      ],
+    },
+    {
       id: 'adsp-2-3-s2',
       title: '상향식 접근',
       quizId: 'adsp-2-3-cp-02',
       dialogue: [
-        { pose: 'wave', text: '하향식이 "문제 먼저" 라면 [상향식]은 "[데이터 먼저]" 야.' },
-        { pose: 'think', text: '대량의 로그·거래 데이터에서 [패턴·이상 징후]를 발견하는 방식.' },
-        { pose: 'lightbulb', text: '주 무기는 [비지도 학습] · [EDA]. 문제를 미리 정의 안 해!' },
-        { pose: 'happy', text: '대표 예 — [장바구니 분석]에서 "맥주 + 기저귀" 같은 예상 밖 조합 발견.' },
-        { pose: 'idle', text: '주제 없을 때 or 혁신 찾을 때 유리. 체크!' },
+        { pose: 'wave', text: '이번에는 [상향식 접근] 을 배워보자!' },
+        { pose: 'think', text: '[Bottom-Up] —\n[데이터부터] 시작해 패턴 발견.\n하향식 ("문제 먼저") 의 반대.' },
+        { pose: 'lightbulb', text: '왜? — 문제가 모호할 때\n비지도 학습·EDA 로\n데이터가 [말하게] 함.' },
+        { pose: 'happy', text: '비유: 모의고사 5회 본 후\n"어 비슷한 실수 패턴이?" 발견.\n실무 예: 장바구니 분석 — "맥주 + 기저귀".' },
+        { pose: 'idle', text: '상향식 사례 문제!' },
       ],
       blocks: [
         {
@@ -1279,11 +1721,11 @@ const ADSP_2_3: Lesson = {
       title: '디자인 씽킹 (혼합)',
       quizId: 'adsp-2-3-cp-03',
       dialogue: [
-        { pose: 'wave', text: '현대 기업이 제일 선호하는 방식은 뭘까? [디자인 씽킹].' },
-        { pose: 'think', text: '[하향식] ↔ [상향식]을 왕복하며 [가설 수정 반복]하는 접근이야.' },
-        { pose: 'lightbulb', text: '과제도 프로젝트로 관리돼 — [PMBOK 10영역].' },
-        { pose: 'happy', text: '"[이범통이의자에서]" — 이해관계자 · 범위 · 통합 · 일정 · 원가 · 품질 · 자원 · 의사소통 · 위험 · 조달.' },
-        { pose: 'idle', text: '혼합 접근이 왜 강한지, 체크!' },
+        { pose: 'wave', text: '이번에는 [디자인 씽킹] 을 배워보자!' },
+        { pose: 'think', text: '[하향식] ↔ [상향식] 왕복 +\n[가설 수정 반복] 접근.\n현대 기업이 가장 선호.' },
+        { pose: 'lightbulb', text: '왜? — 과제도 프로젝트로 관리 →\n[PMBOK 10영역] = "이범통이의자에서".\n이해관계자·범위·통합·일정·원가·품질·자원·의사소통·위험·조달.' },
+        { pose: 'happy', text: '비유: 가설 → 모의고사 검증\n→ 약점 발견 → 가설 수정 → 다시 모의고사.\n끝없는 왕복!' },
+        { pose: 'idle', text: '디자인 씽킹 사례 문제!' },
       ],
       blocks: [
         {
@@ -1298,6 +1740,267 @@ const ADSP_2_3: Lesson = {
           title: 'PMBOK 10영역 — "이범통이의자에서"',
           body:
             '통합 · 이해관계자 · 범위 · 일정 · 원가 · 품질 · 자원 · 의사소통 · 위험 · 조달. 과제도 프로젝트로 관리되어야 합니다.',
+        },
+      ],
+    },
+    // ─── 분석 과제 정의서 — 1 step ───
+    {
+      id: 'adsp-2-3-s4',
+      title: '분석 과제 정의서 — 5 핵심 항목',
+      quizId: 'adsp-2-3-cp-04',
+      dialogue: [
+        { pose: 'wave', text: '이번에는 [분석 과제 정의서] 를 배워보자!' },
+        { pose: 'think', text: '프로젝트 시작 전 작성 문서.\n핵심 5항목:\n· [목적·범위·데이터원천·산출물·일정]' },
+        { pose: 'lightbulb', text: '왜? — 진행 중 [범위 변경·자원 분쟁]\n방지. 사전에 합의된 헌장 역할.\n주의 — 데이터원천은 [내부 + 외부] (함정).' },
+        { pose: 'happy', text: '비유: 학교 조별 과제 기획서 —\n주제·다룰 범위·참고자료·결과물·마감.\n사전에 안 적으면 분쟁!' },
+        { pose: 'idle', text: '과제 정의서 항목 문제!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '분석 과제 정의서는 분석 프로젝트를 시작하기 전 합의해서 작성하는 문서입니다. 진행 중 "범위가 갑자기 바뀐다", "자원이 부족하다" 같은 분쟁을 사전에 방지하는 헌장 역할을 합니다.',
+        },
+        {
+          kind: 'keypoints',
+          title: '5 핵심 항목',
+          items: [
+            '목적(Purpose): 왜 이 분석을 하는가 — 비즈니스 목표',
+            '범위(Scope): 어디까지 다루고 어디부터 제외하는가',
+            '데이터원천(Data Source): 내부 데이터 + 외부 데이터 (시험 함정 — 둘 다 포함)',
+            '산출물(Output): 무엇을 만들 것인가 — 보고서·대시보드·모델 등',
+            '일정(Schedule): 마일스톤·완료 시점',
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: '"내부 데이터만" 함정',
+          body:
+            '데이터원천은 내부 시스템 + 외부 (오픈 데이터·구매 데이터·소셜·공공) 모두 포함. "내부만" 이라고 적힌 선지는 오답.',
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '비유 — 학교 조별 과제 기획서',
+          body:
+            '주제(목적) · 다룰 범위 · 참고자료(데이터원천) · 결과물 · 마감일. 사전에 합의 안 하면 발표 직전에 "이거 우리 범위 아니야" 같은 분쟁 발생.',
+        },
+      ],
+    },
+    // ─── 분석 준비도 6영역 (업조기데문아이) — overview + 6 substeps ───
+    {
+      id: 'adsp-2-3-s5',
+      title: '분석 준비도 개요',
+      quizId: 'adsp-2-3-cp-05',
+      dialogue: [
+        { pose: 'wave', text: '이번에는 [분석 준비도 6영역] 을 배워보자!' },
+        { pose: 'think', text: '조직이 분석을 시작할 [준비] 됐나\n점검 6항목:\n· [업·조·기·데·문·아이티]' },
+        { pose: 'lightbulb', text: '줄여서 [업조기데문아이]!\n주의 — "비용·예산" 은 [없음] (함정).\n준비도 vs 성숙도 매트릭스 → 4 유형\n(확산형·도입형·정착형·준비형).' },
+        { pose: 'happy', text: '비유: 동아리 창단 체크리스트 —\n주제·부원·방법·자료·분위기·장비\n6가지 다 점검!' },
+        { pose: 'idle', text: '준비도 6영역 매칭 문제!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '분석 준비도(Analytics Readiness) 는 조직이 분석을 시작·확장할 만한 토대가 갖춰졌는지 6 영역으로 점검합니다. 분석 거버넌스 5축(시조프인데) 와 헷갈리지 마세요 — 거버넌스는 굴리는 틀, 준비도는 시작 전 점검표.',
+        },
+        {
+          kind: 'callout',
+          tone: 'mnemonic',
+          title: '"업·조·기·데·문·아이티"',
+          body:
+            '분석 [업]무 · 분석 [조]직(인력) · 분석 [기]법 · 분석 [데]이터 · 분석 [문]화 · IT 인프라([아이티]). 6 영역.',
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: '"비용·예산" 함정',
+          body:
+            '6 영역에 "비용·예산" 은 포함되지 않습니다. 시험에 자주 나오는 오답 선지.',
+        },
+        {
+          kind: 'table',
+          headers: ['준비도', '성숙도', '유형'],
+          rows: [
+            ['↑', '↑', '확산형'],
+            ['↑', '↓', '도입형'],
+            ['↓', '↑', '정착형'],
+            ['↓', '↓', '준비형'],
+          ],
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-3-s5-biz',
+      title: '준비도 ① 분석 업무 (Business Task)',
+      quizId: 'adsp-2-3-cp-05-biz',
+      dialogue: [
+        { pose: 'wave', text: '① [업무] — 무슨 분석을 할까?' },
+        { pose: 'think', text: '[Business Task] —\n조직 내 분석 업무 발굴·정의 수준.' },
+        { pose: 'lightbulb', text: '왜? — 분석할 [주제] 가 없으면\n인프라·인력 다 있어도 무용.\n과제 발굴이 출발점.' },
+        { pose: 'happy', text: '비유: 동아리 — 무슨 활동 할지?\n실무 예: 마케팅 ROI·고객 이탈 예측 등 과제 발굴 가능 여부.' },
+        { pose: 'idle', text: '업무 영역 문제!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '분석 업무 영역은 조직이 분석할 만한 비즈니스 과제를 얼마나 발굴·정의할 수 있느냐를 봅니다. "어떤 분석이 필요한지" 조차 못 짚으면 다음 단계 진행 X.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"분석 과제 발굴", "비즈니스 문제 정의", "주제 도출". 사람·R&R 이면 조직, 알고리즘이면 기법.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-3-s5-org',
+      title: '준비도 ② 분석 인력·조직 (People & Org)',
+      quizId: 'adsp-2-3-cp-05-org',
+      dialogue: [
+        { pose: 'wave', text: '② [인력·조직] — 누가 할까?' },
+        { pose: 'think', text: '[People & Organization] —\n분석가·조직 구조·R&R.' },
+        { pose: 'lightbulb', text: '왜? — 사람·조직 없으면\n과제도 인프라도 시작 못 함.' },
+        { pose: 'happy', text: '비유: 동아리 — 회장·부원 몇 명? 역할 분담?\n실무 예: 분석팀 인력·CDO 유무·R&R 명확성.' },
+        { pose: 'idle', text: '인력·조직 영역 문제!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '분석 인력·조직 영역은 조직 내 분석 인력 보유 수준 + 분석 전담 조직 (CDO·CoE 등) 의 명확성을 봅니다.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"분석 인력 보유", "CDO·CoE", "R&R 명확성". 과제 발굴이면 업무, 알고리즘 활용이면 기법.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-3-s5-method',
+      title: '준비도 ③ 분석 기법 (Method)',
+      quizId: 'adsp-2-3-cp-05-method',
+      dialogue: [
+        { pose: 'wave', text: '③ [기법] — 어떤 방법으로?' },
+        { pose: 'think', text: '[Method] —\n분석 기법·알고리즘 활용 수준.' },
+        { pose: 'lightbulb', text: '왜? — 통계·ML·DL 중\n어디까지 쓸 수 있나 점검.\n기법 부족하면 데이터 있어도 못 풉.' },
+        { pose: 'happy', text: '비유: 동아리 — 어떤 방법으로 활동?\n실무 예: 회귀·분류·딥러닝 활용 가능 수준.' },
+        { pose: 'idle', text: '기법 영역 문제!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '분석 기법 영역은 통계·머신러닝·딥러닝 등 분석 알고리즘과 기법을 어디까지 활용할 수 있는가를 봅니다.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"기법 활용", "알고리즘 적용", "통계·ML 수준". 사람이면 조직, 데이터 자체면 데이터.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-3-s5-data',
+      title: '준비도 ④ 분석 데이터 (Data)',
+      quizId: 'adsp-2-3-cp-05-data',
+      dialogue: [
+        { pose: 'wave', text: '④ [데이터] — 자료는?' },
+        { pose: 'think', text: '[Data] —\n분석에 쓸 데이터 확보·품질·표준 수준.' },
+        { pose: 'lightbulb', text: '왜? — 데이터 [품질] 나쁘면\n분석도 쓰레기.\n분석 거버넌스 5축의 "데이터" 와 연결.' },
+        { pose: 'happy', text: '비유: 동아리 — 자료·정보 어디서?\n실무 예: 내부 + 외부 데이터·품질·표준 점검.' },
+        { pose: 'idle', text: '데이터 영역 문제!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '분석 데이터 영역은 분석에 사용할 수 있는 데이터의 확보 가능성·품질·표준화 수준을 봅니다.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"데이터 확보·품질·표준". 알고리즘이면 기법, 플랫폼이면 IT 인프라.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-3-s5-culture',
+      title: '준비도 ⑤ 분석 문화 (Culture)',
+      quizId: 'adsp-2-3-cp-05-culture',
+      dialogue: [
+        { pose: 'wave', text: '⑤ [문화] — 받아들일 분위기?' },
+        { pose: 'think', text: '[Culture] —\n데이터 기반 의사결정 [문화] 수준.' },
+        { pose: 'lightbulb', text: '왜? — 도구·인력 갖춰도\n"감으로 결정" 문화면 분석 무력화.' },
+        { pose: 'happy', text: '비유: 동아리 — 부원들 적극적인 분위기?\n실무 예: 회의에서 "데이터 근거 있나?" 가 디폴트인지.' },
+        { pose: 'idle', text: '문화 영역 문제!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '분석 문화 영역은 조직이 데이터 기반 의사결정을 일상으로 받아들이는 문화 수준을 봅니다. 분석이 의사결정의 디폴트인가, 아니면 "감으로 결정" 후 사후 정당화용인가.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"데이터 기반 의사결정 문화", "분석 활용도". 인력이면 조직, 분위기 X 사람 수면 조직.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-3-s5-it',
+      title: '준비도 ⑥ IT 인프라 (Infrastructure)',
+      quizId: 'adsp-2-3-cp-05-it',
+      dialogue: [
+        { pose: 'wave', text: '⑥ [IT 인프라] — 장비·시스템은?' },
+        { pose: 'think', text: '[IT Infrastructure] —\n분석 플랫폼·서버·도구 수준.' },
+        { pose: 'lightbulb', text: '왜? — 데이터·기법 있어도\n[돌릴 환경] 없으면 무용.\n분석 거버넌스 5축의 "시스템" 과 연결.' },
+        { pose: 'happy', text: '비유: 동아리 — 노트북·서버·앱 갖췄나?\n실무 예: DW·BI·ML 플랫폼 보유 여부.' },
+        { pose: 'idle', text: 'IT 인프라 영역 문제!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'IT 인프라 영역은 분석을 돌릴 컴퓨팅 환경·플랫폼·도구 보유 수준입니다. 분석 거버넌스 5축의 "시스템" 과 동일한 개념.',
+        },
+        {
+          kind: 'section',
+          title: '시험 키워드',
+          body:
+            '"플랫폼·서버·BI·DW". 데이터 자체면 데이터, 알고리즘이면 기법.',
+        },
+      ],
+    },
+    {
+      id: 'adsp-2-3-s5-review',
+      title: '분석 준비도 복습',
+      quizId: 'adsp-2-3-cp-05',
+      group: 'adsp-2-3-s5',
+      dialogue: [
+        { pose: 'wave', text: '[분석 준비도] 복습 시간이야!' },
+        { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
+        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
+        { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
+      ],
+      blocks: [
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '복습 체크리스트',
+          body:
+            '바로 직전 스텝들에서 배운 개념·암기법·함정을 한 번 더 떠올리며 다음 그룹으로 넘어가요. 잘 안 떠오르는 항목이 있으면 이전 스텝으로 돌아가 확인하세요.',
         },
       ],
     },

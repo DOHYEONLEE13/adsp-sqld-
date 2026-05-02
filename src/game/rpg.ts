@@ -152,7 +152,11 @@ export function computePlayerStats(store: ProgressStore): PlayerStats {
     totalXp,
     sessionsCount: store.sessions.length,
     correctTotal,
-    streakDays: computeStreakDays(store.sessions),
+    streakDays: computeStreakDays(
+      store.sessions,
+      Date.now(),
+      Object.keys(store.lessonAttemptsByDay ?? {}),
+    ),
   };
 }
 
@@ -169,14 +173,24 @@ function dayKey(at: number): string {
   return `${y}-${m}-${dd}`;
 }
 
-/** 오늘부터 하루씩 뒤로 가며 연속으로 세션이 있는 날의 개수. */
+/**
+ * 오늘부터 하루씩 뒤로 가며 연속 활동 일수.
+ * 활동 = Quest session 완료 OR 학습 모드 inline 풀이 1문 이상.
+ *
+ * @param sessions Quest 세션 이력
+ * @param now 현재 epoch ms (테스트용 주입)
+ * @param lessonActivityDays 학습 모드 inline 활동 있는 'YYYY-MM-DD' 키 목록
+ *                          (기본 [] — 호출 측에서 미공급 시 sessions 만 고려).
+ */
 export function computeStreakDays(
   sessions: readonly SessionRecord[],
   now: number = Date.now(),
+  lessonActivityDays: readonly string[] = [],
 ): number {
-  if (sessions.length === 0) return 0;
   const days = new Set<string>();
   for (const s of sessions) days.add(dayKey(s.at));
+  for (const k of lessonActivityDays) days.add(k);
+  if (days.size === 0) return 0;
 
   const today = new Date(now);
   today.setHours(0, 0, 0, 0);
@@ -185,7 +199,7 @@ export function computeStreakDays(
   yesterday.setDate(yesterday.getDate() - 1);
   const yesterdayKey = dayKey(yesterday.getTime());
 
-  // 가장 최근 세션이 오늘도 어제도 아니면 streak = 0.
+  // 가장 최근 활동이 오늘도 어제도 아니면 streak = 0.
   if (!days.has(todayKey) && !days.has(yesterdayKey)) return 0;
 
   // 시작점 — 오늘이 있으면 오늘, 아니면 어제.

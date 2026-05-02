@@ -381,7 +381,7 @@ interface TopicSectionProps {
   index: number;
   topic: string;
   lessonId: string;
-  steps: { id: string; title: string; quizId: string }[];
+  steps: { id: string; title: string; quizId?: string }[];
   accent: string;
   progress: ProgressStore;
   isWeak: boolean;
@@ -436,7 +436,10 @@ function TopicSection({
       {/* step 노드 column */}
       <div className="flex flex-col">
         {steps.map((step, idx) => {
-          const stat = progress.questionStats[step.quizId];
+          // review (quiz-less) step 은 stat 없음 — 항상 미완료 취급 (진행하면 됨).
+          const stat = step.quizId
+            ? progress.questionStats[step.quizId]
+            : undefined;
           const completed = !!stat?.lastCorrect && (stat?.correct ?? 0) > 0;
           const attempted = !!stat && (stat.attempts ?? 0) > 0;
           const locked = isStepLocked(lockSnap, lessonId, idx);

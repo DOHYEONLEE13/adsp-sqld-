@@ -221,4 +221,26 @@ describe('computeStreakDays — 연속 플레이 일수', () => {
     // 오늘 ✓ 어제 ✗ 그제 ✓ → streak = 1 (오늘만)
     expect(computeStreakDays([rec(today), rec(dayBefore)], today)).toBe(1);
   });
+
+  it('학습 모드 활동만 있어도 streak 카운트', () => {
+    // sessions 비어도 lesson activity 만으로 streak 인정
+    expect(
+      computeStreakDays([], today, ['2026-05-01', '2026-04-30']),
+    ).toBe(2);
+  });
+
+  it('sessions 와 학습 모드 합집합으로 streak 계산', () => {
+    // 오늘 = sessions / 어제 = 학습 모드 / 그제 = sessions → streak 3
+    expect(
+      computeStreakDays(
+        [rec(today), rec(dayBefore)],
+        today,
+        ['2026-04-30'],
+      ),
+    ).toBe(3);
+  });
+
+  it('학습 모드만 있을 때 어제 활동으로도 streak = 1', () => {
+    expect(computeStreakDays([], today, ['2026-04-30'])).toBe(1);
+  });
 });

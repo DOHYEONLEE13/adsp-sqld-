@@ -37,6 +37,8 @@ import { consumeEnergy } from './energy';
 import EnergyBlockModal from './components/EnergyBlockModal';
 import { isStepLocked, stepKey, unlockStepOnServer } from './stepUnlocks';
 import { useStepUnlocks } from './stepUnlocks';
+import { isFinaleStep, isFinaleStepLocked } from './finale';
+import { useProgress } from './useProgress';
 import { tryRecordPassCompletion } from './passSync';
 
 interface Props {
@@ -60,6 +62,7 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
   );
   const [lockToast, setLockToast] = useState<string | null>(null);
   const stepLockSnap = useStepUnlocks();
+  const progress = useProgress();
 
   /**
    * 에너지 1 차감 후 callback. 게스트·프리미엄·env 미설정 = 무조건 진행.
@@ -256,6 +259,19 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
             // lessonId 는 lesson lookup 으로. 잠금 검사 + 다음 step 자동 해금.
             const lesson = getLesson(screen.subject, screen.chapter, topic);
             const lessonId = lesson?.id ?? `${screen.subject}-${screen.chapter}`;
+            const targetStep = lesson?.steps[stepIdx];
+            // finale step 은 절대 잠금 (subject 완주 + admin 검수 모드만 우회).
+            if (
+              targetStep &&
+              isFinaleStep(targetStep) &&
+              isFinaleStepLocked(progress, targetStep)
+            ) {
+              setLockToast(
+                '모든 step 클리어 후 열려요. 마무리는 끝까지 와야 보이는 한 마디!',
+              );
+              window.setTimeout(() => setLockToast(null), 2800);
+              return;
+            }
             if (isStepLocked(stepLockSnap, lessonId, stepIdx)) {
               setLockToast('앞 단계를 먼저 풀이하면 자동 해금돼요.');
               window.setTimeout(() => setLockToast(null), 2400);

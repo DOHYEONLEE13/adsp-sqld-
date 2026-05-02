@@ -31,13 +31,13 @@ import {
 import { SUBJECT_SCHEMAS } from '../subjects';
 
 describe('lessons split — 전수 무결성 검증', () => {
-  it('1. ALL_LESSONS 가 15 lesson · 300 step', () => {
+  it('1. ALL_LESSONS 가 15 lesson · 301 step', () => {
     expect(ALL_LESSONS.length).toBe(15);
     const totalSteps = ALL_LESSONS.reduce(
       (sum, l) => sum + l.steps.length,
       0,
     );
-    expect(totalSteps).toBe(300);
+    expect(totalSteps).toBe(301);
   });
 
   it('2. 모든 lesson 이 getLesson(subject, chapter, topic) 으로 역조회됨', () => {
@@ -212,6 +212,6 @@ describe('lessons split — 전수 무결성 검증', () => {
       0,
     );
     expect(chapterSum).toBe(lessonSum);
-    expect(chapterSum).toBe(300);
+    expect(chapterSum).toBe(301);
   });
 });

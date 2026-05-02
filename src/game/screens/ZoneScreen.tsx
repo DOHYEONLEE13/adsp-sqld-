@@ -39,6 +39,7 @@ import {
   type MockExamProgress,
 } from '../mockExams';
 import { isStepLocked, useStepUnlocks } from '../stepUnlocks';
+import { isFinaleStep, isFinaleStepLocked } from '../finale';
 import { usePassSnapshot } from '../passSync';
 import {
   chapterPassProgress,
@@ -442,7 +443,10 @@ function TopicSection({
             : undefined;
           const completed = !!stat?.lastCorrect && (stat?.correct ?? 0) > 0;
           const attempted = !!stat && (stat.attempts ?? 0) > 0;
-          const locked = isStepLocked(lockSnap, lessonId, idx);
+          // finale step 은 별도 잠금 (subject 완주 + admin 검수 모드만 우회).
+          const locked = isFinaleStep(step)
+            ? isFinaleStepLocked(progress, step)
+            : isStepLocked(lockSnap, lessonId, idx);
           return (
             <StepNode
               key={step.id}

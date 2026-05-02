@@ -2,7 +2,7 @@
  * 랜딩 "도전 가능한 자격증" 컬렉션 — 실제 앱이 지원하는 과목으로 일치.
  *
  * 콘텐츠 카운트 (2026-05-01 기준, playable 기준):
- *   사용 가능: ADSP (250 step · 420 문항), SQLD (50 step · 250 문항).
+ *   사용 가능: ADSP (251 step · 420 문항), SQLD (50 step · 250 문항).
  *   준비중:    빅데이터 분석기사 — 콘텐츠 작성 트랙.
  *
  * "playable" 정의: multiple_choice 타입 + status≠restored + needsDistractors≠true.
@@ -11,7 +11,7 @@
  *
  * ⚠️  카운트 갱신 시 sync 필요:
  *   - step 수: src/data/lessons/{adsp,sqld}/ 의 모든 lesson 의 steps 합산
- *     (lessons.integration.test.ts 가 총 300 검증 중)
+ *     (lessons.integration.test.ts 가 총 301 검증 중)
  *   - 문항 수: npm run audit 출력 — playable (multiple_choice & status≠restored)
  *     기준. ADSP + SQLD 합 670.
  *   런타임 자동 카운트는 의도적으로 안 함 — ALL_QUESTIONS / ALL_LESSONS 를 import
@@ -30,7 +30,7 @@ export const SUBJECT_SHOWCASES: SubjectShowcase[] = [
       '데이터 분석 준전문가. 데이터 입문자의 보편적 출발점. 우주 탐험으로 챕터를 정복하세요.',
     videoUrl: VIDEO_URLS.mode1,
     metaLabel: '콘텐츠',
-    metaValue: '250 step · 420 문항',
+    metaValue: '251 step · 420 문항',
     href: '#/game/adsp',
   },
   {

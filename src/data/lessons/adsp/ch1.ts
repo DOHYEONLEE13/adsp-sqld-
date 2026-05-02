@@ -13,7 +13,7 @@ const ADSP_1_1: Lesson = {
     // ─── DIKW 피라미드 — 1 step → 5 steps 로 분해 (Phase C, 2026-04-27) ───
     {
       id: 'adsp-1-1-s1',
-      title: 'DIKW 피라미드 — 4단계 개요',
+      title: 'DIKW 피라미드 개요',
       quizId: 'adsp-1-1-cp-01a',
       dialogue: [
         { pose: 'wave', text: '안녕! 첫 시간이야. 오늘은 [DIKW 피라미드] 부터.' },
@@ -52,7 +52,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s1-data',
-      title: 'DIKW ① 데이터 (Data) — 가공 전 원시 값',
+      title: 'DIKW ① 데이터 (Data)',
       quizId: 'adsp-1-1-cp-01b',
       dialogue: [
         { pose: 'wave', text: '첫 단계, [데이터] 야.' },
@@ -83,7 +83,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s1-info',
-      title: 'DIKW ② 정보 (Information) — 비교·집계로 의미가 생김',
+      title: 'DIKW ② 정보 (Information)',
       quizId: 'adsp-1-1-cp-01c',
       dialogue: [
         { pose: 'wave', text: '둘째, [정보] 단계.' },
@@ -114,7 +114,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s1-knowledge',
-      title: 'DIKW ③ 지식 (Knowledge) — 반복 가능한 규칙',
+      title: 'DIKW ③ 지식 (Knowledge)',
       quizId: 'adsp-1-1-cp-01',
       dialogue: [
         { pose: 'wave', text: '셋째, [지식] 단계.' },
@@ -148,7 +148,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s1-wisdom',
-      title: 'DIKW ④ 지혜 (Wisdom) — 새 영역으로의 확장',
+      title: 'DIKW ④ 지혜 (Wisdom)',
       quizId: 'adsp-1-1-cp-01d',
       dialogue: [
         { pose: 'wave', text: '마지막, [지혜] 단계.' },
@@ -185,7 +185,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s1-review',
-      title: 'DIKW 피라미드 — 4단계 복습',
+      title: 'DIKW 피라미드 복습',
       quizId: 'adsp-1-1-cp-01a',
       group: 'adsp-1-1-s1',
       dialogue: [
@@ -209,7 +209,7 @@ const ADSP_1_1: Lesson = {
     // ─── 데이터 3가지 분류 기준 — 1 step → 4 substeps (beginner-friendly 보강) ───
     {
       id: 'adsp-1-1-s2',
-      title: '데이터 분류 — 3축 동시 적용 (개요)',
+      title: '데이터 분류 (개요)',
       quizId: 'adsp-1-1-cp-02',
       dialogue: [
         { pose: 'wave', text: '이번엔 [데이터] 에 대해\n자세히 알아보자!' },
@@ -246,7 +246,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s2-jeong',
-      title: '형태 ① 정형 — 행·열 구조',
+      title: '형태 ① 정형',
       quizId: 'adsp-1-1-cp-02-jeong',
       dialogue: [
         { pose: 'wave', text: '[형태] 분류 첫째 — [정형] 부터!' },
@@ -283,7 +283,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s2-ban',
-      title: '형태 ② 반정형 — 메타데이터 동봉',
+      title: '형태 ② 반정형',
       quizId: 'adsp-1-1-cp-02-ban',
       dialogue: [
         { pose: 'wave', text: '[형태] 분류 둘째 — [반정형]!' },
@@ -320,7 +320,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s2-bi',
-      title: '형태 ③ 비정형 — 정해진 형식 X',
+      title: '형태 ③ 비정형',
       quizId: 'adsp-1-1-cp-02-bi',
       dialogue: [
         { pose: 'wave', text: '[형태] 분류 셋째 — [비정형]!' },
@@ -357,7 +357,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s2-quan',
-      title: '표현 방식 ① 정량적 — 측정 가능한 숫자',
+      title: '표현 방식 ① 정량적',
       quizId: 'adsp-1-1-cp-02-quan',
       dialogue: [
         { pose: 'wave', text: '[표현 방식] 분류 첫째 — [정량적] 부터!' },
@@ -394,7 +394,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s2-qual',
-      title: '표현 방식 ② 정성적 — 말·감정·서술',
+      title: '표현 방식 ② 정성적',
       quizId: 'adsp-1-1-cp-02-qual',
       dialogue: [
         { pose: 'wave', text: '[표현 방식] 분류 둘째 — [정성적]!' },
@@ -431,7 +431,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s2-num',
-      title: '분석 목적 ① 수치형 — 크기·차이의 의미',
+      title: '분석 목적 ① 수치형',
       quizId: 'adsp-1-1-cp-02-num',
       dialogue: [
         { pose: 'wave', text: '[분석 목적] 분류 첫째 — [수치형] 부터!' },
@@ -468,7 +468,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s2-cat',
-      title: '분석 목적 ② 범주형 — 카테고리·라벨',
+      title: '분석 목적 ② 범주형',
       quizId: 'adsp-1-1-cp-02-cat',
       dialogue: [
         { pose: 'wave', text: '[분석 목적] 분류 둘째 — [범주형]!' },
@@ -505,7 +505,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s2-review',
-      title: '데이터 분류 — 3축 동시 적용 복습',
+      title: '데이터 분류 복습',
       quizId: 'adsp-1-1-cp-02',
       group: 'adsp-1-1-s2',
       dialogue: [
@@ -528,7 +528,7 @@ const ADSP_1_1: Lesson = {
     // ─── SECI — 1 step → 5 substeps (암묵·형식 + 4 변환) ───
     {
       id: 'adsp-1-1-s3',
-      title: '암묵지 · 형식지 — 두 가지 지식',
+      title: '암묵지 · 형식지',
       quizId: 'adsp-1-1-cp-03',
       dialogue: [
         { pose: 'wave', text: '[자전거 타는 법] 을\n책으로 옮길 수 있을까?' },
@@ -743,7 +743,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s3-summary',
-      title: 'SECI 종합 — 4단계 매핑',
+      title: 'SECI 종합',
       quizId: 'adsp-1-1-cp-03-seci',
       dialogue: [
         { pose: 'wave', text: 'SECI 4단계를\n전부 살펴봤어!' },
@@ -785,7 +785,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s3-review',
-      title: '암묵지 · 형식지 — 두 가지 지식 복습',
+      title: '암묵지 · 형식지 복습',
       quizId: 'adsp-1-1-cp-03',
       group: 'adsp-1-1-s3',
       dialogue: [
@@ -851,7 +851,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s4-share',
-      title: 'DB ① 공용 — 여러 사용자 공동 이용',
+      title: 'DB ① 공용',
       quizId: 'adsp-1-1-cp-04-share',
       dialogue: [
         { pose: 'wave', text: 'DB 첫 특징 — [공용 데이터]!' },
@@ -888,7 +888,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s4-int',
-      title: 'DB ② 통합 — 데이터 중복 X',
+      title: 'DB ② 통합',
       quizId: 'adsp-1-1-cp-04-int',
       dialogue: [
         { pose: 'wave', text: 'DB 둘째 특징 — [통합된 데이터]!' },
@@ -925,7 +925,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s4-stored',
-      title: 'DB ③ 저장 — 저장매체에 보관',
+      title: 'DB ③ 저장',
       quizId: 'adsp-1-1-cp-04-stored',
       dialogue: [
         { pose: 'wave', text: 'DB 셋째 특징 — [저장된 데이터]!' },
@@ -962,7 +962,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s4-change',
-      title: 'DB ④ 변화 — 추가·삭제·수정에도 정확',
+      title: 'DB ④ 변화',
       quizId: 'adsp-1-1-cp-04-change',
       dialogue: [
         { pose: 'wave', text: 'DB 마지막 특징 — [변화하는 데이터]!' },
@@ -1000,7 +1000,7 @@ const ADSP_1_1: Lesson = {
     {
       id: 'adsp-1-1-s4-dw',
       group: 'adsp-1-1-s4-dw',
-      title: 'DW (Data Warehouse) — 분석 창고',
+      title: 'DW (Data Warehouse)',
       quizId: 'adsp-1-1-cp-04-dw',
       dialogue: [
         {
@@ -1058,7 +1058,7 @@ const ADSP_1_1: Lesson = {
     {
       id: 'adsp-1-1-s4-dw-purpose',
       group: 'adsp-1-1-s4-dw',
-      title: 'DW 목적 — 통합 의사결정 지원',
+      title: 'DW 목적',
       quizId: 'adsp-1-1-cp-04-dw-purpose',
       dialogue: [
         { pose: 'wave', text: 'DW 의 [목적] 알아보자!' },
@@ -1100,7 +1100,7 @@ const ADSP_1_1: Lesson = {
     {
       id: 'adsp-1-1-s4-dw-features',
       group: 'adsp-1-1-s4-dw',
-      title: 'DW 주요특징 — 주제·통합·시계열·비휘발',
+      title: 'DW 주요특징',
       quizId: 'adsp-1-1-cp-04-dw-features',
       dialogue: [
         { pose: 'wave', text: 'DW 의 [주요특징 4가지]!' },
@@ -1151,7 +1151,7 @@ const ADSP_1_1: Lesson = {
     {
       id: 'adsp-1-1-s4-dm',
       group: 'adsp-1-1-s4-dm',
-      title: 'DM (Data Mart) — 부서별 작은 창고',
+      title: 'DM (Data Mart)',
       quizId: 'adsp-1-1-cp-04-dm',
       dialogue: [
         {
@@ -1205,7 +1205,7 @@ const ADSP_1_1: Lesson = {
     {
       id: 'adsp-1-1-s4-dm-purpose',
       group: 'adsp-1-1-s4-dm',
-      title: 'DM 목적 — 부서별 빠른 분석',
+      title: 'DM 목적',
       quizId: 'adsp-1-1-cp-04-dm-purpose',
       dialogue: [
         { pose: 'wave', text: 'DM 의 [목적] 알아보자!' },
@@ -1247,7 +1247,7 @@ const ADSP_1_1: Lesson = {
     {
       id: 'adsp-1-1-s4-dm-features',
       group: 'adsp-1-1-s4-dm',
-      title: 'DM 유형 — 종속형 / 독립형',
+      title: 'DM 유형',
       quizId: 'adsp-1-1-cp-04-dm-features',
       dialogue: [
         { pose: 'wave', text: 'DM 은 [2가지 유형] 이 있어!' },
@@ -1293,7 +1293,7 @@ const ADSP_1_1: Lesson = {
     {
       id: 'adsp-1-1-s4-lake',
       group: 'adsp-1-1-s4-lake',
-      title: 'Data Lake — 정제 전 저수지',
+      title: 'Data Lake',
       quizId: 'adsp-1-1-cp-04-lake',
       dialogue: [
         {
@@ -1347,7 +1347,7 @@ const ADSP_1_1: Lesson = {
     {
       id: 'adsp-1-1-s4-lake-purpose',
       group: 'adsp-1-1-s4-lake',
-      title: 'Data Lake 목적 — 원시 보존 + 다양한 분석',
+      title: 'Data Lake 목적',
       quizId: 'adsp-1-1-cp-04-lake-purpose',
       dialogue: [
         { pose: 'wave', text: 'Data Lake 의 [목적] 알아보자!' },
@@ -1389,7 +1389,7 @@ const ADSP_1_1: Lesson = {
     {
       id: 'adsp-1-1-s4-lake-features',
       group: 'adsp-1-1-s4-lake',
-      title: 'Data Lake 특징 — Schema-on-Read',
+      title: 'Data Lake 특징',
       quizId: 'adsp-1-1-cp-04-lake-features',
       dialogue: [
         { pose: 'wave', text: 'Data Lake 의 [주요특징]!' },
@@ -1463,7 +1463,7 @@ const ADSP_1_1: Lesson = {
     {
       id: 'adsp-1-1-s4-olap',
       group: 'adsp-1-1-s4-olap-oltp',
-      title: 'OLAP — 분석 처리',
+      title: 'OLAP',
       quizId: 'adsp-1-1-cp-04-olap',
       dialogue: [
         {
@@ -1508,7 +1508,7 @@ const ADSP_1_1: Lesson = {
     {
       id: 'adsp-1-1-s4-olap-purpose',
       group: 'adsp-1-1-s4-olap-oltp',
-      title: 'OLAP 목적 — 다차원 분석 + 의사결정',
+      title: 'OLAP 목적',
       quizId: 'adsp-1-1-cp-04-olap-purpose',
       dialogue: [
         { pose: 'wave', text: 'OLAP 의 [목적] 알아보자!' },
@@ -1550,7 +1550,7 @@ const ADSP_1_1: Lesson = {
     {
       id: 'adsp-1-1-s4-olap-features',
       group: 'adsp-1-1-s4-olap-oltp',
-      title: 'OLAP 특징 — 비정규화·집계 쿼리',
+      title: 'OLAP 특징',
       quizId: 'adsp-1-1-cp-04-olap-features',
       dialogue: [
         { pose: 'wave', text: 'OLAP 의 [특징·구조·쿼리·사용자·예시]!' },
@@ -1597,7 +1597,7 @@ const ADSP_1_1: Lesson = {
     {
       id: 'adsp-1-1-s4-oltp',
       group: 'adsp-1-1-s4-olap-oltp',
-      title: 'OLTP — 트랜잭션 처리',
+      title: 'OLTP',
       quizId: 'adsp-1-1-cp-04-oltp',
       dialogue: [
         {
@@ -1642,7 +1642,7 @@ const ADSP_1_1: Lesson = {
     {
       id: 'adsp-1-1-s4-oltp-purpose',
       group: 'adsp-1-1-s4-olap-oltp',
-      title: 'OLTP 목적 — 즉시 처리 + 일관성',
+      title: 'OLTP 목적',
       quizId: 'adsp-1-1-cp-04-oltp-purpose',
       dialogue: [
         { pose: 'wave', text: 'OLTP 의 [목적] 알아보자!' },
@@ -1684,7 +1684,7 @@ const ADSP_1_1: Lesson = {
     {
       id: 'adsp-1-1-s4-oltp-features',
       group: 'adsp-1-1-s4-olap-oltp',
-      title: 'OLTP 특징 — 정규화·짧은 트랜잭션',
+      title: 'OLTP 특징',
       quizId: 'adsp-1-1-cp-04-oltp-features',
       dialogue: [
         { pose: 'wave', text: 'OLTP 의 [특징·구조·쿼리·사용자·예시]!' },
@@ -1766,7 +1766,7 @@ const ADSP_1_1: Lesson = {
     // ─── 기업 데이터베이스 7종 — 1 step → 8 substeps (DBMS·ERP·CRM·SCM·KMS·BI·BA) ───
     {
       id: 'adsp-1-1-s5',
-      title: '기업 데이터베이스 — 7종 개요',
+      title: '기업 데이터베이스 개요',
       quizId: 'adsp-1-1-cp-05',
       dialogue: [
         {
@@ -1818,7 +1818,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s5-dbms',
-      title: '① DBMS — 데이터베이스 관리 시스템',
+      title: '① DBMS',
       quizId: 'adsp-1-1-cp-05-dbms',
       dialogue: [
         {
@@ -1866,7 +1866,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s5-erp',
-      title: '② ERP — 전사 자원 관리',
+      title: '② ERP',
       quizId: 'adsp-1-1-cp-05-erp',
       dialogue: [
         {
@@ -1910,7 +1910,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s5-crm',
-      title: '③ CRM — 고객 관계 관리',
+      title: '③ CRM',
       quizId: 'adsp-1-1-cp-05-crm',
       dialogue: [
         {
@@ -1954,7 +1954,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s5-scm',
-      title: '④ SCM — 공급망 관리',
+      title: '④ SCM',
       quizId: 'adsp-1-1-cp-05-scm',
       dialogue: [
         {
@@ -1998,7 +1998,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s5-kms',
-      title: '⑤ KMS — 지식 관리 시스템',
+      title: '⑤ KMS',
       quizId: 'adsp-1-1-cp-05-kms',
       dialogue: [
         {
@@ -2042,7 +2042,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s5-bi',
-      title: '⑥ BI — 비즈니스 인텔리전스',
+      title: '⑥ BI',
       quizId: 'adsp-1-1-cp-05-bi',
       dialogue: [
         {
@@ -2086,7 +2086,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s5-ba',
-      title: '⑦ BA — 비즈니스 분석',
+      title: '⑦ BA',
       quizId: 'adsp-1-1-cp-05-ba',
       dialogue: [
         {
@@ -2136,7 +2136,7 @@ const ADSP_1_1: Lesson = {
     },
     {
       id: 'adsp-1-1-s5-review',
-      title: '기업 데이터베이스 — 7종 복습',
+      title: '기업 데이터베이스 복습',
       quizId: 'adsp-1-1-cp-05',
       group: 'adsp-1-1-s5',
       dialogue: [
@@ -2172,7 +2172,7 @@ const ADSP_1_2: Lesson = {
     // ─── 빅데이터 출현 배경 — 5가지 요인 ───
     {
       id: 'adsp-1-2-s0',
-      title: '빅데이터 출현 배경 — 5가지 요인',
+      title: '빅데이터 출현 배경',
       quizId: 'adsp-1-2-cp-bg',
       dialogue: [
         {
@@ -2264,7 +2264,7 @@ const ADSP_1_2: Lesson = {
     },
     {
       id: 'adsp-1-2-s1-3v',
-      title: '빅데이터 3V — 가트너의 정의',
+      title: '빅데이터 3V',
       quizId: 'adsp-1-2-cp-01',
       dialogue: [
         {
@@ -2419,7 +2419,7 @@ const ADSP_1_2: Lesson = {
     // ─── 빅데이터가 만들어내는 변화 — 4축 (전후양상) ───
     {
       id: 'adsp-1-2-s2',
-      title: '빅데이터가 만들어내는 변화 — 4축 개요',
+      title: '빅데이터가 만들어내는 변화 개요',
       quizId: 'adsp-1-2-cp-02',
       dialogue: [
         {
@@ -2663,7 +2663,7 @@ const ADSP_1_2: Lesson = {
     },
     {
       id: 'adsp-1-2-s2-review',
-      title: '빅데이터가 만들어내는 변화 — 4축 복습',
+      title: '빅데이터가 만들어내는 변화 복습',
       quizId: 'adsp-1-2-cp-02',
       group: 'adsp-1-2-s2',
       dialogue: [
@@ -2857,7 +2857,7 @@ const ADSP_1_2: Lesson = {
     // ─── 빅데이터 비유 4종 + 위기·대응 — 1 step → 6 substeps ───
     {
       id: 'adsp-1-2-s4',
-      title: '빅데이터 비유 — 4가지 개요',
+      title: '빅데이터 비유 개요',
       quizId: 'adsp-1-2-cp-04',
       dialogue: [
         {
@@ -3058,7 +3058,7 @@ const ADSP_1_2: Lesson = {
     },
     {
       id: 'adsp-1-2-s4-crisis',
-      title: '빅데이터 위기·대응 — 3가지 짝',
+      title: '빅데이터 위기·대응',
       quizId: 'adsp-1-2-cp-04-crisis',
       dialogue: [
         {
@@ -3106,7 +3106,7 @@ const ADSP_1_2: Lesson = {
     },
     {
       id: 'adsp-1-2-s4-review',
-      title: '빅데이터 비유 — 4가지 복습',
+      title: '빅데이터 비유 복습',
       quizId: 'adsp-1-2-cp-04',
       group: 'adsp-1-2-s4',
       dialogue: [

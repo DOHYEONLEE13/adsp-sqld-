@@ -384,7 +384,7 @@ const ADSP_3_1: Lesson = {
     },
     {
       id: 'adsp-3-1-s4',
-      title: '이상값 탐지 — 개요',
+      title: '이상값 탐지 개요',
       quizId: 'adsp-3-1-cp-04',
       dialogue: [
         { pose: 'wave', text: '이번에는 [이상값 탐지 4종] 을 배워보자!' },
@@ -539,7 +539,7 @@ const ADSP_3_1: Lesson = {
     },
     {
       id: 'adsp-3-1-s4-review',
-      title: '이상값 탐지 — 복습',
+      title: '이상값 탐지 복습',
       quizId: 'adsp-3-1-cp-04',
       group: 'adsp-3-1-s4',
       dialogue: [
@@ -601,7 +601,7 @@ const ADSP_3_1: Lesson = {
     },
     {
       id: 'adsp-3-1-s5-vector',
-      title: 'R ① vector — 같은 타입 1차원',
+      title: 'R ① vector',
       quizId: 'adsp-3-1-cp-05-vector',
       dialogue: [
         { pose: 'wave', text: '① [vector] — 같은 색 펜 한 통!' },
@@ -626,7 +626,7 @@ const ADSP_3_1: Lesson = {
     },
     {
       id: 'adsp-3-1-s5-list',
-      title: 'R ② list — 다른 타입 혼합',
+      title: 'R ② list',
       quizId: 'adsp-3-1-cp-05-list',
       dialogue: [
         { pose: 'wave', text: '② [list] — 필통 안의 잡동사니!' },
@@ -651,7 +651,7 @@ const ADSP_3_1: Lesson = {
     },
     {
       id: 'adsp-3-1-s5-matrix',
-      title: 'R ③ matrix — 같은 타입 2차원',
+      title: 'R ③ matrix',
       quizId: 'adsp-3-1-cp-05-matrix',
       dialogue: [
         { pose: 'wave', text: '③ [matrix] — 같은 펜 격자 정리!' },
@@ -676,7 +676,7 @@ const ADSP_3_1: Lesson = {
     },
     {
       id: 'adsp-3-1-s5-df',
-      title: 'R ④ data.frame — 열마다 다른 타입',
+      title: 'R ④ data.frame',
       quizId: 'adsp-3-1-cp-05-df',
       dialogue: [
         { pose: 'wave', text: '④ [data.frame] — 시간표!' },
@@ -911,7 +911,7 @@ const ADSP_3_2: Lesson = {
     // ─── 확률분포 — 1 step → 3 substeps (overview + 이산 + 연속) ───
     {
       id: 'adsp-3-2-s2',
-      title: '확률분포 — 이산 vs 연속 개요',
+      title: '확률분포 개요',
       quizId: 'adsp-3-2-cp-02',
       dialogue: [
         { pose: 'wave', text: '확률분포 — 이산 vs 연속 두 갈래.' },
@@ -984,7 +984,7 @@ const ADSP_3_2: Lesson = {
     },
     {
       id: 'adsp-3-2-s2-review',
-      title: '확률분포 — 이산 vs 연속 복습',
+      title: '확률분포 복습',
       quizId: 'adsp-3-2-cp-02',
       group: 'adsp-3-2-s2',
       dialogue: [
@@ -1301,7 +1301,7 @@ const ADSP_3_3: Lesson = {
     // ─── p-value · 가설검정 5용어 — 1 step → 6 substeps ───
     {
       id: 'adsp-3-3-s1',
-      title: '가설검정 5용어 — 개요',
+      title: '가설검정 5용어 개요',
       quizId: 'adsp-3-3-cp-01',
       dialogue: [
         { pose: 'wave', text: '가설검정 5용어 — 헷갈리면 시험에서 뚫림.' },
@@ -1436,7 +1436,7 @@ const ADSP_3_3: Lesson = {
     },
     {
       id: 'adsp-3-3-s1-review',
-      title: '가설검정 5용어 — 복습',
+      title: '가설검정 5용어 복습',
       quizId: 'adsp-3-3-cp-01',
       group: 'adsp-3-3-s1',
       dialogue: [
@@ -1459,7 +1459,7 @@ const ADSP_3_3: Lesson = {
     // ─── t검정 3종 — 1 step → 4 substeps ───
     {
       id: 'adsp-3-3-s2',
-      title: 't검정 3종 — 개요',
+      title: 't검정 3종 개요',
       quizId: 'adsp-3-3-cp-02',
       dialogue: [
         { pose: 'wave', text: 't검정은 평균 차이 검정 — 3가지 버전.' },
@@ -1580,7 +1580,7 @@ const ADSP_3_3: Lesson = {
     },
     {
       id: 'adsp-3-3-s2-review',
-      title: 't검정 3종 — 복습',
+      title: 't검정 3종 복습',
       quizId: 'adsp-3-3-cp-02',
       group: 'adsp-3-3-s2',
       dialogue: [

@@ -13,7 +13,7 @@ const ADSP_2_1: Lesson = {
     // ─── 분석 4유형 (What × How) — 1 step → 5 substeps ───
     {
       id: 'adsp-2-1-s1',
-      title: '분석 4유형 — What × How (개요)',
+      title: '분석 4유형 (개요)',
       quizId: 'adsp-2-1-cp-01',
       dialogue: [
         { pose: 'wave', text: '이번에는 [분석 4유형] 을 배워보자!' },
@@ -228,7 +228,7 @@ const ADSP_2_1: Lesson = {
     },
     {
       id: 'adsp-2-1-s1-review',
-      title: '분석 4유형 — What × How 복습',
+      title: '분석 4유형 복습',
       quizId: 'adsp-2-1-cp-01',
       group: 'adsp-2-1-s1',
       dialogue: [
@@ -251,7 +251,7 @@ const ADSP_2_1: Lesson = {
     // ─── KDD vs CRISP-DM — 1 step → 3 substeps (overview + KDD + CRISP) ───
     {
       id: 'adsp-2-1-s2',
-      title: '분석 프로세스 — KDD vs CRISP-DM 개요',
+      title: '분석 프로세스 개요',
       quizId: 'adsp-2-1-cp-02',
       dialogue: [
         { pose: 'wave', text: '이번에는 [분석 프로세스] 를 배워보자!' },
@@ -356,7 +356,7 @@ const ADSP_2_1: Lesson = {
     },
     {
       id: 'adsp-2-1-s2-review',
-      title: '분석 프로세스 — KDD vs CRISP-DM 복습',
+      title: '분석 프로세스 복습',
       quizId: 'adsp-2-1-cp-02',
       group: 'adsp-2-1-s2',
       dialogue: [
@@ -601,7 +601,7 @@ const ADSP_2_1: Lesson = {
     // ─── 분석 방법론 5종 — 1 step → 6 substeps ───
     {
       id: 'adsp-2-1-s4',
-      title: '분석 방법론 5종 — 개요',
+      title: '분석 방법론 5종 개요',
       quizId: 'adsp-2-1-cp-04',
       dialogue: [
         { pose: 'wave', text: '이번에는 [분석 방법론 5종] 을 배워보자!' },
@@ -841,7 +841,7 @@ const ADSP_2_1: Lesson = {
     },
     {
       id: 'adsp-2-1-s4-review',
-      title: '분석 방법론 5종 — 복습',
+      title: '분석 방법론 5종 복습',
       quizId: 'adsp-2-1-cp-04',
       group: 'adsp-2-1-s4',
       dialogue: [
@@ -877,7 +877,7 @@ const ADSP_2_2: Lesson = {
     // ─── 우선순위 4사분면 — 1 step → 5 substeps ───
     {
       id: 'adsp-2-2-s1',
-      title: '과제 우선순위 — 시급성 × 난이도 (개요)',
+      title: '과제 우선순위 (개요)',
       quizId: 'adsp-2-2-cp-01',
       dialogue: [
         { pose: 'wave', text: '이번에는 [과제 우선순위] 정하는 법을 배워보자!' },
@@ -1034,7 +1034,7 @@ const ADSP_2_2: Lesson = {
     },
     {
       id: 'adsp-2-2-s1-review',
-      title: '과제 우선순위 — 시급성 × 난이도 복습',
+      title: '과제 우선순위 복습',
       quizId: 'adsp-2-2-cp-01',
       group: 'adsp-2-2-s1',
       dialogue: [
@@ -1574,7 +1574,7 @@ const ADSP_2_3: Lesson = {
     // ─── 타당성 3요소 — 1 step → 4 substeps ───
     {
       id: 'adsp-2-3-s1',
-      title: '타당성 3요소 — 개요',
+      title: '타당성 3요소 개요',
       quizId: 'adsp-2-3-cp-01',
       dialogue: [
         { pose: 'wave', text: '이번에는 [타당성 3축] 을 배워보자!' },
@@ -1670,7 +1670,7 @@ const ADSP_2_3: Lesson = {
     },
     {
       id: 'adsp-2-3-s1-review',
-      title: '타당성 3요소 — 복습',
+      title: '타당성 3요소 복습',
       quizId: 'adsp-2-3-cp-01',
       group: 'adsp-2-3-s1',
       dialogue: [
@@ -1746,7 +1746,7 @@ const ADSP_2_3: Lesson = {
     // ─── 분석 과제 정의서 — 1 step ───
     {
       id: 'adsp-2-3-s4',
-      title: '분석 과제 정의서 — 5 핵심 항목',
+      title: '분석 과제 정의서',
       quizId: 'adsp-2-3-cp-04',
       dialogue: [
         { pose: 'wave', text: '이번에는 [분석 과제 정의서] 를 배워보자!' },

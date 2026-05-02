@@ -163,12 +163,30 @@ export function useStepUnlocks(): StepLockSnapshot {
   return snap;
 }
 
+/**
+ * 검수용 dev 토글 — localStorage 의 'questdp.dev.unlockAllSteps' 가 '1' 이면
+ * 모든 step 자동 unlock. AdminPage 의 "모든 회독 잠금해제(검수)" 버튼으로 set.
+ * passes.ts 의 unlockAllPasses 와 짝으로 작동 (pass 잠금 + step 잠금 동시 해제).
+ */
+export const DEV_UNLOCK_STEPS_KEY = 'questdp.dev.unlockAllSteps';
+
+export function isDevUnlockStepsEnabled(): boolean {
+  if (typeof window === 'undefined') return false;
+  try {
+    return window.localStorage.getItem(DEV_UNLOCK_STEPS_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+
 /** step idx 0 은 항상 unlocked. 그 외엔 enforced + 서버 등록 여부로 결정. */
 export function isStepLocked(
   snap: StepLockSnapshot,
   lessonId: string,
   stepIdx: number,
 ): boolean {
+  // 검수 모드 — admin 이 dev 토글 ON 했으면 모든 step 강제 unlocked.
+  if (isDevUnlockStepsEnabled()) return false;
   if (!snap.enforced) return false;
   if (stepIdx === 0) return false;
   return !snap.unlockedSet.has(stepKey(lessonId, stepIdx));

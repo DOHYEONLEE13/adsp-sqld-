@@ -11,11 +11,16 @@
  */
 
 import { useEffect, useState } from 'react';
-import { ArrowLeft, RefreshCcw, Shield, Users } from 'lucide-react';
+import { ArrowLeft, RefreshCcw, Shield, Unlock, Users } from 'lucide-react';
 import { getSupabase, isSupabaseConfigured } from '@/lib/supabase';
 import { useMyProfile } from '@/data/profile';
 import VideoBg from '@/components/ui/VideoBg';
 import { VIDEO_URLS } from '@/data/site';
+import { DEV_UNLOCK_KEY, isDevUnlockEnabled } from '@/game/passes';
+import {
+  DEV_UNLOCK_STEPS_KEY,
+  isDevUnlockStepsEnabled,
+} from '@/game/stepUnlocks';
 
 interface UserRow {
   id: string;
@@ -76,6 +81,28 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
   }, []);
 
   const isAdminFinal = profile.isAdmin || serverAdmin === true;
+
+  // ── 검수 모드 — 모든 회독·step 잠금해제 토글 ─────────────────
+  // pass + step 두 잠금 시스템을 동시에 ON/OFF.
+  const [bypassActive, setBypassActive] = useState<boolean>(
+    () => isDevUnlockEnabled() && isDevUnlockStepsEnabled(),
+  );
+  const handleToggleBypass = () => {
+    const next = !bypassActive;
+    if (typeof window !== 'undefined') {
+      if (next) {
+        window.localStorage.setItem(DEV_UNLOCK_KEY, '1');
+        window.localStorage.setItem(DEV_UNLOCK_STEPS_KEY, '1');
+      } else {
+        window.localStorage.removeItem(DEV_UNLOCK_KEY);
+        window.localStorage.removeItem(DEV_UNLOCK_STEPS_KEY);
+      }
+    }
+    setBypassActive(next);
+    // ZoneScreen 의 isStepLocked 가 함수 호출 시점에 localStorage 읽으므로
+    // 즉시 반영하려면 reload (PassSection 과 동일 패턴).
+    window.setTimeout(() => window.location.reload(), 200);
+  };
 
   // 비-admin 진입 시 홈으로 (clientside guard)
   useEffect(() => {
@@ -322,8 +349,63 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
           </div>
         </section>
 
+        {/* 검수 도구 — 모든 잠금 해제 토글 */}
+        <section
+          className="mt-10 p-5 rounded-[16px] border"
+          style={{
+            background: bypassActive
+              ? 'linear-gradient(135deg, rgba(111,255,0,0.10), rgba(111,255,0,0.04))'
+              : 'rgba(239,244,255,0.04)',
+            borderColor: bypassActive
+              ? 'rgba(111,255,0,0.45)'
+              : 'rgba(239,244,255,0.12)',
+          }}
+        >
+          <div className="flex items-start justify-between gap-4 flex-wrap">
+            <div className="flex-1 min-w-0">
+              <h3 className="kr-heading text-[13px] mb-2 inline-flex items-center gap-2">
+                <Unlock
+                  size={12}
+                  strokeWidth={2.6}
+                  className={bypassActive ? 'text-neon' : 'text-cream/55'}
+                />
+                검수 도구 — 모든 회독·step 잠금해제
+              </h3>
+              <p className="kr-body text-[12px] text-cream/65 leading-[1.7]">
+                토글 ON 시 이전 step 클리어 여부 + N회독 stamp 보유 여부와 무관하게
+                모든 콘텐츠가 열람 가능해집니다. 검수·QA 용도로만 사용. 다시 OFF
+                하면 정상 잠금 정책으로 복원됩니다 (페이지 자동 reload).
+              </p>
+              <p className="kr-body text-[11px] text-cream/45 mt-2 leading-[1.6]">
+                저장 위치: localStorage.{DEV_UNLOCK_KEY} ·{' '}
+                {DEV_UNLOCK_STEPS_KEY} (디바이스별 — 다른 기기에선 별도 토글
+                필요).
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleToggleBypass}
+              className="kr-heading uppercase text-[11px] tracking-widest px-4 py-2.5 rounded-full transition shrink-0"
+              style={{
+                background: bypassActive
+                  ? 'rgba(111,255,0,0.95)'
+                  : 'rgba(239,244,255,0.08)',
+                color: bypassActive ? 'var(--base)' : 'var(--cream)',
+                border: bypassActive
+                  ? '1px solid rgba(111,255,0,1)'
+                  : '1px solid rgba(239,244,255,0.25)',
+                boxShadow: bypassActive
+                  ? '0 6px 20px rgba(111,255,0,0.35)'
+                  : 'none',
+              }}
+            >
+              {bypassActive ? '✓ 검수 모드 ON' : '검수 모드 OFF'}
+            </button>
+          </div>
+        </section>
+
         {/* 안내 */}
-        <section className="mt-10 p-5 rounded-[16px] border border-cream/12 bg-cream/5">
+        <section className="mt-6 p-5 rounded-[16px] border border-cream/12 bg-cream/5">
           <h3 className="kr-heading text-[13px] mb-2 inline-flex items-center gap-2">
             <Shield size={12} strokeWidth={2.6} className="text-neon" />
             운영자 추가/제거

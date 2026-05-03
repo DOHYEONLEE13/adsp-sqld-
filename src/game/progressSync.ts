@@ -112,35 +112,27 @@ export async function pullProgress(): Promise<void> {
   replaceFromMerge(merged);
 }
 
-// ─── 다른 사용자로 로그인 감지 → local clear ─────────────────────────
+// ─── 사용자 전환 감지 → local clear ──────────────────────────────────
 //
-// 같은 기기에서 사용자 A 로그아웃 → 사용자 B 로그인 시 A 의 progress 가
-// 노출되지 않도록 local 을 한 번 비우고 그 다음 pull.
+// 두 종류 전환을 처리:
+//  1) 다른 사용자가 같은 기기에서 로그인 (A 로그아웃 → B 로그인) — A 데이터 leak 차단
+//  2) 게스트 → 로그인 (last==null + 게스트 진도 있음) — 게스트 데이터가 server
+//     데이터 contaminate 하지 않도록 가드. server 가 비어있으면 migrate.ts 가
+//     흡수, 데이터 있으면 게스트 진도 discard.
+//
+// signInTransition 모듈이 결정 로직을 담당.
 
-const LAST_USER_ID_KEY = 'questdp.lastUserId.v1';
-
-function getLastUserId(): string | null {
-  if (typeof window === 'undefined') return null;
-  try {
-    return window.localStorage.getItem(LAST_USER_ID_KEY);
-  } catch {
-    return null;
-  }
-}
-
-function setLastUserId(uid: string | null): void {
-  if (typeof window === 'undefined') return;
-  try {
-    if (uid) window.localStorage.setItem(LAST_USER_ID_KEY, uid);
-    else window.localStorage.removeItem(LAST_USER_ID_KEY);
-  } catch {
-    /* 무시 */
-  }
-}
+import {
+  decideSignInTransition,
+  getLastUserId,
+  setLastUserId,
+} from '@/lib/signInTransition';
 
 /**
- * SIGNED_IN 이벤트 시 호출. 직전 user_id 와 다르면 local progress clear.
- * (storage 의 reset 호출 — emptyStore 로 commit)
+ * SIGNED_IN 이벤트 시 호출. transition 종류에 따라 local 정리:
+ *  - 'reset': 게스트→기존 계정 — local 게스트 진도 폐기 (server 가 truth)
+ *  - 'migrate': 게스트→신규 계정 — local 유지 (migrate.ts 가 server 로 push)
+ *  - 'pull': 손실할 게스트 진도 없거나 같은 사용자 재로그인 — 평소대로
  */
 async function handleAuthChange(userId: string | null): Promise<void> {
   if (!userId) {
@@ -150,12 +142,31 @@ async function handleAuthChange(userId: string | null): Promise<void> {
   }
   const last = getLastUserId();
   if (last && last !== userId) {
-    // 다른 사용자가 같은 기기에서 로그인
+    // 다른 인증 사용자가 같은 기기에서 로그인 — A 데이터 즉시 비우기
     const { resetProgress } = await import('./storage');
     resetProgress();
+    setLastUserId(userId);
+    return;
   }
+
+  // 같은 사용자 재로그인 또는 게스트→로그인 케이스 — transition probe
+  const decision = await decideSignInTransition(userId);
+  if (decision === 'reset') {
+    // 기존 계정 + 게스트 진도 흔적 → 게스트 데이터 폐기
+    const { resetProgress } = await import('./storage');
+    resetProgress();
+    // UX 안내 — sessionStorage 로 토스트 트리거 (구독자가 처리)
+    if (typeof window !== 'undefined') {
+      try {
+        window.sessionStorage.setItem('questdp.guestDiscardToast', '1');
+        window.dispatchEvent(new CustomEvent('questdp:guest-discarded'));
+      } catch {
+        /* 무시 */
+      }
+    }
+  }
+  // 'migrate' / 'pull' — 별도 동작 없음. caller 가 pullProgress 호출.
   setLastUserId(userId);
-  // pull 은 호출자가 트리거 (initProgressSync 의 SIGNED_IN handler)
 }
 
 // ─── init ──────────────────────────────────────────────────────────

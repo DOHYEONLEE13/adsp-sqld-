@@ -10,6 +10,7 @@
 
 import type { Subject } from '@/types/question';
 import { getSupabase, onAuthStateChange } from '@/lib/supabase';
+import { decideSignInTransition } from '@/lib/signInTransition';
 
 const STORAGE_KEY = 'questdp.examDates.v1';
 
@@ -159,13 +160,24 @@ async function pullExamDates(): Promise<void> {
 
 let _syncStarted = false;
 
+/** server push 없이 local 만 비우는 변형 — guest→기존 계정 전환 시. */
+function resetExamDatesLocal(): void {
+  save({});
+}
+
 export function initExamDatesSync(): () => void {
   if (_syncStarted) return () => {};
   _syncStarted = true;
 
   void pullExamDates();
-  const unsub = onAuthStateChange((event) => {
+  const unsub = onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+      if (session?.user.id) {
+        const decision = await decideSignInTransition(session.user.id);
+        if (decision === 'reset') {
+          resetExamDatesLocal();
+        }
+      }
       void pullExamDates();
     }
   });

@@ -9,6 +9,7 @@
  */
 import type { Subject } from '@/types/question';
 import { getSupabase, onAuthStateChange } from '@/lib/supabase';
+import { decideSignInTransition } from '@/lib/signInTransition';
 
 const STORAGE_KEY = 'questdp.bookmarks.v1';
 const SCHEMA_VERSION = 1 as const;
@@ -292,6 +293,18 @@ async function serverDeleteAllBookmarks(): Promise<void> {
   }
 }
 
+/**
+ * server push 없이 local 만 비우는 변형. signInTransition 의 'reset' 결정
+ * 시 호출 — 게스트 북마크가 server 의 기존 계정 북마크와 union 되지 않도록.
+ *
+ * 일반 resetBookmarks() 는 server delete 까지 함께 — 위험 액션. 본 함수는
+ * 인증 사용자가 아직 server pull 안 한 시점의 local-only reset 용.
+ */
+function resetBookmarksLocal(): void {
+  addedAt = {};
+  commit(emptyStore());
+}
+
 /** server → local pull. 다른 기기에서 추가한 북마크 흡수. */
 async function pullBookmarks(): Promise<void> {
   const sb = getSupabase();
@@ -324,8 +337,17 @@ export function initBookmarksSync(): () => void {
 
   void pullBookmarks();
 
-  const unsub = onAuthStateChange((event) => {
+  const unsub = onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+      // Guest → 기존 계정 전환이면 게스트 북마크 폐기 (server delete 없이).
+      // 그러지 않으면 pullBookmarks 가 어차피 server 데이터로 덮어써서 동작은
+      // 같지만, 명시적으로 reset 해서 의도 분명히 + race window 좁힘.
+      if (session?.user.id) {
+        const decision = await decideSignInTransition(session.user.id);
+        if (decision === 'reset') {
+          resetBookmarksLocal();
+        }
+      }
       void pullBookmarks();
     }
   });

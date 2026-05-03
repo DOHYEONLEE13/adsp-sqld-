@@ -42,6 +42,7 @@ import { MobileTopBar, MobileBottomNav } from '../components/MobileGameNav';
 import PageAmbientBg from '../components/PageAmbientBg';
 import BookmarkedConceptsList from '../components/BookmarkedConceptsList';
 import { useResolvedBookmarks } from '../useConceptBookmarks';
+import { useDevUnlockFlags } from '../useDevUnlockFlags';
 
 const SUBJECT_ACCENT: Record<Subject, string> = {
   adsp: '#67e8f9',
@@ -59,6 +60,9 @@ export default function PlanetScreen({
   onSelectChapter,
   onBack,
 }: Props) {
+  // dev unlock 토글 변경 시 즉시 재렌더 — disabled chapter 도 ChapterPath 에서
+  // bypass 처리 (검수 모드면 모든 챕터 클릭 가능).
+  useDevUnlockFlags();
   const schema = SUBJECT_SCHEMAS[subject];
   const planets = getPlanets(subject);
   const progress = useProgress();
@@ -175,6 +179,8 @@ function ChapterPath({
   progress,
   onSelectChapter,
 }: ChapterPathProps) {
+  // 검수 모드 변화에 즉시 반응 — questionCount 0 챕터도 클릭 허용.
+  const devUnlock = useDevUnlockFlags();
   // 컨테이너 실제 폭을 관측 — 좁은 폰 뷰포트도 대응.
   const ref = useRef<HTMLDivElement>(null);
   const [W, setW] = useState(420);
@@ -243,7 +249,10 @@ function ChapterPath({
       </svg>
 
       {nodes.map((n) => {
-        const disabled = n.planet.questionCount === 0;
+        // 검수 모드 (dev unlock) 면 questionCount 0 이어도 진입 허용 — 콘텐츠
+        // 작성 중인 챕터도 admin 이 빈 ZoneScreen 으로 검수 가능.
+        const isDevUnlock = devUnlock.passes || devUnlock.steps;
+        const disabled = !isDevUnlock && n.planet.questionCount === 0;
         const agg = aggregateChapter(subject, n.planet.chapter, progress);
         const weakCount = disabled
           ? 0

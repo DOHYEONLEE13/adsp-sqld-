@@ -29,7 +29,7 @@ import {
   type PassTier,
 } from '@/types/passes';
 import { usePassSnapshot, resetPassProgress } from '@/game/passSync';
-import { DEV_UNLOCK_KEY, isDevUnlockEnabled } from '@/game/passes';
+import { useDevUnlockFlags, setDevUnlockFlags } from '@/game/useDevUnlockFlags';
 import { useMyProfile } from '@/data/profile';
 import {
   getSupabase,
@@ -114,27 +114,13 @@ export default function PassSection() {
   }, []);
   const isAdmin = profile.isAdmin || serverAdmin === true;
 
-  // ── 검수용 dev 토글 ──────────────────────────────────────
-  // localStorage 의 unlockAllPasses 플래그. ON 시 모든 회독 탭 강제 unlocked.
-  // 마이그 0013 적용 전 stamp 발급 불가 환경에서 검수하려고 추가.
-  const [devUnlock, setDevUnlock] = useState<boolean>(() => isDevUnlockEnabled());
-  useEffect(() => {
-    // 다른 탭에서 변경 시 동기화 (선택적)
-    const handler = () => setDevUnlock(isDevUnlockEnabled());
-    window.addEventListener('storage', handler);
-    return () => window.removeEventListener('storage', handler);
-  }, []);
+  // ── 검수용 dev 토글 (passes + steps 통합) ───────────────────────
+  // useDevUnlockFlags 가 같은 탭 내 즉시 재렌더 트리거. AdminPage 의 토글과
+  // 동일 스토어 사용 — 둘 중 어디서 토글해도 양쪽 UI 즉시 동기화.
+  const flags = useDevUnlockFlags();
+  const devUnlock = flags.passes;
   const handleToggleDevUnlock = () => {
-    const next = !devUnlock;
-    if (next) {
-      window.localStorage.setItem(DEV_UNLOCK_KEY, '1');
-    } else {
-      window.localStorage.removeItem(DEV_UNLOCK_KEY);
-    }
-    setDevUnlock(next);
-    // 같은 탭 내에선 storage 이벤트 안 뜨므로 페이지 reload 권장 (탭 컴포넌트가 함수 호출 시점만 체크)
-    // → 사용자가 ZoneScreen 재진입 시 적용됨. 즉시 반영하려면 reload.
-    window.setTimeout(() => window.location.reload(), 200);
+    setDevUnlockFlags({ passes: !devUnlock, steps: !devUnlock });
   };
 
   const handleReset = async () => {

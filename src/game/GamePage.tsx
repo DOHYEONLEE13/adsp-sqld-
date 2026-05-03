@@ -40,6 +40,8 @@ import { useStepUnlocks } from './stepUnlocks';
 import { isFinaleStep, isFinaleStepLocked } from './finale';
 import { useProgress } from './useProgress';
 import { useDevUnlockFlags } from './useDevUnlockFlags';
+import { isDevUnlockEnabled } from './passes';
+import { isDevUnlockStepsEnabled } from './stepUnlocks';
 import { tryRecordPassCompletion } from './passSync';
 
 interface Props {
@@ -141,8 +143,13 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
   /**
    * 에너지 1 차감 후 callback. 게스트·프리미엄·env 미설정 = 무조건 진행.
    * 무료 인증 사용자가 0 일 때만 차단 모달.
+   * admin 검수 모드 (dev unlock) ON 이면 차감·차단 모두 우회 — 검수 시 무한 풀이.
    */
   const gateEnergy = async (proceed: () => void) => {
+    if (isDevUnlockEnabled() || isDevUnlockStepsEnabled()) {
+      proceed();
+      return;
+    }
     const result = await consumeEnergy(1);
     if (result.ok) {
       proceed();

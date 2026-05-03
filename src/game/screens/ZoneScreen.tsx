@@ -93,6 +93,9 @@ export default function ZoneScreen({
   onReviewIds,
   onBack,
 }: Props) {
+  // dev unlock 토글 변경 시 즉시 재렌더 — passUnlockState / isStepLocked 가
+  // 함수 호출 시점에 localStorage 를 읽으므로 ZoneScreen 재렌더만 유도하면 됨.
+  useDevUnlockFlags();
   const schema = SUBJECT_SCHEMAS[subject];
   const chapterMeta = schema.chapters.find((c) => c.chapter === chapter);
   const lessons = getLessonsInChapter(subject, chapter);

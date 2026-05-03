@@ -312,21 +312,32 @@ function AddFriendCard({ myTag }: { myTag: string }) {
     e.preventDefault();
     if (submitting) return;
     setSubmitting(true);
-    const result = await addFriend(tagInput, myTag);
-    setSubmitting(false);
-    if (result.ok) {
-      setFeedback({ tone: 'ok', msg: '친구 추가 완료!' });
-      setTagInput('');
-    } else {
-      const map: Record<typeof result.reason, string> = {
-        invalid: '태그 형식이 올바르지 않아요. 예: Q-XXXX-XXXX',
-        self: '본인 태그는 추가할 수 없어요.',
-        duplicate: '이미 추가된 친구입니다.',
-        not_found: '해당 태그의 사용자를 찾을 수 없어요.',
-        unauthenticated: '로그인 후 친구 추가가 가능해요.',
-        network: '네트워크 오류 — 잠시 후 다시 시도해주세요.',
-      };
-      setFeedback({ tone: 'err', msg: map[result.reason] });
+    // try/finally — addFriend 안 어딘가가 hang/throw 해도 submitting 이 영원히
+    // true 로 박혀 button 이 잠기는 것 방지. addFriend 자체에도 timeout 안전망이
+    // 있지만 외부에서도 한 번 더 보호.
+    try {
+      const result = await addFriend(tagInput, myTag);
+      if (result.ok) {
+        setFeedback({ tone: 'ok', msg: '친구 추가 완료!' });
+        setTagInput('');
+      } else {
+        const map: Record<typeof result.reason, string> = {
+          invalid: '태그 형식이 올바르지 않아요. 예: Q-XXXX-XXXX',
+          self: '본인 태그는 추가할 수 없어요.',
+          duplicate: '이미 추가된 친구입니다.',
+          not_found: '해당 태그의 사용자를 찾을 수 없어요.',
+          unauthenticated: '로그인 후 친구 추가가 가능해요.',
+          network: '네트워크 오류 — 잠시 후 다시 시도해주세요.',
+        };
+        setFeedback({ tone: 'err', msg: map[result.reason] });
+      }
+    } catch {
+      setFeedback({
+        tone: 'err',
+        msg: '예기치 못한 오류 — 잠시 후 다시 시도해주세요.',
+      });
+    } finally {
+      setSubmitting(false);
     }
     window.setTimeout(() => setFeedback(null), 3200);
   };

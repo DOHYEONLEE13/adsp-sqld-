@@ -102,6 +102,27 @@ export type AddResult =
  *
  * 게스트 케이스: localStorage 만. 즉시 ok.
  */
+/**
+ * Promise 에 timeout 걸기. 네트워크/RLS 이슈로 hang 하는 supabase 호출이 영영
+ * resolve 안 하면 UI 가 영구 disabled 됨. timeout 으로 강제 reject 해 catch 로
+ * 흘려보내 사용자에게 즉시 피드백.
+ */
+function withTimeout<T>(p: PromiseLike<T>, ms: number, label: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const id = setTimeout(() => reject(new Error(`timeout: ${label}`)), ms);
+    p.then(
+      (v) => {
+        clearTimeout(id);
+        resolve(v);
+      },
+      (e) => {
+        clearTimeout(id);
+        reject(e);
+      },
+    );
+  });
+}
+
 export async function addFriend(rawTag: string, myTag: string): Promise<AddResult> {
   const tag = normalizeTag(rawTag);
   if (!isValidTag(tag)) return { ok: false, reason: 'invalid' };
@@ -114,31 +135,39 @@ export async function addFriend(rawTag: string, myTag: string): Promise<AddResul
 
   const sb = getSupabase();
   if (sb) {
-    const { data: sess } = await sb.auth.getSession();
-    if (!sess.session) {
-      return { ok: false, reason: 'unauthenticated' };
-    }
-
-    // 즉시 placeholder — UI 가 친구 카드 옅게 노출하다 server 응답 후 실데이터 또는 제거
-    data.list.push({
-      tag,
-      displayName: tag,
-      avatarPose: DEFAULT_AVATAR_POSE,
-      level: 0,
-      totalXp: 0,
-      streakDays: 0,
-      lastSeenAt: 0,
-      addedAt: Date.now(),
-      passTier: 'bronze',
-    });
-    save(data);
-    notify();
-
-    // server RPC await
+    // 모든 supabase 호출을 단일 try/catch + timeout 안에 감쌈. getSession / RPC /
+    // pull 어느 하나라도 hang/throw 하면 즉시 catch 로 흘러 UI 가 멈추지 않음.
     try {
-      const { data: rpcData, error } = await sb.rpc('add_friend_by_tag', {
-        target_tag: tag,
+      const sessRes = await withTimeout(
+        sb.auth.getSession(),
+        8000,
+        'auth.getSession',
+      );
+      if (!sessRes.data.session) {
+        return { ok: false, reason: 'unauthenticated' };
+      }
+
+      // 즉시 placeholder — UI 가 친구 카드 옅게 노출하다 server 응답 후 실데이터 또는 제거
+      data.list.push({
+        tag,
+        displayName: tag,
+        avatarPose: DEFAULT_AVATAR_POSE,
+        level: 0,
+        totalXp: 0,
+        streakDays: 0,
+        lastSeenAt: 0,
+        addedAt: Date.now(),
+        passTier: 'bronze',
       });
+      save(data);
+      notify();
+
+      // server RPC — 8초 timeout
+      const { data: rpcData, error } = await withTimeout(
+        sb.rpc('add_friend_by_tag', { target_tag: tag }),
+        8000,
+        'rpc.add_friend_by_tag',
+      );
       if (error) {
         // 네트워크/RPC 에러 — placeholder 제거
         const local = load();
@@ -147,9 +176,10 @@ export async function addFriend(rawTag: string, myTag: string): Promise<AddResul
         notify();
         return { ok: false, reason: 'network' };
       }
-      const result = (rpcData ?? [])[0] as
-        | { ok: boolean; reason: string | null }
-        | undefined;
+      // RPC 가 `table (ok boolean, reason text)` 반환 — supabase-js 는 보통
+      // 배열로 줌. 단일 객체로 오는 케이스 대비해 둘 다 허용.
+      const row = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+      const result = row as { ok: boolean; reason: string | null } | undefined;
       if (!result?.ok) {
         // 서버 거부 — placeholder 제거 + 정확한 reason 반환
         const local = load();
@@ -162,8 +192,10 @@ export async function addFriend(rawTag: string, myTag: string): Promise<AddResul
         }
         return { ok: false, reason: 'network' };
       }
-      // 성공 — pull 로 실데이터 가져오고 channel 재구성
-      await pullFromSupabase();
+      // 성공 — RPC 가 row 를 이미 insert 했으니 UI 는 즉시 ok.
+      // pull / rebuildChannel 은 background (await 하면 RLS 이슈로 hang 시 UI 도
+      // 같이 멈춤. realtime 채널이 있어 결국 자동 동기화됨).
+      void pullFromSupabase();
       void rebuildChannel();
       return { ok: true };
     } catch {

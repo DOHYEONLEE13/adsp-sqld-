@@ -275,9 +275,11 @@ function MyTagCard({
             )}
           </div>
 
-          {/* 로그인 CTA — 고유 태그·친구 시스템 활성화 안내 */}
+          {/* 로그인 CTA — 고유 태그·친구 시스템 활성화 안내.
+              lg+ 에서 inner max-width 로 너무 길게 늘어지지 않도록 — "의도된 카드"
+              느낌 유지. 너무 와이드하면 메시지 + 버튼 사이 빈 공간이 어색함. */}
           <div
-            className="rounded-[16px] p-4 flex flex-col sm:flex-row sm:items-center gap-3"
+            className="rounded-[16px] p-4 lg:p-5 flex flex-col sm:flex-row sm:items-center gap-3 lg:gap-5 lg:max-w-[720px]"
             style={{
               background: 'rgba(111,255,0,0.06)',
               border: '1px solid rgba(111,255,0,0.22)',
@@ -685,6 +687,45 @@ function Leaderboard({
             ) : null}
           </li>
         ))}
+
+        {/*
+          데스크톱 placeholder — 친구 적을 때 빈 슬롯이 시각적으로 공허해지는
+          것 방지. lg+ grid (2-col) 기준 슬롯이 비면 "친구 추가" 인비테이션
+          카드로 채움. rows.length 가 짝수가 안 되면 마지막 row 옆이 비므로,
+          비는 슬롯 수만큼 placeholder 추가 (최대 3 개).
+        */}
+        {rows.length < 4
+          ? Array.from({ length: Math.min(4 - rows.length, 3) }).map((_, i) => (
+              <li
+                key={`placeholder-${i}`}
+                aria-hidden="true"
+                className="hidden lg:flex rounded-[14px] px-4 py-3 items-center gap-3 border-dashed"
+                style={{
+                  background: 'rgba(239,244,255,0.02)',
+                  border: '1.5px dashed rgba(239,244,255,0.10)',
+                }}
+              >
+                <span
+                  className="shrink-0 w-9 h-9 rounded-full inline-flex items-center justify-center"
+                  style={{
+                    background: 'rgba(239,244,255,0.04)',
+                    border: '1px dashed rgba(239,244,255,0.15)',
+                    color: 'rgba(239,244,255,0.35)',
+                  }}
+                >
+                  <UserPlus size={14} strokeWidth={2.2} />
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="kr-body text-[12.5px] text-cream/45 truncate">
+                    친구 추가하면 여기에 표시돼요
+                  </p>
+                  <p className="kr-num text-[10px] text-cream/30 mt-0.5">
+                    태그 공유로 진도 비교 시작
+                  </p>
+                </div>
+              </li>
+            ))
+          : null}
       </ol>
     </section>
   );

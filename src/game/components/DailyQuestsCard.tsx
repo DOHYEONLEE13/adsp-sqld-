@@ -66,7 +66,7 @@ export default function DailyQuestsCard({ quests, compact, onClick }: Props) {
         </span>
       </div>
 
-      <ul className="flex flex-col gap-3">
+      <ul className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4">
         {quests.map((q) => (
           <QuestRow key={q.id} quest={q} />
         ))}
@@ -89,20 +89,23 @@ function QuestRow({ quest }: { quest: DailyQuest }) {
   const barColor = quest.completed ? '#6FFF00' : '#a78bfa';
   return (
     <li
-      className="rounded-[14px] px-4 py-3"
+      className="rounded-[14px] lg:rounded-[18px] px-4 py-3 lg:px-5 lg:py-4 flex flex-col"
       style={{
         background: quest.completed
           ? 'rgba(111,255,0,0.08)'
           : 'rgba(239,244,255,0.04)',
+        border: quest.completed
+          ? '1px solid rgba(111,255,0,0.25)'
+          : '1px solid rgba(239,244,255,0.06)',
       }}
     >
-      <div className="flex items-center gap-3 mb-2">
-        <span className="text-[22px] leading-none">{quest.icon}</span>
+      <div className="flex items-center gap-3 mb-2 lg:mb-3">
+        <span className="text-[22px] lg:text-[26px] leading-none">{quest.icon}</span>
         <div className="flex-1 min-w-0">
-          <p className="kr-heading text-[12px] uppercase tracking-wide truncate">
+          <p className="kr-heading text-[12px] lg:text-[13px] uppercase tracking-wide truncate">
             {quest.title}
           </p>
-          <p className="kr-body text-[11px] text-cream/60 truncate">
+          <p className="kr-body text-[11px] lg:text-[12px] text-cream/60 truncate">
             {quest.description}
           </p>
         </div>
@@ -113,7 +116,7 @@ function QuestRow({ quest }: { quest: DailyQuest }) {
             style={{ color: '#6FFF00' }}
           />
         ) : (
-          <span className="kr-heading text-[11px] text-cream/50 tabular-nums shrink-0">
+          <span className="kr-heading text-[11px] lg:text-[12px] text-cream/50 tabular-nums shrink-0">
             {quest.progress} / {quest.target}
           </span>
         )}

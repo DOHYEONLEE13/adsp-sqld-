@@ -562,7 +562,7 @@ function Leaderboard({
         </div>
       </div>
 
-      <ol className="flex flex-col gap-2">
+      <ol className="grid grid-cols-1 lg:grid-cols-2 gap-2 lg:gap-3">
         {rows.map((row, idx) => (
           <li
             key={row.tag}

@@ -277,7 +277,7 @@ export default function LessonScreen({
           borderBottom: '1px solid rgba(239,244,255,0.08)',
         }}
       >
-        <div className="mx-auto max-w-[760px] px-5 md:px-8 py-3 md:py-4">
+        <div className="mx-auto max-w-[760px] lg:max-w-[1000px] xl:max-w-[1180px] px-5 md:px-8 lg:px-12 xl:px-16 py-3 md:py-4">
           <div className="flex items-center gap-3">
             <button
               type="button"
@@ -319,7 +319,7 @@ export default function LessonScreen({
       </div>
 
       {/* ============ Body ============ */}
-      <div className="mx-auto max-w-[760px] px-6 md:px-10 pt-6 md:pt-10">
+      <div className="mx-auto max-w-[760px] lg:max-w-[1000px] xl:max-w-[1180px] px-6 md:px-10 lg:px-14 xl:px-20 pt-6 md:pt-10 lg:pt-14">
         {/* Topic + step meta */}
         <div className="mb-5">
           <div className="flex items-center gap-2 kr-heading text-[10px] uppercase tracking-widest text-cream/55 mb-2 flex-wrap">

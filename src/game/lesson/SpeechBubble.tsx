@@ -23,7 +23,7 @@ export default function SpeechBubble({ text, placement = 'right' }: Props) {
       className="relative"
     >
       <div
-        className="liquid-glass rounded-[22px] px-5 py-4 md:px-6 md:py-5 kr-body text-[15px] md:text-[17px] leading-[1.7] text-cream whitespace-pre-line"
+        className="liquid-glass rounded-[22px] px-5 py-4 md:px-6 md:py-5 lg:px-7 lg:py-6 kr-body text-[15px] md:text-[17px] lg:text-[18px] xl:text-[19px] leading-[1.7] text-cream whitespace-pre-line"
         style={{
           background: 'rgba(255,255,255,0.04)',
           boxShadow: '0 8px 24px -12px rgba(0,0,0,0.6)',

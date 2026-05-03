@@ -49,7 +49,7 @@ export default function OptionsPanel({
             type="button"
             onClick={() => !graded && onChoose(idx)}
             disabled={graded}
-            className="text-left rounded-2xl px-4 py-4 md:px-5 md:py-5 kr-body text-[14px] md:text-[15px] leading-[1.55] transition-transform active:scale-[0.98] disabled:cursor-default"
+            className="text-left rounded-2xl px-4 py-4 md:px-5 md:py-5 lg:px-6 lg:py-6 kr-body text-[14px] md:text-[15px] lg:text-[17px] xl:text-[18px] leading-[1.55] transition-transform active:scale-[0.98] disabled:cursor-default"
             style={styleFor(state)}
           >
             <span

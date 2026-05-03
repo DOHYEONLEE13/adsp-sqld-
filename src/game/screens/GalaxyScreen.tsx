@@ -181,7 +181,7 @@ export default function GalaxyScreen({
       </div>
 
       {/* === Frame: 가운데 정렬 column === */}
-      <div className="relative z-10 w-full max-w-[840px] mx-auto min-h-screen px-5 md:px-10 lg:px-14 pt-5 md:pt-7 pb-10 flex flex-col">
+      <div className="relative z-10 w-full max-w-[840px] lg:max-w-[1080px] xl:max-w-[1240px] mx-auto min-h-screen px-5 md:px-10 lg:px-16 xl:px-20 pt-5 md:pt-7 lg:pt-10 pb-10 flex flex-col">
         {/* TOP BAR */}
         <div className="flex items-center justify-between gap-3 mb-12 md:mb-20">
           <IconBox label="돌아가기" onClick={onExit}>

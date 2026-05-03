@@ -337,12 +337,12 @@ export default function DialogueLesson({
           >
             {passNumber}회독
           </span>
-          <h2 className="kr-heading text-[24px] md:text-[28px] text-center mb-3 leading-[1.2]">
+          <h2 className="kr-heading text-[24px] md:text-[28px] lg:text-[32px] text-center mb-3 leading-[1.2]">
             {reminder?.headline ?? `${step.title}, 기억나?`}
           </h2>
           {reminder ? (
             <>
-              <p className="kr-body text-[14px] md:text-[15px] text-cream/80 text-center leading-[1.65] mb-5 max-w-[480px]">
+              <p className="kr-body text-[14px] md:text-[15px] lg:text-[16px] text-cream/80 text-center leading-[1.65] mb-5 max-w-[480px] lg:max-w-[560px]">
                 {reminder.summary}
               </p>
               <ul
@@ -447,7 +447,7 @@ export default function DialogueLesson({
         </div>
       ) : null}
 
-      <main className="flex-1 mx-auto w-full max-w-[820px] px-5 md:px-8 pt-6 pb-36">
+      <main className="flex-1 mx-auto w-full max-w-[820px] lg:max-w-[1000px] xl:max-w-[1180px] px-5 md:px-8 lg:px-12 xl:px-16 pt-6 lg:pt-10 pb-36">
         {/* 캐릭터 + 말풍선 영역 */}
         <div
           className={

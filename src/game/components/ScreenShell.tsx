@@ -64,7 +64,7 @@ export default function ScreenShell({
           />
         </>
       ) : null}
-      <div className="relative mx-auto w-full max-w-layout px-6 md:px-10 lg:px-16 py-10 md:py-14 lg:py-20">
+      <div className="relative mx-auto w-full max-w-[1240px] xl:max-w-[1320px] px-6 md:px-10 lg:px-14 xl:px-20 py-10 md:py-14 lg:py-16">
         <header className="mb-10 md:mb-14 relative">
           {/* topRight — PlanTag 등 우상단 floating 요소 */}
           {topRight ? (
@@ -85,11 +85,11 @@ export default function ScreenShell({
           <span className="kr-heading uppercase tracking-widest text-[11px] md:text-[12px] block leading-none text-neon">
             {eyebrow}
           </span>
-          <h1 className="kr-heading uppercase leading-[1.05] text-[32px] md:text-[48px] lg:text-[60px] mt-3">
+          <h1 className="kr-heading uppercase leading-[1.05] text-[32px] md:text-[48px] lg:text-[60px] xl:text-[68px] mt-3">
             {title}
           </h1>
           {subtitle ? (
-            <p className="kr-body text-[14px] md:text-[15px] leading-[1.7] text-cream/70 mt-4 max-w-2xl">
+            <p className="kr-body text-[14px] md:text-[15px] lg:text-[16px] xl:text-[17px] leading-[1.7] text-cream/70 mt-4 max-w-2xl lg:max-w-3xl">
               {subtitle}
             </p>
           ) : null}

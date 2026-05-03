@@ -114,6 +114,30 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
   // 반환값은 사용하지 않고 단지 hook 구독으로 hook 변화 시 컴포넌트 재렌더만 유도.
   useDevUnlockFlags();
 
+  // 이미 GamePage 가 마운트된 상태 (예: PlanetScreen 의 북마크 카드 클릭) 에서
+  // 북마크 점프 요청이 오면 hash 가 같아 hashchange 가 안 뜨고 GamePage 도
+  // remount 안 됨 → consumePendingConceptOpen 가 호출되지 않음. custom event 로
+  // 명시적으로 setScreen 을 호출해 문제 phase 로 점프시킴.
+  useEffect(() => {
+    const handler = () => {
+      const pending = consumePendingConceptOpen();
+      if (!pending || !pending.topic) return;
+      if (pending.phase === 'question' && typeof window !== 'undefined') {
+        window.sessionStorage.setItem('questdp.pendingLessonPhase', 'question');
+      }
+      setScreen({
+        kind: 'lesson',
+        subject: pending.subject,
+        chapter: pending.chapter,
+        topic: pending.topic,
+        stepIdx: pending.stepIdx,
+        passNumber: 1,
+      });
+    };
+    window.addEventListener('questdp-open-concept', handler);
+    return () => window.removeEventListener('questdp-open-concept', handler);
+  }, []);
+
   /**
    * 에너지 1 차감 후 callback. 게스트·프리미엄·env 미설정 = 무조건 진행.
    * 무료 인증 사용자가 0 일 때만 차단 모달.

@@ -60,7 +60,7 @@ export default function BookmarkedConceptsList({
   const handleOpen = (b: (typeof filtered)[number]) => {
     if (typeof window === 'undefined') return;
     if (b.lesson && typeof b.stepIdx === 'number') {
-      // lesson 매칭 — LessonScreen 으로 점프, 도착 즉시 question phase 로 자동 이동.
+      // lesson 매칭 — LessonScreen 으로 점프, 도착 즉시 question phase 로.
       window.sessionStorage.setItem(
         'questdp.pendingConceptOpen',
         JSON.stringify({
@@ -70,10 +70,17 @@ export default function BookmarkedConceptsList({
           stepIdx: b.stepIdx,
           stepId: b.step?.id ?? '',
           questionId: b.questionId,
-          phase: 'question', // narration 스킵 → 곧장 문제로
+          phase: 'question',
         }),
       );
+      // 두 가지 경우를 모두 처리:
+      //   1) StatsPage 등 다른 라우트에서 클릭 → hash 변경 → App.tsx 의
+      //      hashchange → GamePage mount → 초기 useState 가 sessionStorage
+      //      소비.
+      //   2) PlanetScreen (이미 GamePage 안) 에서 클릭 → hash 동일이라 hashchange
+      //      불발 → custom event 로 GamePage 의 listener 가 setScreen.
       window.location.hash = `/game/${b.subject}`;
+      window.dispatchEvent(new Event('questdp-open-concept'));
     } else {
       // lesson 매칭 없는 문제 (실전·모의고사 등) → 북마크 페이지에서 보기
       window.location.hash = '/bookmarks';

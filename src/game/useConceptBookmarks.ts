@@ -47,11 +47,17 @@ function buildStepIndex() {
     string,
     { lesson: Lesson; step: LessonStep; stepIdx: number }
   >();
+  // 같은 quizId 를 여러 step 이 공유 가능 (review · finale 은 부모 quizId 재사용).
+  // 북마크 점프 시 primary (overview / substep) 로 가야 자연스러우므로 review·
+  // finale 은 인덱싱에서 제외 — primary 가 항상 인덱스에 남음.
   for (const lesson of ALL_LESSONS) {
     lesson.steps.forEach((step, stepIdx) => {
-      if (step.quizId) {
-        idx.set(step.quizId, { lesson, step, stepIdx });
-      }
+      if (!step.quizId) return;
+      if (step.id.endsWith('-review')) return;
+      if (step.id.endsWith('-finale')) return;
+      // 동시에 같은 quizId 가 여러 primary 에 쓰이는 경우는 데이터 결함 — 첫 매칭만.
+      if (idx.has(step.quizId)) return;
+      idx.set(step.quizId, { lesson, step, stepIdx });
     });
   }
   return idx;

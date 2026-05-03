@@ -11,7 +11,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
-import { Copy, Trash2, UserPlus, Trophy, Zap, Flame, ArrowUpDown } from 'lucide-react';
+import { Copy, LogIn, Trash2, UserPlus, Trophy, Zap, Flame, ArrowUpDown } from 'lucide-react';
 import ScreenShell from './components/ScreenShell';
 import { MobileBottomNav, MobileTopBar } from './components/MobileGameNav';
 import PageAmbientBg from './components/PageAmbientBg';
@@ -31,6 +31,7 @@ import {
   getSupabase,
   isSupabaseConfigured,
   onAuthStateChange,
+  signInWithOAuth,
 } from '@/lib/supabase';
 import {
   getMyProfile,
@@ -158,8 +159,13 @@ export default function FriendsPage({ onExit }: Props) {
         }}
       />
 
-      {/* 동기화 중에는 myTag 가 빈 문자열 — AddFriendCard 자체를 가림 */}
-      {me.pendingServerSync ? null : <AddFriendCard myTag={me.tag} />}
+      {/* AddFriendCard 게이트:
+          1) 게스트 (미인증) — 비노출. 로그인 후 활성화 (MyTagCard 가 안내).
+          2) sync 중 (myTag === '') — 비노출. skeleton 만.
+          3) ready — 노출. */}
+      {me.isAuthenticated && !me.pendingServerSync && me.tag !== '' ? (
+        <AddFriendCard myTag={me.tag} />
+      ) : null}
 
       <Leaderboard rows={board} sortKey={sortKey} onChangeSort={setSortKey} />
 
@@ -169,8 +175,8 @@ export default function FriendsPage({ onExit }: Props) {
         </p>
       ) : isSupabaseConfigured() ? (
         <p className="kr-body text-[12px] text-cream/55 mt-4 leading-[1.65]">
-          ※ 게스트 모드 — 친구 태그만 로컬에 보관되고 진도는 0 으로 표시돼요.
-          프로필 페이지에서 Google 로그인하면 친구의 실시간 진도까지 보입니다.
+          ※ 게스트 모드 — 친구 시스템은 로그인 후 활성화돼요. 위 카드의
+          [Google 로그인] 으로 고유 태그를 발급받고 친구 진도를 비교해보세요.
         </p>
       ) : (
         <p className="kr-body text-[12px] text-cream/55 mt-4 leading-[1.65]">
@@ -196,6 +202,7 @@ function MyTagCard({
   const [copied, setCopied] = useState(false);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(profile.displayName);
+  const [authLoading, setAuthLoading] = useState(false);
 
   useEffect(() => setDraft(profile.displayName), [profile.displayName]);
 
@@ -208,6 +215,99 @@ function MyTagCard({
       window.prompt('아래 태그를 복사하세요', profile.tag);
     }
   };
+
+  const handleLogin = async () => {
+    if (authLoading) return;
+    setAuthLoading(true);
+    const result = await signInWithOAuth('google');
+    if ((result as { error?: unknown })?.error) {
+      window.alert('로그인 실패. 잠시 후 다시 시도해주세요.');
+      setAuthLoading(false);
+    }
+    // 성공 시 OAuth 리다이렉트 — 이 컴포넌트는 unmount.
+  };
+
+  // 게스트 (미인증) — 태그·친구 시스템 비활성. 닉네임만 설정 가능 + 로그인 CTA.
+  if (!profile.isAuthenticated) {
+    return (
+      <section
+        className="liquid-glass rounded-[24px] p-5 md:p-6 mb-6"
+        aria-label="내 프로필"
+      >
+        <h2 className="kr-heading text-[11px] uppercase tracking-widest text-cream/60 mb-3">
+          내 프로필 (게스트)
+        </h2>
+        <div className="flex flex-col gap-4">
+          {/* 닉네임 — guest 도 설정 가능 */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {editing ? (
+              <>
+                <input
+                  type="text"
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  placeholder="닉네임"
+                  className="bg-transparent outline-none kr-heading text-[16px] md:text-[18px] border-b border-cream/30 focus:border-neon transition pb-1 min-w-[120px]"
+                  style={{ color: 'var(--cream)' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    onRename(draft);
+                    setEditing(false);
+                  }}
+                  className="kr-heading text-[11px] uppercase tracking-widest px-3 py-1.5 rounded-full"
+                  style={{ background: '#6FFF00', color: '#010828' }}
+                >
+                  저장
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setEditing(true)}
+                className="kr-heading text-[16px] md:text-[18px] hover:text-neon transition"
+                style={{ color: 'var(--cream)' }}
+              >
+                {profile.displayName || '닉네임 설정'}
+                <span className="text-cream/40 text-[12px] ml-2">(이름 변경)</span>
+              </button>
+            )}
+          </div>
+
+          {/* 로그인 CTA — 고유 태그·친구 시스템 활성화 안내 */}
+          <div
+            className="rounded-[16px] p-4 flex flex-col sm:flex-row sm:items-center gap-3"
+            style={{
+              background: 'rgba(111,255,0,0.06)',
+              border: '1px solid rgba(111,255,0,0.22)',
+            }}
+          >
+            <div className="flex-1 min-w-0">
+              <p className="kr-body text-[13px] text-cream/85 leading-[1.55]">
+                로그인하면 <span className="text-neon">고유 태그</span> 가
+                발급되고, 친구를 추가해서 진도를 비교할 수 있어요.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={handleLogin}
+              disabled={authLoading || !isSupabaseConfigured()}
+              className="kr-heading uppercase tracking-widest inline-flex items-center justify-center gap-2 text-[12px] px-4 py-2.5 rounded-full transition active:scale-95 disabled:opacity-40 shrink-0"
+              style={{
+                background: '#6FFF00',
+                color: '#010828',
+                boxShadow: '0 6px 18px -4px rgba(111,255,0,0.45)',
+              }}
+            >
+              <LogIn size={13} strokeWidth={2.6} />
+              {authLoading ? '이동 중…' : 'Google 로그인'}
+            </button>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
@@ -253,7 +353,7 @@ function MyTagCard({
               className="kr-heading text-[16px] md:text-[18px] hover:text-neon transition"
               style={{ color: 'var(--cream)' }}
             >
-              {profile.displayName || profile.tag}
+              {profile.displayName || '닉네임 설정'}
               <span className="text-cream/40 text-[12px] ml-2">(이름 변경)</span>
             </button>
           )}

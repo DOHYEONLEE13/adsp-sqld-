@@ -114,21 +114,17 @@ export default function GalaxyScreen({
 
   // 닉네임 onboarding 게이트 — 첫 방문 + 닉네임 미설정일 때만 노출.
   //
-  // "닉네임 미설정" 판정:
-  //   - displayName 이 비어있거나
-  //   - displayName 이 tag 와 동일 (profile.ts 가 fallback 으로 tag 를 채운 케이스)
-  //   둘 다 사용자가 의도적으로 닉네임을 정한 적 없음.
+  // 단순화 (2026-05-04): tag 는 이제 server-issued 만 — 게스트는 항상 ''.
+  // "닉네임 미설정" = displayName.trim() === '' 만 체크하면 됨.
   //
   // sync-loading (pendingServerSync) 동안엔 surge 방지 위해 false 로 친다.
   // - "건너뛰기" 누른 사용자는 onboardingDismissed 로 한 세션 동안 다시 안 뜸.
   const [onboardingDismissed, setOnboardingDismissed] = useState(false);
-  const trimmedName = profile.displayName.trim();
-  const hasRealNickname =
-    trimmedName !== '' && trimmedName !== profile.tag;
+  const hasNickname = profile.displayName.trim() !== '';
   const needsNicknameOnboarding =
     !onboardingDismissed &&
     !profile.pendingServerSync &&
-    !hasRealNickname &&
+    !hasNickname &&
     playerStats.sessionsCount === 0;
 
   // launching 상태면 WARP_DURATION_MS 후에 실제 전환.
@@ -234,7 +230,6 @@ export default function GalaxyScreen({
             stats={playerStats}
             progress={progress}
             displayName={profile.displayName}
-            tag={profile.tag}
           />
         </div>
 
@@ -377,12 +372,11 @@ function buildChooserGreeting(
   stats: PlayerStats,
   progress: ProgressStore,
   displayName: string,
-  tag: string,
 ): ChooserGreeting {
   // 닉네임 있으면 호칭 prefix 로 활용 (없으면 빈 문자열 → 일반 톤).
-  // displayName 이 tag 와 같으면 진짜 닉네임 X — 일반 톤으로.
+  // tag 는 이제 server-issued 만 — guest 는 빈값이라 별도 비교 불필요.
   const name = displayName.trim();
-  const isReal = name !== '' && name !== tag;
+  const isReal = name !== '';
   const nickPrefix = isReal ? `[${name}]님, ` : '';
 
   if (stats.sessionsCount === 0) {
@@ -438,16 +432,14 @@ function ChooserMascot({
   stats,
   progress,
   displayName,
-  tag,
 }: {
   stats: PlayerStats;
   progress: ProgressStore;
   displayName: string;
-  tag: string;
 }) {
   const greeting = useMemo(
-    () => buildChooserGreeting(stats, progress, displayName, tag),
-    [stats, progress, displayName, tag],
+    () => buildChooserGreeting(stats, progress, displayName),
+    [stats, progress, displayName],
   );
   return (
     <div className="flex flex-col items-center gap-2">

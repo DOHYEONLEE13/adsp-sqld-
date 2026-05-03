@@ -34,19 +34,37 @@ export const AVATAR_POSES: ReadonlyArray<QuesPose> = [
 export const DEFAULT_AVATAR_POSE: QuesPose = 'wave';
 
 export interface MyProfile {
-  /** 친구 추가용 고유 태그 — `Q-XXXX-XXXX`. */
+  /**
+   * 친구 추가용 고유 태그 — `Q-XXXX-XXXX` 형식.
+   *
+   * **server-issued 식별자만**. `on_auth_user_created()` trigger 가 RPC
+   * `generate_unique_tag()` 로 발급. 클라이언트가 임의 생성 X.
+   *
+   * 빈 문자열 (`''`) 인 경우:
+   *   - 게스트 (미인증) — 친구 시스템 사용 불가
+   *   - 인증됐지만 server pull 미완료 (pendingServerSync=true)
+   *
+   * UI 는 `tag === ''` 일 때 친구 기능 / 태그 노출을 스킵해야 함.
+   */
   tag: string;
-  /** 표시 이름 — 사용자가 변경 가능. 기본값은 태그 그대로. */
+  /** 표시 이름 — 사용자가 닉네임 onboarding 또는 프로필 페이지에서 설정. */
   displayName: string;
   /** 아바타 포즈 — Ques 마스코트의 표정/포즈. */
   avatarPose: QuesPose;
+  /**
+   * Supabase 인증 상태. 게스트 = false. server tag·친구 시스템·결제 UI 의
+   * 1차 게이트로 사용.
+   */
+  isAuthenticated: boolean;
   /** 운영자 권한. server 의 profiles.role 동기화. 게스트는 항상 false. */
   isAdmin: boolean;
   createdAt: number;
   /**
    * 인증된 상태에서 server pull 이 아직 완료 안 됨 (혹은 실패) 표시.
    * UI 는 이 플래그가 true 면 tag/displayName 노출 금지 — skeleton 으로 대체.
-   * 임시(client-generated) 태그 노출 방지의 핵심 가드.
+   *
+   * 게스트는 항상 false (sync 자체가 없음). 게스트 vs auth-pending 구분이
+   * 필요하면 isAuthenticated 와 함께 사용.
    */
   pendingServerSync: boolean;
   /**
@@ -69,18 +87,9 @@ interface StoredProfile {
   createdAt: number;
 }
 
-/** 8글자 알파벳·숫자 (혼동 글자 O/0/I/1 제외) 4-4 형식. */
-function generateTag(): string {
-  const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // ambiguous 글자 제거
-  const pick = () => ALPHABET[Math.floor(Math.random() * ALPHABET.length)];
-  let a = '';
-  let b = '';
-  for (let i = 0; i < 4; i++) {
-    a += pick();
-    b += pick();
-  }
-  return `Q-${a}-${b}`;
-}
+// generateTag() (이전 client-generated 태그) 제거됨 (2026-05-04).
+// tag 는 오직 server RPC `generate_unique_tag()` 가 trigger 시점에 발급.
+// 게스트는 tag 가 없는 상태로 동작 — 친구 기능 비활성, 닉네임만 가능.
 
 function loadStored(): StoredProfile | null {
   if (typeof window === 'undefined') return null;
@@ -89,7 +98,11 @@ function loadStored(): StoredProfile | null {
     if (!raw) return null;
     const obj = JSON.parse(raw) as StoredProfile;
     if (obj?.v !== 1 || typeof obj.tag !== 'string') return null;
-    if (!TAG_RE.test(obj.tag)) return null;
+    // tag 는 빈 문자열 (게스트) 또는 Q-XXXX-XXXX (server-issued) 둘 중 하나.
+    // legacy guest tag (이전 버전이 client-generated 한 Q-XXXX-XXXX) 도
+    // localStorage 에 그대로 남아있을 수 있지만, getMyProfile() 가 미인증
+    // 시 tag='' 로 강제 → 노출 안 됨.
+    if (obj.tag !== '' && !TAG_RE.test(obj.tag)) return null;
     return obj;
   } catch {
     return null;
@@ -126,68 +139,51 @@ function setSyncStatus(s: 'idle' | 'pending' | 'ok' | 'failed'): void {
 }
 
 /**
- * 내 프로필을 가져온다. 없으면 생성. 항상 동일한 태그를 돌려줌.
+ * 내 프로필을 가져온다. tag 는 server-issued 만 노출 — guest 는 tag='' 로 강제.
  *
- * 가드: 인증된 상태에서 syncStatus 가 'ok' 가 아니면 — 즉 server pull 결과를
- * 못 받은 상태 — pendingServerSync=true 를 반환해 UI 가 tag/displayName 노출
- * 차단할 수 있도록 한다. 임시(client-generated) 태그 절대 노출 X 의 핵심.
+ * 가드:
+ *  - 게스트: tag 항상 ''. displayName 은 localStorage 에 따로 저장된 값
+ *    (NicknameOnboarding 으로 설정 가능). 친구 시스템·태그 공유는 비활성.
+ *  - 인증 + sync 미완료: tag/displayName='' + pendingServerSync=true.
+ *  - 인증 + sync 'ok': server 의 tag·displayName 노출.
  */
 export function getMyProfile(): MyProfile {
   const stored = loadStored();
-  // 게스트 모드 (미인증) — 임시 태그 OK (사용자가 게스트로 진행 가능)
+
+  // 게스트 (미인증) — tag 절대 노출 X. displayName 은 stored 가 있으면 그대로.
   if (!_isAuthenticated) {
-    if (stored) {
-      return {
-        tag: stored.tag,
-        displayName: stored.displayName || stored.tag,
-        avatarPose: stored.avatarPose ?? DEFAULT_AVATAR_POSE,
-        isAdmin: stored.role === 'admin',
-        createdAt: stored.createdAt,
-        pendingServerSync: false,
-        syncStatus: 'idle',
-      };
-    }
-    // 게스트 첫 진입 — 임시 태그 발급 (게스트 모드 한정)
-    const fresh: StoredProfile = {
-      v: 1,
-      tag: generateTag(),
-      displayName: '',
-      avatarPose: DEFAULT_AVATAR_POSE,
-      createdAt: Date.now(),
-    };
-    saveStored(fresh);
     return {
-      tag: fresh.tag,
-      displayName: fresh.displayName || fresh.tag,
-      avatarPose: fresh.avatarPose ?? DEFAULT_AVATAR_POSE,
+      tag: '',
+      displayName: stored?.displayName ?? '',
+      avatarPose: stored?.avatarPose ?? DEFAULT_AVATAR_POSE,
+      isAuthenticated: false,
       isAdmin: false,
-      createdAt: fresh.createdAt,
+      createdAt: stored?.createdAt ?? 0,
       pendingServerSync: false,
       syncStatus: 'idle',
     };
   }
 
-  // 인증 상태 — server pull 결과를 기다리는 중
-  // stored 가 있어도 syncStatus 가 'ok' 가 아니면 pendingServerSync=true
-  // (UI 가 skeleton 으로 처리)
+  // 인증 — server pull 결과 대기 중이면 tag/displayName 빈값 (skeleton)
   const syncDone = _syncStatus === 'ok';
   if (stored) {
     return {
       tag: syncDone ? stored.tag : '',
-      displayName: syncDone ? stored.displayName || stored.tag : '',
+      displayName: syncDone ? stored.displayName : '',
       avatarPose: stored.avatarPose ?? DEFAULT_AVATAR_POSE,
+      isAuthenticated: true,
       isAdmin: stored.role === 'admin',
       createdAt: stored.createdAt,
       pendingServerSync: !syncDone,
       syncStatus: _syncStatus,
     };
   }
-  // stored 없음 = 인증됐지만 아직 pull 한 번도 안 됨
-  // 임시 태그를 절대 발급 X — 빈 값 + pendingServerSync=true
+  // 인증됐지만 한 번도 pull 안 됨
   return {
     tag: '',
     displayName: '',
     avatarPose: DEFAULT_AVATAR_POSE,
+    isAuthenticated: true,
     isAdmin: false,
     createdAt: 0,
     pendingServerSync: true,
@@ -196,21 +192,40 @@ export function getMyProfile(): MyProfile {
 }
 
 /**
- * 표시 이름 변경. 빈 문자열이면 태그를 사용.
+ * 표시 이름 변경. NicknameOnboarding · FriendsPage 의 닉네임 설정에 사용.
  *
- * 가드: 인증된 상태인데 syncStatus != 'ok' 면 차단 — sync 안 된 상태에서
- * 의도와 다른 row 에 push 가 갈 위험을 차단. 게스트는 그대로 OK.
+ * 가드:
+ *  - 인증 + syncStatus != 'ok' → 차단 (의도와 다른 row 에 push 위험).
+ *  - 게스트 + stored 없음 → 임시 stored 자동 생성 (tag='' 유지).
+ *  - 인증 + stored 없음 → no-stored 에러 (sync 후 재시도).
  */
 export function setDisplayName(name: string): { ok: boolean; reason?: string } {
   if (_isAuthenticated && _syncStatus !== 'ok') {
     return { ok: false, reason: 'sync-not-ready' };
   }
+  const trimmed = name.trim();
   const stored = loadStored();
-  if (!stored) return { ok: false, reason: 'no-stored' };
-  saveStored({ ...stored, displayName: name.trim() });
+  if (!stored) {
+    // 게스트 첫 닉네임 설정 — minimal stored 자동 생성. tag 는 빈값 유지.
+    if (!_isAuthenticated) {
+      saveStored({
+        v: 1,
+        tag: '',
+        displayName: trimmed,
+        avatarPose: DEFAULT_AVATAR_POSE,
+        createdAt: Date.now(),
+      });
+      notify();
+      return { ok: true };
+    }
+    return { ok: false, reason: 'no-stored' };
+  }
+  saveStored({ ...stored, displayName: trimmed });
   notify();
-  // 서버 동기화 (인증돼 있을 때만, fire-and-forget)
-  void pushToSupabase({ display_name: name.trim() });
+  // 서버 동기화 — 인증된 사용자 한정 (게스트는 push 대상 X).
+  if (_isAuthenticated) {
+    void pushToSupabase({ display_name: trimmed });
+  }
   return { ok: true };
 }
 
@@ -220,10 +235,25 @@ export function setAvatarPose(pose: QuesPose): { ok: boolean; reason?: string } 
     return { ok: false, reason: 'sync-not-ready' };
   }
   const stored = loadStored();
-  if (!stored) return { ok: false, reason: 'no-stored' };
+  if (!stored) {
+    if (!_isAuthenticated) {
+      saveStored({
+        v: 1,
+        tag: '',
+        displayName: '',
+        avatarPose: pose,
+        createdAt: Date.now(),
+      });
+      notify();
+      return { ok: true };
+    }
+    return { ok: false, reason: 'no-stored' };
+  }
   saveStored({ ...stored, avatarPose: pose });
   notify();
-  void pushToSupabase({ avatar_pose: pose });
+  if (_isAuthenticated) {
+    void pushToSupabase({ avatar_pose: pose });
+  }
   return { ok: true };
 }
 

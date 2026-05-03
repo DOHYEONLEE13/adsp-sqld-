@@ -323,7 +323,7 @@ export default function LessonScreen({
         {/* Topic + step meta */}
         <div className="mb-5">
           <div className="flex items-center gap-2 kr-heading text-[10px] uppercase tracking-widest text-cream/55 mb-2 flex-wrap">
-            <span className="cursive text-neon text-[18px] leading-none">
+            <span className="text-neon">
               Lesson
             </span>
             <span className="text-cream/30">›</span>

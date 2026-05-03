@@ -182,6 +182,15 @@ button {
   letter-spacing: 0.01em;
 }
 
+/* QuestDP 로고 워드마크 전용 폰트 — Sora ExtraBold (geometric + 약간의 personality).
+   kr-heading (Noto Sans KR) 와 분리해서 brand identity 확보. */
+.logo-wordmark {
+  font-family: 'Sora', 'Noto Sans KR', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-feature-settings: 'ss01' on;
+}
+
 /* ===== RPG XP popup ===== */
 @keyframes xpPopupRise {
   0% {

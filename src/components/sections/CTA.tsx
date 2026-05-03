@@ -36,12 +36,6 @@ export default function CTA() {
         <div className="relative z-[2] px-6 py-16 flex flex-col gap-8">
           {/* 헤딩 */}
           <div className="relative text-left">
-            <span
-              className="cursive text-neon absolute -top-6 left-0 rotate-[-2deg] text-[20px]"
-              style={{ mixBlendMode: 'exclusion' }}
-            >
-              {CTA_CONTENT.cursiveAccent}
-            </span>
             <h2 className="kr-heading uppercase leading-[1.1] text-[24px]">
               <span className="block mb-3">{CTA_CONTENT.joinLine}</span>
               {CTA_CONTENT.restLines.map((line, i) => (
@@ -101,13 +95,6 @@ export default function CTA() {
         {/* 우측 헤딩 + CTA 버튼 */}
         <div className="absolute inset-0 z-[2] flex items-center justify-end px-6 lg:pl-[15%] lg:pr-[20%] py-8 pointer-events-none">
           <div className="relative text-right pointer-events-auto max-w-[640px]">
-            <span
-              className="cursive text-neon absolute -left-2 rotate-[-2deg] text-[28px] -top-9 md:text-[44px] md:-top-12 lg:text-[68px] lg:-top-[68px] lg:-left-6"
-              style={{ mixBlendMode: 'exclusion' }}
-            >
-              {CTA_CONTENT.cursiveAccent}
-            </span>
-
             <h2 className="kr-heading uppercase leading-[1.05] text-[32px] md:text-[44px] lg:text-[60px]">
               <span className="block mb-4 md:mb-8 lg:mb-12">
                 {CTA_CONTENT.joinLine}

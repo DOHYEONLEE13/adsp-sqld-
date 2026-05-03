@@ -108,11 +108,8 @@ export default function PlanetScreen({
             <span style={{ color: accent }}>{subject.toUpperCase()} Planet</span>
           </div>
 
-          <span className="cursive text-neon text-[32px] md:text-[44px] leading-[0.95] drop-shadow-[0_0_20px_rgba(111,255,0,0.35)]">
-            Planet
-          </span>
           <h1
-            className="kr-heading uppercase text-[26px] md:text-[36px] lg:text-[44px] mt-3 leading-[1.15] tracking-[0.01em] drop-shadow-[0_2px_20px_rgba(0,0,0,0.75)]"
+            className="kr-heading uppercase text-[26px] md:text-[36px] lg:text-[44px] leading-[1.15] tracking-[0.01em] drop-shadow-[0_2px_20px_rgba(0,0,0,0.75)]"
           >
             {schema.title}
           </h1>
@@ -139,7 +136,7 @@ export default function PlanetScreen({
         {/* === 행성 라벨 — 좌하단에 플로팅 (lg+ 에서만) === */}
         <div className="pointer-events-none hidden lg:flex flex-col items-center absolute left-10 xl:left-20 bottom-14 xl:bottom-20">
           <div
-            className="cursive leading-none text-[44px] xl:text-[52px]"
+            className="kr-heading uppercase leading-none text-[36px] xl:text-[44px] tracking-[0.02em]"
             style={{
               color: accent,
               textShadow: `0 0 24px ${accent}66`,

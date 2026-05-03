@@ -40,13 +40,6 @@ export default function Hero() {
               ))}
             </h1>
 
-            <span
-              className="cursive text-neon opacity-90 absolute whitespace-nowrap text-[24px] sm:text-[32px] md:text-[40px] lg:text-[48px] -rotate-1 -top-10 right-0 lg:-top-12 lg:-right-10"
-              style={{ mixBlendMode: 'exclusion' }}
-            >
-              {HERO.cursiveAccent}
-            </span>
-
             {/* 메인 CTA — 랜딩에서 곧장 플레이로. */}
             <div className="mt-8 md:mt-10 flex flex-wrap items-center gap-3 md:gap-4">
               <a

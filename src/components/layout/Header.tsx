@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { LogIn, LogOut, Shield } from 'lucide-react';
+import { LogIn, LogOut, Menu, Shield, X } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { BRAND } from '@/data/site';
-import { NAV_LINKS } from '@/data/nav';
+import { NAV_LINKS_MAIN, NAV_LINKS_SUPPORT } from '@/data/nav';
+import type { NavLink } from '@/types/site';
 import {
   getSupabase,
   isSupabaseConfigured,
@@ -12,17 +14,125 @@ import {
 import { useMyProfile } from '@/data/profile';
 
 export default function Header() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // ESC + body scroll lock 동안 메뉴만 스크롤. unmount 시 원복.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenuOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [menuOpen]);
+
   return (
-    <div className="flex items-center justify-between gap-3 md:gap-4">
-      <Logo />
-      <div className="hidden md:block">
-        <Nav />
+    <>
+      <div className="flex items-center justify-between gap-3 md:gap-4">
+        <Logo />
+        <div className="flex items-center gap-2">
+          <AdminLink />
+          <AuthButton />
+          {/* 햄버거 — 클릭 시 카테고리 패널 슬라이드다운 */}
+          <button
+            type="button"
+            onClick={() => setMenuOpen(true)}
+            aria-label="메뉴 열기"
+            aria-expanded={menuOpen}
+            className="inline-flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-full liquid-glass hover:bg-white/10 transition active:scale-95 text-cream/85"
+          >
+            <Menu size={20} strokeWidth={2.4} />
+          </button>
+        </div>
       </div>
-      <div className="flex items-center gap-2">
-        <AdminLink />
-        <AuthButton />
-      </div>
-    </div>
+
+      <AnimatePresence>
+        {menuOpen ? (
+          <MenuOverlay onClose={() => setMenuOpen(false)} />
+        ) : null}
+      </AnimatePresence>
+    </>
+  );
+}
+
+/**
+ * 햄버거 클릭 시 위에서 슬라이드다운하는 카테고리 패널.
+ * 닫기: × 버튼 / backdrop / ESC / 링크 클릭.
+ */
+function MenuOverlay({ onClose }: { onClose: () => void }) {
+  return (
+    <>
+      {/* Backdrop — 클릭 닫기 */}
+      <motion.button
+        type="button"
+        onClick={onClose}
+        aria-label="메뉴 닫기"
+        className="fixed inset-0 z-[60] bg-base/70 backdrop-blur-sm cursor-default"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+      />
+
+      {/* 슬라이드다운 패널 */}
+      <motion.div
+        role="dialog"
+        aria-modal="true"
+        aria-label="메뉴"
+        className="fixed top-0 left-0 right-0 z-[61]"
+        initial={{ y: '-100%' }}
+        animate={{ y: 0 }}
+        exit={{ y: '-100%' }}
+        transition={{ type: 'tween', duration: 0.3, ease: [0.18, 0.9, 0.4, 1] }}
+      >
+        <div
+          className="max-w-layout mx-auto px-6 md:px-12 py-7 md:py-9"
+          style={{
+            background: 'rgba(1,8,40,0.95)',
+            backdropFilter: 'blur(18px)',
+            WebkitBackdropFilter: 'blur(18px)',
+            borderBottom: '1px solid rgba(239,244,255,0.10)',
+            boxShadow: '0 16px 40px -10px rgba(0,0,0,0.55)',
+          }}
+        >
+          {/* 패널 헤더 — 라벨 + 닫기 */}
+          <div className="flex items-center justify-between mb-6">
+            <span className="kr-heading uppercase tracking-widest text-[11px] text-cream/55">
+              메뉴
+            </span>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="메뉴 닫기"
+              className="inline-flex items-center justify-center w-9 h-9 rounded-full hover:bg-white/10 transition active:scale-95 text-cream/75"
+            >
+              <X size={18} strokeWidth={2.4} />
+            </button>
+          </div>
+
+          {/* 서비스 섹션 */}
+          <NavSection
+            title="서비스"
+            links={NAV_LINKS_MAIN}
+            onClickLink={onClose}
+          />
+
+          {/* 지원 섹션 */}
+          <div className="mt-5">
+            <NavSection
+              title="지원"
+              links={NAV_LINKS_SUPPORT}
+              onClickLink={onClose}
+            />
+          </div>
+        </div>
+      </motion.div>
+    </>
   );
 }
 
@@ -110,35 +220,69 @@ function Logo() {
   return (
     <a
       href="#"
-      aria-label="홈으로"
-      className="kr-heading uppercase text-[15px] md:text-[16px] tracking-wider hover:text-neon transition-colors"
+      aria-label={`${BRAND.nameEn} 홈으로`}
+      className="inline-flex items-center gap-2.5 group select-none"
     >
-      {BRAND.logoLeft}
-      <span className="text-neon">{BRAND.separator}</span>
-      {BRAND.logoRight}
+      {/* 로고 마크 — 토리 mascot headshot roundel.
+          rounded-full 로 PNG 의 흰색 사각 모서리 잘라냄. */}
+      <img
+        src="/logo/questdp-mark.png"
+        alt=""
+        width={44}
+        height={44}
+        draggable={false}
+        className="w-10 h-10 md:w-12 md:h-12 shrink-0 rounded-full transition-transform group-hover:scale-105 group-hover:rotate-[-4deg]"
+      />
+      {/* 워드마크 — Sora ExtraBold (.logo-wordmark) + DP 만 neon accent */}
+      <span className="logo-wordmark uppercase text-[22px] md:text-[28px] leading-none">
+        <span className="text-cream group-hover:text-neon transition-colors">
+          Quest
+        </span>
+        <span className="text-neon">DP</span>
+      </span>
     </a>
   );
 }
 
-function Nav() {
+/**
+ * 한 섹션 (서비스 / 지원) 의 라벨 + cell 리스트.
+ * 외부 링크 (mailto:, 다른 도메인) 는 새 탭으로 열고, hash 링크는 같은 탭.
+ */
+function NavSection({
+  title,
+  links,
+  onClickLink,
+}: {
+  title: string;
+  links: NavLink[];
+  onClickLink: () => void;
+}) {
   return (
-    <nav
-      aria-label="주요 메뉴"
-      className="liquid-glass rounded-[28px] px-5 py-3 md:px-7 md:py-3.5 lg:px-10 lg:py-4"
-    >
-      <ul className="flex gap-4 md:gap-6 lg:gap-8 list-none m-0 p-0">
-        {NAV_LINKS.map((link) => (
-          <li key={link.label}>
-            <a
-              href={link.href}
-              className="kr-body font-bold text-[12px] md:text-[13px] whitespace-nowrap transition-colors hover:text-neon"
-            >
-              {link.label}
-            </a>
-          </li>
-        ))}
+    <>
+      <h3 className="kr-heading uppercase tracking-widest text-[10px] text-cream/45 mb-2 px-1">
+        {title}
+      </h3>
+      <ul className="flex flex-col gap-2 list-none m-0 p-0">
+        {links.map((link) => {
+          const isExternal =
+            link.href.startsWith('mailto:') ||
+            link.href.startsWith('http');
+          return (
+            <li key={link.label}>
+              <a
+                href={link.href}
+                onClick={onClickLink}
+                target={isExternal ? '_blank' : undefined}
+                rel={isExternal ? 'noopener noreferrer' : undefined}
+                className="block kr-heading uppercase tracking-widest text-[14px] md:text-[15px] py-4 px-5 rounded-[16px] border border-cream/10 bg-white/[0.03] text-cream/90 hover:bg-white/[0.08] hover:text-neon hover:border-neon/40 transition"
+              >
+                {link.label}
+              </a>
+            </li>
+          );
+        })}
       </ul>
-    </nav>
+    </>
   );
 }
 

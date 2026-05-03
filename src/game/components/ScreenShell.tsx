@@ -82,7 +82,7 @@ export default function ScreenShell({
             </button>
           ) : null}
 
-          <span className="cursive text-neon text-[28px] md:text-[40px] block leading-none">
+          <span className="kr-heading uppercase tracking-widest text-[11px] md:text-[12px] block leading-none text-neon">
             {eyebrow}
           </span>
           <h1 className="kr-heading uppercase leading-[1.05] text-[32px] md:text-[48px] lg:text-[60px] mt-3">

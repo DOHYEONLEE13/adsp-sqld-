@@ -31,7 +31,7 @@ function Header() {
       <h2 className="kr-heading uppercase leading-[1] text-[32px] sm:text-[44px] md:text-[52px] lg:text-[60px]">
         <span className="block">{COLLECTION.titleFirstLine}</span>
         <span className="block ml-12 sm:ml-24 lg:ml-32">
-          <span className="cursive text-neon mr-2">
+          <span className="mr-2">
             {COLLECTION.cursiveInline}
           </span>
           {COLLECTION.titleSecondLineSuffix}

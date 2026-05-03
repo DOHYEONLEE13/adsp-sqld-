@@ -11,11 +11,23 @@ export default function Footer() {
           <div className="max-w-[320px]">
             <a
               href="#"
-              className="kr-heading uppercase text-[18px] tracking-wider text-cream hover:text-neon transition-colors inline-block mb-3"
+              aria-label={`${BRAND.nameEn} 홈으로`}
+              className="inline-flex items-center gap-2 group select-none mb-3"
             >
-              {BRAND.logoLeft}
-              <span className="text-neon">{BRAND.separator}</span>
-              {BRAND.logoRight}
+              <img
+                src="/logo/questdp-mark.png"
+                alt=""
+                width={36}
+                height={36}
+                draggable={false}
+                className="w-9 h-9 shrink-0 rounded-full transition-transform group-hover:scale-105"
+              />
+              <span className="logo-wordmark uppercase text-[20px] leading-none">
+                <span className="text-cream group-hover:text-neon transition-colors">
+                  Quest
+                </span>
+                <span className="text-neon">DP</span>
+              </span>
             </a>
             <p className="kr-body text-[12px] leading-[1.65] text-cream/55">
               {BRAND.tagline}. ADSP · SQLD 자격증을 게임으로 정복하는 학습

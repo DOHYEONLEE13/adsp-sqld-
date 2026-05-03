@@ -153,7 +153,7 @@ export default function BookmarksPage({ onExit }: Props) {
           {tree.map((sb) => (
             <section key={sb.subject}>
               <div className="flex items-baseline gap-3 mb-5">
-                <span className="cursive text-neon text-[24px] md:text-[30px] leading-none">
+                <span className="kr-heading text-[16px] md:text-[18px] uppercase tracking-[0.04em] text-neon">
                   {sb.subject.toUpperCase()}
                 </span>
                 <h2 className="kr-heading text-[16px] md:text-[18px] uppercase">

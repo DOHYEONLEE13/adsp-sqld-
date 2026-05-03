@@ -7,7 +7,7 @@
  * 토글만 노출. 해설 풀텍스트는 토글을 눌렀을 때만 expansion 영역에서 보여줌.
  */
 
-import { CheckCircle2, ChevronDown, ChevronUp, XCircle } from 'lucide-react';
+import { CheckCircle2, ChevronDown, ChevronUp, RefreshCcw, XCircle } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 
@@ -22,6 +22,12 @@ interface Props {
   /** Secondary 액션 — primary 옆에 ghost 버튼으로 노출. 없으면 미렌더. */
   secondaryCtaLabel?: string;
   onSecondary?: () => void;
+  /**
+   * "비슷한 문제 더 풀기" tertiary 액션 — onSimilarProblems + similarCount > 0
+   * 일 때만 노출. 답변 후 같은 토픽의 다른 문제를 즉시 풀어볼 수 있는 진입점.
+   */
+  onSimilarProblems?: () => void;
+  similarCount?: number;
 }
 
 export default function FeedbackSheet({
@@ -32,6 +38,8 @@ export default function FeedbackSheet({
   onContinue,
   secondaryCtaLabel,
   onSecondary,
+  onSimilarProblems,
+  similarCount,
 }: Props) {
   const accent = correct ? '#6FFF00' : '#f87171';
   const tintBg = correct
@@ -123,7 +131,29 @@ export default function FeedbackSheet({
             </div>
           </div>
 
-          <div className="flex items-center gap-2 shrink-0 justify-end">
+          <div className="flex items-center gap-2 shrink-0 justify-end flex-wrap">
+            {/* "비슷한 문제 더 풀기" — 같은 토픽의 다른 문제 N개 풀이 진입점 */}
+            {onSimilarProblems && (similarCount ?? 0) > 0 ? (
+              <button
+                type="button"
+                onClick={onSimilarProblems}
+                aria-label={`비슷한 문제 ${similarCount}개 더 풀기`}
+                className="kr-heading uppercase tracking-widest text-[11px] md:text-[12px] px-3.5 py-2.5 md:px-4 md:py-3 rounded-full transition liquid-glass hover:bg-white/10 whitespace-nowrap inline-flex items-center gap-1.5"
+              >
+                <RefreshCcw size={12} strokeWidth={2.6} />
+                비슷한 문제 더 풀기
+                <span
+                  className="kr-num tabular-nums px-1.5 py-0.5 rounded-full text-[9.5px]"
+                  style={{
+                    background: 'rgba(111,255,0,0.15)',
+                    color: '#9CFF3D',
+                  }}
+                >
+                  {Math.min(similarCount ?? 0, 9)}
+                  {(similarCount ?? 0) > 9 ? '+' : ''}
+                </span>
+              </button>
+            ) : null}
             {secondaryCtaLabel && onSecondary ? (
               <button
                 type="button"

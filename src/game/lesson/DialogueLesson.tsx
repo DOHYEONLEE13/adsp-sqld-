@@ -25,6 +25,8 @@ import TopBar from './TopBar';
 import SpeechBubble from './SpeechBubble';
 import OptionsPanel from './OptionsPanel';
 import FeedbackSheet from './FeedbackSheet';
+import SimilarProblemsPanel from '../components/SimilarProblemsPanel';
+import { countSimilarQuestions } from '../similarQuestions';
 import PageAmbientBg from '../components/PageAmbientBg';
 import { getReminder } from '@/data/reminders';
 import { PASS_TIER_VISUAL } from '@/types/passes';
@@ -80,6 +82,8 @@ export default function DialogueLesson({
 
   const [stepIdx, setStepIdx] = useState(initialStepIdx ?? 0);
   const [turnIdx, setTurnIdx] = useState(0);
+  // 비슷한 문제 패널 (FeedbackSheet 위로 슬라이드업) 노출 여부.
+  const [similarOpen, setSimilarOpen] = useState(false);
   // 북마크 카드에서 점프해온 경우 narration 스킵 → 곧장 question phase 로.
   // sessionStorage 의 'questdp.pendingLessonPhase' 가 'question' 이면 한 번만 소비.
   const initialPhase = ((): Phase => {
@@ -118,6 +122,7 @@ export default function DialogueLesson({
     setPhase('narrate');
     setChosen(null);
     setCorrect(null);
+    setSimilarOpen(false); // 다음 step 진입 시 패널 자동 닫기 (안전망)
     // 새 step 이 review 면 reminder 카드 강제 노출. 그 외엔 isReplay 모드일 때만.
     const nextStep = lesson?.steps[stepIdx];
     const nextIsReview = nextStep?.id.endsWith('-review') ?? false;
@@ -672,10 +677,21 @@ export default function DialogueLesson({
                 onContinue={onContinue}
                 secondaryCtaLabel={secondaryCtaLabel}
                 onSecondary={onSecondary}
+                onSimilarProblems={() => setSimilarOpen(true)}
+                similarCount={countSimilarQuestions(quizQuestion.id)}
               />
             );
           })()
         : null}
+
+      {/* 비슷한 문제 더 풀기 — 하단 슬라이드업 모달시트 */}
+      {similarOpen && quizQuestion ? (
+        <SimilarProblemsPanel
+          currentQuizId={quizQuestion.id}
+          accent={subject === 'sqld' ? '#c084fc' : '#67e8f9'}
+          onClose={() => setSimilarOpen(false)}
+        />
+      ) : null}
     </section>
   );
 }

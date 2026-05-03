@@ -439,7 +439,15 @@ export function initProfileSync(): () => void {
   // 즉시 한 번 pull (이미 세션 있을 수 있음)
   void pullFromSupabase();
 
-  const unsub = onAuthStateChange((event) => {
+  const unsub = onAuthStateChange((event, session) => {
+    // ⚠️ 핵심 — 모든 auth 이벤트에서 _isAuthenticated 를 즉시 session 존재
+    // 여부로 동기화. pullFromSupabase 의 race / 네트워크 지연으로 stale 상태가
+    // 되어 UI 가 "로그인 후에도 게스트" 로 표시되던 버그 fix.
+    const sessionExists = !!session;
+    if (sessionExists !== _isAuthenticated) {
+      setAuthState(sessionExists);
+    }
+
     if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
       void pullFromSupabase();
     }

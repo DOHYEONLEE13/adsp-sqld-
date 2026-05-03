@@ -151,6 +151,7 @@ export default function FriendsPage({ onExit }: Props) {
 
       <MyTagCard
         profile={me}
+        isSignedIn={isSignedIn}
         onRename={(n) => {
           const result = setDisplayName(n);
           if (!result.ok && result.reason === 'sync-not-ready') {
@@ -159,11 +160,13 @@ export default function FriendsPage({ onExit }: Props) {
         }}
       />
 
-      {/* AddFriendCard 게이트:
-          1) 게스트 (미인증) — 비노출. 로그인 후 활성화 (MyTagCard 가 안내).
+      {/* AddFriendCard 게이트 (이중 가드 — profile.isAuthenticated OR isSignedIn):
+          1) 게스트 (둘 다 false) — 비노출. 로그인 후 활성화 (MyTagCard 가 안내).
           2) sync 중 (myTag === '') — 비노출. skeleton 만.
           3) ready — 노출. */}
-      {me.isAuthenticated && !me.pendingServerSync && me.tag !== '' ? (
+      {(me.isAuthenticated || isSignedIn) &&
+      !me.pendingServerSync &&
+      me.tag !== '' ? (
         <AddFriendCard myTag={me.tag} />
       ) : null}
 
@@ -194,9 +197,17 @@ export default function FriendsPage({ onExit }: Props) {
 
 function MyTagCard({
   profile,
+  isSignedIn,
   onRename,
 }: {
   profile: MyProfile;
+  /**
+   * Supabase 세션 존재 여부 — 부모 (FriendsPage) 가 직접 구독한 1차 신호.
+   * `profile.isAuthenticated` 와 함께 OR 결합 — 둘 중 하나라도 true 면 인증
+   * 사용자로 처리. profile 모듈 race 로 isAuthenticated 가 일시적으로 stale
+   * 되어도 UI 가 "로그인 후 게스트" 로 잘못 표시되지 않도록 이중 가드.
+   */
+  isSignedIn: boolean;
   onRename: (name: string) => void;
 }) {
   const [copied, setCopied] = useState(false);
@@ -228,7 +239,10 @@ function MyTagCard({
   };
 
   // 게스트 (미인증) — 태그·친구 시스템 비활성. 닉네임만 설정 가능 + 로그인 CTA.
-  if (!profile.isAuthenticated) {
+  // 인증 판정: profile.isAuthenticated OR isSignedIn 둘 중 하나만 true 면 인증.
+  // 둘 다 false 일 때만 진정한 게스트.
+  const isGuest = !profile.isAuthenticated && !isSignedIn;
+  if (isGuest) {
     return (
       <section
         className="liquid-glass rounded-[24px] p-5 md:p-6 mb-6"

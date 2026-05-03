@@ -37,6 +37,8 @@ import type { QuesPose } from '@/components/mascot/types';
 import type { ProgressStore } from '../storage';
 import VideoBg from '@/components/ui/VideoBg';
 import { VIDEO_URLS } from '@/data/site';
+import { useMyProfile } from '@/data/profile';
+import NicknameOnboarding from './NicknameOnboarding';
 
 interface Props {
   onSelectSubject: (subject: Subject) => void;
@@ -99,6 +101,7 @@ export default function GalaxyScreen({
 }: Props) {
   const progress = useProgress();
   const bookmarks = useBookmarks();
+  const profile = useMyProfile();
   const bookmarkCount = bookmarks.ids.size;
   const playerStats = computePlayerStats(progress);
   const defaultMissionSubject: Subject =
@@ -108,6 +111,25 @@ export default function GalaxyScreen({
   const sqldTotal = playableCount('sqld');
 
   const [view, setView] = useState<View>({ kind: 'overview' });
+
+  // 닉네임 onboarding 게이트 — 첫 방문 + 닉네임 미설정일 때만 노출.
+  //
+  // "닉네임 미설정" 판정:
+  //   - displayName 이 비어있거나
+  //   - displayName 이 tag 와 동일 (profile.ts 가 fallback 으로 tag 를 채운 케이스)
+  //   둘 다 사용자가 의도적으로 닉네임을 정한 적 없음.
+  //
+  // sync-loading (pendingServerSync) 동안엔 surge 방지 위해 false 로 친다.
+  // - "건너뛰기" 누른 사용자는 onboardingDismissed 로 한 세션 동안 다시 안 뜸.
+  const [onboardingDismissed, setOnboardingDismissed] = useState(false);
+  const trimmedName = profile.displayName.trim();
+  const hasRealNickname =
+    trimmedName !== '' && trimmedName !== profile.tag;
+  const needsNicknameOnboarding =
+    !onboardingDismissed &&
+    !profile.pendingServerSync &&
+    !hasRealNickname &&
+    playerStats.sessionsCount === 0;
 
   // launching 상태면 WARP_DURATION_MS 후에 실제 전환.
   useEffect(() => {
@@ -135,6 +157,13 @@ export default function GalaxyScreen({
 
   // 오늘 데일리 미션 완료 여부 — banner 상태 표시.
   const dailyDoneToday = isToday(progress.lastDailyMissionAt);
+
+  // 첫 방문자 — 닉네임 onboarding 만 노출하고 chooser 는 그 후에.
+  if (needsNicknameOnboarding) {
+    return (
+      <NicknameOnboarding onDone={() => setOnboardingDismissed(true)} />
+    );
+  }
 
   return (
     <section
@@ -201,7 +230,12 @@ export default function GalaxyScreen({
 
         {/* MASCOT + SPEECH BUBBLE — 사용자 상태별 인사 */}
         <div className="mb-8 md:mb-10">
-          <ChooserMascot stats={playerStats} progress={progress} />
+          <ChooserMascot
+            stats={playerStats}
+            progress={progress}
+            displayName={profile.displayName}
+            tag={profile.tag}
+          />
         </div>
 
         {/* HAIRLINE */}
@@ -342,11 +376,22 @@ interface ChooserGreeting {
 function buildChooserGreeting(
   stats: PlayerStats,
   progress: ProgressStore,
+  displayName: string,
+  tag: string,
 ): ChooserGreeting {
+  // 닉네임 있으면 호칭 prefix 로 활용 (없으면 빈 문자열 → 일반 톤).
+  // displayName 이 tag 와 같으면 진짜 닉네임 X — 일반 톤으로.
+  const name = displayName.trim();
+  const isReal = name !== '' && name !== tag;
+  const nickPrefix = isReal ? `[${name}]님, ` : '';
+
   if (stats.sessionsCount === 0) {
+    // onboarding 직후 (닉네임 방금 설정한 케이스). 짧게 맞이 + 과목 유도.
     return {
       pose: 'wave',
-      text: '안녕하세요! 저는 [조롱이] 라고 해요! 어떤 과목을 공부하려고 하세요?',
+      text: isReal
+        ? `반가워요 [${name}]님! 어떤 과목으로 시작해볼까요?`
+        : '안녕하세요! 저는 [토리] 라고 해요! 어떤 과목을 공부하려고 하세요?',
     };
   }
 
@@ -360,15 +405,15 @@ function buildChooserGreeting(
       pose: 'happy',
       text:
         stats.streakDays >= 3
-          ? `[${stats.streakDays}일 연속] — 더 가볼까?`
-          : '오늘도 한 번 더?',
+          ? `${nickPrefix}[${stats.streakDays}일 연속] — 더 가볼까?`
+          : `${nickPrefix}오늘도 한 번 더?`,
     };
   }
 
   if (stats.streakDays >= 3) {
     return {
       pose: 'celebrate',
-      text: `[${stats.streakDays}일 연속] 이어가요!`,
+      text: `${nickPrefix}[${stats.streakDays}일 연속] 이어가요!`,
     };
   }
 
@@ -377,22 +422,32 @@ function buildChooserGreeting(
   const daysAway = Math.floor((now - lastAt) / (24 * 60 * 60 * 1000));
 
   if (daysAway >= 3) {
-    return { pose: 'sad', text: `${daysAway}일 만이에요. 다시 시작!` };
+    return {
+      pose: 'sad',
+      text: `${nickPrefix}${daysAway}일 만이에요. 다시 시작!`,
+    };
   }
 
-  return { pose: 'idle', text: '오늘 뭘 공부할까?' };
+  return {
+    pose: 'idle',
+    text: `${nickPrefix}오늘 뭘 공부할까?`,
+  };
 }
 
 function ChooserMascot({
   stats,
   progress,
+  displayName,
+  tag,
 }: {
   stats: PlayerStats;
   progress: ProgressStore;
+  displayName: string;
+  tag: string;
 }) {
   const greeting = useMemo(
-    () => buildChooserGreeting(stats, progress),
-    [stats, progress],
+    () => buildChooserGreeting(stats, progress, displayName, tag),
+    [stats, progress, displayName, tag],
   );
   return (
     <div className="flex flex-col items-center gap-2">

@@ -100,24 +100,26 @@ export default function ProfileCustomizer() {
       className="liquid-glass rounded-[24px] p-5 md:p-6"
       aria-label="프로필 꾸미기"
     >
-      <div className="flex items-center gap-4 md:gap-5">
-        {/* 큰 아바타 */}
+      <div className="flex items-center gap-4 md:gap-5 lg:gap-7">
+        {/* 큰 아바타 — 데스크톱에서 사이즈 ↑ (모바일 88 → md 108 → lg 132 → xl 156). */}
         <div
-          className="shrink-0 rounded-[24px] inline-flex items-center justify-center"
+          className="shrink-0 rounded-[24px] inline-flex items-center justify-center w-[88px] h-[88px] md:w-[108px] md:h-[108px] lg:w-[132px] lg:h-[132px] xl:w-[156px] xl:h-[156px]"
           style={{
-            width: 88,
-            height: 88,
             background:
               'radial-gradient(circle at 30% 25%, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 60%), rgba(253,128,46,0.12)',
             border: '1.5px solid rgba(253,128,46,0.4)',
           }}
         >
-          {/* 큰 아바타는 draft 를 미리보기 — 저장 전이라도 어떻게 보일지 즉시 확인 */}
-          <Ques pose={draftAvatarPose} size={76} animated={false} />
+          {/* 큰 아바타는 draft 를 미리보기. className 으로 반응형 사이즈. */}
+          <Ques
+            pose={draftAvatarPose}
+            animated={false}
+            className="w-[76px] h-[76px] md:w-[92px] md:h-[92px] lg:w-[112px] lg:h-[112px] xl:w-[132px] xl:h-[132px]"
+          />
         </div>
 
         <div className="flex-1 min-w-0">
-          <div className="kr-heading uppercase text-[10px] tracking-widest text-cream/55 mb-1">
+          <div className="kr-heading uppercase text-[10px] md:text-[11px] tracking-widest text-cream/55 mb-1">
             나의 프로필
           </div>
           {profile.pendingServerSync ? (
@@ -184,7 +186,7 @@ export default function ProfileCustomizer() {
           ) : (
             <div className="flex items-center gap-2">
               <h2
-                className="kr-heading text-[18px] md:text-[22px] truncate"
+                className="kr-heading text-[18px] md:text-[22px] lg:text-[26px] xl:text-[30px] truncate"
                 style={{ color: 'var(--cream)' }}
               >
                 {profile.displayName}
@@ -211,12 +213,13 @@ export default function ProfileCustomizer() {
         </div>
       </div>
 
-      {/* 포즈 선택 그리드 — 클릭은 draft 만 갱신. 저장은 별도 버튼. */}
-      <div className="mt-5">
-        <div className="kr-heading uppercase text-[10px] tracking-widest text-cream/55 mb-2">
+      {/* 포즈 선택 그리드 — 클릭은 draft 만 갱신. 저장은 별도 버튼.
+          모바일 2 행 (4-cols) → md+ 동일하지만 cell 자체가 커지므로 mascot 도 따라 ↑. */}
+      <div className="mt-5 lg:mt-7">
+        <div className="kr-heading uppercase text-[10px] md:text-[11px] tracking-widest text-cream/55 mb-2">
           아바타 표정
         </div>
-        <div className="grid grid-cols-4 gap-2 md:gap-3">
+        <div className="grid grid-cols-4 gap-2 md:gap-3 lg:gap-4">
           {AVATAR_POSES.map((pose) => {
             const isDraft = pose === draftAvatarPose;
             const isSaved = pose === profile.avatarPose;
@@ -231,7 +234,7 @@ export default function ProfileCustomizer() {
                 }}
                 aria-label={`아바타 — ${POSE_LABELS[pose]}${isSaved ? ' (저장됨)' : ''}${isDraft && !isSaved ? ' (선택 중)' : ''}`}
                 aria-pressed={isDraft}
-                className="aspect-square rounded-[14px] inline-flex items-center justify-center transition active:scale-95"
+                className="aspect-square rounded-[14px] lg:rounded-[18px] inline-flex items-center justify-center transition active:scale-95 p-2 md:p-3 lg:p-5"
                 style={{
                   background: isDraft
                     ? 'rgba(111,255,0,0.12)'
@@ -243,7 +246,12 @@ export default function ProfileCustomizer() {
                       : '2px solid rgba(239,244,255,0.08)',
                 }}
               >
-                <Ques pose={pose} size={56} animated={false} />
+                {/* className 으로 cell 안에서 100% — cell 이 커지면 mascot 도 비례 ↑ */}
+                <Ques
+                  pose={pose}
+                  animated={false}
+                  className="w-full h-full"
+                />
               </button>
             );
           })}

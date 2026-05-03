@@ -25,7 +25,11 @@ const POSE_SRC: Record<QuesPose, string> = {
 
 interface Props {
   pose: QuesPose;
-  /** 한 변(px). 기본 160. */
+  /**
+   * 한 변(px). 명시적 사이즈가 필요할 때만 전달.
+   * 미지정 시 `className` 의 Tailwind w-* / h-* 가 외곽 크기 결정 — 데스크톱
+   * 반응형 (lg:w-32 등) 사이즈에 적합.
+   */
   size?: number;
   /** false 면 호흡/크로스페이드 등 모든 애니메이션 비활성. 접근성 · 배포 성능용. */
   animated?: boolean;
@@ -34,7 +38,7 @@ interface Props {
 
 export default function Ques({
   pose,
-  size = 160,
+  size,
   animated = true,
   className,
 }: Props) {
@@ -45,7 +49,7 @@ export default function Ques({
       className={['relative inline-block select-none', className]
         .filter(Boolean)
         .join(' ')}
-      style={{ width: size, height: size }}
+      style={size !== undefined ? { width: size, height: size } : undefined}
       aria-label={`Ques - ${pose}`}
     >
       <AnimatePresence initial={false}>
@@ -61,8 +65,7 @@ export default function Ques({
           <img
             src={src}
             alt=""
-            width={size}
-            height={size}
+            {...(size !== undefined ? { width: size, height: size } : {})}
             draggable={false}
             className={[
               'w-full h-full object-contain',
@@ -74,7 +77,9 @@ export default function Ques({
         </motion.div>
       </AnimatePresence>
 
-      {pose === 'sleep' && animated ? <SleepZOverlay size={size} /> : null}
+      {pose === 'sleep' && animated && size !== undefined ? (
+        <SleepZOverlay size={size} />
+      ) : null}
     </div>
   );
 }

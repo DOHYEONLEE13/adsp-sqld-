@@ -415,7 +415,8 @@ function SubjectStampRow({
           {SUBJECT_LABEL[subject]}
         </span>
       </div>
-      <div className="grid grid-cols-1 gap-2">
+      {/* 챕터 stamp 행 — 데스크톱은 grid 2~3 col 로 압축 (chapter 수 적어 공간 낭비 ↓). */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-2 lg:gap-3">
         {schema.chapters.map((ch) => (
           <ChapterStampRow
             key={ch.chapter}
@@ -441,19 +442,21 @@ function ChapterStampRow({
   const passSet = new Set(stamps.map((s) => s.passNumber));
   return (
     <div
-      className="flex items-center justify-between gap-3 px-3 py-2 rounded-xl"
+      className="flex items-center justify-between gap-3 px-3 py-2 lg:px-4 lg:py-3 rounded-xl"
       style={{
         background: 'rgba(239,244,255,0.04)',
         border: '1px solid rgba(239,244,255,0.08)',
       }}
     >
       <div className="min-w-0 flex-1">
-        <div className="kr-num text-[10px] uppercase tracking-widest text-cream/45">
+        <div className="kr-num text-[10px] lg:text-[11px] uppercase tracking-widest text-cream/45">
           Chapter {chapter}
         </div>
-        <div className="kr-body text-[12.5px] text-cream/85 truncate">{title}</div>
+        <div className="kr-body text-[12.5px] lg:text-[14px] text-cream/85 truncate">
+          {title}
+        </div>
       </div>
-      <div className="flex items-center gap-1.5 shrink-0">
+      <div className="flex items-center gap-1.5 lg:gap-2 shrink-0">
         {[1, 2, 3].map((pass) => {
           const earned = passSet.has(pass);
           const tier = TIER_FOR_PASS[pass];
@@ -462,10 +465,8 @@ function ChapterStampRow({
             <span
               key={pass}
               title={`${pass}회독 ${earned ? '완료' : '미완료'}`}
-              className="kr-num inline-flex items-center justify-center rounded-full text-[9px]"
+              className="kr-num inline-flex items-center justify-center rounded-full text-[9px] lg:text-[10px] w-[22px] h-[22px] lg:w-[26px] lg:h-[26px]"
               style={{
-                width: 22,
-                height: 22,
                 background: earned ? `${visual.color}33` : 'rgba(239,244,255,0.06)',
                 border: `1px solid ${earned ? visual.color : 'rgba(239,244,255,0.18)'}`,
                 color: earned ? visual.color : 'rgba(239,244,255,0.45)',

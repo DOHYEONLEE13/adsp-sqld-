@@ -14,6 +14,7 @@ const SQLD_1_1: Lesson = {
       id: 'sqld-1-1-s1',
       title: '데이터 모델링이란 — 3특징 + 3관점',
       quizId: 'sqld-1-1-cp-01',
+      group: 'sqld-1-1-g1-modeling',
       dialogue: [
         { pose: 'wave', text: 'SQLD 첫 시간! [데이터 모델링]부터 차근차근 배워보자.' },
         { pose: 'think', text: '학교에서 [수강신청] 한 번쯤 해봤지? 학생·과목·교수·시간표 같은 정보를 컴퓨터가 다루려면 어떻게 해야 할까?' },
@@ -84,6 +85,7 @@ const SQLD_1_1: Lesson = {
       id: 'sqld-1-1-s2',
       title: '모델링 단계 — 개념 → 논리 → 물리',
       quizId: 'sqld-1-1-cp-02',
+      group: 'sqld-1-1-g1-modeling',
       dialogue: [
         { pose: 'wave', text: '모델링은 한 번에 끝나는 게 아니라 [3단계] 거쳐 가!' },
         { pose: 'think', text: '비유하면 집 짓기와 똑같아. [스케치] → [설계도면] → [실제 시공]!' },
@@ -147,6 +149,7 @@ const SQLD_1_1: Lesson = {
       id: 'sqld-1-1-s3',
       title: 'ANSI/SPARC 3-스키마 + 데이터 독립성',
       quizId: 'sqld-1-1-cp-03',
+      group: 'sqld-1-1-g1-modeling',
       dialogue: [
         { pose: 'wave', text: '같은 DB 라도 [보는 사람] 마다 시야가 달라야 해.' },
         { pose: 'think', text: '예를 들어 학생은 "내 성적표" 만 보고, 교수는 "전공 학생 명단" 보고, DBA 는 "DB 전체 구조" 를 봐.' },
@@ -209,6 +212,7 @@ const SQLD_1_1: Lesson = {
       id: 'sqld-1-1-s4',
       title: '엔터티 — 5요건 + 명명 규칙',
       quizId: 'sqld-1-1-cp-04',
+      group: 'sqld-1-1-g2-entity',
       dialogue: [
         { pose: 'wave', text: '[엔터티(Entity)]는 우리가 [표] 로 관리할 대상이야!' },
         { pose: 'think', text: '실생활 예시: "학생", "과목", "수강신청", "고객", "주문" 같은 거. 결국 DB 의 [테이블 1개] 가 됨.' },
@@ -275,6 +279,7 @@ const SQLD_1_1: Lesson = {
       id: 'sqld-1-1-s5',
       title: '엔터티 분류 — 유무형 / 발생시점',
       quizId: 'sqld-1-1-cp-05',
+      group: 'sqld-1-1-g2-entity',
       dialogue: [
         { pose: 'wave', text: '엔터티는 [2가지 기준]으로 분류돼! 두 분류를 헷갈리면 시험에서 함정에 걸려.' },
         { pose: 'think', text: '첫 번째 기준 = [유무형]: 형태가 있냐 없냐? [유형] · [개념] · [사건] 3종!' },
@@ -340,6 +345,7 @@ const SQLD_1_1: Lesson = {
       id: 'sqld-1-1-s6',
       title: '속성 — 3 × 3 × 3 분류',
       quizId: 'sqld-1-1-cp-06',
+      group: 'sqld-1-1-g3-attr-rel',
       dialogue: [
         { pose: 'wave', text: '[속성(Attribute)]은 엔터티의 [세부 정보]야! DB 의 컬럼 1개와 매칭!' },
         { pose: 'think', text: '예: 엔터티 "학생" 의 속성 = "학번·이름·전공·생년월일·연락처". 한 줄(인스턴스) 마다 이 속성 값들이 채워져.' },
@@ -418,6 +424,7 @@ const SQLD_1_1: Lesson = {
       id: 'sqld-1-1-s7',
       title: '관계 — 관차선 + 교차 엔터티',
       quizId: 'sqld-1-1-cp-07',
+      group: 'sqld-1-1-g3-attr-rel',
       dialogue: [
         { pose: 'wave', text: '[관계(Relationship)]는 두 엔터티 사이의 [논리적 연결]!' },
         { pose: 'think', text: '예: "학생 [수강한다] 과목" → 두 엔터티 사이에 "수강" 이라는 행위 관계가 있어!' },
@@ -485,6 +492,7 @@ const SQLD_1_1: Lesson = {
       id: 'sqld-1-1-s8',
       title: '식별자 — 4가지 분류 + 주식별자 4요건',
       quizId: 'sqld-1-1-cp-08',
+      group: 'sqld-1-1-g4-identifier',
       dialogue: [
         { pose: 'wave', text: '[식별자(Identifier)]는 인스턴스를 [유일하게 구분]하는 [속성 또는 속성 집합]!' },
         { pose: 'think', text: '학생 1명을 어떻게 구분할까? "이름" 으로? 동명이인이 있으면 X. "학번" 이 있어야 안전!' },
@@ -556,6 +564,7 @@ const SQLD_1_1: Lesson = {
       id: 'sqld-1-1-s9',
       title: '식별자 관계 vs 비식별자 관계',
       quizId: 'sqld-1-1-cp-09',
+      group: 'sqld-1-1-g4-identifier',
       dialogue: [
         { pose: 'wave', text: '두 엔터티가 관계를 맺을 때 부모의 PK 를 자식이 받는 [방식]에 따라 두 종류로 갈려!' },
         { pose: 'think', text: '[식별자 관계] = 강한 연결. 부모 PK 를 자식이 [PK 의 일부] 로 받음.' },
@@ -614,6 +623,7 @@ const SQLD_1_1: Lesson = {
       id: 'sqld-1-1-s10',
       title: '키 5종 + 무결성 3종 + 식별자 vs 키',
       quizId: 'sqld-1-1-cp-10',
+      group: 'sqld-1-1-g4-identifier',
       dialogue: [
         { pose: 'wave', text: '식별자가 [논리 단계]에서 쓰는 말이라면, [키(Key)]는 [물리 단계]에서 쓰는 말이야!' },
         { pose: 'think', text: '키는 [5종]! 후보키·기본키·대체키·슈퍼키·외래키.' },
@@ -695,6 +705,7 @@ const SQLD_1_2: Lesson = {
       id: 'sqld-1-2-s1',
       title: '이상 현상(Anomaly) 3종 — 정규화의 동기',
       quizId: 'sqld-1-2-cp-01',
+      group: 'sqld-1-2-g1-normalization',
       dialogue: [
         { pose: 'wave', text: '왜 [정규화]를 하는지부터 짚자. 핵심은 [이상 현상(Anomaly)] 을 막기 위해서!' },
         { pose: 'think', text: '한 테이블에 너무 많은 정보를 묶어두면 부작용이 생겨. 비유로 들어가자.' },
@@ -762,6 +773,7 @@ const SQLD_1_2: Lesson = {
       id: 'sqld-1-2-s2',
       title: '함수적 종속 — 완전 / 부분 / 이행',
       quizId: 'sqld-1-2-cp-02',
+      group: 'sqld-1-2-g1-normalization',
       dialogue: [
         { pose: 'wave', text: '정규형 단계를 이해하려면 [함수적 종속(Functional Dependency)] 부터 알아야 해!' },
         { pose: 'think', text: '"A 의 값을 알면 B 의 값이 [유일하게] 결정된다" 를 [A → B] 로 표기해.' },
@@ -826,6 +838,7 @@ const SQLD_1_2: Lesson = {
       id: 'sqld-1-2-s3',
       title: '정규형 단계 — 1NF → BCNF (도·부·이·결)',
       quizId: 'sqld-1-2-cp-03',
+      group: 'sqld-1-2-g1-normalization',
       dialogue: [
         { pose: 'wave', text: '이제 [정규형(Normal Form)] 단계 차례야! 1NF 부터 단계적으로 적용해.' },
         { pose: 'think', text: '[1NF (제1정규형)]: 모든 속성이 [원자값(Atomic)]! 한 셀에 한 의미만!' },
@@ -885,6 +898,7 @@ const SQLD_1_2: Lesson = {
       id: 'sqld-1-2-s4',
       title: '반정규화 — 언제 · 어떻게 · 대가',
       quizId: 'sqld-1-2-cp-04',
+      group: 'sqld-1-2-g1-normalization',
       dialogue: [
         { pose: 'wave', text: '[반정규화(Denormalization)]는 정규화의 [반대 방향]으로 가는 작업!' },
         { pose: 'think', text: '왜? 정규화로 분해된 테이블이 너무 많아 [JOIN 횟수 폭증] → 조회가 느려질 때!' },
@@ -951,6 +965,7 @@ const SQLD_1_2: Lesson = {
       id: 'sqld-1-2-s5',
       title: '특수 관계 — 계층형 / 상호배타 / 순환',
       quizId: 'sqld-1-2-cp-05',
+      group: 'sqld-1-2-g2-design-choices',
       dialogue: [
         { pose: 'wave', text: '일반적인 1:1, 1:M, M:N 외에도 모델링에서 자주 보는 [특수 관계]가 있어!' },
         { pose: 'think', text: '① [계층형(Hierarchical)] 데이터 모델!' },
@@ -1006,6 +1021,7 @@ const SQLD_1_2: Lesson = {
       id: 'sqld-1-2-s6',
       title: '트랜잭션 ACID + 격리수준 4종',
       quizId: 'sqld-1-2-cp-06',
+      group: 'sqld-1-2-g3-runtime-semantics',
       dialogue: [
         { pose: 'wave', text: '[트랜잭션(Transaction)]은 DB 에서 [하나의 논리 작업 단위]!' },
         { pose: 'think', text: '예: 계좌이체 = 송금자 잔액 - 1000 + 수신자 잔액 + 1000. 둘 다 성공해야지 한쪽만 성공하면 큰일!' },
@@ -1085,6 +1101,7 @@ const SQLD_1_2: Lesson = {
       id: 'sqld-1-2-s7',
       title: 'NULL — 본성 · 산술 · 집계 · 정렬',
       quizId: 'sqld-1-2-cp-07',
+      group: 'sqld-1-2-g3-runtime-semantics',
       dialogue: [
         { pose: 'wave', text: '[NULL]은 SQL 의 가장 까다로운 개념! 시험·실무 둘 다 단골 함정!' },
         { pose: 'think', text: 'NULL = "값이 없음" 또는 "미정의" 의미. [0 ≠ NULL]·[빈 문자열 \'\' ≠ NULL]!' },
@@ -1152,6 +1169,7 @@ const SQLD_1_2: Lesson = {
       id: 'sqld-1-2-s8',
       title: '본질식별자 vs 인조식별자 — 실무 선택 기준',
       quizId: 'sqld-1-2-cp-08',
+      group: 'sqld-1-2-g2-design-choices',
       dialogue: [
         { pose: 'wave', text: '식별자는 [본질(Natural)] vs [인조(Surrogate)] 두 종류!' },
         { pose: 'think', text: '[본질식별자]: 업무에 [원래 존재]하는 식별자.' },

@@ -9,12 +9,79 @@
       name="description"
       content="암기 싫은 당신을 위한 RPG형 자격증 학습 플랫폼. 몬스터를 잡고 보스를 깨며 ADSP·SQLD 합격."
     />
+    <!-- Open Graph (Facebook · KakaoTalk · LinkedIn share preview) -->
     <meta property="og:title" content="QuestDP — ADSP·SQLD, 게임으로 놀면서 합격" />
     <meta
       property="og:description"
       content="AI가 약점을 진단하고 보스 스테이지를 만들어주는 자격증 학습 RPG."
     />
     <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ko_KR" />
+    <meta property="og:url" content="https://quest-dp.com/" />
+    <meta property="og:site_name" content="QuestDP" />
+    <meta property="og:image" content="https://quest-dp.com/logo/questdp-lockup.png" />
+    <meta property="og:image:width" content="1696" />
+    <meta property="og:image:height" content="624" />
+    <meta property="og:image:alt" content="QuestDP — ADSP·SQLD 자격증 학습 SaaS" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="QuestDP — ADSP·SQLD, 게임으로 놀면서 합격" />
+    <meta
+      name="twitter:description"
+      content="AI가 약점을 진단하고 보스 스테이지를 만들어주는 자격증 학습 RPG."
+    />
+    <meta name="twitter:image" content="https://quest-dp.com/logo/questdp-lockup.png" />
+
+    <!-- Canonical (SPA — 라우트별 갱신은 react-helmet-async 가 처리) -->
+    <link rel="canonical" href="https://quest-dp.com/" />
+
+    <!--
+      Search engine 검증 메타 (사용자가 등록 후 토큰 채워넣음):
+      <meta name="google-site-verification" content="..." />
+      <meta name="naver-site-verification" content="..." />
+    -->
+
+    <!-- JSON-LD: Organization + WebSite (Schema.org)
+         검색엔진이 QuestDP 의 정체와 사이트 검색 동작을 이해 -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "QuestDP",
+        "alternateName": "퀘스트디피",
+        "url": "https://quest-dp.com",
+        "logo": "https://quest-dp.com/logo/questdp-mark.png",
+        "image": "https://quest-dp.com/logo/questdp-lockup.png",
+        "description": "ADSP·SQLD 자격증을 게임처럼 학습하는 RPG형 마이크로러닝 SaaS.",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "KR",
+          "addressLocality": "성남시"
+        },
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "email": "questdpofficial@gmail.com",
+          "contactType": "customer support",
+          "areaServed": "KR",
+          "availableLanguage": ["Korean"]
+        }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "QuestDP",
+        "alternateName": "퀘스트디피",
+        "url": "https://quest-dp.com",
+        "inLanguage": "ko-KR",
+        "publisher": {
+          "@type": "Organization",
+          "name": "QuestDP"
+        }
+      }
+    </script>
 
     <!-- Favicons -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

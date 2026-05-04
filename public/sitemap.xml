@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   QuestDP sitemap — generate-sitemap.mjs 가 자동 생성.
-  생성 시각: 2026-05-04T05:50:43.409Z
-  총 URL: 987 (정적 16 + lesson 301 + quiz 670)
+  생성 시각: 2026-05-04T05:42:39.309Z
+  총 URL: 982 (정적 11 + lesson 301 + quiz 670)
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -57,31 +57,6 @@
   </url>
   <url>
     <loc>https://quest-dp.com/glossary</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://quest-dp.com/blog</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.85</priority>
-  </url>
-  <url>
-    <loc>https://quest-dp.com/blog/adsp-vs-sqld-%EC%88%9C%EC%84%9C</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://quest-dp.com/blog/adsp-2%EC%A3%BC-%ED%95%A9%EA%B2%A9-%EB%A1%9C%EB%93%9C%EB%A7%B5</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://quest-dp.com/blog/sqld-%EB%85%B8%EB%9E%AD%EC%9D%B4-vs-questdp</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://quest-dp.com/blog/adsp-%EB%B9%84%EC%A0%84%EA%B3%B5%EC%9E%90-%EA%B0%80%EC%9D%B4%EB%93%9C</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

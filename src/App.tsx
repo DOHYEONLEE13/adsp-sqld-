@@ -38,8 +38,6 @@ const QuizStaticPage = lazy(() => import('./pages/QuizStaticPage'));
 const CurriculumPage = lazy(() => import('./pages/CurriculumPage'));
 const FaqPage = lazy(() => import('./pages/FaqPage'));
 const GlossaryPage = lazy(() => import('./pages/GlossaryPage'));
-const BlogIndexPage = lazy(() => import('./pages/BlogIndexPage'));
-const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
 const GamePage = lazy(() => import('./game/GamePage'));
 const StatsPage = lazy(() => import('./game/StatsPage'));
 const BookmarksPage = lazy(() => import('./game/BookmarksPage'));
@@ -63,9 +61,7 @@ type Route =
   | 'quiz-static'
   | 'curriculum'
   | 'faq'
-  | 'glossary'
-  | 'blog-index'
-  | 'blog-post';
+  | 'glossary';
 
 interface RouteState {
   route: Route;
@@ -81,8 +77,6 @@ interface RouteState {
   curriculumSubject?: Subject;
   /** `/faq/:subject` — Tier 2 SEO FAQ. */
   faqSubject?: Subject;
-  /** `/blog/:slug` — Tier 2 SEO 블로그 포스트. */
-  blogSlug?: string;
 }
 
 /**
@@ -148,14 +142,6 @@ function getRoute(): RouteState {
   if (pathname === '/glossary') {
     return { route: 'glossary' };
   }
-  // Tier 2 — 블로그 인덱스 + 포스트. `/blog`, `/blog/:slug`
-  if (pathname === '/blog' || pathname === '/blog/') {
-    return { route: 'blog-index' };
-  }
-  if (pathname.startsWith('/blog/')) {
-    const raw = pathname.slice('/blog/'.length).split('/')[0];
-    if (raw) return { route: 'blog-post', blogSlug: raw };
-  }
 
   // 2. Hash-based 라우트 (그 외 모든 routes)
   const hash = window.location.hash.replace(/^#/, '');
@@ -210,7 +196,6 @@ export default function App() {
       quizQuestionId,
       curriculumSubject,
       faqSubject,
-      blogSlug,
     },
     setRouteState,
   ] = useState<RouteState>(() => getRoute());
@@ -453,14 +438,6 @@ export default function App() {
 
     if (route === 'glossary') {
       return <GlossaryPage />;
-    }
-
-    if (route === 'blog-index') {
-      return <BlogIndexPage />;
-    }
-
-    if (route === 'blog-post' && blogSlug) {
-      return <BlogPostPage slug={blogSlug} />;
     }
 
     return <Landing />;

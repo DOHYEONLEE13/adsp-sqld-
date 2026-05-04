@@ -102,12 +102,6 @@ const STATIC_URLS = [
   { loc: '/faq/adsp', changefreq: 'monthly', priority: '0.8' },
   { loc: '/faq/sqld', changefreq: 'monthly', priority: '0.8' },
   { loc: '/glossary', changefreq: 'monthly', priority: '0.8' },
-  // Tier 2 PR 5 — Cornerstone blog posts.
-  { loc: '/blog', changefreq: 'weekly', priority: '0.85' },
-  { loc: '/blog/' + encodeURI('adsp-vs-sqld-순서'), changefreq: 'monthly', priority: '0.8' },
-  { loc: '/blog/' + encodeURI('adsp-2주-합격-로드맵'), changefreq: 'monthly', priority: '0.8' },
-  { loc: '/blog/' + encodeURI('sqld-노랭이-vs-questdp'), changefreq: 'monthly', priority: '0.8' },
-  { loc: '/blog/' + encodeURI('adsp-비전공자-가이드'), changefreq: 'monthly', priority: '0.8' },
 ];
 
 function buildSitemap(stepIds, questionIds) {

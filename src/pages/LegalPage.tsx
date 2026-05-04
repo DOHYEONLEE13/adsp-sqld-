@@ -9,14 +9,49 @@ import { ArrowLeft } from 'lucide-react';
 import { LEGAL_DOCS, type LegalDoc } from '@/data/legal';
 import VideoBg from '@/components/ui/VideoBg';
 import { VIDEO_URLS } from '@/data/site';
+import { useSeoMeta } from '@/lib/seo';
 
 interface Props {
   slug: LegalDoc['slug'];
   onBack?: () => void;
 }
 
+const SEO_META: Record<
+  LegalDoc['slug'],
+  { title: string; description: string }
+> = {
+  about: {
+    title: 'QuestDP 소개 — ADSP·SQLD 자격증 학습 RPG | QuestDP',
+    description:
+      '한국 ADsP·SQLD 자격증을 우주 탐험 RPG 로 재구성한 학습 SaaS. 토리·셀리 마스코트와 마이크로러닝, AI 약점 분석으로 게임처럼 합격.',
+  },
+  privacy: {
+    title: '개인정보 처리방침 | QuestDP',
+    description:
+      'QuestDP 가 수집·이용·보관하는 개인정보 항목과 처리 절차. 이용자 권리 및 행사 방법, 보유 기간, 파기 절차 안내.',
+  },
+  terms: {
+    title: '이용약관 | QuestDP',
+    description:
+      'QuestDP 서비스 이용 시 회원과 회사의 권리·의무 및 책임 사항. 결제·환불·계정 정책 포함.',
+  },
+  refund: {
+    title: '환불 정책 | QuestDP',
+    description:
+      '전자상거래법 기준 QuestDP 의 환불 정책. 청약철회 가능 기간, 환불 신청 방법, 자동 결제 해지 절차 안내.',
+  },
+};
+
 export default function LegalPage({ slug, onBack }: Props) {
   const doc = LEGAL_DOCS[slug];
+  const meta = SEO_META[slug];
+  useSeoMeta({
+    title: meta.title,
+    description: meta.description,
+    canonical: `https://quest-dp.com/${slug}`,
+    ogImage: 'https://quest-dp.com/og/default.png',
+    ogType: 'website',
+  });
   return (
     <section className="relative min-h-screen isolate overflow-hidden bg-base text-cream">
       {/* 배경 — 게임 페이지와 같은 ambient 영상 + 어두운 오버레이 */}

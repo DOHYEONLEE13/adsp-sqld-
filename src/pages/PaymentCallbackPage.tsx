@@ -28,6 +28,7 @@ import {
   getPendingPayment,
   PRODUCT_LABELS,
 } from '@/lib/toss';
+import { useSeoMeta } from '@/lib/seo';
 
 interface Props {
   onBack: () => void;
@@ -36,6 +37,12 @@ interface Props {
 type Phase = 'verifying' | 'success' | 'failure' | 'cancelled';
 
 export default function PaymentCallbackPage({ onBack }: Props) {
+  // 결제 콜백은 검색 노출 차단 (paymentKey · orderId 같은 민감 정보 포함).
+  useSeoMeta({
+    title: '결제 처리 중 — QuestDP',
+    noIndex: true,
+  });
+
   const [phase, setPhase] = useState<Phase>('verifying');
   const [errorMsg, setErrorMsg] = useState<string>('');
   const [productLabel, setProductLabel] = useState<string>('');

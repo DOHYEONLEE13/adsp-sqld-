@@ -22,7 +22,6 @@
 
 import { useEffect, useState } from 'react';
 import { CheckCircle2, AlertTriangle, Loader2 } from 'lucide-react';
-import { Helmet } from 'react-helmet-async';
 import { getSupabase } from '@/lib/supabase';
 import {
   clearPendingPayment,
@@ -109,10 +108,6 @@ export default function PaymentCallbackPage({ onBack }: Props) {
       className="relative min-h-screen flex items-center justify-center px-6"
       style={{ background: '#010828', color: 'var(--cream)' }}
     >
-      <Helmet>
-        <title>결제 처리 중 — QuestDP</title>
-        <meta name="robots" content="noindex, nofollow" />
-      </Helmet>
       <div className="w-full max-w-[480px]">
         <div
           className="liquid-glass rounded-[24px] p-8 md:p-10 text-center"

@@ -21,6 +21,7 @@ import {
 } from '@/data/lessons';
 import { recordSingleAnswer } from '../storage';
 import Ques from '@/components/mascot/Ques';
+import { characterForSubject } from '@/components/mascot/types';
 import TopBar from './TopBar';
 import SpeechBubble from './SpeechBubble';
 import OptionsPanel from './OptionsPanel';
@@ -324,7 +325,11 @@ export default function DialogueLesson({
         />
         <div className="flex-1 flex flex-col items-center justify-center px-5 md:px-8 py-10 max-w-[640px] mx-auto w-full">
           <div className="mb-5">
-            <Ques pose={passNumber === 2 ? 'think' : 'lightbulb'} size={120} />
+            <Ques
+              pose={passNumber === 2 ? 'think' : 'lightbulb'}
+              character={characterForSubject(subject)}
+              size={120}
+            />
           </div>
           <span
             className="kr-num inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] uppercase tracking-widest mb-3"
@@ -458,7 +463,11 @@ export default function DialogueLesson({
           }
         >
           <div className="shrink-0">
-            <Ques pose={questPose} size={isMobile ? 140 : 180} />
+            <Ques
+              pose={questPose}
+              character={characterForSubject(subject)}
+              size={isMobile ? 140 : 180}
+            />
           </div>
           <div className="flex-1 w-full pt-2">
             {bubbleText ? (

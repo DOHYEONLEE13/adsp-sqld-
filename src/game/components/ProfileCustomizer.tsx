@@ -15,13 +15,14 @@ import Ques from '@/components/mascot/Ques';
 import {
   AVATAR_POSES,
   getMyProfile,
+  setAvatarCharacter,
   setAvatarPose,
   setDisplayName,
   subscribeProfile,
   type MyProfile,
 } from '@/data/profile';
 import ProfileSyncSkeleton from '@/components/profile/ProfileSyncSkeleton';
-import type { QuesPose } from '@/components/mascot/types';
+import type { MascotCharacter, QuesPose } from '@/components/mascot/types';
 
 const POSE_LABELS: Record<QuesPose, string> = {
   happy: '행복',
@@ -47,40 +48,62 @@ export default function ProfileCustomizer() {
   const [draft, setDraft] = useState(profile.displayName);
   useEffect(() => setDraft(profile.displayName), [profile.displayName]);
 
-  // ── 아바타 포즈: "미리보기 후 명시적 저장" 패턴 ──────────────────────────
-  // 사용자가 8개 포즈 중 마음껏 눌러볼 수 있도록 클릭은 draftAvatarPose 만 갱신.
-  // [저장하기] 클릭 시에만 setAvatarPose 가 localStorage + Supabase 에 push.
-  // 효과:
-  //   - 사용자: 탐색 부담 ↓ (실수로 확정될 우려 X)
-  //   - 서버:  N 회 클릭 → 1 회 write (다기기 sync 트래픽 감소)
+  // ── 아바타 포즈 + 캐릭터: "미리보기 후 명시적 저장" 패턴 ────────────────
+  // 사용자가 16 옵션 (캐릭터 2 × 포즈 8) 중 마음껏 눌러볼 수 있도록 클릭은 draft
+  // state 만 갱신. [저장하기] 클릭 시에만 setAvatarPose / setAvatarCharacter 가
+  // localStorage + Supabase 에 push.
   const [draftAvatarPose, setDraftAvatarPose] = useState<QuesPose>(
     profile.avatarPose,
   );
-  // 외부에서 profile.avatarPose 가 변하면 (다른 기기 sync · 새로 fetch) draft 도
-  // 따라가게. 단, "사용자가 draft 만 바꾸고 아직 저장 안 한 상태" 에선 외부 변경을
-  // 흡수하지 않도록 마지막으로 본 server pose 를 ref 로 추적해서 비교.
+  const [draftCharacter, setDraftCharacter] = useState<MascotCharacter>(
+    profile.avatarCharacter,
+  );
+
+  // 외부에서 profile 이 변하면 (다른 기기 sync · 새로 fetch) draft 도 따라가게.
+  // 단, "사용자가 draft 만 바꾸고 아직 저장 안 한 상태" 에선 외부 변경을 흡수
+  // 하지 않도록 마지막으로 본 server 값을 ref 로 추적해서 비교.
   const lastSeenServerPoseRef = useRef<QuesPose>(profile.avatarPose);
+  const lastSeenServerCharRef = useRef<MascotCharacter>(profile.avatarCharacter);
   useEffect(() => {
-    const externalChanged =
+    const externalPoseChanged =
       profile.avatarPose !== lastSeenServerPoseRef.current;
-    const userHasUnsavedDraft =
+    const userHasUnsavedPose =
       draftAvatarPose !== lastSeenServerPoseRef.current;
-    if (externalChanged && !userHasUnsavedDraft) {
-      // 외부 변경만 있고 사용자 draft 는 없음 → 흡수
+    if (externalPoseChanged && !userHasUnsavedPose) {
       setDraftAvatarPose(profile.avatarPose);
     }
     lastSeenServerPoseRef.current = profile.avatarPose;
-    // 의도적으로 draftAvatarPose 는 deps 에서 제외 — draft 변경이 effect 를
-    // 다시 트리거하면 저장 직후 사이클이 꼬임.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile.avatarPose]);
 
-  const avatarChanged = draftAvatarPose !== profile.avatarPose;
+  useEffect(() => {
+    const externalCharChanged =
+      profile.avatarCharacter !== lastSeenServerCharRef.current;
+    const userHasUnsavedChar =
+      draftCharacter !== lastSeenServerCharRef.current;
+    if (externalCharChanged && !userHasUnsavedChar) {
+      setDraftCharacter(profile.avatarCharacter);
+    }
+    lastSeenServerCharRef.current = profile.avatarCharacter;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile.avatarCharacter]);
+
+  const avatarChanged =
+    draftAvatarPose !== profile.avatarPose ||
+    draftCharacter !== profile.avatarCharacter;
 
   const onSaveAvatar = () => {
     if (!avatarChanged) return;
-    const result = setAvatarPose(draftAvatarPose);
-    if (!result.ok && result.reason === 'sync-not-ready') {
+    let blocked = false;
+    if (draftAvatarPose !== profile.avatarPose) {
+      const r = setAvatarPose(draftAvatarPose);
+      if (!r.ok && r.reason === 'sync-not-ready') blocked = true;
+    }
+    if (!blocked && draftCharacter !== profile.avatarCharacter) {
+      const r = setAvatarCharacter(draftCharacter);
+      if (!r.ok && r.reason === 'sync-not-ready') blocked = true;
+    }
+    if (blocked) {
       window.alert(
         '프로필 동기화가 완료되지 않았어요. 잠시 후 다시 시도해주세요.',
       );
@@ -89,6 +112,13 @@ export default function ProfileCustomizer() {
 
   const onCancelAvatar = () => {
     setDraftAvatarPose(profile.avatarPose);
+    setDraftCharacter(profile.avatarCharacter);
+  };
+
+  // 캐릭터 라벨
+  const CHAR_LABEL: Record<MascotCharacter, string> = {
+    tori: '토리 (ADSP)',
+    selli: '셀리 (SQLD)',
   };
 
   // 닉네임 미설정 — 빈 값이거나 자동 생성된 태그 그대로면 "미설정" 으로 본다.
@@ -110,9 +140,10 @@ export default function ProfileCustomizer() {
             border: '1.5px solid rgba(253,128,46,0.4)',
           }}
         >
-          {/* 큰 아바타는 draft 를 미리보기. className 으로 반응형 사이즈. */}
+          {/* 큰 아바타는 draft 를 미리보기 (캐릭터 + 포즈 둘 다). */}
           <Ques
             pose={draftAvatarPose}
+            character={draftCharacter}
             animated={false}
             className="w-[76px] h-[76px] md:w-[92px] md:h-[92px] lg:w-[112px] lg:h-[112px] xl:w-[132px] xl:h-[132px]"
           />
@@ -213,9 +244,40 @@ export default function ProfileCustomizer() {
         </div>
       </div>
 
-      {/* 포즈 선택 그리드 — 클릭은 draft 만 갱신. 저장은 별도 버튼.
-          모바일 2 행 (4-cols) → md+ 동일하지만 cell 자체가 커지므로 mascot 도 따라 ↑. */}
+      {/* 캐릭터 선택 탭 (tori/selli) + 포즈 선택 그리드.
+          클릭은 draft 만 갱신. 저장은 별도 버튼. */}
       <div className="mt-5 lg:mt-7">
+        {/* 캐릭터 탭 — 2 캐릭터 토글 */}
+        <div className="kr-heading uppercase text-[10px] md:text-[11px] tracking-widest text-cream/55 mb-2">
+          캐릭터
+        </div>
+        <div className="flex items-center gap-2 mb-4">
+          {(['tori', 'selli'] as const).map((c) => {
+            const isActive = c === draftCharacter;
+            return (
+              <button
+                key={c}
+                type="button"
+                onClick={() => setDraftCharacter(c)}
+                disabled={profile.pendingServerSync}
+                aria-pressed={isActive}
+                className="kr-heading uppercase tracking-widest text-[11px] md:text-[12px] px-4 py-2 rounded-full transition active:scale-95 disabled:opacity-50"
+                style={{
+                  background: isActive
+                    ? 'rgba(111,255,0,0.16)'
+                    : 'rgba(239,244,255,0.04)',
+                  border: isActive
+                    ? '1.5px solid #6FFF00'
+                    : '1.5px solid rgba(239,244,255,0.10)',
+                  color: isActive ? '#6FFF00' : 'rgba(239,244,255,0.65)',
+                }}
+              >
+                {CHAR_LABEL[c]}
+              </button>
+            );
+          })}
+        </div>
+
         <div className="kr-heading uppercase text-[10px] md:text-[11px] tracking-widest text-cream/55 mb-2">
           아바타 표정
         </div>
@@ -246,9 +308,10 @@ export default function ProfileCustomizer() {
                       : '2px solid rgba(239,244,255,0.08)',
                 }}
               >
-                {/* className 으로 cell 안에서 100% — cell 이 커지면 mascot 도 비례 ↑ */}
+                {/* className 으로 cell 안에서 100% — 현재 선택 캐릭터 (draft) 의 포즈 */}
                 <Ques
                   pose={pose}
+                  character={draftCharacter}
                   animated={false}
                   className="w-full h-full"
                 />

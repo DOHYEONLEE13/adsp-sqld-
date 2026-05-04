@@ -18,7 +18,7 @@ import PageAmbientBg from './components/PageAmbientBg';
 import { useProgress } from './useProgress';
 import { computePlayerStats } from './rpg';
 import Ques from '@/components/mascot/Ques';
-import type { QuesPose } from '@/components/mascot/types';
+import type { MascotCharacter, QuesPose } from '@/components/mascot/types';
 import { usePassSnapshot } from './passSync';
 import ProfileSyncSkeleton from '@/components/profile/ProfileSyncSkeleton';
 import {
@@ -98,6 +98,7 @@ export default function FriendsPage({ onExit }: Props) {
       tag: me.tag,
       displayName: me.displayName || me.tag,
       avatarPose: me.avatarPose,
+      avatarCharacter: me.avatarCharacter,
       level: playerStats.level,
       totalXp: playerStats.totalXp,
       streakDays: playerStats.streakDays,
@@ -109,6 +110,7 @@ export default function FriendsPage({ onExit }: Props) {
       tag: f.tag,
       displayName: f.displayName,
       avatarPose: f.avatarPose,
+      avatarCharacter: f.avatarCharacter,
       level: f.level,
       totalXp: f.totalXp,
       streakDays: f.streakDays,
@@ -519,6 +521,7 @@ interface BoardRow {
   tag: string;
   displayName: string;
   avatarPose: QuesPose;
+  avatarCharacter: MascotCharacter;
   level: number;
   totalXp: number;
   streakDays: number;
@@ -633,7 +636,12 @@ function Leaderboard({
                   : '1.5px solid rgba(253,128,46,0.4)',
               }}
             >
-              <Ques pose={row.avatarPose} size={36} animated={false} />
+              <Ques
+                pose={row.avatarPose}
+                character={row.avatarCharacter}
+                size={36}
+                animated={false}
+              />
             </span>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap">

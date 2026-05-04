@@ -13,7 +13,8 @@
  */
 
 import { useSyncExternalStore } from 'react';
-import type { QuesPose } from '@/components/mascot/types';
+import type { MascotCharacter, QuesPose } from '@/components/mascot/types';
+import { DEFAULT_CHARACTER } from '@/components/mascot/types';
 import { getSupabase, onAuthStateChange } from '@/lib/supabase';
 
 const STORAGE_KEY = 'questdp.profile.v1';
@@ -49,8 +50,10 @@ export interface MyProfile {
   tag: string;
   /** 표시 이름 — 사용자가 닉네임 onboarding 또는 프로필 페이지에서 설정. */
   displayName: string;
-  /** 아바타 포즈 — Ques 마스코트의 표정/포즈. */
+  /** 아바타 포즈 — 마스코트의 표정/포즈. */
   avatarPose: QuesPose;
+  /** 아바타 캐릭터 — `tori` (ADSP 기본) / `selli` (SQLD). 기본 `tori`. */
+  avatarCharacter: MascotCharacter;
   /**
    * Supabase 인증 상태. 게스트 = false. server tag·친구 시스템·결제 UI 의
    * 1차 게이트로 사용.
@@ -82,6 +85,7 @@ interface StoredProfile {
   tag: string;
   displayName: string;
   avatarPose?: QuesPose;
+  avatarCharacter?: MascotCharacter;
   /** 'user' | 'admin' — server 에서 동기화. 미설정 시 'user'. */
   role?: 'user' | 'admin';
   createdAt: number;
@@ -156,6 +160,7 @@ export function getMyProfile(): MyProfile {
       tag: '',
       displayName: stored?.displayName ?? '',
       avatarPose: stored?.avatarPose ?? DEFAULT_AVATAR_POSE,
+      avatarCharacter: stored?.avatarCharacter ?? DEFAULT_CHARACTER,
       isAuthenticated: false,
       isAdmin: false,
       createdAt: stored?.createdAt ?? 0,
@@ -171,6 +176,7 @@ export function getMyProfile(): MyProfile {
       tag: syncDone ? stored.tag : '',
       displayName: syncDone ? stored.displayName : '',
       avatarPose: stored.avatarPose ?? DEFAULT_AVATAR_POSE,
+      avatarCharacter: stored.avatarCharacter ?? DEFAULT_CHARACTER,
       isAuthenticated: true,
       isAdmin: stored.role === 'admin',
       createdAt: stored.createdAt,
@@ -183,6 +189,7 @@ export function getMyProfile(): MyProfile {
     tag: '',
     displayName: '',
     avatarPose: DEFAULT_AVATAR_POSE,
+    avatarCharacter: DEFAULT_CHARACTER,
     isAuthenticated: true,
     isAdmin: false,
     createdAt: 0,
@@ -213,6 +220,7 @@ export function setDisplayName(name: string): { ok: boolean; reason?: string } {
         tag: '',
         displayName: trimmed,
         avatarPose: DEFAULT_AVATAR_POSE,
+        avatarCharacter: DEFAULT_CHARACTER,
         createdAt: Date.now(),
       });
       notify();
@@ -242,6 +250,7 @@ export function setAvatarPose(pose: QuesPose): { ok: boolean; reason?: string } 
         tag: '',
         displayName: '',
         avatarPose: pose,
+        avatarCharacter: DEFAULT_CHARACTER,
         createdAt: Date.now(),
       });
       notify();
@@ -253,6 +262,37 @@ export function setAvatarPose(pose: QuesPose): { ok: boolean; reason?: string } 
   notify();
   if (_isAuthenticated) {
     void pushToSupabase({ avatar_pose: pose });
+  }
+  return { ok: true };
+}
+
+/** 아바타 캐릭터 변경 (tori | selli). setAvatarPose 와 동일 가드. */
+export function setAvatarCharacter(
+  character: MascotCharacter,
+): { ok: boolean; reason?: string } {
+  if (_isAuthenticated && _syncStatus !== 'ok') {
+    return { ok: false, reason: 'sync-not-ready' };
+  }
+  const stored = loadStored();
+  if (!stored) {
+    if (!_isAuthenticated) {
+      saveStored({
+        v: 1,
+        tag: '',
+        displayName: '',
+        avatarPose: DEFAULT_AVATAR_POSE,
+        avatarCharacter: character,
+        createdAt: Date.now(),
+      });
+      notify();
+      return { ok: true };
+    }
+    return { ok: false, reason: 'no-stored' };
+  }
+  saveStored({ ...stored, avatarCharacter: character });
+  notify();
+  if (_isAuthenticated) {
+    void pushToSupabase({ avatar_character: character });
   }
   return { ok: true };
 }
@@ -365,7 +405,7 @@ async function pullFromSupabase(): Promise<void> {
   const fetchOnce = () =>
     sb
       .from('profiles')
-      .select('tag, display_name, avatar_pose, role, created_at')
+      .select('tag, display_name, avatar_pose, avatar_character, role, created_at')
       .eq('id', sess.session!.user.id)
       .maybeSingle();
 
@@ -381,6 +421,8 @@ async function pullFromSupabase(): Promise<void> {
         tag: data.tag,
         displayName: data.display_name ?? '',
         avatarPose: (data.avatar_pose as QuesPose) ?? DEFAULT_AVATAR_POSE,
+        avatarCharacter:
+          (data.avatar_character as MascotCharacter) ?? DEFAULT_CHARACTER,
         role,
         createdAt:
           local?.createdAt ?? Date.parse(data.created_at) ?? Date.now(),
@@ -407,6 +449,7 @@ export async function retryProfileSync(): Promise<void> {
 async function pushToSupabase(patch: {
   display_name?: string;
   avatar_pose?: QuesPose;
+  avatar_character?: MascotCharacter;
 }): Promise<void> {
   const sb = getSupabase();
   if (!sb) return;

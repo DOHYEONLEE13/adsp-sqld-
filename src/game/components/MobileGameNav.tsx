@@ -113,7 +113,12 @@ export function MobileTopBar({ subject }: TopProps) {
           aria-label={badgeLabel}
         >
           <span className="shrink-0 inline-flex items-center justify-center w-10 h-10">
-            <Ques pose={profile.avatarPose} size={40} animated={false} />
+            <Ques
+              pose={profile.avatarPose}
+              character={profile.avatarCharacter}
+              size={40}
+              animated={false}
+            />
           </span>
           {(() => {
             // 인증된 상태에서 server pull 결과 도착 전 — skeleton 노출

@@ -12,7 +12,8 @@
  */
 
 import { DEFAULT_AVATAR_POSE, isValidTag, normalizeTag } from './profile';
-import type { QuesPose } from '@/components/mascot/types';
+import type { MascotCharacter, QuesPose } from '@/components/mascot/types';
+import { DEFAULT_CHARACTER } from '@/components/mascot/types';
 import { getSupabase, onAuthStateChange } from '@/lib/supabase';
 
 const STORAGE_KEY = 'questdp.friends.v1';
@@ -24,6 +25,8 @@ export interface FriendEntry {
   displayName: string;
   /** 친구가 선택한 아바타 포즈 — 서버 연동 시 profiles.avatar_pose 와 동기화. */
   avatarPose: QuesPose;
+  /** 친구가 선택한 마스코트 캐릭터 (tori | selli). */
+  avatarCharacter: MascotCharacter;
   /** 마지막으로 본 진행 스냅샷. 서버 없으니 일단 0. */
   level: number;
   totalXp: number;
@@ -71,6 +74,7 @@ export function listFriends(): FriendEntry[] {
     // 구버전(저장 시점에 avatarPose 가 없던) 대응 — 기본 포즈로 폴백.
     ...f,
     avatarPose: f.avatarPose ?? DEFAULT_AVATAR_POSE,
+    avatarCharacter: f.avatarCharacter ?? DEFAULT_CHARACTER,
   }));
   // XP 내림차순 — 리더보드 정렬.
   sorted.sort((a, b) => b.totalXp - a.totalXp);
@@ -152,6 +156,7 @@ export async function addFriend(rawTag: string, myTag: string): Promise<AddResul
         tag,
         displayName: tag,
         avatarPose: DEFAULT_AVATAR_POSE,
+        avatarCharacter: DEFAULT_CHARACTER,
         level: 0,
         totalXp: 0,
         streakDays: 0,
@@ -212,6 +217,7 @@ export async function addFriend(rawTag: string, myTag: string): Promise<AddResul
     tag,
     displayName: tag,
     avatarPose: DEFAULT_AVATAR_POSE,
+    avatarCharacter: DEFAULT_CHARACTER,
     level: 0,
     totalXp: 0,
     streakDays: 0,
@@ -258,6 +264,8 @@ interface FriendRow {
   tag: string;
   display_name: string;
   avatar_pose: string;
+  /** 마이그 0017 적용 후 컬럼 존재. */
+  avatar_character?: string | null;
   total_xp: number;
   level: number;
   streak_days: number;
@@ -282,7 +290,7 @@ async function pullFromSupabase(): Promise<void> {
   const r1 = await sb
     .from('friendships')
     .select(
-      'friend_id, friend:profiles!friendships_friend_id_fkey(tag, display_name, avatar_pose, total_xp, level, streak_days, last_seen_at, pass_tier)',
+      'friend_id, friend:profiles!friendships_friend_id_fkey(tag, display_name, avatar_pose, avatar_character, total_xp, level, streak_days, last_seen_at, pass_tier)',
     )
     .order('created_at', { ascending: false });
   if (!r1.error && r1.data) {
@@ -307,11 +315,17 @@ async function pullFromSupabase(): Promise<void> {
     const tier: T = validTiers.includes(f.pass_tier as T)
       ? (f.pass_tier as T)
       : 'bronze';
+    const validChars = ['tori', 'selli'] as const;
+    type C = (typeof validChars)[number];
+    const character: C = validChars.includes(f.avatar_character as C)
+      ? (f.avatar_character as C)
+      : DEFAULT_CHARACTER;
     return [
       {
         tag: f.tag,
         displayName: f.display_name || f.tag,
         avatarPose: (f.avatar_pose as QuesPose) ?? DEFAULT_AVATAR_POSE,
+        avatarCharacter: character,
         level: f.level ?? 0,
         totalXp: f.total_xp ?? 0,
         streakDays: f.streak_days ?? 0,

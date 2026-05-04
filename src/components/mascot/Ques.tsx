@@ -1,30 +1,37 @@
 /**
- * Ques — QuestDP 의 우주비행사 마스코트.
+ * Ques — QuestDP 마스코트 컴포넌트.
+ *
+ * 캐릭터:
+ *   - `tori` (기본, ADSP): public/mascot/ques-<pose>.png
+ *   - `selli` (SQLD): public/mascot/selli-<pose>.png
  *
  * props.pose 가 바뀌면 AnimatePresence 로 크로스페이드. 'idle' 포즈에선 CSS
  * 호흡 애니메이션이 자동으로 붙는다. 'sleep' 포즈는 위에 Z 파티클 오버레이.
  *
- * 이미지는 public/mascot/ques-<pose>.png 에 있으며 eager import 하지 않는다
- * (PNG 합계 약 4MB — 필요한 포즈만 브라우저가 요청).
+ * 이미지는 eager import 하지 않음 (PNG 합계 약 8MB — 필요한 포즈만 요청).
  */
 
 import { AnimatePresence, motion } from 'framer-motion';
-import type { QuesPose } from './types';
+import type { MascotCharacter, QuesPose } from './types';
+import { DEFAULT_CHARACTER } from './types';
 import SleepZOverlay from './SleepZOverlay';
 
-const POSE_SRC: Record<QuesPose, string> = {
-  idle: '/mascot/ques-idle.png',
-  happy: '/mascot/ques-happy.png',
-  sad: '/mascot/ques-sad.png',
-  celebrate: '/mascot/ques-celebrate.png',
-  sleep: '/mascot/ques-sleep.png',
-  wave: '/mascot/ques-wave.png',
-  think: '/mascot/ques-think.png',
-  lightbulb: '/mascot/ques-lightbulb.png',
+/** 캐릭터별 파일 prefix. `<prefix>-<pose>.png` 로 결합. */
+const PREFIX_BY_CHARACTER: Record<MascotCharacter, string> = {
+  tori: 'ques',
+  selli: 'selli',
 };
+
+function poseSrc(character: MascotCharacter, pose: QuesPose): string {
+  return `/mascot/${PREFIX_BY_CHARACTER[character]}-${pose}.png`;
+}
 
 interface Props {
   pose: QuesPose;
+  /**
+   * 캐릭터 종류. 기본 `tori` (ADSP). SQLD subject 컨텍스트는 `selli`.
+   */
+  character?: MascotCharacter;
   /**
    * 한 변(px). 명시적 사이즈가 필요할 때만 전달.
    * 미지정 시 `className` 의 Tailwind w-* / h-* 가 외곽 크기 결정 — 데스크톱
@@ -38,11 +45,12 @@ interface Props {
 
 export default function Ques({
   pose,
+  character = DEFAULT_CHARACTER,
   size,
   animated = true,
   className,
 }: Props) {
-  const src = POSE_SRC[pose];
+  const src = poseSrc(character, pose);
 
   return (
     <div
@@ -50,11 +58,11 @@ export default function Ques({
         .filter(Boolean)
         .join(' ')}
       style={size !== undefined ? { width: size, height: size } : undefined}
-      aria-label={`Ques - ${pose}`}
+      aria-label={`${character} - ${pose}`}
     >
       <AnimatePresence initial={false}>
         <motion.div
-          key={pose}
+          key={`${character}-${pose}`}
           className="absolute inset-0"
           initial={animated ? { opacity: 0, scale: 0.94 } : false}
           animate={{ opacity: 1, scale: 1 }}

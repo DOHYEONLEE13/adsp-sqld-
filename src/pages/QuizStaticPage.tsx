@@ -21,7 +21,7 @@
  */
 
 import { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
+import { useSeoMeta } from '@/lib/seo';
 import {
   ArrowLeft,
   ChevronDown,
@@ -54,65 +54,70 @@ export default function QuizStaticPage({ questionId }: Props) {
   const lookup = findQuestionById(questionId);
   const [revealed, setRevealed] = useState(false);
 
+  // SEO 메타 — lookup 유무에 따라 분기. hook 은 항상 호출.
+  const seoTitle = lookup
+    ? makeSeoTitle(lookup.question)
+    : '문제를 찾을 수 없어요 — QuestDP';
+  const seoDescription = lookup
+    ? makeSeoDescription(lookup.question)
+    : 'URL 이 잘못되었거나 콘텐츠가 이동했을 수 있어요.';
+  const canonical = lookup
+    ? `https://quest-dp.com/quiz/${lookup.question.id}`
+    : undefined;
+
+  // JSON-LD — lookup 있을 때만 emit
+  const jsonLd = lookup
+    ? (() => {
+        const q = lookup.question;
+        return [
+          {
+            '@context': 'https://schema.org',
+            '@type': 'Question',
+            name: stripBrackets(q.question),
+            text: stripBrackets(q.question),
+            inLanguage: 'ko-KR',
+            answerCount: 1,
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: q.choices[q.answerIndex],
+            },
+            suggestedAnswer: q.choices.map((c, i) => ({
+              '@type': 'Answer',
+              text: c,
+              ...(i === q.answerIndex ? {} : {}),
+            })),
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: '홈', item: 'https://quest-dp.com/' },
+              { '@type': 'ListItem', position: 2, name: SUBJECT_LABEL[q.subject], item: `https://quest-dp.com/#/game/${q.subject}` },
+              { '@type': 'ListItem', position: 3, name: q.chapterTitle, item: canonical },
+              { '@type': 'ListItem', position: 4, name: q.topic, item: canonical },
+            ],
+          },
+        ];
+      })()
+    : undefined;
+
+  useSeoMeta({
+    title: seoTitle,
+    description: seoDescription,
+    canonical,
+    ogType: 'article',
+    ogImage: 'https://quest-dp.com/og/default.png',
+    noIndex: !lookup,
+    jsonLd,
+  });
+
   if (!lookup) return <NotFound />;
   const { question: q, related, sameRound } = lookup;
   const accent = SUBJECT_ACCENT[q.subject];
-
-  // SEO 메타
-  const seoTitle = makeSeoTitle(q);
-  const seoDescription = makeSeoDescription(q);
-  const canonical = `https://quest-dp.com/quiz/${q.id}`;
-
-  // JSON-LD Question schema
-  const questionJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Question',
-    name: stripBrackets(q.question),
-    text: stripBrackets(q.question),
-    inLanguage: 'ko-KR',
-    answerCount: 1,
-    acceptedAnswer: {
-      '@type': 'Answer',
-      text: q.choices[q.answerIndex],
-    },
-    suggestedAnswer: q.choices.map((c, i) => ({
-      '@type': 'Answer',
-      text: c,
-      ...(i === q.answerIndex ? {} : {}), // marker only on accepted
-    })),
-  };
-
-  const breadcrumbJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: '홈', item: 'https://quest-dp.com/' },
-      { '@type': 'ListItem', position: 2, name: SUBJECT_LABEL[q.subject], item: `https://quest-dp.com/#/game/${q.subject}` },
-      { '@type': 'ListItem', position: 3, name: q.chapterTitle, item: canonical },
-      { '@type': 'ListItem', position: 4, name: q.topic, item: canonical },
-    ],
-  };
-
   const round = q.source && /^\d{4}-\d+회/.test(q.source) ? q.source.match(/^(\d{4}-\d+회)/)?.[1] : null;
 
   return (
     <article className="relative min-h-screen isolate overflow-hidden bg-base text-cream">
-      <Helmet>
-        <title>{seoTitle}</title>
-        <meta name="description" content={seoDescription} />
-        <link rel="canonical" href={canonical} />
-        <meta property="og:title" content={seoTitle} />
-        <meta property="og:description" content={seoDescription} />
-        <meta property="og:url" content={canonical} />
-        <meta property="og:type" content="article" />
-        <script type="application/ld+json">
-          {JSON.stringify(questionJsonLd)}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify(breadcrumbJsonLd)}
-        </script>
-      </Helmet>
-
       <div className="relative z-10 max-w-[820px] lg:max-w-[1000px] mx-auto px-5 md:px-8 lg:px-12 pt-8 pb-16">
         {/* Back home */}
         <a
@@ -349,12 +354,9 @@ function RelatedQuestionLink({ q }: { q: MultipleChoiceQuestion }) {
 }
 
 function NotFound() {
+  // 부모 컴포넌트의 useSeoMeta 가 noIndex + 404 title 설정함.
   return (
     <section className="min-h-screen flex flex-col items-center justify-center px-6 bg-base text-cream">
-      <Helmet>
-        <title>문제를 찾을 수 없어요 — QuestDP</title>
-        <meta name="robots" content="noindex" />
-      </Helmet>
       <CircleX size={48} strokeWidth={1.6} className="text-cream/40 mb-4" />
       <h1 className="kr-heading text-[24px] md:text-[28px] mb-3">
         문제를 찾을 수 없어요

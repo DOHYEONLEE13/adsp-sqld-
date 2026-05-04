@@ -34,7 +34,6 @@ const RefundRequestPage = lazy(() => import('./pages/RefundRequestPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const PaymentCallbackPage = lazy(() => import('./pages/PaymentCallbackPage'));
 const LessonStaticPage = lazy(() => import('./pages/LessonStaticPage'));
-const QuizStaticPage = lazy(() => import('./pages/QuizStaticPage'));
 const GamePage = lazy(() => import('./game/GamePage'));
 const StatsPage = lazy(() => import('./game/StatsPage'));
 const BookmarksPage = lazy(() => import('./game/BookmarksPage'));
@@ -54,8 +53,7 @@ type Route =
   | 'refund-request'
   | 'login'
   | 'payment-callback'
-  | 'lesson-static'
-  | 'quiz-static';
+  | 'lesson-static';
 
 interface RouteState {
   route: Route;
@@ -65,8 +63,6 @@ interface RouteState {
   legalSlug?: LegalDoc['slug'];
   /** `/lesson/:stepId` — Tier 2 SEO 진입점. */
   lessonStepId?: string;
-  /** `/quiz/:questionId` — Tier 2 SEO 진입점. */
-  quizQuestionId?: string;
 }
 
 /**
@@ -107,12 +103,6 @@ function getRoute(): RouteState {
     // stepId 안에 / 포함되면 잘라냄 (예방)
     const cleanId = stepId.split('/')[0];
     if (cleanId) return { route: 'lesson-static', lessonStepId: cleanId };
-  }
-  // Tier 2 — 정적 quiz SEO 페이지. `/quiz/:questionId`
-  if (pathname.startsWith('/quiz/')) {
-    const questionId = pathname.slice('/quiz/'.length);
-    const cleanId = questionId.split('/')[0];
-    if (cleanId) return { route: 'quiz-static', quizQuestionId: cleanId };
   }
 
   // 2. Hash-based 라우트 (그 외 모든 routes)
@@ -159,10 +149,8 @@ function getRoute(): RouteState {
 const ROUTE_FALLBACK = null;
 
 export default function App() {
-  const [
-    { route, initialSubject, legalSlug, lessonStepId, quizQuestionId },
-    setRouteState,
-  ] = useState<RouteState>(() => getRoute());
+  const [{ route, initialSubject, legalSlug, lessonStepId }, setRouteState] =
+    useState<RouteState>(() => getRoute());
 
   // ── useTransition 으로 끊김 완화 ────────────────────────────────────
   // 첫 탭 클릭 시 lazy chunk + 페이지 mount 비용이 합쳐져 1프레임 정지처럼
@@ -386,10 +374,6 @@ export default function App() {
 
     if (route === 'lesson-static' && lessonStepId) {
       return <LessonStaticPage stepId={lessonStepId} />;
-    }
-
-    if (route === 'quiz-static' && quizQuestionId) {
-      return <QuizStaticPage questionId={quizQuestionId} />;
     }
 
     return <Landing />;

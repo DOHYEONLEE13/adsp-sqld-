@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { BRAND } from '@/data/site';
 import { NAV_LINKS_MAIN, NAV_LINKS_SUPPORT } from '@/data/nav';
 import type { NavLink } from '@/types/site';
+import { handleNavClick } from '@/lib/navigate';
 import {
   getSupabase,
   isSupabaseConfigured,
@@ -267,11 +268,19 @@ function NavSection({
           const isExternal =
             link.href.startsWith('mailto:') ||
             link.href.startsWith('http');
+          // Path-based 라우트 (legal pages) 는 SPA navigation 으로 가로챔 — reload 없음.
+          const isPathRoute =
+            !isExternal &&
+            !link.href.startsWith('#') &&
+            link.href.startsWith('/');
           return (
             <li key={link.label}>
               <a
                 href={link.href}
-                onClick={onClickLink}
+                onClick={(e) => {
+                  if (isPathRoute) handleNavClick(e, link.href);
+                  onClickLink();
+                }}
                 target={isExternal ? '_blank' : undefined}
                 rel={isExternal ? 'noopener noreferrer' : undefined}
                 className="block kr-heading uppercase tracking-widest text-[14px] md:text-[15px] py-4 px-5 rounded-[16px] border border-cream/10 bg-white/[0.03] text-cream/90 hover:bg-white/[0.08] hover:text-neon hover:border-neon/40 transition"

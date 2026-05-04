@@ -2,6 +2,7 @@ import { ChevronRight, Gamepad2, Mail } from 'lucide-react';
 import VideoBg from '@/components/ui/VideoBg';
 import { CTA as CTA_CONTENT } from '@/data/site';
 import { SOCIAL_LINKS } from '@/data/nav';
+import { handleNavClick } from '@/lib/navigate';
 
 const ICONS = { email: Mail } as const;
 
@@ -62,7 +63,8 @@ export default function CTA() {
               <ChevronRight size={16} strokeWidth={2.6} />
             </a>
             <a
-              href="#/about"
+              href="/about"
+              onClick={(e) => handleNavClick(e, '/about')}
               className="liquid-glass kr-heading inline-flex items-center gap-1.5 uppercase tracking-widest text-[11px] px-4 py-3 rounded-full hover:bg-white/10 transition text-cream"
             >
               소개 보기
@@ -121,7 +123,8 @@ export default function CTA() {
                 <ChevronRight size={16} strokeWidth={2.6} />
               </a>
               <a
-                href="#/about"
+                href="/about"
+                onClick={(e) => handleNavClick(e, '/about')}
                 className="liquid-glass kr-heading inline-flex items-center gap-1.5 uppercase tracking-widest text-[11px] lg:text-[12px] px-5 py-3.5 rounded-full hover:bg-white/10 transition text-cream"
               >
                 소개 보기
@@ -166,25 +169,29 @@ function TrustCard() {
       </p>
       <div className="flex flex-wrap gap-x-3 gap-y-2 kr-body text-[11px] text-cream/70">
         <a
-          href="#/about"
+          href="/about"
+          onClick={(e) => handleNavClick(e, '/about')}
           className="hover:text-neon transition uppercase tracking-widest"
         >
           소개
         </a>
         <a
-          href="#/privacy"
+          href="/privacy"
+          onClick={(e) => handleNavClick(e, '/privacy')}
           className="hover:text-neon transition uppercase tracking-widest"
         >
           개인정보
         </a>
         <a
-          href="#/terms"
+          href="/terms"
+          onClick={(e) => handleNavClick(e, '/terms')}
           className="hover:text-neon transition uppercase tracking-widest"
         >
           이용약관
         </a>
         <a
-          href="#/refund"
+          href="/refund"
+          onClick={(e) => handleNavClick(e, '/refund')}
           className="hover:text-neon transition uppercase tracking-widest"
         >
           환불정책

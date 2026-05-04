@@ -35,7 +35,6 @@ const LoginPage = lazy(() => import('./pages/LoginPage'));
 const PaymentCallbackPage = lazy(() => import('./pages/PaymentCallbackPage'));
 const LessonStaticPage = lazy(() => import('./pages/LessonStaticPage'));
 const QuizStaticPage = lazy(() => import('./pages/QuizStaticPage'));
-const CurriculumPage = lazy(() => import('./pages/CurriculumPage'));
 const GamePage = lazy(() => import('./game/GamePage'));
 const StatsPage = lazy(() => import('./game/StatsPage'));
 const BookmarksPage = lazy(() => import('./game/BookmarksPage'));
@@ -56,8 +55,7 @@ type Route =
   | 'login'
   | 'payment-callback'
   | 'lesson-static'
-  | 'quiz-static'
-  | 'curriculum';
+  | 'quiz-static';
 
 interface RouteState {
   route: Route;
@@ -69,8 +67,6 @@ interface RouteState {
   lessonStepId?: string;
   /** `/quiz/:questionId` — Tier 2 SEO 진입점. */
   quizQuestionId?: string;
-  /** `/curriculum/:subject` — Tier 2 SEO pillar 페이지. */
-  curriculumSubject?: Subject;
 }
 
 /**
@@ -118,13 +114,6 @@ function getRoute(): RouteState {
     const cleanId = questionId.split('/')[0];
     if (cleanId) return { route: 'quiz-static', quizQuestionId: cleanId };
   }
-  // Tier 2 — 커리큘럼 pillar 페이지. `/curriculum/adsp` · `/curriculum/sqld`
-  if (pathname.startsWith('/curriculum/')) {
-    const sub = pathname.slice('/curriculum/'.length).split('/')[0];
-    if (sub === 'adsp' || sub === 'sqld') {
-      return { route: 'curriculum', curriculumSubject: sub };
-    }
-  }
 
   // 2. Hash-based 라우트 (그 외 모든 routes)
   const hash = window.location.hash.replace(/^#/, '');
@@ -171,14 +160,7 @@ const ROUTE_FALLBACK = null;
 
 export default function App() {
   const [
-    {
-      route,
-      initialSubject,
-      legalSlug,
-      lessonStepId,
-      quizQuestionId,
-      curriculumSubject,
-    },
+    { route, initialSubject, legalSlug, lessonStepId, quizQuestionId },
     setRouteState,
   ] = useState<RouteState>(() => getRoute());
 
@@ -408,10 +390,6 @@ export default function App() {
 
     if (route === 'quiz-static' && quizQuestionId) {
       return <QuizStaticPage questionId={quizQuestionId} />;
-    }
-
-    if (route === 'curriculum' && curriculumSubject) {
-      return <CurriculumPage subject={curriculumSubject} />;
     }
 
     return <Landing />;

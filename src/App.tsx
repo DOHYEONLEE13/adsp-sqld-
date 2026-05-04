@@ -36,6 +36,8 @@ const PaymentCallbackPage = lazy(() => import('./pages/PaymentCallbackPage'));
 const LessonStaticPage = lazy(() => import('./pages/LessonStaticPage'));
 const QuizStaticPage = lazy(() => import('./pages/QuizStaticPage'));
 const CurriculumPage = lazy(() => import('./pages/CurriculumPage'));
+const FaqPage = lazy(() => import('./pages/FaqPage'));
+const GlossaryPage = lazy(() => import('./pages/GlossaryPage'));
 const GamePage = lazy(() => import('./game/GamePage'));
 const StatsPage = lazy(() => import('./game/StatsPage'));
 const BookmarksPage = lazy(() => import('./game/BookmarksPage'));
@@ -57,7 +59,9 @@ type Route =
   | 'payment-callback'
   | 'lesson-static'
   | 'quiz-static'
-  | 'curriculum';
+  | 'curriculum'
+  | 'faq'
+  | 'glossary';
 
 interface RouteState {
   route: Route;
@@ -71,6 +75,8 @@ interface RouteState {
   quizQuestionId?: string;
   /** `/curriculum/:subject` — Tier 2 SEO pillar 페이지. */
   curriculumSubject?: Subject;
+  /** `/faq/:subject` — Tier 2 SEO FAQ. */
+  faqSubject?: Subject;
 }
 
 /**
@@ -125,6 +131,17 @@ function getRoute(): RouteState {
       return { route: 'curriculum', curriculumSubject: sub };
     }
   }
+  // Tier 2 — FAQ. `/faq/adsp` · `/faq/sqld`
+  if (pathname.startsWith('/faq/')) {
+    const sub = pathname.slice('/faq/'.length).split('/')[0];
+    if (sub === 'adsp' || sub === 'sqld') {
+      return { route: 'faq', faqSubject: sub };
+    }
+  }
+  // Tier 2 — 용어 사전. `/glossary`
+  if (pathname === '/glossary') {
+    return { route: 'glossary' };
+  }
 
   // 2. Hash-based 라우트 (그 외 모든 routes)
   const hash = window.location.hash.replace(/^#/, '');
@@ -178,6 +195,7 @@ export default function App() {
       lessonStepId,
       quizQuestionId,
       curriculumSubject,
+      faqSubject,
     },
     setRouteState,
   ] = useState<RouteState>(() => getRoute());
@@ -412,6 +430,14 @@ export default function App() {
 
     if (route === 'curriculum' && curriculumSubject) {
       return <CurriculumPage subject={curriculumSubject} />;
+    }
+
+    if (route === 'faq' && faqSubject) {
+      return <FaqPage subject={faqSubject} />;
+    }
+
+    if (route === 'glossary') {
+      return <GlossaryPage />;
     }
 
     return <Landing />;

@@ -98,6 +98,10 @@ const STATIC_URLS = [
   // Tier 2 PR 3 — pillar 커리큘럼 페이지 (모든 lesson 의 hub).
   { loc: '/curriculum/adsp', changefreq: 'weekly', priority: '0.9' },
   { loc: '/curriculum/sqld', changefreq: 'weekly', priority: '0.9' },
+  // Tier 2 PR 4 — FAQ + Glossary cluster.
+  { loc: '/faq/adsp', changefreq: 'monthly', priority: '0.8' },
+  { loc: '/faq/sqld', changefreq: 'monthly', priority: '0.8' },
+  { loc: '/glossary', changefreq: 'monthly', priority: '0.8' },
 ];
 
 function buildSitemap(stepIds, questionIds) {

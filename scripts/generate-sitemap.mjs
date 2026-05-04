@@ -25,6 +25,7 @@ const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 const LESSONS_ROOT = path.join(REPO_ROOT, 'src/data/lessons');
+const QUESTIONS_ROOT = path.join(REPO_ROOT, 'src/data/questions');
 const OUT = path.join(REPO_ROOT, 'public/sitemap.xml');
 
 const BASE_URL = 'https://quest-dp.com';
@@ -54,6 +55,37 @@ function collectLessonStepIds() {
   return [...stepIds];
 }
 
+// ─── question ID 추출 (indexable 한 것만) ────────────────────────
+// JSON 파일에서 type='multiple_choice' + status != 'restored' + !needsDistractors
+// 인 모든 질문의 id 모음. isPlayable 의 mirror.
+
+function walkJSON(dir, out = []) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const p = path.join(dir, entry.name);
+    if (entry.isDirectory()) walkJSON(p, out);
+    else if (entry.name.endsWith('.json')) out.push(p);
+  }
+  return out;
+}
+
+function collectQuestionIds() {
+  const ids = new Set();
+  if (!fs.existsSync(QUESTIONS_ROOT)) return [];
+  for (const file of walkJSON(QUESTIONS_ROOT)) {
+    const raw = JSON.parse(fs.readFileSync(file, 'utf8'));
+    const arr = Array.isArray(raw) ? raw : Array.isArray(raw?.questions) ? raw.questions : null;
+    if (!arr) continue;
+    for (const q of arr) {
+      if (!q || typeof q !== 'object') continue;
+      if (q.type !== 'multiple_choice') continue;
+      if (q.status === 'restored') continue;
+      if (q.needsDistractors) continue;
+      if (typeof q.id === 'string' && q.id) ids.add(q.id);
+    }
+  }
+  return [...ids];
+}
+
 // ─── XML 생성 ───────────────────────────────────────────────────
 
 const STATIC_URLS = [
@@ -65,14 +97,19 @@ const STATIC_URLS = [
   { loc: '/refund', changefreq: 'yearly', priority: '0.3' },
 ];
 
-function buildSitemap(stepIds) {
+function buildSitemap(stepIds, questionIds) {
   const urls = [
     ...STATIC_URLS,
     ...stepIds.map((id) => ({
       loc: `/lesson/${id}`,
       changefreq: 'monthly',
-      // ADsP/SQLD lesson 은 SEO 핵심 진입점 — 정적 페이지보다 약간 낮은 우선
       priority: '0.7',
+    })),
+    ...questionIds.map((id) => ({
+      loc: `/quiz/${id}`,
+      changefreq: 'monthly',
+      // 기출문제 → transactional intent. lesson 보다 살짝 낮음 (개수 많아 중복 risk).
+      priority: '0.6',
     })),
   ];
 
@@ -81,7 +118,7 @@ function buildSitemap(stepIds) {
     '<!--',
     '  QuestDP sitemap — generate-sitemap.mjs 가 자동 생성.',
     `  생성 시각: ${new Date().toISOString()}`,
-    `  총 URL: ${urls.length} (정적 ${STATIC_URLS.length} + lesson ${stepIds.length})`,
+    `  총 URL: ${urls.length} (정적 ${STATIC_URLS.length} + lesson ${stepIds.length} + quiz ${questionIds.length})`,
     '-->',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
     ...urls.map((u) =>
@@ -103,8 +140,13 @@ function buildSitemap(stepIds) {
 // ─── 실행 ───────────────────────────────────────────────────────
 
 const stepIds = collectLessonStepIds();
+const questionIds = collectQuestionIds();
 console.log(`📚 lesson step 발견: ${stepIds.length}`);
-const xml = buildSitemap(stepIds);
+console.log(`❓ indexable question 발견: ${questionIds.length}`);
+const xml = buildSitemap(stepIds, questionIds);
 fs.writeFileSync(OUT, xml, 'utf8');
 console.log(`✅ sitemap.xml 생성 — ${OUT}`);
-console.log(`   총 URL: ${STATIC_URLS.length + stepIds.length} (정적 ${STATIC_URLS.length} + lesson ${stepIds.length})`);
+console.log(
+  `   총 URL: ${STATIC_URLS.length + stepIds.length + questionIds.length} ` +
+    `(정적 ${STATIC_URLS.length} + lesson ${stepIds.length} + quiz ${questionIds.length})`,
+);

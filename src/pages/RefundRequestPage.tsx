@@ -110,11 +110,7 @@ export default function RefundRequestPage({ onBack }: Props) {
           type="button"
           onClick={() => {
             if (onBack) onBack();
-            else {
-              // /refund 는 path-based — pushState + popstate dispatch
-              window.history.pushState({}, '', '/refund');
-              window.dispatchEvent(new PopStateEvent('popstate'));
-            }
+            else (window.location.hash = '/refund');
           }}
           aria-label="환불 정책으로 돌아가기"
           className="inline-flex items-center gap-2 kr-heading uppercase text-[11px] tracking-widest text-cream/75 hover:text-neon transition mb-8"

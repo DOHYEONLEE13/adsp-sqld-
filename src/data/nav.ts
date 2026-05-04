@@ -13,15 +13,13 @@ import { COMPANY } from './site';
  */
 export const NAV_LINKS_MAIN: NavLink[] = [
   { label: '플레이', href: '#/game' },
-  // 소개 — path-based (SEO indexable)
-  { label: '소개', href: '/about' },
+  { label: '소개', href: '#/about' },
   { label: '요금제', href: '#pricing' },
 ];
 
 export const NAV_LINKS_SUPPORT: NavLink[] = [
   { label: '쿠폰 등록', href: '#/redeem' },
-  // 환불 정책 — path-based (SEO indexable)
-  { label: '환불 정책', href: '/refund' },
+  { label: '환불 정책', href: '#/refund' },
   { label: '고객문의', href: `mailto:${COMPANY.email}` },
 ];
 

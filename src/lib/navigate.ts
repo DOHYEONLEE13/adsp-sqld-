@@ -25,10 +25,11 @@ const PATH_ROUTES = new Set([
   '/privacy',
   '/terms',
   '/refund',
+  '/glossary',
 ]);
 
-/** Path prefix 라우트 — `/lesson/:stepId`, `/quiz/:questionId`, `/curriculum/:subject` 등 동적 segment. */
-const PATH_PREFIXES = ['/lesson/', '/quiz/', '/curriculum/'];
+/** Path prefix 라우트 — `/lesson/:stepId`, `/quiz/:questionId`, `/curriculum/:subject`, `/faq/:subject` 등 동적 segment. */
+const PATH_PREFIXES = ['/lesson/', '/quiz/', '/curriculum/', '/faq/'];
 
 /**
  * Path-based 라우트로 이동. legacy hash 라우트와 path 모두 지원.

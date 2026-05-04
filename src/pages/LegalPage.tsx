@@ -6,7 +6,6 @@
  */
 
 import { ArrowLeft } from 'lucide-react';
-import { Helmet } from 'react-helmet-async';
 import { LEGAL_DOCS, type LegalDoc } from '@/data/legal';
 import VideoBg from '@/components/ui/VideoBg';
 import { VIDEO_URLS } from '@/data/site';
@@ -16,43 +15,10 @@ interface Props {
   onBack?: () => void;
 }
 
-/** 페이지별 SEO 메타 — title 60자 이내 / description 160자 이내. */
-const SEO_META: Record<LegalDoc['slug'], { title: string; description: string }> = {
-  about: {
-    title: 'QuestDP 소개 — 한국 자격증 학습을 게임처럼 재구성',
-    description:
-      'ADsP·SQLD 를 RPG 형 마이크로러닝으로 정복하는 학습 SaaS. 토리·셀리 마스코트와 함께 단기 합격까지의 여정을 안내합니다.',
-  },
-  privacy: {
-    title: 'QuestDP 개인정보 처리방침',
-    description:
-      '회원가입·결제·학습 기록을 어떻게 수집·이용·보관·삭제하는지 명시합니다. 전자상거래법·개인정보보호법 준수.',
-  },
-  terms: {
-    title: 'QuestDP 이용약관',
-    description:
-      '서비스 이용 시 사용자와 회사의 권리·의무·책임 범위를 정의합니다. 결제·환불·계정·콘텐츠 이용 규정 포함.',
-  },
-  refund: {
-    title: 'QuestDP 환불 정책',
-    description:
-      '결제 7일 이내 미사용 시 100% 환불 (전자상거래법 17조). 사용 후 환불은 일할 정산. 환불 신청 절차 안내.',
-  },
-};
-
 export default function LegalPage({ slug, onBack }: Props) {
   const doc = LEGAL_DOCS[slug];
-  const meta = SEO_META[slug];
   return (
     <section className="relative min-h-screen isolate overflow-hidden bg-base text-cream">
-      <Helmet>
-        <title>{meta.title}</title>
-        <meta name="description" content={meta.description} />
-        <link rel="canonical" href={`https://quest-dp.com/${slug}`} />
-        <meta property="og:title" content={meta.title} />
-        <meta property="og:description" content={meta.description} />
-        <meta property="og:url" content={`https://quest-dp.com/${slug}`} />
-      </Helmet>
       {/* 배경 — 게임 페이지와 같은 ambient 영상 + 어두운 오버레이 */}
       <div className="absolute inset-0 z-0 overflow-hidden">
         <VideoBg src={VIDEO_URLS.pageAmbient} fit="cover" />

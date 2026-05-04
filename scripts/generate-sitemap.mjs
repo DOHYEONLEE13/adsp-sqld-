@@ -95,6 +95,9 @@ const STATIC_URLS = [
   { loc: '/privacy', changefreq: 'yearly', priority: '0.3' },
   { loc: '/terms', changefreq: 'yearly', priority: '0.3' },
   { loc: '/refund', changefreq: 'yearly', priority: '0.3' },
+  // Tier 2 PR 3 — pillar 커리큘럼 페이지 (모든 lesson 의 hub).
+  { loc: '/curriculum/adsp', changefreq: 'weekly', priority: '0.9' },
+  { loc: '/curriculum/sqld', changefreq: 'weekly', priority: '0.9' },
 ];
 
 function buildSitemap(stepIds, questionIds) {

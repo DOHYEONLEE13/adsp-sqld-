@@ -62,19 +62,39 @@ interface RouteState {
 }
 
 /**
- * 얇은 해시 라우터.
+ * 하이브리드 라우터 — Legal 4 페이지는 path, 그 외는 hash.
+ *
+ * Path-based (검색엔진 indexable):
+ *  - `/about`     → legal/about
+ *  - `/privacy`   → legal/privacy
+ *  - `/terms`     → legal/terms
+ *  - `/refund`    → legal/refund
+ *
+ * Hash-based (변경 위험으로 추후 PR 에서 전환):
  *  - `#/`              → landing
- *  - `#/game`          → activeSubject 있으면 그 과목 planet 직진,
- *                        없으면 onboarding chooser
- *  - `#/game/adsp`     → game, ADSP planet 으로 직진 (랜딩 카드에서 옴)
- *  - `#/game/sqld`     → game, SQLD planet 으로 직진
- *  - `#/quests`        → 오늘의 퀘스트 (모바일 하단 깃발 탭)
- *  - `#/friends`       → 친구 경쟁/리더보드 (모바일 하단 트로피 탭)
- *  - `#/stats`         → stats (대시보드 / 프로필)
- *  - `#/bookmarks`     → bookmarks
+ *  - `#/game`, `#/game/adsp`, `#/game/sqld`
+ *  - `#/quests`, `#/friends`, `#/stats`, `#/bookmarks`
+ *  - `#/admin`, `#/redeem`, `#/refund-request`
+ *  - `#/payment/callback`, `#/login`
+ *
+ * Legacy hash (`#/about` 등) 는 mount 시 redirectLegacyHashToPath() 가 한 번
+ * replaceState 해 path 로 옮김 — 옛 북마크 호환.
  */
 function getRoute(): RouteState {
   if (typeof window === 'undefined') return { route: 'landing' };
+
+  // 1. Path-based 라우트 우선 (legal pages — SEO indexable)
+  const pathname = window.location.pathname;
+  if (pathname === '/about')
+    return { route: 'legal', legalSlug: 'about' };
+  if (pathname === '/privacy')
+    return { route: 'legal', legalSlug: 'privacy' };
+  if (pathname === '/terms')
+    return { route: 'legal', legalSlug: 'terms' };
+  if (pathname === '/refund')
+    return { route: 'legal', legalSlug: 'refund' };
+
+  // 2. Hash-based 라우트 (그 외 모든 routes)
   const hash = window.location.hash.replace(/^#/, '');
   if (hash.startsWith('/quests')) return { route: 'quests' };
   if (hash.startsWith('/friends')) return { route: 'friends' };
@@ -87,14 +107,6 @@ function getRoute(): RouteState {
   if (hash.startsWith('/payment/callback'))
     return { route: 'payment-callback' };
   if (hash.startsWith('/login')) return { route: 'login' };
-  if (hash.startsWith('/about'))
-    return { route: 'legal', legalSlug: 'about' };
-  if (hash.startsWith('/privacy'))
-    return { route: 'legal', legalSlug: 'privacy' };
-  if (hash.startsWith('/terms'))
-    return { route: 'legal', legalSlug: 'terms' };
-  if (hash.startsWith('/refund'))
-    return { route: 'legal', legalSlug: 'refund' };
   if (hash.startsWith('/game')) {
     const parts = hash.split('/').filter(Boolean); // ['game'] or ['game', 'adsp']
     const sub = parts[1];
@@ -137,12 +149,31 @@ export default function App() {
   //  페이지가 보이고, mount 끝나면 즉시 교체.)
   const [, startTransition] = useTransition();
 
+  // Legacy hash redirect — `#/about` 등 옛 북마크가 들어오면 path 로 한 번 교체.
+  // App mount 시 한 번만 실행.
   useEffect(() => {
-    const onHashChange = () => {
+    if (typeof window === 'undefined') return;
+    const hash = window.location.hash.replace(/^#/, '');
+    const legalSlugs = ['/about', '/privacy', '/terms', '/refund'] as const;
+    const legacyMatch = legalSlugs.find((s) => hash === s || hash.startsWith(s + '?'));
+    if (legacyMatch && window.location.pathname !== legacyMatch) {
+      window.history.replaceState({}, '', legacyMatch);
+      // 새 라우트 즉시 인식
+      setRouteState(getRoute());
+    }
+  }, []);
+
+  // 라우트 변경 구독 — hashchange (hash routes) + popstate (path routes).
+  useEffect(() => {
+    const onChange = () => {
       startTransition(() => setRouteState(getRoute()));
     };
-    window.addEventListener('hashchange', onHashChange);
-    return () => window.removeEventListener('hashchange', onHashChange);
+    window.addEventListener('hashchange', onChange);
+    window.addEventListener('popstate', onChange);
+    return () => {
+      window.removeEventListener('hashchange', onChange);
+      window.removeEventListener('popstate', onChange);
+    };
   }, []);
 
   // 프로필·친구·세션·북마크·시험일 ↔ Supabase 자동 sync + 일회 마이그.
@@ -270,7 +301,9 @@ export default function App() {
         <LegalPage
           slug={legalSlug}
           onBack={() => {
-            window.location.hash = '';
+            // path-based legal → home (/) 으로. pushState + popstate dispatch.
+            window.history.pushState({}, '', '/');
+            window.dispatchEvent(new PopStateEvent('popstate'));
           }}
         />
       );
@@ -300,7 +333,9 @@ export default function App() {
       return (
         <RefundRequestPage
           onBack={() => {
-            window.location.hash = '/refund';
+            // /refund 는 이제 path-based — pushState 사용
+            window.history.pushState({}, '', '/refund');
+            window.dispatchEvent(new PopStateEvent('popstate'));
           }}
         />
       );

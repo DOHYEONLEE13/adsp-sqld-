@@ -1,4 +1,5 @@
 import { BRAND, COMPANY } from '@/data/site';
+import { handleNavClick } from '@/lib/navigate';
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -40,7 +41,7 @@ export default function Footer() {
             <FooterLinkGroup
               title="서비스"
               links={[
-                { label: '소개', href: '#/about' },
+                { label: '소개', href: '/about' },
                 { label: '플레이', href: '#/game' },
                 { label: '요금제', href: '#pricing' },
               ]}
@@ -48,9 +49,9 @@ export default function Footer() {
             <FooterLinkGroup
               title="정책"
               links={[
-                { label: '개인정보 처리방침', href: '#/privacy' },
-                { label: '이용약관', href: '#/terms' },
-                { label: '환불 정책', href: '#/refund' },
+                { label: '개인정보 처리방침', href: '/privacy' },
+                { label: '이용약관', href: '/terms' },
+                { label: '환불 정책', href: '/refund' },
               ]}
             />
             <FooterLinkGroup
@@ -106,21 +107,36 @@ function FooterLinkGroup({ title, links }: FooterLinkGroupProps) {
     <div>
       <div className="kr-heading text-[10px] text-cream/85 mb-3">{title}</div>
       <ul className="space-y-2.5 list-none m-0 p-0">
-        {links.map((link) => (
-          <li key={link.href}>
-            <a
-              href={link.href}
-              className="text-cream/55 hover:text-neon transition-colors break-all"
-              {...(link.href.startsWith('mailto:')
-                ? {}
-                : link.href.startsWith('http')
-                  ? { target: '_blank', rel: 'noopener noreferrer' }
-                  : {})}
-            >
-              {link.label}
-            </a>
-          </li>
-        ))}
+        {links.map((link) => {
+          const isExternal =
+            link.href.startsWith('mailto:') || link.href.startsWith('http');
+          // path-based 라우트 (legal pages) 는 SPA navigation 으로 가로채 reload
+          // 없이 이동. hash route (#/...) 는 브라우저 기본 동작.
+          const isPathRoute =
+            !isExternal &&
+            !link.href.startsWith('#') &&
+            link.href.startsWith('/');
+          return (
+            <li key={link.href}>
+              <a
+                href={link.href}
+                onClick={
+                  isPathRoute
+                    ? (e) => handleNavClick(e, link.href)
+                    : undefined
+                }
+                className="text-cream/55 hover:text-neon transition-colors break-all"
+                {...(link.href.startsWith('mailto:')
+                  ? {}
+                  : link.href.startsWith('http')
+                    ? { target: '_blank', rel: 'noopener noreferrer' }
+                    : {})}
+              >
+                {link.label}
+              </a>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

@@ -71,7 +71,11 @@ export default function LegalPage({ slug, onBack }: Props) {
           type="button"
           onClick={() => {
             if (onBack) onBack();
-            else window.location.hash = '';
+            else {
+              // path-based legal → home (/) 으로 이동
+              window.history.pushState({}, '', '/');
+              window.dispatchEvent(new PopStateEvent('popstate'));
+            }
           }}
           aria-label="홈으로"
           className="inline-flex items-center gap-2 kr-heading uppercase text-[11px] tracking-widest text-cream/75 hover:text-neon transition mb-8"

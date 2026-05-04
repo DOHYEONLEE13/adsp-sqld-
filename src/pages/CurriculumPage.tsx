@@ -16,7 +16,7 @@
  *   - BreadcrumbList
  */
 
-import { Helmet } from 'react-helmet-async';
+import { useSeoMeta } from '@/lib/seo';
 import { ArrowLeft, BookOpen, ChevronRight, Sparkles, Layers } from 'lucide-react';
 import { getCurriculum, type SubjectCurriculum, type CurriculumTopic } from '@/lib/curriculum';
 import { handleNavClick } from '@/lib/navigate';
@@ -109,21 +109,17 @@ export default function CurriculumPage({ subject }: Props) {
     ],
   };
 
+  useSeoMeta({
+    title: seoTitle,
+    description: seoDescription,
+    canonical,
+    ogType: 'website',
+    ogImage: 'https://quest-dp.com/og/default.png',
+    jsonLd: [courseJsonLd, itemListJsonLd, breadcrumbJsonLd],
+  });
+
   return (
     <article className="relative min-h-screen isolate overflow-hidden bg-base text-cream">
-      <Helmet>
-        <title>{seoTitle}</title>
-        <meta name="description" content={seoDescription} />
-        <link rel="canonical" href={canonical} />
-        <meta property="og:title" content={seoTitle} />
-        <meta property="og:description" content={seoDescription} />
-        <meta property="og:url" content={canonical} />
-        <meta property="og:type" content="website" />
-        <script type="application/ld+json">{JSON.stringify(courseJsonLd)}</script>
-        <script type="application/ld+json">{JSON.stringify(itemListJsonLd)}</script>
-        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
-      </Helmet>
-
       <div className="relative z-10 max-w-[900px] lg:max-w-[1080px] mx-auto px-5 md:px-8 lg:px-12 pt-8 pb-16">
         {/* Back home */}
         <a

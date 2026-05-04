@@ -1,0 +1,26 @@
+# QuestDP — robots.txt
+# 한국 ADsP·SQLD 자격증 학습 SaaS
+
+User-agent: *
+Allow: /
+
+# 결제 콜백 / 관리자 / 인증 콜백 등 indexable 가치 X
+Disallow: /payment/callback
+Disallow: /admin
+Disallow: /redeem
+Disallow: /refund-request
+Disallow: /login
+
+# 게임 내부 deep state — 사용자 컨텍스트 의존
+Disallow: /game/
+
+# 네이버봇 명시 허용 (한국 우선 시장)
+User-agent: Yeti
+Allow: /
+
+# 구글봇 명시 허용
+User-agent: Googlebot
+Allow: /
+
+# Sitemap
+Sitemap: https://quest-dp.com/sitemap.xml

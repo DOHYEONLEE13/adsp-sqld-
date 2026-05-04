@@ -14,7 +14,7 @@
  *   - 본문 H2/H3 → ToC anchor 가능
  */
 
-import { Helmet } from 'react-helmet-async';
+import { useSeoMeta } from '@/lib/seo';
 import { ArrowLeft, BookOpen, ChevronRight, Sparkles, Clock } from 'lucide-react';
 import {
   type BlogBlock,
@@ -31,63 +31,75 @@ interface Props {
 
 export default function BlogPostPage({ slug }: Props) {
   const post = findPostBySlug(slug);
-  if (!post) return <NotFound />;
 
-  const canonical = `https://quest-dp.com/blog/${encodeURI(post.slug)}`;
-  const seoTitle = `${post.title} — QuestDP`;
+  // SEO 메타 — post 유무에 따라 분기. hook 은 항상 호출.
+  const canonical = post
+    ? `https://quest-dp.com/blog/${encodeURI(post.slug)}`
+    : undefined;
+  const seoTitle = post
+    ? `${post.title} — QuestDP`
+    : '블로그 포스트를 찾을 수 없어요 — QuestDP';
+  const seoDescription = post
+    ? post.metaDescription
+    : 'URL 이 잘못되었거나 콘텐츠가 이동했을 수 있어요.';
 
-  // JSON-LD Article
-  const articleJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: post.title,
-    description: post.metaDescription,
-    inLanguage: 'ko-KR',
-    datePublished: post.publishedAt,
-    dateModified: post.updatedAt ?? post.publishedAt,
-    author: {
-      '@type': 'Organization',
-      name: 'QuestDP',
-      url: 'https://quest-dp.com',
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: 'QuestDP',
-      logo: {
-        '@type': 'ImageObject',
-        url: 'https://quest-dp.com/logo/questdp-mark.png',
-      },
-    },
-    mainEntityOfPage: {
-      '@type': 'WebPage',
-      '@id': canonical,
-    },
-    image: 'https://quest-dp.com/og/default.png',
-    keywords: post.primaryKeyword,
-  };
-
-  const faqJsonLd =
-    post.faqs && post.faqs.length > 0
-      ? {
+  // JSON-LD — post 있을 때만 emit
+  const jsonLd = post
+    ? (() => {
+        const articleJsonLd = {
           '@context': 'https://schema.org',
-          '@type': 'FAQPage',
-          mainEntity: post.faqs.map((it) => ({
-            '@type': 'Question',
-            name: it.q,
-            acceptedAnswer: { '@type': 'Answer', text: it.a },
-          })),
+          '@type': 'Article',
+          headline: post.title,
+          description: post.metaDescription,
+          inLanguage: 'ko-KR',
+          datePublished: post.publishedAt,
+          dateModified: post.updatedAt ?? post.publishedAt,
+          author: { '@type': 'Organization', name: 'QuestDP', url: 'https://quest-dp.com' },
+          publisher: {
+            '@type': 'Organization',
+            name: 'QuestDP',
+            logo: { '@type': 'ImageObject', url: 'https://quest-dp.com/logo/questdp-mark.png' },
+          },
+          mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+          image: 'https://quest-dp.com/og/default.png',
+          keywords: post.primaryKeyword,
+        };
+        const breadcrumbJsonLd = {
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: [
+            { '@type': 'ListItem', position: 1, name: '홈', item: 'https://quest-dp.com/' },
+            { '@type': 'ListItem', position: 2, name: '블로그', item: 'https://quest-dp.com/blog' },
+            { '@type': 'ListItem', position: 3, name: post.title, item: canonical },
+          ],
+        };
+        const items: object[] = [articleJsonLd, breadcrumbJsonLd];
+        if (post.faqs && post.faqs.length > 0) {
+          items.push({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: post.faqs.map((it) => ({
+              '@type': 'Question',
+              name: it.q,
+              acceptedAnswer: { '@type': 'Answer', text: it.a },
+            })),
+          });
         }
-      : null;
+        return items;
+      })()
+    : undefined;
 
-  const breadcrumbJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: '홈', item: 'https://quest-dp.com/' },
-      { '@type': 'ListItem', position: 2, name: '블로그', item: 'https://quest-dp.com/blog' },
-      { '@type': 'ListItem', position: 3, name: post.title, item: canonical },
-    ],
-  };
+  useSeoMeta({
+    title: seoTitle,
+    description: seoDescription,
+    canonical,
+    ogType: 'article',
+    ogImage: 'https://quest-dp.com/og/default.png',
+    noIndex: !post,
+    jsonLd,
+  });
+
+  if (!post) return <NotFound />;
 
   // related posts
   const related =
@@ -97,25 +109,6 @@ export default function BlogPostPage({ slug }: Props) {
 
   return (
     <article className="relative min-h-screen isolate overflow-hidden bg-base text-cream">
-      <Helmet>
-        <title>{seoTitle}</title>
-        <meta name="description" content={post.metaDescription} />
-        <link rel="canonical" href={canonical} />
-        <meta property="og:title" content={seoTitle} />
-        <meta property="og:description" content={post.metaDescription} />
-        <meta property="og:url" content={canonical} />
-        <meta property="og:type" content="article" />
-        <meta property="article:published_time" content={post.publishedAt} />
-        {post.updatedAt ? (
-          <meta property="article:modified_time" content={post.updatedAt} />
-        ) : null}
-        <script type="application/ld+json">{JSON.stringify(articleJsonLd)}</script>
-        {faqJsonLd ? (
-          <script type="application/ld+json">{JSON.stringify(faqJsonLd)}</script>
-        ) : null}
-        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
-      </Helmet>
-
       <div className="relative z-10 max-w-[760px] lg:max-w-[860px] mx-auto px-5 md:px-8 lg:px-12 pt-8 pb-16">
         <a
           href="/blog"
@@ -463,12 +456,9 @@ function InlineMd({ text }: { text: string }) {
 }
 
 function NotFound() {
+  // 부모 컴포넌트의 useSeoMeta 가 noIndex + 404 title 설정함.
   return (
     <section className="min-h-screen flex flex-col items-center justify-center px-6 bg-base text-cream">
-      <Helmet>
-        <title>블로그 포스트를 찾을 수 없어요 — QuestDP</title>
-        <meta name="robots" content="noindex" />
-      </Helmet>
       <h1 className="kr-heading text-[24px] md:text-[28px] mb-3">블로그 포스트를 찾을 수 없어요</h1>
       <p className="kr-body text-[14px] text-cream/65 mb-6 text-center max-w-md">
         URL 이 잘못되었거나 콘텐츠가 이동했을 수 있어요.

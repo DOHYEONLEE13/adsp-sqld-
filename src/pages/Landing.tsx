@@ -18,10 +18,6 @@ export default function Landing() {
         />
         <meta name="keywords" content="ADsP, SQLD, 자격증, 데이터 분석 준전문가, SQL 개발자, 학습앱, 게임형 학습, 마이크로러닝, 인강, 기출문제" />
         <link rel="canonical" href="https://quest-dp.com/" />
-        {/* OG/Twitter 이미지 — Helmet 이 index.html 의 og:image 을 override.
-            홈에서 SNS 공유 시 이 URL 사용. */}
-        <meta property="og:image" content="https://quest-dp.com/og/default.png" />
-        <meta name="twitter:image" content="https://quest-dp.com/og/default.png" />
       </Helmet>
       <TextureOverlay />
       <Hero />

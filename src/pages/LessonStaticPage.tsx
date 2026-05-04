@@ -20,8 +20,8 @@
  *   - Breadcrumb schema
  */
 
-import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, BookOpen, ChevronRight, Sparkles } from 'lucide-react';
+import { useSeoMeta } from '@/lib/seo';
 import {
   findStepById,
   getChapterTitle,
@@ -46,7 +46,63 @@ const SUBJECT_ACCENT: Record<'adsp' | 'sqld', string> = {
 export default function LessonStaticPage({ stepId }: Props) {
   const lookup = findStepById(stepId);
 
-  // step 못 찾음 — 404
+  // SEO 메타 — lookup 유무에 따라 분기. hook 은 항상 호출 (Rules of Hooks).
+  const seoTitle = lookup
+    ? `${lookup.step.title} — ${lookup.lesson.topic} | ${SUBJECT_LABEL[lookup.lesson.subject]}`
+    : '학습 페이지를 찾을 수 없어요 — QuestDP';
+  const seoDescription = lookup
+    ? makeDescription(lookup.step, lookup.lesson.topic)
+    : 'URL 이 잘못되었거나 콘텐츠가 이동했을 수 있어요.';
+  const canonical = lookup
+    ? `https://quest-dp.com/lesson/${stepId}`
+    : undefined;
+
+  // JSON-LD — lookup 있을 때만 emit
+  const jsonLd = lookup
+    ? (() => {
+        const subj = lookup.lesson.subject;
+        const chapTitle = getChapterTitle(subj, lookup.lesson.chapter) ?? `Chapter ${lookup.lesson.chapter}`;
+        return [
+          {
+            '@context': 'https://schema.org',
+            '@type': 'Course',
+            name: lookup.step.title,
+            description: seoDescription,
+            provider: {
+              '@type': 'Organization',
+              name: 'QuestDP',
+              sameAs: 'https://quest-dp.com',
+            },
+            inLanguage: 'ko-KR',
+            teaches: lookup.lesson.topic,
+            educationalLevel: SUBJECT_LABEL[subj],
+            isAccessibleForFree: true,
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: '홈', item: 'https://quest-dp.com/' },
+              { '@type': 'ListItem', position: 2, name: SUBJECT_LABEL[subj], item: `https://quest-dp.com/#/game/${subj}` },
+              { '@type': 'ListItem', position: 3, name: chapTitle, item: canonical },
+              { '@type': 'ListItem', position: 4, name: lookup.step.title, item: canonical },
+            ],
+          },
+        ];
+      })()
+    : undefined;
+
+  useSeoMeta({
+    title: seoTitle,
+    description: seoDescription,
+    canonical,
+    ogType: 'article',
+    ogImage: 'https://quest-dp.com/og/default.png',
+    noIndex: !lookup,
+    jsonLd,
+  });
+
+  // step 못 찾음 — 404 (hook 호출 후이므로 안전)
   if (!lookup) {
     return <NotFound />;
   }
@@ -56,60 +112,10 @@ export default function LessonStaticPage({ stepId }: Props) {
   const accent = SUBJECT_ACCENT[subject];
   const chapterTitle = getChapterTitle(subject, lesson.chapter) ?? `Chapter ${lesson.chapter}`;
 
-  // SEO 메타 — title 60자 / description 160자 이내
-  const seoTitle = `${step.title} — ${lesson.topic} | ${SUBJECT_LABEL[subject]}`;
-  const seoDescription = makeDescription(step, lesson.topic);
-  const canonical = `https://quest-dp.com/lesson/${stepId}`;
-
-  // JSON-LD — Course schema (학습 콘텐츠)
-  const courseJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'Course',
-    name: step.title,
-    description: seoDescription,
-    provider: {
-      '@type': 'Organization',
-      name: 'QuestDP',
-      sameAs: 'https://quest-dp.com',
-    },
-    inLanguage: 'ko-KR',
-    teaches: lesson.topic,
-    educationalLevel: SUBJECT_LABEL[subject],
-    isAccessibleForFree: true,
-  };
-
-  // BreadcrumbList schema
-  const breadcrumbJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      { '@type': 'ListItem', position: 1, name: '홈', item: 'https://quest-dp.com/' },
-      { '@type': 'ListItem', position: 2, name: SUBJECT_LABEL[subject], item: `https://quest-dp.com/#/game/${subject}` },
-      { '@type': 'ListItem', position: 3, name: chapterTitle, item: canonical },
-      { '@type': 'ListItem', position: 4, name: step.title, item: canonical },
-    ],
-  };
-
   return (
     <article
       className="relative min-h-screen isolate overflow-hidden bg-base text-cream"
     >
-      <Helmet>
-        <title>{seoTitle}</title>
-        <meta name="description" content={seoDescription} />
-        <link rel="canonical" href={canonical} />
-        <meta property="og:title" content={seoTitle} />
-        <meta property="og:description" content={seoDescription} />
-        <meta property="og:url" content={canonical} />
-        <meta property="og:type" content="article" />
-        <script type="application/ld+json">
-          {JSON.stringify(courseJsonLd)}
-        </script>
-        <script type="application/ld+json">
-          {JSON.stringify(breadcrumbJsonLd)}
-        </script>
-      </Helmet>
-
       <div className="relative z-10 max-w-[820px] lg:max-w-[1000px] mx-auto px-5 md:px-8 lg:px-12 pt-8 pb-16">
         {/* Back home */}
         <a
@@ -341,12 +347,9 @@ function BlockRenderer({ block, accent }: { block: LessonBlock; accent: string }
 }
 
 function NotFound() {
+  // 부모 컴포넌트의 useSeoMeta 가 이미 noIndex + 404 title 을 설정함.
   return (
     <section className="min-h-screen flex flex-col items-center justify-center px-6 bg-base text-cream">
-      <Helmet>
-        <title>학습 페이지를 찾을 수 없어요 — QuestDP</title>
-        <meta name="robots" content="noindex" />
-      </Helmet>
       <h1 className="kr-heading text-[24px] md:text-[28px] mb-3">학습 페이지를 찾을 수 없어요</h1>
       <p className="kr-body text-[14px] text-cream/65 mb-6 text-center max-w-md">
         URL 이 잘못되었거나 콘텐츠가 이동했을 수 있어요. 홈에서 다른 학습을 둘러보세요.

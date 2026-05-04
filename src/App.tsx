@@ -33,6 +33,7 @@ const RedeemPage = lazy(() => import('./pages/RedeemPage'));
 const RefundRequestPage = lazy(() => import('./pages/RefundRequestPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const PaymentCallbackPage = lazy(() => import('./pages/PaymentCallbackPage'));
+const LessonStaticPage = lazy(() => import('./pages/LessonStaticPage'));
 const GamePage = lazy(() => import('./game/GamePage'));
 const StatsPage = lazy(() => import('./game/StatsPage'));
 const BookmarksPage = lazy(() => import('./game/BookmarksPage'));
@@ -51,7 +52,8 @@ type Route =
   | 'redeem'
   | 'refund-request'
   | 'login'
-  | 'payment-callback';
+  | 'payment-callback'
+  | 'lesson-static';
 
 interface RouteState {
   route: Route;
@@ -59,6 +61,8 @@ interface RouteState {
   initialSubject?: Subject;
   /** legal 페이지 진입 시 어느 문서. */
   legalSlug?: LegalDoc['slug'];
+  /** `/lesson/:stepId` — Tier 2 SEO 진입점. */
+  lessonStepId?: string;
 }
 
 /**
@@ -83,7 +87,7 @@ interface RouteState {
 function getRoute(): RouteState {
   if (typeof window === 'undefined') return { route: 'landing' };
 
-  // 1. Path-based 라우트 우선 (legal pages — SEO indexable)
+  // 1. Path-based 라우트 우선 (legal pages + Tier 2 lesson — SEO indexable)
   const pathname = window.location.pathname;
   if (pathname === '/about')
     return { route: 'legal', legalSlug: 'about' };
@@ -93,6 +97,13 @@ function getRoute(): RouteState {
     return { route: 'legal', legalSlug: 'terms' };
   if (pathname === '/refund')
     return { route: 'legal', legalSlug: 'refund' };
+  // Tier 2 — 정적 lesson SEO 페이지. `/lesson/:stepId`
+  if (pathname.startsWith('/lesson/')) {
+    const stepId = pathname.slice('/lesson/'.length);
+    // stepId 안에 / 포함되면 잘라냄 (예방)
+    const cleanId = stepId.split('/')[0];
+    if (cleanId) return { route: 'lesson-static', lessonStepId: cleanId };
+  }
 
   // 2. Hash-based 라우트 (그 외 모든 routes)
   const hash = window.location.hash.replace(/^#/, '');
@@ -138,7 +149,7 @@ function getRoute(): RouteState {
 const ROUTE_FALLBACK = null;
 
 export default function App() {
-  const [{ route, initialSubject, legalSlug }, setRouteState] =
+  const [{ route, initialSubject, legalSlug, lessonStepId }, setRouteState] =
     useState<RouteState>(() => getRoute());
 
   // ── useTransition 으로 끊김 완화 ────────────────────────────────────
@@ -359,6 +370,10 @@ export default function App() {
           }}
         />
       );
+    }
+
+    if (route === 'lesson-static' && lessonStepId) {
+      return <LessonStaticPage stepId={lessonStepId} />;
     }
 
     return <Landing />;

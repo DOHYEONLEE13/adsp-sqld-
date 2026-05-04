@@ -18,12 +18,17 @@
  *   - `#/about` 등 옛 북마크는 mount 시 한 번 path 로 redirect (replaceState)
  */
 
+/** Path-based 라우트 (검색엔진 indexable). hash 라우트와 분리. */
 const PATH_ROUTES = new Set([
+  '/',
   '/about',
   '/privacy',
   '/terms',
   '/refund',
 ]);
+
+/** Path prefix 라우트 — `/lesson/:stepId` 같이 동적 segment 가 있는 경우. */
+const PATH_PREFIXES = ['/lesson/'];
 
 /**
  * Path-based 라우트로 이동. legacy hash 라우트와 path 모두 지원.
@@ -40,9 +45,10 @@ export function navigate(path: string): void {
     if (!normalized.startsWith('/')) normalized = '/' + normalized;
   }
 
-  // path 라우트인지 확인
-  const isPathRoute = PATH_ROUTES.has(normalized) ||
-    [...PATH_ROUTES].some((r) => normalized.startsWith(r + '/'));
+  // path 라우트인지 확인 — exact match 또는 prefix 일치
+  const isPathRoute =
+    PATH_ROUTES.has(normalized) ||
+    PATH_PREFIXES.some((p) => normalized.startsWith(p));
 
   if (isPathRoute) {
     // path-based: pushState + popstate dispatch

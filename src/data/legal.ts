@@ -16,7 +16,8 @@ export interface LegalSection {
 export interface LegalDoc {
   slug: 'privacy' | 'terms' | 'refund' | 'about';
   title: string;
-  subtitle: string;
+  /** 부제 — 헤더 아래 회색 안내 문구. 비워두면 미렌더. */
+  subtitle?: string;
   updatedAt: string;
   sections: LegalSection[];
 }
@@ -85,7 +86,6 @@ const ABOUT_PAGE: LegalDoc = {
 const PRIVACY_PAGE: LegalDoc = {
   slug: 'privacy',
   title: '개인정보 처리방침',
-  subtitle: '수집·이용·보관·삭제까지 — 어떻게 다루는지 솔직하게 적어둡니다.',
   updatedAt: COMPANY.policyUpdatedAt,
   sections: [
     {

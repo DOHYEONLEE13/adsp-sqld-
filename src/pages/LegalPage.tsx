@@ -53,9 +53,11 @@ export default function LegalPage({ slug, onBack }: Props) {
           <h1 className="kr-heading text-[32px] md:text-[44px] leading-[1.1] mb-4">
             {doc.title}
           </h1>
-          <p className="kr-body text-[14px] md:text-[15px] text-cream/70 leading-[1.65]">
-            {doc.subtitle}
-          </p>
+          {doc.subtitle ? (
+            <p className="kr-body text-[14px] md:text-[15px] text-cream/70 leading-[1.65]">
+              {doc.subtitle}
+            </p>
+          ) : null}
           <p className="kr-body text-[11px] text-cream/50 mt-3 uppercase tracking-widest">
             최종 개정 · {doc.updatedAt}
           </p>

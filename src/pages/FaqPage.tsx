@@ -15,7 +15,7 @@
  *   - BreadcrumbList
  */
 
-import { Helmet } from 'react-helmet-async';
+import { useSeoMeta } from '@/lib/seo';
 import { ArrowLeft, ChevronRight, HelpCircle, Sparkles } from 'lucide-react';
 import { ALL_FAQ } from '@/data/seo/faq';
 import { handleNavClick } from '@/lib/navigate';
@@ -66,20 +66,17 @@ export default function FaqPage({ subject }: Props) {
     ],
   };
 
+  useSeoMeta({
+    title: data.metaTitle,
+    description: data.metaDescription,
+    canonical,
+    ogType: 'article',
+    ogImage: 'https://quest-dp.com/og/default.png',
+    jsonLd: [faqJsonLd, breadcrumbJsonLd],
+  });
+
   return (
     <article className="relative min-h-screen isolate overflow-hidden bg-base text-cream">
-      <Helmet>
-        <title>{data.metaTitle}</title>
-        <meta name="description" content={data.metaDescription} />
-        <link rel="canonical" href={canonical} />
-        <meta property="og:title" content={data.metaTitle} />
-        <meta property="og:description" content={data.metaDescription} />
-        <meta property="og:url" content={canonical} />
-        <meta property="og:type" content="article" />
-        <script type="application/ld+json">{JSON.stringify(faqJsonLd)}</script>
-        <script type="application/ld+json">{JSON.stringify(breadcrumbJsonLd)}</script>
-      </Helmet>
-
       <div className="relative z-10 max-w-[820px] lg:max-w-[920px] mx-auto px-5 md:px-8 lg:px-12 pt-8 pb-16">
         {/* Back home */}
         <a

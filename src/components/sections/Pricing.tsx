@@ -3,6 +3,24 @@ import { useEffect, useRef, useState } from 'react';
 import { PRICING_PLANS } from '@/data/pricing';
 import { cx } from '@/lib/utils';
 import type { PricingPlan } from '@/types/site';
+import {
+  isTossConfigured,
+  requestPayment,
+  type ProductCode,
+} from '@/lib/toss';
+import { getMyProfile } from '@/data/profile';
+import {
+  getSupabase,
+  isSupabaseConfigured,
+} from '@/lib/supabase';
+import { setPendingAuthRedirect } from '@/lib/authGuard';
+
+/** Plan id → 토스 product code 매핑. free 플랜은 결제 X. */
+const PLAN_TO_PRODUCT: Record<string, ProductCode | null> = {
+  free: null,
+  'premium-weekly': 'weekly',
+  'premium-monthly': 'monthly',
+};
 
 /**
  * Pricing — 3 카드 가로 슬라이드 (모든 폭).
@@ -263,22 +281,76 @@ function PricingCTA({
   isHighlight: boolean;
 }) {
   const isPaid = plan.id !== 'free';
+  const productCode = PLAN_TO_PRODUCT[plan.id] ?? null;
+  const [submitting, setSubmitting] = useState(false);
+
+  // 월 구독 (정기결제 / 빌링) 은 Phase 2 — 현재는 일회성 1주권 + 평생권만 활성.
+  // monthly 카드 클릭 시는 안내만.
+  const isMonthly = plan.id === 'premium-monthly';
+
   const label = !isPaid
     ? '지금 시작하기'
-    : plan.id === 'premium-monthly'
+    : isMonthly
       ? '월 구독 결제하기'
       : '1주 단기 결제하기';
 
-  const handleClick = () => {
+  const handleClick = async () => {
+    if (submitting) return;
     if (!isPaid) {
       // 무료: 게임 진입
       window.location.hash = '/game';
       return;
     }
-    // PG 미등록 시점 안내. Phase B 가맹점 활성 후 Toss SDK 로 교체.
-    window.alert(
-      '결제 시스템 준비 중입니다.\n곧 오픈 예정 — 사업자/PG 가맹점 활성 직후 정식 결제 가능.\n(클릭 동작은 정상 등록되어 있습니다.)',
-    );
+
+    // 월 구독은 빌링 (정기결제) — Phase 2 미구현 안내
+    if (isMonthly) {
+      window.alert(
+        '월 자동 구독은 곧 오픈 예정입니다.\n지금은 1주 단기 또는 평생 코드 (마케팅 이벤트) 로 이용 가능합니다.',
+      );
+      return;
+    }
+
+    if (!productCode) return;
+
+    // Toss 키 미설정 — 환경 안내
+    if (!isTossConfigured()) {
+      window.alert(
+        '결제 시스템 준비 중입니다.\n토스 페이먼츠 가맹점 활성 후 정식 오픈 예정.',
+      );
+      return;
+    }
+
+    // 인증 가드 — 미로그인이면 로그인으로 redirect (결제 의도는 hash 로 보존)
+    if (isSupabaseConfigured()) {
+      const sb = getSupabase();
+      const { data } = (await sb?.auth.getSession()) ?? { data: { session: null } };
+      if (!data.session) {
+        // 로그인 후 자동으로 #pricing 으로 복귀하도록
+        setPendingAuthRedirect('#pricing');
+        window.location.hash = '/login';
+        return;
+      }
+    }
+
+    // 토스 결제창 호출 (성공 시 successUrl 로 redirect — 함수 resolve X)
+    setSubmitting(true);
+    try {
+      const profile = getMyProfile();
+      await requestPayment({
+        productCode,
+        customerEmail: profile.displayName ? `${profile.tag}@questdp.user` : 'guest@questdp.user',
+        customerName: profile.displayName || profile.tag || '게스트',
+      });
+    } catch (err) {
+      setSubmitting(false);
+      const msg =
+        err instanceof Error
+          ? err.message === 'toss-client-key-missing'
+            ? '결제 시스템 환경설정이 누락되어 있습니다.'
+            : `결제창 호출 실패: ${err.message}`
+          : '결제창 호출 실패. 잠시 후 다시 시도해주세요.';
+      window.alert(msg);
+    }
   };
 
   return (

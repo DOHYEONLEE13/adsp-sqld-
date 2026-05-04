@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.104.1",
+    "@tosspayments/payment-sdk": "^1.9.2",
     "framer-motion": "^12.38.0",
     "hls.js": "^1.6.16",
     "lucide-react": "^0.454.0",

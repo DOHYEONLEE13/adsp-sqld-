@@ -32,6 +32,7 @@ const AdminPage = lazy(() => import('./pages/AdminPage'));
 const RedeemPage = lazy(() => import('./pages/RedeemPage'));
 const RefundRequestPage = lazy(() => import('./pages/RefundRequestPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
+const PaymentCallbackPage = lazy(() => import('./pages/PaymentCallbackPage'));
 const GamePage = lazy(() => import('./game/GamePage'));
 const StatsPage = lazy(() => import('./game/StatsPage'));
 const BookmarksPage = lazy(() => import('./game/BookmarksPage'));
@@ -49,7 +50,8 @@ type Route =
   | 'admin'
   | 'redeem'
   | 'refund-request'
-  | 'login';
+  | 'login'
+  | 'payment-callback';
 
 interface RouteState {
   route: Route;
@@ -82,6 +84,8 @@ function getRoute(): RouteState {
   if (hash.startsWith('/redeem')) return { route: 'redeem' };
   if (hash.startsWith('/refund-request'))
     return { route: 'refund-request' };
+  if (hash.startsWith('/payment/callback'))
+    return { route: 'payment-callback' };
   if (hash.startsWith('/login')) return { route: 'login' };
   if (hash.startsWith('/about'))
     return { route: 'legal', legalSlug: 'about' };
@@ -305,6 +309,16 @@ export default function App() {
     if (route === 'login') {
       return (
         <LoginPage
+          onBack={() => {
+            window.location.hash = '';
+          }}
+        />
+      );
+    }
+
+    if (route === 'payment-callback') {
+      return (
+        <PaymentCallbackPage
           onBack={() => {
             window.location.hash = '';
           }}

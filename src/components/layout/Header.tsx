@@ -303,6 +303,11 @@ function NavSection({
  * - 로그인 후: 이메일 + 로그아웃 아이콘.
  */
 function AuthButton() {
+  // 인증 상태 — profile store (localStorage 기반, mount 즉시 반영) 우선.
+  // email 은 추가 표시용으로만 supabase 에서 fetch.
+  // 이전 정책: useState<email> 만 사용 → mount 마다 null 로 초기화되어 라우트
+  // 전환 시 "로그인" 버튼이 잠깐 표시되던 문제. profile.isAuthenticated 사용으로 해결.
+  const profile = useMyProfile();
   const [email, setEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -336,7 +341,12 @@ function AuthButton() {
     );
   }
 
-  if (email) {
+  // 인증 상태는 stored 기반 (즉시) 또는 supabase email (fetch 후) 어느 한쪽이라도 ok
+  const loggedIn = profile.isAuthenticated || !!email;
+
+  if (loggedIn) {
+    // 표시 텍스트 우선순위: email > displayName > '로그아웃'
+    const label = email || profile.displayName || null;
     return (
       <button
         type="button"
@@ -350,7 +360,9 @@ function AuthButton() {
         className="kr-heading inline-flex items-center gap-1.5 uppercase tracking-widest text-[10px] md:text-[11px] px-3 md:px-4 py-2 md:py-2.5 rounded-full border border-cream/25 hover:bg-cream/10 transition disabled:opacity-40"
       >
         <LogOut size={12} strokeWidth={2.4} />
-        <span className="hidden sm:inline truncate max-w-[120px]">{email}</span>
+        {label ? (
+          <span className="hidden sm:inline truncate max-w-[120px]">{label}</span>
+        ) : null}
         <span className="sm:hidden">로그아웃</span>
       </button>
     );

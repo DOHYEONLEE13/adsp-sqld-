@@ -295,6 +295,16 @@ export default function LessonScreen({
             setEnergyBlock(null);
             onBack();
           }}
+          onUpgrade={() => {
+            // 랜딩의 #pricing 섹션으로 이동 → SPA 가 hashchange 로 landing 전환
+            window.location.href = '/#pricing';
+            // mount 이후 anchor scroll 명시 (브라우저 자동 scroll 누락 보장)
+            window.setTimeout(() => {
+              document
+                .getElementById('pricing')
+                ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 250);
+          }}
         />
       ) : null}
       <PageAmbientBg blur />

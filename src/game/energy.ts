@@ -250,7 +250,6 @@ export interface ConsumeResult {
 function consumeGuest(amount: number): ConsumeResult {
   const cur = regenGuest(loadGuestEnergy());
   if (cur.count < amount) {
-    // 부족 — 다음 충전까지 남은 초 계산
     const elapsed = Date.now() - cur.updatedAt;
     const remainingMs = REGEN_MS - (elapsed % REGEN_MS);
     saveGuestEnergy(cur);
@@ -261,9 +260,13 @@ function consumeGuest(amount: number): ConsumeResult {
       retryAfterSec: Math.ceil(remainingMs / 1000),
     };
   }
+  // updatedAt 정책 (서버 RPC consume_energy 와 동일):
+  //  - cap (5) 에서 첫 차감 → 새 30분 cycle 시작 (Date.now())
+  //  - cap 미만에서 차감 → 기존 cycle 유지 (regenGuest 가 advance 한 updatedAt)
+  const newUpdatedAt = cur.count >= CAP ? Date.now() : cur.updatedAt;
   const next: GuestEnergy = {
     count: cur.count - amount,
-    updatedAt: Date.now(),
+    updatedAt: newUpdatedAt,
   };
   saveGuestEnergy(next);
   setState(guestStateFrom(next));

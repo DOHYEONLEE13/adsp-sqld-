@@ -503,45 +503,71 @@ function PromoCodeManager() {
     if (creating) return;
     setCreating(true);
     setFeedback(null);
-    const sb = getSupabase();
-    if (!sb) {
+    try {
+      const sb = getSupabase();
+      if (!sb) {
+        setFeedback({ kind: 'err', msg: 'Supabase 미설정 — 발급 불가' });
+        return;
+      }
+      const code = `QDP-PROMO-${genCodeSuffix(8)}`;
+      const expires = expiresAt
+        ? new Date(`${expiresAt}T23:59:59`).toISOString()
+        : null;
+      const { error } = await sb.from('redemption_codes').insert({
+        code,
+        granted_tier: 'lifetime',
+        max_uses: Math.max(1, maxUses | 0),
+        note: note.trim() || null,
+        expires_at: expires,
+      });
+      if (error) {
+        // eslint-disable-next-line no-console
+        console.error('[promo] insert failed', error);
+        setFeedback({
+          kind: 'err',
+          msg: `발급 실패 — ${error.message} (코드 ${error.code ?? '?'})`,
+        });
+        return;
+      }
+      setFeedback({ kind: 'ok', msg: `${code} 발급됨` });
+      setNote('');
+      await reload();
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('[promo] exception', e);
+      const msg = e instanceof Error ? e.message : String(e);
+      setFeedback({ kind: 'err', msg: `오류 — ${msg}` });
+    } finally {
+      // 어떤 경우에도 발급 중 spinner 해제 (이전 코드의 hang 보호)
       setCreating(false);
-      return;
     }
-    const code = `QDP-PROMO-${genCodeSuffix(8)}`;
-    const expires = expiresAt
-      ? new Date(`${expiresAt}T23:59:59`).toISOString()
-      : null;
-    const { error } = await sb.from('redemption_codes').insert({
-      code,
-      granted_tier: 'lifetime',
-      max_uses: Math.max(1, maxUses | 0),
-      note: note.trim() || null,
-      expires_at: expires,
-    });
-    setCreating(false);
-    if (error) {
-      setFeedback({ kind: 'err', msg: `발급 실패 — ${error.message}` });
-      return;
-    }
-    setFeedback({ kind: 'ok', msg: `${code} 발급됨` });
-    setNote('');
-    await reload();
   };
 
   const handleDelete = async (code: string) => {
     if (!window.confirm(`"${code}" 정말 삭제하시겠어요? 이미 사용된 grant 는 유지됩니다.`)) {
       return;
     }
-    const sb = getSupabase();
-    if (!sb) return;
-    const { error } = await sb.from('redemption_codes').delete().eq('code', code);
-    if (error) {
-      setFeedback({ kind: 'err', msg: `삭제 실패 — ${error.message}` });
-      return;
+    try {
+      const sb = getSupabase();
+      if (!sb) return;
+      const { error } = await sb.from('redemption_codes').delete().eq('code', code);
+      if (error) {
+        // eslint-disable-next-line no-console
+        console.error('[promo] delete failed', error);
+        setFeedback({
+          kind: 'err',
+          msg: `삭제 실패 — ${error.message} (코드 ${error.code ?? '?'})`,
+        });
+        return;
+      }
+      setFeedback({ kind: 'ok', msg: `${code} 삭제됨` });
+      await reload();
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('[promo] delete exception', e);
+      const msg = e instanceof Error ? e.message : String(e);
+      setFeedback({ kind: 'err', msg: `오류 — ${msg}` });
     }
-    setFeedback({ kind: 'ok', msg: `${code} 삭제됨` });
-    await reload();
   };
 
   const isExpired = (row: RedemptionCodeRow): boolean =>
@@ -572,9 +598,9 @@ function PromoCodeManager() {
           코드 발급
         </div>
         <div className="flex flex-wrap items-end gap-3">
-          <label className="flex flex-col gap-1.5 min-w-[120px]">
+          <label className="flex flex-col gap-1.5 min-w-[140px]">
             <span className="kr-num text-[10px] uppercase tracking-widest text-cream/55">
-              사용 가능 횟수
+              인원 제한
             </span>
             <input
               type="number"
@@ -582,12 +608,16 @@ function PromoCodeManager() {
               max={10000}
               value={maxUses}
               onChange={(e) => setMaxUses(parseInt(e.target.value || '1', 10))}
-              className="kr-num text-[13px] px-3 py-2 rounded-lg bg-cream/8 border border-cream/15 outline-none focus:border-neon/50 transition"
+              className="kr-num text-[13px] px-3 py-2 rounded-lg bg-cream/8 border border-cream/15 outline-none focus:border-neon/50 transition text-cream placeholder:text-cream/35"
             />
+            <span className="kr-body text-[10.5px] text-cream/55 leading-[1.4]">
+              이 코드를 입력해 프리미엄을 받을 수 있는 최대 인원수.
+              1 = 1명만 사용 가능.
+            </span>
           </label>
           <label className="flex flex-col gap-1.5 min-w-[160px]">
             <span className="kr-num text-[10px] uppercase tracking-widest text-cream/55">
-              만료일 (선택)
+              코드 만료일 (선택)
             </span>
             <input
               type="date"
@@ -595,6 +625,9 @@ function PromoCodeManager() {
               onChange={(e) => setExpiresAt(e.target.value)}
               className="kr-num text-[13px] px-3 py-2 rounded-lg bg-cream/8 border border-cream/15 outline-none focus:border-neon/50 transition text-cream"
             />
+            <span className="kr-body text-[10.5px] text-cream/55 leading-[1.4]">
+              이 날짜 이후엔 코드 입력 거절. 이전에 사용한 사람의 권한은 영구.
+            </span>
           </label>
           <label className="flex flex-col gap-1.5 flex-1 min-w-[200px]">
             <span className="kr-num text-[10px] uppercase tracking-widest text-cream/55">
@@ -605,7 +638,7 @@ function PromoCodeManager() {
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="예: 5월 마케팅 캠페인"
-              className="kr-body text-[13px] px-3 py-2 rounded-lg bg-cream/8 border border-cream/15 outline-none focus:border-neon/50 transition placeholder:text-cream/35"
+              className="kr-body text-[13px] px-3 py-2 rounded-lg bg-cream/8 border border-cream/15 outline-none focus:border-neon/50 transition text-cream placeholder:text-cream/35"
             />
           </label>
           <button

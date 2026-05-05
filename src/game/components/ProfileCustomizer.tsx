@@ -94,19 +94,13 @@ export default function ProfileCustomizer() {
 
   const onSaveAvatar = () => {
     if (!avatarChanged) return;
-    let blocked = false;
+    // sync-not-ready 가드 제거 (2026-05-05) — localStorage 즉시 저장 + 서버
+    // push 는 fire-and-forget. UI 가 즉시 갱신되어 사용자가 변경 확인 가능.
     if (draftAvatarPose !== profile.avatarPose) {
-      const r = setAvatarPose(draftAvatarPose);
-      if (!r.ok && r.reason === 'sync-not-ready') blocked = true;
+      setAvatarPose(draftAvatarPose);
     }
-    if (!blocked && draftCharacter !== profile.avatarCharacter) {
-      const r = setAvatarCharacter(draftCharacter);
-      if (!r.ok && r.reason === 'sync-not-ready') blocked = true;
-    }
-    if (blocked) {
-      window.alert(
-        '프로필 동기화가 완료되지 않았어요. 잠시 후 다시 시도해주세요.',
-      );
+    if (draftCharacter !== profile.avatarCharacter) {
+      setAvatarCharacter(draftCharacter);
     }
   };
 

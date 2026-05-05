@@ -116,11 +116,6 @@ export async function signOut() {
       try { window.localStorage.removeItem(k); } catch { /* 무시 */ }
     }
     try { window.sessionStorage.removeItem('questdp.auth.redirectReason.v1'); } catch { /* 무시 */ }
-    // 페이지 새로고침으로 모든 모듈 변수 + React state 강제 초기화.
-    // (profile.ts 의 _isAuthenticated/_syncStatus/cachedSnapshot,
-    //  energy/stepUnlocks 의 module-level state 등 stale 가능성 제거)
-    // 홈으로 이동 + 새로고침 = 게스트 UI 일관 표시.
-    window.location.replace('/');
   }
 }
 

@@ -84,9 +84,19 @@
       }
     </script>
 
-    <!-- Favicons — 토리 마스코트 마크 (1024×1024 PNG, 브라우저 자동 다운스케일) -->
-    <link rel="icon" type="image/png" sizes="any" href="/logo/questdp-mark.png" />
+    <!-- Favicons — 토리 마스코트 마크.
+         Google 검색 결과 옆에 favicon 노출되도록 다중 sizes 등록.
+         (Google 권장 — 48 의 배수 사이즈, sizes 명시) -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/logo/questdp-mark.png" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/logo/questdp-mark.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/logo/questdp-mark.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/logo/questdp-mark.png" />
+    <!-- legacy 'shortcut icon' — 일부 검색엔진은 이걸 우선 -->
+    <link rel="shortcut icon" type="image/png" href="/logo/questdp-mark.png" />
+    <!-- iOS 홈 화면 아이콘 -->
     <link rel="apple-touch-icon" sizes="180x180" href="/logo/questdp-mark.png" />
+    <!-- PWA / Android 홈 화면 — manifest.json 이 추가 메타 + 다중 사이즈 정의 -->
+    <link rel="manifest" href="/manifest.json" />
     <!-- Safari pinned tab — 단색 SVG fallback (mask-icon 은 PNG 미지원) -->
     <link rel="mask-icon" href="/favicon.svg" color="#6FFF00" />
 

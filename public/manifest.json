@@ -1,0 +1,32 @@
+{
+  "name": "QuestDP — ADSP·SQLD 자격증",
+  "short_name": "QuestDP",
+  "description": "ADsP·SQLD 자격증을 게임처럼 학습하는 마이크로러닝 SaaS. 토리·셀리 마스코트와 함께 챕터를 정복하세요.",
+  "lang": "ko",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#010828",
+  "theme_color": "#010828",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/logo/questdp-mark.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo/questdp-mark.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo/questdp-mark.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

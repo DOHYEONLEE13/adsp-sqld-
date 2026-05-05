@@ -1,5 +1,5 @@
-import { Check, ArrowRight } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { Check, ArrowRight, Zap } from 'lucide-react';
+import { Fragment, useEffect, useRef, useState, type ReactNode } from 'react';
 import { PRICING_PLANS } from '@/data/pricing';
 import { cx } from '@/lib/utils';
 import type { PricingPlan } from '@/types/site';
@@ -139,6 +139,30 @@ export default function Pricing() {
   );
 }
 
+/**
+ * 텍스트 안의 ⚡ 이모지를 보라색 Zap 아이콘 (lucide) 으로 inline 치환.
+ * 예: "⚡ 5회 보유 — 새 step 진입 시 1회 소모"
+ *   → <Zap fill="#A78BFA" /> "5회 보유 — ..."
+ */
+function renderWithZap(text: string): ReactNode {
+  const parts = text.split('⚡');
+  if (parts.length === 1) return text;
+  return parts.map((part, i) => (
+    <Fragment key={i}>
+      {i > 0 ? (
+        <Zap
+          className="inline-block align-[-0.18em] mx-0.5"
+          size={15}
+          fill="#A78BFA"
+          strokeWidth={0}
+          aria-hidden
+        />
+      ) : null}
+      {part}
+    </Fragment>
+  ));
+}
+
 function PricingCard({ plan }: { plan: PricingPlan }) {
   const isHighlight = plan.emphasis === 'highlight';
   const isPaid = plan.id !== 'free';
@@ -222,7 +246,7 @@ function PricingCard({ plan }: { plan: PricingPlan }) {
       {/* 설명 */}
       {plan.description && (
         <p className="kr-body text-[13px] text-cream/65 mt-3 leading-[1.55]">
-          {plan.description}
+          {renderWithZap(plan.description)}
         </p>
       )}
 
@@ -247,7 +271,7 @@ function PricingCard({ plan }: { plan: PricingPlan }) {
               <Check size={11} strokeWidth={3} aria-hidden />
             </span>
             <span className={cx(f.highlight ? 'text-cream' : 'text-cream/80')}>
-              {f.text}
+              {renderWithZap(f.text)}
             </span>
           </li>
         ))}

@@ -22,7 +22,7 @@ import {
 import { recordSingleAnswer } from '../storage';
 import { useProgress } from '../useProgress';
 import { consumeEnergy } from '../energy';
-import { stepKey, unlockStepOnServer } from '../stepUnlocks';
+import { stepKey, unlockStepOnServer, useStepUnlocks } from '../stepUnlocks';
 import EnergyBlockModal from '../components/EnergyBlockModal';
 import Ques from '@/components/mascot/Ques';
 import { characterForSubject } from '@/components/mascot/types';
@@ -99,6 +99,10 @@ export default function DialogueLesson({
   const progressStore = useProgress();
   const progressStoreRef = useRef(progressStore);
   progressStoreRef.current = progressStore;
+  // step_unlocks 서버/localStorage set 도 ref — visited dedup 용.
+  const lockSnap = useStepUnlocks();
+  const lockSnapRef = useRef(lockSnap);
+  lockSnapRef.current = lockSnap;
   const [energyBlock, setEnergyBlock] = useState<{ retryAfterSec: number } | null>(null);
   useEffect(() => {
     if (consumedStepsRef.current.has(stepIdx)) return;
@@ -112,10 +116,24 @@ export default function DialogueLesson({
     const alreadySolved = !!stat && (stat.correct ?? 0) > 0;
     if (alreadySolved) return;
 
+    // 이미 visited (한 번 ⚡ 차감하고 진입한 적 있음) — 차감 X
+    // step_unlocks 서버 row 가 visit 기록 의미. 서버 unlocked set 에 있으면 차감 X.
+    if (lesson) {
+      const sk = stepKey(lesson.id, stepIdx);
+      if (lockSnapRef.current.unlockedSet.has(sk)) return;
+    }
+
     let cancelled = false;
     void consumeEnergy(1).then((res) => {
       if (cancelled) return;
-      if (!res.ok) setEnergyBlock({ retryAfterSec: res.retryAfterSec });
+      if (!res.ok) {
+        setEnergyBlock({ retryAfterSec: res.retryAfterSec });
+        return;
+      }
+      // 차감 성공 시에만 visit 기록 (= 서버 step_unlocks insert / localStorage 추가)
+      if (lesson) {
+        void unlockStepOnServer(stepKey(lesson.id, stepIdx));
+      }
     });
     return () => {
       cancelled = true;
@@ -290,10 +308,8 @@ export default function DialogueLesson({
     const timeMs = Date.now() - startedAtRef.current;
     const xp = recordSingleAnswer(quizQuestion.id, ok, timeMs);
     setPhase('feedback');
-    // 정답 맞춘 경우에만 다음 step 자동 해금 (단순 진입으로 해금되지 않음).
-    if (ok && stepIdx < lesson.steps.length - 1) {
-      void unlockStepOnServer(stepKey(lesson.id, stepIdx + 1));
-    }
+    // 잠금 결정은 prevSolved (이전 step 정답 cross-check) 로만 — 별도 unlock RPC X.
+    // 다음 step 진입 시 mount useEffect 가 ⚡ 차감 + visit 기록 알아서 처리.
     if (xp > 0) {
       setXpToast({ amount: xp, key: Date.now() });
       window.setTimeout(() => setXpToast(null), 1800);
@@ -303,12 +319,8 @@ export default function DialogueLesson({
   const handleNextStep = () => {
     if (stepIdx < lesson.steps.length - 1) {
       const nextIdx = stepIdx + 1;
-      // review 전용 step (quizId 없음) 은 진입만으로 다음 step 해금.
-      // quiz step 은 handleChoose 에서 정답 맞춘 경우만 해금.
-      const currentStep = lesson.steps[stepIdx];
-      if (!currentStep.quizId) {
-        void unlockStepOnServer(stepKey(lesson.id, nextIdx));
-      }
+      // 잠금은 prevSolved 로만 결정 — 별도 unlock 호출 X.
+      // 다음 step mount useEffect 가 ⚡ 차감 + visit 기록 처리.
       setStepIdx(nextIdx);
       window.scrollTo({ top: 0, behavior: 'auto' });
     } else {

@@ -207,57 +207,56 @@ export function getMyProfile(): MyProfile {
  *  - 인증 + stored 없음 → no-stored 에러 (sync 후 재시도).
  */
 export function setDisplayName(name: string): { ok: boolean; reason?: string } {
-  // sync-not-ready 가드 제거 (2026-05-05) — 사용자 의도 우선, localStorage 즉시
-  // 반영 + push 시도. 실패 시 다음 sync 가 server 권위로 덮어씀.
+  if (_isAuthenticated && _syncStatus !== 'ok') {
+    return { ok: false, reason: 'sync-not-ready' };
+  }
   const trimmed = name.trim();
   const stored = loadStored();
   if (!stored) {
-    // localStorage 비었을 때 — fallback stored 자동 생성 (인증/게스트 무관).
-    saveStored({
-      v: 1,
-      tag: '',
-      displayName: trimmed,
-      avatarPose: DEFAULT_AVATAR_POSE,
-      avatarCharacter: DEFAULT_CHARACTER,
-      createdAt: Date.now(),
-    });
-    notify();
-    if (_isAuthenticated) void pushToSupabase({ display_name: trimmed });
-    return { ok: true };
+    // 게스트 첫 닉네임 설정 — minimal stored 자동 생성. tag 는 빈값 유지.
+    if (!_isAuthenticated) {
+      saveStored({
+        v: 1,
+        tag: '',
+        displayName: trimmed,
+        avatarPose: DEFAULT_AVATAR_POSE,
+        avatarCharacter: DEFAULT_CHARACTER,
+        createdAt: Date.now(),
+      });
+      notify();
+      return { ok: true };
+    }
+    return { ok: false, reason: 'no-stored' };
   }
   saveStored({ ...stored, displayName: trimmed });
   notify();
+  // 서버 동기화 — 인증된 사용자 한정 (게스트는 push 대상 X).
   if (_isAuthenticated) {
     void pushToSupabase({ display_name: trimmed });
   }
   return { ok: true };
 }
 
-/**
- * 아바타 포즈 변경.
- *
- * 정책 (2026-05-05 변경): sync-not-ready 가드 제거.
- *   - 사용자가 명시적으로 [저장하기] 누른 의사를 우선
- *   - localStorage 즉시 저장 + UI 갱신
- *   - 서버 push 는 fire-and-forget (sync 'pending'/'failed' 도 시도). 실패해도
- *     다음 SIGNED_IN / 수동 retry 시 server pull 이 권위 source 로 덮어씀.
- *   - 게스트 (미로그인) 도 localStorage 만 저장 후 즉시 UI 갱신.
- */
+/** 아바타 포즈 변경. setDisplayName 과 동일 가드. */
 export function setAvatarPose(pose: QuesPose): { ok: boolean; reason?: string } {
+  if (_isAuthenticated && _syncStatus !== 'ok') {
+    return { ok: false, reason: 'sync-not-ready' };
+  }
   const stored = loadStored();
   if (!stored) {
-    // localStorage 비었을 때 — fallback stored 생성 (인증 직후 sync 미완 케이스 포함)
-    saveStored({
-      v: 1,
-      tag: '',
-      displayName: '',
-      avatarPose: pose,
-      avatarCharacter: DEFAULT_CHARACTER,
-      createdAt: Date.now(),
-    });
-    notify();
-    if (_isAuthenticated) void pushToSupabase({ avatar_pose: pose });
-    return { ok: true };
+    if (!_isAuthenticated) {
+      saveStored({
+        v: 1,
+        tag: '',
+        displayName: '',
+        avatarPose: pose,
+        avatarCharacter: DEFAULT_CHARACTER,
+        createdAt: Date.now(),
+      });
+      notify();
+      return { ok: true };
+    }
+    return { ok: false, reason: 'no-stored' };
   }
   saveStored({ ...stored, avatarPose: pose });
   notify();
@@ -267,23 +266,28 @@ export function setAvatarPose(pose: QuesPose): { ok: boolean; reason?: string } 
   return { ok: true };
 }
 
-/** 아바타 캐릭터 변경 (tori | selli). setAvatarPose 와 동일 정책. */
+/** 아바타 캐릭터 변경 (tori | selli). setAvatarPose 와 동일 가드. */
 export function setAvatarCharacter(
   character: MascotCharacter,
 ): { ok: boolean; reason?: string } {
+  if (_isAuthenticated && _syncStatus !== 'ok') {
+    return { ok: false, reason: 'sync-not-ready' };
+  }
   const stored = loadStored();
   if (!stored) {
-    saveStored({
-      v: 1,
-      tag: '',
-      displayName: '',
-      avatarPose: DEFAULT_AVATAR_POSE,
-      avatarCharacter: character,
-      createdAt: Date.now(),
-    });
-    notify();
-    if (_isAuthenticated) void pushToSupabase({ avatar_character: character });
-    return { ok: true };
+    if (!_isAuthenticated) {
+      saveStored({
+        v: 1,
+        tag: '',
+        displayName: '',
+        avatarPose: DEFAULT_AVATAR_POSE,
+        avatarCharacter: character,
+        createdAt: Date.now(),
+      });
+      notify();
+      return { ok: true };
+    }
+    return { ok: false, reason: 'no-stored' };
   }
   saveStored({ ...stored, avatarCharacter: character });
   notify();

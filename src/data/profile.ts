@@ -441,7 +441,15 @@ export async function retryProfileSync(): Promise<void> {
   await pullFromSupabase();
 }
 
-/** 부분 업데이트를 server 에 PATCH (인증돼 있을 때만). 실패해도 무시. */
+/**
+ * 부분 업데이트를 server 에 PATCH (인증돼 있을 때만).
+ *
+ * 정책:
+ *  - error 발생 시 console.error 로 노출 (silent fail 방지 — 진단 용이)
+ *  - 성공 시에도 returning 값으로 localStorage 재확인 (saveStored 가 다시
+ *    실행되어 race 로 인해 옛 값이 덮어쓰여진 경우 복구)
+ *  - 어떤 throw 가 발생해도 호출자에게 영향 X (fire-and-forget 유지)
+ */
 async function pushToSupabase(patch: {
   display_name?: string;
   avatar_pose?: QuesPose;
@@ -452,12 +460,38 @@ async function pushToSupabase(patch: {
   try {
     const { data: sess } = await sb.auth.getSession();
     if (!sess.session) return;
-    await sb
+    const { data, error } = await sb
       .from('profiles')
       .update(patch)
-      .eq('id', sess.session.user.id);
-  } catch {
-    /* 오프라인·일시적 오류 — localStorage 는 이미 update 됐으니 다음 pull 에 정리. */
+      .eq('id', sess.session.user.id)
+      .select('display_name, avatar_pose, avatar_character')
+      .maybeSingle();
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error('[profile] update failed', error.message, error.code);
+      return;
+    }
+    if (data) {
+      // 성공 — server 가 confirm 한 값으로 localStorage 재확정.
+      // 이유: push await 중 다른 곳에서 pullFromSupabase 가 옛 server 값을
+      // 덮어썼을 race 가능성 → server 응답이 진짜 권위 source 라 다시 저장.
+      const local = loadStored();
+      if (local) {
+        saveStored({
+          ...local,
+          displayName: data.display_name ?? local.displayName,
+          avatarPose:
+            (data.avatar_pose as QuesPose | undefined) ?? local.avatarPose,
+          avatarCharacter:
+            (data.avatar_character as MascotCharacter | undefined) ??
+            local.avatarCharacter,
+        });
+        notify();
+      }
+    }
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('[profile] update exception', e);
   }
 }
 

@@ -457,10 +457,20 @@ function TopicSection({
             : undefined;
           const completed = !!stat?.lastCorrect && (stat?.correct ?? 0) > 0;
           const attempted = !!stat && (stat.attempts ?? 0) > 0;
+          // 이전 step 클리어 여부 — 정답 cross-check 또는 review 전용 step.
+          const prevStep = idx > 0 ? steps[idx - 1] : null;
+          const prevSolved = !prevStep
+            ? true
+            : !prevStep.quizId
+              ? true // review 전용 step 은 진입만으로 통과
+              : (() => {
+                  const ps = progress.questionStats[prevStep.quizId];
+                  return !!ps && (ps.correct ?? 0) > 0;
+                })();
           // finale step 은 별도 잠금 (subject 완주 + admin 검수 모드만 우회).
           const locked = isFinaleStep(step)
             ? isFinaleStepLocked(progress, step)
-            : isStepLocked(lockSnap, lessonId, idx);
+            : isStepLocked(lockSnap, lessonId, idx, prevSolved);
           return (
             <StepNode
               key={step.id}

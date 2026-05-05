@@ -229,17 +229,31 @@ export function isDevUnlockStepsEnabled(): boolean {
   }
 }
 
-/** step idx 0 은 항상 unlocked. 그 외엔 enforced + 서버 등록 여부로 결정. */
+/**
+ * step idx 0 은 항상 unlocked. 그 외엔 **이전 step 정답 맞춤** 으로만 결정.
+ *
+ * 정책 (2026-05-05 변경):
+ *   - prevSolved=true (이전 step 의 quiz 를 정답 맞췄거나 review 전용 step) → unlocked
+ *   - prevSolved=false → locked
+ *   - server step_unlocks 의 row 는 통계 목적으로만 유지. 클라이언트 잠금 결정엔
+ *     사용 X. (이전 정책에서 자동 unlock 된 stale 데이터를 무시하기 위함.)
+ *
+ * `lessonId` 인자는 호환성 유지용 — server unlockedSet lookup 은 더 이상 안 함.
+ */
 export function isStepLocked(
   snap: StepLockSnapshot,
-  lessonId: string,
+  _lessonId: string,
   stepIdx: number,
+  prevSolved: boolean = true,
 ): boolean {
   // 검수 모드 — admin 이 dev 토글 ON 했으면 모든 step 강제 unlocked.
   if (isDevUnlockStepsEnabled()) return false;
+  // 프리미엄 / 어드민 / env 미설정 = enforce X
   if (!snap.enforced) return false;
+  // step 0 은 lesson 진입 시 항상 첫 번째라 default unlocked.
   if (stepIdx === 0) return false;
-  return !snap.unlockedSet.has(stepKey(lessonId, stepIdx));
+  // 이전 step 미클리어 = 잠금
+  return !prevSolved;
 }
 
 /** 로컬 state + (게스트면) localStorage 에 step key 추가. */

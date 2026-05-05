@@ -35,7 +35,7 @@ import ReviewPage from './ReviewPage';
 import { createReviewSession } from './review';
 import { consumeEnergy } from './energy';
 import EnergyBlockModal from './components/EnergyBlockModal';
-import { isStepLocked, stepKey, unlockStepOnServer } from './stepUnlocks';
+import { isStepLocked } from './stepUnlocks';
 import { useStepUnlocks } from './stepUnlocks';
 import { isFinaleStep, isFinaleStepLocked } from './finale';
 import { useProgress } from './useProgress';
@@ -337,7 +337,7 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
             )
           }
           onSelectStep={(topic, stepIdx, passNumber) => {
-            // lessonId 는 lesson lookup 으로. 잠금 검사 + 다음 step 자동 해금.
+            // lessonId 는 lesson lookup 으로. 잠금 검사 (정답 cross-check).
             const lesson = getLesson(screen.subject, screen.chapter, topic);
             const lessonId = lesson?.id ?? `${screen.subject}-${screen.chapter}`;
             const targetStep = lesson?.steps[stepIdx];
@@ -353,15 +353,23 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
               window.setTimeout(() => setLockToast(null), 2800);
               return;
             }
-            if (isStepLocked(stepLockSnap, lessonId, stepIdx)) {
-              setLockToast('앞 단계를 먼저 풀이하면 자동 해금돼요.');
+            // 이전 step 클리어 cross-check (review 전용 step 은 진입만으로 통과)
+            const prevStep = lesson && stepIdx > 0 ? lesson.steps[stepIdx - 1] : null;
+            const prevSolved = !prevStep
+              ? true
+              : !prevStep.quizId
+                ? true
+                : (() => {
+                    const ps = progress.questionStats[prevStep.quizId];
+                    return !!ps && (ps.correct ?? 0) > 0;
+                  })();
+            if (isStepLocked(stepLockSnap, lessonId, stepIdx, prevSolved)) {
+              setLockToast('앞 단계의 문제를 먼저 정답 처리해야 열려요.');
               window.setTimeout(() => setLockToast(null), 2400);
               return;
             }
-            // 진입한 step 의 다음 step 을 자동 해금 (서버 RPC, fire-and-forget)
-            if (lesson && stepIdx + 1 < lesson.steps.length) {
-              void unlockStepOnServer(stepKey(lessonId, stepIdx + 1));
-            }
+            // 자동 해금 제거 — 정답 맞춰야 다음 step 해금 (DialogueLesson/LessonScreen
+            // 의 handleChoose 가 처리). 진입만으로는 unlock 안 됨.
             setScreen({
               kind: 'lesson',
               subject: screen.subject,

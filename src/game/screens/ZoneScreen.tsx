@@ -339,6 +339,7 @@ export default function ZoneScreen({
                   );
                   return w ? weaknessLevel(w) === 'weak' : false;
                 })()}
+                passNumber={selectedPass}
                 onSelectStep={(stepIdx) =>
                   onSelectStep(lesson.topic, stepIdx, selectedPass)
                 }
@@ -394,6 +395,11 @@ interface TopicSectionProps {
   accent: string;
   progress: ProgressStore;
   isWeak: boolean;
+  /**
+   * 현재 회독 차수 (1·2·3). 2 이상이면 review-only step (quizId 없음) 을
+   * 노출에서 제외 — 회독 자체가 복습이라 안에 또 복습 step 둘 필요 없음.
+   */
+  passNumber: number;
   onSelectStep: (stepIdx: number) => void;
   onLockedClick?: (stepIdx: number) => void;
 }
@@ -406,6 +412,7 @@ function TopicSection({
   accent,
   progress,
   isWeak,
+  passNumber,
   onSelectStep,
   onLockedClick,
 }: TopicSectionProps) {
@@ -414,6 +421,12 @@ function TopicSection({
   // 가 함수 호출 시점에 localStorage 를 읽으므로 hook 결과 사용 안 해도 됨.
   // 단지 변경 감지 → 재렌더 트리거 목적.
   useDevUnlockFlags();
+
+  // 2회독 이상에서는 review-only step (quizId 없음) 제외.
+  // _origIdx 보존 — onSelectStep 호출 시 lesson.steps 의 원본 index 전달용.
+  const stepsWithIdx = steps.map((s, i) => ({ ...s, _origIdx: i }));
+  const visibleSteps =
+    passNumber > 1 ? stepsWithIdx.filter((s) => !!s.quizId) : stepsWithIdx;
   return (
     <section>
       {/* 섹션 헤더 — caps eyebrow + 토픽 이름 + hairline */}
@@ -438,7 +451,7 @@ function TopicSection({
             </span>
           ) : null}
           <span className="kr-body text-[11px] text-cream/50 tabular-nums ml-auto">
-            {steps.length} steps
+            {visibleSteps.length} steps
           </span>
         </div>
         <div
@@ -450,19 +463,20 @@ function TopicSection({
 
       {/* step 노드 column */}
       <div className="flex flex-col">
-        {steps.map((step, idx) => {
+        {visibleSteps.map((step, displayIdx) => {
+          const idx = step._origIdx;
           // review (quiz-less) step 은 stat 없음 — 항상 미완료 취급 (진행하면 됨).
           const stat = step.quizId
             ? progress.questionStats[step.quizId]
             : undefined;
           const completed = !!stat?.lastCorrect && (stat?.correct ?? 0) > 0;
           const attempted = !!stat && (stat.attempts ?? 0) > 0;
-          // 이전 step 클리어 여부 — 정답 cross-check 또는 review 전용 step.
-          const prevStep = idx > 0 ? steps[idx - 1] : null;
+          // 이전 step 클리어 여부 — visibleSteps 기준으로 prev 산정.
+          const prevStep = displayIdx > 0 ? visibleSteps[displayIdx - 1] : null;
           const prevSolved = !prevStep
             ? true
             : !prevStep.quizId
-              ? true // review 전용 step 은 진입만으로 통과
+              ? true // review 전용 step 은 진입만으로 통과 (1회독에서만 노출)
               : (() => {
                   const ps = progress.questionStats[prevStep.quizId];
                   return !!ps && (ps.correct ?? 0) > 0;
@@ -474,13 +488,13 @@ function TopicSection({
           return (
             <StepNode
               key={step.id}
-              n={idx + 1}
+              n={displayIdx + 1}
               title={step.title}
               accent={accent}
               completed={completed}
               attempted={attempted}
               locked={locked}
-              isLast={idx === steps.length - 1}
+              isLast={displayIdx === visibleSteps.length - 1}
               onClick={() => {
                 if (locked) {
                   onLockedClick?.(idx);

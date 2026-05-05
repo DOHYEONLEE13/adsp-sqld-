@@ -49,9 +49,9 @@ function Header() {
           <span className="text-[32px] sm:text-[44px] md:text-[52px] lg:text-[60px]">
             {COLLECTION.seeAllPrimary}
           </span>
-          <span className="flex flex-col gap-0.5 text-[20px] sm:text-[26px] md:text-[30px] lg:text-[36px]">
-            <span>{COLLECTION.seeAllSecondaryTop}</span>
-            <span>{COLLECTION.seeAllSecondaryBottom}</span>
+          <span className="text-[20px] sm:text-[26px] md:text-[30px] lg:text-[36px] whitespace-nowrap">
+            {COLLECTION.seeAllSecondaryTop}
+            {COLLECTION.seeAllSecondaryBottom}
           </span>
         </div>
         <span

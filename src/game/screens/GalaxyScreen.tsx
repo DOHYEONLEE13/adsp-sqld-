@@ -136,10 +136,18 @@ export default function GalaxyScreen({
     return () => window.clearTimeout(id);
   }, [view, onSelectSubject]);
 
+  // 닉네임 미설정 + subject 클릭 시 NicknameOnboarding 노출 후 자동 진입.
+  const [pendingSubject, setPendingSubject] = useState<Subject | null>(null);
+
   const handlePlanetClick = (subject: Subject) => {
     if (view.kind === 'launching') return;
     const total = subject === 'adsp' ? adspTotal : sqldTotal;
     if (total === 0) return;
+    if (!hasNickname && !profile.pendingServerSync) {
+      // 닉네임 입력 후 자동으로 해당 subject 의 detail 뷰로 진입
+      setPendingSubject(subject);
+      return;
+    }
     setView({ kind: 'detail', subject });
   };
 
@@ -153,6 +161,19 @@ export default function GalaxyScreen({
 
   // 오늘 데일리 미션 완료 여부 — banner 상태 표시.
   const dailyDoneToday = isToday(progress.lastDailyMissionAt);
+
+  // 사용자가 ADSP/SQLD 클릭했지만 닉네임 미설정 — onboarding 후 자동 진입.
+  if (pendingSubject) {
+    return (
+      <NicknameOnboarding
+        onDone={() => {
+          const subj = pendingSubject;
+          setPendingSubject(null);
+          setView({ kind: 'detail', subject: subj });
+        }}
+      />
+    );
+  }
 
   // 첫 방문자 — 닉네임 onboarding 만 노출하고 chooser 는 그 후에.
   if (needsNicknameOnboarding) {

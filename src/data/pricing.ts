@@ -21,13 +21,14 @@ export const PRICING_PLANS: PricingPlan[] = [
     category: 'FREE',
     tier: '무료 플랜',
     price: '₩0',
-    description: '모든 콘텐츠 열람 가능. 풀이는 하루 ⚡ 5회까지.',
+    description:
+      'ADSP · SQLD 전체 커리큘럼 무료. 새 풀이는 ⚡ 최대 5회 (30분마다 자동 충전).',
     features: [
-      { text: '⚡ 에너지 5회 — 학습·모의고사 풀이 시 1회 소모' },
+      { text: '⚡ 5회 보유 — 새 step·모의고사 진입 시 1회 소모' },
+      { text: '이미 푼 step 다시 보기는 ⚡ 차감 X (무제한 복습)' },
       { text: '30분마다 ⚡ 1회 자동 충전 (최대 5회)' },
-      { text: '로드맵 순차 진행 — 앞 단계 클리어 시 다음 잠금 해제' },
-      { text: 'ADSP · SQLD 모든 개념 콘텐츠 열람' },
-      { text: '오답 복습 · 일일 미션 기본 제공' },
+      { text: '로드맵 순차 진행 — 앞 단계 정답 처리 시 다음 잠금 해제' },
+      { text: 'ADSP · SQLD 전체 커리큘럼 + 오답 복습 + 일일 미션 기본 제공' },
     ],
   },
   {

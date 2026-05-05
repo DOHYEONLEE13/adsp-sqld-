@@ -19,6 +19,8 @@ const MIGRATION_FLAG_KEY = 'questdp.migrated.v1';
 const PROGRESS_KEY = 'questdp.progress.v1';
 const BOOKMARKS_KEY = 'questdp.bookmarks.v1';
 const EXAM_DATES_KEY = 'questdp.examDates.v1';
+const GUEST_STEP_UNLOCKS_KEY = 'questdp.stepUnlocks.guest.v1';
+const PROFILE_KEY = 'questdp.profile.v1';
 
 interface ProgressV1 {
   version: 1;
@@ -182,6 +184,48 @@ async function runMigration(userId: string): Promise<void> {
         .upsert(rows, { onConflict: 'user_id,subject' });
       if (error) {
         console.warn('[migrate] exam_dates upsert failed', error.message);
+      }
+    }
+  }
+
+  // ── step_unlocks (게스트 진행도 → 인증 server) ──────────────────
+  // 게스트가 정답 맞춰 unlock 한 step 들 + visit 마커 모두 옮김.
+  // 보안 고려: 게스트가 localStorage 조작 가능하지만 server 의 question_stats
+  // 와 cross-check 안 한 채 unlock 만 해도 풀이 진행은 정답 cross-check 로
+  // 결정되므로 우회 위험 X.
+  const guestUnlocks = readJson<string[]>(GUEST_STEP_UNLOCKS_KEY);
+  if (Array.isArray(guestUnlocks) && guestUnlocks.length > 0) {
+    const rows = guestUnlocks
+      .filter((k): k is string => typeof k === 'string' && k.length > 0)
+      .map((step_key) => ({ user_id: userId, step_key }));
+    if (rows.length > 0) {
+      const { error } = await sb
+        .from('step_unlocks')
+        .upsert(rows, { onConflict: 'user_id,step_key', ignoreDuplicates: true });
+      if (error) {
+        console.warn('[migrate] step_unlocks upsert failed', error.message);
+      }
+    }
+  }
+
+  // ── displayName (게스트가 입력한 닉네임 → server profile.display_name) ──
+  // server profile 의 display_name 이 비어있을 때만 (이미 있으면 덮어쓰기 X)
+  const localProfile = readJson<{ displayName?: string }>(PROFILE_KEY);
+  const guestNick = (localProfile?.displayName ?? '').trim();
+  if (guestNick) {
+    const { data: prof } = await sb
+      .from('profiles')
+      .select('display_name')
+      .eq('id', userId)
+      .maybeSingle();
+    const serverNick = (prof?.display_name ?? '').trim();
+    if (!serverNick) {
+      const { error } = await sb
+        .from('profiles')
+        .update({ display_name: guestNick })
+        .eq('id', userId);
+      if (error) {
+        console.warn('[migrate] display_name update failed', error.message);
       }
     }
   }

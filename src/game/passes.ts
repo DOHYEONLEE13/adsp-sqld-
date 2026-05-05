@@ -17,6 +17,7 @@
  */
 
 import type { Subject } from '@/types/question';
+import { isLastSessionAdmin } from './stepUnlocks';
 import {
   CHAPTER_PASS_THRESHOLD,
   PASS_TIER_ORDER,
@@ -84,11 +85,17 @@ export function chapterPassProgress(
  * 검수용 dev 토글 — localStorage 의 'questdp.dev.unlockAllPasses' 가 '1' 이면
  * 모든 회독 자동 unlock. StatsPage 의 토글 버튼 또는 콘솔에서 직접 set.
  * 마이그 0013 미적용 환경에서 stamp 가 발급 안 되어 영원히 잠금되는 문제 우회용.
+ *
+ * **권한 게이트**: stepUnlocks 의 isLastSessionAdmin() 체크 — admin 이 아니면
+ * 토글이 켜져 있어도 효과 없음. 다른 계정 로그인 후에도 같은 브라우저의
+ * localStorage 가 살아있는 경우 일반 사용자가 모든 회독을 우회하는 문제 방지.
  */
 export const DEV_UNLOCK_KEY = 'questdp.dev.unlockAllPasses';
 
 export function isDevUnlockEnabled(): boolean {
   if (typeof window === 'undefined') return false;
+  // admin 이 아니면 토글 효과 발휘 안 함 — 일반 사용자 우회 방지.
+  if (!isLastSessionAdmin()) return false;
   try {
     return window.localStorage.getItem(DEV_UNLOCK_KEY) === '1';
   } catch {

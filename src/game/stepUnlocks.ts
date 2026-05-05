@@ -52,14 +52,22 @@ function setState(next: StepLockSnapshot) {
   notify();
 }
 
+// 마지막으로 인증된 사용자가 admin 이었는지 (dev unlock 토글 게이트용).
+let _lastIsAdmin = false;
+export function isLastSessionAdmin(): boolean {
+  return _lastIsAdmin;
+}
+
 async function pull(): Promise<void> {
   const sb = getSupabase();
   if (!sb) {
+    _lastIsAdmin = false;
     setState(DEFAULT);
     return;
   }
   const { data: sess } = await sb.auth.getSession();
   if (!sess.session) {
+    _lastIsAdmin = false;
     setState(DEFAULT);
     return;
   }
@@ -70,7 +78,9 @@ async function pull(): Promise<void> {
     .select('is_premium, role')
     .eq('id', sess.session.user.id)
     .maybeSingle();
-  if (prof?.is_premium || (prof as { role?: string } | null)?.role === 'admin') {
+  const isAdmin = (prof as { role?: string } | null)?.role === 'admin';
+  _lastIsAdmin = isAdmin;
+  if (prof?.is_premium || isAdmin) {
     setState({ enforced: false, unlockedSet: new Set() });
     return;
   }
@@ -167,11 +177,17 @@ export function useStepUnlocks(): StepLockSnapshot {
  * 검수용 dev 토글 — localStorage 의 'questdp.dev.unlockAllSteps' 가 '1' 이면
  * 모든 step 자동 unlock. AdminPage 의 "모든 회독 잠금해제(검수)" 버튼으로 set.
  * passes.ts 의 unlockAllPasses 와 짝으로 작동 (pass 잠금 + step 잠금 동시 해제).
+ *
+ * **권한 게이트**: localStorage 만으로는 일반 사용자가 우회 가능 (DevTools 로
+ * 직접 set 가능). 그래서 isLastSessionAdmin() 체크를 추가 — 토글이 켜져 있어도
+ * 현재 인증된 사용자가 admin 이 아니면 효과 없음.
  */
 export const DEV_UNLOCK_STEPS_KEY = 'questdp.dev.unlockAllSteps';
 
 export function isDevUnlockStepsEnabled(): boolean {
   if (typeof window === 'undefined') return false;
+  // admin 이 아니면 토글 효과 발휘 안 함 (security gate).
+  if (!_lastIsAdmin) return false;
   try {
     return window.localStorage.getItem(DEV_UNLOCK_STEPS_KEY) === '1';
   } catch {

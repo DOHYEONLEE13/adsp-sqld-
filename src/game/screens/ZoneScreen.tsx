@@ -422,11 +422,12 @@ function TopicSection({
   // 단지 변경 감지 → 재렌더 트리거 목적.
   useDevUnlockFlags();
 
-  // 2회독 이상에서는 review-only step (quizId 없음) 제외.
+  // review-only step (quizId 없음) 은 모든 회독에서 노출 제외.
+  // 사용자 정책: 회독 시스템 안에 별도 복습 step 두지 않음 (회독 자체가 복습).
   // _origIdx 보존 — onSelectStep 호출 시 lesson.steps 의 원본 index 전달용.
+  void passNumber; // 향후 회독별 분기 필요 시 사용
   const stepsWithIdx = steps.map((s, i) => ({ ...s, _origIdx: i }));
-  const visibleSteps =
-    passNumber > 1 ? stepsWithIdx.filter((s) => !!s.quizId) : stepsWithIdx;
+  const visibleSteps = stepsWithIdx.filter((s) => !!s.quizId);
   return (
     <section>
       {/* 섹션 헤더 — caps eyebrow + 토픽 이름 + hairline */}

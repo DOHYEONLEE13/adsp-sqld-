@@ -169,18 +169,12 @@ export function getMyProfile(): MyProfile {
     };
   }
 
-  // 인증 + stored 있음 — 즉시 stored 값 사용 (server pull 완료를 기다리지 않음).
-  //
-  // 이전 정책 (skeleton): _syncStatus !== 'ok' 면 tag/displayName 빈 값.
-  // 문제: 재로그인 케이스에서 stored 에 이미 server 데이터 있어도 sync 'pending'
-  //       동안 UI 가 게스트로 보임. pull 끝날 때까지 수 초 게스트 UI → 사용자 혼란.
-  // 변경 (2026-05-05): stored 그대로 사용. server pull 결과가 다르면 saveStored
-  //       + notify 가 자동 갱신. pendingServerSync 는 별도 인디케이터로만 노출.
+  // 인증 — server pull 결과 대기 중이면 tag/displayName 빈값 (skeleton)
   const syncDone = _syncStatus === 'ok';
   if (stored) {
     return {
-      tag: stored.tag,
-      displayName: stored.displayName,
+      tag: syncDone ? stored.tag : '',
+      displayName: syncDone ? stored.displayName : '',
       avatarPose: stored.avatarPose ?? DEFAULT_AVATAR_POSE,
       avatarCharacter: stored.avatarCharacter ?? DEFAULT_CHARACTER,
       isAuthenticated: true,

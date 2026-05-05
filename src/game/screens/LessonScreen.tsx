@@ -114,15 +114,27 @@ export default function LessonScreen({
   const progress = useProgress();
   const startedAtRef = useRef<number>(Date.now());
 
-  // ── ⚡ 차감 — step 단위 (진입 + 다음 step 마다 1회). ─────────────
-  // consumedStepsRef 로 dedup → 같은 stepIdx 재진입 시 추가 차감 X.
-  // 프리미엄/어드민은 RPC 가 즉시 ok=true 반환 → 차감 0.
-  // 게스트는 localStorage 기반 차감 (가입 인센티브).
+  // ── ⚡ 차감 정책:
+  //  - 처음 푸는 step (questionStats 에 correct 기록 없음) 진입 → 1⚡
+  //  - 이미 정답 맞춘 step 재진입 → 차감 X (revisit free)
+  //  - 같은 mount 안에서 같은 stepIdx 재방문 → 추가 차감 X
+  //  - 프리미엄/어드민 = RPC 가 ok=true 즉시 반환 → 차감 0
   const consumedStepsRef = useRef<Set<number>>(new Set());
+  const progressRef = useRef(progress);
+  progressRef.current = progress;
   const [energyBlock, setEnergyBlock] = useState<{ retryAfterSec: number } | null>(null);
   useEffect(() => {
     if (consumedStepsRef.current.has(stepIdx)) return;
     consumedStepsRef.current.add(stepIdx);
+
+    // 이미 정답 맞춘 step (revisit) — 차감 X
+    const currentStep = lesson?.steps[stepIdx];
+    const stat = currentStep?.quizId
+      ? progressRef.current.questionStats[currentStep.quizId]
+      : undefined;
+    const alreadySolved = !!stat && (stat.correct ?? 0) > 0;
+    if (alreadySolved) return;
+
     let cancelled = false;
     void consumeEnergy(1).then((res) => {
       if (cancelled) return;
@@ -133,7 +145,7 @@ export default function LessonScreen({
     return () => {
       cancelled = true;
     };
-  }, [stepIdx]);
+  }, [stepIdx, lesson]);
 
   if (!lesson) {
     return (
@@ -201,6 +213,10 @@ export default function LessonScreen({
     const timeMs = Date.now() - startedAtRef.current;
     const xp = recordSingleAnswer(quizQuestion.id, correct, timeMs);
     setQuizState((s) => ({ ...s, [stepIdx]: { chosen: idx, correct } }));
+    // 정답 맞춘 경우만 다음 step 자동 해금 (단순 진입으로 해금되지 않음).
+    if (correct && stepIdx < lesson.steps.length - 1) {
+      void unlockStepOnServer(stepKey(lesson.id, stepIdx + 1));
+    }
     if (xp > 0) {
       setXpToast({ amount: xp, key: Date.now() });
       window.setTimeout(() => {
@@ -217,7 +233,12 @@ export default function LessonScreen({
     }
     if (stepIdx < lesson.steps.length - 1) {
       const nextIdx = stepIdx + 1;
-      void unlockStepOnServer(stepKey(lesson.id, nextIdx));
+      // review 전용 step (quizId 없음) 만 진입 자동 해금. quiz step 은
+      // handleChoose 에서 정답 맞춘 경우만 해금.
+      const currentStep = lesson.steps[stepIdx];
+      if (!currentStep.quizId) {
+        void unlockStepOnServer(stepKey(lesson.id, nextIdx));
+      }
       setStepIdx(nextIdx);
       setView('concept');
       window.scrollTo({ top: 0, behavior: 'smooth' });

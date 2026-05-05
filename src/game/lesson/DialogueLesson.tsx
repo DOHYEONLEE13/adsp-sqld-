@@ -20,6 +20,7 @@ import {
   getQuizQuestion,
 } from '@/data/lessons';
 import { recordSingleAnswer } from '../storage';
+import { useProgress } from '../useProgress';
 import { consumeEnergy } from '../energy';
 import { stepKey, unlockStepOnServer } from '../stepUnlocks';
 import EnergyBlockModal from '../components/EnergyBlockModal';
@@ -86,15 +87,31 @@ export default function DialogueLesson({
 
   const [stepIdx, setStepIdx] = useState(initialStepIdx ?? 0);
   const [turnIdx, setTurnIdx] = useState(0);
-  // ⚡ 차감 — step 단위 (진입 1회 + 다음 step 마다 추가 1회).
-  // consumedStepsRef 로 dedup → 같은 stepIdx 재진입 시 추가 차감 X.
-  // 프리미엄/어드민은 RPC 가 즉시 ok=true 반환 → 차감 0.
-  // 게스트는 localStorage 기반 차감 (가입 인센티브).
+  // ⚡ 차감 정책:
+  //  - 처음 푸는 step (questionStats 에 correct 기록 없음) 진입 → 1⚡
+  //  - 이미 정답 맞춘 step 재진입 → 차감 X (revisit free)
+  //  - review 전용 step (quizId 없음) → 항상 진입 시 1⚡
+  //  - 같은 mount 안에서 같은 stepIdx 재방문 (refresh 등) → 추가 차감 X
+  //  - 프리미엄/어드민 = RPC 가 ok=true 즉시 반환 → 차감 0
   const consumedStepsRef = useRef<Set<number>>(new Set());
+  // progressStore (ProgressStore 객체) 의 latest snapshot 을 ref 에 보관
+  // — useEffect 안에서 stale 방지. (line 229 의 진행률 number 와 별개)
+  const progressStore = useProgress();
+  const progressStoreRef = useRef(progressStore);
+  progressStoreRef.current = progressStore;
   const [energyBlock, setEnergyBlock] = useState<{ retryAfterSec: number } | null>(null);
   useEffect(() => {
     if (consumedStepsRef.current.has(stepIdx)) return;
     consumedStepsRef.current.add(stepIdx);
+
+    // 이미 정답 맞춘 step (revisit) — 차감 X
+    const currentStep = lesson?.steps[stepIdx];
+    const stat = currentStep?.quizId
+      ? progressStoreRef.current.questionStats[currentStep.quizId]
+      : undefined;
+    const alreadySolved = !!stat && (stat.correct ?? 0) > 0;
+    if (alreadySolved) return;
+
     let cancelled = false;
     void consumeEnergy(1).then((res) => {
       if (cancelled) return;
@@ -103,7 +120,7 @@ export default function DialogueLesson({
     return () => {
       cancelled = true;
     };
-  }, [stepIdx]);
+  }, [stepIdx, lesson]);
   // 비슷한 문제 패널 (FeedbackSheet 위로 슬라이드업) 노출 여부.
   const [similarOpen, setSimilarOpen] = useState(false);
   // 북마크 카드에서 점프해온 경우 narration 스킵 → 곧장 question phase 로.
@@ -273,6 +290,10 @@ export default function DialogueLesson({
     const timeMs = Date.now() - startedAtRef.current;
     const xp = recordSingleAnswer(quizQuestion.id, ok, timeMs);
     setPhase('feedback');
+    // 정답 맞춘 경우에만 다음 step 자동 해금 (단순 진입으로 해금되지 않음).
+    if (ok && stepIdx < lesson.steps.length - 1) {
+      void unlockStepOnServer(stepKey(lesson.id, stepIdx + 1));
+    }
     if (xp > 0) {
       setXpToast({ amount: xp, key: Date.now() });
       window.setTimeout(() => setXpToast(null), 1800);
@@ -282,8 +303,12 @@ export default function DialogueLesson({
   const handleNextStep = () => {
     if (stepIdx < lesson.steps.length - 1) {
       const nextIdx = stepIdx + 1;
-      // 서버에 다음 step 해금 등록 — fire-and-forget. 실패해도 UX 영향 X.
-      void unlockStepOnServer(stepKey(lesson.id, nextIdx));
+      // review 전용 step (quizId 없음) 은 진입만으로 다음 step 해금.
+      // quiz step 은 handleChoose 에서 정답 맞춘 경우만 해금.
+      const currentStep = lesson.steps[stepIdx];
+      if (!currentStep.quizId) {
+        void unlockStepOnServer(stepKey(lesson.id, nextIdx));
+      }
       setStepIdx(nextIdx);
       window.scrollTo({ top: 0, behavior: 'auto' });
     } else {

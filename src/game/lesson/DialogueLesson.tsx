@@ -482,6 +482,7 @@ export default function DialogueLesson({
       {energyBlock ? (
         <EnergyBlockModal
           retryAfterSec={energyBlock.retryAfterSec}
+          subject={subject}
           onClose={() => {
             setEnergyBlock(null);
             onBack();

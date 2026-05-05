@@ -290,6 +290,7 @@ export default function LessonScreen({
       {energyBlock ? (
         <EnergyBlockModal
           retryAfterSec={energyBlock.retryAfterSec}
+          subject={subject}
           onClose={() => {
             setEnergyBlock(null);
             onBack();

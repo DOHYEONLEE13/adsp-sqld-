@@ -28,12 +28,10 @@ export default function GameModes() {
 function Header() {
   return (
     <div className="flex flex-col lg:flex-row items-start lg:items-end justify-between gap-10 lg:gap-8 mb-12">
-      <h2 className="kr-heading uppercase leading-[1] text-[32px] sm:text-[44px] md:text-[52px] lg:text-[60px]">
-        <span className="block">{COLLECTION.titleFirstLine}</span>
-        <span className="block ml-12 sm:ml-24 lg:ml-32">
-          <span className="mr-2">
-            {COLLECTION.cursiveInline}
-          </span>
+      <h2 className="kr-heading uppercase leading-[1] text-[32px] sm:text-[44px] md:text-[52px] lg:text-[60px] whitespace-nowrap">
+        <span>{COLLECTION.titleFirstLine}</span>
+        <span className="ml-3 sm:ml-4">
+          <span className="mr-2">{COLLECTION.cursiveInline}</span>
           {COLLECTION.titleSecondLineSuffix}
         </span>
       </h2>
@@ -45,11 +43,9 @@ function Header() {
         }}
         className="inline-flex flex-col items-start gap-3"
       >
-        <div className="kr-heading uppercase leading-[1] flex items-end gap-4">
-          <span className="text-[32px] sm:text-[44px] md:text-[52px] lg:text-[60px]">
-            {COLLECTION.seeAllPrimary}
-          </span>
-          <span className="text-[20px] sm:text-[26px] md:text-[30px] lg:text-[36px] whitespace-nowrap">
+        <div className="kr-heading uppercase leading-[1] flex items-end gap-3 text-[32px] sm:text-[44px] md:text-[52px] lg:text-[60px] whitespace-nowrap">
+          <span>{COLLECTION.seeAllPrimary}</span>
+          <span>
             {COLLECTION.seeAllSecondaryTop}
             {COLLECTION.seeAllSecondaryBottom}
           </span>

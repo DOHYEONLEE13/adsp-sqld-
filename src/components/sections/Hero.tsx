@@ -30,7 +30,7 @@ export default function Hero() {
           <SocialIcons orientation="vertical" />
         </div>
 
-        <div className="flex-1 flex items-center pt-20 relative">
+        <div className="flex-1 flex items-end lg:items-center pt-20 relative">
           <div className="relative max-w-[780px] lg:ml-32">
             <h1 className="kr-heading uppercase leading-[1.05] sm:leading-[1] text-[40px] sm:text-[60px] md:text-[75px] lg:text-[90px]">
               {HERO.headingLines.map((line, i) => (

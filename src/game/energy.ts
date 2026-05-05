@@ -2,11 +2,13 @@
  * energy.ts — ⚡ 에너지 상태 + consume 헬퍼.
  *
  * 정책:
- *  - 게스트(미로그인): 무제한 (서버 동기화 안 하니 fair use 제약 X).
+ *  - 게스트(미로그인): **5 에너지 localStorage 게이트** (가입 인센티브).
+ *    30분당 +1 회복. localStorage 라 보안 X 지만 friction 효과는 충분.
+ *  - 인증 + 무료: 5 에너지 server cap, 30분당 +1. step 진입 시 1 소모 (per step).
  *  - 인증 + 프리미엄: 무제한 (∞ 아이콘 표시).
- *  - 인증 + 무료: 5 에너지 cap, 30분당 +1 자동 충전. 세션 시작 시 1 소모.
+ *  - 인증 + 어드민: 무제한 (운영자 검수).
  *
- * 서버 RPC `consume_energy` 가 atomic 처리. 클라는 호출 후 결과만 사용.
+ * 서버 RPC `consume_energy` 가 atomic 처리. 게스트는 localStorage 동일 모방.
  */
 
 import { useEffect, useState } from 'react';
@@ -33,20 +35,77 @@ export interface EnergyState {
 }
 
 /**
- * 무제한 모드 — 게스트 / 프리미엄 / 어드민 어느 하나라도 true 면 ⚡ 게이트 우회.
- * UI 분기에 사용 (EnergyBadge 표시 여부, 차단 모달 skip 등).
+ * 무제한 모드 — 프리미엄 / 어드민 만 true. 게스트는 5⚡ 게이트 적용.
+ * UI 분기에 사용 (EnergyBadge 의 ∞ 표시 vs 카운트다운).
  */
 export function isUnlimited(state: EnergyState): boolean {
-  return !state.authenticated || state.isPremium || state.isAdmin;
+  return state.isPremium || state.isAdmin;
 }
 
-const DEFAULT_GUEST: EnergyState = {
-  authenticated: false,
-  isPremium: false,
-  isAdmin: false,
-  energy: 5,
-  energyUpdatedAt: Date.now(),
-};
+// ─── 게스트용 localStorage 기반 ⚡ store ─────────────────────────
+// 보안 X (사용자가 직접 수정 가능) 지만 친구·가입 friction 효과는 충분.
+// 인증 시 SIGNED_IN 이벤트가 server pull 로 덮어씀.
+const GUEST_KEY = 'questdp.energy.guest.v1';
+const CAP = 5;
+const REGEN_MS = 30 * 60 * 1000; // 30분
+
+interface GuestEnergy {
+  count: number;
+  /** 마지막 갱신 timestamp (ms). 30분 회복 계산 기준. */
+  updatedAt: number;
+}
+
+function loadGuestEnergy(): GuestEnergy {
+  if (typeof window === 'undefined') return { count: CAP, updatedAt: Date.now() };
+  try {
+    const raw = window.localStorage.getItem(GUEST_KEY);
+    if (!raw) return { count: CAP, updatedAt: Date.now() };
+    const obj = JSON.parse(raw) as Partial<GuestEnergy>;
+    if (typeof obj.count === 'number' && typeof obj.updatedAt === 'number') {
+      return {
+        count: Math.max(0, Math.min(CAP, obj.count)),
+        updatedAt: obj.updatedAt,
+      };
+    }
+  } catch {
+    /* 무시 */
+  }
+  return { count: CAP, updatedAt: Date.now() };
+}
+
+function saveGuestEnergy(e: GuestEnergy): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(GUEST_KEY, JSON.stringify(e));
+  } catch {
+    /* 무시 */
+  }
+}
+
+/** lazy regen — 30분당 +1, cap=5. updatedAt 도 함께 전진. */
+function regenGuest(e: GuestEnergy): GuestEnergy {
+  if (e.count >= CAP) return e;
+  const elapsed = Date.now() - e.updatedAt;
+  const gain = Math.floor(elapsed / REGEN_MS);
+  if (gain <= 0) return e;
+  const next = Math.min(CAP, e.count + gain);
+  return {
+    count: next,
+    updatedAt: e.updatedAt + gain * REGEN_MS,
+  };
+}
+
+function guestStateFrom(e: GuestEnergy): EnergyState {
+  return {
+    authenticated: false,
+    isPremium: false,
+    isAdmin: false,
+    energy: e.count,
+    energyUpdatedAt: e.updatedAt,
+  };
+}
+
+const DEFAULT_GUEST: EnergyState = guestStateFrom(loadGuestEnergy());
 
 let _state: EnergyState = DEFAULT_GUEST;
 const _listeners = new Set<() => void>();
@@ -66,13 +125,22 @@ function setState(next: EnergyState) {
   notify();
 }
 
-/** server 에서 profile 의 energy_count / is_premium 만 fetch. */
+/** server 에서 profile 의 energy_count / is_premium 만 fetch. 게스트면 localStorage. */
 async function pullEnergy(): Promise<void> {
   const sb = getSupabase();
-  if (!sb) return;
+  if (!sb) {
+    // env 미설정 = 게스트 처리 (localStorage)
+    const guest = regenGuest(loadGuestEnergy());
+    saveGuestEnergy(guest);
+    setState(guestStateFrom(guest));
+    return;
+  }
   const { data: sess } = await sb.auth.getSession();
   if (!sess.session) {
-    setState(DEFAULT_GUEST);
+    // 미로그인 = 게스트 (localStorage 게이트)
+    const guest = regenGuest(loadGuestEnergy());
+    saveGuestEnergy(guest);
+    setState(guestStateFrom(guest));
     return;
   }
   const { data } = await sb
@@ -175,20 +243,42 @@ export interface ConsumeResult {
 }
 
 /**
- * 에너지 차감. 게스트·프리미엄·env 미설정 = 무조건 ok.
- * 무료 인증 사용자만 server RPC 통과해 atomic 차감.
+ * 에너지 차감. 프리미엄·어드민 = 무조건 ok (RPC 가 즉시 통과).
+ * 무료 인증 사용자 = server RPC 통과해 atomic 차감.
+ * 게스트·env 미설정 = localStorage 기반 차감 (가입 인센티브 friction).
  */
-export async function consumeEnergy(amount = 1): Promise<ConsumeResult> {
-  if (!isSupabaseConfigured()) {
-    return { ok: true, remaining: 999, retryAfterSec: 0 };
+function consumeGuest(amount: number): ConsumeResult {
+  const cur = regenGuest(loadGuestEnergy());
+  if (cur.count < amount) {
+    // 부족 — 다음 충전까지 남은 초 계산
+    const elapsed = Date.now() - cur.updatedAt;
+    const remainingMs = REGEN_MS - (elapsed % REGEN_MS);
+    saveGuestEnergy(cur);
+    setState(guestStateFrom(cur));
+    return {
+      ok: false,
+      remaining: cur.count,
+      retryAfterSec: Math.ceil(remainingMs / 1000),
+    };
   }
+  const next: GuestEnergy = {
+    count: cur.count - amount,
+    updatedAt: Date.now(),
+  };
+  saveGuestEnergy(next);
+  setState(guestStateFrom(next));
+  return { ok: true, remaining: next.count, retryAfterSec: 0 };
+}
+
+export async function consumeEnergy(amount = 1): Promise<ConsumeResult> {
+  if (!isSupabaseConfigured()) return consumeGuest(amount);
   const sb = getSupabase();
-  if (!sb) return { ok: true, remaining: 999, retryAfterSec: 0 };
+  if (!sb) return consumeGuest(amount);
 
   const { data: sess } = await sb.auth.getSession();
   if (!sess.session) {
-    // 게스트 — 무제한
-    return { ok: true, remaining: 999, retryAfterSec: 0 };
+    // 게스트 — localStorage 기반 차감
+    return consumeGuest(amount);
   }
 
   try {

@@ -86,9 +86,15 @@ export default function DialogueLesson({
 
   const [stepIdx, setStepIdx] = useState(initialStepIdx ?? 0);
   const [turnIdx, setTurnIdx] = useState(0);
-  // ⚡ 진입 시 1회 소모. 무료 인증 사용자만 차단 (게스트/프리미엄/어드민 통과).
+  // ⚡ 차감 — step 단위 (진입 1회 + 다음 step 마다 추가 1회).
+  // consumedStepsRef 로 dedup → 같은 stepIdx 재진입 시 추가 차감 X.
+  // 프리미엄/어드민은 RPC 가 즉시 ok=true 반환 → 차감 0.
+  // 게스트는 localStorage 기반 차감 (가입 인센티브).
+  const consumedStepsRef = useRef<Set<number>>(new Set());
   const [energyBlock, setEnergyBlock] = useState<{ retryAfterSec: number } | null>(null);
   useEffect(() => {
+    if (consumedStepsRef.current.has(stepIdx)) return;
+    consumedStepsRef.current.add(stepIdx);
     let cancelled = false;
     void consumeEnergy(1).then((res) => {
       if (cancelled) return;
@@ -97,8 +103,7 @@ export default function DialogueLesson({
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [stepIdx]);
   // 비슷한 문제 패널 (FeedbackSheet 위로 슬라이드업) 노출 여부.
   const [similarOpen, setSimilarOpen] = useState(false);
   // 북마크 카드에서 점프해온 경우 narration 스킵 → 곧장 question phase 로.

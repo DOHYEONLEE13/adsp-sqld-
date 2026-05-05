@@ -5,13 +5,6 @@ import type {
   HeroContent,
 } from '@/types/site';
 
-/**
- * Build tag — chunk hash 강제 변동용 (Cloudflare 502 upload 실패 retry).
- * 변경 시 site.ts 를 import 하는 모든 chunk 의 hash 가 새로 → Cloudflare 가
- * 새 asset 으로 인식해 다시 업로드.
- */
-export const BUILD_TAG = '2026-05-05-T18-25-recovery';
-
 export const BRAND = {
   nameKr: '퀘스트디피',
   nameEn: 'QuestDP',

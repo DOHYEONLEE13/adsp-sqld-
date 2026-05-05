@@ -613,17 +613,23 @@ function SubjectInfoPanel({
   const subjectAccentRgb = SUBJECT_ACCENT_RGB[subject];
 
   // 게스트 여부 — 미인증이면 진도가 이 기기에만 저장된다는 안내 노출.
-  // 다른 페이지(FriendsPage·AuthCard) 와 동일한 패턴.
-  const [isSignedIn, setIsSignedIn] = useState(false);
+  //
+  // 정책 (2026-05-05): profile store (localStorage 기반, mount 즉시 반영) 우선.
+  // session fetch 는 추가 안전망. 둘 중 하나라도 인증이면 banner 숨김.
+  // 이전 정책: useState(false) 만 → mount 마다 false 초기화 → 라우트 진입
+  // 시 잠깐 게스트 banner 깜빡임. profile.isAuthenticated 사용으로 해결.
+  const profileForAuth = useMyProfile();
+  const [sessionExists, setSessionExists] = useState(false);
   useEffect(() => {
     const sb = getSupabase();
     if (!sb) return;
-    sb.auth.getSession().then(({ data }) => setIsSignedIn(!!data.session));
-    const unsub = onAuthStateChange((_e, s) => setIsSignedIn(!!s));
+    sb.auth.getSession().then(({ data }) => setSessionExists(!!data.session));
+    const unsub = onAuthStateChange((_e, s) => setSessionExists(!!s));
     return () => {
       unsub();
     };
   }, []);
+  const isSignedIn = profileForAuth.isAuthenticated || sessionExists;
 
   // 학습 모드 — 과목별 첫 진입 시 1회 묻고, 이후엔 기억된 값 사용.
   // 'review' 면 GamePage 가 자동으로 passNumber=2 로 시작 (studyMode.passNumberFor).

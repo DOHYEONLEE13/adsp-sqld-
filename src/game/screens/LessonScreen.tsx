@@ -13,7 +13,7 @@
  * 스텝을 보고 있는지" 를 표시합니다. 맞춘 수는 실시간 누적됩니다.
  */
 
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowLeft,
   ArrowRight,
@@ -36,6 +36,9 @@ import {
 } from '@/data/lessons';
 import { useProgress } from '../useProgress';
 import { recordSingleAnswer } from '../storage';
+import { consumeEnergy } from '../energy';
+import { stepKey, unlockStepOnServer } from '../stepUnlocks';
+import EnergyBlockModal from '../components/EnergyBlockModal';
 import PageAmbientBg from '../components/PageAmbientBg';
 
 const SUBJECT_ACCENT: Record<Subject, string> = {
@@ -110,6 +113,24 @@ export default function LessonScreen({
 
   const progress = useProgress();
   const startedAtRef = useRef<number>(Date.now());
+
+  // ── ⚡ 진입 시 1회 소모. 부족하면 차단 모달. ────────────────────
+  // 게스트 / 프리미엄 / 어드민 = RPC 가 ok=true 즉시 반환 → 차단 X.
+  // 무료 인증 = atomic 차감. 부족하면 retryAfterSec 으로 대기 안내.
+  const [energyBlock, setEnergyBlock] = useState<{ retryAfterSec: number } | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    void consumeEnergy(1).then((res) => {
+      if (cancelled) return;
+      if (!res.ok) {
+        setEnergyBlock({ retryAfterSec: res.retryAfterSec });
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!lesson) {
     return (
@@ -192,7 +213,9 @@ export default function LessonScreen({
       return;
     }
     if (stepIdx < lesson.steps.length - 1) {
-      setStepIdx(stepIdx + 1);
+      const nextIdx = stepIdx + 1;
+      void unlockStepOnServer(stepKey(lesson.id, nextIdx));
+      setStepIdx(nextIdx);
       setView('concept');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
@@ -232,6 +255,15 @@ export default function LessonScreen({
 
   return (
     <section className="relative min-h-screen text-cream isolate overflow-hidden pb-24">
+      {energyBlock ? (
+        <EnergyBlockModal
+          retryAfterSec={energyBlock.retryAfterSec}
+          onClose={() => {
+            setEnergyBlock(null);
+            onBack();
+          }}
+        />
+      ) : null}
       <PageAmbientBg blur />
       {/* 토픽 액센트 글로우 — 영상 위에 살짝 색감 */}
       <div

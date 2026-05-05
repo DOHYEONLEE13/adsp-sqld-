@@ -12,11 +12,7 @@
  * - ⚡ level — 현재 레벨
  */
 
-import {
-  Flame,
-  Zap,
-  Infinity as InfinityIcon,
-} from 'lucide-react';
+import { Flame } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useEffect, useState, type ComponentType, type ReactNode } from 'react';
 import {
@@ -29,7 +25,7 @@ import {
 import type { Subject } from '@/types/question';
 import { useProgress } from '../useProgress';
 import { computePlayerStats } from '../rpg';
-import { useEnergy } from '../energy';
+import EnergyBadge from './EnergyBadge';
 import Ques from '@/components/mascot/Ques';
 import {
   getMyProfile,
@@ -57,7 +53,6 @@ interface TopProps {
 export function MobileTopBar({ subject }: TopProps) {
   const progress = useProgress();
   const stats = computePlayerStats(progress);
-  const energy = useEnergy();
   const [shareOpen, setShareOpen] = useState(false);
   const [profile, setProfile] = useState<MyProfile>(() => getMyProfile());
   const passSnap = usePassSnapshot();
@@ -189,21 +184,7 @@ export function MobileTopBar({ subject }: TopProps) {
               {stats.totalXp}
             </span>
           </button>
-          {energy.isPremium ? (
-            <span
-              className="inline-flex items-center gap-1"
-              title="프리미엄 — ⚡ 무제한"
-            >
-              <InfinityIcon size={20} className="text-[#A78BFA]" strokeWidth={2.4} />
-              <Zap size={16} fill="#A78BFA" strokeWidth={0} />
-            </span>
-          ) : (
-            <Stat
-              icon={<Zap size={20} fill="#A78BFA" strokeWidth={0} />}
-              value={energy.energy}
-              color="#A78BFA"
-            />
-          )}
+          <EnergyBadge size="sm" />
         </div>
       </div>
       {shareOpen ? (

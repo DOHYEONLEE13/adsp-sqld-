@@ -342,6 +342,10 @@ export default function ZoneScreen({
                 onSelectStep={(stepIdx) =>
                   onSelectStep(lesson.topic, stepIdx, selectedPass)
                 }
+                onLockedClick={() => {
+                  setLockToast('이전 단계를 먼저 끝내야 해요');
+                  window.setTimeout(() => setLockToast(null), 2400);
+                }}
               />
             ))}
 
@@ -391,6 +395,7 @@ interface TopicSectionProps {
   progress: ProgressStore;
   isWeak: boolean;
   onSelectStep: (stepIdx: number) => void;
+  onLockedClick?: (stepIdx: number) => void;
 }
 
 function TopicSection({
@@ -402,6 +407,7 @@ function TopicSection({
   progress,
   isWeak,
   onSelectStep,
+  onLockedClick,
 }: TopicSectionProps) {
   const lockSnap = useStepUnlocks();
   // dev unlock 토글이 변경되면 즉시 재렌더 — isStepLocked / isFinaleStepLocked
@@ -465,7 +471,13 @@ function TopicSection({
               attempted={attempted}
               locked={locked}
               isLast={idx === steps.length - 1}
-              onClick={() => onSelectStep(idx)}
+              onClick={() => {
+                if (locked) {
+                  onLockedClick?.(idx);
+                  return;
+                }
+                onSelectStep(idx);
+              }}
             />
           );
         })}

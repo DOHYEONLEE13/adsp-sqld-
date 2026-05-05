@@ -21,15 +21,29 @@ export interface EnergyState {
   authenticated: boolean;
   /** 프리미엄 — true 면 무제한. */
   isPremium: boolean;
-  /** 현재 에너지. 프리미엄이면 999 표시 / 게스트면 5 placeholder. */
+  /** 어드민 — true 면 무제한 (운영자 검수용). */
+  isAdmin: boolean;
+  /** 현재 에너지. 프리미엄/어드민이면 999 표시 / 게스트면 5 placeholder. */
   energy: number;
-  /** 충전까지 남은 초. */
+  /**
+   * 마지막 갱신 timestamp (ms). 30분 충전 타이머 계산의 기준.
+   * nextRegenAt = energyUpdatedAt + 30*60*1000 (energy < cap 인 경우만).
+   */
   energyUpdatedAt: number;
+}
+
+/**
+ * 무제한 모드 — 게스트 / 프리미엄 / 어드민 어느 하나라도 true 면 ⚡ 게이트 우회.
+ * UI 분기에 사용 (EnergyBadge 표시 여부, 차단 모달 skip 등).
+ */
+export function isUnlimited(state: EnergyState): boolean {
+  return !state.authenticated || state.isPremium || state.isAdmin;
 }
 
 const DEFAULT_GUEST: EnergyState = {
   authenticated: false,
   isPremium: false,
+  isAdmin: false,
   energy: 5,
   energyUpdatedAt: Date.now(),
 };
@@ -63,14 +77,17 @@ async function pullEnergy(): Promise<void> {
   }
   const { data } = await sb
     .from('profiles')
-    .select('energy_count, energy_updated_at, is_premium')
+    .select('energy_count, energy_updated_at, is_premium, role')
     .eq('id', sess.session.user.id)
     .maybeSingle();
   if (!data) return;
+  const isAdmin = (data as { role?: string }).role === 'admin';
+  const isPremium = !!data.is_premium;
   setState({
     authenticated: true,
-    isPremium: !!data.is_premium,
-    energy: data.is_premium ? 999 : (data.energy_count ?? 0),
+    isPremium,
+    isAdmin,
+    energy: isPremium || isAdmin ? 999 : (data.energy_count ?? 0),
     energyUpdatedAt: data.energy_updated_at
       ? Date.parse(data.energy_updated_at)
       : Date.now(),

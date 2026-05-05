@@ -64,13 +64,13 @@ async function pull(): Promise<void> {
     return;
   }
 
-  // 프리미엄이면 enforce X
+  // 프리미엄 또는 어드민이면 enforce X (운영자 검수 + 결제 사용자는 자유)
   const { data: prof } = await sb
     .from('profiles')
-    .select('is_premium')
+    .select('is_premium, role')
     .eq('id', sess.session.user.id)
     .maybeSingle();
-  if (prof?.is_premium) {
+  if (prof?.is_premium || (prof as { role?: string } | null)?.role === 'admin') {
     setState({ enforced: false, unlockedSet: new Set() });
     return;
   }

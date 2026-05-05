@@ -20,6 +20,9 @@ import {
   getQuizQuestion,
 } from '@/data/lessons';
 import { recordSingleAnswer } from '../storage';
+import { consumeEnergy } from '../energy';
+import { stepKey, unlockStepOnServer } from '../stepUnlocks';
+import EnergyBlockModal from '../components/EnergyBlockModal';
 import Ques from '@/components/mascot/Ques';
 import { characterForSubject } from '@/components/mascot/types';
 import TopBar from './TopBar';
@@ -83,6 +86,19 @@ export default function DialogueLesson({
 
   const [stepIdx, setStepIdx] = useState(initialStepIdx ?? 0);
   const [turnIdx, setTurnIdx] = useState(0);
+  // ⚡ 진입 시 1회 소모. 무료 인증 사용자만 차단 (게스트/프리미엄/어드민 통과).
+  const [energyBlock, setEnergyBlock] = useState<{ retryAfterSec: number } | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    void consumeEnergy(1).then((res) => {
+      if (cancelled) return;
+      if (!res.ok) setEnergyBlock({ retryAfterSec: res.retryAfterSec });
+    });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   // 비슷한 문제 패널 (FeedbackSheet 위로 슬라이드업) 노출 여부.
   const [similarOpen, setSimilarOpen] = useState(false);
   // 북마크 카드에서 점프해온 경우 narration 스킵 → 곧장 question phase 로.
@@ -260,7 +276,10 @@ export default function DialogueLesson({
 
   const handleNextStep = () => {
     if (stepIdx < lesson.steps.length - 1) {
-      setStepIdx(stepIdx + 1);
+      const nextIdx = stepIdx + 1;
+      // 서버에 다음 step 해금 등록 — fire-and-forget. 실패해도 UX 영향 X.
+      void unlockStepOnServer(stepKey(lesson.id, nextIdx));
+      setStepIdx(nextIdx);
       window.scrollTo({ top: 0, behavior: 'auto' });
     } else {
       // 마지막 step — single-step 모드는 Zone 복귀, legacy 는 실전 세트.
@@ -418,6 +437,15 @@ export default function DialogueLesson({
       className="relative min-h-screen text-cream flex flex-col isolate"
       data-subject={subject}
     >
+      {energyBlock ? (
+        <EnergyBlockModal
+          retryAfterSec={energyBlock.retryAfterSec}
+          onClose={() => {
+            setEnergyBlock(null);
+            onBack();
+          }}
+        />
+      ) : null}
       <PageAmbientBg blur />
       <TopBar
         progress={progress}

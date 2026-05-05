@@ -2,11 +2,13 @@
  * stepUnlocks.ts — 로드맵 step 잠금 상태.
  *
  * 정책:
- *  - 게스트(미로그인) · 프리미엄: 모든 step 항상 unlocked.
+ *  - 게스트(미로그인): step 0 만 default unlocked. 이전 step 풀어야 다음 해금.
+ *    진행도는 localStorage 에 저장 (서버 sync X).
  *  - 인증 무료: 각 lesson 의 step 0 만 default unlocked. step N (N≥1) 은
  *    `step_unlocks` 테이블에 row 가 있어야 unlocked.
+ *  - 인증 프리미엄 / 어드민: 모든 step 항상 unlocked (enforced=false).
  *  - 자동 해금: 사용자가 step N 에 진입(visit) 하면 즉시 step N+1 을
- *    `unlock_step` RPC 로 등록. 다음 진입 때 자유롭게 풀이.
+ *    인증=`unlock_step` RPC, 게스트=localStorage 에 등록.
  *
  * step_key 컨벤션: `{lessonId}-s{stepIdx}` (예: `adsp-1-1-s2`).
  */
@@ -29,10 +31,38 @@ export interface StepLockSnapshot {
   unlockedSet: Set<string>;
 }
 
-const DEFAULT: StepLockSnapshot = {
-  enforced: false,
-  unlockedSet: new Set(),
-};
+// 게스트(미로그인) 도 step 0 만 default unlocked → 잠금 enforce.
+// localStorage 기반 진행도 추적 (보안 X 지만 가입 friction 효과).
+const GUEST_UNLOCKS_KEY = 'questdp.stepUnlocks.guest.v1';
+
+function loadGuestUnlocks(): Set<string> {
+  if (typeof window === 'undefined') return new Set();
+  try {
+    const raw = window.localStorage.getItem(GUEST_UNLOCKS_KEY);
+    if (!raw) return new Set();
+    const arr = JSON.parse(raw);
+    if (Array.isArray(arr)) return new Set(arr.filter((x): x is string => typeof x === 'string'));
+  } catch {
+    /* 무시 */
+  }
+  return new Set();
+}
+
+function saveGuestUnlocks(set: Set<string>): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(GUEST_UNLOCKS_KEY, JSON.stringify([...set]));
+  } catch {
+    /* 무시 */
+  }
+}
+
+/** 게스트 (서버 sync X) 도 enforced=true → step 0 외엔 진행도 추적 필요. */
+function defaultGuestSnapshot(): StepLockSnapshot {
+  return { enforced: true, unlockedSet: loadGuestUnlocks() };
+}
+
+const DEFAULT: StepLockSnapshot = defaultGuestSnapshot();
 
 let _state: StepLockSnapshot = DEFAULT;
 const _listeners = new Set<() => void>();
@@ -61,14 +91,16 @@ export function isLastSessionAdmin(): boolean {
 async function pull(): Promise<void> {
   const sb = getSupabase();
   if (!sb) {
+    // env 미설정 = 게스트 처리 (localStorage 기반 진행도)
     _lastIsAdmin = false;
-    setState(DEFAULT);
+    setState(defaultGuestSnapshot());
     return;
   }
   const { data: sess } = await sb.auth.getSession();
   if (!sess.session) {
+    // 미로그인 = 게스트 (localStorage 진행도)
     _lastIsAdmin = false;
-    setState(DEFAULT);
+    setState(defaultGuestSnapshot());
     return;
   }
 
@@ -147,7 +179,9 @@ export function initStepUnlocksSync(): () => void {
       });
     }
     if (event === 'SIGNED_OUT') {
-      setState(DEFAULT);
+      // 게스트 snapshot 새로 읽어 (현재 localStorage 의 unlocked set 반영)
+      _lastIsAdmin = false;
+      setState(defaultGuestSnapshot());
       _channelUnsub?.();
       _channelUnsub = null;
     }
@@ -208,23 +242,44 @@ export function isStepLocked(
   return !snap.unlockedSet.has(stepKey(lessonId, stepIdx));
 }
 
+/** 로컬 state + (게스트면) localStorage 에 step key 추가. */
+function addUnlockedLocally(key: string): void {
+  if (_state.unlockedSet.has(key)) return;
+  const next = new Set(_state.unlockedSet);
+  next.add(key);
+  setState({ ..._state, unlockedSet: next });
+}
+
 /**
- * 서버에 step 해금 RPC. fire-and-forget.
- * 게스트·env 미설정·이미 unlocked = 즉시 return.
+ * step 해금. fire-and-forget.
+ * 인증 = `unlock_step` RPC 호출. 게스트 = localStorage 에 추가.
  */
 export async function unlockStepOnServer(key: string): Promise<void> {
-  if (!isSupabaseConfigured()) return;
   if (_state.unlockedSet.has(key)) return;
+
+  // env 미설정 또는 미로그인 = 게스트. localStorage 에만 저장.
+  if (!isSupabaseConfigured()) {
+    const next = new Set(_state.unlockedSet);
+    next.add(key);
+    saveGuestUnlocks(next);
+    addUnlockedLocally(key);
+    return;
+  }
   const sb = getSupabase();
   if (!sb) return;
   try {
     const { data: sess } = await sb.auth.getSession();
-    if (!sess.session) return;
+    if (!sess.session) {
+      // 게스트 — localStorage 에 추가
+      const next = new Set(_state.unlockedSet);
+      next.add(key);
+      saveGuestUnlocks(next);
+      addUnlockedLocally(key);
+      return;
+    }
     await sb.rpc('unlock_step', { step_key: key });
-    // 옵티미스틱 — 로컬 set 도 즉시 반영
-    const next = new Set(_state.unlockedSet);
-    next.add(key);
-    setState({ ..._state, unlockedSet: next });
+    // 인증 — 옵티미스틱 로컬 갱신 (realtime 채널이 곧 동일 set 으로 덮어씀)
+    addUnlockedLocally(key);
   } catch {
     /* 무시 */
   }

@@ -1,5 +1,5 @@
 /**
- * RedeemPage — 초대 코드 입력 → 평생 무료 활성화.
+ * RedeemPage — 프로모션 코드 입력 → 일정 기간 premium 활성화.
  *
  * 라우팅: `#/redeem`
  *
@@ -10,6 +10,9 @@
  *   4. 성공 후 → 본인 grant 이력 표시 ("어떤 코드로 받았는지")
  *
  * env 미설정·게스트 모드: AuthCard 가 안내 fallback.
+ *
+ * 용도: 마케팅·홍보 이벤트, 인플루언서 콜라보, 베타 캠페인 등으로 발급되는
+ *       단기 / 장기 premium 코드 입력 창구. admin 만 코드 발급 권한.
  */
 
 import { useEffect, useState } from 'react';
@@ -131,14 +134,14 @@ export default function RedeemPage({ onBack }: Props) {
         {/* ── 타이틀 ───────────────────────────────────────────── */}
         <header className="mb-10 pb-6 border-b border-cream/15">
           <div className="kr-heading uppercase text-[10px] tracking-widest text-neon/85 mb-3">
-            QuestDP · INVITE
+            QuestDP · PROMO
           </div>
           <h1 className="kr-heading text-[32px] md:text-[44px] leading-[1.1] mb-4 flex items-center gap-3">
             <Sparkles size={28} className="text-neon" />
-            초대 코드
+            프로모션 코드
           </h1>
           <p className="kr-body text-[14px] md:text-[15px] text-cream/70 leading-[1.65]">
-            친구·지인에게 받은 코드를 입력하면 평생 무료 또는 일정 기간 premium 이
+            이벤트·캠페인으로 발급된 코드를 입력하면 일정 기간 동안 프리미엄 혜택이
             활성화됩니다. 한 코드는 한 번만 사용할 수 있어요.
           </p>
         </header>
@@ -162,13 +165,13 @@ export default function RedeemPage({ onBack }: Props) {
             <form
               onSubmit={handleSubmit}
               className="liquid-glass rounded-[20px] p-5 md:p-6 mb-6"
-              aria-label="초대 코드 입력"
+              aria-label="프로모션 코드 입력"
             >
               <label
                 htmlFor="redeem-code"
                 className="block kr-num text-[10px] uppercase tracking-widest text-cream/65 mb-2"
               >
-                초대 코드
+                프로모션 코드
               </label>
               <div className="flex gap-2 flex-wrap">
                 <input
@@ -176,7 +179,7 @@ export default function RedeemPage({ onBack }: Props) {
                   type="text"
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
-                  placeholder="QDP-FRIEND-XXXX"
+                  placeholder="QDP-PROMO-XXXX"
                   autoComplete="off"
                   spellCheck={false}
                   className="flex-1 min-w-[200px] kr-num text-[14px] tracking-widest px-4 py-3 rounded-xl bg-cream/5 text-cream placeholder:text-cream/35 outline-none transition"

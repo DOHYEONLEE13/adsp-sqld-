@@ -11,7 +11,16 @@
  */
 
 import { useEffect, useState } from 'react';
-import { ArrowLeft, RefreshCcw, Shield, Unlock, Users } from 'lucide-react';
+import {
+  ArrowLeft,
+  Plus,
+  RefreshCcw,
+  Shield,
+  Sparkles,
+  Trash2,
+  Unlock,
+  Users,
+} from 'lucide-react';
 import { getSupabase, isSupabaseConfigured } from '@/lib/supabase';
 import { useMyProfile } from '@/data/profile';
 import VideoBg from '@/components/ui/VideoBg';
@@ -390,6 +399,9 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
           </div>
         </section>
 
+        {/* 프로모션 코드 관리 — 활성 코드 목록 + 생성/삭제 */}
+        <PromoCodeManager />
+
         {/* 안내 */}
         <section className="mt-6 p-5 rounded-[16px] border border-cream/12 bg-cream/5">
           <h3 className="kr-heading text-[13px] mb-2 inline-flex items-center gap-2">
@@ -433,5 +445,273 @@ function Stat({ label, value }: { label: string; value: number }) {
         {value.toLocaleString('ko-KR')}
       </div>
     </div>
+  );
+}
+
+// ─── 프로모션 코드 관리 ─────────────────────────────────────────────
+
+interface RedemptionCodeRow {
+  code: string;
+  granted_tier: string;
+  max_uses: number;
+  uses: number;
+  note: string | null;
+  expires_at: string | null;
+  created_at: string;
+}
+
+/** 코드 무작위 suffix 생성 — 혼동되기 쉬운 0/O/1/I 제외. */
+function genCodeSuffix(len = 8): string {
+  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let out = '';
+  for (let i = 0; i < len; i++) {
+    out += alphabet[Math.floor(Math.random() * alphabet.length)];
+  }
+  return out;
+}
+
+function PromoCodeManager() {
+  const [codes, setCodes] = useState<RedemptionCodeRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [maxUses, setMaxUses] = useState<number>(1);
+  const [note, setNote] = useState('');
+  const [expiresAt, setExpiresAt] = useState(''); // YYYY-MM-DD form
+  const [creating, setCreating] = useState(false);
+  const [feedback, setFeedback] = useState<{ kind: 'ok' | 'err'; msg: string } | null>(null);
+
+  const reload = async () => {
+    setLoading(true);
+    const sb = getSupabase();
+    if (!sb) {
+      setLoading(false);
+      return;
+    }
+    const { data, error } = await sb
+      .from('redemption_codes')
+      .select('code, granted_tier, max_uses, uses, note, expires_at, created_at')
+      .order('created_at', { ascending: false })
+      .limit(100);
+    if (!error && data) setCodes(data as RedemptionCodeRow[]);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    void reload();
+  }, []);
+
+  const handleCreate = async () => {
+    if (creating) return;
+    setCreating(true);
+    setFeedback(null);
+    const sb = getSupabase();
+    if (!sb) {
+      setCreating(false);
+      return;
+    }
+    const code = `QDP-PROMO-${genCodeSuffix(8)}`;
+    const expires = expiresAt
+      ? new Date(`${expiresAt}T23:59:59`).toISOString()
+      : null;
+    const { error } = await sb.from('redemption_codes').insert({
+      code,
+      granted_tier: 'lifetime',
+      max_uses: Math.max(1, maxUses | 0),
+      note: note.trim() || null,
+      expires_at: expires,
+    });
+    setCreating(false);
+    if (error) {
+      setFeedback({ kind: 'err', msg: `발급 실패 — ${error.message}` });
+      return;
+    }
+    setFeedback({ kind: 'ok', msg: `${code} 발급됨` });
+    setNote('');
+    await reload();
+  };
+
+  const handleDelete = async (code: string) => {
+    if (!window.confirm(`"${code}" 정말 삭제하시겠어요? 이미 사용된 grant 는 유지됩니다.`)) {
+      return;
+    }
+    const sb = getSupabase();
+    if (!sb) return;
+    const { error } = await sb.from('redemption_codes').delete().eq('code', code);
+    if (error) {
+      setFeedback({ kind: 'err', msg: `삭제 실패 — ${error.message}` });
+      return;
+    }
+    setFeedback({ kind: 'ok', msg: `${code} 삭제됨` });
+    await reload();
+  };
+
+  const isExpired = (row: RedemptionCodeRow): boolean =>
+    !!row.expires_at && new Date(row.expires_at) < new Date();
+  const isDepleted = (row: RedemptionCodeRow): boolean => row.uses >= row.max_uses;
+
+  return (
+    <section className="mt-10">
+      <header className="flex items-center justify-between mb-4">
+        <h2 className="kr-heading text-[16px] inline-flex items-center gap-2">
+          <Sparkles size={16} className="text-neon" strokeWidth={2.4} />
+          프로모션 코드 관리
+        </h2>
+        <button
+          type="button"
+          onClick={() => void reload()}
+          aria-label="새로고침"
+          className="kr-num text-[11px] text-cream/65 hover:text-neon transition inline-flex items-center gap-1"
+        >
+          <RefreshCcw size={11} strokeWidth={2.4} />
+          새로고침
+        </button>
+      </header>
+
+      {/* 코드 발급 폼 */}
+      <div className="rounded-[16px] p-4 md:p-5 mb-5 border border-cream/12 bg-cream/5">
+        <div className="kr-heading uppercase text-[10px] tracking-widest text-cream/55 mb-3">
+          코드 발급
+        </div>
+        <div className="flex flex-wrap items-end gap-3">
+          <label className="flex flex-col gap-1.5 min-w-[120px]">
+            <span className="kr-num text-[10px] uppercase tracking-widest text-cream/55">
+              사용 가능 횟수
+            </span>
+            <input
+              type="number"
+              min={1}
+              max={10000}
+              value={maxUses}
+              onChange={(e) => setMaxUses(parseInt(e.target.value || '1', 10))}
+              className="kr-num text-[13px] px-3 py-2 rounded-lg bg-cream/8 border border-cream/15 outline-none focus:border-neon/50 transition"
+            />
+          </label>
+          <label className="flex flex-col gap-1.5 min-w-[160px]">
+            <span className="kr-num text-[10px] uppercase tracking-widest text-cream/55">
+              만료일 (선택)
+            </span>
+            <input
+              type="date"
+              value={expiresAt}
+              onChange={(e) => setExpiresAt(e.target.value)}
+              className="kr-num text-[13px] px-3 py-2 rounded-lg bg-cream/8 border border-cream/15 outline-none focus:border-neon/50 transition text-cream"
+            />
+          </label>
+          <label className="flex flex-col gap-1.5 flex-1 min-w-[200px]">
+            <span className="kr-num text-[10px] uppercase tracking-widest text-cream/55">
+              메모 (선택)
+            </span>
+            <input
+              type="text"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="예: 5월 마케팅 캠페인"
+              className="kr-body text-[13px] px-3 py-2 rounded-lg bg-cream/8 border border-cream/15 outline-none focus:border-neon/50 transition placeholder:text-cream/35"
+            />
+          </label>
+          <button
+            type="button"
+            onClick={() => void handleCreate()}
+            disabled={creating}
+            className="kr-num inline-flex items-center gap-1.5 text-[12px] uppercase tracking-widest px-4 py-2.5 rounded-lg transition active:scale-[0.97] disabled:opacity-40"
+            style={{
+              background: 'rgba(111,255,0,0.16)',
+              color: '#9CFF3D',
+              border: '1px solid rgba(111,255,0,0.4)',
+            }}
+          >
+            <Plus size={12} strokeWidth={2.6} />
+            {creating ? '발급 중...' : '발급'}
+          </button>
+        </div>
+        {feedback ? (
+          <div
+            className="mt-3 kr-body text-[12px]"
+            style={{
+              color: feedback.kind === 'ok' ? '#9CFF3D' : '#fca5a5',
+            }}
+          >
+            {feedback.msg}
+          </div>
+        ) : null}
+      </div>
+
+      {/* 코드 목록 */}
+      <div className="rounded-[16px] border border-cream/12 overflow-hidden">
+        <div className="grid grid-cols-[1fr_80px_120px_1fr_44px] gap-2 px-4 py-3 bg-cream/8 kr-num text-[10px] uppercase tracking-widest text-cream/55">
+          <span>코드</span>
+          <span className="text-right">사용</span>
+          <span>만료</span>
+          <span>메모</span>
+          <span aria-label="삭제" />
+        </div>
+        {loading ? (
+          <div className="px-4 py-6 kr-body text-[12px] text-cream/55 text-center">
+            불러오는 중...
+          </div>
+        ) : codes.length === 0 ? (
+          <div className="px-4 py-6 kr-body text-[12px] text-cream/55 text-center">
+            발급된 코드가 없습니다.
+          </div>
+        ) : (
+          codes.map((row) => {
+            const expired = isExpired(row);
+            const depleted = isDepleted(row);
+            const inactive = expired || depleted;
+            return (
+              <div
+                key={row.code}
+                className="grid grid-cols-[1fr_80px_120px_1fr_44px] gap-2 px-4 py-3 border-t border-cream/8 items-center"
+                style={{ opacity: inactive ? 0.55 : 1 }}
+              >
+                <span className="kr-num text-[12.5px] tabular-nums break-all">
+                  {row.code}
+                </span>
+                <span className="kr-num text-[11.5px] text-cream/75 text-right tabular-nums">
+                  {row.uses}/{row.max_uses}
+                  {depleted ? (
+                    <span className="kr-heading text-[8.5px] uppercase ml-1 text-cream/50">
+                      소진
+                    </span>
+                  ) : null}
+                </span>
+                <span className="kr-num text-[11px] text-cream/65">
+                  {row.expires_at
+                    ? new Date(row.expires_at).toLocaleDateString('ko-KR', {
+                        year: '2-digit',
+                        month: '2-digit',
+                        day: '2-digit',
+                      })
+                    : '없음'}
+                  {expired ? (
+                    <span className="kr-heading text-[8.5px] uppercase ml-1 text-[#fca5a5]">
+                      만료
+                    </span>
+                  ) : null}
+                </span>
+                <span className="kr-body text-[11.5px] text-cream/65 truncate">
+                  {row.note || '—'}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => void handleDelete(row.code)}
+                  aria-label={`${row.code} 삭제`}
+                  className="inline-flex items-center justify-center w-7 h-7 rounded-md hover:bg-red-500/15 text-cream/55 hover:text-red-300 transition"
+                >
+                  <Trash2 size={12} strokeWidth={2.4} />
+                </button>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      <p className="mt-3 kr-body text-[11.5px] text-cream/55 leading-[1.65]">
+        ※ 발급된 코드는 사용자가 <code className="px-1 py-0.5 rounded bg-cream/10 text-cream/85">#/redeem</code>{' '}
+        에서 입력 시 영구 프리미엄 부여. 코드 자체에 만료일을 설정하면 그 이후엔
+        새 사용자가 입력해도 거절. 이미 사용된 grant 는{' '}
+        <code className="px-1 py-0.5 rounded bg-cream/10 text-cream/85">premium_grants</code>{' '}
+        의 revoke RPC 로 별도 회수.
+      </p>
+    </section>
   );
 }

@@ -59,6 +59,31 @@ export function isSupabaseConfigured(): boolean {
 
 export type OAuthProvider = 'google' | 'kakao';
 
+/**
+ * OAuth callback redirect 의 정식 origin 결정.
+ *
+ * 정책:
+ *  - 로컬 dev (`localhost`, `127.0.0.1`) → 현재 origin 그대로
+ *  - prod (`quest-dp.com`) → quest-dp.com (canonical)
+ *  - Cloudflare 자동 도메인 (`adsp-sqld.pages.dev`) → **quest-dp.com 으로 강제**
+ *    이유: Supabase Site URL 이 quest-dp.com 으로 등록되어 callback 후 cookie
+ *    도메인 분리되지 않도록. Pages 자동 도메인을 그대로 쓰면 OAuth 후 다른
+ *    origin 으로 redirect 되어 session 새로 만들기 (= 로그인 한 번에 안 됨).
+ *
+ * env override: VITE_AUTH_REDIRECT_ORIGIN 이 있으면 그 값 우선.
+ */
+function canonicalAuthOrigin(): string {
+  const envOverride = (import.meta.env.VITE_AUTH_REDIRECT_ORIGIN as string | undefined)?.trim();
+  if (envOverride) return envOverride;
+  if (typeof window === 'undefined') return 'https://quest-dp.com';
+  const host = window.location.hostname;
+  if (host === 'localhost' || host === '127.0.0.1') {
+    return window.location.origin;
+  }
+  // prod 또는 Cloudflare 자동 도메인 모두 canonical 로 통합
+  return 'https://quest-dp.com';
+}
+
 /** OAuth 로그인 — 외부 콘솔로 redirect. 콜백은 detectSessionInUrl 이 처리. */
 export async function signInWithOAuth(provider: OAuthProvider) {
   const sb = getSupabase();
@@ -66,7 +91,7 @@ export async function signInWithOAuth(provider: OAuthProvider) {
   return sb.auth.signInWithOAuth({
     provider,
     options: {
-      redirectTo: window.location.origin,
+      redirectTo: canonicalAuthOrigin(),
     },
   });
 }

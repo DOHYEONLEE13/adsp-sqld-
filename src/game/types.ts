@@ -11,7 +11,17 @@ import type { MultipleChoiceQuestion, Subject } from '@/types/question';
 export type GameScreen =
   | { kind: 'galaxy' }
   | { kind: 'planet'; subject: Subject }
-  | { kind: 'zone'; subject: Subject; chapter: number }
+  | {
+      kind: 'zone';
+      subject: Subject;
+      chapter: number;
+      /**
+       * 진입 시 자동 강조할 topic — 펄스 애니메이션으로 사용자 안내.
+       * "나의 약점" 탭에서 단원 노드 클릭 시 사용. 설정되면 ZoneScreen mount 후
+       * 일정 시간 (10초) 펄스 후 자동 페이드.
+       */
+      highlightTopic?: string;
+    }
   | {
       kind: 'lesson';
       subject: Subject;

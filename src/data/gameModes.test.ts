@@ -22,11 +22,14 @@ function actualSteps(subject: Subject): number {
 }
 
 function actualPlayableQuestions(subject: Subject): number {
+  // 차단 status: restored (legacy) + deprecated (Phase 3 v2 신규).
+  // 동기화: src/game/session.ts isPlayable.
   return ALL_QUESTIONS.filter(
     (q) =>
       q.subject === subject &&
       q.type === 'multiple_choice' &&
       q.status !== 'restored' &&
+      q.status !== 'deprecated' &&
       !q.needsDistractors,
   ).length;
 }

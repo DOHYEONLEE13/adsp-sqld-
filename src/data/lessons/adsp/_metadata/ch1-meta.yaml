@@ -1,0 +1,105 @@
+# ===== ADsP Subject 1 Lesson Metadata =====
+# 운영 lesson .ts 파일은 그대로 두고, 메타 정보만 별도 관리.
+# question-bank 의 _meta.yaml 과 양방향 sync 대상.
+#
+# 회독·변형은 quiz_pass1_id/quiz_pass2_id 분리하지 않음 — 각 step 은 primary quiz_id 한 개만 명시.
+# 1·2회독 변형 관계는 question-bank/<chapter>/_meta.yaml 의 variant_groups 에서 추적.
+# (TAXONOMY.md 5·6 절 참조)
+
+exam: ADsP
+subject: 1                              # 과목 번호
+subject_name: 데이터 이해
+
+lessons:
+  # ─── Lesson 1: 데이터, 정보, 지식 (1과목 1단원 — 데이터의 이해) ───
+  - lesson_id: adsp-1-1
+    lesson_title: 데이터, 정보, 지식 — 그 차이부터
+    file: src/data/lessons/adsp/ch1.ts
+    estimated_minutes: 8
+    status: self_reviewed
+    last_modified: 2026-04-30
+    question_bank_chapter: ch1-data-basics
+    question_bank_path: question-bank/ADsP/subject-1-data-understanding/ch1-data-basics
+    guidebook_mapping:
+      exam: ADsP
+      subject: 1
+      chapter: 1
+      chapter_name: 데이터의 이해
+      section: ~                         # 1단원 전체
+
+    # 토픽 그룹 — lesson 내부의 sN 묶음
+    topic_groups:
+      - group_id: dikw-pyramid
+        group_title: DIKW 피라미드
+        steps:
+          - step_id: adsp-1-1-s1
+            title: DIKW 피라미드 개요
+            quiz_id: Q-ADsP-1-1-0001
+            quiz_legacy_id: adsp-1-1-cp-01a
+            primary_concept: DIKW 4단계 순서
+
+          - step_id: adsp-1-1-s1-data
+            title: DIKW ① 데이터 (Data)
+            quiz_id: Q-ADsP-1-1-0002
+            quiz_legacy_id: adsp-1-1-cp-01b
+            primary_concept: 데이터 정의
+
+          - step_id: adsp-1-1-s1-info
+            title: DIKW ② 정보 (Information)
+            quiz_id: Q-ADsP-1-1-0003
+            quiz_legacy_id: adsp-1-1-cp-01c
+            primary_concept: 정보 정의
+
+          - step_id: adsp-1-1-s1-knowledge
+            title: DIKW ③ 지식 (Knowledge)
+            quiz_id: Q-ADsP-1-1-0004
+            quiz_legacy_id: adsp-1-1-cp-01
+            primary_concept: 지식 정의
+
+          - step_id: adsp-1-1-s1-wisdom
+            title: DIKW ④ 지혜 (Wisdom)
+            quiz_id: Q-ADsP-1-1-0005
+            quiz_legacy_id: adsp-1-1-cp-01d
+            primary_concept: 지혜 정의
+
+          - step_id: adsp-1-1-s1-review
+            title: DIKW 피라미드 복습
+            quiz_id: Q-ADsP-1-1-0001         # primary (lesson .ts 의 quizId)
+            quiz_legacy_id: adsp-1-1-cp-01a
+            primary_concept: DIKW 종합
+            # 2회독 변형 (Q-ADsP-1-1-0006) 은 question-bank variant_group VG-DIKW-001 로 추적
+
+      # ─── 다른 topic_group (s2 데이터 분류 / s3 SECI / s4 DB·DW…) 은 Phase 2-A bulk 변환 후 추가 ───
+
+  # ─── Lesson 2: 빅데이터 (1과목 2단원 — 데이터의 가치와 미래) — Phase 2-A 에서 채움 ───
+  - lesson_id: adsp-1-2
+    lesson_title: 빅데이터는 왜 "빅" 인가
+    file: src/data/lessons/adsp/ch1.ts
+    question_bank_chapter: ch2-data-value
+    question_bank_path: question-bank/ADsP/subject-1-data-understanding/ch2-data-value
+    guidebook_mapping:
+      exam: ADsP
+      subject: 1
+      chapter: 2
+      chapter_name: 데이터의 가치와 미래
+      section: ~                         # 2단원 전체
+    # topic_groups: ... (Phase 3 generate_lesson_meta.mjs 자동화)
+
+  # ─── Lesson 3: 데이터 사이언티스트 (1과목 3단원 — 가치 창조 데이터 사이언스) ───
+  - lesson_id: adsp-1-3
+    lesson_title: 데이터 사이언티스트라는 직업
+    file: src/data/lessons/adsp/ch1.ts
+    question_bank_chapter: ch3-data-science-strategy
+    question_bank_path: question-bank/ADsP/subject-1-data-understanding/ch3-data-science-strategy
+    guidebook_mapping:
+      exam: ADsP
+      subject: 1
+      chapter: 3
+      chapter_name: 가치 창조를 위한 데이터 사이언스
+      section: ~                         # 3단원 전체
+    # topic_groups: ... (Phase 3 자동화)
+
+# ───────────────────────────────────────────────────
+created_at: 2026-05-05
+last_modified: 2026-05-05
+version: 2   # v1 = pass1/pass2 split, v2 = variant_group 일원화

@@ -7,7 +7,8 @@
  * - "확인" 으로 닫기
  */
 
-import { Zap, X, Crown } from 'lucide-react';
+import { useState } from 'react';
+import { Zap, X, Crown, PlayCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Ques from '@/components/mascot/Ques';
 import {
@@ -16,7 +17,8 @@ import {
   type MascotCharacter,
 } from '@/components/mascot/types';
 import type { Subject } from '@/types/question';
-import { formatRetryAfter } from '../energy';
+import { formatRetryAfter, AD_REWARD } from '../energy';
+import AdRewardModal from './AdRewardModal';
 
 interface Props {
   retryAfterSec: number;
@@ -36,6 +38,7 @@ export default function EnergyBlockModal({
   const character: MascotCharacter = subject
     ? characterForSubject(subject)
     : DEFAULT_CHARACTER;
+  const [showAd, setShowAd] = useState(false);
 
   const handleUpgrade = () => {
     if (onUpgrade) {
@@ -106,31 +109,46 @@ export default function EnergyBlockModal({
             .
           </p>
           <p className="kr-body text-[12.5px] text-cream/60 leading-[1.55]">
-            프리미엄으로 전환하면 ⚡ 무제한 + 모든 step 자유 진행.
+            광고 1회 보면 ⚡ {AD_REWARD} 즉시 충전. 또는 프리미엄으로 무제한.
           </p>
 
           <div className="w-full mt-5 flex flex-col gap-2">
+            {/* 광고 보기 — primary CTA (즉시 가치, 무료) */}
+            <button
+              type="button"
+              onClick={() => setShowAd(true)}
+              className="w-full kr-num text-[13px] font-medium py-3 rounded-full inline-flex items-center justify-center gap-2 transition active:scale-[0.98]"
+              style={{
+                background: 'var(--neon)',
+                color: '#0a1f00',
+                boxShadow: '0 6px 18px -4px rgba(111,255,0,0.55)',
+              }}
+            >
+              <PlayCircle size={14} strokeWidth={2.4} />
+              광고 보고 ⚡ {AD_REWARD} 충전
+            </button>
+            {/* 프리미엄 — secondary (장기 가치) */}
             <button
               type="button"
               onClick={handleUpgrade}
-              className="w-full kr-num text-[13px] font-medium py-3 rounded-full inline-flex items-center justify-center gap-2 transition active:scale-[0.98]"
+              className="w-full kr-num text-[12.5px] py-2.5 rounded-full inline-flex items-center justify-center gap-2 transition active:scale-[0.98]"
               style={{
-                background: '#A78BFA',
-                color: '#1a0e3d',
-                boxShadow: '0 6px 18px -4px rgba(167,139,250,0.55)',
+                background: 'rgba(167,139,250,0.18)',
+                border: '1px solid rgba(167,139,250,0.5)',
+                color: '#A78BFA',
               }}
             >
-              <Crown size={14} strokeWidth={2.4} />
+              <Crown size={13} strokeWidth={2.4} />
               프리미엄 알아보기
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="w-full kr-num text-[12px] py-2.5 rounded-full transition active:scale-[0.98]"
+              className="w-full kr-num text-[12px] py-2 rounded-full transition active:scale-[0.98]"
               style={{
-                background: 'rgba(239,244,255,0.08)',
-                border: '1px solid rgba(239,244,255,0.14)',
-                color: 'var(--cream)',
+                background: 'rgba(239,244,255,0.06)',
+                border: '1px solid rgba(239,244,255,0.12)',
+                color: 'rgba(239,244,255,0.75)',
               }}
             >
               나중에
@@ -138,6 +156,18 @@ export default function EnergyBlockModal({
           </div>
         </div>
       </motion.div>
+
+      {/* 광고 시청 모달 — 보상 완료 시 onClose 로 EnergyBlockModal 도 함께 닫음 */}
+      {showAd ? (
+        <AdRewardModal
+          subject={subject}
+          onClose={() => {
+            setShowAd(false);
+            // 보상이 들어왔으면 useEnergy 가 갱신됨 — 부모가 다시 시도하도록 모달 닫기
+            onClose();
+          }}
+        />
+      ) : null}
     </div>
   );
 }

@@ -1,0 +1,66 @@
+# ===== ADsP Subject 2 Lesson Metadata =====
+# 운영 lesson .ts 파일은 그대로 두고, 메타 정보만 별도 관리.
+# 운영 lesson 분할 (3개) 과 가이드북 공식 단원 (2개) 의 매핑은 guidebook_mapping 필드로 표현.
+
+exam: ADsP
+subject: 2
+subject_name: 데이터 분석 기획
+
+# ─── ⚠ 운영 lesson 구조 ↔ 가이드북 단원 매핑 정책 ───
+# 운영 lesson .ts 는 마이크로러닝 분할 (3개). 가이드북 공식 단원은 2개.
+# 따라서 lesson 1:1 매핑이 아닌, lesson_id → (guidebook_chapter, section) 매핑.
+# 약점 진단 등에서 lesson 단위 진도 → 가이드북 단원 단위 약점 분석 변환 시 사용.
+
+lessons:
+  - lesson_id: adsp-2-1
+    lesson_title: 분석의 4가지 유형과 방법론
+    file: src/data/lessons/adsp/ch2.ts
+    estimated_minutes: ~
+    status: self_reviewed
+    last_modified: 2026-04-30
+    question_bank_chapter: ch1-analysis-planning
+    question_bank_path: question-bank/ADsP/subject-2-analysis-planning/ch1-analysis-planning
+    guidebook_mapping:
+      exam: ADsP
+      subject: 2
+      chapter: 1
+      chapter_name: 데이터 분석 기획의 이해
+      section: 분석 기획 + 분석 방법론     # 1단원의 전반부
+
+  - lesson_id: adsp-2-2
+    lesson_title: 조직을 움직이는 마스터플랜
+    file: src/data/lessons/adsp/ch2.ts
+    estimated_minutes: ~
+    status: self_reviewed
+    last_modified: 2026-04-30
+    question_bank_chapter: ch2-analysis-master-plan
+    question_bank_path: question-bank/ADsP/subject-2-analysis-planning/ch2-analysis-master-plan
+    guidebook_mapping:
+      exam: ADsP
+      subject: 2
+      chapter: 2
+      chapter_name: 분석 마스터플랜
+      section: ~                           # 2단원 전체
+
+  - lesson_id: adsp-2-3
+    lesson_title: 좋은 분석 과제는 어떻게 찾는가
+    file: src/data/lessons/adsp/ch2.ts
+    estimated_minutes: ~
+    status: self_reviewed
+    last_modified: 2026-04-30
+    question_bank_chapter: ch1-analysis-planning      # 가이드북 1단원으로 통합
+    question_bank_path: question-bank/ADsP/subject-2-analysis-planning/ch1-analysis-planning
+    guidebook_mapping:
+      exam: ADsP
+      subject: 2
+      chapter: 1
+      chapter_name: 데이터 분석 기획의 이해
+      section: 분석 과제 발굴               # 1단원의 한 섹션
+
+# ─── Phase 3 보강 예정 ───
+# topic_groups: 각 lesson 의 step 그룹별 quiz 매핑은 generate_lesson_meta.mjs (Phase 3) 로 자동화.
+
+# ───────────────────────────────────────────────────
+created_at: 2026-05-05
+last_modified: 2026-05-05
+version: 1

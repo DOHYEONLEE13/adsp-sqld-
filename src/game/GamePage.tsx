@@ -69,21 +69,101 @@ interface PendingConceptOpen {
   questionId?: string;
   /** 'question' = 도착 즉시 narration 스킵 후 question phase. 'narrate' (기본) = 일반. */
   phase?: 'narrate' | 'question';
+  /**
+   * 진입 시 강제 passNumber. 미지정 시 passNumberFor(subject) 사용.
+   * 약점 노드 → 2회독 복습 진입 같이 명시적 회독 차수가 필요한 케이스에 사용.
+   */
+  passNumber?: 1 | 2;
 }
+/**
+ * 모듈 레벨 캐시 — React.StrictMode 의 double-mount 보호.
+ *
+ * dev 모드에서 StrictMode 가 GamePage 를 두 번 mount → useState 초기값 평가도 두 번.
+ * 첫 호출에서 sessionStorage 소비 후 lesson 화면 결정, 두 번째 호출에서 sessionStorage
+ * 비어있어 null 반환 → planet 으로 fallback. 사용자에게는 두 번째 결과가 노출되어 lesson
+ * 으로 점프되지 않는 버그가 발생.
+ *
+ * 해결: 짧은 시간 윈도우 (1.5s) 내 호출은 첫 결과 그대로 반환.
+ * 이후 호출은 새로 sessionStorage 검사 (정상 navigation 케이스 보호).
+ */
+const PENDING_CACHE_WINDOW_MS = 1500;
+let _pendingCache: { value: PendingConceptOpen | null; at: number } | null = null;
+
 function consumePendingConceptOpen(): PendingConceptOpen | null {
-  if (typeof window === 'undefined') return null;
+  // StrictMode double-mount 보호 — 윈도우 내 호출은 같은 결과 재사용.
+  if (_pendingCache && Date.now() - _pendingCache.at < PENDING_CACHE_WINDOW_MS) {
+    return _pendingCache.value;
+  }
+  if (typeof window === 'undefined') {
+    _pendingCache = { value: null, at: Date.now() };
+    return null;
+  }
   try {
     const raw = window.sessionStorage.getItem('questdp.pendingConceptOpen');
-    if (!raw) return null;
+    if (!raw) {
+      _pendingCache = { value: null, at: Date.now() };
+      return null;
+    }
     window.sessionStorage.removeItem('questdp.pendingConceptOpen');
-    return JSON.parse(raw) as PendingConceptOpen;
+    const parsed = JSON.parse(raw) as PendingConceptOpen;
+    _pendingCache = { value: parsed, at: Date.now() };
+    return parsed;
   } catch {
+    _pendingCache = { value: null, at: Date.now() };
+    return null;
+  }
+}
+
+/**
+ * "나의 약점" 탭 → 단원 노드 클릭 시 ZoneScreen 으로 직접 진입 + 첫 미완료 step 강조.
+ *
+ * 학습 탭과 같은 화면 (ZoneScreen) 으로 통일 → 사용자 통제권 + 정보 노출 일관성.
+ * pendingConceptOpen 와 별개 키 사용 — DialogueLesson 직진과 분리.
+ */
+interface PendingZoneOpen {
+  subject: Subject;
+  chapter: number;
+  /** 자동 강조할 topic — 본 topic 의 첫 미완료 step 노드에 펄스 애니메이션. */
+  highlightTopic?: string;
+}
+let _pendingZoneCache: { value: PendingZoneOpen | null; at: number } | null = null;
+function consumePendingZoneOpen(): PendingZoneOpen | null {
+  if (_pendingZoneCache && Date.now() - _pendingZoneCache.at < PENDING_CACHE_WINDOW_MS) {
+    return _pendingZoneCache.value;
+  }
+  if (typeof window === 'undefined') {
+    _pendingZoneCache = { value: null, at: Date.now() };
+    return null;
+  }
+  try {
+    const raw = window.sessionStorage.getItem('questdp.pendingZoneOpen');
+    if (!raw) {
+      _pendingZoneCache = { value: null, at: Date.now() };
+      return null;
+    }
+    window.sessionStorage.removeItem('questdp.pendingZoneOpen');
+    const parsed = JSON.parse(raw) as PendingZoneOpen;
+    _pendingZoneCache = { value: parsed, at: Date.now() };
+    return parsed;
+  } catch {
+    _pendingZoneCache = { value: null, at: Date.now() };
     return null;
   }
 }
 
 export default function GamePage({ initialSubject, onExitToLanding }: Props) {
   const [screen, setScreen] = useState<GameScreen>(() => {
+    // 1순위: ZoneScreen 직진 (나의 약점 탭 → 단원 노드 클릭)
+    const pendingZone = consumePendingZoneOpen();
+    if (pendingZone && pendingZone.subject === initialSubject) {
+      return {
+        kind: 'zone',
+        subject: pendingZone.subject,
+        chapter: pendingZone.chapter,
+        highlightTopic: pendingZone.highlightTopic,
+      };
+    }
+    // 2순위: DialogueLesson 직진 (북마크 점프 등 lesson 단위 진입)
     const pending = consumePendingConceptOpen();
     if (pending && pending.subject === initialSubject && pending.topic) {
       // phase='question' 이면 DialogueLesson 진입 즉시 narration 스킵 표식.
@@ -99,7 +179,8 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
         chapter: pending.chapter,
         topic: pending.topic,
         stepIdx: pending.stepIdx,
-        passNumber: 1,
+        // pending.passNumber 우선 (북마크 등 명시적 회독 진입), 없으면 자동 결정
+        passNumber: pending.passNumber ?? passNumberFor(pending.subject),
       };
     }
     return initialSubject
@@ -133,7 +214,8 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
         chapter: pending.chapter,
         topic: pending.topic,
         stepIdx: pending.stepIdx,
-        passNumber: 1,
+        // pending.passNumber 우선 (약점 노드 등 명시적 회독 진입), 없으면 자동 결정
+        passNumber: pending.passNumber ?? passNumberFor(pending.subject),
       });
     };
     window.addEventListener('questdp-open-concept', handler);
@@ -324,6 +406,7 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
         <ZoneScreen
           subject={screen.subject}
           chapter={screen.chapter}
+          highlightTopic={screen.highlightTopic}
           onStart={(p: StartParams) =>
             startSession(
               screen.subject,

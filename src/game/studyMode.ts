@@ -12,6 +12,7 @@
  */
 
 import type { Subject } from '@/types/question';
+import { loadOnboardingResult } from './onboarding/onboardingStorage';
 
 const STORAGE_KEY = 'questdp.studyMode.v1';
 
@@ -46,9 +47,38 @@ function save(modes: StudyModes): void {
   }
 }
 
-/** 과목의 학습 모드. 미설정이면 undefined. */
+/** 과목의 학습 모드 (사용자 명시 설정만). 미설정이면 undefined. */
 export function getStudyMode(subject: Subject): StudyMode | undefined {
   return load()[subject];
+}
+
+/**
+ * 효과적 학습 모드 — 사용자 명시값 > onboarding persona 매핑 > undefined.
+ *
+ * Phase 4 Step 3 통합 (작업 A): onboarding 의 persona 가 studyMode 와 1:1 대응이라
+ * 같은 정보를 두 번 묻지 않도록 자동 매핑.
+ *   - persona === 'reviewer' → 'review'
+ *   - persona === 'beginner' → 'first'
+ *
+ * 사용자가 SubjectInfoPanel 에서 명시적으로 변경했으면 setStudyMode 가 우선.
+ *
+ * onboarding 도 안 한 게스트 → undefined 반환 (legacy UI 가 큰 카드 노출).
+ */
+export function getEffectiveStudyMode(subject: Subject): StudyMode | undefined {
+  // 1순위: 사용자가 직접 설정한 값
+  const explicit = getStudyMode(subject);
+  if (explicit) return explicit;
+
+  // 2순위: onboarding persona 자동 매핑
+  const onboarding = loadOnboardingResult();
+  if (!onboarding) return undefined;
+  // onboarding 의 exams 에 본 subject 가 포함될 때만 매핑 적용 (다른 시험 답한 사용자에 오용 방지)
+  if (subject !== 'adsp' && subject !== 'sqld') return undefined;
+  if (!onboarding.exams.includes(subject)) return undefined;
+
+  if (onboarding.persona === 'reviewer') return 'review';
+  if (onboarding.persona === 'beginner') return 'first';
+  return undefined;
 }
 
 /** 과목의 학습 모드 설정. null 이면 삭제. */
@@ -63,7 +93,9 @@ export function setStudyMode(subject: Subject, mode: StudyMode | null): void {
  * 학습 모드에 따른 시작 passNumber.
  * 'review' → 2 (변형 문제 우선, 부족 시 원본 보충 — session.ts 가 처리)
  * 그 외   → 1
+ *
+ * Phase 4 Step 3 — getEffectiveStudyMode 사용 (onboarding 자동 매핑 반영).
  */
 export function passNumberFor(subject: Subject): 1 | 2 {
-  return getStudyMode(subject) === 'review' ? 2 : 1;
+  return getEffectiveStudyMode(subject) === 'review' ? 2 : 1;
 }

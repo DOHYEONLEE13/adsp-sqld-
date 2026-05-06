@@ -1,0 +1,43 @@
+# ===== SQLD Subject 1 Lesson Metadata =====
+# 운영 lesson .ts 파일은 그대로 두고, 메타 정보만 별도 관리.
+# 운영 lesson 분할 (2개) 과 가이드북 공식 단원 (2개) 의 매핑은 1:1 (깔끔).
+
+exam: SQLD
+subject: 1
+subject_name: 데이터 모델링
+
+lessons:
+  - lesson_id: sqld-1-1
+    lesson_title: 모델링 · 스키마 · 엔터티 · 속성 · 관계 · 식별자
+    file: src/data/lessons/sqld/ch1-modeling.ts
+    estimated_minutes: ~
+    status: self_reviewed
+    last_modified: 2026-04-30
+    question_bank_chapter: ch1-data-modeling-fundamentals
+    question_bank_path: question-bank/SQLD/subject-1-data-modeling/ch1-data-modeling-fundamentals
+    guidebook_mapping:
+      exam: SQLD
+      subject: 1
+      chapter: 1
+      chapter_name: 데이터 모델링의 이해
+      section: ~                                     # 1단원 전체 (1:1 매핑)
+
+  - lesson_id: sqld-1-2
+    lesson_title: 정규화·반정규화·트랜잭션·NULL
+    file: src/data/lessons/sqld/ch1-modeling.ts
+    estimated_minutes: ~
+    status: self_reviewed
+    last_modified: 2026-04-30
+    question_bank_chapter: ch2-data-modeling-for-performance
+    question_bank_path: question-bank/SQLD/subject-1-data-modeling/ch2-data-modeling-for-performance
+    guidebook_mapping:
+      exam: SQLD
+      subject: 1
+      chapter: 2
+      chapter_name: 데이터 모델과 성능
+      section: ~                                     # 2단원 전체 (1:1 매핑)
+
+# ───────────────────────────────────────────────────
+created_at: 2026-05-05
+last_modified: 2026-05-05
+version: 1

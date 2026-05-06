@@ -29,10 +29,14 @@ import type {
 /** 샘플링 전략. 문항 풀을 어떻게 뽑을지. */
 export type SamplingMode = 'random' | 'weakness' | 'review';
 
-/** 게임에 노출 가능한 문항만 통과시키는 가드. */
+/** 게임에 노출 가능한 문항만 통과시키는 가드.
+ *
+ * 차단 status: `restored` (legacy, 정답만), `deprecated` (검수 실패/폐기).
+ * 관련 정책: `src/types/question.ts` QuestionStatus, `question-bank/ROADMAP.md` 6 절.
+ */
 export function isPlayable(q: Question): q is MultipleChoiceQuestion {
   if (q.type !== 'multiple_choice') return false;
-  if (q.status === 'restored') return false;
+  if (q.status === 'restored' || q.status === 'deprecated') return false;
   if (q.needsDistractors) return false;
   return true;
 }

@@ -1,11 +1,11 @@
 /**
  * EnergyBadge — ⚡ 에너지 + 30분 충전 타이머.
  *
- * 표시 정책:
- *  - 게스트 (인증 X): "⚡ 5" 정적 (서버 sync 없으니 fair use 제약 X)
+ * 표시 정책 (cap=10):
+ *  - 게스트 (인증 X): "⚡ N/10" — localStorage 기반 가입 friction
  *  - 프리미엄 / 어드민: "∞ ⚡" — 무제한 표식
- *  - 무료 인증, energy === 5 (cap): "⚡ 5" — 타이머 없음 (이미 풀 상태)
- *  - 무료 인증, energy < 5: "⚡ N · MM:SS" — 다음 충전까지 카운트다운
+ *  - 무료 인증, energy === 10 (cap): "⚡ 10" — 타이머 없음 (이미 풀 상태)
+ *  - 무료 인증, energy < 10: "⚡ N · MM:SS" — 다음 충전까지 카운트다운
  *
  * 30분 타이머:
  *   nextRegenAt = energyUpdatedAt + 30분
@@ -15,10 +15,11 @@
 
 import { useEffect, useState } from 'react';
 import { Infinity as InfinityIcon, Zap } from 'lucide-react';
-import { useEnergy, isUnlimited, type EnergyState } from '../energy';
+import { useEnergy, isUnlimited, ENERGY_CAP, type EnergyState } from '../energy';
+import AdRewardModal from './AdRewardModal';
 
 const REGEN_AFTER_MS = 30 * 60 * 1000; // 30분
-const CAP = 5;
+const CAP = ENERGY_CAP;
 
 interface Props {
   /** 색상 — 기본 보라 (#A78BFA). 다른 contexts 에서 customize 가능. */
@@ -62,6 +63,8 @@ function CountedBadge({
 }) {
   const showTimer = state.energy < CAP;
   const [now, setNow] = useState<number>(() => Date.now());
+  // 광고 모달 — energy < cap 일 때만 노출 (cap 면 굳이 광고 볼 동기 없음).
+  const [showAd, setShowAd] = useState(false);
 
   // 1초 tick — 타이머 표시 시에만 활성
   useEffect(() => {
@@ -75,15 +78,14 @@ function CountedBadge({
   const mm = Math.floor(remainingMs / 60000);
   const ss = Math.floor((remainingMs % 60000) / 1000);
 
-  return (
-    <span
-      className="inline-flex items-center gap-1.5"
-      title={
-        showTimer
-          ? `⚡ ${state.energy}/${CAP} — 다음 충전 ${mm}:${String(ss).padStart(2, '0')}`
-          : `⚡ ${state.energy}/${CAP} — 풀 충전`
-      }
-    >
+  // 항상 탭 가능 — 사용자 발견성 우선. cap 도달 시 모달 안에서 "이미 가득" 안내.
+  const title =
+    state.energy < CAP
+      ? `⚡ ${state.energy}/${CAP} — 다음 충전 ${mm}:${String(ss).padStart(2, '0')} (탭 = 광고 보고 즉시 충전)`
+      : `⚡ ${state.energy}/${CAP} — 풀 충전 (탭 = 광고 안내)`;
+
+  const inner = (
+    <>
       <span className="inline-flex items-center gap-1">
         <Zap size={size === 'sm' ? 16 : 18} fill={color} strokeWidth={0} />
         <span
@@ -111,6 +113,25 @@ function CountedBadge({
           {mm}:{String(ss).padStart(2, '0')}
         </span>
       ) : null}
-    </span>
+    </>
+  );
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setShowAd(true)}
+        aria-label={
+          state.energy < CAP
+            ? `에너지 ${state.energy}, 광고 보고 충전`
+            : `에너지 ${state.energy}, 풀 충전`
+        }
+        title={title}
+        className="inline-flex items-center gap-1.5 transition active:scale-95 hover:opacity-80"
+      >
+        {inner}
+      </button>
+      {showAd ? <AdRewardModal onClose={() => setShowAd(false)} /> : null}
+    </>
   );
 }

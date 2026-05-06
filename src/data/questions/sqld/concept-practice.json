@@ -16,10 +16,26 @@
       "type": "multiple_choice",
       "difficulty": 1,
       "question": "데이터 모델링의 3가지 특징(\"단추명\")으로 옳지 않은 것은?",
-      "choices": ["단순화", "추상화", "명확화", "정형화"],
+      "choices": [
+        "단순화",
+        "추상화",
+        "명확화",
+        "정형화"
+      ],
       "answerIndex": 3,
       "explanation": "모델링의 3특징은 단순화·추상화·명확화 (\"단추명\"). 정형화는 별개 개념입니다.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-1-1-0001"
+      }
     },
     {
       "id": "sqld-1-1-cp-02",
@@ -38,7 +54,18 @@
       ],
       "answerIndex": 2,
       "explanation": "개념적 → 논리적 → 물리적 (\"개논물\"). 아래로 갈수록 추상화 ↓ 구체화 ↑. 논리적 단계가 재사용성 가장 높음.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-1-1-0002"
+      }
     },
     {
       "id": "sqld-1-1-cp-03",
@@ -49,10 +76,26 @@
       "type": "multiple_choice",
       "difficulty": 2,
       "question": "다음 설명에 해당하는 스키마 구조로 가장 적절한 것은?\n\n[설명] 모든 사용자 관점을 통합한 조직 전체 관점의 통합적 표현",
-      "choices": ["외부 스키마", "개념 스키마", "내부 스키마", "응용 스키마"],
+      "choices": [
+        "외부 스키마",
+        "개념 스키마",
+        "내부 스키마",
+        "응용 스키마"
+      ],
       "answerIndex": 1,
       "explanation": "ANSI/SPARC 3계층 — 외부(사용자별 뷰) · 개념(전체 통합) · 내부(물리 저장). \"통합적 표현\" 키워드는 개념 스키마. \"응용 스키마\"는 가짜 보기.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-1-1-0003"
+      }
     },
     {
       "id": "sqld-1-1-cp-04",
@@ -71,7 +114,18 @@
       ],
       "answerIndex": 2,
       "explanation": "엔터티 5요건은 업무 필요·식별성·2개 이상 인스턴스·속성 보유·관계 필수. \"영속적 저장\"은 조건이 아닙니다 (임시 엔터티도 가능).",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-1-1-0004"
+      }
     },
     {
       "id": "sqld-1-1-cp-05",
@@ -82,10 +136,26 @@
       "type": "multiple_choice",
       "difficulty": 2,
       "question": "엔터티의 발생 시점에 따른 분류가 아닌 것은?",
-      "choices": ["기본 엔터티", "중심 엔터티", "관계 엔터티", "행위 엔터티"],
+      "choices": [
+        "기본 엔터티",
+        "중심 엔터티",
+        "관계 엔터티",
+        "행위 엔터티"
+      ],
       "answerIndex": 2,
       "explanation": "발생 시점 분류는 기본·중심·행위 (3가지뿐). \"관계 엔터티\"는 분류명에 없습니다 (가짜 보기). 유무형 분류는 유형·개념·사건 (\"개사유\").",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-1-1-0005"
+      }
     },
     {
       "id": "sqld-1-1-cp-06",
@@ -96,10 +166,26 @@
       "type": "multiple_choice",
       "difficulty": 2,
       "question": "다른 속성으로부터 계산이나 변형으로 생성되는 속성은?",
-      "choices": ["기본 속성", "설계 속성", "일반 속성", "파생 속성"],
+      "choices": [
+        "기본 속성",
+        "설계 속성",
+        "일반 속성",
+        "파생 속성"
+      ],
       "answerIndex": 3,
       "explanation": "기본=업무에 원래 존재, 설계=설계 시 새로 정의, 파생=계산·변형으로 생성. 합계, 평균, 나이(생년월일에서 계산) 등이 파생 속성.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-1-1-0006"
+      }
     },
     {
       "id": "sqld-1-1-cp-07",
@@ -110,10 +196,26 @@
       "type": "multiple_choice",
       "difficulty": 2,
       "question": "관계의 구성요소(\"관차선\")가 아닌 것은?",
-      "choices": ["관계명", "차수", "선택사양", "연결성"],
+      "choices": [
+        "관계명",
+        "차수",
+        "선택사양",
+        "연결성"
+      ],
       "answerIndex": 3,
       "explanation": "관계 구성은 관계명(Membership) · 차수(Cardinality) · 선택사양(Optionality) — \"관차선\". \"연결성\"은 별개 보기.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-1-1-0007"
+      }
     },
     {
       "id": "sqld-1-1-cp-08",
@@ -132,7 +234,18 @@
       ],
       "answerIndex": 1,
       "explanation": "주식별자 4요건 — 유일성·최소성·불변성·존재성(NOT NULL). NULL 절대 허용 X. 의미성도 요건이 아닙니다.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-1-1-0008"
+      }
     },
     {
       "id": "sqld-1-1-cp-09",
@@ -151,7 +264,18 @@
       ],
       "answerIndex": 3,
       "explanation": "식별자 관계는 1:1 또는 1:M 모두 가능. 부모 PK 만으로 자식 PK 구성 시 1:1, 다른 속성과 합쳐 PK 구성 시 1:M.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-1-1-0009"
+      }
     },
     {
       "id": "sqld-1-1-cp-10",
@@ -170,7 +294,18 @@
       ],
       "answerIndex": 3,
       "explanation": "외래키는 다른 테이블의 PK 를 참조하므로 외부식별자입니다. 내부식별자는 엔터티 내부에서 스스로 생성되는 식별자.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-1-1-0010"
+      }
     },
     {
       "id": "sqld-1-2-cp-01",
@@ -181,10 +316,26 @@
       "type": "multiple_choice",
       "difficulty": 2,
       "question": "다음 중 이상 현상(Anomaly)이 아닌 것은?",
-      "choices": ["삽입 이상", "삭제 이상", "갱신 이상", "조회 이상"],
+      "choices": [
+        "삽입 이상",
+        "삭제 이상",
+        "갱신 이상",
+        "조회 이상"
+      ],
       "answerIndex": 3,
       "explanation": "이상 현상 3종은 삽입·삭제·갱신 이상 (\"삽삭갱\"). 조회는 부작용이 없습니다.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-1-2-0001"
+      }
     },
     {
       "id": "sqld-1-2-cp-02",
@@ -203,7 +354,18 @@
       ],
       "answerIndex": 2,
       "explanation": "완전 함수적 종속은 기본키 \"전체\"에 종속. 일부에만 종속되는 것은 부분 함수적 종속이며, 이를 제거하면 2NF.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-1-2-0002"
+      }
     },
     {
       "id": "sqld-1-2-cp-03",
@@ -214,10 +376,26 @@
       "type": "multiple_choice",
       "difficulty": 3,
       "question": "\"기본키 전체에 대해 완전 함수적 종속을 만족\"하는 정규형은?",
-      "choices": ["제1정규형", "제2정규형", "제3정규형", "BCNF"],
+      "choices": [
+        "제1정규형",
+        "제2정규형",
+        "제3정규형",
+        "BCNF"
+      ],
       "answerIndex": 1,
       "explanation": "1NF=원자값, 2NF=부분 함수 종속 제거(완전 함수 종속), 3NF=이행 함수 종속 제거, BCNF=결정자=후보키 (\"도부이결\").",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-1-2-0003"
+      }
     },
     {
       "id": "sqld-1-2-cp-04",
@@ -236,7 +414,18 @@
       ],
       "answerIndex": 1,
       "explanation": "반정규화는 조회 성능 향상이 목적입니다. 컬럼 중복·테이블 통합·파생 컬럼·요약 테이블 등으로 JOIN 횟수를 줄입니다. 갱신 부담↑·일관성 리스크↑.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-1-2-0004"
+      }
     },
     {
       "id": "sqld-1-2-cp-05",
@@ -257,11 +446,28 @@
       "explanation": "계층형 모델 (예: 사원-상사) 은 같은 테이블이 자기 자신을 참조하는 구조. 셀프 조인 또는 CONNECT BY 같은 계층형 질의로 다룹니다.",
       "source": "개념 예제",
       "_audit": {
-        "fixed": ["B2"],
-        "changed_fields": ["choices"],
-        "reason": "정답 길이 압축 (50→30자) + 다른 보기 보강",
-        "audited_at": "2026-04-29"
-      }
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-1-2-0005"
+      },
+      "status": "self-reviewed",
+      "_audit_history": [
+        {
+          "fixed": [
+            "B2"
+          ],
+          "changed_fields": [
+            "choices"
+          ],
+          "reason": "정답 길이 압축 (50→30자) + 다른 보기 보강",
+          "audited_at": "2026-04-29"
+        }
+      ]
     },
     {
       "id": "sqld-1-2-cp-06",
@@ -272,10 +478,26 @@
       "type": "multiple_choice",
       "difficulty": 2,
       "question": "트랜잭션이 동시에 실행될 때 다른 트랜잭션의 영향을 받지 않고 독립적으로 실행되어야 하는 ACID 특성은?",
-      "choices": ["원자성(Atomicity)", "일관성(Consistency)", "고립성(Isolation)", "지속성(Durability)"],
+      "choices": [
+        "원자성(Atomicity)",
+        "일관성(Consistency)",
+        "고립성(Isolation)",
+        "지속성(Durability)"
+      ],
       "answerIndex": 2,
       "explanation": "고립성(Isolation) — 동시에 실행되는 트랜잭션이 서로 간섭하지 않음. 격리 수준(Read Uncommitted ~ Serializable) 으로 강도 조정.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-1-2-0006"
+      }
     },
     {
       "id": "sqld-1-2-cp-07",
@@ -294,7 +516,18 @@
       ],
       "answerIndex": 1,
       "explanation": "COUNT(*) 는 모든 행 — NULL 포함. SUM/AVG/MIN/MAX/COUNT(컬럼) 은 NULL 무시. NULL = NULL 은 UNKNOWN. Oracle ASC 시 NULL 은 끝(NULLS LAST).",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-1-2-0007"
+      }
     },
     {
       "id": "sqld-1-2-cp-08",
@@ -313,7 +546,18 @@
       ],
       "answerIndex": 2,
       "explanation": "인조식별자는 인위적 생성 (일련번호·UUID). 주민번호 등 업무에 이미 존재하는 값을 사용하는 것은 본질식별자입니다.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-1-2-0008"
+      }
     },
     {
       "id": "sqld-2-1-cp-01",
@@ -324,10 +568,26 @@
       "type": "multiple_choice",
       "difficulty": 1,
       "question": "다음 중 SQL 명령어와 그룹의 짝으로 옳지 않은 것은?",
-      "choices": ["DDL — TRUNCATE", "DML — DROP", "DCL — REVOKE", "TCL — COMMIT"],
+      "choices": [
+        "DDL — TRUNCATE",
+        "DML — DROP",
+        "DCL — REVOKE",
+        "TCL — COMMIT"
+      ],
       "answerIndex": 1,
       "explanation": "DROP 은 DDL 입니다. DML 은 SELECT/INSERT/UPDATE/DELETE/MERGE. TRUNCATE 도 DDL 이므로 자동 COMMIT 됩니다.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-1-0001"
+      }
     },
     {
       "id": "sqld-2-1-cp-02",
@@ -338,10 +598,26 @@
       "type": "multiple_choice",
       "difficulty": 1,
       "question": "관계대수 연산자 중 \"두 릴레이션에 모두 존재하는 튜플만 추출\" 하는 연산은?",
-      "choices": ["σ (Selection)", "∪ (Union)", "∩ (Intersect)", "× (Cartesian)"],
+      "choices": [
+        "σ (Selection)",
+        "∪ (Union)",
+        "∩ (Intersect)",
+        "× (Cartesian)"
+      ],
       "answerIndex": 2,
       "explanation": "∩ Intersect — 교집합. σ 는 조건 만족 행 선택, ∪ 는 합집합, × 는 모든 조합 (카티시안 곱).",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-1-0002"
+      }
     },
     {
       "id": "sqld-2-1-cp-03",
@@ -360,7 +636,18 @@
       ],
       "answerIndex": 1,
       "explanation": "FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY (\"프웨그하셀오\"). SELECT 가 5번째라 ALIAS 는 ORDER BY 에서만 사용 가능.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-1-0003"
+      }
     },
     {
       "id": "sqld-2-1-cp-04",
@@ -379,7 +666,18 @@
       ],
       "answerIndex": 2,
       "explanation": "WHERE 절은 SELECT 보다 먼저 실행되므로 SELECT 의 별칭을 사용할 수 없습니다. ORDER BY 에서는 가능 (실행 순서상 SELECT 뒤).",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-1-0004"
+      }
     },
     {
       "id": "sqld-2-1-cp-05",
@@ -398,7 +696,18 @@
       ],
       "answerIndex": 2,
       "explanation": "(1) 7번째부터 끝까지 = 'gh'. (2) 뒤에서 2번째부터 끝 = 'gh'. (4) INSTR=7 이므로 SUBSTR(s,7,2) = 'gh'. (3) 길이가 음수(-2) → Oracle 은 NULL 반환.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-1-0005"
+      }
     },
     {
       "id": "sqld-2-1-cp-06",
@@ -417,7 +726,18 @@
       ],
       "answerIndex": 1,
       "explanation": "ROUND(15.58, -1) = 20 (10의 자리에서 반올림). TRUNC(15.58, 1) = 15.5 (소수 1자리 아래 버림). CEIL(3.58) = 4.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-1-0006"
+      }
     },
     {
       "id": "sqld-2-1-cp-07",
@@ -428,10 +748,26 @@
       "type": "multiple_choice",
       "difficulty": 3,
       "question": "다음 쿼리의 결과값은?\n\nSELECT NVL(COUNT(*), 9999) FROM TABLE WHERE 1=2;",
-      "choices": ["NULL", "1", "9999", "0"],
+      "choices": [
+        "NULL",
+        "1",
+        "9999",
+        "0"
+      ],
       "answerIndex": 3,
       "explanation": "WHERE 1=2 로 어떤 행도 만족하지 않지만 COUNT(*) 는 0을 반환합니다 (NULL 아님). 따라서 NVL(0, 9999) = 0. SUM/AVG 는 NULL 이라 NVL 이 적용됩니다.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-1-0007"
+      }
     },
     {
       "id": "sqld-2-1-cp-08",
@@ -450,7 +786,18 @@
       ],
       "answerIndex": 0,
       "explanation": "Simple CASE 의 \"WHEN NULL\" 은 = NULL 비교라 항상 UNKNOWN → ELSE 적중. NULL 분기는 Searched CASE (IS NULL) 또는 DECODE 사용. NVL2(col, x, y) 는 NOT NULL=x, NULL=y.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-1-0008"
+      }
     },
     {
       "id": "sqld-2-1-cp-09",
@@ -469,7 +816,18 @@
       ],
       "answerIndex": 2,
       "explanation": "COALESCE 는 왼쪽부터 첫 NOT NULL 반환. NULLIF(a,b) 는 a=b 면 NULL, 다르면 a. DECODE 는 NULL 비교 가능 (Oracle 전용 특성). Simple CASE 의 WHEN NULL 은 동작 X.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-1-0009"
+      }
     },
     {
       "id": "sqld-2-1-cp-10",
@@ -488,7 +846,18 @@
       ],
       "answerIndex": 3,
       "explanation": "SQL Server 의 [KT] 는 K 또는 T 한 글자 매칭. '%im' 은 길이 무관 모두, '_im' 은 임의 한 글자 + im (3글자). 정확히 K나 T로 시작하는 3글자 이름은 [KT]im.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-1-0010"
+      }
     },
     {
       "id": "sqld-2-1-cp-11",
@@ -507,7 +876,18 @@
       ],
       "answerIndex": 2,
       "explanation": "WHERE 는 행 단위 — 집계함수 사용 불가. 집계 결과 조건은 HAVING. 절 순서는 GROUP BY → HAVING → ORDER BY.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-1-0011"
+      }
     },
     {
       "id": "sqld-2-1-cp-12",
@@ -526,7 +906,18 @@
       ],
       "answerIndex": 3,
       "explanation": "ORDER BY 는 SELECT 뒤에 실행되므로 별칭·컬럼번호·집계함수 모두 사용 가능합니다. NULL 정렬은 Oracle 과 SQL Server 가 반대.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-1-0012"
+      }
     },
     {
       "id": "sqld-2-2-cp-01",
@@ -537,10 +928,26 @@
       "type": "multiple_choice",
       "difficulty": 2,
       "question": "양쪽 테이블의 모든 행을 보존하며, 매칭되지 않는 쪽은 NULL 로 채우는 JOIN 은?",
-      "choices": ["INNER JOIN", "LEFT OUTER JOIN", "FULL OUTER JOIN", "CROSS JOIN"],
+      "choices": [
+        "INNER JOIN",
+        "LEFT OUTER JOIN",
+        "FULL OUTER JOIN",
+        "CROSS JOIN"
+      ],
       "answerIndex": 2,
       "explanation": "FULL OUTER JOIN — 양쪽 테이블의 모든 행을 보존하고 매칭이 없는 쪽은 NULL. INNER 는 매칭만, LEFT/RIGHT 는 한 쪽만 보존, CROSS 는 모든 쌍.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-2-0001"
+      }
     },
     {
       "id": "sqld-2-2-cp-02",
@@ -559,7 +966,18 @@
       ],
       "answerIndex": 3,
       "explanation": "ON 절은 표현식이 와야 하므로 단일 컬럼명만으로는 오류. ON A.dept_id = B.dept_id 같이 표현식이 필요. USING 은 단일 컬럼명 가능.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-2-0002"
+      }
     },
     {
       "id": "sqld-2-2-cp-03",
@@ -570,10 +988,26 @@
       "type": "multiple_choice",
       "difficulty": 2,
       "question": "5행 × 4행 두 테이블을 CROSS JOIN 하면 결과 행 수는?",
-      "choices": ["9", "5", "20", "1"],
+      "choices": [
+        "9",
+        "5",
+        "20",
+        "1"
+      ],
       "answerIndex": 2,
       "explanation": "CROSS JOIN = 카티시안 곱 = M × N = 5 × 4 = 20행. 매칭 조건이 없어 모든 가능한 쌍이 생성됩니다.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-2-0003"
+      }
     },
     {
       "id": "sqld-2-2-cp-04",
@@ -592,7 +1026,18 @@
       ],
       "answerIndex": 2,
       "explanation": "다중행 서브쿼리는 여러 행을 반환하므로 IN/ANY/ALL/EXISTS 와 사용. 스칼라는 SELECT 절·1행1컬럼, 인라인 뷰는 FROM 절. 상호연관은 바깥을 참조 → 행마다 실행.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-2-0004"
+      }
     },
     {
       "id": "sqld-2-2-cp-05",
@@ -611,7 +1056,18 @@
       ],
       "answerIndex": 1,
       "explanation": "NOT IN 의 서브쿼리 결과에 NULL 이 섞이면 모두 UNKNOWN → 0행 반환. NOT EXISTS 는 NULL 영향 없음. LEFT JOIN + IS NULL 패턴도 안전.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-2-0005"
+      }
     },
     {
       "id": "sqld-2-2-cp-06",
@@ -630,7 +1086,18 @@
       ],
       "answerIndex": 2,
       "explanation": "INTERSECT — 교집합 + 중복 제거. 합집합 중복 제거는 UNION, 합집합 중복 포함은 UNION ALL, 차집합은 MINUS/EXCEPT.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-2-0006"
+      }
     },
     {
       "id": "sqld-2-2-cp-07",
@@ -649,7 +1116,18 @@
       ],
       "answerIndex": 2,
       "explanation": "ROLLUP 은 컬럼 순서에 따라 결과가 달라집니다 (소계가 어느 컬럼 기준인지 변함). CUBE 는 모든 부분집합을 만들므로 순서 무관.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-2-0007"
+      }
     },
     {
       "id": "sqld-2-2-cp-08",
@@ -668,7 +1146,18 @@
       ],
       "answerIndex": 2,
       "explanation": "ROW_NUMBER 는 동률 없이 순번 (1,2,3,4,5). RANK 는 동률 같은 순위 + 다음 건너뜀 (1,2,2,4,4 또는 ASC 기준 첫 2000=1). DENSE_RANK 는 건너뛰지 않음. 2000(1) 다음 3000 은 DENSE_RANK=2.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-2-0008"
+      }
     },
     {
       "id": "sqld-2-2-cp-09",
@@ -687,7 +1176,18 @@
       ],
       "answerIndex": 1,
       "explanation": "GROUP BY 는 그룹당 한 행으로 압축, 윈도우 함수는 OVER() 로 그룹 계산을 행마다 표시 — 원본 행 수 유지. \"각 행 옆에 그룹 평균 표시\" 같은 요구는 윈도우만 가능.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-2-0009"
+      }
     },
     {
       "id": "sqld-2-2-cp-10",
@@ -706,7 +1206,18 @@
       ],
       "answerIndex": 1,
       "explanation": "ROWS — 행 개수 단위 (같은 값이라도 한 행씩). RANGE — 정렬 키 값 단위 (같은 값은 묶어서 처리). 누적 합·이동 평균에서 차이가 명확합니다.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-2-0010"
+      }
     },
     {
       "id": "sqld-2-2-cp-11",
@@ -725,7 +1236,18 @@
       ],
       "answerIndex": 2,
       "explanation": "TOP 은 SQL Server 전용입니다. Oracle 은 ROWNUM(인라인뷰 + 정렬) 또는 12c+ 의 FETCH FIRST 사용. ROWNUM 을 외부에서 ORDER BY 와 직접 결합하면 정렬 전 번호라 잘못된 결과.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-2-0011"
+      }
     },
     {
       "id": "sqld-2-2-cp-12",
@@ -744,7 +1266,18 @@
       ],
       "answerIndex": 0,
       "explanation": "? = 0 또는 1회. * = 0회 이상. + = 1회 이상. {m,} = m 회 이상. {n,m} = n~m 회.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-2-0012"
+      }
     },
     {
       "id": "sqld-2-3-cp-01",
@@ -763,7 +1296,18 @@
       ],
       "answerIndex": 2,
       "explanation": "(3) 은 NOT NULL 인 AMT 컬럼을 명시하지 않았으므로 NULL 이 들어가 제약 위반. (1)(2)(4) 는 모두 정상. (1) 은 모든 컬럼 순서대로 입력.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-3-0001"
+      }
     },
     {
       "id": "sqld-2-3-cp-02",
@@ -782,7 +1326,18 @@
       ],
       "answerIndex": 3,
       "explanation": "MERGE 의 INSERT/UPDATE 는 단일 SQL 로 한 트랜잭션 내에서 실행됩니다. ETL·증분 동기화에 자주 사용.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-3-0002"
+      }
     },
     {
       "id": "sqld-2-3-cp-03",
@@ -793,10 +1348,26 @@
       "type": "multiple_choice",
       "difficulty": 3,
       "question": "다음 SQL 실행 후 SELECT COUNT(*) FROM T 의 결과는?\n\nINSERT INTO T VALUES(1);\nINSERT INTO T VALUES(2);\nINSERT INTO T VALUES(3);\nSAVEPOINT SV1;\nINSERT INTO T VALUES(4);\nINSERT INTO T VALUES(5);\nCOMMIT;\nINSERT INTO T VALUES(6);\nROLLBACK TO SAVEPOINT SV1;",
-      "choices": ["3", "5", "6", "오류 발생"],
+      "choices": [
+        "3",
+        "5",
+        "6",
+        "오류 발생"
+      ],
       "answerIndex": 3,
       "explanation": "COMMIT 후에는 SAVEPOINT 가 모두 사라지므로 ROLLBACK TO SV1 은 \"존재하지 않는 SAVEPOINT\" 오류. COMMIT 직전까지 5건이 영구 반영, 그 뒤 INSERT 6은 별도 트랜잭션. SV1 ROLLBACK 자체가 실패하므로 6번도 그대로 유지되어 6건.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-3-0003"
+      }
     },
     {
       "id": "sqld-2-3-cp-04",
@@ -815,7 +1386,18 @@
       ],
       "answerIndex": 3,
       "explanation": "Oracle 에서 DDL 실행 시 직전 DML 까지 함께 자동 COMMIT 됩니다. 따라서 DDL 후엔 그 이전 DML 도 ROLLBACK 불가.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-3-0004"
+      }
     },
     {
       "id": "sqld-2-3-cp-05",
@@ -834,7 +1416,18 @@
       ],
       "answerIndex": 2,
       "explanation": "동일 테이블에 같은 이름 컬럼은 만들 수 없습니다 (식별 불가). 숫자로 시작 X, 예약어 X, 길이 제한은 모두 옳음.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-3-0005"
+      }
     },
     {
       "id": "sqld-2-3-cp-06",
@@ -853,7 +1446,18 @@
       ],
       "answerIndex": 3,
       "explanation": "DELETE 는 DML — ROLLBACK 가능, 자동 COMMIT 아님. TRUNCATE 와 DROP 이 DDL 로 자동 COMMIT.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-3-0006"
+      }
     },
     {
       "id": "sqld-2-3-cp-07",
@@ -872,7 +1476,18 @@
       ],
       "answerIndex": 3,
       "explanation": "기존에 NULL 값이 있는 컬럼에 NOT NULL 을 추가하면 제약 위반으로 오류. 먼저 NULL 을 채운 뒤 추가해야 합니다.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-3-0007"
+      }
     },
     {
       "id": "sqld-2-3-cp-08",
@@ -891,7 +1506,18 @@
       ],
       "answerIndex": 3,
       "explanation": "WITH ADMIN OPTION 은 회수해도 받은 사용자의 권한은 유지됩니다. WITH GRANT OPTION 만 연쇄 회수됨.",
-      "source": "개념 예제"
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-SQLD-2-3-0008"
+      }
     }
   ]
 }

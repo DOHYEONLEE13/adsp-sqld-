@@ -20,6 +20,7 @@ import {
   FlagTabIcon,
   TrophyTabIcon,
   UserTabIcon,
+  FlameTabIcon,
   type TabIconProps,
 } from '@/components/nav/TabIcons';
 import type { Subject } from '@/types/question';
@@ -36,6 +37,10 @@ import { usePassSnapshot } from '../passSync';
 import PassTierBadge from '@/components/passes/PassTierBadge';
 import ProfileSyncSkeleton from '@/components/profile/ProfileSyncSkeleton';
 import PlanTag from '@/components/ui/PlanTag';
+import SubjectBadge from './SubjectBadge';
+import SubjectSwitcher from './SubjectSwitcher';
+import SubjectSwitchToast from './SubjectSwitchToast';
+import { loadOnboardingResult } from '../onboarding/onboardingStorage';
 
 const SUBJECT_ACCENT: Record<Subject, string> = {
   adsp: '#67e8f9',
@@ -56,6 +61,17 @@ export function MobileTopBar({ subject }: TopProps) {
   const [shareOpen, setShareOpen] = useState(false);
   const [profile, setProfile] = useState<MyProfile>(() => getMyProfile());
   const passSnap = usePassSnapshot();
+
+  // 사용자 흐름 폴리시 — 좌측 상단 마스코트 옆 과목 배지 + 전환 모달.
+  // 활성 과목 = props.subject 우선, 없으면 progress.activeSubject, 없으면 onboarding.exams[0].
+  const onboarding = loadOnboardingResult();
+  const activeSubject: Subject | null =
+    subject ??
+    progress.activeSubject ??
+    onboarding?.exams[0] ??
+    null;
+  const [switcherOpen, setSwitcherOpen] = useState(false);
+  const [toastSubject, setToastSubject] = useState<Subject | null>(null);
   useEffect(() => {
     const unsub = subscribeProfile(() => setProfile(getMyProfile()));
     return () => {
@@ -99,6 +115,12 @@ export function MobileTopBar({ subject }: TopProps) {
       }}
     >
       <div className="flex items-center justify-between gap-2 px-4 py-2 max-w-[1200px] mx-auto md:px-6 lg:px-10">
+        {/*
+          좌측 영역: 마스코트 + 닉네임 (#/stats) + 과목 배지 (SubjectSwitcher).
+          마스코트/닉네임 button 안에 또 다른 button 을 넣으면 nested button 에러가
+          발생하므로 SubjectBadge 는 별도 형제로 둠.
+        */}
+        <div className="flex items-center gap-2 min-w-0">
         <button
           type="button"
           onClick={() => {
@@ -153,6 +175,14 @@ export function MobileTopBar({ subject }: TopProps) {
             );
           })()}
         </button>
+        {/* 과목 배지 — 클릭 시 SubjectSwitcher. 활성 과목 없으면 미노출. */}
+        {activeSubject ? (
+          <SubjectBadge
+            subject={activeSubject}
+            onClick={() => setSwitcherOpen(true)}
+          />
+        ) : null}
+        </div>
         <div className="flex items-center gap-3 md:gap-4">
           {/* 요금제 라벨 — 클릭 시 /#pricing */}
           <PlanTag size="sm" />
@@ -201,6 +231,25 @@ export function MobileTopBar({ subject }: TopProps) {
           진도 텍스트 복사됨!
         </div>
       ) : null}
+      {/* 과목 전환 모달 */}
+      {switcherOpen ? (
+        <SubjectSwitcher
+          current={activeSubject}
+          onClose={() => setSwitcherOpen(false)}
+          onSwitched={(newSubject) => {
+            setToastSubject(newSubject);
+            // 다음 화면 진입 — 학습 탭(galaxy chooser X, planet 직진)
+            window.location.hash = `/game/${newSubject}`;
+          }}
+        />
+      ) : null}
+      {/* 과목 전환 인사 toast */}
+      {toastSubject ? (
+        <SubjectSwitchToast
+          subject={toastSubject}
+          onDismiss={() => setToastSubject(null)}
+        />
+      ) : null}
     </div>
   );
 }
@@ -226,7 +275,7 @@ function Stat({
 
 // ---------------------------------------------------------------- Bottom Nav
 
-export type MobileNavTab = 'learn' | 'quests' | 'trophy' | 'profile';
+export type MobileNavTab = 'learn' | 'quests' | 'weakness' | 'trophy' | 'profile';
 
 interface BottomProps {
   /** 현재 활성 탭 — 강조 표시. */
@@ -255,7 +304,12 @@ export function MobileBottomNav({
         borderTop: '1px solid rgba(239,244,255,0.08)',
       }}
     >
-      <div className="grid grid-cols-4 pb-[env(safe-area-inset-bottom)] max-w-[1200px] mx-auto">
+      {/*
+        Phase 4 Step 5 — 5번째 슬롯 '진행도' 추가. grid-cols-4 → grid-cols-5.
+        iPhone SE (375px) 기준 슬롯 폭 75px — 한글 3자 라벨 (퀘스트/진행도/프로필)
+        모두 잘림 없이 표시 가능 (10.5px 폰트 × 3자 ≈ 33px).
+      */}
+      <div className="grid grid-cols-5 pb-[env(safe-area-inset-bottom)] max-w-[1200px] mx-auto">
         <Tab
           tab="learn"
           active={active}
@@ -282,6 +336,16 @@ export function MobileBottomNav({
             } else {
               window.location.hash = '/quests';
             }
+          }}
+        />
+        <Tab
+          tab="weakness"
+          active={active}
+          accent={accent}
+          Icon={FlameTabIcon}
+          label="나의 약점"
+          onClick={() => {
+            window.location.hash = '/weakness';
           }}
         />
         <Tab

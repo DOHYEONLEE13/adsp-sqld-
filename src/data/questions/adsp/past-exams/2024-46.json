@@ -29,7 +29,7 @@
     "subtopic": "정성·정량 데이터",
     "difficulty": 2,
     "source": "2024년 46회 ADSP 1과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "다음 중 데이터에 대한 설명으로 옳은 것을 고르시오.",
     "choices": [
@@ -41,11 +41,27 @@
     "answerIndex": 0,
     "explanation": "정성적 데이터(텍스트·이미지·음성 등 비정형)는 구조가 느슨해 저장·분석에 더 많은 비용·기술이 요구된다.",
     "_audit": {
-      "fixed": ["B2"],
-      "changed_fields": ["choices"],
-      "reason": "정답 길이 압축 (57→27자) + 다른 보기 보강",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-1-1-0062"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "B2"
+        ],
+        "changed_fields": [
+          "choices"
+        ],
+        "reason": "정답 길이 압축 (57→27자) + 다른 보기 보강",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-46-3",
@@ -77,7 +93,7 @@
     "subtopic": "OLTP와 OLAP 역할 구분",
     "difficulty": 3,
     "source": "2024년 46회 ADSP 1과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "데이터 관련 개념 중 가장 부적절한 것을 고르시오.",
     "choices": [
@@ -90,10 +106,22 @@
     "explanation": "OLTP(Online Transaction Processing)는 거래 처리, OLAP(Online Analytical Processing)는 다차원 분석·조회가 주 역할이다. 보기의 역할은 뒤바뀌어 있다.",
     "_audit": {
       "fixed": [],
-      "changed_fields": [],
-      "reason": "정답 명확 — needsAnswerVerification 제거",
-      "audited_at": "2026-04-29"
-    }
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-1-1-0064"
+    },
+    "_audit_history": [
+      {
+        "fixed": [],
+        "changed_fields": [],
+        "reason": "정답 명확 — needsAnswerVerification 제거",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-46-5",
@@ -146,7 +174,7 @@
     "subtopic": "기술·환경 변화 요인",
     "difficulty": 2,
     "source": "2024년 46회 ADSP 1과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "빅데이터 출현 배경으로 옳은 것을 모두 고른 것은? (가. 데이터 생성량의 폭발적 증가 / 나. 하드웨어·저장 비용의 감소 / 다. 클라우드 컴퓨팅 기술의 발전)",
     "choices": [
@@ -159,10 +187,22 @@
     "explanation": "빅데이터 출현의 3대 배경은 ①데이터 양 증가 ②저장·처리 기술 및 비용 감소 ③분석 기법·인프라(클라우드) 발전. 세 가지 모두 해당한다.",
     "_audit": {
       "fixed": [],
-      "changed_fields": [],
-      "reason": "본문에 보기 가/나/다 명시되어 외부 컨텍스트 불필요 — 플래그 제거",
-      "audited_at": "2026-04-29"
-    }
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-1-2-0036"
+    },
+    "_audit_history": [
+      {
+        "fixed": [],
+        "changed_fields": [],
+        "reason": "본문에 보기 가/나/다 명시되어 외부 컨텍스트 불필요 — 플래그 제거",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-46-8",
@@ -446,7 +486,7 @@
     "subtopic": "결측값 대체의 목적",
     "difficulty": 2,
     "source": "2024년 46회 ADSP 3과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "결측값에 대한 설명으로 올바른 것은 무엇인가?",
     "choices": [
@@ -458,11 +498,27 @@
     "answerIndex": 0,
     "explanation": "결측 대체(imputation)는 관측치 손실로 인한 정보 손실을 최소화하려는 것이 주 목적. 단순 0 대체·전부 삭제는 분석 왜곡을 초래.",
     "_audit": {
-      "fixed": ["B2"],
-      "changed_fields": ["choices"],
-      "reason": "정답 길이 압축 (39→26자) + 다른 보기 보강",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-3-1-0031"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "B2"
+        ],
+        "changed_fields": [
+          "choices"
+        ],
+        "reason": "정답 길이 압축 (39→26자) + 다른 보기 보강",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-46-22",
@@ -494,7 +550,7 @@
     "subtopic": "모수 vs 기댓값",
     "difficulty": 4,
     "source": "2024년 46회 ADSP 3과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "통계적 추론에 대한 설명으로 적절하지 않은 것은 무엇인가?",
     "choices": [
@@ -506,11 +562,30 @@
     "answerIndex": 0,
     "explanation": "통계적 추론은 '표본'에서 '모수'를 '추정'하는 과정이다. 표본에서 계산한 값(표본 평균 등)은 통계량(추정량)이지 모수 자체가 아니다. 모수는 우리가 알지 못하는 모집단의 고정된 값.",
     "_audit": {
-      "fixed": ["A1", "A4"],
-      "changed_fields": ["question", "choices", "explanation"],
-      "reason": "E(X)·모수 표현이 모호했던 보기를 '표본 평균 = 모수' 명백한 오류로 교체 — needsAnswerVerification 제거",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-3-2-0068"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "A1",
+          "A4"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "explanation"
+        ],
+        "reason": "E(X)·모수 표현이 모호했던 보기를 '표본 평균 = 모수' 명백한 오류로 교체 — needsAnswerVerification 제거",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-46-24",
@@ -521,7 +596,7 @@
     "subtopic": "이산확률분포 E(X)",
     "difficulty": 3,
     "source": "2024년 46회 ADSP 3과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "이산확률변수 X의 분포가 P(X=1)=0.4, P(X=2)=0.3, P(X=3)=0.2, P(X=4)=0.1일 때, X의 기댓값 E(X)는 얼마인가?",
     "choices": [
@@ -533,11 +608,28 @@
     "answerIndex": 0,
     "explanation": "E(X) = Σ xᵢ·P(xᵢ) = 1·0.4 + 2·0.3 + 3·0.2 + 4·0.1 = 0.4 + 0.6 + 0.6 + 0.4 = 2.0.",
     "_audit": {
-      "fixed": ["A4"],
-      "changed_fields": ["question", "explanation"],
-      "reason": "외부 표 의존 제거 — 본문에 분포 직접 명시",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-3-2-0069"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "A4"
+        ],
+        "changed_fields": [
+          "question",
+          "explanation"
+        ],
+        "reason": "외부 표 의존 제거 — 본문에 분포 직접 명시",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-46-25",
@@ -569,7 +661,7 @@
     "subtopic": "일표본 t-검정 해석",
     "difficulty": 3,
     "source": "2024년 46회 ADSP 3과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "일표본 t-검정에 대한 설명으로 적절하지 않은 것은 무엇인가?",
     "choices": [
@@ -581,11 +673,29 @@
     "answerIndex": 0,
     "explanation": "α는 단지 기각의 임계 기준일 뿐, α의 크기 자체가 기각 여부를 결정하지 않는다. 기각 여부는 'p값 < α' 또는 't 통계량 > 임계값' 비교로 결정된다.",
     "_audit": {
-      "fixed": ["A4"],
-      "changed_fields": ["question", "choices", "explanation"],
-      "reason": "needsContextVerification 제거 — 보기 1을 일반 검정 원리로 명확화",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-3-2-0071"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "A4"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "explanation"
+        ],
+        "reason": "needsContextVerification 제거 — 보기 1을 일반 검정 원리로 명확화",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-46-27",
@@ -617,7 +727,7 @@
     "subtopic": "MDS 적용 사례",
     "difficulty": 3,
     "source": "2024년 46회 ADSP 3과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "MDS(다차원 척도법)를 수행한 것으로 옳은 것은 무엇인가?",
     "choices": [
@@ -629,11 +739,27 @@
     "answerIndex": 0,
     "explanation": "MDS는 개체 간 '유사도(거리)'를 보존하여 저차원 공간에 시각적으로 배치하는 기법으로, 취향 지도·인지 지도 등의 사례가 대표적이다.",
     "_audit": {
-      "fixed": ["B2"],
-      "changed_fields": ["choices"],
-      "reason": "정답 길이 압축 + 다른 보기 보강",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-3-2-0072"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "B2"
+        ],
+        "changed_fields": [
+          "choices"
+        ],
+        "reason": "정답 길이 압축 + 다른 보기 보강",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-46-29",
@@ -665,7 +791,7 @@
     "subtopic": "표본 공분산 계산",
     "difficulty": 3,
     "source": "2024년 46회 ADSP 3과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "데이터 X = {1, 3, 5}, Y = {2, 4, 6}의 표본 공분산(Sample Covariance)은 얼마인가?",
     "choices": [
@@ -677,11 +803,29 @@
     "answerIndex": 0,
     "explanation": "X̄=3, Ȳ=4. Cov(X,Y) = Σ(xᵢ−x̄)(yᵢ−ȳ)/(n−1) = [(−2)(−2) + 0·0 + 2·2] / (3−1) = 8/2 = 4.0.",
     "_audit": {
-      "fixed": ["A4"],
-      "changed_fields": ["question", "choices", "explanation"],
-      "reason": "외부 표 의존 제거 — 본문에 X·Y 데이터 직접 명시 + 새 정답에 맞춰 보기 순서 조정",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-3-1-0033"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "A4"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "explanation"
+        ],
+        "reason": "외부 표 의존 제거 — 본문에 X·Y 데이터 직접 명시 + 새 정답에 맞춰 보기 순서 조정",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-46-31",
@@ -755,7 +899,7 @@
     "subtopic": "정상성의 정의",
     "difficulty": 2,
     "source": "2024년 46회 ADSP 3과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "정상성을 가진 시계열 모델의 특징에 대한 설명으로 옳은 것은 무엇인가?",
     "choices": [
@@ -767,11 +911,27 @@
     "answerIndex": 0,
     "explanation": "(약)정상성 조건: ①일정 평균 ②일정 분산 ③자기공분산이 시차(lag)에만 의존. 추세·계절성이 있으면 비정상.",
     "_audit": {
-      "fixed": ["B2"],
-      "changed_fields": ["choices"],
-      "reason": "정답 길이 압축 + 다른 보기 보강",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-3-2-0076"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "B2"
+        ],
+        "changed_fields": [
+          "choices"
+        ],
+        "reason": "정답 길이 압축 + 다른 보기 보강",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-46-35",
@@ -782,7 +942,7 @@
     "subtopic": "로지스틱 회귀 일반 해석",
     "difficulty": 3,
     "source": "2024년 46회 ADSP 3과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "로지스틱 회귀(Logistic Regression)에 대한 설명으로 옳지 않은 것은 무엇인가?",
     "choices": [
@@ -794,11 +954,31 @@
     "answerIndex": 0,
     "explanation": "로지스틱 회귀는 종속변수가 '이항/범주형(예: 연체 여부, 합격/불합격)'일 때 사용한다. 연속형은 선형(회귀) 분석 영역이다.",
     "_audit": {
-      "fixed": ["A4"],
-      "changed_fields": ["question", "choices", "explanation", "subtopic", "difficulty"],
-      "reason": "ISLR Credit 외부 결과 의존 제거 — 로지스틱 회귀 일반 해석 문제로 재구성",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-3-3-0049"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "A4"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "explanation",
+          "subtopic",
+          "difficulty"
+        ],
+        "reason": "ISLR Credit 외부 결과 의존 제거 — 로지스틱 회귀 일반 해석 문제로 재구성",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-46-36",
@@ -809,7 +989,7 @@
     "subtopic": "분류의 정의",
     "difficulty": 1,
     "source": "2024년 46회 ADSP 3과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "다음 중 분류 분석의 정의로 가장 올바른 것은 무엇인가?",
     "choices": [
@@ -821,11 +1001,27 @@
     "answerIndex": 0,
     "explanation": "분류는 라벨이 있는 데이터로 학습해 새 데이터를 사전에 정의된 범주 중 하나로 할당하는 지도 학습. 나머지는 군집·회귀·연관분석 정의.",
     "_audit": {
-      "fixed": ["B2"],
-      "changed_fields": ["choices"],
-      "reason": "정답 길이 압축 (51→28자) + 다른 보기 보강",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-3-3-0050"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "B2"
+        ],
+        "changed_fields": [
+          "choices"
+        ],
+        "reason": "정답 길이 압축 (51→28자) + 다른 보기 보강",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-46-37",
@@ -836,7 +1032,7 @@
     "subtopic": "활성화 함수 vs 로지스틱 회귀",
     "difficulty": 4,
     "source": "2024년 46회 ADSP 3과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "신경망 모델에 대한 설명으로 적절하지 않은 것은 무엇인가?",
     "choices": [
@@ -848,11 +1044,27 @@
     "answerIndex": 0,
     "explanation": "은닉층 없는 단층 신경망이 로지스틱 회귀와 동일해지는 것은 활성화 함수가 '시그모이드(sigmoid)'일 때. ReLU 를 쓰면 로지스틱 회귀와 동등하지 않다.",
     "_audit": {
-      "fixed": ["B2"],
-      "changed_fields": ["choices"],
-      "reason": "정답 길이 압축 (67→33자)",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-3-3-0051"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "B2"
+        ],
+        "changed_fields": [
+          "choices"
+        ],
+        "reason": "정답 길이 압축 (67→33자)",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-46-38",
@@ -1052,7 +1264,7 @@
     "subtopic": "Apriori 알고리즘 원리",
     "difficulty": 3,
     "source": "2024년 46회 ADSP 3과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "Apriori 알고리즘에 대한 설명으로 옳지 않은 것은 무엇인가?",
     "choices": [
@@ -1064,11 +1276,30 @@
     "answerIndex": 0,
     "explanation": "Apriori 원칙(anti-monotonic): 빈발하지 않은 항목집합의 상위 집합은 모두 빈발이 아니다. 이를 이용해 후보를 가지치기하여 탐색 공간을 줄이는 것이 Apriori의 핵심.",
     "_audit": {
-      "fixed": ["A4"],
-      "changed_fields": ["question", "choices", "explanation", "subtopic"],
-      "reason": "외부 트랜잭션 표 의존 제거 — Apriori 원리 문제로 재구성",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-3-3-0061"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "A4"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "explanation",
+          "subtopic"
+        ],
+        "reason": "외부 트랜잭션 표 의존 제거 — Apriori 원리 문제로 재구성",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-46-48",
@@ -1100,7 +1331,7 @@
     "subtopic": "지지도 계산",
     "difficulty": 3,
     "source": "2024년 46회 ADSP 3과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "전체 1,000건의 거래 중 커피와 우유가 함께 구매된 거래가 300건이라고 할 때, '커피 → 우유'의 지지도(Support)는 얼마인가?",
     "choices": [
@@ -1112,11 +1343,28 @@
     "answerIndex": 0,
     "explanation": "Support(커피→우유) = P(커피∩우유) = (동시 구매 건수) / (전체 거래 건수) = 300 / 1,000 = 0.3.",
     "_audit": {
-      "fixed": ["A4"],
-      "changed_fields": ["question", "explanation"],
-      "reason": "외부 표 의존 제거 — 본문에 거래 건수 직접 명시",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-3-3-0063"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "A4"
+        ],
+        "changed_fields": [
+          "question",
+          "explanation"
+        ],
+        "reason": "외부 표 의존 제거 — 본문에 거래 건수 직접 명시",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-46-50",
@@ -1127,7 +1375,7 @@
     "subtopic": "최장연결법(Complete Linkage)",
     "difficulty": 4,
     "source": "2024년 46회 ADSP 3과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "최장연결법(Complete Linkage)에 대한 설명으로 옳지 않은 것은 무엇인가?",
     "choices": [
@@ -1139,10 +1387,28 @@
     "answerIndex": 0,
     "explanation": "연결법(단일·최장·평균·중심)에 따라 군집 결과가 달라진다. 동일 데이터·동일 방법이면 결과가 재현 가능하지만, '다른 방법을 써도 동일'은 틀린 진술이다.",
     "_audit": {
-      "fixed": ["A4"],
-      "changed_fields": ["question", "choices", "explanation"],
-      "reason": "외부 결과 의존 제거 — 최장연결법 일반 특성 문제로 명확화",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-3-3-0064"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "A4"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "explanation"
+        ],
+        "reason": "외부 결과 의존 제거 — 최장연결법 일반 특성 문제로 명확화",
+        "audited_at": "2026-04-29"
+      }
+    ]
   }
 ]

@@ -113,7 +113,8 @@ describe('실제 문제 은행 raw 토픽 흡수율', () => {
       for (const q of ALL_QUESTIONS) {
         if (q.subject !== subject) continue;
         if (q.type !== 'multiple_choice') continue;
-        if (q.status === 'restored' || q.needsDistractors) continue;
+        // 차단 status: restored (legacy) + deprecated (Phase 3 v2). 동기화: src/game/session.ts isPlayable.
+        if (q.status === 'restored' || q.status === 'deprecated' || q.needsDistractors) continue;
         total++;
         if (canonicalTopic(subject, q.chapter, q.topic) !== null) mapped++;
       }

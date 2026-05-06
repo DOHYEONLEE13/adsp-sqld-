@@ -34,6 +34,12 @@ interface Props {
   onSelect: (passNumber: number) => void;
   /** 잠긴 탭 클릭 시 콜백 (호출자가 토스트 표시). */
   onLockedClick?: (passNumber: number) => void;
+  /**
+   * 라벨 override — passNumber → 표시 텍스트.
+   * 미지정 시 기본 "1회독" / "2회독" / "N회독+".
+   * 재응시생 흐름에서 "1회독" → "약점 학습", "2회독" → "복습" 으로 대체 가능.
+   */
+  labels?: Record<number, string>;
 }
 
 const TIER_FOR_PASS: Record<number, PassTier> = {
@@ -51,6 +57,7 @@ export default function PassTabs({
   currentPass,
   onSelect,
   onLockedClick,
+  labels,
 }: Props) {
   return (
     <nav
@@ -94,7 +101,12 @@ export default function PassTabs({
             }}
           >
             <span style={{ fontWeight: 600 }}>
-              {t.passNumber === 1 ? '1회독' : t.passNumber === 2 ? '2회독' : `${t.passNumber}회독+`}
+              {labels?.[t.passNumber] ??
+                (t.passNumber === 1
+                  ? '1회독'
+                  : t.passNumber === 2
+                    ? '2회독'
+                    : `${t.passNumber}회독+`)}
             </span>
             {!t.unlocked ? (
               <Lock size={11} strokeWidth={2.4} />

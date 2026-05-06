@@ -414,3 +414,37 @@ button {
     0 0 0 1px rgba(255, 91, 91, 0.6),
     0 0 24px rgba(255, 75, 75, 0.4) !important;
 }
+
+/* ────────────────────────────────────────────────────────
+ * "나의 약점" → 단원 노드 클릭 시 ZoneScreen 의 첫 미완료
+ * step 노드를 자동 펄스 강조. 10초 후 React 가 클래스 제거.
+ * 색은 cyan/red 가운데 무난한 약점 톤 (red-400) 으로 통일.
+ * ──────────────────────────────────────────────────────── */
+@keyframes qd-pulse-ring {
+  0% {
+    box-shadow:
+      0 0 0 0 rgba(248, 113, 113, 0.55),
+      0 0 0 0 rgba(248, 113, 113, 0.35);
+  }
+  60% {
+    box-shadow:
+      0 0 0 10px rgba(248, 113, 113, 0),
+      0 0 0 18px rgba(248, 113, 113, 0);
+  }
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(248, 113, 113, 0),
+      0 0 0 0 rgba(248, 113, 113, 0);
+  }
+}
+
+.qd-pulse-ring {
+  animation: qd-pulse-ring 1.6s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qd-pulse-ring {
+    animation: none;
+    box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.6);
+  }
+}

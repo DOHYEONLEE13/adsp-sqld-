@@ -50,7 +50,7 @@
     "subtopic": "데이터베이스 특징",
     "difficulty": 2,
     "source": "2024년 45회 ADSP 1과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "다음 중 데이터베이스의 특징으로 적절하지 않은 것은 무엇인가?",
     "choices": [
@@ -62,11 +62,28 @@
     "answerIndex": 3,
     "explanation": "데이터베이스의 핵심 특징 중 하나는 '공용 데이터(shared data)' — 여러 사용자가 서로 다른 목적으로 같은 데이터를 공동 이용할 수 있다는 점. 단일 목적 한정은 DB의 본질에 반한다.",
     "_audit": {
-      "fixed": ["B2"],
-      "changed_fields": ["choices", "explanation"],
-      "reason": "정답 길이 압축 (60→22자) + 다른 보기와 길이 균형",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-1-1-0059"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "B2"
+        ],
+        "changed_fields": [
+          "choices",
+          "explanation"
+        ],
+        "reason": "정답 길이 압축 (60→22자) + 다른 보기와 길이 균형",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-45-4",
@@ -203,7 +220,7 @@
     "subtopic": "통제 방안",
     "difficulty": 3,
     "source": "2024년 45회 ADSP 1과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "빅데이터 시대의 위기 요인에 대한 해결 방안으로 적절하지 않은 것은 무엇인가?",
     "choices": [
@@ -216,10 +233,22 @@
     "explanation": "ADSP 교재 패러다임 상 해결 방안은 '동의에서 책임으로' 전환이다. 즉 사전 동의 강화가 아니라 '결과에 대한 책임 원칙', '알고리즘 접근권', '비식별화'가 정식 해결 방안이다.",
     "_audit": {
       "fixed": [],
-      "changed_fields": [],
-      "reason": "1차 감사: 정답·해설 모두 ADSP 교재 표준과 일치 — needsAnswerVerification 플래그 제거",
-      "audited_at": "2026-04-29"
-    }
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-1-2-0035"
+    },
+    "_audit_history": [
+      {
+        "fixed": [],
+        "changed_fields": [],
+        "reason": "1차 감사: 정답·해설 모두 ADSP 교재 표준과 일치 — needsAnswerVerification 플래그 제거",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-45-11",
@@ -461,7 +490,7 @@
     "subtopic": "카이제곱 검정",
     "difficulty": 3,
     "source": "2024년 45회 ADSP 3과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "범주형 자료 분석에 대한 설명 중 틀린 것은 무엇인가?",
     "choices": [
@@ -473,11 +502,28 @@
     "answerIndex": 0,
     "explanation": "적합도 검정은 '분산'이 아니라 '빈도(관찰빈도 vs 기대빈도)'가 얼마나 일치하는지를 검정한다. χ² 통계량 = Σ(O−E)²/E.",
     "_audit": {
-      "fixed": ["B2"],
-      "changed_fields": ["choices", "explanation"],
-      "reason": "정답 길이 압축 (51→37자) + 보기 길이 균형",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-3-2-0053"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "B2"
+        ],
+        "changed_fields": [
+          "choices",
+          "explanation"
+        ],
+        "reason": "정답 길이 압축 (51→37자) + 보기 길이 균형",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-45-23",
@@ -530,7 +576,7 @@
     "subtopic": "계절 vs 순환요인",
     "difficulty": 3,
     "source": "2024년 45회 ADSP 3과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "시계열 분해에 대한 설명 중 잘못된 것은 무엇인가?",
     "choices": [
@@ -542,11 +588,28 @@
     "answerIndex": 0,
     "explanation": "경제·자연현상에서 주기(보통 1년 이내)를 가지는 반복 변동은 '계절요인(Seasonal)'이다. 순환요인(Cyclic)은 1년 이상의 불명확한 주기를 갖는 변동.",
     "_audit": {
-      "fixed": ["B2"],
-      "changed_fields": ["choices", "explanation"],
-      "reason": "정답 길이 압축 (43→38자) + 다른 보기 약간 보강해 균형",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-3-2-0055"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "B2"
+        ],
+        "changed_fields": [
+          "choices",
+          "explanation"
+        ],
+        "reason": "정답 길이 압축 (43→38자) + 다른 보기 약간 보강해 균형",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-45-26",
@@ -557,7 +620,7 @@
     "subtopic": "회귀식 해석",
     "difficulty": 2,
     "source": "2024년 45회 ADSP 3과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "콜레스테롤 데이터 회귀식으로 올바른 것은 무엇인가? (절편 ≈ 96.04, 기울기 ≈ 1.97~1.98)",
     "choices": [
@@ -570,10 +633,22 @@
     "explanation": "회귀식 표기법은 f(x) = 절편 + 기울기·x. 절편 96.04, 기울기 1.97이 각각 올바른 자리에 위치해야 한다.",
     "_audit": {
       "fixed": [],
-      "changed_fields": [],
-      "reason": "본문에 절편·기울기 값이 명시되어 외부 컨텍스트 없이 풀이 가능 — needsContextVerification 플래그 제거",
-      "audited_at": "2026-04-29"
-    }
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-3-2-0056"
+    },
+    "_audit_history": [
+      {
+        "fixed": [],
+        "changed_fields": [],
+        "reason": "본문에 절편·기울기 값이 명시되어 외부 컨텍스트 없이 풀이 가능 — needsContextVerification 플래그 제거",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-45-27",
@@ -626,7 +701,7 @@
     "subtopic": "PCA 특성",
     "difficulty": 3,
     "source": "2024년 45회 ADSP 3과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "주성분 분석(PCA)에 대한 설명으로 틀린 것은 무엇인가?",
     "choices": [
@@ -638,11 +713,28 @@
     "answerIndex": 0,
     "explanation": "PCA는 변수 선택(feature selection)이 아닌 변수 변환(feature extraction) 기법이다. 로딩(loading) 값이 계산되지만, 원 변수의 중요도 지표로 그대로 쓰기엔 한계가 있다.",
     "_audit": {
-      "fixed": ["B2"],
-      "changed_fields": ["choices", "explanation"],
-      "reason": "정답 길이 압축 (44→32자) + 다른 보기 균형 + needsAnswerVerification 제거 (정답 확정)",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-3-2-0059"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "B2"
+        ],
+        "changed_fields": [
+          "choices",
+          "explanation"
+        ],
+        "reason": "정답 길이 압축 (44→32자) + 다른 보기 균형 + needsAnswerVerification 제거 (정답 확정)",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-45-30",
@@ -653,7 +745,7 @@
     "subtopic": "PCA 결과 해석 원칙",
     "difficulty": 3,
     "source": "2024년 45회 ADSP 3과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "주성분분석(PCA) 결과 해석에 대한 설명으로 틀린 것은 무엇인가?",
     "choices": [
@@ -665,11 +757,31 @@
     "answerIndex": 0,
     "explanation": "주성분은 분산이 큰 순서로 추출되므로 PC1 > PC2 > PC3 … 순으로 설명력이 줄어든다. 모든 주성분의 분산이 같다는 설명은 PCA의 정의에 반한다.",
     "_audit": {
-      "fixed": ["A4"],
-      "changed_fields": ["question", "choices", "answerIndex", "explanation", "subtopic"],
-      "reason": "외부 데이터(차량/Javelin) 없이 풀 수 없던 문제를 PCA 일반 원칙 문제로 재구성",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-3-2-0060"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "A4"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation",
+          "subtopic"
+        ],
+        "reason": "외부 데이터(차량/Javelin) 없이 풀 수 없던 문제를 PCA 일반 원칙 문제로 재구성",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-45-31",
@@ -680,7 +792,7 @@
     "subtopic": "Box Plot 해석",
     "difficulty": 3,
     "source": "2024년 45회 ADSP 3과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "4분위수에 대한 해석으로 옳지 않은 것은 무엇인가?",
     "choices": [
@@ -692,11 +804,29 @@
     "answerIndex": 0,
     "explanation": "Q1은 하위 25% 지점이므로 '하위 25%는 Q1보다 작다'가 올바르다. '크다'로 표현한 보기는 정의에 반한다.",
     "_audit": {
-      "fixed": ["B2"],
-      "changed_fields": ["question", "choices", "explanation"],
-      "reason": "정답 길이 압축 + 보기 길이 균형 (Sales/Price 외부 컨텍스트 제거)",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-3-1-0029"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "B2"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "explanation"
+        ],
+        "reason": "정답 길이 압축 + 보기 길이 균형 (Sales/Price 외부 컨텍스트 제거)",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-45-32",
@@ -728,7 +858,7 @@
     "subtopic": "변수 간 비교",
     "difficulty": 3,
     "source": "2024년 45회 ADSP 3과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "상관관계 분석 결과 해석에 대한 설명으로 틀린 것은 무엇인가?",
     "choices": [
@@ -740,11 +870,30 @@
     "answerIndex": 0,
     "explanation": "상관계수의 절댓값(|r|)이 1에 가까울수록 강한 선형관계, 0에 가까울수록 약한 선형관계다. 작을수록 강하다는 설명은 정의에 반한다.",
     "_audit": {
-      "fixed": ["A4"],
-      "changed_fields": ["question", "choices", "answerIndex", "explanation"],
-      "reason": "외부 데이터(census/balance) 없이 풀 수 없던 문제를 상관계수 일반 해석 문제로 재구성",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-3-2-0062"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "A4"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "외부 데이터(census/balance) 없이 풀 수 없던 문제를 상관계수 일반 해석 문제로 재구성",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-45-34",
@@ -902,7 +1051,7 @@
     "subtopic": "가지치기 효과",
     "difficulty": 3,
     "source": "2024년 45회 ADSP 3과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "의사결정나무에 대한 설명으로 옳지 않은 것은 무엇인가?",
     "choices": [
@@ -914,11 +1063,28 @@
     "answerIndex": 0,
     "explanation": "가지치기는 과적합 방지가 목적이다. 학습 데이터 정확도는 오히려 '낮아지지만' 검증·테스트 데이터의 일반화 성능이 좋아진다.",
     "_audit": {
-      "fixed": ["B2"],
-      "changed_fields": ["choices", "explanation"],
-      "reason": "정답 길이 압축 (45→34자) + 짧은 보기 보강해 균형",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-3-3-0042"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "B2"
+        ],
+        "changed_fields": [
+          "choices",
+          "explanation"
+        ],
+        "reason": "정답 길이 압축 (45→34자) + 짧은 보기 보강해 균형",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-45-42",
@@ -971,7 +1137,7 @@
     "subtopic": "덴드로그램 절단",
     "difficulty": 3,
     "source": "2024년 45회 ADSP 3과목",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "덴드로그램(dendrogram)에서 군집 개수를 결정하는 방법으로 옳은 것은 무엇인가?",
     "choices": [
@@ -983,11 +1149,30 @@
     "answerIndex": 0,
     "explanation": "덴드로그램은 계층적 군집 결과를 트리로 시각화한 그림. 임의 높이에서 수평선을 그으면 그 선이 가로지르는 수직 가지 수 = 군집 수. 적정 군집 수는 가지 길이가 가장 길게 떨어진 지점에서 잘라 정한다.",
     "_audit": {
-      "fixed": ["A4"],
-      "changed_fields": ["question", "choices", "answerIndex", "explanation"],
-      "reason": "외부 그림 없이 풀 수 없던 'Height=2 절단' 문제를 덴드로그램 절단 원리 일반 문제로 재구성",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-ADsP-3-3-0045"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "A4"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "외부 그림 없이 풀 수 없던 'Height=2 절단' 문제를 덴드로그램 절단 원리 일반 문제로 재구성",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "adsp-45-45",

@@ -1,0 +1,71 @@
+# ===== SQLD Subject 2 Lesson Metadata =====
+# 운영 lesson .ts 파일은 그대로 두고, 메타 정보만 별도 관리.
+# 운영 lesson 분할 (3개) 과 가이드북 공식 단원 (3개) 의 매핑은 깔끔한 1:1 (ADsP 와 달리 분할 불일치 없음).
+
+exam: SQLD
+subject: 2
+subject_name: SQL 기본 및 활용
+
+# ─── ⚠ 학습 UX 개선 검토 메모 (2026-05-05) ───
+# 사용자 검토 의견:
+# > SQLD-2 lesson 분할이 ADsP 보다 거친 가능성. 가이드북 1단원 SQL 기본만 봐도
+# > DDL/DML/DCL/TCL + SELECT + 함수 + WHERE + GROUP BY/HAVING + ORDER BY + NULL 처리
+# > 로 콘텐츠 양이 많음. 학습 UX 관점에서 sqld-2-1 의 추가 분할이 필요할 수 있으나,
+# > 이는 데이터 변환과 무관한 별도 결정 영역.
+#
+# 현재 상태: 가이드북 기준 1:1 매핑으로 진행. 추후 학습 UX 개선 단계에서 lesson 분할 재검토 가능.
+
+lessons:
+  - lesson_id: sqld-2-1
+    lesson_title: SQL 명령군 · SELECT · 함수 · WHERE · GROUP/HAVING · ORDER BY
+    file: src/data/lessons/sqld/ch2-sql.ts
+    estimated_minutes: 18
+    status: self_reviewed
+    last_modified: 2026-04-30
+    question_bank_chapter: ch1-sql-basics
+    question_bank_path: question-bank/SQLD/subject-2-sql-basics-and-application/ch1-sql-basics
+    # ⚠ lesson 콘텐츠 분량 큼 (4명령군 + SELECT + 단일/집계 함수 + WHERE + GROUP BY/HAVING + ORDER BY + NULL).
+    # 추후 학습 UX 개선 단계에서 sqld-2-1-a (명령군·SELECT·함수) / sqld-2-1-b (WHERE·GROUP·ORDER·NULL) 분할 검토 가능.
+    guidebook_mapping:
+      exam: SQLD
+      subject: 2
+      chapter: 1
+      chapter_name: SQL 기본
+      section: ~                                     # 1단원 전체 (1:1 매핑)
+
+  - lesson_id: sqld-2-2
+    lesson_title: JOIN · 서브쿼리 · 집합·그룹·윈도우 · TOP N · 계층형 · PIVOT · 정규식
+    file: src/data/lessons/sqld/ch2-sql.ts
+    estimated_minutes: ~
+    status: self_reviewed
+    last_modified: 2026-04-30
+    question_bank_chapter: ch2-sql-application
+    question_bank_path: question-bank/SQLD/subject-2-sql-basics-and-application/ch2-sql-application
+    # ⚠ lesson 콘텐츠 분량 매우 큼 (JOIN 4종 + 서브쿼리 6종 + 집합/그룹/윈도우 + TOP N + 계층형 + PIVOT + 정규식).
+    # 출제 비중도 가장 큰 영역 (87 문항). 학습 UX 개선 시 가장 먼저 분할 검토 권장.
+    guidebook_mapping:
+      exam: SQLD
+      subject: 2
+      chapter: 2
+      chapter_name: SQL 활용
+      section: ~                                     # 2단원 전체 (1:1 매핑)
+
+  - lesson_id: sqld-2-3
+    lesson_title: INSERT/UPDATE/DELETE · MERGE · TCL · DDL · 제약조건 · DCL
+    file: src/data/lessons/sqld/ch2-sql.ts
+    estimated_minutes: ~
+    status: self_reviewed
+    last_modified: 2026-04-30
+    question_bank_chapter: ch3-sql-management
+    question_bank_path: question-bank/SQLD/subject-2-sql-basics-and-application/ch3-sql-management
+    guidebook_mapping:
+      exam: SQLD
+      subject: 2
+      chapter: 3
+      chapter_name: 관리 구문
+      section: ~                                     # 3단원 전체 (1:1 매핑)
+
+# ───────────────────────────────────────────────────
+created_at: 2026-05-05
+last_modified: 2026-05-05
+version: 1

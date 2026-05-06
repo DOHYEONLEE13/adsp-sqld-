@@ -24,7 +24,18 @@
       ],
       "answerIndex": 1,
       "explanation": "p-value 가 유의수준 α=0.05 보다 작을 때 귀무가설을 기각합니다.",
-      "source": "샘플"
+      "source": "샘플",
+      "status": "ai-generated",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-ADsP-3-2-0077"
+      }
     }
   ]
 }

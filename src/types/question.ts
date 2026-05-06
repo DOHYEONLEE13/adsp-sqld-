@@ -15,16 +15,34 @@ export type Difficulty = 1 | 2 | 3 | 4 | 5;
 
 /**
  * 문제 라이프사이클 상태.
+ *
+ * **v1 (legacy, Phase 1)**:
  * - `restored`: 기출 복원. 정답 텍스트만 있고 오답 선지가 없는 상태.
+ *   ⚠ v2 시점 (2026-05-05) 운영 데이터 사용 0건. **신규 사용 금지** (markdown 검수 시스템에서 deprecated 사용).
+ *   Phase 5+ 후속 마이그레이션으로 type 에서 제거 검토.
  * - `ai-generated`: Claude 가 생성한 문제. 검수 전.
- * - `draft`: 사람이 작성 중.
- * - `curated`: 검수 완료, 실제 게임에 노출 가능.
+ * - `draft`: 사람이 작성 중. (사용 0건)
+ * - `curated`: 검수 완료, 실제 게임에 노출 가능. (사용 0건 — v2 의 self-reviewed/guidebook-verified 가 대체)
+ *
+ * **v2 (Phase 3 — markdown 검수 시스템 호환, 2026-05-05)**:
+ * - `self-reviewed`: 자체 검수 통과 (정답·해설·보기 자체 검증 완료, 가이드북 미확인).
+ * - `guidebook-verified`: 가이드북 페이지 직접 확인 + 검수 통과.
+ * - `deprecated`: 검수 실패 / 폐기. 학습자에게 노출 X (`isPlayable` 차단).
+ *
+ * 노출 가능 여부 (game/session.ts `isPlayable`):
+ * - 차단: `restored`, `deprecated`
+ * - 노출: `ai-generated`, `self-reviewed`, `guidebook-verified`, `draft`, `curated`
+ *
+ * 관련 문서: `question-bank/TAXONOMY.md` 3-8 절, `question-bank/ROADMAP.md` 6 절.
  */
 export type QuestionStatus =
   | 'restored'
   | 'ai-generated'
   | 'draft'
-  | 'curated';
+  | 'curated'
+  | 'self-reviewed'
+  | 'guidebook-verified'
+  | 'deprecated';
 
 /**
  * 풍부한 해설 객체 — 학습자가 정답·오답·핵심 개념·암기 팁까지 한 번에 파악.

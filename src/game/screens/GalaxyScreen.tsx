@@ -29,7 +29,11 @@ import ProgressBadge from '../components/ProgressBadge';
 import { aggregateSubject } from '../aggregate';
 import { useProgress } from '../useProgress';
 import { useBookmarks } from '../useBookmarks';
-import { getStudyMode, setStudyMode, type StudyMode } from '../studyMode';
+import {
+  getEffectiveStudyMode,
+  setStudyMode,
+  type StudyMode,
+} from '../studyMode';
 import { computePlayerStats, type PlayerStats } from '../rpg';
 import Ques from '@/components/mascot/Ques';
 import SpeechBubble from '@/game/lesson/SpeechBubble';
@@ -39,6 +43,10 @@ import VideoBg from '@/components/ui/VideoBg';
 import { VIDEO_URLS } from '@/data/site';
 import { useMyProfile } from '@/data/profile';
 import NicknameOnboarding from './NicknameOnboarding';
+import StudyPlanBanner from '../studyPlan/StudyPlanBanner';
+import OnboardingPromptBanner from '../studyPlan/OnboardingPromptBanner';
+import { loadStudyPlan } from '../studyPlan/studyPlanStorage';
+import { recommendNextStep } from '../studyPlan/nextStep';
 
 interface Props {
   onSelectSubject: (subject: Subject) => void;
@@ -252,6 +260,15 @@ export default function GalaxyScreen({
             progress={progress}
             displayName={profile.displayName}
           />
+        </div>
+
+        {/*
+          Phase 4 Step 3 — 학습 플랜 진도 배너 / onboarding 권유 배너.
+          plan 있으면 StudyPlanBanner, 없으면 OnboardingPromptBanner — 둘 중 하나만.
+        */}
+        <div className="mb-6 md:mb-8">
+          <StudyPlanBanner variant="compact" />
+          <OnboardingPromptBanner />
         </div>
 
         {/* HAIRLINE */}
@@ -631,14 +648,49 @@ function SubjectInfoPanel({
   }, []);
   const isSignedIn = profileForAuth.isAuthenticated || sessionExists;
 
-  // 학습 모드 — 과목별 첫 진입 시 1회 묻고, 이후엔 기억된 값 사용.
-  // 'review' 면 GamePage 가 자동으로 passNumber=2 로 시작 (studyMode.passNumberFor).
+  // 학습 모드 — Phase 4 Step 3 작업 A:
+  //   1) 사용자가 명시적으로 설정한 값 우선
+  //   2) onboarding persona 자동 매핑 (beginner→'first', reviewer→'review')
+  //   3) 둘 다 없으면 undefined → 큰 카드 selector 노출 (게스트 사용자)
   const [studyMode, setStudyModeState] = useState<StudyMode | undefined>(() =>
-    getStudyMode(subject),
+    getEffectiveStudyMode(subject),
   );
   const handleStudyModeSelect = (mode: StudyMode) => {
     setStudyMode(subject, mode);
     setStudyModeState(mode);
+  };
+
+  // Phase 4 Step 3 작업 B — 본 주차 목표 진입 추천.
+  // plan 이 본 subject 와 일치하면 메인 CTA 가 [본 주차 목표 시작] 으로 변경되어
+  // 곧장 lesson step 으로 점프. 추천 없으면 기존 "{SUBJECT} 플레이하기" 동작.
+  const recommendation = useMemo(() => {
+    const plan = loadStudyPlan();
+    if (!plan || plan.exam !== subject) return null;
+    return recommendNextStep(plan, progress.sessions, progress.questionStats);
+  }, [subject, progress.sessions, progress.questionStats]);
+
+  /**
+   * 메인 CTA 동작 — 추천 있으면 sessionStorage 에 lesson 점프 정보 셋업 후 onPlay.
+   * GamePage 가 mount/route 변경 시 sessionStorage 를 읽어 lesson 화면으로 곧장 진입.
+   *
+   * 안전: sessionStorage 셋업 + 기존 onPlay (워프 → onSelectSubject) 흐름 유지.
+   * 워프 후 GamePage useState 초기화 시점에 pendingConceptOpen 소비.
+   */
+  const handleMainCta = () => {
+    if (recommendation && typeof window !== 'undefined') {
+      window.sessionStorage.setItem(
+        'questdp.pendingConceptOpen',
+        JSON.stringify({
+          subject: recommendation.subject,
+          chapter: recommendation.chapter,
+          topic: recommendation.topic,
+          stepIdx: recommendation.initialStepIdx,
+          stepId: '',
+          phase: 'narrate',
+        }),
+      );
+    }
+    onPlay();
   };
 
   return (
@@ -765,15 +817,47 @@ function SubjectInfoPanel({
           </div>
         )}
 
+        {/*
+          Phase 4 Step 3 작업 B — 본 주차 목표가 있으면 메인 CTA 위에 컨텍스트 카드 노출.
+          "이번 주 목표: 1과목 데이터 이해 / lesson 1-1 (35분 남음)" 같은 미리보기.
+        */}
+        {recommendation && !launching ? (
+          <div
+            className="mt-5 mb-3 px-3.5 py-2.5 rounded-[12px] flex items-center gap-2"
+            style={{
+              background: `rgba(${subjectAccentRgb}, 0.08)`,
+              border: `1px solid rgba(${subjectAccentRgb}, 0.32)`,
+            }}
+          >
+            <span
+              className="kr-num text-[10px] uppercase tracking-[0.18em] shrink-0"
+              style={{ color: subjectAccent, letterSpacing: '0.18em' }}
+            >
+              WEEK {recommendation.week_number}
+            </span>
+            <span
+              className="kr-body text-[12.5px] leading-tight flex-1 truncate"
+              style={{ color: 'rgba(239,244,255,0.85)' }}
+            >
+              {recommendation.chapter_display_name} ·{' '}
+              <span style={{ color: 'rgba(239,244,255,0.55)' }}>
+                {recommendation.lesson_title}
+              </span>
+            </span>
+          </div>
+        ) : null}
+
         <div className="mt-5 flex items-center gap-2">
           <button
             type="button"
-            onClick={onPlay}
+            onClick={handleMainCta}
             disabled={launching || total === 0 || !studyMode}
             aria-label={
               !studyMode
                 ? '학습 모드를 먼저 선택해주세요'
-                : `${subject.toUpperCase()} 플레이하기`
+                : recommendation
+                  ? `이번 주 목표 시작 — ${recommendation.chapter_display_name}`
+                  : `${subject.toUpperCase()} 플레이하기`
             }
             className="kr-heading uppercase tracking-widest text-[12px] md:text-[13px] px-5 py-3 rounded-full inline-flex items-center gap-2 transition hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed flex-1 justify-center"
             style={{
@@ -783,7 +867,11 @@ function SubjectInfoPanel({
               boxShadow: `0 6px 18px rgba(${subjectAccentRgb}, 0.45)`,
             }}
           >
-            {launching ? '워프 중…' : `${subject.toUpperCase()} 플레이하기`}
+            {launching
+              ? '워프 중…'
+              : recommendation
+                ? '이번 주 목표 시작'
+                : `${subject.toUpperCase()} 플레이하기`}
             {!launching ? <ChevronRight size={15} strokeWidth={2.4} /> : null}
           </button>
           <button

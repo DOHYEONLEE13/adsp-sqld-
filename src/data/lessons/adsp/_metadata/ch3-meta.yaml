@@ -1,0 +1,82 @@
+# ===== ADsP Subject 3 Lesson Metadata =====
+# 운영 lesson .ts 파일은 그대로 두고, 메타 정보만 별도 관리.
+# 운영 lesson 분할 (4개) 과 가이드북 공식 단원 (3개) 의 매핑은 guidebook_mapping 필드로 표현.
+# (TAXONOMY.md 4-0 절 — 라우팅 우선순위 정책 참조)
+
+exam: ADsP
+subject: 3
+subject_name: 데이터 분석
+
+# ─── ⚠ 운영 lesson 구조 ↔ 가이드북 단원 매핑 정책 ───
+# 운영 lesson .ts 는 마이크로러닝 분할 (4개). 가이드북 공식 단원은 3개.
+# 2단원 (통계 분석) 이 너무 방대해서 운영상 2개 lesson 으로 분할.
+# 그 외는 1:1 매핑.
+
+lessons:
+  - lesson_id: adsp-3-1
+    lesson_title: 데이터 마트와 EDA
+    file: src/data/lessons/adsp/ch3.ts
+    estimated_minutes: ~
+    status: self_reviewed
+    last_modified: 2026-04-30
+    question_bank_chapter: ch1-r-and-data-mart
+    question_bank_path: question-bank/ADsP/subject-3-data-analysis/ch1-r-and-data-mart
+    guidebook_mapping:
+      exam: ADsP
+      subject: 3
+      chapter: 1
+      chapter_name: R 기초와 데이터 마트
+      section: ~                                     # 1단원 전체 (R 기초 + EDA + 데이터 마트)
+
+  - lesson_id: adsp-3-2
+    lesson_title: 확률분포와 척도
+    file: src/data/lessons/adsp/ch3.ts
+    estimated_minutes: ~
+    status: self_reviewed
+    last_modified: 2026-04-30
+    question_bank_chapter: ch2-statistics
+    question_bank_path: question-bank/ADsP/subject-3-data-analysis/ch2-statistics
+    guidebook_mapping:
+      exam: ADsP
+      subject: 3
+      chapter: 2
+      chapter_name: 통계 분석
+      section: 확률분포·척도·표본추출                  # 2단원 전반부
+
+  - lesson_id: adsp-3-3
+    lesson_title: 가설 검정 · 회귀 · 시계열
+    file: src/data/lessons/adsp/ch3.ts
+    estimated_minutes: ~
+    status: self_reviewed
+    last_modified: 2026-04-30
+    question_bank_chapter: ch2-statistics             # adsp-3-2 와 같은 가이드북 chapter
+    question_bank_path: question-bank/ADsP/subject-3-data-analysis/ch2-statistics
+    guidebook_mapping:
+      exam: ADsP
+      subject: 3
+      chapter: 2
+      chapter_name: 통계 분석
+      section: 가설검정·회귀·시계열                    # 2단원 후반부
+
+  - lesson_id: adsp-3-4
+    lesson_title: 분류 · 군집 · 연관
+    file: src/data/lessons/adsp/ch3.ts
+    estimated_minutes: ~
+    status: self_reviewed
+    last_modified: 2026-04-30
+    question_bank_chapter: ch3-data-mining
+    question_bank_path: question-bank/ADsP/subject-3-data-analysis/ch3-data-mining
+    guidebook_mapping:
+      exam: ADsP
+      subject: 3
+      chapter: 3
+      chapter_name: 정형 데이터 마이닝
+      section: ~                                     # 3단원 전체
+
+# ─── Phase 3 보강 예정 ───
+# topic_groups: 각 lesson 의 step 그룹별 quiz 매핑은 generate_lesson_meta.mjs (Phase 3) 로 자동화.
+
+# ───────────────────────────────────────────────────
+created_at: 2026-05-05
+last_modified: 2026-05-05
+version: 1

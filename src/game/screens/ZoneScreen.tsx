@@ -10,7 +10,7 @@
  * Sololearn-스타일 path: 작은 원 노드 + 점선 connector. 3D bevel 없음.
  */
 
-import { useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
   ArrowLeft,
   BookOpen,
@@ -49,6 +49,7 @@ import {
   type PassSession,
 } from '../passes';
 import { getStudyMode } from '../studyMode';
+import { loadOnboardingResult } from '../onboarding/onboardingStorage';
 import PassTabs from '@/components/passes/PassTabs';
 import { PASS_TIER_VISUAL } from '@/types/passes';
 
@@ -56,6 +57,17 @@ const SUBJECT_ACCENT: Record<Subject, string> = {
   adsp: '#67e8f9',
   sqld: '#c084fc',
 };
+
+/**
+ * CSS attribute selector escape — querySelector 의 [data-x="..."] 안에 들어갈 값.
+ * 브라우저 native CSS.escape 가 있으면 사용, 없으면 큰따옴표·역슬래시만 escape (한글 등 비-ASCII 는 그대로).
+ */
+function cssEscape(s: string): string {
+  if (typeof window !== 'undefined' && typeof window.CSS?.escape === 'function') {
+    return window.CSS.escape(s);
+  }
+  return s.replace(/(["\\])/g, '\\$1');
+}
 
 export interface StartParams {
   topic: string | null;
@@ -77,6 +89,12 @@ export interface ReviewIdsParams {
 interface Props {
   subject: Subject;
   chapter: number;
+  /**
+   * 진입 시 자동 강조할 topic — "나의 약점" 탭에서 단원 노드 클릭 시 사용.
+   * 본 topic 의 첫 미완료 step 노드에 ~10초간 펄스 애니메이션 적용.
+   * 사용자가 화면 어디든 한 번 인터랙션하면 즉시 페이드 (지속성 X).
+   */
+  highlightTopic?: string;
   onStart: (params: StartParams) => void;
   /** 특정 step 노드 클릭 → 그 step 만 단독 학습. passNumber 전달 (선택). */
   onSelectStep: (topic: string, stepIdx: number, passNumber?: number) => void;
@@ -88,6 +106,7 @@ interface Props {
 export default function ZoneScreen({
   subject,
   chapter,
+  highlightTopic,
   onStart,
   onSelectStep,
   onReviewIds,
@@ -128,7 +147,15 @@ export default function ZoneScreen({
   );
   // studyMode='review' 면 2회독부터 시작이 자연스러움 (사용자가 다른 곳에서
   // 1회독을 했다는 의미 → QuestDP 안 stamp 없어도 2회독 unlocked).
-  const isReviewMode = getStudyMode(subject) === 'review';
+  //
+  // 사용자 흐름 폴리시 — onboarding.persona='reviewer' (재응시생) 도 자동 review 모드:
+  //   - 메타인지: 약점 단원 학습은 #/weakness 탭에서 처리되니 ZoneScreen 진입은
+  //     "다른 단원 둘러보기" 의도. 기본은 복습 (2회독).
+  //   - fallback_beginner ("처음부터 다시"): 이미 공부한 적 있는 재응시생이라 복습부터.
+  //   사용자가 1회독 보고 싶으면 PassTabs 클릭으로 자유 진입 (잠금 X — 시각만 비활성).
+  const reviewerOnboarding = loadOnboardingResult()?.persona === 'reviewer';
+  const isReviewMode =
+    getStudyMode(subject) === 'review' || reviewerOnboarding;
   const initialPass = isReviewMode ? Math.max(defaultPass, 2) : defaultPass;
   const [selectedPass, setSelectedPass] = useState<number>(initialPass);
   const [lockToast, setLockToast] = useState<string | null>(null);
@@ -172,6 +199,40 @@ export default function ZoneScreen({
   // onStart 호출 시 자동으로 selectedPass 주입
   const onStartWithPass = (p: StartParams) =>
     onStart({ ...p, passNumber: p.passNumber ?? selectedPass });
+
+  // ── highlightTopic — "나의 약점" 탭 → 단원 노드 클릭 시 자동 강조 ──
+  // 마운트 시 prop 으로 받은 topic 을 활성 강조 상태로 설정 → 10초 후 자동 페이드.
+  // 사용자 인터랙션 (step 클릭 등) 시 즉시 false 로 — 인지 부하 최소화.
+  const [activeHighlight, setActiveHighlight] = useState<string | null>(
+    highlightTopic ?? null,
+  );
+  useEffect(() => {
+    if (!highlightTopic) return;
+    setActiveHighlight(highlightTopic);
+    const t = window.setTimeout(() => setActiveHighlight(null), 10000);
+    return () => window.clearTimeout(t);
+  }, [highlightTopic]);
+  // 강조 topic 의 섹션 시작점 (Part 헤더 + Step 1) 을 sticky top bar 바로 아래로
+  // 정확히 안착시킴.
+  //
+  // scrollIntoView({ block: 'center' }) 는 섹션이 큰 lesson 에선 (예: 53-step 데이터의 이해)
+  // 섹션 중앙 = step 25 위치로 가버려 사용자가 Step 1 펄스를 바로 못 봄. 대신 섹션의 top
+  // 좌표를 직접 계산해 약 88px 오프셋 (MobileTopBar h-14 = 56px + 32px 여유) 두고 scrollTo.
+  // 마운트 후 첫 frame 에 layout 안정화 후 실행.
+  useEffect(() => {
+    if (!activeHighlight) return;
+    const el = document.querySelector<HTMLElement>(
+      `[data-highlight-topic="${cssEscape(activeHighlight)}"]`,
+    );
+    if (!el) return;
+    const r = window.requestAnimationFrame(() => {
+      const rect = el.getBoundingClientRect();
+      const TOP_BAR_OFFSET = 88; // MobileTopBar 높이 + 여유
+      const targetY = rect.top + window.scrollY - TOP_BAR_OFFSET;
+      window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
+    });
+    return () => window.cancelAnimationFrame(r);
+  }, [activeHighlight]);
 
   return (
     <section className="relative min-h-screen text-cream isolate overflow-hidden">
@@ -218,11 +279,20 @@ export default function ZoneScreen({
             (개념 + 확인 문제 한 묶음).
           </p>
 
-          {/* ── 회독 탭 ── */}
+          {/* ── 회독 탭 ──
+              사용자 흐름 폴리시 — 재응시생 (persona='reviewer') 한정으로 라벨 교체:
+                1회독 → '약점 학습' (약점 chapter 우선 정렬된 1회독 풀이)
+                2회독 → '복습' (reminder 카드 + 변형 문제)
+              입문자 (persona='beginner') 는 기존 1·2·3회독 라벨 유지. */}
           <div className="mt-5">
             <PassTabs
               tabs={passTabs}
               currentPass={selectedPass}
+              labels={
+                loadOnboardingResult()?.persona === 'reviewer'
+                  ? { 1: '약점 학습', 2: '복습' }
+                  : undefined
+              }
               onSelect={(p) => setSelectedPass(p)}
               onLockedClick={(p) => {
                 setLockToast(
@@ -340,9 +410,12 @@ export default function ZoneScreen({
                   return w ? weaknessLevel(w) === 'weak' : false;
                 })()}
                 passNumber={selectedPass}
-                onSelectStep={(stepIdx) =>
-                  onSelectStep(lesson.topic, stepIdx, selectedPass)
-                }
+                pulse={activeHighlight === lesson.topic}
+                onSelectStep={(stepIdx) => {
+                  // 사용자 인터랙션 발생 → 강조 즉시 페이드.
+                  setActiveHighlight(null);
+                  onSelectStep(lesson.topic, stepIdx, selectedPass);
+                }}
                 onLockedClick={() => {
                   setLockToast('이전 단계를 먼저 끝내야 해요');
                   window.setTimeout(() => setLockToast(null), 2400);
@@ -400,6 +473,8 @@ interface TopicSectionProps {
    * 노출에서 제외 — 회독 자체가 복습이라 안에 또 복습 step 둘 필요 없음.
    */
   passNumber: number;
+  /** "나의 약점" 진입 시 본 topic 을 자동 강조 — 첫 미완료/미잠금 step 에 펄스. */
+  pulse?: boolean;
   onSelectStep: (stepIdx: number) => void;
   onLockedClick?: (stepIdx: number) => void;
 }
@@ -413,6 +488,7 @@ function TopicSection({
   progress,
   isWeak,
   passNumber,
+  pulse = false,
   onSelectStep,
   onLockedClick,
 }: TopicSectionProps) {
@@ -428,8 +504,23 @@ function TopicSection({
   void passNumber; // 향후 회독별 분기 필요 시 사용
   const stepsWithIdx = steps.map((s, i) => ({ ...s, _origIdx: i }));
   const visibleSteps = stepsWithIdx.filter((s) => !!s.quizId);
+
+  // pulse 활성화 시: 첫 미완료(미정답) step 의 displayIdx 를 골라 펄스 표시 노드로.
+  // 모두 완료된 토픽이면 첫 step 에 펄스 (= "다시 복기" 안내).
+  const pulseDisplayIdx = pulse
+    ? (() => {
+        for (let i = 0; i < visibleSteps.length; i += 1) {
+          const s = visibleSteps[i];
+          const stat = s.quizId ? progress.questionStats[s.quizId] : undefined;
+          const completed = !!stat?.lastCorrect && (stat?.correct ?? 0) > 0;
+          if (!completed) return i;
+        }
+        return 0;
+      })()
+    : -1;
+
   return (
-    <section>
+    <section data-highlight-topic={topic}>
       {/* 섹션 헤더 — caps eyebrow + 토픽 이름 + hairline */}
       <div className="mb-5">
         <div className="flex items-baseline gap-3 flex-wrap">
@@ -496,6 +587,7 @@ function TopicSection({
               attempted={attempted}
               locked={locked}
               isLast={displayIdx === visibleSteps.length - 1}
+              pulse={displayIdx === pulseDisplayIdx}
               onClick={() => {
                 if (locked) {
                   onLockedClick?.(idx);
@@ -523,6 +615,8 @@ interface StepNodeProps {
   attempted: boolean;
   locked: boolean;
   isLast: boolean;
+  /** "나의 약점" 진입 자동 강조 — 펄스 링 + 살짝 강한 보더. */
+  pulse?: boolean;
   onClick: () => void;
 }
 
@@ -534,6 +628,7 @@ function StepNode({
   attempted,
   locked,
   isLast,
+  pulse = false,
   onClick,
 }: StepNodeProps) {
   return (
@@ -543,9 +638,11 @@ function StepNode({
         <button
           type="button"
           onClick={onClick}
-          aria-label={`Step ${n} ${title}${completed ? ' (완료)' : locked ? ' (잠김 — 앞 단계 먼저)' : ''}`}
+          aria-label={`Step ${n} ${title}${completed ? ' (완료)' : locked ? ' (잠김 — 앞 단계 먼저)' : ''}${pulse ? ' (약점 — 여기서부터)' : ''}`}
           aria-disabled={locked}
-          className="w-11 h-11 md:w-12 md:h-12 rounded-full inline-flex items-center justify-center transition shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-neon"
+          className={`relative w-11 h-11 md:w-12 md:h-12 rounded-full inline-flex items-center justify-center transition shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-neon${
+            pulse ? ' qd-pulse-ring' : ''
+          }`}
           style={{
             // 잠금 step 도 어두운 별 사진 배경 위에서 보이도록 살짝 어두운 backdrop
             // 추가 (transparent → rgba(1,8,40,0.45)). 활성 step 은 그대로 transparent.

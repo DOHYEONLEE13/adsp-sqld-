@@ -19,6 +19,20 @@ import {
 } from './storage';
 import { MobileBottomNav, MobileTopBar } from './components/MobileGameNav';
 import PageAmbientBg from './components/PageAmbientBg';
+// Phase 4 Step 4 — 망각 곡선 통합
+import {
+  ReviewQuestCard,
+  InactivityModal,
+  loadActiveReviewItems,
+  generateDailyReviewQueue,
+  handleInactivity,
+  resetQueue,
+  replaceAllReviewItems,
+  getLastActive,
+  getQuestionMetaMap,
+} from './forgettingCurve';
+import { loadOnboardingResult } from './onboarding/onboardingStorage';
+import OnboardingPromptBanner from './studyPlan/OnboardingPromptBanner';
 
 interface Props {
   onExit: () => void;
@@ -31,6 +45,46 @@ export default function QuestsPage({ onExit }: Props) {
   const allDone = completedCount(dailyQuests) === dailyQuests.length;
   const bonusClaimed = hasDailyBonusBeenClaimedToday(progress);
   const [bonusToast, setBonusToast] = useState<number | null>(null);
+
+  // Phase 4 Step 4 — 미접속 단계 검사 + 모달 노출 (3일+ 경우만, 1~3일은 InAppBanner 가 담당).
+  const [inactivityModalShown, setInactivityModalShown] = useState(false);
+  const inactivity = useMemo(() => {
+    if (inactivityModalShown) return null;
+    const onboarding = loadOnboardingResult();
+    if (!onboarding) return null; // 게스트 — 알림 X
+    const lastActive = getLastActive();
+    if (!lastActive) return null; // 신규 사용자 — 알림 X
+    const items = loadActiveReviewItems('guest');
+    const today = new Date();
+    const queue = generateDailyReviewQueue({
+      items,
+      persona: onboarding.persona === 'unknown' ? 'beginner' : onboarding.persona,
+      weak_chapters: onboarding.weak_chapters,
+      sessions: progress.sessions,
+      questionMeta: getQuestionMetaMap(),
+      today,
+    });
+    return handleInactivity(lastActive, today, queue.map((q) => ({
+      // 큐 항목을 ReviewItem 형태로 단순 매핑 — handleInactivity 가 length 만 사용.
+      user_id: q.user_id,
+      question_id: q.question_id,
+      current_interval: q.current_interval,
+      ease_factor: 2.5,
+      consecutive_correct: 0,
+      consecutive_wrong: 0,
+      due_date: q.due_date,
+      last_attempted_at: today,
+      status: 'active' as const,
+    })));
+  }, [progress.sessions, inactivityModalShown]);
+
+  const handleInactivityReset = () => {
+    const items = loadActiveReviewItems('guest');
+    const reset = resetQueue(items, new Date());
+    // active 만 리셋된 결과 + 기존 paused/mastered 유지
+    const allItems = items.filter((i) => i.status !== 'active');
+    replaceAllReviewItems([...reset, ...allItems]);
+  };
 
   // 3종 모두 완료 + 오늘 미청구면 자동 보너스 XP 지급. 같은 날 1회 한정.
   useEffect(() => {
@@ -91,6 +145,25 @@ export default function QuestsPage({ onExit }: Props) {
         </div>
       </section>
 
+      {/* Phase 4 Step 4 — 망각 곡선 "오늘의 복습" 카드 (onboarding 완료 사용자만).
+          게스트는 OnboardingPromptBanner 로 onboarding 유도. */}
+      {loadOnboardingResult() ? (
+        <ReviewQuestCard
+          onStartReview={() => {
+            // ReviewSession 화면 진입 — Phase 4 Step 4 v1.0 단순화:
+            // 기존 #/review 허브로 이동 (수동 복습 시스템 재활용).
+            // v1.1 에서 별도 ReviewSession 화면 분리.
+            window.location.hash = '/game';
+            // game 진입 후 사용자가 Galaxy 의 [복습] 버튼 클릭 — 안내 부족할 수 있어
+            // 후속 폴리시에서 직접 review 세션 mount 로 변경 가능.
+          }}
+        />
+      ) : (
+        <div className="mb-5">
+          <OnboardingPromptBanner />
+        </div>
+      )}
+
       <DailyQuestsCard quests={dailyQuests} />
 
       {/* 3종 완료 시 보너스 배너 — 오늘 청구 여부 표시 */}
@@ -144,6 +217,16 @@ export default function QuestsPage({ onExit }: Props) {
       {/* 모바일 하단 내비 — 다른 탭과의 이동을 위해 모든 페이지에 부착 */}
       <div className="md:hidden h-20" aria-hidden />
       <MobileBottomNav active="quests" />
+
+      {/* Phase 4 Step 4 — 미접속 모달 (3일+ 경우만 노출, 1~3일은 InAppBanner) */}
+      {inactivity &&
+        (inactivity.action === 'inform' || inactivity.action === 'suggest_reset') && (
+          <InactivityModal
+            action={inactivity}
+            onReset={handleInactivityReset}
+            onDismiss={() => setInactivityModalShown(true)}
+          />
+        )}
     </ScreenShell>
   );
 }

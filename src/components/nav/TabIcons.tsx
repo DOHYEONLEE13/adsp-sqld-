@@ -92,3 +92,28 @@ export function UserTabIcon(props: TabIconProps) {
     </svg>
   );
 }
+
+/**
+ * 진행도 — 3개 막대 그래프 (오름차순).
+ * 단일 path 로 3개 직사각형이 baseline 에서 떠올라 progressing.
+ */
+export function ChartTabIcon(props: TabIconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M4 14a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-6zm6-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V9zm6-6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v17a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V3z" />
+    </svg>
+  );
+}
+
+/**
+ * 약점 — 불꽃 (flame).
+ * 약점 단원이 핫스팟이라는 메타포. ZoneScreen 의 "약점 집중" 칩 (Flame) 과 일관.
+ * 단일 path filled 실루엣 — 한 번에 그려짐, join/overlap 없음.
+ */
+export function FlameTabIcon(props: TabIconProps) {
+  return (
+    <svg {...base(props)}>
+      <path d="M12 2c.5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5A2.5 2.5 0 0 0 11 11c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6z" />
+    </svg>
+  );
+}

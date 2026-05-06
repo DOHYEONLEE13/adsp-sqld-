@@ -11,7 +11,12 @@
     "status": "ai-generated",
     "type": "multiple_choice",
     "question": "다음 설명에 해당하는 스키마 구조로 가장 적절한 것은?\n\n[설명] 모든 사용자 관점을 통합한 조직 전체 관점의 통합적 표현",
-    "choices": ["외부 스키마", "개념 스키마", "내부 스키마", "논리 스키마"],
+    "choices": [
+      "외부 스키마",
+      "개념 스키마",
+      "내부 스키마",
+      "논리 스키마"
+    ],
     "answerIndex": 1,
     "explanation": "ANSI/SPARC 3계층 — 외부(사용자별 뷰), 개념(전체 통합), 내부(물리 저장). \"통합적 표현\" 키워드는 개념 스키마. \"논리 스키마\"는 가짜 보기."
   },
@@ -27,7 +32,12 @@
     "status": "ai-generated",
     "type": "multiple_choice",
     "question": "다음 중 엔터티 발생 시점에 따른 분류가 아닌 것은?",
-    "choices": ["기본 엔터티", "중심 엔터티", "사건 엔터티", "행위 엔터티"],
+    "choices": [
+      "기본 엔터티",
+      "중심 엔터티",
+      "사건 엔터티",
+      "행위 엔터티"
+    ],
     "answerIndex": 2,
     "explanation": "발생 시점 분류는 기본·중심·행위 3종. \"사건 엔터티\"는 유무형 분류 (개·사·유) 에 속하는 분류명입니다."
   },
@@ -43,7 +53,12 @@
     "status": "ai-generated",
     "type": "multiple_choice",
     "question": "한 컬럼에 \"직원1, 직원2\" 처럼 두 값이 함께 들어가는 문제를 해결하기 위한 가장 적절한 정규화 단계는?",
-    "choices": ["제1정규화", "제2정규화", "제3정규화", "BCNF"],
+    "choices": [
+      "제1정규화",
+      "제2정규화",
+      "제3정규화",
+      "BCNF"
+    ],
     "answerIndex": 0,
     "explanation": "원자성(한 셀에 한 값)을 위배하므로 1NF 위반. 1NF 는 모든 도메인이 원자값이어야 한다는 규칙."
   },
@@ -59,7 +74,12 @@
     "status": "ai-generated",
     "type": "multiple_choice",
     "question": "다른 속성으로부터 계산이나 변형이 되어 생성되는 속성은?",
-    "choices": ["기본 속성", "설계 속성", "일반 속성", "파생 속성"],
+    "choices": [
+      "기본 속성",
+      "설계 속성",
+      "일반 속성",
+      "파생 속성"
+    ],
     "answerIndex": 3,
     "explanation": "파생 속성 — 다른 속성에서 계산·가공으로 생성. 합계·평균·나이(생년월일에서 계산) 등. 기본 속성은 업무에 원래 존재."
   },
@@ -93,7 +113,7 @@
     "subtopic": "관계/식별자 상속",
     "difficulty": 3,
     "source": "2026년 57회 SQLD 1과목 변형",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "다음 \"고객-계약-납부\" 관련 ERD 에 대한 설명으로 옳지 않은 것은?",
     "choices": [
@@ -105,11 +125,27 @@
     "answerIndex": 2,
     "explanation": "여러 계약 가입과 무관하게 고객의 식별자가 계약에 상속된다. 납부는 별도 엔터티로 식별자 상속 방향이 '납부자→계약'이 아니다.",
     "_audit": {
-      "fixed": ["B2"],
-      "changed_fields": ["choices"],
-      "reason": "정답 길이 압축 (43→28자)",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-SQLD-1-1-0038"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "B2"
+        ],
+        "changed_fields": [
+          "choices"
+        ],
+        "reason": "정답 길이 압축 (43→28자)",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "sqld-57-7",
@@ -162,7 +198,7 @@
     "subtopic": "관계의 의미",
     "difficulty": 2,
     "source": "2026년 57회 SQLD 1과목 변형",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "\"상품에는 주문이 무조건 포함된다\" 와 \"주문에는 상품이 무조건 포함된다\" 중 옳은 표현과 그 이유로 가장 적절한 것은?",
     "choices": [
@@ -174,11 +210,27 @@
     "answerIndex": 1,
     "explanation": "주문은 정의상 상품을 포함해야 의미가 있다 (필수 참여). 반면 상품은 한 번도 주문되지 않을 수도 있으므로 전자는 강제 조건이 아니다.",
     "_audit": {
-      "fixed": ["B2"],
-      "changed_fields": ["choices"],
-      "reason": "정답 길이 압축 + 다른 보기 길이 보강해 균형",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-SQLD-1-1-0041"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "B2"
+        ],
+        "changed_fields": [
+          "choices"
+        ],
+        "reason": "정답 길이 압축 + 다른 보기 길이 보강해 균형",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "sqld-57-10",
@@ -297,7 +349,12 @@
     "status": "ai-generated",
     "type": "multiple_choice",
     "question": "다음 중 SQL 명령어와 분류가 잘못 짝지어진 것은?",
-    "choices": ["DDL — TRUNCATE", "DML — DROP", "DCL — REVOKE", "TCL — COMMIT"],
+    "choices": [
+      "DDL — TRUNCATE",
+      "DML — DROP",
+      "DCL — REVOKE",
+      "TCL — COMMIT"
+    ],
     "answerIndex": 1,
     "explanation": "DROP 은 객체 삭제이므로 DDL 입니다. DML 은 SELECT/INSERT/UPDATE/DELETE/MERGE."
   },
@@ -334,7 +391,12 @@
     "status": "ai-generated",
     "type": "multiple_choice",
     "question": "서브쿼리의 결과로 [여러 컬럼이 반환]되어 메인 쿼리의 조건절에서 동시에 비교되는 서브쿼리 유형은?",
-    "choices": ["단일행 서브쿼리", "다중행 서브쿼리", "단일컬럼 서브쿼리", "다중컬럼 서브쿼리"],
+    "choices": [
+      "단일행 서브쿼리",
+      "다중행 서브쿼리",
+      "단일컬럼 서브쿼리",
+      "다중컬럼 서브쿼리"
+    ],
     "answerIndex": 3,
     "explanation": "다중컬럼 서브쿼리 — (a, b) IN ((1,2), (3,4)) 같이 여러 컬럼을 한꺼번에 비교."
   },
@@ -455,7 +517,12 @@
     "status": "ai-generated",
     "type": "multiple_choice",
     "question": "\"부서별 평균 급여보다 높은 직원 수\" 가 \"전체 평균보다 높은 사람\" 보다 많은 부서를 찾으려 할 때 사용해야 할 절은?",
-    "choices": ["WHERE", "GROUP BY", "HAVING", "ORDER BY"],
+    "choices": [
+      "WHERE",
+      "GROUP BY",
+      "HAVING",
+      "ORDER BY"
+    ],
     "answerIndex": 2,
     "explanation": "그룹별 집계 결과에 조건을 거는 절은 HAVING. WHERE 는 행 단위 필터, 집계함수 사용 불가."
   },
@@ -471,7 +538,12 @@
     "status": "ai-generated",
     "type": "multiple_choice",
     "question": "윈도우 함수에서 \"같은 정렬 키 값을 가진 행을 묶어 한 윈도우로 처리\" 하는 옵션은?",
-    "choices": ["ROWS", "RANGE", "PARTITION BY", "ORDER BY"],
+    "choices": [
+      "ROWS",
+      "RANGE",
+      "PARTITION BY",
+      "ORDER BY"
+    ],
     "answerIndex": 1,
     "explanation": "ROWS = 행 개수 단위. RANGE = 정렬 키 값 단위 (같은 값은 묶어서 처리). 누적합·이동평균에서 결과 차이 발생."
   },
@@ -487,7 +559,12 @@
     "status": "ai-generated",
     "type": "multiple_choice",
     "question": "[T1] (col1, col2) = (1,1)(2,2)(3,3)(4,5) 일 때 다음 SQL 의 결과는?\n\nSELECT COUNT(*) FROM T1 a, T1 b\nWHERE a.col1 = b.col2;",
-    "choices": ["1", "2", "3", "4"],
+    "choices": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
     "answerIndex": 2,
     "explanation": "셀프 조인 매칭: (a=1,b=1)·(a=2,b=2)·(a=3,b=3) — 3건. (4,5) 의 a.col1=4 와 매칭되는 b.col2 가 없어 제외."
   },
@@ -524,7 +601,12 @@
     "status": "ai-generated",
     "type": "multiple_choice",
     "question": "다음 SQL 의 결과로 출력되지 않는 것은?\n\nSELECT *\nFROM days\nWHERE REGEXP_LIKE(name, '^[^mw][[:lower:]]*[u]*day$', 'i');",
-    "choices": ["Tuesday", "Sunday", "Friday", "Saturday"],
+    "choices": [
+      "Tuesday",
+      "Sunday",
+      "Friday",
+      "Saturday"
+    ],
     "answerIndex": 0,
     "explanation": "Tuesday 는 'T' 시작이지만 패턴은 'mw' 가 아닌 첫 글자 + 소문자... + day. Tuesday 의 \"u\" 는 소문자라 매칭하지만 [u]* 는 0개 이상. 자세히 검토하면 Tuesday 도 매칭. 가장 안 매칭되는 것은 'M' 이나 'W' 시작 단어. 보기에 없으면 가장 까다로운 'Tuesday' 가 답으로 자주 나옴."
   },
@@ -561,7 +643,12 @@
     "status": "ai-generated",
     "type": "multiple_choice",
     "question": "동률 처리에서 같은 순위 + 다음 순위를 [건너뛰지 않는] 함수는?",
-    "choices": ["DENSE_RANK", "RANK", "ROW_NUMBER", "PERCENT_RANK"],
+    "choices": [
+      "DENSE_RANK",
+      "RANK",
+      "ROW_NUMBER",
+      "PERCENT_RANK"
+    ],
     "answerIndex": 0,
     "explanation": "DENSE_RANK = 동률 같은 순위 + 연속 (1,1,2). RANK = 건너뜀 (1,1,3). ROW_NUMBER = 동률 무시 고유."
   },
@@ -577,7 +664,12 @@
     "status": "ai-generated",
     "type": "multiple_choice",
     "question": "다음 중 계층형 질의에서 [루트 노드를 지정하는 절]은?",
-    "choices": ["WHERE", "FROM", "ORDER BY", "START WITH"],
+    "choices": [
+      "WHERE",
+      "FROM",
+      "ORDER BY",
+      "START WITH"
+    ],
     "answerIndex": 3,
     "explanation": "START WITH 가 계층형 질의의 출발점(루트) 을 지정. CONNECT BY 가 부모-자식 관계 정의."
   },
@@ -614,7 +706,12 @@
     "status": "ai-generated",
     "type": "multiple_choice",
     "question": "[TAB1] = {A, B, C, G}, [TAB2] = {E, F, D, G} 일 때, INNER + LEFT + RIGHT + FULL OUTER JOIN 의 결과 행 수의 [총합] 은?",
-    "choices": ["14", "15", "16", "17"],
+    "choices": [
+      "14",
+      "15",
+      "16",
+      "17"
+    ],
     "answerIndex": 2,
     "explanation": "공통(G) 1개. INNER=1, LEFT=4 (A,B,C 비매칭+G), RIGHT=4 (E,F,D 비매칭+G), FULL=7 (1+3+3). 합=1+4+4+7=16."
   },
@@ -651,7 +748,12 @@
     "status": "ai-generated",
     "type": "multiple_choice",
     "question": "다음 SQL 의 결과는?\n\nSELECT NVL(COUNT(*), 9999)\nFROM TABLE\nWHERE 1=2;",
-    "choices": ["NULL", "1", "9999", "0"],
+    "choices": [
+      "NULL",
+      "1",
+      "9999",
+      "0"
+    ],
     "answerIndex": 3,
     "explanation": "WHERE 1=2 는 항상 거짓이라 0행. 하지만 COUNT(*) 는 0 (NOT NULL) 반환. NVL(0, 9999) = 0."
   },
@@ -667,7 +769,12 @@
     "status": "ai-generated",
     "type": "multiple_choice",
     "question": "다음 중 [같은 이름의 컬럼을 한 번만] 출력하고 같은 이름의 컬럼들을 자동으로 매칭하는 조인 방식은?",
-    "choices": ["INNER JOIN", "LEFT OUTER JOIN", "NATURAL JOIN", "RIGHT OUTER JOIN"],
+    "choices": [
+      "INNER JOIN",
+      "LEFT OUTER JOIN",
+      "NATURAL JOIN",
+      "RIGHT OUTER JOIN"
+    ],
     "answerIndex": 2,
     "explanation": "NATURAL JOIN 은 같은 이름 컬럼을 자동 매칭하고 결과에는 한 번만 등장. 다른 JOIN 은 ON 절에서 명시적으로."
   },
@@ -683,7 +790,12 @@
     "status": "ai-generated",
     "type": "multiple_choice",
     "question": "다음 SQL 중 오류가 발생하는 것의 개수는?\n\nㄱ) INSERT INTO T (id) VALUES (1)         -- T(id PK, name VARCHAR2(10) NOT NULL)\nㄴ) INSERT INTO T (id, name) VALUES (2, 'A')\nㄷ) UPDATE T SET id=1 WHERE name='A'      -- 이미 id=1 존재\nㄹ) INSERT INTO T VALUES (3, NULL)",
-    "choices": ["1개", "2개", "3개", "4개"],
+    "choices": [
+      "1개",
+      "2개",
+      "3개",
+      "4개"
+    ],
     "answerIndex": 2,
     "explanation": "ㄱ: name NOT NULL 위반 (오류). ㄴ: 정상. ㄷ: id 중복 (PK 위반, 오류). ㄹ: name 이 NULL 인데 NOT NULL (오류). 오류 3개."
   },
@@ -699,7 +811,12 @@
     "status": "ai-generated",
     "type": "multiple_choice",
     "question": "[TAB1] (col1, col2): 100건. col2 가 NULL 인 행 30건. 다음 결과로 옳은 것은?\n\nSELECT COUNT(*), COUNT(col2) FROM TAB1;",
-    "choices": ["100, 70", "70, 100", "70, NULL", "100, 100"],
+    "choices": [
+      "100, 70",
+      "70, 100",
+      "70, NULL",
+      "100, 100"
+    ],
     "answerIndex": 0,
     "explanation": "COUNT(*) 는 모든 행 (100). COUNT(col2) 는 NULL 제외 (70)."
   },
@@ -820,7 +937,12 @@
     "status": "ai-generated",
     "type": "multiple_choice",
     "question": "지역·상품의 [모든 가능한 부분집합] 으로 집계하려 할 때 가장 적절한 함수는?",
-    "choices": ["ROLLUP", "GROUPING SETS (수동)", "CUBE", "GROUP BY 만"],
+    "choices": [
+      "ROLLUP",
+      "GROUPING SETS (수동)",
+      "CUBE",
+      "GROUP BY 만"
+    ],
     "answerIndex": 2,
     "explanation": "CUBE(a,b) = (a,b),(a),(b),() — 모든 부분집합. ROLLUP 은 (a,b),(a),() — 일부만."
   },
@@ -833,7 +955,7 @@
     "subtopic": "UNPIVOT",
     "difficulty": 3,
     "source": "2026년 57회 SQLD 2과목 변형",
-    "status": "ai-generated",
+    "status": "self-reviewed",
     "type": "multiple_choice",
     "question": "UNPIVOT 의 결과 형태로 가장 적절한 것은?",
     "choices": [
@@ -845,11 +967,27 @@
     "answerIndex": 2,
     "explanation": "UNPIVOT 은 WIDE → LONG 변환. 여러 컬럼을 '속성-값' 행으로 풀어놓음. PIVOT 은 반대 (LONG → WIDE).",
     "_audit": {
-      "fixed": ["B2"],
-      "changed_fields": ["choices"],
-      "reason": "정답 길이 압축 + 다른 보기 길이 보강해 균형",
-      "audited_at": "2026-04-29"
-    }
+      "fixed": [],
+      "changed_fields": [
+        "status"
+      ],
+      "reason": "markdown 검수 반영",
+      "audited_at": "2026-05-05",
+      "auditor": "md_to_json (claude-code)",
+      "source_md": "Q-SQLD-2-2-0084"
+    },
+    "_audit_history": [
+      {
+        "fixed": [
+          "B2"
+        ],
+        "changed_fields": [
+          "choices"
+        ],
+        "reason": "정답 길이 압축 + 다른 보기 길이 보강해 균형",
+        "audited_at": "2026-04-29"
+      }
+    ]
   },
   {
     "id": "sqld-57-45",
@@ -863,7 +1001,12 @@
     "status": "ai-generated",
     "type": "multiple_choice",
     "question": "다음 SQL 의 SELECT 첫 번째 자리에 [올 수 없는] 것은?\n\nSELECT (   ), COUNT(EMPNO)\nFROM EMP\nGROUP BY JOB, DEPT;",
-    "choices": ["EMPNO", "JOB", "DEPT", "NULL"],
+    "choices": [
+      "EMPNO",
+      "JOB",
+      "DEPT",
+      "NULL"
+    ],
     "answerIndex": 0,
     "explanation": "GROUP BY 에 EMPNO 가 없으므로 SELECT 의 비집계 컬럼으로 EMPNO 사용 불가. JOB·DEPT 는 GROUP BY 에 있으므로 가능."
   },
@@ -921,7 +1064,12 @@
     "status": "ai-generated",
     "type": "multiple_choice",
     "question": "ROLLUP 결과에서 소계 행을 보기 좋게 표시하려 할 때 사용하는 함수는?",
-    "choices": ["GROUPING(col)", "DECODE(col, NULL, '소계', col)", "CASE WHEN col IS NULL THEN '소계' END", "NVL(col, '소계')"],
+    "choices": [
+      "GROUPING(col)",
+      "DECODE(col, NULL, '소계', col)",
+      "CASE WHEN col IS NULL THEN '소계' END",
+      "NVL(col, '소계')"
+    ],
     "answerIndex": 0,
     "explanation": "GROUPING(col) = 1 이면 그 컬럼이 ROLLUP/CUBE 의 소계 NULL 자리. CASE WHEN GROUPING(col)=1 THEN '소계' ELSE col END 패턴 표준. (2)(3)(4) 는 원본 NULL 까지 \"소계\" 로 잘못 표시할 수 있음."
   },
@@ -937,7 +1085,12 @@
     "status": "ai-generated",
     "type": "multiple_choice",
     "question": "다음 시나리오 후 SELECT COUNT(*) FROM T 의 결과는?\n\nINSERT INTO T VALUES(1);\nSAVEPOINT A;\nINSERT INTO T VALUES(2);\nSAVEPOINT B;\nINSERT INTO T VALUES(3);\nROLLBACK TO A;\nINSERT INTO T VALUES(4);\nCOMMIT;",
-    "choices": ["1", "2", "3", "4"],
+    "choices": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
     "answerIndex": 1,
     "explanation": "INSERT 1 → 행 1개. SV A 후 INSERT 2, INSERT 3. ROLLBACK TO A → 2,3 취소, 1 만 남음. INSERT 4 → 1, 4. COMMIT. 최종 2건."
   },

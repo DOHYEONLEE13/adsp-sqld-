@@ -20,6 +20,7 @@ import {
   getQuizQuestion,
 } from '@/data/lessons';
 import { recordSingleAnswer } from '../storage';
+import { recordReviewAttempt } from '../forgettingCurve';
 import { useProgress } from '../useProgress';
 import { consumeEnergy } from '../energy';
 import { stepKey, unlockStepOnServer, useStepUnlocks } from '../stepUnlocks';
@@ -33,6 +34,7 @@ import FeedbackSheet from './FeedbackSheet';
 import SimilarProblemsPanel from '../components/SimilarProblemsPanel';
 import { countSimilarQuestions } from '../similarQuestions';
 import PageAmbientBg from '../components/PageAmbientBg';
+import StudyPlanContextBar from '../studyPlan/StudyPlanContextBar';
 import { getReminder } from '@/data/reminders';
 import { PASS_TIER_VISUAL } from '@/types/passes';
 import { explanationToText } from '@/types/question';
@@ -307,6 +309,9 @@ export default function DialogueLesson({
     setCorrect(ok);
     const timeMs = Date.now() - startedAtRef.current;
     const xp = recordSingleAnswer(quizQuestion.id, ok, timeMs);
+    // Phase 4 Step 4 — SM-2 망각 곡선 시스템에도 풀이 결과 반영.
+    // onboarding 완료 사용자만 작동 (게스트는 no-op).
+    void recordReviewAttempt(quizQuestion.id, ok, new Date());
     setPhase('feedback');
     // 잠금 결정은 prevSolved (이전 step 정답 cross-check) 로만 — 별도 unlock RPC X.
     // 다음 step 진입 시 mount useEffect 가 ⚡ 차감 + visit 기록 알아서 처리.
@@ -505,6 +510,11 @@ export default function DialogueLesson({
         accent={subject === 'sqld' ? '#c084fc' : '#67e8f9'}
         onExit={onBack}
       />
+      {/*
+        Phase 4 Step 3 작업 B — "이번 주 목표" 컨텍스트 띠.
+        plan 이 본 lesson chapter 와 일치할 때만 표시 (자유 진입 사용자에게는 숨김).
+      */}
+      <StudyPlanContextBar subject={subject} chapter={chapter} topic={topic} />
 
       {/* XP 획득 토스트 */}
       {xpToast ? (

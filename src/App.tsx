@@ -45,10 +45,23 @@ const StatsPage = lazy(() => import('./game/StatsPage'));
 const BookmarksPage = lazy(() => import('./game/BookmarksPage'));
 const QuestsPage = lazy(() => import('./game/QuestsPage'));
 const FriendsPage = lazy(() => import('./game/FriendsPage'));
+// Phase 4 Step 2 — 첫 진입 + 진단 (mock 단계, localStorage 기반)
+const OnboardingFlow = lazy(() =>
+  import('./game/onboarding/OnboardingFlow').then((m) => ({ default: m.OnboardingFlow })),
+);
+// Phase 4 Step 3 — 학습 플랜 확인 화면 (route wrapper — 자체 load + redirect 처리)
+const StudyPlanRoute = lazy(() => import('./game/studyPlan/StudyPlanRoute'));
+// Phase 4 Step 5 — 진행도 현황 (5번째 네비 슬롯)
+const ProgressDashboard = lazy(
+  () => import('./game/passPrediction/ProgressDashboard'),
+);
 
 type Route =
   | 'landing'
   | 'game'
+  | 'onboarding'
+  | 'study-plan'
+  | 'weakness'
   | 'stats'
   | 'bookmarks'
   | 'quests'
@@ -159,6 +172,15 @@ function getRoute(): RouteState {
 
   // 2. Hash-based 라우트 (그 외 모든 routes)
   const hash = window.location.hash.replace(/^#/, '');
+  // Phase 4 Step 2 — 직접 진입 (사용자가 강제로 onboarding 재진입 시)
+  if (hash.startsWith('/onboarding')) return { route: 'onboarding' };
+  // Phase 4 Step 3 — 학습 플랜 확인 화면
+  if (hash.startsWith('/study-plan')) return { route: 'study-plan' };
+  // Phase 4 Step 5 — 나의 약점 (5번째 네비 슬롯).
+  //   `/progress` 는 backward-compatible alias (이전 라우트 — 외부 링크/북마크 보호).
+  if (hash.startsWith('/weakness') || hash.startsWith('/progress')) {
+    return { route: 'weakness' };
+  }
   if (hash.startsWith('/quests')) return { route: 'quests' };
   if (hash.startsWith('/friends')) return { route: 'friends' };
   if (hash.startsWith('/stats')) return { route: 'stats' };
@@ -176,11 +198,29 @@ function getRoute(): RouteState {
     if (sub === 'adsp' || sub === 'sqld') {
       return { route: 'game', initialSubject: sub };
     }
-    // /game (no subject) — fallback: 저장된 activeSubject 가 있으면 그 과목으로
-    // 직진. 없으면 chooser 로 onboarding.
+    // /game (no subject) — fallback 우선순위:
+    //  1) progressStore.activeSubject (사용자 명시 선택)
+    //  2) onboarding.exams[0] (onboarding 으로 이미 시험 선택)
+    //  → 둘 다 없으면 chooser 로 (게스트 또는 onboarding 미진행)
     const active = getSnapshot().activeSubject;
     if (active === 'adsp' || active === 'sqld') {
       return { route: 'game', initialSubject: active };
+    }
+    // onboardingStorage 직접 import (작은 함수, lazy 영향 미미). cyclic 피하려면
+    // localStorage 직접 read 도 가능하나 helper 가 검증된 fallback 까지 처리.
+    try {
+      const raw = window.localStorage.getItem('questdp_onboarding_v4');
+      if (raw) {
+        const parsed = JSON.parse(raw) as { exams?: string[]; version?: number };
+        if (parsed?.version === 1) {
+          const ex = parsed.exams?.[0];
+          if (ex === 'adsp' || ex === 'sqld') {
+            return { route: 'game', initialSubject: ex };
+          }
+        }
+      }
+    } catch {
+      /* silent fallback */
     }
     return { route: 'game' };
   }
@@ -308,6 +348,28 @@ export default function App() {
     return () => unsub();
   }, []);
 
+  // Phase 4 Step 4 — 라우트 변화 시 lastActiveAt 갱신 (어느 페이지든 진입 = 활성).
+  // 미접속 처리 입력. localStorage 기반 (Step 5/6 에서 profiles.last_active_at 으로 전환).
+  useEffect(() => {
+    void import('./game/forgettingCurve').then(({ markActive }) => {
+      markActive();
+    });
+  }, [route]);
+
+  // Phase 4 Step 2 — 신규 사용자 자동 onboarding 진입.
+  // game 라우트 진입 시 onboarding 미완료 상태면 #/onboarding 으로 redirect.
+  // mock 단계: localStorage 기반 (`questdp_onboarding_v4` key).
+  // 마이그레이션 적용 후: profiles.persona === 'unknown' 으로 전환.
+  useEffect(() => {
+    if (route !== 'game') return;
+    // 동기 import 로 needsOnboarding 호출 (chunk 영향 적음 — 작은 함수)
+    import('./game/onboarding/onboardingStorage').then((m) => {
+      if (m.needsOnboarding()) {
+        window.location.hash = '/onboarding';
+      }
+    });
+  }, [route]);
+
   // GlobalAmbientBg 는 라우트 전환과 무관하게 항상 마운트 — 페이지가
   // 바뀌어도 영상이 처음부터 다시 시작되지 않게.  각 페이지의 PageAmbientBg
   // 가 controller 에 push/pop 만 해서 fade in/out 으로만 노출 토글한다.
@@ -316,6 +378,37 @@ export default function App() {
     // 로그인 게이트는 결제 시점 (Phase B Premium 업그레이드) 에만 등장.
     // AuthGuard / LoginPage / authGuard.ts 인프라는 그대로 유지 → premium 게이트
     // 에서 setPendingAuthRedirect + #/login 패턴 재사용.
+    if (route === 'onboarding') {
+      return (
+        <OnboardingFlow
+          onFinish={() => {
+            // Phase 4 Step 3 — onboarding 완료 시 학습 플랜 화면으로 이동.
+            // OnboardingFlow 가 plan 자동 생성 + saveStudyPlan 처리 완료 상태.
+            window.location.hash = '/study-plan';
+          }}
+          onSkip={() => {
+            // 게스트 모드 그대로 — game chooser 진입
+            window.location.hash = '/game';
+          }}
+        />
+      );
+    }
+
+    if (route === 'study-plan') {
+      return <StudyPlanRoute />;
+    }
+
+    if (route === 'weakness') {
+      return (
+        <ProgressDashboard
+          onExit={() => {
+            window.location.hash = '/game';
+          }}
+        />
+      );
+    }
+
+
     if (route === 'game') {
       return (
         <GamePage

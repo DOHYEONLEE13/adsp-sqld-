@@ -43,7 +43,7 @@
       "subtopic": "정성/정량, 존재적/당위적 특성",
       "difficulty": 3,
       "source": "2026년 48회 ADSP 1과목",
-      "status": "ai-generated",
+      "status": "self-reviewed",
       "needsDistractors": false,
       "tags": [
         "기출복원",
@@ -62,10 +62,24 @@
       "explanation": "(가) 정성적 데이터가 더 많은 비용·기술 요구 → 오. (나) 정성적 데이터 정의 → 정. (다) 수치·용이는 정량적 데이터 성질 → 오. (라) 데이터의 '존재적 특성' → 정. (마) 데이터의 '당위적 특성' → 정. 따라서 (나), (라), (마).",
       "_audit": {
         "fixed": [],
-        "changed_fields": ["explanation"],
-        "reason": "(나), (라), (마)는 ADSP 표준 정의에 부합 — needsAnswerVerification 제거",
-        "audited_at": "2026-04-29"
-      }
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-ADsP-1-1-0068"
+      },
+      "_audit_history": [
+        {
+          "fixed": [],
+          "changed_fields": [
+            "explanation"
+          ],
+          "reason": "(나), (라), (마)는 ADSP 표준 정의에 부합 — needsAnswerVerification 제거",
+          "audited_at": "2026-04-29"
+        }
+      ]
     },
     {
       "id": "adsp-r48-2-11",
@@ -292,7 +306,7 @@
       "subtopic": "집중형·기능형·분산형",
       "difficulty": 3,
       "source": "2026년 48회 ADSP 2과목",
-      "status": "ai-generated",
+      "status": "self-reviewed",
       "needsDistractors": false,
       "tags": [
         "기출복원",
@@ -310,11 +324,27 @@
       "answerIndex": 0,
       "explanation": "분산형은 각 부서에 분석 인력이 전담 배치되기 때문에 오히려 실무 적용 속도가 빠른 것이 강점. 지문은 반대로 서술되어 오답.",
       "_audit": {
-        "fixed": ["B2"],
-        "changed_fields": ["choices"],
-        "reason": "정답 길이 압축 (59→33자)",
-        "audited_at": "2026-04-29"
-      }
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-ADsP-2-2-0037"
+      },
+      "_audit_history": [
+        {
+          "fixed": [
+            "B2"
+          ],
+          "changed_fields": [
+            "choices"
+          ],
+          "reason": "정답 길이 압축 (59→33자)",
+          "audited_at": "2026-04-29"
+        }
+      ]
     },
     {
       "id": "adsp-r48-2-20",
@@ -352,7 +382,7 @@
       "subtopic": "Box Plot 해석",
       "difficulty": 3,
       "source": "2026년 48회 ADSP 3과목",
-      "status": "ai-generated",
+      "status": "self-reviewed",
       "needsDistractors": false,
       "tags": [
         "기출복원",
@@ -371,11 +401,30 @@
       "answerIndex": 0,
       "explanation": "Box Plot 은 중앙값·사분위·IQR·이상값을 시각화하지만 각 그룹의 관측치 수(표본 크기)는 직접 나타내지 않는다.",
       "_audit": {
-        "fixed": ["A4"],
-        "changed_fields": ["question", "choices", "explanation", "tags"],
-        "reason": "chickwts R 데이터 그림 의존 제거 — Box Plot 일반 비교 정보 문제로 재구성",
-        "audited_at": "2026-04-29"
-      }
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-ADsP-3-1-0035"
+      },
+      "_audit_history": [
+        {
+          "fixed": [
+            "A4"
+          ],
+          "changed_fields": [
+            "question",
+            "choices",
+            "explanation",
+            "tags"
+          ],
+          "reason": "chickwts R 데이터 그림 의존 제거 — Box Plot 일반 비교 정보 문제로 재구성",
+          "audited_at": "2026-04-29"
+        }
+      ]
     },
     {
       "id": "adsp-r48-3-22",
@@ -575,7 +624,7 @@
       "subtopic": "잔차 분석 대응",
       "difficulty": 3,
       "source": "2026년 48회 ADSP 3과목",
-      "status": "ai-generated",
+      "status": "self-reviewed",
       "needsDistractors": false,
       "tags": [
         "기출복원",
@@ -593,11 +642,30 @@
       "answerIndex": 0,
       "explanation": "잔차가 체계적인 패턴(U자·S자 곡선)을 보이면 선형 가정이 위배된 것. 다항 회귀·로그 변환 등 비선형 구조를 도입해야 함. 표본 추가·변수 추가만으로는 근본 해결이 안 됨.",
       "_audit": {
-        "fixed": ["A4", "B2"],
-        "changed_fields": ["question", "choices", "explanation"],
-        "reason": "원본 그림 의존 제거 + 정답 길이 압축 (48→27자)",
-        "audited_at": "2026-04-29"
-      }
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-ADsP-3-2-0083"
+      },
+      "_audit_history": [
+        {
+          "fixed": [
+            "A4",
+            "B2"
+          ],
+          "changed_fields": [
+            "question",
+            "choices",
+            "explanation"
+          ],
+          "reason": "원본 그림 의존 제거 + 정답 길이 압축 (48→27자)",
+          "audited_at": "2026-04-29"
+        }
+      ]
     },
     {
       "id": "adsp-r48-3-30",
@@ -608,7 +676,7 @@
       "subtopic": "신뢰수준 해석",
       "difficulty": 4,
       "source": "2026년 48회 ADSP 3과목",
-      "status": "ai-generated",
+      "status": "self-reviewed",
       "needsDistractors": false,
       "tags": [
         "기출복원",
@@ -626,11 +694,28 @@
       "answerIndex": 0,
       "explanation": "빈도주의 신뢰수준(95% 등)은 '동일한 방법으로 반복 표본추출·구간추정을 했을 때 해당 구간이 모수를 포함하는 비율'. '주어진 특정 구간이 모수를 포함할 확률'이라는 조건부 해석은 베이지안 관점이지 빈도주의 신뢰구간의 정의가 아님.",
       "_audit": {
-        "fixed": ["B2"],
-        "changed_fields": ["choices", "explanation"],
-        "reason": "정답 길이 압축 (94→34자) — 핵심 오류(신뢰수준의 오해석)만 남김",
-        "audited_at": "2026-04-29"
-      }
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-ADsP-3-2-0084"
+      },
+      "_audit_history": [
+        {
+          "fixed": [
+            "B2"
+          ],
+          "changed_fields": [
+            "choices",
+            "explanation"
+          ],
+          "reason": "정답 길이 압축 (94→34자) — 핵심 오류(신뢰수준의 오해석)만 남김",
+          "audited_at": "2026-04-29"
+        }
+      ]
     },
     {
       "id": "adsp-r48-3-31",
@@ -641,7 +726,7 @@
       "subtopic": "t-검정 p-value 해석",
       "difficulty": 4,
       "source": "2026년 48회 ADSP 3과목",
-      "status": "ai-generated",
+      "status": "self-reviewed",
       "needsDistractors": false,
       "tags": [
         "기출복원",
@@ -659,11 +744,30 @@
       "answerIndex": 0,
       "explanation": "p-value 0.079 > α 0.01 이므로 1% 유의수준에서 귀무가설을 기각할 수 없다. 즉 1% 수준에서 두 집단 평균이 유의하게 다르다고 결론 내릴 수 없다.",
       "_audit": {
-        "fixed": ["A4"],
-        "changed_fields": ["question", "choices", "explanation", "tags"],
-        "reason": "sleep R 데이터 의존 제거 — p-value를 본문에 직접 명시",
-        "audited_at": "2026-04-29"
-      }
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-ADsP-3-2-0085"
+      },
+      "_audit_history": [
+        {
+          "fixed": [
+            "A4"
+          ],
+          "changed_fields": [
+            "question",
+            "choices",
+            "explanation",
+            "tags"
+          ],
+          "reason": "sleep R 데이터 의존 제거 — p-value를 본문에 직접 명시",
+          "audited_at": "2026-04-29"
+        }
+      ]
     },
     {
       "id": "adsp-r48-3-32",
@@ -701,7 +805,7 @@
       "subtopic": "변수 유의성 해석",
       "difficulty": 4,
       "source": "2026년 48회 ADSP 3과목",
-      "status": "ai-generated",
+      "status": "self-reviewed",
       "needsDistractors": false,
       "tags": [
         "기출복원",
@@ -719,11 +823,30 @@
       "answerIndex": 0,
       "explanation": "회귀계수의 크기는 변수의 단위·스케일에 따라 달라지므로 '계수가 큰 변수 = 가장 유의'는 성립하지 않는다. 통계적 유의성은 t값·p-value 로 판단해야 한다.",
       "_audit": {
-        "fixed": ["A4"],
-        "changed_fields": ["question", "choices", "explanation", "tags"],
-        "reason": "Hitters R 데이터 의존 제거 — 다중회귀 일반 해석 문제로 재구성",
-        "audited_at": "2026-04-29"
-      }
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-ADsP-3-2-0087"
+      },
+      "_audit_history": [
+        {
+          "fixed": [
+            "A4"
+          ],
+          "changed_fields": [
+            "question",
+            "choices",
+            "explanation",
+            "tags"
+          ],
+          "reason": "Hitters R 데이터 의존 제거 — 다중회귀 일반 해석 문제로 재구성",
+          "audited_at": "2026-04-29"
+        }
+      ]
     },
     {
       "id": "adsp-r48-3-34",
@@ -734,7 +857,7 @@
       "subtopic": "연결함수(link function)",
       "difficulty": 3,
       "source": "2026년 48회 ADSP 3과목",
-      "status": "ai-generated",
+      "status": "self-reviewed",
       "needsDistractors": false,
       "tags": [
         "기출복원",
@@ -752,11 +875,27 @@
       "answerIndex": 0,
       "explanation": "로지스틱 회귀의 연결함수는 '로짓(logit) 함수' = ln(p/(1-p)). 시그모이드는 로짓의 역함수(반응함수)로 확률 변환에 쓰이지만 link function 은 아니다.",
       "_audit": {
-        "fixed": ["B2"],
-        "changed_fields": ["choices"],
-        "reason": "정답 길이 압축 (52→24자)",
-        "audited_at": "2026-04-29"
-      }
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-ADsP-3-3-0065"
+      },
+      "_audit_history": [
+        {
+          "fixed": [
+            "B2"
+          ],
+          "changed_fields": [
+            "choices"
+          ],
+          "reason": "정답 길이 압축 (52→24자)",
+          "audited_at": "2026-04-29"
+        }
+      ]
     },
     {
       "id": "adsp-r48-3-35",
@@ -821,7 +960,7 @@
       "subtopic": "절편 유의성 판단",
       "difficulty": 4,
       "source": "2026년 48회 ADSP 3과목",
-      "status": "ai-generated",
+      "status": "self-reviewed",
       "needsDistractors": false,
       "tags": [
         "기출복원",
@@ -839,11 +978,29 @@
       "answerIndex": 0,
       "explanation": "절편(Intercept)의 유의성은 회귀 결과표의 Intercept 행 p-value 로 확인 가능. '알 수 없다'는 틀림.",
       "_audit": {
-        "fixed": ["A4"],
-        "changed_fields": ["question", "choices", "tags"],
-        "reason": "ChickWeight R 데이터 의존 제거 — 단순회귀 일반 해석 문제로 재구성",
-        "audited_at": "2026-04-29"
-      }
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-ADsP-3-2-0090"
+      },
+      "_audit_history": [
+        {
+          "fixed": [
+            "A4"
+          ],
+          "changed_fields": [
+            "question",
+            "choices",
+            "tags"
+          ],
+          "reason": "ChickWeight R 데이터 의존 제거 — 단순회귀 일반 해석 문제로 재구성",
+          "audited_at": "2026-04-29"
+        }
+      ]
     },
     {
       "id": "adsp-r48-3-38",
@@ -936,7 +1093,7 @@
       "subtopic": "회귀 트리 예측 정확도",
       "difficulty": 3,
       "source": "2026년 48회 ADSP 3과목",
-      "status": "ai-generated",
+      "status": "self-reviewed",
       "needsDistractors": false,
       "tags": [
         "기출복원",
@@ -954,11 +1111,28 @@
       "answerIndex": 0,
       "explanation": "회귀 트리는 잎 노드에 속한 샘플들의 평균으로 예측한다. 잎이 단일 샘플이 아닌 이상 학습 데이터에서도 100% 예측은 불가능 — '항상'이라는 보편 양화는 틀림.",
       "_audit": {
-        "fixed": ["B2"],
-        "changed_fields": ["choices", "explanation"],
-        "reason": "정답 길이 압축 (70→33자)",
-        "audited_at": "2026-04-29"
-      }
+        "fixed": [],
+        "changed_fields": [
+          "status"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-ADsP-3-3-0066"
+      },
+      "_audit_history": [
+        {
+          "fixed": [
+            "B2"
+          ],
+          "changed_fields": [
+            "choices",
+            "explanation"
+          ],
+          "reason": "정답 길이 압축 (70→33자)",
+          "audited_at": "2026-04-29"
+        }
+      ]
     },
     {
       "id": "adsp-r48-3-42",

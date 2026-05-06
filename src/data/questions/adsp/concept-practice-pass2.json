@@ -12,7 +12,7 @@
       "subject": "adsp",
       "chapter": 1,
       "chapterTitle": "데이터 이해",
-      "topic": "데이터의 이해",
+      "topic": "DIKW 피라미드",
       "type": "multiple_choice",
       "difficulty": 3,
       "pass": 2,
@@ -26,14 +26,30 @@
       "answerIndex": 3,
       "explanation": "지혜(Wisdom) = 지식을 [상황에 맞게 적용·판단] 하는 단계. 운영 규칙처럼 의사결정에 직접 쓰이는 형태가 지혜.\n· (1) 단순 측정값 = 데이터, (2) 비교 후 의미 부여 = 정보, (3) 일반화된 규칙 = 지식, (4) 상황 적용 = 지혜.",
       "source": "QuestDP 변형 — 시나리오 응용",
-      "tags": ["DIKW", "회독2", "응용"]
+      "tags": [
+        "DIKW",
+        "회독2",
+        "응용"
+      ],
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status",
+          "topic"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-ADsP-1-1-0006"
+      }
     },
     {
       "id": "adsp-1-1-cp-02-p2",
       "subject": "adsp",
       "chapter": 1,
       "chapterTitle": "데이터 이해",
-      "topic": "데이터의 이해",
+      "topic": "데이터 분류 (개요)",
       "type": "multiple_choice",
       "difficulty": 3,
       "pass": 2,
@@ -47,14 +63,29 @@
       "answerIndex": 1,
       "explanation": "· 구조화: 행·열로 정의된 스키마. 엑셀·관계형 DB.\n· 반구조화: 키-값 같은 메타구조 + 자유로운 본문. JSON·XML·로그.\n· 비구조화: 스키마 X, 분석엔 별도 추출 필요. 음성·이미지·영상·자유 텍스트.",
       "source": "QuestDP 변형 — 사례 분류",
-      "tags": ["데이터 분류", "회독2"]
+      "tags": [
+        "데이터 분류",
+        "회독2"
+      ],
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status",
+          "topic"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-ADsP-1-1-0015"
+      }
     },
     {
       "id": "adsp-1-1-cp-03-p2",
       "subject": "adsp",
       "chapter": 1,
       "chapterTitle": "데이터 이해",
-      "topic": "데이터의 이해",
+      "topic": "암묵지 · 형식지",
       "type": "multiple_choice",
       "difficulty": 3,
       "pass": 2,
@@ -68,14 +99,30 @@
       "answerIndex": 1,
       "explanation": "· 사회화: 암묵→암묵 (도제식 견습)\n· 외부화: [암묵→형식] = 머릿속 노하우를 글·표로 바꾸는 단계 ✅\n· 결합: 형식→형식 (여러 문서 합쳐 새 문서)\n· 내면화: 형식→암묵 (읽고 체득)\n위키에 올린 = 노하우(암묵)를 문서(형식)로 만든 외부화.",
       "source": "QuestDP 변형 — 시나리오 매칭",
-      "tags": ["SECI", "지식 변환", "회독2"]
+      "tags": [
+        "SECI",
+        "지식 변환",
+        "회독2"
+      ],
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status",
+          "topic"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-ADsP-1-1-0023"
+      }
     },
     {
       "id": "adsp-1-1-cp-04-p2",
       "subject": "adsp",
       "chapter": 1,
       "chapterTitle": "데이터 이해",
-      "topic": "데이터의 이해",
+      "topic": "DB 4특징",
       "type": "multiple_choice",
       "difficulty": 3,
       "pass": 2,
@@ -89,20 +136,42 @@
       "answerIndex": 2,
       "explanation": "데이터 레이크 = [Schema-on-Read]. 일단 원본 그대로 저장 → 분석할 때 구조 부여. 비정형 데이터까지 포함.\n· (1) OLTP = 일반 OLTP DB 의 영역\n· (2) Schema-on-Write = 데이터 웨어하우스(DW) 의 특징\n· (4) 다차원 OLAP = 데이터 마트(DM) / DW",
       "source": "QuestDP 변형 — 차별점 식별",
-      "tags": ["Data Lake", "DW", "회독2"],
+      "tags": [
+        "Data Lake",
+        "DW",
+        "회독2"
+      ],
       "_audit": {
-        "fixed": ["B2"],
-        "changed_fields": ["choices"],
-        "reason": "정답 길이 압축 (56→33자) + 다른 보기 보강",
-        "audited_at": "2026-04-29"
-      }
+        "fixed": [],
+        "changed_fields": [
+          "status",
+          "topic"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-ADsP-1-1-0044"
+      },
+      "status": "self-reviewed",
+      "_audit_history": [
+        {
+          "fixed": [
+            "B2"
+          ],
+          "changed_fields": [
+            "choices"
+          ],
+          "reason": "정답 길이 압축 (56→33자) + 다른 보기 보강",
+          "audited_at": "2026-04-29"
+        }
+      ]
     },
     {
       "id": "adsp-1-1-cp-05-p2",
       "subject": "adsp",
       "chapter": 1,
       "chapterTitle": "데이터 이해",
-      "topic": "데이터의 이해",
+      "topic": "기업 데이터베이스",
       "type": "multiple_choice",
       "difficulty": 3,
       "pass": 2,
@@ -116,14 +185,30 @@
       "answerIndex": 2,
       "explanation": "· ERP: 회계·인사·생산 등 [내부 자원] 통합 관리\n· SCM: [공급망 — 원자재 → 생산 → 물류] 최적화\n· CRM: [고객 접점 데이터·관계] 관리. 마케팅 자동화·캠페인 추적은 CRM 의 핵심 ✅\n· DBMS: 데이터 저장·관리 인프라 (특정 비즈니스 영역 X)",
       "source": "QuestDP 변형 — 시스템 매칭",
-      "tags": ["기업 정보 시스템", "CRM", "회독2"]
+      "tags": [
+        "기업 정보 시스템",
+        "CRM",
+        "회독2"
+      ],
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status",
+          "topic"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-ADsP-1-1-0053"
+      }
     },
     {
       "id": "adsp-1-2-cp-01-p2",
       "subject": "adsp",
       "chapter": 1,
       "chapterTitle": "데이터 이해",
-      "topic": "데이터의 가치와 미래",
+      "topic": "빅데이터 단위 암기",
       "type": "multiple_choice",
       "difficulty": 3,
       "pass": 2,
@@ -137,14 +222,30 @@
       "answerIndex": 1,
       "explanation": "분당 50만 건 = 단위 시간당 [생성 속도] 의 묘사 → Velocity.\n· Volume: 누적 [총량] 의 묘사 (예: 1PB 저장된 영상)\n· Variety: [형태가 섞인] 묘사 (텍스트+영상+센서 로그)\n· Veracity: 5V 의 확장. 3V 에는 안 들어감 (혼동 distractor)",
       "source": "QuestDP 변형 — 3V 구분",
-      "tags": ["빅데이터 3V", "Velocity", "회독2"]
+      "tags": [
+        "빅데이터 3V",
+        "Velocity",
+        "회독2"
+      ],
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status",
+          "topic"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-ADsP-1-2-0006"
+      }
     },
     {
       "id": "adsp-1-2-cp-02-p2",
       "subject": "adsp",
       "chapter": 1,
       "chapterTitle": "데이터 이해",
-      "topic": "데이터의 가치와 미래",
+      "topic": "빅데이터가 만들어내는 변화",
       "type": "multiple_choice",
       "difficulty": 3,
       "pass": 2,
@@ -158,14 +259,30 @@
       "answerIndex": 2,
       "explanation": "[가장 적절하지 않은 것] 을 골라야 함. 데이터 가치는 [재사용·결합·시점·관점] 에 따라 달라져 단위당 가격이 정해지기 어려움. (3) 은 정반대 주장 → 정답.\n나머지 (1·2·4) 는 모두 데이터 가치 측정의 [어려움] 을 정확히 설명.",
       "source": "QuestDP 변형 — 부정 추론",
-      "tags": ["데이터 가치", "회독2", "역추론"]
+      "tags": [
+        "데이터 가치",
+        "회독2",
+        "역추론"
+      ],
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status",
+          "topic"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-ADsP-1-2-0012"
+      }
     },
     {
       "id": "adsp-1-2-cp-03-p2",
       "subject": "adsp",
       "chapter": 1,
       "chapterTitle": "데이터 이해",
-      "topic": "데이터의 가치와 미래",
+      "topic": "데이터 3법",
       "type": "multiple_choice",
       "difficulty": 3,
       "pass": 2,
@@ -178,21 +295,43 @@
       ],
       "answerIndex": 1,
       "_audit": {
-        "fixed": ["B2"],
-        "changed_fields": ["choices"],
-        "reason": "정답 길이 압축 (71→32자) + 다른 보기 길이 보강",
-        "audited_at": "2026-04-29"
+        "fixed": [],
+        "changed_fields": [
+          "status",
+          "topic"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-ADsP-1-2-0017"
       },
       "explanation": "데이터 3법 개정 핵심 = [가명정보] 도입. 개인정보 ≠ 가명정보 ≠ 익명정보.\n· 가명정보: 통계 작성·과학적 연구·공익적 기록보존 목적에 한해 동의 없이 활용 가능\n· (1) 자유 거래·판매 허용 X (오답)\n· (3) GDPR 그대로 적용 X (오답)\n· (4) 동의 절차 폐지 X (오답) — 마이데이터는 정보주체 동의 + 전송요구권 기반",
       "source": "QuestDP 변형 — 법 개정 핵심",
-      "tags": ["데이터 3법", "가명정보", "회독2"]
+      "tags": [
+        "데이터 3법",
+        "가명정보",
+        "회독2"
+      ],
+      "status": "self-reviewed",
+      "_audit_history": [
+        {
+          "fixed": [
+            "B2"
+          ],
+          "changed_fields": [
+            "choices"
+          ],
+          "reason": "정답 길이 압축 (71→32자) + 다른 보기 길이 보강",
+          "audited_at": "2026-04-29"
+        }
+      ]
     },
     {
       "id": "adsp-1-2-cp-04-p2",
       "subject": "adsp",
       "chapter": 1,
       "chapterTitle": "데이터 이해",
-      "topic": "데이터의 가치와 미래",
+      "topic": "빅데이터 비유",
       "type": "multiple_choice",
       "difficulty": 4,
       "pass": 2,
@@ -206,14 +345,30 @@
       "answerIndex": 1,
       "explanation": "핵심 차이는 [재식별 가능성]:\n· 개인정보: 그 자체로 식별 가능\n· 가명정보: 그 자체로는 식별 X, 단 [추가정보 결합 시 식별 가능] ✅\n· 익명정보: 결합해도 식별 불가능 (완전 비식별)\n· 민감정보: 분류 축이 다름 (식별 여부 X, 보호 강도)",
       "source": "QuestDP 변형 — 정의 매칭",
-      "tags": ["가명정보", "익명정보", "회독2"]
+      "tags": [
+        "가명정보",
+        "익명정보",
+        "회독2"
+      ],
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status",
+          "topic"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-ADsP-1-2-0024"
+      }
     },
     {
       "id": "adsp-1-3-cp-01-p2",
       "subject": "adsp",
       "chapter": 1,
       "chapterTitle": "데이터 이해",
-      "topic": "가치 창조를 위한 데이터 사이언스",
+      "topic": "핵심 3축",
       "type": "multiple_choice",
       "difficulty": 3,
       "pass": 2,
@@ -226,21 +381,42 @@
       ],
       "answerIndex": 2,
       "_audit": {
-        "fixed": ["B2"],
-        "changed_fields": ["choices"],
-        "reason": "정답 길이 압축 (48→29자)",
-        "audited_at": "2026-04-29"
+        "fixed": [],
+        "changed_fields": [
+          "status",
+          "topic"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-ADsP-1-3-0002"
       },
       "explanation": "데이터 사이언스의 차별점은 [Holistic(총체적)]: 비즈니스 문제 정의 → 데이터 수집 → 분석 → 모델링 → 시각화 → 의사결정자에게 [전달] 까지 전체 가치 사슬.\n통계학은 분석 단계의 엄밀성에 집중하는 반면, 데이터 사이언스는 그 전후 단계까지 포함.",
       "source": "QuestDP 변형 — 차별점 식별",
-      "tags": ["데이터 사이언스", "회독2"]
+      "tags": [
+        "데이터 사이언스",
+        "회독2"
+      ],
+      "status": "self-reviewed",
+      "_audit_history": [
+        {
+          "fixed": [
+            "B2"
+          ],
+          "changed_fields": [
+            "choices"
+          ],
+          "reason": "정답 길이 압축 (48→29자)",
+          "audited_at": "2026-04-29"
+        }
+      ]
     },
     {
       "id": "adsp-1-3-cp-02-p2",
       "subject": "adsp",
       "chapter": 1,
       "chapterTitle": "데이터 이해",
-      "topic": "가치 창조를 위한 데이터 사이언스",
+      "topic": "Hard Skill vs Soft Skill",
       "type": "multiple_choice",
       "difficulty": 3,
       "pass": 2,
@@ -254,14 +430,30 @@
       "answerIndex": 2,
       "explanation": "Soft Skill = [통찰·소통·창의·다분야 협업·스토리텔링]. (3) 의 [의사결정자 설득·시각화] 가 Soft.\n나머지 (1·2·4) 는 Hard Skill — 분석·툴·기술 영역.",
       "source": "QuestDP 변형 — Hard/Soft 구분",
-      "tags": ["데이터 사이언티스트", "Soft Skill", "회독2"]
+      "tags": [
+        "데이터 사이언티스트",
+        "Soft Skill",
+        "회독2"
+      ],
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status",
+          "topic"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-ADsP-1-3-0004"
+      }
     },
     {
       "id": "adsp-1-3-cp-03-p2",
       "subject": "adsp",
       "chapter": 1,
       "chapterTitle": "데이터 이해",
-      "topic": "가치 창조를 위한 데이터 사이언스",
+      "topic": "DS 6역량",
       "type": "multiple_choice",
       "difficulty": 4,
       "pass": 2,
@@ -275,7 +467,23 @@
       "answerIndex": 1,
       "explanation": "DIGITAL CAMERA 7대 역량 (한 가지 매핑):\n· C: Communication (소통/협업)\n· A: Art (시각화·디자인)\n· M: Math (수학·통계)\n· E: Engineering (도구·시스템)\n· R: R / 분석 언어\n· I: Insight (호기심 기반 통찰) ✅\nA: Analytical (분석적 사고)\n→ 호기심·통찰 = I.",
       "source": "QuestDP 변형 — 7대 역량 매칭",
-      "tags": ["DIGITAL CAMERA", "데이터 사이언티스트", "회독2"]
+      "tags": [
+        "DIGITAL CAMERA",
+        "데이터 사이언티스트",
+        "회독2"
+      ],
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [],
+        "changed_fields": [
+          "status",
+          "topic"
+        ],
+        "reason": "markdown 검수 반영",
+        "audited_at": "2026-05-05",
+        "auditor": "md_to_json (claude-code)",
+        "source_md": "Q-ADsP-1-3-0012"
+      }
     }
   ]
 }

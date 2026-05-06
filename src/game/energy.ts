@@ -1,14 +1,18 @@
 /**
  * energy.ts — ⚡ 에너지 상태 + consume 헬퍼.
  *
- * 정책:
- *  - 게스트(미로그인): **5 에너지 localStorage 게이트** (가입 인센티브).
+ * 정책 (2026-05-07 cap 5 → 10 상향, 광고 보상 추가):
+ *  - 게스트(미로그인): **10 에너지 localStorage 게이트** (가입 인센티브).
  *    30분당 +1 회복. localStorage 라 보안 X 지만 friction 효과는 충분.
- *  - 인증 + 무료: 5 에너지 server cap, 30분당 +1. step 진입 시 1 소모 (per step).
+ *  - 인증 + 무료: 10 에너지 server cap, 30분당 +1. step 진입 시 1 소모 (per step).
  *  - 인증 + 프리미엄: 무제한 (∞ 아이콘 표시).
  *  - 인증 + 어드민: 무제한 (운영자 검수).
  *
- * 서버 RPC `consume_energy` 가 atomic 처리. 게스트는 localStorage 동일 모방.
+ * 광고 보상: 광고 1회 시청 → +5 에너지 (cap 10 까지). 30초 쿨다운.
+ *  - 인증 사용자: 서버 RPC `grant_ad_energy` 가 cap·쿨다운 검사 + atomic 차감.
+ *  - 게스트: localStorage 기반 동일 동작 모방 (멀티 계정 우회 가능 — 가입 friction 의도).
+ *
+ * 서버 RPC `consume_energy` / `grant_ad_energy` 가 atomic 처리. 게스트는 localStorage 동일 모방.
  */
 
 import { useEffect, useState } from 'react';
@@ -46,13 +50,33 @@ export function isUnlimited(state: EnergyState): boolean {
 // 보안 X (사용자가 직접 수정 가능) 지만 친구·가입 friction 효과는 충분.
 // 인증 시 SIGNED_IN 이벤트가 server pull 로 덮어씀.
 const GUEST_KEY = 'questdp.energy.guest.v1';
-const CAP = 5;
+/** 에너지 최대 보유량 (2026-05-07 5 → 10). 서버 cap 과 일치 — 마이그레이션 0021. */
+export const ENERGY_CAP = 10;
+/** 광고 1회 보상 — server `grant_ad_energy` 와 일치. */
+export const AD_REWARD = 5;
+/** 광고 보상 쿨다운 (초) — server `grant_ad_energy` 와 일치. */
+export const AD_COOLDOWN_SEC = 30;
+/** 광고 일일 한도 — server `grant_ad_energy` 와 일치 (KST 자정 리셋). */
+export const AD_DAILY_CAP = 3;
+const CAP = ENERGY_CAP;
 const REGEN_MS = 30 * 60 * 1000; // 30분
 
 interface GuestEnergy {
   count: number;
   /** 마지막 갱신 timestamp (ms). 30분 회복 계산 기준. */
   updatedAt: number;
+  /** 마지막 광고 보상 timestamp (ms). 쿨다운 검사 기준. 0 = 보상 받은 적 없음. */
+  lastAdAt?: number;
+  /** KST 기준 오늘 광고 시청 횟수 (자정 리셋). */
+  adViewsToday?: number;
+  /** 마지막 광고 시청 KST 날짜 (YYYY-MM-DD). 다른 날이면 adViewsToday 리셋. */
+  adViewsDate?: string;
+}
+
+/** KST(Asia/Seoul) 의 오늘 날짜 (YYYY-MM-DD) — 게스트 일일 한도 비교 기준. */
+function todayKstStr(): string {
+  // KST = UTC+9. 'sv-SE' 로케일이 ISO date 와 동일한 YYYY-MM-DD 출력.
+  return new Date().toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' });
 }
 
 function loadGuestEnergy(): GuestEnergy {
@@ -62,9 +86,21 @@ function loadGuestEnergy(): GuestEnergy {
     if (!raw) return { count: CAP, updatedAt: Date.now() };
     const obj = JSON.parse(raw) as Partial<GuestEnergy>;
     if (typeof obj.count === 'number' && typeof obj.updatedAt === 'number') {
+      // 2026-05-07 cap 5 → 10 마이그레이션 — 기존 5 이하 게스트는 "선물" 로 cap 까지 끌어올림.
+      // 시간이 지나서 자연스럽게 늘어난 것처럼 updatedAt 도 now() 로.
+      const upgraded = obj.count <= 5;
+      // 일일 카운트 정규화 — date 가 다르면 0 으로 리셋.
+      const today = todayKstStr();
+      const dateMatches = obj.adViewsDate === today;
       return {
-        count: Math.max(0, Math.min(CAP, obj.count)),
-        updatedAt: obj.updatedAt,
+        count: upgraded ? CAP : Math.max(0, Math.min(CAP, obj.count)),
+        updatedAt: upgraded ? Date.now() : obj.updatedAt,
+        lastAdAt: typeof obj.lastAdAt === 'number' ? obj.lastAdAt : 0,
+        adViewsToday:
+          dateMatches && typeof obj.adViewsToday === 'number'
+            ? Math.max(0, Math.min(AD_DAILY_CAP, obj.adViewsToday))
+            : 0,
+        adViewsDate: today,
       };
     }
   } catch {
@@ -320,4 +356,219 @@ export function formatRetryAfter(sec: number): string {
   if (sec < 60) return `${sec}초`;
   const m = Math.ceil(sec / 60);
   return `${m}분`;
+}
+
+// ─── 광고 보상 RPC — grant_ad_energy ───────────────────────────────
+
+export interface AdGrantResult {
+  ok: boolean;
+  /** 실제 적립된 에너지. cap 초과면 0 < granted < AD_REWARD 일 수 있음. */
+  granted: number;
+  /** 적립 후 총 에너지 (cap 일 수도 있음). */
+  remaining: number;
+  /**
+   * 쿨다운 남은 초. ok=false + retryAfterSec > 0 = 30초 쿨다운 위반.
+   * ok=false + retryAfterSec = 0 + viewsToday >= dailyCap = 일일 한도 도달 (다른 안내 필요).
+   */
+  retryAfterSec: number;
+  /** 본 호출 후 KST 오늘 누적 광고 시청 횟수. */
+  viewsToday: number;
+  /** 일일 한도 (3). */
+  dailyCap: number;
+}
+
+/** 게스트 — localStorage 기반 광고 보상. 일일 한도 + 30초 쿨다운 + cap 까지 적립. */
+function grantAdGuest(): AdGrantResult {
+  const cur = regenGuest(loadGuestEnergy());
+  const today = todayKstStr();
+  const dateMatches = cur.adViewsDate === today;
+  const currentViews = dateMatches ? cur.adViewsToday ?? 0 : 0;
+
+  // 일일 한도 도달 — retryAfterSec=0 + viewsToday >= dailyCap 으로 신호.
+  if (currentViews >= AD_DAILY_CAP) {
+    return {
+      ok: false,
+      granted: 0,
+      remaining: cur.count,
+      retryAfterSec: 0,
+      viewsToday: currentViews,
+      dailyCap: AD_DAILY_CAP,
+    };
+  }
+
+  // 쿨다운 검사.
+  const lastAt = cur.lastAdAt ?? 0;
+  const elapsedSec = (Date.now() - lastAt) / 1000;
+  if (lastAt > 0 && elapsedSec < AD_COOLDOWN_SEC) {
+    return {
+      ok: false,
+      granted: 0,
+      remaining: cur.count,
+      retryAfterSec: Math.ceil(AD_COOLDOWN_SEC - elapsedSec),
+      viewsToday: currentViews,
+      dailyCap: AD_DAILY_CAP,
+    };
+  }
+
+  // 이미 cap — 보상 0 이지만 ok=true (UX 상 "꽉 찼습니다" 처리). 카운트는 차감.
+  if (cur.count >= CAP) {
+    const next: GuestEnergy = {
+      ...cur,
+      lastAdAt: Date.now(),
+      adViewsToday: currentViews + 1,
+      adViewsDate: today,
+    };
+    saveGuestEnergy(next);
+    setState(guestStateFrom(next));
+    return {
+      ok: true,
+      granted: 0,
+      remaining: CAP,
+      retryAfterSec: 0,
+      viewsToday: currentViews + 1,
+      dailyCap: AD_DAILY_CAP,
+    };
+  }
+
+  const newCount = Math.min(CAP, cur.count + AD_REWARD);
+  const granted = newCount - cur.count;
+  const next: GuestEnergy = {
+    ...cur,
+    count: newCount,
+    lastAdAt: Date.now(),
+    adViewsToday: currentViews + 1,
+    adViewsDate: today,
+  };
+  saveGuestEnergy(next);
+  setState(guestStateFrom(next));
+  return {
+    ok: true,
+    granted,
+    remaining: newCount,
+    retryAfterSec: 0,
+    viewsToday: currentViews + 1,
+    dailyCap: AD_DAILY_CAP,
+  };
+}
+
+/**
+ * 광고 1회 시청 보상 — +5 에너지 (cap 까지). 30초 쿨다운.
+ *
+ * 인증 사용자 = 서버 RPC `grant_ad_energy` 호출 (atomic + 쿨다운 검사 server-side).
+ * 게스트 = localStorage 동일 모방.
+ */
+export async function grantAdEnergy(): Promise<AdGrantResult> {
+  if (!isSupabaseConfigured()) return grantAdGuest();
+  const sb = getSupabase();
+  if (!sb) return grantAdGuest();
+
+  const { data: sess } = await sb.auth.getSession();
+  if (!sess.session) return grantAdGuest();
+
+  try {
+    const { data, error } = await sb.rpc('grant_ad_energy');
+    if (error) {
+      // 네트워크 오류 — fallback 게스트 path (보상 손실 방지).
+      console.warn('[energy] grant_ad_energy RPC failed', error.message);
+      return {
+        ok: false,
+        granted: 0,
+        remaining: _state.energy,
+        retryAfterSec: 0,
+        viewsToday: 0,
+        dailyCap: AD_DAILY_CAP,
+      };
+    }
+    const row = (data ?? [])[0] as
+      | {
+          ok: boolean;
+          granted: number;
+          remaining: number;
+          retry_after_sec: number;
+          views_today: number;
+          daily_cap: number;
+        }
+      | undefined;
+    if (!row) {
+      return {
+        ok: false,
+        granted: 0,
+        remaining: _state.energy,
+        retryAfterSec: 0,
+        viewsToday: 0,
+        dailyCap: AD_DAILY_CAP,
+      };
+    }
+    // 로컬 state 즉시 반영 (realtime 보다 빠른 UX).
+    if (row.ok && row.granted > 0) {
+      setState({
+        ..._state,
+        energy: row.remaining,
+        energyUpdatedAt: Date.now(),
+      });
+    }
+    return {
+      ok: row.ok,
+      granted: row.granted,
+      remaining: row.remaining,
+      retryAfterSec: row.retry_after_sec,
+      viewsToday: row.views_today,
+      dailyCap: row.daily_cap,
+    };
+  } catch (e) {
+    console.warn('[energy] grant_ad_energy exception', e);
+    return {
+      ok: false,
+      granted: 0,
+      remaining: _state.energy,
+      retryAfterSec: 0,
+      viewsToday: 0,
+      dailyCap: AD_DAILY_CAP,
+    };
+  }
+}
+
+// ─── 일일 카운트 prefetch — UI 가 idle 마운트 시 "남은 N/3" 표시용 ────
+
+/** 게스트 — localStorage 기반 일일 카운트 정규화 후 반환. */
+function readGuestAdViewsToday(): { viewsToday: number; dailyCap: number } {
+  const cur = loadGuestEnergy();
+  const today = todayKstStr();
+  const dateMatches = cur.adViewsDate === today;
+  return {
+    viewsToday: dateMatches ? cur.adViewsToday ?? 0 : 0,
+    dailyCap: AD_DAILY_CAP,
+  };
+}
+
+/**
+ * KST 오늘 누적 광고 시청 횟수 + daily cap.
+ * 인증 사용자 = 서버 RPC `get_ad_views_today`. 게스트 = localStorage.
+ */
+export async function getAdViewsToday(): Promise<{
+  viewsToday: number;
+  dailyCap: number;
+}> {
+  if (!isSupabaseConfigured()) return readGuestAdViewsToday();
+  const sb = getSupabase();
+  if (!sb) return readGuestAdViewsToday();
+
+  const { data: sess } = await sb.auth.getSession();
+  if (!sess.session) return readGuestAdViewsToday();
+
+  try {
+    const { data, error } = await sb.rpc('get_ad_views_today');
+    if (error) {
+      console.warn('[energy] get_ad_views_today RPC failed', error.message);
+      return { viewsToday: 0, dailyCap: AD_DAILY_CAP };
+    }
+    const row = (data ?? [])[0] as
+      | { views_today: number; daily_cap: number }
+      | undefined;
+    if (!row) return { viewsToday: 0, dailyCap: AD_DAILY_CAP };
+    return { viewsToday: row.views_today, dailyCap: row.daily_cap };
+  } catch (e) {
+    console.warn('[energy] get_ad_views_today exception', e);
+    return { viewsToday: 0, dailyCap: AD_DAILY_CAP };
+  }
 }

@@ -107,10 +107,26 @@ interface ThemeCardProps {
 }
 
 function ThemeCard({ theme, selected, applied, onSelect }: ThemeCardProps) {
+  // CSS preview 는 실제 적용될 background와 size/repeat 도 그대로 미러 (carousel 안 깨짐).
   const previewStyle =
     theme.preview.kind === 'image'
-      ? { backgroundImage: `url(${theme.preview.src})`, backgroundSize: 'cover', backgroundPosition: 'center' }
-      : { backgroundImage: theme.preview.background, backgroundSize: '90px 90px, 180px 180px, 100% 100%, 100% 100%', backgroundRepeat: 'repeat, repeat, no-repeat, no-repeat', backgroundColor: '#02050f' };
+      ? {
+          backgroundImage: `url(${theme.preview.src})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }
+      : theme.kind === 'css'
+        ? {
+            backgroundImage: theme.preview.background,
+            backgroundSize: theme.backgroundSize,
+            backgroundRepeat: theme.backgroundRepeat,
+            backgroundColor: theme.backgroundColor,
+            backgroundPosition: theme.backgroundPosition,
+          }
+        : {
+            backgroundImage: theme.preview.background,
+            backgroundColor: '#02050f',
+          };
 
   return (
     <button

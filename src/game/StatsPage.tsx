@@ -10,21 +10,17 @@
  *   - 데이터 리셋 버튼 (확인 다이얼로그)
  */
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import {
   BarChart3,
   Calendar,
-  CalendarClock,
   Flame,
-  RefreshCcw,
   Target,
-  Trash2,
 } from 'lucide-react';
 import type { Subject } from '@/types/question';
 import { SUBJECT_SCHEMAS } from '@/data/subjects';
 import ScreenShell from './components/ScreenShell';
 import { useProgress } from './useProgress';
-import { resetProgress } from './storage';
 import {
   computeKpi,
   computeSubjectBreakdown,
@@ -34,16 +30,8 @@ import { topicWeaknesses, weaknessLevel } from './weakness';
 import { formatDuration } from './session';
 import { cx } from '@/lib/utils';
 import { aggregateChapter } from './aggregate';
-import {
-  daysUntil,
-  getAllExamDates,
-  getUpcomingPresets,
-  setExamDate,
-} from './examDate';
 import { MobileTopBar, MobileBottomNav } from './components/MobileGameNav';
 import ProfileCustomizer from './components/ProfileCustomizer';
-import ThemePicker from './components/ThemePicker';
-import AuthCard from './components/AuthCard';
 import PageAmbientBg from './components/PageAmbientBg';
 import PassSection from '@/components/passes/PassSection';
 import BookmarkedConceptsList from './components/BookmarkedConceptsList';
@@ -59,8 +47,6 @@ const SUBJECT_LABEL: Record<Subject, string> = {
 
 export default function StatsPage({ onExit }: Props) {
   const progress = useProgress();
-  const [confirmReset, setConfirmReset] = useState(false);
-  const [examDates, setExamDatesState] = useState(() => getAllExamDates());
 
   const kpi = useMemo(() => computeKpi(progress), [progress]);
   const subjects = useMemo(() => computeSubjectBreakdown(progress), [progress]);
@@ -83,10 +69,6 @@ export default function StatsPage({ onExit }: Props) {
     return result;
   }, [progress]);
 
-  const handleExamDateChange = (subject: Subject, ymd: string) => {
-    setExamDate(subject, ymd || null);
-    setExamDatesState(getAllExamDates());
-  };
   const topWeak = useMemo(() => {
     const all = [
       ...topicWeaknesses('adsp', progress),
@@ -113,17 +95,9 @@ export default function StatsPage({ onExit }: Props) {
       <MobileTopBar />
       <div className="md:hidden h-14" aria-hidden />
 
-      {/* 로그인 / 로그아웃 (Supabase) */}
-      <AuthCard />
-
       {/* 프로필 꾸미기 — 아바타 포즈 + 이름 */}
       <div className="mb-6">
         <ProfileCustomizer />
-      </div>
-
-      {/* 배경 테마 선택 — 사용자 선호 ambient 배경 */}
-      <div className="mb-6">
-        <ThemePicker />
       </div>
 
       {/* 북마크한 개념 — 양 과목 모두 (학습 화면 우상단 ★ 로 추가) */}
@@ -131,18 +105,6 @@ export default function StatsPage({ onExit }: Props) {
 
       {/* 회독 Pass Tier + Stamp 컬렉션 */}
       <PassSection />
-
-      {/* D-day — 항상 표시 (빈 상태에서도 설정 가능) */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        {(['adsp', 'sqld'] as const).map((subject) => (
-          <DdayCard
-            key={subject}
-            subject={subject}
-            ymd={examDates[subject]}
-            onChange={(v) => handleExamDateChange(subject, v)}
-          />
-        ))}
-      </section>
 
       {empty ? (
         <div className="liquid-glass rounded-[24px] p-8 md:p-12 text-center">
@@ -292,51 +254,6 @@ export default function StatsPage({ onExit }: Props) {
         </>
       )}
 
-      {/* 리셋 */}
-      <section className="liquid-glass rounded-[24px] p-5 md:p-6 border border-red-400/20">
-        <h2 className="kr-heading text-[13px] uppercase tracking-widest text-red-400 mb-2 inline-flex items-center gap-2">
-          <Trash2 size={14} strokeWidth={2.4} />
-          Danger Zone
-        </h2>
-        <p className="kr-body text-[12px] text-cream/70 mb-4">
-          모든 진행 기록(풀이 통계, 세션 이력)을 삭제합니다. 되돌릴 수 없습니다.
-        </p>
-        {confirmReset ? (
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                resetProgress();
-                setConfirmReset(false);
-              }}
-              className="kr-heading uppercase tracking-widest text-[12px] px-5 py-3 rounded-full"
-              style={{
-                background: '#f87171',
-                color: '#010828',
-              }}
-            >
-              정말 삭제
-            </button>
-            <button
-              type="button"
-              onClick={() => setConfirmReset(false)}
-              className="liquid-glass kr-heading uppercase tracking-widest text-[12px] px-5 py-3 rounded-full hover:bg-white/10 transition"
-            >
-              취소
-            </button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setConfirmReset(true)}
-            className="liquid-glass kr-heading uppercase tracking-widest text-[12px] px-5 py-3 rounded-full inline-flex items-center gap-2 hover:bg-white/10 transition"
-          >
-            <RefreshCcw size={14} strokeWidth={2.4} />
-            진행 기록 초기화
-          </button>
-        )}
-      </section>
-
       <div className="md:hidden h-20" aria-hidden />
       <MobileBottomNav active="profile" />
     </ScreenShell>
@@ -353,124 +270,6 @@ interface ChapterMasteryRow {
   total: number;
   solved: number;
   accuracy: number;
-}
-
-function DdayCard({
-  subject,
-  ymd,
-  onChange,
-}: {
-  subject: Subject;
-  ymd: string | undefined;
-  onChange: (v: string) => void;
-}) {
-  const days = daysUntil(ymd);
-  const accent = subject === 'adsp' ? '#67e8f9' : '#c084fc';
-  const label = days === null
-    ? '시험일 미설정'
-    : days > 0
-      ? `D-${days}`
-      : days === 0
-        ? 'D-Day'
-        : `D+${-days}`;
-  const urgent = days !== null && days >= 0 && days <= 14;
-  return (
-    <div
-      className="liquid-glass rounded-[20px] p-4 md:p-5"
-      style={urgent ? { boxShadow: `0 0 40px -12px ${accent}` } : undefined}
-    >
-      <div className="flex items-center justify-between gap-2 mb-2">
-        <span className="kr-heading text-[11px] uppercase tracking-widest text-cream/60 inline-flex items-center gap-1.5">
-          <CalendarClock size={12} strokeWidth={2.4} />
-          {SUBJECT_LABEL[subject]} 시험일
-        </span>
-        <input
-          type="date"
-          value={ymd ?? ''}
-          onChange={(e) => onChange(e.target.value)}
-          className="kr-body text-[11px] bg-white/5 text-cream/80 rounded-md px-2 py-1 outline-none border border-white/10 focus:border-white/30"
-          style={{ colorScheme: 'dark' }}
-        />
-      </div>
-      <div
-        className="kr-heading text-[32px] md:text-[40px] mt-1 leading-none"
-        style={{ color: urgent ? accent : 'var(--cream)' }}
-      >
-        {label}
-      </div>
-      {ymd ? (
-        <p className="kr-body text-[11px] text-cream/50 mt-2">
-          {formatExamDate(ymd)} 예정
-        </p>
-      ) : (
-        <>
-          <p className="kr-body text-[11px] text-cream/50 mt-2">
-            시험 날짜를 지정하면 카운트다운이 표시됩니다.
-          </p>
-          {/*
-            2026 회차 프리셋 — 한국데이터산업진흥원 공식 일정.
-            클릭 한 번으로 시험일 자동 설정.
-          */}
-          <PresetChips subject={subject} accent={accent} onPick={onChange} />
-        </>
-      )}
-    </div>
-  );
-}
-
-function PresetChips({
-  subject,
-  accent,
-  onPick,
-}: {
-  subject: Subject;
-  accent: string;
-  onPick: (ymd: string) => void;
-}) {
-  const presets = getUpcomingPresets(subject);
-  if (presets.length === 0) {
-    return (
-      <p className="kr-body text-[10.5px] text-cream/40 mt-2">
-        2026 시험 일정이 모두 종료됐습니다. 2027 일정 발표 후 추가 예정.
-      </p>
-    );
-  }
-  return (
-    <div className="mt-3">
-      <div className="kr-num text-[10px] uppercase tracking-[0.18em] text-cream/45 mb-1.5">
-        2026 회차 빠른 설정
-      </div>
-      <div className="flex flex-wrap gap-1.5">
-        {presets.map((p) => (
-          <button
-            key={p.date}
-            type="button"
-            onClick={() => onPick(p.date)}
-            aria-label={`${p.round} 시험일 ${p.display} 로 설정`}
-            className="kr-num inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10.5px] transition active:scale-95"
-            style={{
-              background: `${accent}14`,
-              color: accent,
-              border: `1px solid ${accent}33`,
-              fontWeight: 600,
-            }}
-          >
-            <span>{p.round}</span>
-            <span className="text-cream/50">·</span>
-            <span className="kr-body text-cream/70 font-normal">
-              {p.display.split(' ')[0].slice(5)}
-            </span>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function formatExamDate(ymd: string): string {
-  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ymd);
-  if (!m) return ymd;
-  return `${m[1]}년 ${Number(m[2])}월 ${Number(m[3])}일`;
 }
 
 function StreakCalendar({

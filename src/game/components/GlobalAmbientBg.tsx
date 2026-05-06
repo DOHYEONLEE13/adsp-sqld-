@@ -69,6 +69,7 @@ export default function GlobalAmbientBg() {
             backgroundImage: theme.background,
             backgroundSize: theme.backgroundSize,
             backgroundRepeat: theme.backgroundRepeat,
+            backgroundPosition: theme.backgroundPosition,
           }}
         />
       )}

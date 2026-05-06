@@ -42,6 +42,7 @@ const BlogIndexPage = lazy(() => import('./pages/BlogIndexPage'));
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
 const GamePage = lazy(() => import('./game/GamePage'));
 const StatsPage = lazy(() => import('./game/StatsPage'));
+const SettingsPage = lazy(() => import('./game/SettingsPage'));
 const BookmarksPage = lazy(() => import('./game/BookmarksPage'));
 const QuestsPage = lazy(() => import('./game/QuestsPage'));
 const FriendsPage = lazy(() => import('./game/FriendsPage'));
@@ -63,6 +64,7 @@ type Route =
   | 'study-plan'
   | 'weakness'
   | 'stats'
+  | 'settings'
   | 'bookmarks'
   | 'quests'
   | 'friends'
@@ -184,6 +186,7 @@ function getRoute(): RouteState {
   if (hash.startsWith('/quests')) return { route: 'quests' };
   if (hash.startsWith('/friends')) return { route: 'friends' };
   if (hash.startsWith('/stats')) return { route: 'stats' };
+  if (hash.startsWith('/settings')) return { route: 'settings' };
   if (hash.startsWith('/bookmarks')) return { route: 'bookmarks' };
   if (hash.startsWith('/admin')) return { route: 'admin' };
   if (hash.startsWith('/redeem')) return { route: 'redeem' };
@@ -426,6 +429,16 @@ export default function App() {
     if (route === 'stats') {
       return (
         <StatsPage
+          onExit={() => {
+            window.location.hash = '/game';
+          }}
+        />
+      );
+    }
+
+    if (route === 'settings') {
+      return (
+        <SettingsPage
           onExit={() => {
             window.location.hash = '/game';
           }}

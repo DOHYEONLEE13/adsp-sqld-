@@ -42,10 +42,11 @@ export interface ThemeCss extends ThemeBase {
   kind: 'css';
   /** GlobalAmbientBg 가 그대로 inline style.background 로 사용. */
   background: string;
-  /** 추가 background-size · background-repeat · background-color 옵션. */
+  /** 추가 background-size · background-repeat · background-color · background-position 옵션. */
   backgroundSize?: string;
   backgroundRepeat?: string;
   backgroundColor?: string;
+  backgroundPosition?: string;
 }
 
 export type Theme = ThemeVideo | ThemeImage | ThemeCss;
@@ -102,7 +103,7 @@ export const THEMES: Theme[] = [
   {
     id: 'stars-css',
     kind: 'css',
-    label: '은하수',
+    label: '별빛',
     background: STARS_CSS_BG,
     backgroundSize: STARS_CSS_SIZE,
     backgroundRepeat: STARS_CSS_REPEAT,
@@ -112,19 +113,24 @@ export const THEMES: Theme[] = [
       background: STARS_CSS_BG,
     },
   },
-  // ── 사용자 추가 테마 placeholder ──
-  // 이미지 저장 후 아래 entry 의 주석을 풀고 파일명 맞추세요.
-  // {
-  //   id: 'aurora',
-  //   kind: 'image',
-  //   label: '오로라',
-  //   src: '/bg/aurora.jpg',
-  //   preview: { kind: 'image', src: '/bg/aurora.jpg' },
-  // },
+  {
+    id: 'cloud-stars',
+    kind: 'image',
+    label: '구름과 별',
+    src: '/bg/cloud-stars.jpg',
+    preview: { kind: 'image', src: '/bg/cloud-stars.jpg' },
+  },
+  {
+    id: 'milky-way',
+    kind: 'image',
+    label: '은하수',
+    src: '/bg/milky-way.jpg',
+    preview: { kind: 'image', src: '/bg/milky-way.jpg' },
+  },
 ];
 
 /** 기본 테마 — 사용자 미선택 / 잘못된 id 일 때 fallback. */
-export const DEFAULT_THEME_ID = 'stars-css';
+export const DEFAULT_THEME_ID = 'video-original';
 
 export function getThemeById(id: string | null): Theme {
   return THEMES.find((t) => t.id === id) ?? THEMES.find((t) => t.id === DEFAULT_THEME_ID) ?? THEMES[0];

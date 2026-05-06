@@ -12,9 +12,9 @@
  * - ⚡ level — 현재 레벨
  */
 
-import { Flame } from 'lucide-react';
+import { Settings as SettingsIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useEffect, useState, type ComponentType, type ReactNode } from 'react';
+import { useEffect, useState, type ComponentType } from 'react';
 import {
   BookTabIcon,
   FlagTabIcon,
@@ -36,7 +36,6 @@ import {
 import { usePassSnapshot } from '../passSync';
 import PassTierBadge from '@/components/passes/PassTierBadge';
 import ProfileSyncSkeleton from '@/components/profile/ProfileSyncSkeleton';
-import PlanTag from '@/components/ui/PlanTag';
 import SubjectBadge from './SubjectBadge';
 import SubjectSwitcher from './SubjectSwitcher';
 import SubjectSwitchToast from './SubjectSwitchToast';
@@ -81,7 +80,7 @@ export function MobileTopBar({ subject }: TopProps) {
 
   const handleShare = async () => {
     const subj = subject ? subject.toUpperCase() : 'QuestDP';
-    const text = `QuestDP — ${subj} 진도\n레벨 ${stats.level} · XP ${stats.totalXp} · ${stats.streakDays}일 연속\n나도 도전해봐!`;
+    const text = `QuestDP — ${subj} 진도\n레벨 ${stats.level} · XP ${stats.totalXp}\n나도 도전해봐!`;
     const shareData = { title: 'QuestDP 진도', text, url: window.location.href };
     try {
       if (navigator.share) {
@@ -184,13 +183,7 @@ export function MobileTopBar({ subject }: TopProps) {
         ) : null}
         </div>
         <div className="flex items-center gap-3 md:gap-4">
-          {/* 요금제 라벨 — 클릭 시 /#pricing */}
-          <PlanTag size="sm" />
-          <Stat
-            icon={<Flame size={20} fill="#cbd5e1" strokeWidth={0} />}
-            value={stats.streakDays}
-            color="#cbd5e1"
-          />
+          {/* 순서: XP · 에너지 · 설정 (가장 오른쪽 끝). PlanTag 는 사용자 결정으로 제거. */}
           <button
             type="button"
             onClick={handleShare}
@@ -215,6 +208,26 @@ export function MobileTopBar({ subject }: TopProps) {
             </span>
           </button>
           <EnergyBadge size="sm" />
+          <button
+            type="button"
+            onClick={() => {
+              if (typeof window !== 'undefined') {
+                window.location.hash = '/settings';
+              }
+            }}
+            aria-label="설정 열기"
+            className="inline-flex items-center justify-center w-8 h-8 rounded-full transition active:scale-95 hover:opacity-80"
+            style={{
+              background: 'rgba(239,244,255,0.06)',
+              border: '1px solid rgba(239,244,255,0.18)',
+            }}
+          >
+            <SettingsIcon
+              size={16}
+              strokeWidth={2.2}
+              style={{ color: 'rgba(239,244,255,0.85)' }}
+            />
+          </button>
         </div>
       </div>
       {shareOpen ? (
@@ -254,32 +267,15 @@ export function MobileTopBar({ subject }: TopProps) {
   );
 }
 
-function Stat({
-  icon,
-  value,
-  color,
-}: {
-  icon: ReactNode;
-  value: number;
-  color: string;
-}) {
-  return (
-    <div className="flex items-center gap-1.5">
-      <span className="kr-num text-[13px]" style={{ color }}>
-        {value}
-      </span>
-      {icon}
-    </div>
-  );
-}
-
 // ---------------------------------------------------------------- Bottom Nav
 
 export type MobileNavTab = 'learn' | 'quests' | 'weakness' | 'trophy' | 'profile';
 
 interface BottomProps {
-  /** 현재 활성 탭 — 강조 표시. */
-  active: MobileNavTab;
+  /**
+   * 현재 활성 탭 — 강조 표시. undefined 면 어떤 탭도 강조 안 됨 (예: 설정 페이지).
+   */
+  active?: MobileNavTab;
   /** Learn 탭 콜백. 보통 현재 탭이라 no-op. */
   onLearn?: () => void;
   /** Quests 탭 콜백 — 일일 미션 트리거 등. */
@@ -395,7 +391,7 @@ function Tab({
   onClick,
 }: {
   tab: MobileNavTab;
-  active: MobileNavTab;
+  active: MobileNavTab | undefined;
   accent: string;
   /**
    * 단일-path filled 실루엣 아이콘. lucide 아닌 src/components/nav/TabIcons 의

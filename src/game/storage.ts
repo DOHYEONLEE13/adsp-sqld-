@@ -81,6 +81,11 @@ export interface ProgressStore {
    */
   lessonXp?: number;
   /**
+   * 사용자가 상점 (XP→에너지 등) 에서 누적 소비한 XP. 표시 XP = totalXp - spentXp.
+   * computePlayerStats 가 차감해 화면에 보여줌 — 게임 내 currency 처럼 작동.
+   */
+  spentXp?: number;
+  /**
    * 학습 모드 (LessonScreen / DialogueLesson) inline 풀이의 일별 집계.
    * 일일 퀘스트 (volume / variety) + streak 계산에 sessions 와 함께 활용.
    * key = 'YYYY-MM-DD' (로컬 자정 기준). 30일 초과분은 자동 정리.
@@ -131,6 +136,7 @@ function loadStore(): ProgressStore {
       lastDailyMissionAt: parsed.lastDailyMissionAt,
       activeSubject: parsed.activeSubject,
       lessonXp: parsed.lessonXp,
+      spentXp: parsed.spentXp,
       lessonAttemptsByDay: parsed.lessonAttemptsByDay ?? {},
       dailyBonusClaimedAt: parsed.dailyBonusClaimedAt,
       createdAt: parsed.createdAt ?? Date.now(),
@@ -388,6 +394,16 @@ export function resetProgress(): void {
  */
 export function replaceFromMerge(merged: ProgressStore): void {
   commit(merged);
+}
+
+/**
+ * XP 소비 — 상점 (XP→에너지) 등에서 사용. spentXp 누적 + commit.
+ * computePlayerStats 가 표시 XP 에서 자동 차감. 사용자 잔액 검사는 호출측 책임.
+ */
+export function spendXp(amount: number): void {
+  if (amount <= 0) return;
+  const prevSpent = current.spentXp ?? 0;
+  commit({ ...current, spentXp: prevSpent + amount, updatedAt: Date.now() });
 }
 
 /** Daily Mission 시작 시점 기록. */

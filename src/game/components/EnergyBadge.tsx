@@ -16,7 +16,7 @@
 import { useEffect, useState } from 'react';
 import { Infinity as InfinityIcon, Zap } from 'lucide-react';
 import { useEnergy, isUnlimited, ENERGY_CAP, type EnergyState } from '../energy';
-import AdRewardModal from './AdRewardModal';
+import EnergyShopModal from './EnergyShopModal';
 
 const REGEN_AFTER_MS = 30 * 60 * 1000; // 30분
 const CAP = ENERGY_CAP;
@@ -63,8 +63,8 @@ function CountedBadge({
 }) {
   const showTimer = state.energy < CAP;
   const [now, setNow] = useState<number>(() => Date.now());
-  // 광고 모달 — energy < cap 일 때만 노출 (cap 면 굳이 광고 볼 동기 없음).
-  const [showAd, setShowAd] = useState(false);
+  // 충전 상점 모달 — XP 구매 + 광고 시청 통합 진입점.
+  const [shopOpen, setShopOpen] = useState(false);
 
   // 1초 tick — 타이머 표시 시에만 활성
   useEffect(() => {
@@ -78,11 +78,11 @@ function CountedBadge({
   const mm = Math.floor(remainingMs / 60000);
   const ss = Math.floor((remainingMs % 60000) / 1000);
 
-  // 항상 탭 가능 — 사용자 발견성 우선. cap 도달 시 모달 안에서 "이미 가득" 안내.
+  // 항상 탭 가능 — 충전 상점 모달 (XP 구매 + 광고).
   const title =
     state.energy < CAP
-      ? `⚡ ${state.energy}/${CAP} — 다음 충전 ${mm}:${String(ss).padStart(2, '0')} (탭 = 광고 보고 즉시 충전)`
-      : `⚡ ${state.energy}/${CAP} — 풀 충전 (탭 = 광고 안내)`;
+      ? `⚡ ${state.energy}/${CAP} — 다음 회복 ${mm}:${String(ss).padStart(2, '0')} (탭 = 충전 상점)`
+      : `⚡ ${state.energy}/${CAP} — 풀 충전 (탭 = 충전 상점)`;
 
   const inner = (
     <>
@@ -120,18 +120,18 @@ function CountedBadge({
     <>
       <button
         type="button"
-        onClick={() => setShowAd(true)}
+        onClick={() => setShopOpen(true)}
         aria-label={
           state.energy < CAP
-            ? `에너지 ${state.energy}, 광고 보고 충전`
-            : `에너지 ${state.energy}, 풀 충전`
+            ? `에너지 ${state.energy}, 충전 상점 열기`
+            : `에너지 ${state.energy}, 충전 상점 열기`
         }
         title={title}
         className="inline-flex items-center gap-1.5 transition active:scale-95 hover:opacity-80"
       >
         {inner}
       </button>
-      {showAd ? <AdRewardModal onClose={() => setShowAd(false)} /> : null}
+      {shopOpen ? <EnergyShopModal onClose={() => setShopOpen(false)} /> : null}
     </>
   );
 }

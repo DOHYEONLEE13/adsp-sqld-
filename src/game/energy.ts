@@ -52,12 +52,12 @@ export function isUnlimited(state: EnergyState): boolean {
 const GUEST_KEY = 'questdp.energy.guest.v1';
 /** 에너지 최대 보유량 (2026-05-07 5 → 10). 서버 cap 과 일치 — 마이그레이션 0021. */
 export const ENERGY_CAP = 10;
-/** 광고 1회 보상 — server `grant_ad_energy` 와 일치. */
-export const AD_REWARD = 5;
+/** 광고 1회 보상 — server `grant_ad_energy` 와 일치 (2026-05-07 5→3). */
+export const AD_REWARD = 3;
 /** 광고 보상 쿨다운 (초) — server `grant_ad_energy` 와 일치. */
 export const AD_COOLDOWN_SEC = 30;
-/** 광고 일일 한도 — server `grant_ad_energy` 와 일치 (KST 자정 리셋). */
-export const AD_DAILY_CAP = 3;
+/** 광고 일일 한도 — server `grant_ad_energy` 와 일치, KST 자정 리셋 (2026-05-07 3→1). */
+export const AD_DAILY_CAP = 1;
 const CAP = ENERGY_CAP;
 const REGEN_MS = 30 * 60 * 1000; // 30분
 
@@ -356,6 +356,60 @@ export function formatRetryAfter(sec: number): string {
   if (sec < 60) return `${sec}초`;
   const m = Math.ceil(sec / 60);
   return `${m}분`;
+}
+
+// ─── XP → 에너지 상점 (게스트 localStorage 전용 — v1.1 서버 RPC 옵션) ──
+
+export interface PurchaseResult {
+  ok: boolean;
+  /** 실패 사유. ok=true 면 undefined. */
+  reason?: 'cap-overflow' | 'insufficient-xp' | 'invalid';
+  /** 성공 시 적립 후 총 에너지. 실패 시 현재 에너지. */
+  remaining: number;
+}
+
+/**
+ * 게스트 (localStorage) — XP 차감 + 에너지 적립 atomic.
+ * 인증 사용자도 일단 동일 path (서버 동기화는 v1.1 server RPC 로).
+ *
+ * 정책:
+ *   - cap (10) 초과 시 거부 — "에너지 가득" 안내. (overflow 정책은 단순화 우선.)
+ *   - XP 부족 시 거부.
+ *
+ * 호출측 (EnergyShopModal) 이 미리 잔액 검사 후 호출하지만 race condition 보호용
+ * 으로 여기서도 final check.
+ */
+export function purchaseEnergyWithXp(args: {
+  xpCost: number;
+  energyAmount: number;
+  currentDisplayedXp: number;
+}): PurchaseResult {
+  const { xpCost, energyAmount, currentDisplayedXp } = args;
+
+  if (xpCost <= 0 || energyAmount <= 0) {
+    return { ok: false, reason: 'invalid', remaining: _state.energy };
+  }
+
+  // XP 잔액 검사 — currentDisplayedXp 는 호출측이 computePlayerStats 결과 전달.
+  if (currentDisplayedXp < xpCost) {
+    return { ok: false, reason: 'insufficient-xp', remaining: _state.energy };
+  }
+
+  const cur = regenGuest(loadGuestEnergy());
+  if (cur.count + energyAmount > CAP) {
+    return { ok: false, reason: 'cap-overflow', remaining: cur.count };
+  }
+
+  // 에너지 적립 (게스트 storage). 서버 동기화는 v1.1.
+  const next: GuestEnergy = {
+    ...cur,
+    count: cur.count + energyAmount,
+    // updatedAt 은 그대로 — 회복 cycle 영향 X.
+  };
+  saveGuestEnergy(next);
+  setState(guestStateFrom(next));
+
+  return { ok: true, remaining: next.count };
 }
 
 // ─── 광고 보상 RPC — grant_ad_energy ───────────────────────────────

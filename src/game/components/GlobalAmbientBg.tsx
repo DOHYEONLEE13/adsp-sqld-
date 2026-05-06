@@ -1,57 +1,78 @@
 /**
- * GlobalAmbientBg — App 루트에 단 한 번만 마운트되는 ambient 배경 비디오.
+ * GlobalAmbientBg — App 루트 단일 마운트 ambient 배경.
  *
- * 페이지 (PlanetScreen / ZoneScreen / LessonScreen / QuestScreen / Quests /
- * Friends / Stats …) 전환 시에도 video element 가 unmount 되지 않아 영상이
- * 끊기지 않고 부드럽게 이어진다.
+ * 사용자 선택 테마 (themes.ts / themeStorage.ts) 에 따라 분기 렌더:
+ *   - 'video' → <VideoBg> (기존 Mux HLS, movement)
+ *   - 'image' → <img> (정적 jpg/png/webp, 가벼움)
+ *   - 'css'   → inline style.background (네트워크 0)
  *
- * 표시 / blur 여부는 `ambientBg.ts` 컨트롤러를 구독해 결정.
- *  - ambient 가 필요 없는 페이지 (Galaxy chooser / Landing) 에선 페이드아웃.
- *  - 문제 풀이·읽기 화면 (Lesson · Quest) 에선 blur 강하게.
+ * 페이지 (PlanetScreen / ZoneScreen / Lesson / Quest …) 전환과 무관하게 항상
+ * 마운트 — 영상 끊김 없이 부드러운 전환 + 테마 즉시 반영.
  *
- * 페이드는 opacity transition — DOM/video 는 유지되므로 다시 active 가 돼도
- * 처음부터 재생되지 않는다.
+ * ambientBg.ts 의 active/blur 도 그대로 구독:
+ *   - active=false → 페이드아웃 (Galaxy chooser 등 ambient 원치 않는 페이지)
+ *   - blur=true   → blur-md scale-110 + 진한 가독성 오버레이
+ *
+ * 사용자 검토 단계 (2026-05-07) — opacity 항상 1 로 풀어둠 → 추후 페이지별
+ * 테마 차등화 정책 정해지면 active 분기 복원.
  */
 
 import { useEffect, useState } from 'react';
 import VideoBg from '@/components/ui/VideoBg';
-import { VIDEO_URLS, VIDEO_POSTERS } from '@/data/site';
 import {
   subscribeAmbientBg,
   type AmbientBgState,
   getAmbientBg,
 } from './ambientBg';
+import { useTheme } from '../theme/useTheme';
 
 export default function GlobalAmbientBg() {
   const [state, setState] = useState<AmbientBgState>(() => getAmbientBg());
-
   useEffect(() => subscribeAmbientBg(setState), []);
+  const theme = useTheme();
+  const blurClass = state.blur ? ' blur-md scale-110' : '';
 
   return (
     <div
       aria-hidden
       className="fixed inset-0 -z-10 pointer-events-none overflow-hidden"
       style={{
-        opacity: state.active ? 1 : 0,
-        // ambient 가 켜질 때는 살짝 빠르게, 꺼질 때도 자연스럽게.
+        // 모든 페이지에 노출 — opacity 항상 1.
+        opacity: 1,
         transition: 'opacity 480ms ease',
       }}
     >
-      <VideoBg
-        src={VIDEO_URLS.pageAmbient}
-        poster={VIDEO_POSTERS.pageAmbient}
-        fit="cover"
-        // Tailwind composition: blur + scale 와 brightness 를 함께 적용
-        // (Tailwind 의 filter utility 는 CSS var 로 합성되므로 충돌 없음).
-        // brightness-110 / saturate-110 = 영상 자체를 살짝 밝고 선명하게 —
-        // 사용자 피드백 "칙칙함" 완화.  blur 토글 시 부드러운 transition.
-        className={
-          'transition-[filter,transform] duration-500 ease-out brightness-110 saturate-110' +
-          (state.blur ? ' blur-md scale-110' : '')
-        }
-      />
-      {/* 가독성 오버레이 — blur=true 일 땐 좀 더 진하게 (문제 풀이 시 시선 본문 집중).
-          기본 (false) 은 배경이 잘 보이게 옅은 vignette 만. */}
+      {theme.kind === 'video' ? (
+        <VideoBg
+          src={theme.src}
+          poster={theme.poster}
+          fit="cover"
+          className={
+            'transition-[filter,transform] duration-500 ease-out brightness-110 saturate-110' +
+            blurClass
+          }
+        />
+      ) : theme.kind === 'image' ? (
+        <img
+          src={theme.src}
+          alt=""
+          className={
+            'absolute inset-0 w-full h-full object-cover transition-[filter,transform] duration-500 ease-out brightness-110 saturate-110' +
+            blurClass
+          }
+        />
+      ) : (
+        <div
+          className={'absolute inset-0 transition-[filter,transform] duration-500 ease-out' + blurClass}
+          style={{
+            backgroundColor: theme.backgroundColor,
+            backgroundImage: theme.background,
+            backgroundSize: theme.backgroundSize,
+            backgroundRepeat: theme.backgroundRepeat,
+          }}
+        />
+      )}
+      {/* 가독성 오버레이 — blur=true 일 땐 좀 더 진하게 */}
       <div
         className="absolute inset-0"
         style={{

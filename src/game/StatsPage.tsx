@@ -42,6 +42,7 @@ import {
 } from './examDate';
 import { MobileTopBar, MobileBottomNav } from './components/MobileGameNav';
 import ProfileCustomizer from './components/ProfileCustomizer';
+import ThemePicker from './components/ThemePicker';
 import AuthCard from './components/AuthCard';
 import PageAmbientBg from './components/PageAmbientBg';
 import PassSection from '@/components/passes/PassSection';
@@ -118,6 +119,11 @@ export default function StatsPage({ onExit }: Props) {
       {/* 프로필 꾸미기 — 아바타 포즈 + 이름 */}
       <div className="mb-6">
         <ProfileCustomizer />
+      </div>
+
+      {/* 배경 테마 선택 — 사용자 선호 ambient 배경 */}
+      <div className="mb-6">
+        <ThemePicker />
       </div>
 
       {/* 북마크한 개념 — 양 과목 모두 (학습 화면 우상단 ★ 로 추가) */}

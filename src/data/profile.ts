@@ -21,10 +21,14 @@ import { waitForSession } from '@/lib/auth/waitForSession';
 const STORAGE_KEY = 'questdp.profile.v1';
 const TAG_RE = /^Q-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
 
-/** 아바타로 선택 가능한 Ques 포즈 (전체 8종 그대로 노출). */
+/**
+ * 아바타로 선택 가능한 Ques 포즈 (전체 8종).
+ * 2026-05-08 — 'wave' 가 첫 위치 (= 신규 가입자가 default 보유 포즈).
+ * 나머지 7 포즈는 50 XP 로 잠금해제 (각 캐릭터별).
+ */
 export const AVATAR_POSES: ReadonlyArray<QuesPose> = [
-  'happy',
   'wave',
+  'happy',
   'celebrate',
   'lightbulb',
   'think',
@@ -58,15 +62,23 @@ export interface MyProfile {
   /**
    * 사용자가 보유한 (구매 또는 default 로 unlock 된) 캐릭터 목록.
    *
-   * 정책 (2026-05-08, 마이그 0025):
-   *   - 신규 사용자 default = ['tori']
-   *   - 기존 사용자 backfill = ['tori', 'selli']
-   *   - 추가 캐릭터 = 50 XP / 1개 (purchase_character RPC)
+   * 2026-05-08 정책 변경: 캐릭터 단위 잠금 폐기, 포즈 단위 잠금으로 전환 (마이그 0026).
+   * 캐릭터 자체는 둘 다 자유 사용 — 항상 ['tori', 'selli'] 반환.
+   * 잠금/구매는 포즈 단위 (unlockedPoses).
    *
-   * 게스트: 항상 ['tori', 'selli'] (모든 캐릭터 무료 사용 — 인증 후 server sync 시
-   * 실제 보유 캐릭터로 덮어씀).
+   * 컬럼 (profiles.unlocked_characters) 은 backward-compat 용 보존 — 항상 둘 다.
    */
   unlockedCharacters: MascotCharacter[];
+  /**
+   * 사용자가 보유한 (캐릭터, 포즈) 조합 목록. `'tori-wave'`, `'selli-happy'` 형식.
+   *
+   * 정책 (2026-05-08, 마이그 0026):
+   *   - 신규 사용자 default = ['tori-wave', 'selli-wave'] (각 캐릭터 첫 포즈만)
+   *   - 추가 포즈 = 50 XP / 1개 (purchase_pose RPC)
+   *
+   * 게스트: 모든 포즈 보유 (구매 시스템 X).
+   */
+  unlockedPoses: string[];
   /**
    * Supabase 인증 상태. 게스트 = false. server tag·친구 시스템·결제 UI 의
    * 1차 게이트로 사용.
@@ -102,10 +114,14 @@ interface StoredProfile {
   /** 'user' | 'admin' — server 에서 동기화. 미설정 시 'user'. */
   role?: 'user' | 'admin';
   /**
-   * 보유한 캐릭터. 미설정 시 ['tori', 'selli'] (게스트 default — 모든 캐릭터 무료).
-   * 인증 후 server sync 시 실제 unlocked_characters 컬럼 값으로 덮어씀.
+   * Backward-compat — 항상 ['tori', 'selli']. 캐릭터 잠금 폐기됨 (마이그 0026).
    */
   unlockedCharacters?: MascotCharacter[];
+  /**
+   * 보유한 (캐릭터, 포즈) 조합. 'tori-wave', 'selli-happy' 형식.
+   * 미설정 시 모든 포즈 보유 (게스트 default — 인증 후 server sync 시 실제 값).
+   */
+  unlockedPoses?: string[];
   createdAt: number;
 }
 
@@ -172,15 +188,15 @@ function setSyncStatus(s: 'idle' | 'pending' | 'ok' | 'failed'): void {
 export function getMyProfile(): MyProfile {
   const stored = loadStored();
 
-  // 게스트 (미인증) — tag 절대 노출 X. displayName 은 stored 가 있으면 그대로.
-  // 게스트는 모든 캐릭터 무료 (구매 시스템 X).
+  // 게스트 — 모든 캐릭터/포즈 무료 (구매 시스템 X).
   if (!_isAuthenticated) {
     return {
       tag: '',
       displayName: stored?.displayName ?? '',
       avatarPose: stored?.avatarPose ?? DEFAULT_AVATAR_POSE,
       avatarCharacter: stored?.avatarCharacter ?? DEFAULT_CHARACTER,
-      unlockedCharacters: stored?.unlockedCharacters ?? ['tori', 'selli'],
+      unlockedCharacters: ['tori', 'selli'],
+      unlockedPoses: stored?.unlockedPoses ?? GUEST_ALL_POSES,
       isAuthenticated: false,
       isAdmin: false,
       createdAt: stored?.createdAt ?? 0,
@@ -192,19 +208,19 @@ export function getMyProfile(): MyProfile {
   // 인증 — server pull 결과 대기 중이면 tag/displayName 빈값 (skeleton)
   const syncDone = _syncStatus === 'ok';
   if (stored) {
-    // unlockedCharacters 결정:
-    //   - 명시적으로 정의됐으면 그대로 (server pull 결과)
-    //   - 미정의 (마이그 0025 이전 캐시) 면 ['tori', 'selli'] — 보수적으로 둘 다 보유
-    //     로 처리해 옛 캐시 사용자가 본인 활성 캐릭터 (셀리든 토리든) 변경 못 하는
-    //     버그 회피. 다음 sync 후 server 값으로 정확화.
-    const unlockedCharacters = stored.unlockedCharacters
-      ?? (['tori', 'selli'] as MascotCharacter[]);
+    // unlockedPoses 결정:
+    //   - 정의됐으면 그대로 (server pull 결과)
+    //   - 미정의 (마이그 0026 이전 캐시) 면 모든 포즈 보유로 fallback —
+    //     옛 캐시 사용자가 본인 활성 포즈 잠금 표시되는 버그 회피.
+    //     다음 sync 후 server 값으로 정확화.
+    const unlockedPoses = stored.unlockedPoses ?? GUEST_ALL_POSES;
     return {
       tag: syncDone ? stored.tag : '',
       displayName: syncDone ? stored.displayName : '',
       avatarPose: stored.avatarPose ?? DEFAULT_AVATAR_POSE,
       avatarCharacter: stored.avatarCharacter ?? DEFAULT_CHARACTER,
-      unlockedCharacters,
+      unlockedCharacters: ['tori', 'selli'],
+      unlockedPoses,
       isAuthenticated: true,
       isAdmin: stored.role === 'admin',
       createdAt: stored.createdAt,
@@ -212,13 +228,14 @@ export function getMyProfile(): MyProfile {
       syncStatus: _syncStatus,
     };
   }
-  // 인증됐지만 한 번도 pull 안 됨
+  // 인증됐지만 한 번도 pull 안 됨 — default 만 (DEFAULT_CHARACTER 의 첫 포즈)
   return {
     tag: '',
     displayName: '',
     avatarPose: DEFAULT_AVATAR_POSE,
     avatarCharacter: DEFAULT_CHARACTER,
-    unlockedCharacters: [DEFAULT_CHARACTER],
+    unlockedCharacters: ['tori', 'selli'],
+    unlockedPoses: ['tori-wave', 'selli-wave'],
     isAuthenticated: true,
     isAdmin: false,
     createdAt: 0,
@@ -226,6 +243,16 @@ export function getMyProfile(): MyProfile {
     syncStatus: _syncStatus,
   };
 }
+
+/**
+ * 게스트 / 옛 캐시 fallback — 모든 (캐릭터, 포즈) 조합. 16 entry.
+ * 게스트는 구매 시스템 외 자유 사용.
+ */
+const GUEST_ALL_POSES: string[] = (
+  ['tori', 'selli'] as const
+).flatMap((c) =>
+  AVATAR_POSES.map((p) => `${c}-${p}`),
+);
 
 /**
  * 표시 이름 변경. NicknameOnboarding · FriendsPage 의 닉네임 설정에 사용.
@@ -267,12 +294,30 @@ export function setDisplayName(name: string): { ok: boolean; reason?: string } {
   return { ok: true };
 }
 
-/** 아바타 포즈 변경. setDisplayName 과 동일 가드. */
+/**
+ * 아바타 포즈 변경. setDisplayName 동일 가드 + 잠금 포즈 거부.
+ *
+ * 잠금 검증: stored.unlockedPoses 가 명시적으로 정의된 경우만.
+ * undefined 면 마이그 0026 이전 캐시 — 가드 skip (다음 sync 후 정확화).
+ *
+ * 검증 키: `${currentCharacter}-${pose}` 형식. 현재 stored.avatarCharacter 기준.
+ */
 export function setAvatarPose(pose: QuesPose): { ok: boolean; reason?: string } {
   if (_isAuthenticated && _syncStatus !== 'ok') {
     return { ok: false, reason: 'sync-not-ready' };
   }
   const stored = loadStored();
+
+  // 잠금 포즈 거부 — 인증 사용자만 (게스트는 모든 포즈 무료).
+  // unlockedPoses 가 명시적으로 정의된 경우만 검증.
+  if (_isAuthenticated && stored?.unlockedPoses) {
+    const character = stored.avatarCharacter ?? DEFAULT_CHARACTER;
+    const key = `${character}-${pose}`;
+    if (!stored.unlockedPoses.includes(key)) {
+      return { ok: false, reason: 'locked' };
+    }
+  }
+
   if (!stored) {
     if (!_isAuthenticated) {
       saveStored({
@@ -297,7 +342,10 @@ export function setAvatarPose(pose: QuesPose): { ok: boolean; reason?: string } 
   return { ok: true };
 }
 
-/** 아바타 캐릭터 변경 (tori | selli). setAvatarPose 와 동일 가드 + 잠금 캐릭터 거부. */
+/**
+ * 아바타 캐릭터 변경 (tori | selli). 2026-05-08 — 잠금 가드 제거.
+ * 캐릭터는 둘 다 free, 잠금/구매는 포즈 단위 (setAvatarPose 가드).
+ */
 export function setAvatarCharacter(
   character: MascotCharacter,
 ): { ok: boolean; reason?: string } {
@@ -305,16 +353,6 @@ export function setAvatarCharacter(
     return { ok: false, reason: 'sync-not-ready' };
   }
   const stored = loadStored();
-
-  // 잠금 캐릭터 거부 — 인증 사용자만 (게스트는 모든 캐릭터 무료).
-  // 단 stored.unlockedCharacters 가 명시적으로 정의된 경우만 검증.
-  // undefined 면 마이그 0025 이전 stored 캐시 — 가드 skip (다음 sync 후 정확화).
-  // 이 보호가 없으면 옛 캐시 사용자가 본인 활성 캐릭터 변경 못 하는 버그 발생.
-  if (_isAuthenticated && stored?.unlockedCharacters) {
-    if (!stored.unlockedCharacters.includes(character)) {
-      return { ok: false, reason: 'locked' };
-    }
-  }
 
   if (!stored) {
     if (!_isAuthenticated) {
@@ -341,29 +379,26 @@ export function setAvatarCharacter(
 }
 
 /**
- * 캐릭터 구매 — 50 XP 차감 + unlocked_characters 추가.
+ * 포즈 구매 — 50 XP 차감 + unlocked_poses 추가.
  *
- * Supabase RPC `purchase_character(p_character)` 호출 후 결과 반영.
- * 성공 시 stored.unlockedCharacters 즉시 갱신 + notify (낙관적 update).
+ * Supabase RPC `purchase_pose(p_character_pose)` 호출. 키 형식: 'tori-happy'.
+ * 성공 시 stored.unlockedPoses 즉시 갱신 + notify (낙관적).
  * 실패 시 stored 변화 0.
- *
- * 게스트는 모든 캐릭터 무료 사용이라 호출 불필요 → reason='guest_no_purchase'.
  *
  * 반환:
  *   ok           - 성공 여부
- *   reason       - ok=false 시 사유 ('insufficient_xp', 'unknown_character',
+ *   reason       - ok=false 시 사유 ('insufficient_xp', 'unknown_pose',
  *                  'unauthenticated', 'sync-not-ready', 'guest_no_purchase',
  *                  'rpc_error', 'no_supabase')
- *   remainingXp  - 차감 후 잔액 (성공 시) 또는 현재 XP (실패 시)
+ *   remainingXp  - 차감 후 잔액
  */
-export async function purchaseCharacter(
+export async function purchasePose(
   character: MascotCharacter,
+  pose: QuesPose,
 ): Promise<{ ok: boolean; reason?: string; remainingXp?: number }> {
-  // 게스트 모드 — 모든 캐릭터 자유, 구매 시스템 X.
   if (!_isAuthenticated) {
     return { ok: false, reason: 'guest_no_purchase' };
   }
-  // sync 미완료 시 거부 — stored 가 정확하지 않음.
   if (_syncStatus !== 'ok') {
     return { ok: false, reason: 'sync-not-ready' };
   }
@@ -371,16 +406,17 @@ export async function purchaseCharacter(
   const sb = getSupabase();
   if (!sb) return { ok: false, reason: 'no_supabase' };
 
+  const key = `${character}-${pose}`;
+
   try {
-    const { data, error } = await sb.rpc('purchase_character', {
-      p_character: character,
+    const { data, error } = await sb.rpc('purchase_pose', {
+      p_character_pose: key,
     });
     if (error) {
       // eslint-disable-next-line no-console
-      console.error('[purchaseCharacter] RPC error', error);
+      console.error('[purchasePose] RPC error', error);
       return { ok: false, reason: 'rpc_error' };
     }
-    // RPC 가 record 한 행을 array 로 반환
     const r = (data as Array<{
       ok: boolean;
       reason: string | null;
@@ -394,20 +430,19 @@ export async function purchaseCharacter(
         remainingXp: r.remaining_xp,
       };
     }
-    // 성공 — stored 의 unlockedCharacters 에 즉시 추가 (낙관적). server pull 이
-    // 다음번에 서버 진실 덮어씌움.
+    // 낙관적 갱신
     const stored = loadStored();
     if (stored) {
-      const current = stored.unlockedCharacters ?? [DEFAULT_CHARACTER];
-      if (!current.includes(character)) {
-        saveStored({ ...stored, unlockedCharacters: [...current, character] });
+      const current = stored.unlockedPoses ?? ['tori-wave', 'selli-wave'];
+      if (!current.includes(key)) {
+        saveStored({ ...stored, unlockedPoses: [...current, key] });
       }
     }
     notify();
     return { ok: true, remainingXp: r.remaining_xp };
   } catch (e) {
     // eslint-disable-next-line no-console
-    console.error('[purchaseCharacter] exception', e);
+    console.error('[purchasePose] exception', e);
     return { ok: false, reason: 'rpc_error' };
   }
 }
@@ -527,7 +562,7 @@ async function pullFromSupabase(): Promise<void> {
     sb
       .from('profiles')
       .select(
-        'tag, display_name, avatar_pose, avatar_character, role, unlocked_characters, created_at',
+        'tag, display_name, avatar_pose, avatar_character, role, unlocked_characters, unlocked_poses, created_at',
       )
       .eq('id', session.user.id)
       .maybeSingle();
@@ -539,15 +574,14 @@ async function pullFromSupabase(): Promise<void> {
       const local = loadStored();
       const role: 'user' | 'admin' =
         data.role === 'admin' ? 'admin' : 'user';
-      // server 의 unlocked_characters 를 MascotCharacter[] 로 안전 normalize.
-      // 컬럼 미존재 (마이그 0025 미적용) 또는 빈 배열이면 보수적으로 [DEFAULT_CHARACTER].
-      const rawUnlocked = (data as { unlocked_characters?: unknown }).unlocked_characters;
-      const knownChars: MascotCharacter[] = ['tori', 'selli'];
-      const unlocked: MascotCharacter[] = Array.isArray(rawUnlocked)
-        ? (rawUnlocked.filter((c): c is MascotCharacter =>
-            typeof c === 'string' && (knownChars as string[]).includes(c),
-          ))
-        : [DEFAULT_CHARACTER];
+      // unlocked_characters — 항상 ['tori', 'selli'] (캐릭터 잠금 폐기, backward-compat 보존)
+      const unlocked: MascotCharacter[] = ['tori', 'selli'];
+      // server 의 unlocked_poses 를 string[] 로 안전 normalize.
+      // 컬럼 미존재 (마이그 0026 미적용) 시 default ['tori-wave', 'selli-wave'].
+      const rawUnlockedPoses = (data as { unlocked_poses?: unknown }).unlocked_poses;
+      const unlockedPoses: string[] = Array.isArray(rawUnlockedPoses)
+        ? rawUnlockedPoses.filter((p): p is string => typeof p === 'string')
+        : ['tori-wave', 'selli-wave'];
       saveStored({
         v: 1,
         tag: data.tag,
@@ -556,7 +590,11 @@ async function pullFromSupabase(): Promise<void> {
         avatarCharacter:
           (data.avatar_character as MascotCharacter) ?? DEFAULT_CHARACTER,
         role,
-        unlockedCharacters: unlocked.length > 0 ? unlocked : [DEFAULT_CHARACTER],
+        unlockedCharacters: unlocked,
+        unlockedPoses:
+          unlockedPoses.length > 0
+            ? unlockedPoses
+            : ['tori-wave', 'selli-wave'],
         createdAt:
           local?.createdAt ?? Date.parse(data.created_at) ?? Date.now(),
       });

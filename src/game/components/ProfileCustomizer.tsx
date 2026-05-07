@@ -14,7 +14,7 @@ import { Pencil, Check, Lock } from 'lucide-react';
 import Ques from '@/components/mascot/Ques';
 import {
   AVATAR_POSES,
-  purchaseCharacter,
+  purchasePose,
   setAvatarCharacter,
   setAvatarPose,
   setDisplayName,
@@ -25,8 +25,8 @@ import { computePlayerStats } from '@/game/rpg';
 import ProfileSyncSkeleton from '@/components/profile/ProfileSyncSkeleton';
 import type { MascotCharacter, QuesPose } from '@/components/mascot/types';
 
-/** 캐릭터 1개 잠금해제 비용. 마이그 0025 의 cost 와 동기화. */
-const CHARACTER_PRICE_XP = 50;
+/** 포즈 1개 잠금해제 비용. 마이그 0026 의 cost 와 동기화. */
+const POSE_PRICE_XP = 50;
 
 const POSE_LABELS: Record<QuesPose, string> = {
   happy: '행복',
@@ -86,6 +86,19 @@ export default function ProfileCustomizer() {
     lastSeenServerCharRef.current = profile.avatarCharacter;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile.avatarCharacter]);
+
+  // 안전망 (2026-05-08) — draft (캐릭터, 포즈) 조합이 잠금 상태면 default 로 자동 전환.
+  // 시나리오: 사용자가 캐릭터 토글 → 그 캐릭터의 현재 draft 포즈가 잠금일 때
+  //          (예: 토리는 happy 보유, 셀리는 wave 만 보유 — 토리에서 셀리로 전환).
+  // 자동 전환으로 잠금 포즈 active 인 채로 표시되는 혼란 방지.
+  useEffect(() => {
+    if (profile.unlockedPoses.length === 0) return; // 데이터 없음 — 대기
+    const key = `${draftCharacter}-${draftAvatarPose}`;
+    if (!profile.unlockedPoses.includes(key)) {
+      setDraftAvatarPose('wave');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draftCharacter, draftAvatarPose, profile.unlockedPoses]);
 
   // 캐릭터는 클릭 즉시 저장 → draft 와 profile 항상 동기화. 표정만 비교.
   const avatarChanged = draftAvatarPose !== profile.avatarPose;
@@ -249,22 +262,14 @@ export default function ProfileCustomizer() {
           draftCharacter={draftCharacter}
           onSelectCharacter={(c) => {
             // 클릭 즉시 저장 — draft + server push 동시.
-            // draft 패턴 (표정처럼) 으로 두면 사용자가 저장 버튼 안 누르고
-            // 새로고침하면 변경 사라지는 사용자 보고 증상 발생 (2026-05-08).
+            // 캐릭터는 잠금 X (둘 다 free, 마이그 0026 이후) — 잠금/구매는 포즈 단위.
             setDraftCharacter(c);
             const r = setAvatarCharacter(c);
-            if (!r.ok) {
-              if (r.reason === 'sync-not-ready') {
-                window.alert(
-                  '프로필 동기화가 완료되지 않았어요. 잠시 후 다시 시도해주세요.',
-                );
-                setDraftCharacter(profile.avatarCharacter);
-              } else if (r.reason === 'locked') {
-                window.alert(
-                  '잠긴 캐릭터입니다. 50 XP 로 잠금해제 후 사용해주세요.',
-                );
-                setDraftCharacter(profile.avatarCharacter);
-              }
+            if (!r.ok && r.reason === 'sync-not-ready') {
+              window.alert(
+                '프로필 동기화가 완료되지 않았어요. 잠시 후 다시 시도해주세요.',
+              );
+              setDraftCharacter(profile.avatarCharacter);
             }
           }}
           profile={profile}
@@ -274,44 +279,13 @@ export default function ProfileCustomizer() {
         <div className="kr-heading uppercase text-[10px] md:text-[11px] tracking-widest text-cream/55 mb-2">
           아바타 표정
         </div>
-        <div className="grid grid-cols-4 gap-2 md:gap-3 lg:gap-4">
-          {AVATAR_POSES.map((pose) => {
-            const isDraft = pose === draftAvatarPose;
-            const isSaved = pose === profile.avatarPose;
-            return (
-              <button
-                key={pose}
-                type="button"
-                disabled={profile.pendingServerSync}
-                onClick={() => {
-                  // 미리보기만 — server write X. 사용자는 마음껏 눌러볼 수 있음.
-                  setDraftAvatarPose(pose);
-                }}
-                aria-label={`아바타 — ${POSE_LABELS[pose]}${isSaved ? ' (저장됨)' : ''}${isDraft && !isSaved ? ' (선택 중)' : ''}`}
-                aria-pressed={isDraft}
-                className="aspect-square rounded-[14px] lg:rounded-[18px] inline-flex items-center justify-center transition active:scale-95 p-2 md:p-3 lg:p-5"
-                style={{
-                  background: isDraft
-                    ? 'rgba(111,255,0,0.12)'
-                    : 'rgba(239,244,255,0.04)',
-                  border: isDraft
-                    ? '2px solid #6FFF00'
-                    : isSaved
-                      ? '2px dashed rgba(111,255,0,0.35)' // 현재 저장된 포즈는 점선 hint
-                      : '2px solid rgba(239,244,255,0.08)',
-                }}
-              >
-                {/* className 으로 cell 안에서 100% — 현재 선택 캐릭터 (draft) 의 포즈 */}
-                <Ques
-                  pose={pose}
-                  character={draftCharacter}
-                  animated={false}
-                  className="w-full h-full"
-                />
-              </button>
-            );
-          })}
-        </div>
+        <PoseGrid
+          draftCharacter={draftCharacter}
+          draftAvatarPose={draftAvatarPose}
+          setDraftAvatarPose={setDraftAvatarPose}
+          profile={profile}
+          poseLabels={POSE_LABELS}
+        />
 
         {/* 저장 / 취소 — 변경된 경우에만 강조 노출 */}
         <div className="mt-3 flex items-center gap-2 min-h-[36px]">
@@ -368,22 +342,11 @@ export default function ProfileCustomizer() {
 }
 
 // ─── CharacterTabs ─────────────────────────────────────────────────────────
-// 캐릭터 토글 + 잠금 표시 + 50 XP 구매 흐름.
-//
-// 잠금 캐릭터 클릭 시:
-//   1) confirm — "X XP 사용해 잠금해제?"
-//   2) purchaseCharacter RPC 호출
-//   3) 성공 → stored 갱신 + draft 적용
-//   4) 실패 → reason 별 메시지
-//
-// 동시 호출 방지 — purchasing flag.
+// 캐릭터 토글 — 둘 다 free, 잠금 시스템 X (포즈 단위로 이동, 마이그 0026).
 
 interface CharacterTabsProps {
   draftCharacter: MascotCharacter;
-  /**
-   * 보유 캐릭터 클릭 시 호출. 부모가 즉시 저장 (setAvatarCharacter) 처리.
-   * 잠금 캐릭터 클릭은 컴포넌트 내부에서 구매 흐름 → 성공 시 호출.
-   */
+  /** 캐릭터 선택 — 부모가 즉시 저장 (setAvatarCharacter). */
   onSelectCharacter: (c: MascotCharacter) => void;
   profile: ReturnType<typeof useMyProfile>;
   characterLabel: Record<MascotCharacter, string>;
@@ -395,74 +358,126 @@ function CharacterTabs({
   profile,
   characterLabel,
 }: CharacterTabsProps) {
+  return (
+    <div className="flex flex-wrap items-center gap-2 mb-3">
+      {(['tori', 'selli'] as const).map((c) => {
+        const isActive = c === draftCharacter;
+        return (
+          <button
+            key={c}
+            type="button"
+            onClick={() => onSelectCharacter(c)}
+            disabled={profile.pendingServerSync}
+            aria-pressed={isActive}
+            aria-label={`${characterLabel[c]} 선택`}
+            className="kr-heading uppercase tracking-widest text-[11px] md:text-[12px] px-4 py-2 rounded-full transition active:scale-95 disabled:opacity-50"
+            style={{
+              background: isActive
+                ? 'rgba(111,255,0,0.16)'
+                : 'rgba(239,244,255,0.04)',
+              border: isActive
+                ? '1.5px solid #6FFF00'
+                : '1.5px solid rgba(239,244,255,0.10)',
+              color: isActive ? '#6FFF00' : 'rgba(239,244,255,0.65)',
+            }}
+          >
+            {characterLabel[c]}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── PoseGrid ─────────────────────────────────────────────────────────────
+// 표정 그리드 (8 포즈) + 잠금/50 XP 구매 흐름.
+//
+// 보유 포즈 클릭: setDraftAvatarPose (미리보기). 사용자가 [저장하기] 누르면 server 적용.
+// 잠금 포즈 클릭: confirm → purchasePose RPC → 성공 시 미리보기 + 사용자가 저장.
+//
+// 잠금 키: `${draftCharacter}-${pose}` 형식. 사용자가 캐릭터 토글하면 그리드의 잠금
+// 상태도 그 캐릭터 기준으로 갱신.
+
+interface PoseGridProps {
+  draftCharacter: MascotCharacter;
+  draftAvatarPose: QuesPose;
+  setDraftAvatarPose: (p: QuesPose) => void;
+  profile: ReturnType<typeof useMyProfile>;
+  poseLabels: Record<QuesPose, string>;
+}
+
+function PoseGrid({
+  draftCharacter,
+  draftAvatarPose,
+  setDraftAvatarPose,
+  profile,
+  poseLabels,
+}: PoseGridProps) {
   const progress = useProgress();
   const stats = computePlayerStats(progress);
   const totalXp = stats.totalXp;
 
-  const [purchasing, setPurchasing] = useState<MascotCharacter | null>(null);
+  const [purchasing, setPurchasing] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{
     kind: 'ok' | 'err';
     msg: string;
   } | null>(null);
 
-  const unlocked = profile.unlockedCharacters;
-
-  const handleClick = async (c: MascotCharacter) => {
+  const handleClick = async (pose: QuesPose) => {
     setFeedback(null);
-    if (unlocked.includes(c)) {
-      onSelectCharacter(c);
+    const key = `${draftCharacter}-${pose}`;
+    const isUnlocked = profile.unlockedPoses.includes(key);
+
+    // 보유 → 미리보기 (현재 그대로)
+    if (isUnlocked) {
+      setDraftAvatarPose(pose);
       return;
     }
 
-    // 잠금 캐릭터 — 구매 흐름
-    if (purchasing) return; // 동시 호출 차단
+    // 잠금 → 구매 흐름
+    if (purchasing) return;
     if (!profile.isAuthenticated) {
-      setFeedback({
-        kind: 'err',
-        msg: '구매하려면 로그인해 주세요.',
-      });
+      setFeedback({ kind: 'err', msg: '구매하려면 로그인해 주세요.' });
       return;
     }
     if (profile.pendingServerSync) {
-      setFeedback({
-        kind: 'err',
-        msg: '동기화 완료 후 다시 시도해 주세요.',
-      });
+      setFeedback({ kind: 'err', msg: '동기화 완료 후 다시 시도해 주세요.' });
       return;
     }
-    if (totalXp < CHARACTER_PRICE_XP) {
+    if (totalXp < POSE_PRICE_XP) {
       setFeedback({
         kind: 'err',
-        msg: `XP ${CHARACTER_PRICE_XP - totalXp}개 부족 — 학습으로 더 모아주세요.`,
+        msg: `XP ${POSE_PRICE_XP - totalXp}개 부족 — 학습으로 더 모아주세요.`,
       });
       return;
     }
     if (
       !window.confirm(
-        `'${characterLabel[c]}' 캐릭터를 잠금해제할까요?\n\n` +
-          `비용: ${CHARACTER_PRICE_XP} XP\n` +
+        `'${poseLabels[pose]}' 표정을 잠금해제할까요?\n\n` +
+          `대상: ${draftCharacter === 'tori' ? '토리 (ADSP)' : '셀리 (SQLD)'} · ${poseLabels[pose]}\n` +
+          `비용: ${POSE_PRICE_XP} XP\n` +
           `현재 XP: ${totalXp}\n` +
-          `잠금해제 후: ${totalXp - CHARACTER_PRICE_XP} XP\n\n` +
+          `잠금해제 후: ${totalXp - POSE_PRICE_XP} XP\n\n` +
           `한 번 잠금해제하면 영구 보유.`,
       )
     ) {
       return;
     }
 
-    setPurchasing(c);
+    setPurchasing(key);
     try {
-      const result = await purchaseCharacter(c);
+      const result = await purchasePose(draftCharacter, pose);
       if (result.ok) {
         setFeedback({
           kind: 'ok',
-          msg: `${characterLabel[c]} 잠금해제 완료! (XP ${result.remainingXp ?? '?'} 남음)`,
+          msg: `${poseLabels[pose]} 잠금해제 완료! (XP ${result.remainingXp ?? '?'} 남음)`,
         });
-        // 잠금해제된 캐릭터를 즉시 적용 (부모가 setAvatarCharacter 호출)
-        onSelectCharacter(c);
+        // 잠금해제된 포즈를 미리보기로 적용 — 사용자가 저장 시 적용.
+        setDraftAvatarPose(pose);
       } else {
         const reasonMsg: Record<string, string> = {
           insufficient_xp: 'XP 부족',
-          unknown_character: '알 수 없는 캐릭터',
+          unknown_pose: '알 수 없는 포즈',
           unauthenticated: '로그인이 필요합니다',
           'sync-not-ready': '동기화 완료 후 다시 시도',
           guest_no_purchase: '게스트는 구매할 수 없습니다',
@@ -479,54 +494,88 @@ function CharacterTabs({
 
   return (
     <>
-      <div className="flex flex-wrap items-center gap-2 mb-3">
-        {(['tori', 'selli'] as const).map((c) => {
-          const isActive = c === draftCharacter;
-          const isUnlocked = unlocked.includes(c);
-          const isPurchasing = purchasing === c;
+      <div className="grid grid-cols-4 gap-2 md:gap-3 lg:gap-4">
+        {AVATAR_POSES.map((pose) => {
+          const key = `${draftCharacter}-${pose}`;
+          const isUnlocked = profile.unlockedPoses.includes(key);
+          const isDraft = pose === draftAvatarPose;
+          const isSaved = pose === profile.avatarPose;
+          const isPurchasing = purchasing === key;
 
           return (
             <button
-              key={c}
+              key={pose}
               type="button"
-              onClick={() => void handleClick(c)}
               disabled={profile.pendingServerSync || isPurchasing}
-              aria-pressed={isActive}
+              onClick={() => void handleClick(pose)}
               aria-label={
                 isUnlocked
-                  ? `${characterLabel[c]} 선택`
-                  : `${characterLabel[c]} 잠금 — ${CHARACTER_PRICE_XP} XP 로 잠금해제`
+                  ? `아바타 — ${poseLabels[pose]}${isSaved ? ' (저장됨)' : ''}${isDraft && !isSaved ? ' (선택 중)' : ''}`
+                  : `${poseLabels[pose]} 잠금 — ${POSE_PRICE_XP} XP 로 잠금해제`
               }
-              className="kr-heading uppercase tracking-widest text-[11px] md:text-[12px] px-4 py-2 rounded-full transition active:scale-95 disabled:opacity-50 inline-flex items-center gap-1.5"
+              aria-pressed={isUnlocked && isDraft}
+              className="aspect-square rounded-[14px] lg:rounded-[18px] inline-flex items-center justify-center transition active:scale-95 p-2 md:p-3 lg:p-5 relative disabled:opacity-50"
               style={{
-                background: isActive
-                  ? 'rgba(111,255,0,0.16)'
+                background: isDraft && isUnlocked
+                  ? 'rgba(111,255,0,0.12)'
                   : isUnlocked
                     ? 'rgba(239,244,255,0.04)'
-                    : 'rgba(255,176,32,0.08)',
-                border: isActive
-                  ? '1.5px solid #6FFF00'
-                  : isUnlocked
-                    ? '1.5px solid rgba(239,244,255,0.10)'
-                    : '1.5px dashed rgba(255,176,32,0.45)',
-                color: isActive
-                  ? '#6FFF00'
-                  : isUnlocked
-                    ? 'rgba(239,244,255,0.65)'
-                    : '#FFB020',
+                    : 'rgba(255,176,32,0.06)',
+                border:
+                  isDraft && isUnlocked
+                    ? '2px solid #6FFF00'
+                    : isUnlocked
+                      ? isSaved
+                        ? '2px dashed rgba(111,255,0,0.35)'
+                        : '2px solid rgba(239,244,255,0.08)'
+                      : '2px dashed rgba(255,176,32,0.45)',
               }}
             >
+              {/* 잠금 포즈는 마스코트 흐림 처리 (Ques 가 style prop 없음 → wrapper div). */}
+              <div
+                className="w-full h-full"
+                style={
+                  !isUnlocked
+                    ? { opacity: 0.35, filter: 'grayscale(0.6)' }
+                    : undefined
+                }
+              >
+                <Ques
+                  pose={pose}
+                  character={draftCharacter}
+                  animated={false}
+                  className="w-full h-full"
+                />
+              </div>
+
+              {/* 잠금 오버레이 — 자물쇠 + 50 XP 라벨 */}
               {!isUnlocked && (
-                <Lock size={10} strokeWidth={2.6} aria-hidden />
-              )}
-              <span>{characterLabel[c]}</span>
-              {!isUnlocked && (
-                <span
-                  className="kr-num text-[10px] tabular-nums"
-                  style={{ marginLeft: 2 }}
+                <div
+                  className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
+                  style={{
+                    background:
+                      'linear-gradient(180deg, rgba(1,8,40,0.05) 0%, rgba(1,8,40,0.55) 100%)',
+                    borderRadius: '12px',
+                  }}
                 >
-                  {isPurchasing ? '구매 중...' : `${CHARACTER_PRICE_XP} XP`}
-                </span>
+                  <Lock
+                    size={16}
+                    strokeWidth={2.6}
+                    style={{ color: '#FFB020', marginBottom: 4 }}
+                    aria-hidden
+                  />
+                  <span
+                    className="kr-num tabular-nums"
+                    style={{
+                      fontSize: 10,
+                      color: '#FFB020',
+                      fontWeight: 700,
+                      letterSpacing: '0.05em',
+                    }}
+                  >
+                    {isPurchasing ? '...' : `${POSE_PRICE_XP} XP`}
+                  </span>
+                </div>
               )}
             </button>
           );
@@ -535,7 +584,7 @@ function CharacterTabs({
 
       {feedback ? (
         <p
-          className="kr-body text-[11px] mb-3 leading-[1.5]"
+          className="kr-body text-[11px] mt-3 leading-[1.5]"
           role="status"
           aria-live="polite"
           style={{

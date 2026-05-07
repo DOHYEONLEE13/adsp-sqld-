@@ -549,30 +549,153 @@ function PromoCodeManager() {
     }
   };
 
+  // 동시 호출 방지 — 사용자가 삭제 버튼 빠르게 더블클릭하는 케이스 보호.
+  // RPC 가 idempotent 이지만 두 번째 호출은 의미 X + 사용자 혼란 → UI 차단.
+  const [deleting, setDeleting] = useState<string | null>(null);
+
+  /**
+   * 코드 삭제 — 0024 마이그의 두 RPC 활용.
+   *
+   * 흐름:
+   *   1) count_redemption_code_users 로 영향받을 사용자 수 미리 조회
+   *   2) 사용자 0명 → "정말 삭제?" 단일 confirm → revoke RPC (회수 0 + 코드 삭제)
+   *   3) 사용자 N명 → 2단계 confirm:
+   *      a. "이 코드 N명 사용 — 다음 단계로 진행?" (cancel 가능)
+   *      b. "정말 N명 권한 박탈?" (마지막 안전망)
+   *   4) revoke_redemption_code(p_delete_code=true) 호출
+   *   5) 결과 표시 (revoked/demoted/deleted 카운트)
+   *
+   * 에러 케이스 (모두 graceful):
+   *   - count RPC 실패 → 메시지 + 종료 (DB 변화 0)
+   *   - 권한 부족 (not_admin) → 메시지 + 종료
+   *   - 코드 미존재 → count 결과 0 + 정상 흐름 (이미 삭제된 케이스)
+   *   - revoke RPC 실패 → 메시지 + 부분 상태 X (RPC 가 atomic transaction)
+   *   - 멱등 — 두 번째 호출 시 revoked_count=0 graceful
+   *   - paid 사용자 보호 — RPC 안에서 다른 source 의 활성 grant 검사 후 demote
+   */
   const handleDelete = async (code: string) => {
-    if (!window.confirm(`"${code}" 정말 삭제하시겠어요? 이미 사용된 grant 는 유지됩니다.`)) {
+    if (deleting) return; // 동시 호출 차단
+    const sb = getSupabase();
+    if (!sb) {
+      setFeedback({ kind: 'err', msg: 'Supabase 미설정' });
       return;
     }
+
+    setDeleting(code);
     try {
-      const sb = getSupabase();
-      if (!sb) return;
-      const { error } = await sb.from('redemption_codes').delete().eq('code', code);
-      if (error) {
+      // ── 1) 영향받을 사용자 수 조회 ────────────────────────────────────
+      const { data: countData, error: countError } = await sb.rpc(
+        'count_redemption_code_users',
+        { p_code: code },
+      );
+      if (countError) {
         // eslint-disable-next-line no-console
-        console.error('[promo] delete failed', error);
+        console.error('[promo] count failed', countError);
         setFeedback({
           kind: 'err',
-          msg: `삭제 실패 — ${error.message} (코드 ${error.code ?? '?'})`,
+          msg: `사용자 조회 실패 — ${countError.message}`,
         });
         return;
       }
-      setFeedback({ kind: 'ok', msg: `${code} 삭제됨` });
+      const cnt = (countData as Array<{
+        ok: boolean;
+        reason: string | null;
+        active_grant_count: number;
+        total_grant_count: number;
+      }> | null)?.[0];
+      if (!cnt || !cnt.ok) {
+        const reason = cnt?.reason ?? 'unknown';
+        setFeedback({
+          kind: 'err',
+          msg: `조회 거절 — ${reason === 'not_admin' ? '관리자 권한 필요' : reason}`,
+        });
+        return;
+      }
+      const activeCount = cnt.active_grant_count ?? 0;
+
+      // ── 2) 사용자 0명 — 단일 confirm ──────────────────────────────────
+      if (activeCount === 0) {
+        if (
+          !window.confirm(
+            `"${code}" 코드를 삭제하시겠어요?\n\n이 코드를 사용한 사람이 없습니다.`,
+          )
+        ) {
+          return;
+        }
+        // 회수 + 삭제 (회수 대상 0이라 effectively 코드 삭제만)
+      } else {
+        // ── 3) 사용자 N명 — 2단계 confirm ──────────────────────────────
+        if (
+          !window.confirm(
+            `⚠️ "${code}" 코드 처리\n\n` +
+              `이 코드를 사용한 사용자: ${activeCount}명 (활성 권한)\n\n` +
+              `[확인] = 다음 단계 (권한 박탈 여부 한 번 더 확인)\n` +
+              `[취소] = 작업 취소`,
+          )
+        ) {
+          return;
+        }
+        if (
+          !window.confirm(
+            `정말 ${activeCount}명의 유료 권한을 박탈하시겠어요?\n\n` +
+              `이 작업은 즉시 반영됩니다. 박탈된 사용자는 ⚡ 5/5 게스트로 전환됩니다.\n` +
+              `(다른 source 의 활성 권한 — 결제·admin 부여 — 이 있는 사용자는 보존됩니다.)\n\n` +
+              `[확인] = 권한 박탈 + 코드 삭제\n` +
+              `[취소] = 작업 취소`,
+          )
+        ) {
+          return;
+        }
+      }
+
+      // ── 4) revoke RPC 호출 ────────────────────────────────────────────
+      const { data: revokeData, error: revokeError } = await sb.rpc(
+        'revoke_redemption_code',
+        { p_code: code, p_delete_code: true },
+      );
+      if (revokeError) {
+        // eslint-disable-next-line no-console
+        console.error('[promo] revoke failed', revokeError);
+        setFeedback({
+          kind: 'err',
+          msg: `회수 실패 — ${revokeError.message}`,
+        });
+        return;
+      }
+      const r = (revokeData as Array<{
+        ok: boolean;
+        reason: string | null;
+        revoked_count: number;
+        profiles_demoted: number;
+        code_deleted: boolean;
+      }> | null)?.[0];
+      if (!r || !r.ok) {
+        const reason = r?.reason ?? 'unknown';
+        setFeedback({
+          kind: 'err',
+          msg: `회수 거절 — ${reason === 'not_admin' ? '관리자 권한 필요' : reason}`,
+        });
+        return;
+      }
+
+      // ── 5) 결과 표시 ──────────────────────────────────────────────────
+      const parts: string[] = [];
+      if (r.code_deleted) parts.push(`${code} 삭제됨`);
+      if (r.revoked_count > 0) parts.push(`grant ${r.revoked_count}건 회수`);
+      if (r.profiles_demoted > 0) parts.push(`권한 박탈 ${r.profiles_demoted}명`);
+      if (parts.length === 0) {
+        // 이미 삭제됐던 케이스 — 멱등 보장 메시지
+        parts.push(`${code} — 이미 처리됨 (변경 사항 없음)`);
+      }
+      setFeedback({ kind: 'ok', msg: parts.join(' · ') });
       await reload();
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error('[promo] delete exception', e);
       const msg = e instanceof Error ? e.message : String(e);
       setFeedback({ kind: 'err', msg: `오류 — ${msg}` });
+    } finally {
+      setDeleting(null);
     }
   };
 
@@ -734,10 +857,20 @@ function PromoCodeManager() {
                 <button
                   type="button"
                   onClick={() => void handleDelete(row.code)}
-                  aria-label={`${row.code} 삭제`}
-                  className="inline-flex items-center justify-center w-7 h-7 rounded-md hover:bg-red-500/15 text-cream/55 hover:text-red-300 transition"
+                  disabled={deleting === row.code}
+                  aria-label={`${row.code} 삭제 — 사용자 권한 박탈 옵션 포함`}
+                  title={
+                    deleting === row.code
+                      ? '처리 중...'
+                      : '삭제 — 코드 사용자 권한 박탈 옵션 포함'
+                  }
+                  className="inline-flex items-center justify-center w-7 h-7 rounded-md hover:bg-red-500/15 text-cream/55 hover:text-red-300 transition disabled:opacity-40"
                 >
-                  <Trash2 size={12} strokeWidth={2.4} />
+                  {deleting === row.code ? (
+                    <RefreshCcw size={11} strokeWidth={2.4} className="animate-spin" />
+                  ) : (
+                    <Trash2 size={12} strokeWidth={2.4} />
+                  )}
                 </button>
               </div>
             );
@@ -748,10 +881,10 @@ function PromoCodeManager() {
       <p className="mt-3 kr-body text-[11.5px] text-cream/55 leading-[1.65]">
         ※ 발급된 코드는 사용자가 <code className="px-1 py-0.5 rounded bg-cream/10 text-cream/85">#/redeem</code>{' '}
         에서 입력 시 프리미엄 부여. <strong>권한 만료일을 설정하면 그 시점에 권한도
-        자동 회수</strong> (매일 03 UTC cron). 만료일을 비워두면 영구 권한. 즉시 회수
-        가 필요하면{' '}
-        <code className="px-1 py-0.5 rounded bg-cream/10 text-cream/85">premium_grants</code>{' '}
-        의 revoke RPC 로 개별 처리.
+        자동 회수</strong> (매일 03 UTC cron). 만료일을 비워두면 영구 권한.{' '}
+        <strong>삭제 버튼</strong>은 코드 사용자 N명을 표시한 후 2단계 confirm 으로
+        권한 박탈 여부를 묻습니다 — 결제·admin 부여 등 다른 source 의 활성 권한이
+        있는 사용자는 보존.
       </p>
     </section>
   );

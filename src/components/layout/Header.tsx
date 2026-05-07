@@ -159,38 +159,46 @@ function AdminLink() {
       return;
     }
     let cancelled = false;
-    (async () => {
+
+    // server 에 admin 여부 fetch — race 안전 helper.
+    const fetchAdmin = async (userId: string) => {
       try {
-        const { data: sess } = await sb.auth.getSession();
-        if (cancelled) return;
-        if (!sess.session) {
-          setServerAdmin(false);
-          return;
-        }
         const { data } = await sb
           .from('profiles')
           .select('role')
-          .eq('id', sess.session.user.id)
+          .eq('id', userId)
           .maybeSingle();
-        if (cancelled) return;
-        setServerAdmin(data?.role === 'admin');
+        if (!cancelled) setServerAdmin(data?.role === 'admin');
       } catch {
         if (!cancelled) setServerAdmin(false);
       }
-    })();
-    // 로그인/로그아웃 시 재확인
+    };
+
+    // 2026-05-07 race fix — onAuthStateChange 등록을 getSession() 이전에 진행.
+    // 이전 코드는 getSession() 의 async 결과 처리 중 INITIAL_SESSION 이벤트가
+    // 먼저 fire 되면 listener 미등록 상태 → 이벤트 놓침 → setServerAdmin(false)
+    // 영구 락 (admin 표시 사라짐). 등록 순서를 뒤집어 race window 제거.
     const unsub = onAuthStateChange(async (_event, session) => {
+      if (cancelled) return;
       if (!session) {
         setServerAdmin(false);
         return;
       }
-      const { data } = await sb
-        .from('profiles')
-        .select('role')
-        .eq('id', session.user.id)
-        .maybeSingle();
-      if (!cancelled) setServerAdmin(data?.role === 'admin');
+      await fetchAdmin(session.user.id);
     });
+
+    // 마운트 시점에 이미 hydrated 된 세션이 있으면 즉시 fetch.
+    // (onAuthStateChange 가 INITIAL_SESSION 으로 같은 결과를 fire 하지만,
+    //  단축 path 로 표시 latency 단축.)
+    void sb.auth.getSession().then(({ data: sess }) => {
+      if (cancelled) return;
+      if (sess.session) {
+        void fetchAdmin(sess.session.user.id);
+      }
+      // session 없어도 setServerAdmin(false) 하지 않음 — onAuthStateChange 의
+      // INITIAL_SESSION 이 권위 있는 답을 곧 가져옴 (cold cache 보호).
+    });
+
     return () => {
       cancelled = true;
       unsub();

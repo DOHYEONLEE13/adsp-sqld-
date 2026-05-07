@@ -231,8 +231,14 @@ function startRealtimeChannel() {
   if (!sb) return;
   void sb.auth.getSession().then(({ data }) => {
     if (!data.session) return;
+    // 2026-05-07 race fix — channel name 에 userId + timestamp suffix.
+    // 이전 'my-energy' 단일 이름은 supabase-js 의 channel registry 에서 같은 reference
+    // 재사용 → 동시 호출 시 이미 subscribed 된 채널에 .on() 추가 시도 → 에러
+    // ("cannot add postgres_changes callbacks for realtime:my-energy after subscribe()").
+    // unique suffix 로 race 영구 해소. _channelUnsub 가 옛 채널 정리하므로 누적 leak 0.
+    const channelName = `my-energy-${data.session.user.id}-${Date.now()}`;
     const channel = sb
-      .channel('my-energy')
+      .channel(channelName)
       .on(
         'postgres_changes',
         {

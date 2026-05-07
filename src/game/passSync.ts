@@ -147,8 +147,14 @@ function startChannel() {
   void sb.auth.getSession().then(({ data }) => {
     if (!data.session) return;
     const userId = data.session.user.id;
+    // 2026-05-07 race fix — channel name 에 userId + timestamp suffix.
+    // 이전 'my-pass-sync' 단일 이름은 supabase-js channel registry 에서 같은 reference
+    // 재사용 → 동시 호출 시 이미 subscribed 된 채널에 .on() 추가 시도 →
+    // "cannot add postgres_changes callbacks ... after subscribe()" 에러.
+    // unique suffix 로 race 영구 해소.
+    const channelName = `my-pass-sync-${userId}-${Date.now()}`;
     const channel = sb
-      .channel('my-pass-sync')
+      .channel(channelName)
       .on(
         'postgres_changes',
         {

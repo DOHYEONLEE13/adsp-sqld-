@@ -155,8 +155,14 @@ function startChannel() {
   if (!sb) return;
   void sb.auth.getSession().then(({ data }) => {
     if (!data.session) return;
+    // 2026-05-07 race fix — channel name 에 userId + timestamp suffix.
+    // 이전 'my-step-unlocks' 단일 이름은 supabase-js channel registry 에서 같은
+    // reference 재사용 → 동시 호출 시 이미 subscribed 된 채널에 .on() 추가 시도 →
+    // "cannot add postgres_changes callbacks ... after subscribe()" 에러.
+    // unique suffix 로 race 영구 해소.
+    const channelName = `my-step-unlocks-${data.session.user.id}-${Date.now()}`;
     const channel = sb
-      .channel('my-step-unlocks')
+      .channel(channelName)
       .on(
         'postgres_changes',
         {

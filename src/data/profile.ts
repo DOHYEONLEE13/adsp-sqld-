@@ -589,12 +589,23 @@ async function pushToSupabase(patch: {
   try {
     const { data: sess } = await sb.auth.getSession();
     if (!sess.session) return;
-    await sb
+    const { error } = await sb
       .from('profiles')
       .update(patch)
       .eq('id', sess.session.user.id);
-  } catch {
-    /* 오프라인·일시적 오류 — localStorage 는 이미 update 됐으니 다음 pull 에 정리. */
+    // 2026-05-08 — silent fail 진단 로그 추가.
+    // localStorage 는 이미 update 됐지만 server 가 거부하면 다음 pull 에 옛 값으로
+    // 복귀해 "변경했는데 새로고침하면 사라짐" 증상 발생. 콘솔에라도 기록.
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.warn('[profile.pushToSupabase] update failed', {
+        patch,
+        error,
+      });
+    }
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn('[profile.pushToSupabase] exception', { patch, error: e });
   }
 }
 

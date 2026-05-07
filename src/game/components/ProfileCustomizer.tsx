@@ -87,34 +87,19 @@ export default function ProfileCustomizer() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile.avatarCharacter]);
 
-  const avatarChanged =
-    draftAvatarPose !== profile.avatarPose ||
-    draftCharacter !== profile.avatarCharacter;
+  // 캐릭터는 클릭 즉시 저장 → draft 와 profile 항상 동기화. 표정만 비교.
+  const avatarChanged = draftAvatarPose !== profile.avatarPose;
 
+  // onSaveAvatar — 표정만 저장. 캐릭터는 클릭 즉시 저장이라 여기 미포함.
   const onSaveAvatar = () => {
     if (!avatarChanged) return;
-    let blocked = false;
-    let lockedAttempt = false;
     if (draftAvatarPose !== profile.avatarPose) {
       const r = setAvatarPose(draftAvatarPose);
-      if (!r.ok && r.reason === 'sync-not-ready') blocked = true;
-    }
-    if (!blocked && draftCharacter !== profile.avatarCharacter) {
-      const r = setAvatarCharacter(draftCharacter);
-      if (!r.ok && r.reason === 'sync-not-ready') blocked = true;
-      // 안전망 — UI 가 잠금 캐릭터를 draft 로 못 만들지만, race 또는 stale state
-      // 시 'locked' reason 가능. 잠금 캐릭터 적용 거부 + 안내.
-      if (!r.ok && r.reason === 'locked') lockedAttempt = true;
-    }
-    if (blocked) {
-      window.alert(
-        '프로필 동기화가 완료되지 않았어요. 잠시 후 다시 시도해주세요.',
-      );
-    }
-    if (lockedAttempt) {
-      window.alert('잠긴 캐릭터입니다. 먼저 50 XP 로 잠금해제해 주세요.');
-      // draft 를 server 값으로 되돌림
-      setDraftCharacter(profile.avatarCharacter);
+      if (!r.ok && r.reason === 'sync-not-ready') {
+        window.alert(
+          '프로필 동기화가 완료되지 않았어요. 잠시 후 다시 시도해주세요.',
+        );
+      }
     }
   };
 
@@ -253,7 +238,8 @@ export default function ProfileCustomizer() {
       </div>
 
       {/* 캐릭터 선택 탭 (tori/selli) + 포즈 선택 그리드.
-          클릭은 draft 만 갱신. 저장은 별도 버튼. */}
+          캐릭터는 클릭 즉시 저장 (2 옵션이라 미리보기 의미 X).
+          포즈는 미리보기 후 명시적 저장 (8 옵션이라 마음껏 눌러볼 수 있게). */}
       <div className="mt-5 lg:mt-7">
         {/* 캐릭터 탭 — 2 캐릭터 토글 + 잠금/구매 표시 */}
         <div className="kr-heading uppercase text-[10px] md:text-[11px] tracking-widest text-cream/55 mb-2">
@@ -261,7 +247,26 @@ export default function ProfileCustomizer() {
         </div>
         <CharacterTabs
           draftCharacter={draftCharacter}
-          setDraftCharacter={setDraftCharacter}
+          onSelectCharacter={(c) => {
+            // 클릭 즉시 저장 — draft + server push 동시.
+            // draft 패턴 (표정처럼) 으로 두면 사용자가 저장 버튼 안 누르고
+            // 새로고침하면 변경 사라지는 사용자 보고 증상 발생 (2026-05-08).
+            setDraftCharacter(c);
+            const r = setAvatarCharacter(c);
+            if (!r.ok) {
+              if (r.reason === 'sync-not-ready') {
+                window.alert(
+                  '프로필 동기화가 완료되지 않았어요. 잠시 후 다시 시도해주세요.',
+                );
+                setDraftCharacter(profile.avatarCharacter);
+              } else if (r.reason === 'locked') {
+                window.alert(
+                  '잠긴 캐릭터입니다. 50 XP 로 잠금해제 후 사용해주세요.',
+                );
+                setDraftCharacter(profile.avatarCharacter);
+              }
+            }
+          }}
           profile={profile}
           characterLabel={CHAR_LABEL}
         />
@@ -375,14 +380,18 @@ export default function ProfileCustomizer() {
 
 interface CharacterTabsProps {
   draftCharacter: MascotCharacter;
-  setDraftCharacter: (c: MascotCharacter) => void;
+  /**
+   * 보유 캐릭터 클릭 시 호출. 부모가 즉시 저장 (setAvatarCharacter) 처리.
+   * 잠금 캐릭터 클릭은 컴포넌트 내부에서 구매 흐름 → 성공 시 호출.
+   */
+  onSelectCharacter: (c: MascotCharacter) => void;
   profile: ReturnType<typeof useMyProfile>;
   characterLabel: Record<MascotCharacter, string>;
 }
 
 function CharacterTabs({
   draftCharacter,
-  setDraftCharacter,
+  onSelectCharacter,
   profile,
   characterLabel,
 }: CharacterTabsProps) {
@@ -401,7 +410,7 @@ function CharacterTabs({
   const handleClick = async (c: MascotCharacter) => {
     setFeedback(null);
     if (unlocked.includes(c)) {
-      setDraftCharacter(c);
+      onSelectCharacter(c);
       return;
     }
 
@@ -448,8 +457,8 @@ function CharacterTabs({
           kind: 'ok',
           msg: `${characterLabel[c]} 잠금해제 완료! (XP ${result.remainingXp ?? '?'} 남음)`,
         });
-        // 잠금해제된 캐릭터를 draft 로 자동 적용 — 사용자가 즉시 확인 가능
-        setDraftCharacter(c);
+        // 잠금해제된 캐릭터를 즉시 적용 (부모가 setAvatarCharacter 호출)
+        onSelectCharacter(c);
       } else {
         const reasonMsg: Record<string, string> = {
           insufficient_xp: 'XP 부족',

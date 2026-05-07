@@ -227,7 +227,17 @@ function startRealtimeChannel() {
   });
 }
 
-/** mount 시 한 번 호출. SIGNED_IN 시 pull + realtime 채널 attach. */
+/** mount 시 한 번 호출. SIGNED_IN 시 pull + realtime 채널 attach.
+ *
+ * 재진입 트리거 (1단계 — 2026-05-07 추가):
+ *   - SIGNED_IN / INITIAL_SESSION / TOKEN_REFRESHED → re-pull
+ *   - window.online (네트워크 복귀) → re-pull
+ *   - document.visibilitychange (탭 다시 보일 때) → re-pull
+ *
+ *   사유: profiles UPDATE realtime 이 permission denied 등으로 막히면 isPremium 이
+ *   초기 잘못된 값에 stuck. 다양한 외부 트리거 추가로 무한 대기 방지.
+ *   profile.ts 의 검증된 패턴 그대로 복사.
+ */
 export function initEnergySync(): () => void {
   if (_syncStarted) return () => {};
   _syncStarted = true;
@@ -237,7 +247,11 @@ export function initEnergySync(): () => void {
   });
 
   const unsubAuth = onAuthStateChange((event) => {
-    if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+    if (
+      event === 'SIGNED_IN' ||
+      event === 'INITIAL_SESSION' ||
+      event === 'TOKEN_REFRESHED'
+    ) {
       void pullEnergy().then(() => {
         _channelUnsub?.();
         _channelUnsub = null;
@@ -251,10 +265,24 @@ export function initEnergySync(): () => void {
     }
   });
 
+  // 네트워크 복귀 / 탭 가시화 시 재pull
+  const onOnline = () => void pullEnergy();
+  const onVisibility = () => {
+    if (document.visibilityState === 'visible') void pullEnergy();
+  };
+  if (typeof window !== 'undefined') {
+    window.addEventListener('online', onOnline);
+    document.addEventListener('visibilitychange', onVisibility);
+  }
+
   return () => {
     unsubAuth();
     _channelUnsub?.();
     _channelUnsub = null;
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('online', onOnline);
+      document.removeEventListener('visibilitychange', onVisibility);
+    }
     _syncStarted = false;
   };
 }

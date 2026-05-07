@@ -164,6 +164,15 @@ function startChannel() {
   });
 }
 
+/**
+ * 재진입 트리거 (1단계 — 2026-05-07 추가):
+ *   - SIGNED_IN / INITIAL_SESSION / TOKEN_REFRESHED → re-pull
+ *   - window.online → re-pull
+ *   - document.visibilitychange → re-pull
+ *
+ *   사유: realtime UPDATE 가 막히면 is_premium / role 초기값에 stuck.
+ *   profile.ts 의 검증된 패턴 복사.
+ */
 export function initStepUnlocksSync(): () => void {
   if (_syncStarted) return () => {};
   _syncStarted = true;
@@ -171,7 +180,11 @@ export function initStepUnlocksSync(): () => void {
   void pull().then(() => startChannel());
 
   const unsubAuth = onAuthStateChange((event) => {
-    if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+    if (
+      event === 'SIGNED_IN' ||
+      event === 'INITIAL_SESSION' ||
+      event === 'TOKEN_REFRESHED'
+    ) {
       void pull().then(() => {
         _channelUnsub?.();
         _channelUnsub = null;
@@ -187,10 +200,23 @@ export function initStepUnlocksSync(): () => void {
     }
   });
 
+  const onOnline = () => void pull();
+  const onVisibility = () => {
+    if (document.visibilityState === 'visible') void pull();
+  };
+  if (typeof window !== 'undefined') {
+    window.addEventListener('online', onOnline);
+    document.addEventListener('visibilitychange', onVisibility);
+  }
+
   return () => {
     unsubAuth();
     _channelUnsub?.();
     _channelUnsub = null;
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('online', onOnline);
+      document.removeEventListener('visibilitychange', onVisibility);
+    }
     _syncStarted = false;
   };
 }

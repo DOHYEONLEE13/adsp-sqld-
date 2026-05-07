@@ -17,8 +17,8 @@
  * MAX). 그건 결제 webhook 활성 후 처리.
  */
 
-import { useEffect, useState } from 'react';
-import { getMyProfile, subscribeProfile } from '@/data/profile';
+import { useMyProfile } from '@/data/profile';
+import type { MyProfile } from '@/data/profile';
 
 export type PlanTagSize = 'sm' | 'md';
 
@@ -33,7 +33,7 @@ type PlanLevel = 'FREE' | 'PRO' | 'MAX';
  * is_premium + premium_until 로 어느 plan 인지 추정.
  * (정확한 product_code 추적은 결제 webhook 활성 후 추가.)
  */
-function inferPlan(profile: ReturnType<typeof getMyProfile>): PlanLevel {
+function inferPlan(profile: MyProfile): PlanLevel {
   // pendingServerSync 면 추정 불가 — FREE 로.
   if (profile.pendingServerSync) return 'FREE';
   // is_premium 필드는 MyProfile 에 없으므로 단계적으로:
@@ -43,14 +43,8 @@ function inferPlan(profile: ReturnType<typeof getMyProfile>): PlanLevel {
 }
 
 export default function PlanTag({ size = 'sm', className }: Props) {
-  const [profile, setProfile] = useState(() => getMyProfile());
-  useEffect(() => {
-    const unsub = subscribeProfile(() => setProfile(getMyProfile()));
-    return () => {
-      unsub();
-    };
-  }, []);
-
+  // 방안 S (2026-05-07) — useMyProfile 로 race condition 해소.
+  const profile = useMyProfile();
   const plan = inferPlan(profile);
 
   const dims =

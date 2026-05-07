@@ -34,12 +34,11 @@ import {
   signInWithOAuth,
 } from '@/lib/supabase';
 import {
-  getMyProfile,
   setDisplayName,
   isValidTag,
   normalizeTag,
   formatTagInput,
-  subscribeProfile,
+  useMyProfile,
   type MyProfile,
 } from '@/data/profile';
 import {
@@ -58,14 +57,8 @@ export default function FriendsPage({ onExit }: Props) {
   const progress = useProgress();
   const playerStats = useMemo(() => computePlayerStats(progress), [progress]);
 
-  // 프로필 — 컴포넌트 마운트 시 한 번 생성·로드. subscribe 로 변경 추적.
-  const [me, setMe] = useState<MyProfile>(() => getMyProfile());
-  useEffect(() => {
-    const unsub = subscribeProfile(() => setMe(getMyProfile()));
-    return () => {
-      unsub();
-    };
-  }, []);
+  // 프로필 — 방안 S (2026-05-07) useMyProfile 로 race condition 해소.
+  const me = useMyProfile();
 
   const [friends, setFriends] = useState<FriendEntry[]>(() => listFriends());
   useEffect(() => {

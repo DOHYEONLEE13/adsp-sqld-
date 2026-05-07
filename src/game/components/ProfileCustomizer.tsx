@@ -14,12 +14,10 @@ import { Pencil, Check } from 'lucide-react';
 import Ques from '@/components/mascot/Ques';
 import {
   AVATAR_POSES,
-  getMyProfile,
   setAvatarCharacter,
   setAvatarPose,
   setDisplayName,
-  subscribeProfile,
-  type MyProfile,
+  useMyProfile,
 } from '@/data/profile';
 import ProfileSyncSkeleton from '@/components/profile/ProfileSyncSkeleton';
 import type { MascotCharacter, QuesPose } from '@/components/mascot/types';
@@ -36,13 +34,8 @@ const POSE_LABELS: Record<QuesPose, string> = {
 };
 
 export default function ProfileCustomizer() {
-  const [profile, setProfile] = useState<MyProfile>(() => getMyProfile());
-  useEffect(() => {
-    const unsub = subscribeProfile(() => setProfile(getMyProfile()));
-    return () => {
-      unsub();
-    };
-  }, []);
+  // 방안 S (2026-05-07) — useMyProfile 로 race condition 해소.
+  const profile = useMyProfile();
 
   const [editingName, setEditingName] = useState(false);
   const [draft, setDraft] = useState(profile.displayName);

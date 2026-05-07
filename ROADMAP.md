@@ -5,6 +5,43 @@
 
 ---
 
+## 코드베이스 표준 — 외부 store 데이터는 반드시 안전한 hook 사용 (2026-05-07 채택)
+
+### 배경
+2026-05-07 인증 시스템 stuck 사고 — 5번의 fix 후에도 새로고침 필요한 증상 잔존. 원인:
+profile/energy/passSync/stepUnlocks 의 sync 함수는 안전하게 고쳤지만, **그 데이터를 읽는
+4 컴포넌트** (MobileGameNav · ProfileCustomizer · PlanTag · FriendsPage) 가 직접
+`useState + useEffect + subscribeXxx` 패턴 사용 → React state race 잔존.
+
+### 표준
+**외부 store (profile / energy / passSync / stepUnlocks) 의 데이터를 React 컴포넌트에서
+읽을 때는 반드시 다음 hook 만 사용:**
+
+| 데이터 | 안전 hook (사용 ✅) | 금지 패턴 (사용 ❌) |
+|---|---|---|
+| 내 프로필 | `useMyProfile()` from `@/data/profile` | `useState(getMyProfile()) + useEffect(subscribeProfile)` |
+| 에너지 / is_premium | `useEnergy()` from `@/game/energy` | `useState(_state) + useEffect(_listeners.add)` |
+| Pass tier / stamps | `usePassSnapshot()` from `@/game/passSync` | 동일 |
+| Step 잠금 | `useStepUnlocks()` from `@/game/stepUnlocks` | 동일 |
+
+### 이유
+- React 의 `useState + useEffect` 패턴은 first render ↔ listener 부착 사이 race window 존재
+- 그 윈도우에서 외부 setState 가 fire 되면 update 영구 미반영 (stale stuck)
+- `useSyncExternalStore` (위 hook 들 내부 사용) 는 React 가 자체적으로 race 처리
+- concurrent rendering 안전성도 보장
+
+### 코드 리뷰 체크
+- 새 컴포넌트 PR 에서 `useState(getMyProfile())`, `useState(_state)` 같은 패턴 발견 시
+  즉시 hook 으로 교체 요구
+- 새 외부 store 신설 시 처음부터 `useSyncExternalStore` 기반 hook 으로 export
+- `subscribeXxx` export 는 hook 외에는 사용 자제 (필요 시 hook 안에서만 internal 사용)
+
+### 회피 케이스
+- React 외부 (예: storage.ts 의 메타 push 같은 비-React 코드) 는 `subscribeXxx` 직접 사용 가능
+- 1-shot 측정 (mount 시 한 번만 읽고 안 추적) 도 `getXxx()` 직접 사용 가능 — 단 추적 필요 시 hook 으로
+
+---
+
 ## 출시 전 P0 (반드시 해야 하는 것)
 
 ### Phase 4 Step 6 — Supabase 마이그레이션 일괄 적용 (2~3일, P0)

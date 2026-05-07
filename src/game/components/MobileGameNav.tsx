@@ -14,7 +14,7 @@
 
 import { Settings as SettingsIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useEffect, useState, type ComponentType } from 'react';
+import { useState, type ComponentType } from 'react';
 import {
   BookTabIcon,
   FlagTabIcon,
@@ -28,11 +28,7 @@ import { useProgress } from '../useProgress';
 import { computePlayerStats } from '../rpg';
 import EnergyBadge from './EnergyBadge';
 import Ques from '@/components/mascot/Ques';
-import {
-  getMyProfile,
-  subscribeProfile,
-  type MyProfile,
-} from '@/data/profile';
+import { useMyProfile } from '@/data/profile';
 import { usePassSnapshot } from '../passSync';
 import PassTierBadge from '@/components/passes/PassTierBadge';
 import ProfileSyncSkeleton from '@/components/profile/ProfileSyncSkeleton';
@@ -58,7 +54,9 @@ export function MobileTopBar({ subject }: TopProps) {
   const progress = useProgress();
   const stats = computePlayerStats(progress);
   const [shareOpen, setShareOpen] = useState(false);
-  const [profile, setProfile] = useState<MyProfile>(() => getMyProfile());
+  // 방안 S (2026-05-07) — useMyProfile (useSyncExternalStore) 로 race condition 해소.
+  // 이전 useState + subscribeProfile 패턴은 first render 와 listener 부착 race 로 stale stuck.
+  const profile = useMyProfile();
   const passSnap = usePassSnapshot();
 
   // 사용자 흐름 폴리시 — 좌측 상단 마스코트 옆 과목 배지 + 전환 모달.
@@ -71,12 +69,6 @@ export function MobileTopBar({ subject }: TopProps) {
     null;
   const [switcherOpen, setSwitcherOpen] = useState(false);
   const [toastSubject, setToastSubject] = useState<Subject | null>(null);
-  useEffect(() => {
-    const unsub = subscribeProfile(() => setProfile(getMyProfile()));
-    return () => {
-      unsub();
-    };
-  }, []);
 
   const handleShare = async () => {
     const subj = subject ? subject.toUpperCase() : 'QuestDP';

@@ -221,12 +221,14 @@ export function getMyProfile(): MyProfile {
   // 인증 — server pull 결과 대기 중이면 tag/displayName 빈값 (skeleton)
   const syncDone = _syncStatus === 'ok';
   if (stored) {
-    // unlockedPoses 결정:
+    // unlockedPoses 결정 (2026-05-08 수정):
     //   - 정의됐으면 그대로 (server pull 결과)
-    //   - 미정의 (마이그 0026 이전 캐시) 면 모든 포즈 보유로 fallback —
-    //     옛 캐시 사용자가 본인 활성 포즈 잠금 표시되는 버그 회피.
-    //     다음 sync 후 server 값으로 정확화.
-    const unlockedPoses = stored.unlockedPoses ?? GUEST_ALL_POSES;
+    //   - 미정의 (옛 캐시) 면 default ['tori-wave', 'selli-wave'] 만 (보수적).
+    //   이전엔 GUEST_ALL_POSES (16개 모두 보유) fallback 으로 옛 캐시 사용자
+    //   본인 포즈 잠금 미표시 의도였지만 — 결과적으로 "잠금 표시 안 보임 + 모달
+    //   안 열림" 사용자 보고 야기. server backfill 로 모든 사용자 default 만 보유
+    //   상태이므로 default fallback 이 더 정확 + 사용자 의도 (구매 시스템) 보존.
+    const unlockedPoses = stored.unlockedPoses ?? ['tori-wave', 'selli-wave'];
     return {
       tag: syncDone ? stored.tag : '',
       displayName: syncDone ? stored.displayName : '',

@@ -93,6 +93,17 @@ export async function waitForSession(
     }, POLL_INTERVAL_MS);
 
     // Timeout — 결정된 시간 후 null 로 graceful fallback.
-    timeoutId = window.setTimeout(() => finish(null), timeoutMs);
+    timeoutId = window.setTimeout(() => {
+      // 방안 R — production 진단 로그. timeout 발생 시 어떤 hydration race 가 미해결인지
+      // 사용자가 console 에서 캡처해 보고 가능. listener / polling 모두 못 잡은 케이스.
+      // 정상 흐름은 timeout 전 finish(session) 호출됨 (즉, 이 로그가 뜨면 비정상).
+      // eslint-disable-next-line no-console
+      console.warn(
+        `[waitForSession] timeout after ${timeoutMs}ms — hydration 미완료. ` +
+          'profile/energy/pass/stepUnlocks 가 게스트 fallback 로 진행. ' +
+          '이후 재진입 트리거 (visibility/online/SIGNED_IN/TOKEN_REFRESHED) 가 fire 될 때 갱신.',
+      );
+      finish(null);
+    }, timeoutMs);
   });
 }

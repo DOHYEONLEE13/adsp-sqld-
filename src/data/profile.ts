@@ -16,6 +16,7 @@ import { useSyncExternalStore } from 'react';
 import type { MascotCharacter, QuesPose } from '@/components/mascot/types';
 import { DEFAULT_CHARACTER } from '@/components/mascot/types';
 import { getSupabase, onAuthStateChange } from '@/lib/supabase';
+import { waitForSession } from '@/lib/auth/waitForSession';
 
 const STORAGE_KEY = 'questdp.profile.v1';
 const TAG_RE = /^Q-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
@@ -396,8 +397,12 @@ const RETRY_DELAYS_MS = [300, 800, 2000];
 async function pullFromSupabase(): Promise<void> {
   const sb = getSupabase();
   if (!sb) return;
-  const { data: sess } = await sb.auth.getSession();
-  if (!sess.session) {
+  // 2026-05-07 hydration race fix (방안 N):
+  //   기존 sb.auth.getSession() 직접 호출은 cold cache 시 null 반환 → setAuthState(false)
+  //   로 즉시 락. 5-retry 는 SELECT 응답 retry 일 뿐, 위에서 early return 하면 도달 못 함.
+  //   waitForSession() 으로 hydration 대기 (3 초 timeout) → race 차단.
+  const session = await waitForSession();
+  if (!session) {
     setAuthState(false);
     return;
   }
@@ -408,7 +413,7 @@ async function pullFromSupabase(): Promise<void> {
     sb
       .from('profiles')
       .select('tag, display_name, avatar_pose, avatar_character, role, created_at')
-      .eq('id', sess.session!.user.id)
+      .eq('id', session.user.id)
       .maybeSingle();
 
   for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt++) {

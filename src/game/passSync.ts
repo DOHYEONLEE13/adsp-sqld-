@@ -16,6 +16,7 @@ import {
   isSupabaseConfigured,
   onAuthStateChange,
 } from '@/lib/supabase';
+import { waitForSession } from '@/lib/auth/waitForSession';
 import { computePassTier, pickHigherTier } from './passes';
 import {
   PASS_TIER_ORDER,
@@ -72,20 +73,23 @@ function setState(next: PassSnapshot) {
   notify();
 }
 
-/** 서버에서 stamps + tier 끌어옴. 마이그 미적용·세션 X 시 graceful degrade. */
+/** 서버에서 stamps + tier 끌어옴. 마이그 미적용·세션 X 시 graceful degrade.
+ *
+ * 2026-05-07 hydration race fix: waitForSession() 으로 cold cache hydration 대기.
+ */
 async function pull(): Promise<void> {
   const sb = getSupabase();
   if (!sb) {
     setState(DEFAULT);
     return;
   }
-  const { data: sess } = await sb.auth.getSession();
-  if (!sess.session) {
+  const session = await waitForSession();
+  if (!session) {
     setState(DEFAULT);
     return;
   }
 
-  const userId = sess.session.user.id;
+  const userId = session.user.id;
 
   // tier 는 profiles.pass_tier (마이그 0013 적용 후 컬럼 존재)
   let tier: PassTier = 'bronze';

@@ -19,6 +19,7 @@ import {
   isSupabaseConfigured,
   onAuthStateChange,
 } from '@/lib/supabase';
+import { waitForSession } from '@/lib/auth/waitForSession';
 
 export function stepKey(lessonId: string, stepIdx: number): string {
   return `${lessonId}-s${stepIdx}`;
@@ -110,9 +111,10 @@ async function pull(): Promise<void> {
     setState(defaultGuestSnapshot());
     return;
   }
-  const { data: sess } = await sb.auth.getSession();
-  if (!sess.session) {
-    // 미로그인 = 게스트 (localStorage 진행도)
+  // 2026-05-07 hydration race fix: waitForSession() 으로 cold cache hydration 대기.
+  const session = await waitForSession();
+  if (!session) {
+    // 미로그인 또는 hydration timeout = 게스트
     _lastIsAdmin = false;
     setState(defaultGuestSnapshot());
     return;
@@ -122,7 +124,7 @@ async function pull(): Promise<void> {
   const { data: prof } = await sb
     .from('profiles')
     .select('is_premium, role')
-    .eq('id', sess.session.user.id)
+    .eq('id', session.user.id)
     .maybeSingle();
   const isAdmin = (prof as { role?: string } | null)?.role === 'admin';
   _lastIsAdmin = isAdmin;

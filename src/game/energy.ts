@@ -21,6 +21,7 @@ import {
   isSupabaseConfigured,
   onAuthStateChange,
 } from '@/lib/supabase';
+import { waitForSession } from '@/lib/auth/waitForSession';
 
 export interface EnergyState {
   /** 인증돼 있고 서버 sync 중인지. 게스트면 false. */
@@ -180,7 +181,12 @@ function setState(next: EnergyState) {
   notify();
 }
 
-/** server 에서 profile 의 energy_count / is_premium 만 fetch. 게스트면 localStorage. */
+/** server 에서 profile 의 energy_count / is_premium 만 fetch. 게스트면 localStorage.
+ *
+ * 2026-05-07 hydration race fix:
+ *   getSession() 직접 호출 대신 waitForSession() 사용. 첫 페이지 로드 (cold cache)
+ *   에서 hydration 미완료로 null 받는 race 차단. 3초 대기 후 timeout = 게스트 처리.
+ */
 async function pullEnergy(): Promise<void> {
   const sb = getSupabase();
   if (!sb) {
@@ -190,9 +196,9 @@ async function pullEnergy(): Promise<void> {
     setState(guestStateFrom(guest));
     return;
   }
-  const { data: sess } = await sb.auth.getSession();
-  if (!sess.session) {
-    // 미로그인 = 게스트 (localStorage 게이트)
+  const session = await waitForSession();
+  if (!session) {
+    // 미로그인 또는 hydration timeout = 게스트
     const guest = regenGuest(loadGuestEnergy());
     saveGuestEnergy(guest);
     setState(guestStateFrom(guest));
@@ -201,7 +207,7 @@ async function pullEnergy(): Promise<void> {
   const { data } = await sb
     .from('profiles')
     .select('energy_count, energy_updated_at, is_premium, role')
-    .eq('id', sess.session.user.id)
+    .eq('id', session.user.id)
     .maybeSingle();
   if (!data) return;
   const isAdmin = (data as { role?: string }).role === 'admin';

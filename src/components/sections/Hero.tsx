@@ -11,11 +11,12 @@ export default function Hero() {
       className="relative min-h-screen rounded-b-[32px] overflow-hidden isolate"
     >
       {/*
-        poster — 영상 로드 전 즉시 표시할 정적 이미지. mp4 다운로드 동안 검은 화면
-        대신 OG 이미지 표시 → LCP / 첫인상 개선.
-        (사용자가 별도 hero 전용 poster 만들 때까지 OG default 재사용.)
+        poster 미지정 — 영상 로드 동안 검은 배경 (Hero 의 dark gradient overlay 가
+        자연스럽게 흡수). OG 이미지를 poster 로 쓰니 영상 시작 직전 1~2 프레임
+        깜빡임 발생 (사용자 보고 2026-05-07) → poster 제거. preload="metadata"
+        는 그대로 유지해 첫 프레임까지 LTE 1~3s 단축 효과는 보존.
       */}
-      <VideoBg src={HERO.videoUrl} poster="/og/default.png" />
+      <VideoBg src={HERO.videoUrl} />
 
       {/* dark gradient for legibility */}
       <div

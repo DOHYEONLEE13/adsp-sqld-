@@ -10,7 +10,7 @@
  * 모듈 패턴은 stepUnlocks.ts 와 동일 — useSyncExternalStore 친화 listener.
  */
 
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 import {
   getSupabase,
   isSupabaseConfigured,
@@ -43,7 +43,21 @@ const DEFAULT: PassSnapshot = {
 let _state: PassSnapshot = DEFAULT;
 const _listeners = new Set<() => void>();
 
+let _cachedSnapshot: PassSnapshot | null = null;
+function passSnapshotFn(): PassSnapshot {
+  if (_cachedSnapshot === null) _cachedSnapshot = _state;
+  return _cachedSnapshot;
+}
+
+function subscribePass(cb: () => void): () => void {
+  _listeners.add(cb);
+  return () => {
+    _listeners.delete(cb);
+  };
+}
+
 function notify() {
+  _cachedSnapshot = null;
   for (const l of _listeners) {
     try {
       l();
@@ -237,16 +251,12 @@ export function initPassSync(): () => void {
   };
 }
 
+/**
+ * 2026-05-07 race fix — useSyncExternalStore 기반 (profile.useMyProfile 패턴).
+ * 기존 useState + useEffect 가 first render ↔ listener 부착 race 로 stale stuck.
+ */
 export function usePassSnapshot(): PassSnapshot {
-  const [snap, setSnap] = useState<PassSnapshot>(_state);
-  useEffect(() => {
-    const cb = () => setSnap(_state);
-    _listeners.add(cb);
-    return () => {
-      _listeners.delete(cb);
-    };
-  }, []);
-  return snap;
+  return useSyncExternalStore(subscribePass, passSnapshotFn, passSnapshotFn);
 }
 
 export function getPassSnapshot(): PassSnapshot {

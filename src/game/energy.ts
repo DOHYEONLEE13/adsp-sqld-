@@ -15,7 +15,7 @@
  * 서버 RPC `consume_energy` / `grant_ad_energy` 가 atomic 처리. 게스트는 localStorage 동일 모방.
  */
 
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 import {
   getSupabase,
   isSupabaseConfigured,
@@ -146,7 +146,26 @@ const DEFAULT_GUEST: EnergyState = guestStateFrom(loadGuestEnergy());
 let _state: EnergyState = DEFAULT_GUEST;
 const _listeners = new Set<() => void>();
 
+/**
+ * useSyncExternalStore 가 reference equality 로 비교하므로 매 호출마다 새 객체를
+ * 반환하면 무한 렌더가 발생. _state 자체는 setState 시 새 reference 로 교체되므로
+ * cachedSnapshot 으로 한 번 더 감쌀 필요는 없으나 — profile.ts 와 동일 패턴 유지.
+ */
+let _cachedSnapshot: EnergyState | null = null;
+function energySnapshot(): EnergyState {
+  if (_cachedSnapshot === null) _cachedSnapshot = _state;
+  return _cachedSnapshot;
+}
+
+function subscribeEnergy(cb: () => void): () => void {
+  _listeners.add(cb);
+  return () => {
+    _listeners.delete(cb);
+  };
+}
+
 function notify() {
+  _cachedSnapshot = null;  // 캐시 무효화 — 다음 snapshot 호출에서 fresh _state.
   for (const l of _listeners) {
     try {
       l();
@@ -287,17 +306,15 @@ export function initEnergySync(): () => void {
   };
 }
 
-/** React hook — useSyncExternalStore 흉내. */
+/**
+ * React hook — useSyncExternalStore 기반 (2026-05-07 race fix).
+ *
+ * 기존 useState + useEffect 패턴은 first render 와 listener 부착 사이의 윈도우에서
+ * 일어나는 외부 setState 를 놓쳐 영구 stale 상태 stuck. profile.useMyProfile 의
+ * 검증된 패턴 그대로 도입.
+ */
 export function useEnergy(): EnergyState {
-  const [snap, setSnap] = useState<EnergyState>(_state);
-  useEffect(() => {
-    const cb = () => setSnap(_state);
-    _listeners.add(cb);
-    return () => {
-      _listeners.delete(cb);
-    };
-  }, []);
-  return snap;
+  return useSyncExternalStore(subscribeEnergy, energySnapshot, energySnapshot);
 }
 
 export interface ConsumeResult {

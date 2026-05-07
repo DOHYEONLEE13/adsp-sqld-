@@ -13,7 +13,7 @@
  * step_key 컨벤션: `{lessonId}-s{stepIdx}` (예: `adsp-1-1-s2`).
  */
 
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 import {
   getSupabase,
   isSupabaseConfigured,
@@ -67,7 +67,21 @@ const DEFAULT: StepLockSnapshot = defaultGuestSnapshot();
 let _state: StepLockSnapshot = DEFAULT;
 const _listeners = new Set<() => void>();
 
+let _cachedSnapshot: StepLockSnapshot | null = null;
+function stepUnlocksSnapshot(): StepLockSnapshot {
+  if (_cachedSnapshot === null) _cachedSnapshot = _state;
+  return _cachedSnapshot;
+}
+
+function subscribeStepUnlocks(cb: () => void): () => void {
+  _listeners.add(cb);
+  return () => {
+    _listeners.delete(cb);
+  };
+}
+
 function notify() {
+  _cachedSnapshot = null;
   for (const l of _listeners) {
     try {
       l();
@@ -221,16 +235,16 @@ export function initStepUnlocksSync(): () => void {
   };
 }
 
+/**
+ * 2026-05-07 race fix — useSyncExternalStore 기반 (profile.useMyProfile 패턴).
+ * 기존 useState + useEffect 가 first render ↔ listener 부착 race 로 stale stuck.
+ */
 export function useStepUnlocks(): StepLockSnapshot {
-  const [snap, setSnap] = useState<StepLockSnapshot>(_state);
-  useEffect(() => {
-    const cb = () => setSnap(_state);
-    _listeners.add(cb);
-    return () => {
-      _listeners.delete(cb);
-    };
-  }, []);
-  return snap;
+  return useSyncExternalStore(
+    subscribeStepUnlocks,
+    stepUnlocksSnapshot,
+    stepUnlocksSnapshot,
+  );
 }
 
 /**

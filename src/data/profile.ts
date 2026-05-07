@@ -80,6 +80,16 @@ export interface MyProfile {
    */
   unlockedPoses: string[];
   /**
+   * server 의 profiles.total_xp — 구매/잠금해제 RPC 가 검증하는 권위 있는 XP.
+   *
+   * client 의 computePlayerStats(progress).totalXp 와 다를 수 있음:
+   *   - record_session RPC sync 실패 시 server 갱신 안 됨 → client 측 XP 만 누적
+   *   - 모달의 "현재 XP" 표시 / 잠금해제 가능 여부 판정은 이 값을 써야 정확
+   *
+   * 게스트 / 미인증 / sync 미완료 시 0.
+   */
+  serverTotalXp: number;
+  /**
    * Supabase 인증 상태. 게스트 = false. server tag·친구 시스템·결제 UI 의
    * 1차 게이트로 사용.
    */
@@ -122,6 +132,8 @@ interface StoredProfile {
    * 미설정 시 모든 포즈 보유 (게스트 default — 인증 후 server sync 시 실제 값).
    */
   unlockedPoses?: string[];
+  /** server 의 total_xp 미러 — 모달 / 구매 검증용. */
+  serverTotalXp?: number;
   createdAt: number;
 }
 
@@ -197,6 +209,7 @@ export function getMyProfile(): MyProfile {
       avatarCharacter: stored?.avatarCharacter ?? DEFAULT_CHARACTER,
       unlockedCharacters: ['tori', 'selli'],
       unlockedPoses: stored?.unlockedPoses ?? GUEST_ALL_POSES,
+      serverTotalXp: 0,
       isAuthenticated: false,
       isAdmin: false,
       createdAt: stored?.createdAt ?? 0,
@@ -221,6 +234,7 @@ export function getMyProfile(): MyProfile {
       avatarCharacter: stored.avatarCharacter ?? DEFAULT_CHARACTER,
       unlockedCharacters: ['tori', 'selli'],
       unlockedPoses,
+      serverTotalXp: stored.serverTotalXp ?? 0,
       isAuthenticated: true,
       isAdmin: stored.role === 'admin',
       createdAt: stored.createdAt,
@@ -236,6 +250,7 @@ export function getMyProfile(): MyProfile {
     avatarCharacter: DEFAULT_CHARACTER,
     unlockedCharacters: ['tori', 'selli'],
     unlockedPoses: ['tori-wave', 'selli-wave'],
+    serverTotalXp: 0,
     isAuthenticated: true,
     isAdmin: false,
     createdAt: 0,
@@ -430,13 +445,16 @@ export async function purchasePose(
         remainingXp: r.remaining_xp,
       };
     }
-    // 낙관적 갱신
+    // 낙관적 갱신 — unlockedPoses 추가 + serverTotalXp 차감
     const stored = loadStored();
     if (stored) {
       const current = stored.unlockedPoses ?? ['tori-wave', 'selli-wave'];
-      if (!current.includes(key)) {
-        saveStored({ ...stored, unlockedPoses: [...current, key] });
-      }
+      const nextPoses = current.includes(key) ? current : [...current, key];
+      saveStored({
+        ...stored,
+        unlockedPoses: nextPoses,
+        serverTotalXp: r.remaining_xp,
+      });
     }
     notify();
     return { ok: true, remainingXp: r.remaining_xp };
@@ -562,7 +580,7 @@ async function pullFromSupabase(): Promise<void> {
     sb
       .from('profiles')
       .select(
-        'tag, display_name, avatar_pose, avatar_character, role, unlocked_characters, unlocked_poses, created_at',
+        'tag, display_name, avatar_pose, avatar_character, role, unlocked_characters, unlocked_poses, total_xp, created_at',
       )
       .eq('id', session.user.id)
       .maybeSingle();
@@ -582,6 +600,9 @@ async function pullFromSupabase(): Promise<void> {
       const unlockedPoses: string[] = Array.isArray(rawUnlockedPoses)
         ? rawUnlockedPoses.filter((p): p is string => typeof p === 'string')
         : ['tori-wave', 'selli-wave'];
+      const rawTotalXp = (data as { total_xp?: unknown }).total_xp;
+      const serverTotalXp =
+        typeof rawTotalXp === 'number' && rawTotalXp >= 0 ? rawTotalXp : 0;
       saveStored({
         v: 1,
         tag: data.tag,
@@ -595,6 +616,7 @@ async function pullFromSupabase(): Promise<void> {
           unlockedPoses.length > 0
             ? unlockedPoses
             : ['tori-wave', 'selli-wave'],
+        serverTotalXp,
         createdAt:
           local?.createdAt ?? Date.parse(data.created_at) ?? Date.now(),
       });

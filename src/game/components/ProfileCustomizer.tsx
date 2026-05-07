@@ -20,8 +20,6 @@ import {
   setDisplayName,
   useMyProfile,
 } from '@/data/profile';
-import { useProgress } from '@/game/useProgress';
-import { computePlayerStats } from '@/game/rpg';
 import ProfileSyncSkeleton from '@/components/profile/ProfileSyncSkeleton';
 import PurchaseConfirmModal from '@/components/ui/PurchaseConfirmModal';
 import type { MascotCharacter, QuesPose } from '@/components/mascot/types';
@@ -423,9 +421,10 @@ function PoseGrid({
   profile,
   poseLabels,
 }: PoseGridProps) {
-  const progress = useProgress();
-  const stats = computePlayerStats(progress);
-  const totalXp = stats.totalXp;
+  // 2026-05-08 — 모달의 "현재 XP" 는 server total_xp 사용 (purchase_pose RPC 가
+  // 검증하는 권위 있는 값). client computePlayerStats 의 XP 와 다를 수 있음 —
+  // record_session sync 실패 시 client 만 누적되고 server 는 0 인 케이스 보호.
+  const totalXp = profile.serverTotalXp;
 
   // 모달 상태 — 잠금 포즈 클릭 시 띄움
   const [modalPose, setModalPose] = useState<QuesPose | null>(null);

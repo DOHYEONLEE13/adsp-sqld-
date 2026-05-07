@@ -13,6 +13,7 @@
  */
 
 import { getSupabase, onAuthStateChange } from '@/lib/supabase';
+import { waitForSession } from '@/lib/auth/waitForSession';
 import type { QuestSummary } from './types';
 import { computeMaxStreak, xpForSession } from './rpg';
 
@@ -104,6 +105,11 @@ function buildArgs(summary: QuestSummary): RecordSessionArgs {
 /**
  * 세션 push. 로그인돼 있으면 RPC, 미로그인이면 outbox 에만 쌓아둠
  * (다음 로그인 후 flush). 실패해도 throw 안 함 — 게임은 계속 진행.
+ *
+ * 2026-05-08 race fix:
+ *   이전엔 sb.auth.getSession() 직접 사용 → cold cache 시 null 반환 →
+ *   outbox 에만 쌓이고 hydration 완료 후에도 자동 flush 안 됨 → 모든 사용자
+ *   server total_xp = 0. waitForSession() 으로 hydration 대기 후 호출.
  */
 export async function pushSessionToServer(summary: QuestSummary): Promise<void> {
   const args = buildArgs(summary);
@@ -113,8 +119,10 @@ export async function pushSessionToServer(summary: QuestSummary): Promise<void> 
     return;
   }
 
-  const { data: sess } = await sb.auth.getSession();
-  if (!sess.session) {
+  // hydration 완료까지 3초 대기 — race 차단.
+  const session = await waitForSession();
+  if (!session) {
+    console.warn('[sessionSync] no session — queueing for later flush');
     queueSession(args);
     return;
   }
@@ -122,7 +130,7 @@ export async function pushSessionToServer(summary: QuestSummary): Promise<void> 
   try {
     const { error } = await sb.rpc('record_session', args);
     if (error) {
-      console.warn('[sessionSync] RPC failed, queueing', error.message);
+      console.warn('[sessionSync] RPC failed, queueing', error.message, error);
       queueSession(args);
       return;
     }
@@ -150,41 +158,80 @@ function queueSession(args: RecordSessionArgs) {
  * outbox 에 쌓인 세션을 모두 push 시도.
  * - 성공한 건 outbox 에서 제거.
  * - 실패하면 그대로 두고 다음 flush 에 재시도.
+ *
+ * 2026-05-08 race fix — waitForSession 사용 (이전 sb.auth.getSession 직접 호출은
+ * cold cache 시 null 반환으로 flush 영원히 미실행).
  */
 export async function flushOutbox(): Promise<void> {
   const sb = getSupabase();
   if (!sb) return;
-  const { data: sess } = await sb.auth.getSession();
-  if (!sess.session) return;
+  const session = await waitForSession();
+  if (!session) return;
 
   const outbox = loadOutbox();
   if (outbox.pending.length === 0) return;
 
   const survivors: PendingSession[] = [];
+  let successCount = 0;
   for (const item of outbox.pending) {
     try {
       const { error } = await sb.rpc('record_session', item.payload);
       if (error) {
+        console.warn('[sessionSync] flush — RPC failed', error.message, error);
         survivors.push(item);
+      } else {
+        successCount += 1;
       }
-    } catch {
+    } catch (e) {
+      console.warn('[sessionSync] flush — exception', e);
       survivors.push(item);
     }
   }
 
   saveOutbox({ v: 1, pending: survivors });
+  if (successCount > 0) {
+    // eslint-disable-next-line no-console
+    console.info(
+      `[sessionSync] flushed ${successCount} session(s), ${survivors.length} remaining`,
+    );
+  }
 }
 
-/** App mount 시 한 번 호출. SIGNED_IN 시 outbox 자동 flush. */
+/**
+ * App mount 시 한 번 호출. 다양한 트리거에서 outbox flush.
+ *
+ * 2026-05-08 트리거 다양화 — INITIAL_SESSION 만으론 cold cache 시 fire 늦거나
+ * 미발생. profile/energy/passSync 와 같은 패턴으로 다중 트리거.
+ */
 export function initSessionSync(): () => void {
   // 페이지 새로고침 시 이미 세션 있으면 즉시 시도
   void flushOutbox();
 
   const unsub = onAuthStateChange((event) => {
-    if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+    if (
+      event === 'SIGNED_IN' ||
+      event === 'INITIAL_SESSION' ||
+      event === 'TOKEN_REFRESHED'
+    ) {
       void flushOutbox();
     }
   });
 
-  return unsub;
+  // 네트워크 복귀 / 탭 가시화 시 재시도
+  const onOnline = () => void flushOutbox();
+  const onVisibility = () => {
+    if (document.visibilityState === 'visible') void flushOutbox();
+  };
+  if (typeof window !== 'undefined') {
+    window.addEventListener('online', onOnline);
+    document.addEventListener('visibilitychange', onVisibility);
+  }
+
+  return () => {
+    unsub();
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('online', onOnline);
+      document.removeEventListener('visibilitychange', onVisibility);
+    }
+  };
 }

@@ -14,6 +14,7 @@
  */
 
 import { getSupabase } from '@/lib/supabase';
+import { waitForSession } from '@/lib/auth/waitForSession';
 import { trackPush } from './progressSync';
 
 export interface MetaPatch {
@@ -22,18 +23,27 @@ export interface MetaPatch {
   lesson_xp?: number;
 }
 
+/**
+ * 2026-05-08 race fix — sb.auth.getSession() 직접 사용은 cold cache 시 null 반환 →
+ *   silent fail → server 의 lesson_xp 영원히 0 (사용자 client lesson XP 누적은 되지만).
+ *   waitForSession() 으로 hydration 대기 후 push.
+ */
 export async function pushProgressMetaToServer(patch: MetaPatch): Promise<void> {
   const sb = getSupabase();
   if (!sb) return;
-  const { data: sess } = await sb.auth.getSession();
-  if (!sess.session) return;
+  const session = await waitForSession();
+  if (!session) return;
 
-  // inflight 등록 — pull 이 race 안 되도록. Builder 를 await 하면 진짜 Promise.
+  // inflight 등록 — pull 이 race 안 되도록.
   const p: Promise<unknown> = (async () => {
-    await sb
+    const { error } = await sb
       .from('profiles')
       .update(patch)
-      .eq('id', sess.session!.user.id);
+      .eq('id', session.user.id);
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.warn('[progressMetaSync] update failed', { patch, error });
+    }
   })();
 
   await trackPush(p).catch(() => {

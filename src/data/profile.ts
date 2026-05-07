@@ -580,7 +580,7 @@ async function pullFromSupabase(): Promise<void> {
     sb
       .from('profiles')
       .select(
-        'tag, display_name, avatar_pose, avatar_character, role, unlocked_characters, unlocked_poses, total_xp, created_at',
+        'tag, display_name, avatar_pose, avatar_character, role, unlocked_characters, unlocked_poses, total_xp, lesson_xp, created_at',
       )
       .eq('id', session.user.id)
       .maybeSingle();
@@ -600,9 +600,17 @@ async function pullFromSupabase(): Promise<void> {
       const unlockedPoses: string[] = Array.isArray(rawUnlockedPoses)
         ? rawUnlockedPoses.filter((p): p is string => typeof p === 'string')
         : ['tori-wave', 'selli-wave'];
+      // 2026-05-08 — server 측 사용 가능 XP = total_xp + lesson_xp 합산.
+      // total_xp = quest 세션 XP (record_session/bump_progress)
+      // lesson_xp = lesson step 정답 XP (recordSingleAnswer → pushProgressMeta)
+      // purchase_pose RPC 도 두 컬럼 합산해 검증 (마이그 0027).
       const rawTotalXp = (data as { total_xp?: unknown }).total_xp;
-      const serverTotalXp =
+      const rawLessonXp = (data as { lesson_xp?: unknown }).lesson_xp;
+      const safeTotal =
         typeof rawTotalXp === 'number' && rawTotalXp >= 0 ? rawTotalXp : 0;
+      const safeLesson =
+        typeof rawLessonXp === 'number' && rawLessonXp >= 0 ? rawLessonXp : 0;
+      const serverTotalXp = safeTotal + safeLesson;
       saveStored({
         v: 1,
         tag: data.tag,

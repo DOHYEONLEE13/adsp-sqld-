@@ -23,6 +23,7 @@ import { ToastProvider } from './components/ui/Toast';
 import DevUnlockBadge from './components/DevUnlockBadge';
 import GuestDiscardToast from './components/GuestDiscardToast';
 import SlowAuthHint from './components/auth/SlowAuthHint';
+import { trackPageview } from './lib/analytics';
 
 // ── lazy 라우트 — 첫 페이지 (Landing) 만 즉시 로드, 나머지는 진입 시 다운로드.
 //   결과: 게스트가 랜딩만 보면 GamePage·StatsPage·법적 페이지·관리자 페이지의
@@ -282,9 +283,13 @@ export default function App() {
   }, []);
 
   // 라우트 변경 구독 — hashchange (hash routes) + popstate (path routes).
+  // GA4 trackPageview 도 같은 hook 에서 발사 (SPA 수동 page_view).
   useEffect(() => {
+    // 첫 mount 의 page_view 도 명시 발사 (GA4 send_page_view: false 라 자동 발사 X).
+    trackPageview(window.location.pathname + window.location.hash);
     const onChange = () => {
       startTransition(() => setRouteState(getRoute()));
+      trackPageview(window.location.pathname + window.location.hash);
     };
     window.addEventListener('hashchange', onChange);
     window.addEventListener('popstate', onChange);

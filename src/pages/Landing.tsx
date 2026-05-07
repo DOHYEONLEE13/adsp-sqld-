@@ -7,6 +7,7 @@ import GameModes from '@/components/sections/GameModes';
 import Pricing from '@/components/sections/Pricing';
 import CTA from '@/components/sections/CTA';
 import { useSeoMeta } from '@/lib/seo';
+import { getSupabase } from '@/lib/supabase';
 
 /**
  * 마운트/해시 변경 시 hash anchor (#pricing 등) 가 있으면 해당 섹션으로 스크롤.
@@ -44,6 +45,14 @@ export default function Landing() {
   });
 
   useScrollToHashAnchor();
+
+  // 방안 D — Landing 마운트 시점에 Supabase 세션 캐시 워밍.
+  // 사용자가 "Play" 클릭 → /game 진입 시 initProfileSync 의 첫 getSession() 호출이
+  // localStorage 캐시에서 즉시 반환됨 → profile pull 시작 시점 단축.
+  // void 로 promise 무시 — 실패해도 정상 흐름엔 영향 없음.
+  useEffect(() => {
+    void getSupabase()?.auth.getSession();
+  }, []);
 
   return (
     <>

@@ -384,12 +384,14 @@ function notify() {
 /**
  * 서버 프로필을 fetch 해 localStorage 에 덮어씌움. 인증돼 있을 때만.
  *
- * 5회 retry (지수 backoff: 350ms·700ms·1500ms·3000ms·6000ms · 총 ~11.5초)
- * — 트리거 race / 네트워크 일시 실패 모두 흡수.
+ * 3회 retry (지수 backoff: 300ms·800ms·2000ms · 총 ~3.1초)
+ * — 트리거 race / 네트워크 일시 실패 흡수. 5회 → 3회 축소 (방안 C, 2026-05-07)
+ *   사유: 정상 1차 응답으로 끝나는 경우가 대부분. 실패 시 'failed' 빠른 노출 →
+ *   사용자 [재시도] 버튼 인지 시점 ↓.
  *
  * 모두 실패 시 syncStatus='failed' 로 전환 → UI 가 fallback (재시도 버튼) 노출.
  */
-const RETRY_DELAYS_MS = [350, 700, 1500, 3000, 6000];
+const RETRY_DELAYS_MS = [300, 800, 2000];
 
 async function pullFromSupabase(): Promise<void> {
   const sb = getSupabase();

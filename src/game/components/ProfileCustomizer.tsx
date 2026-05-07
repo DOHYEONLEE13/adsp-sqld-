@@ -10,17 +10,23 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { Pencil, Check } from 'lucide-react';
+import { Pencil, Check, Lock } from 'lucide-react';
 import Ques from '@/components/mascot/Ques';
 import {
   AVATAR_POSES,
+  purchaseCharacter,
   setAvatarCharacter,
   setAvatarPose,
   setDisplayName,
   useMyProfile,
 } from '@/data/profile';
+import { useProgress } from '@/game/useProgress';
+import { computePlayerStats } from '@/game/rpg';
 import ProfileSyncSkeleton from '@/components/profile/ProfileSyncSkeleton';
 import type { MascotCharacter, QuesPose } from '@/components/mascot/types';
+
+/** 캐릭터 1개 잠금해제 비용. 마이그 0025 의 cost 와 동기화. */
+const CHARACTER_PRICE_XP = 50;
 
 const POSE_LABELS: Record<QuesPose, string> = {
   happy: '행복',
@@ -88,6 +94,7 @@ export default function ProfileCustomizer() {
   const onSaveAvatar = () => {
     if (!avatarChanged) return;
     let blocked = false;
+    let lockedAttempt = false;
     if (draftAvatarPose !== profile.avatarPose) {
       const r = setAvatarPose(draftAvatarPose);
       if (!r.ok && r.reason === 'sync-not-ready') blocked = true;
@@ -95,11 +102,19 @@ export default function ProfileCustomizer() {
     if (!blocked && draftCharacter !== profile.avatarCharacter) {
       const r = setAvatarCharacter(draftCharacter);
       if (!r.ok && r.reason === 'sync-not-ready') blocked = true;
+      // 안전망 — UI 가 잠금 캐릭터를 draft 로 못 만들지만, race 또는 stale state
+      // 시 'locked' reason 가능. 잠금 캐릭터 적용 거부 + 안내.
+      if (!r.ok && r.reason === 'locked') lockedAttempt = true;
     }
     if (blocked) {
       window.alert(
         '프로필 동기화가 완료되지 않았어요. 잠시 후 다시 시도해주세요.',
       );
+    }
+    if (lockedAttempt) {
+      window.alert('잠긴 캐릭터입니다. 먼저 50 XP 로 잠금해제해 주세요.');
+      // draft 를 server 값으로 되돌림
+      setDraftCharacter(profile.avatarCharacter);
     }
   };
 
@@ -240,36 +255,16 @@ export default function ProfileCustomizer() {
       {/* 캐릭터 선택 탭 (tori/selli) + 포즈 선택 그리드.
           클릭은 draft 만 갱신. 저장은 별도 버튼. */}
       <div className="mt-5 lg:mt-7">
-        {/* 캐릭터 탭 — 2 캐릭터 토글 */}
+        {/* 캐릭터 탭 — 2 캐릭터 토글 + 잠금/구매 표시 */}
         <div className="kr-heading uppercase text-[10px] md:text-[11px] tracking-widest text-cream/55 mb-2">
           캐릭터
         </div>
-        <div className="flex items-center gap-2 mb-4">
-          {(['tori', 'selli'] as const).map((c) => {
-            const isActive = c === draftCharacter;
-            return (
-              <button
-                key={c}
-                type="button"
-                onClick={() => setDraftCharacter(c)}
-                disabled={profile.pendingServerSync}
-                aria-pressed={isActive}
-                className="kr-heading uppercase tracking-widest text-[11px] md:text-[12px] px-4 py-2 rounded-full transition active:scale-95 disabled:opacity-50"
-                style={{
-                  background: isActive
-                    ? 'rgba(111,255,0,0.16)'
-                    : 'rgba(239,244,255,0.04)',
-                  border: isActive
-                    ? '1.5px solid #6FFF00'
-                    : '1.5px solid rgba(239,244,255,0.10)',
-                  color: isActive ? '#6FFF00' : 'rgba(239,244,255,0.65)',
-                }}
-              >
-                {CHAR_LABEL[c]}
-              </button>
-            );
-          })}
-        </div>
+        <CharacterTabs
+          draftCharacter={draftCharacter}
+          setDraftCharacter={setDraftCharacter}
+          profile={profile}
+          characterLabel={CHAR_LABEL}
+        />
 
         <div className="kr-heading uppercase text-[10px] md:text-[11px] tracking-widest text-cream/55 mb-2">
           아바타 표정
@@ -364,5 +359,183 @@ export default function ProfileCustomizer() {
         </div>
       </div>
     </section>
+  );
+}
+
+// ─── CharacterTabs ─────────────────────────────────────────────────────────
+// 캐릭터 토글 + 잠금 표시 + 50 XP 구매 흐름.
+//
+// 잠금 캐릭터 클릭 시:
+//   1) confirm — "X XP 사용해 잠금해제?"
+//   2) purchaseCharacter RPC 호출
+//   3) 성공 → stored 갱신 + draft 적용
+//   4) 실패 → reason 별 메시지
+//
+// 동시 호출 방지 — purchasing flag.
+
+interface CharacterTabsProps {
+  draftCharacter: MascotCharacter;
+  setDraftCharacter: (c: MascotCharacter) => void;
+  profile: ReturnType<typeof useMyProfile>;
+  characterLabel: Record<MascotCharacter, string>;
+}
+
+function CharacterTabs({
+  draftCharacter,
+  setDraftCharacter,
+  profile,
+  characterLabel,
+}: CharacterTabsProps) {
+  const progress = useProgress();
+  const stats = computePlayerStats(progress);
+  const totalXp = stats.totalXp;
+
+  const [purchasing, setPurchasing] = useState<MascotCharacter | null>(null);
+  const [feedback, setFeedback] = useState<{
+    kind: 'ok' | 'err';
+    msg: string;
+  } | null>(null);
+
+  const unlocked = profile.unlockedCharacters;
+
+  const handleClick = async (c: MascotCharacter) => {
+    setFeedback(null);
+    if (unlocked.includes(c)) {
+      setDraftCharacter(c);
+      return;
+    }
+
+    // 잠금 캐릭터 — 구매 흐름
+    if (purchasing) return; // 동시 호출 차단
+    if (!profile.isAuthenticated) {
+      setFeedback({
+        kind: 'err',
+        msg: '구매하려면 로그인해 주세요.',
+      });
+      return;
+    }
+    if (profile.pendingServerSync) {
+      setFeedback({
+        kind: 'err',
+        msg: '동기화 완료 후 다시 시도해 주세요.',
+      });
+      return;
+    }
+    if (totalXp < CHARACTER_PRICE_XP) {
+      setFeedback({
+        kind: 'err',
+        msg: `XP ${CHARACTER_PRICE_XP - totalXp}개 부족 — 학습으로 더 모아주세요.`,
+      });
+      return;
+    }
+    if (
+      !window.confirm(
+        `'${characterLabel[c]}' 캐릭터를 잠금해제할까요?\n\n` +
+          `비용: ${CHARACTER_PRICE_XP} XP\n` +
+          `현재 XP: ${totalXp}\n` +
+          `잠금해제 후: ${totalXp - CHARACTER_PRICE_XP} XP\n\n` +
+          `한 번 잠금해제하면 영구 보유.`,
+      )
+    ) {
+      return;
+    }
+
+    setPurchasing(c);
+    try {
+      const result = await purchaseCharacter(c);
+      if (result.ok) {
+        setFeedback({
+          kind: 'ok',
+          msg: `${characterLabel[c]} 잠금해제 완료! (XP ${result.remainingXp ?? '?'} 남음)`,
+        });
+        // 잠금해제된 캐릭터를 draft 로 자동 적용 — 사용자가 즉시 확인 가능
+        setDraftCharacter(c);
+      } else {
+        const reasonMsg: Record<string, string> = {
+          insufficient_xp: 'XP 부족',
+          unknown_character: '알 수 없는 캐릭터',
+          unauthenticated: '로그인이 필요합니다',
+          'sync-not-ready': '동기화 완료 후 다시 시도',
+          guest_no_purchase: '게스트는 구매할 수 없습니다',
+          rpc_error: '서버 오류 — 잠시 후 재시도',
+          no_supabase: '서버 연결 없음',
+        };
+        const msg = reasonMsg[result.reason ?? ''] ?? `실패 — ${result.reason}`;
+        setFeedback({ kind: 'err', msg });
+      }
+    } finally {
+      setPurchasing(null);
+    }
+  };
+
+  return (
+    <>
+      <div className="flex flex-wrap items-center gap-2 mb-3">
+        {(['tori', 'selli'] as const).map((c) => {
+          const isActive = c === draftCharacter;
+          const isUnlocked = unlocked.includes(c);
+          const isPurchasing = purchasing === c;
+
+          return (
+            <button
+              key={c}
+              type="button"
+              onClick={() => void handleClick(c)}
+              disabled={profile.pendingServerSync || isPurchasing}
+              aria-pressed={isActive}
+              aria-label={
+                isUnlocked
+                  ? `${characterLabel[c]} 선택`
+                  : `${characterLabel[c]} 잠금 — ${CHARACTER_PRICE_XP} XP 로 잠금해제`
+              }
+              className="kr-heading uppercase tracking-widest text-[11px] md:text-[12px] px-4 py-2 rounded-full transition active:scale-95 disabled:opacity-50 inline-flex items-center gap-1.5"
+              style={{
+                background: isActive
+                  ? 'rgba(111,255,0,0.16)'
+                  : isUnlocked
+                    ? 'rgba(239,244,255,0.04)'
+                    : 'rgba(255,176,32,0.08)',
+                border: isActive
+                  ? '1.5px solid #6FFF00'
+                  : isUnlocked
+                    ? '1.5px solid rgba(239,244,255,0.10)'
+                    : '1.5px dashed rgba(255,176,32,0.45)',
+                color: isActive
+                  ? '#6FFF00'
+                  : isUnlocked
+                    ? 'rgba(239,244,255,0.65)'
+                    : '#FFB020',
+              }}
+            >
+              {!isUnlocked && (
+                <Lock size={10} strokeWidth={2.6} aria-hidden />
+              )}
+              <span>{characterLabel[c]}</span>
+              {!isUnlocked && (
+                <span
+                  className="kr-num text-[10px] tabular-nums"
+                  style={{ marginLeft: 2 }}
+                >
+                  {isPurchasing ? '구매 중...' : `${CHARACTER_PRICE_XP} XP`}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {feedback ? (
+        <p
+          className="kr-body text-[11px] mb-3 leading-[1.5]"
+          role="status"
+          aria-live="polite"
+          style={{
+            color: feedback.kind === 'ok' ? '#6FFF00' : '#fca5a5',
+          }}
+        >
+          {feedback.msg}
+        </p>
+      ) : null}
+    </>
   );
 }

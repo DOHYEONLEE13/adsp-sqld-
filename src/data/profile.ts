@@ -192,16 +192,19 @@ export function getMyProfile(): MyProfile {
   // 인증 — server pull 결과 대기 중이면 tag/displayName 빈값 (skeleton)
   const syncDone = _syncStatus === 'ok';
   if (stored) {
+    // unlockedCharacters 결정:
+    //   - 명시적으로 정의됐으면 그대로 (server pull 결과)
+    //   - 미정의 (마이그 0025 이전 캐시) 면 ['tori', 'selli'] — 보수적으로 둘 다 보유
+    //     로 처리해 옛 캐시 사용자가 본인 활성 캐릭터 (셀리든 토리든) 변경 못 하는
+    //     버그 회피. 다음 sync 후 server 값으로 정확화.
+    const unlockedCharacters = stored.unlockedCharacters
+      ?? (['tori', 'selli'] as MascotCharacter[]);
     return {
       tag: syncDone ? stored.tag : '',
       displayName: syncDone ? stored.displayName : '',
       avatarPose: stored.avatarPose ?? DEFAULT_AVATAR_POSE,
       avatarCharacter: stored.avatarCharacter ?? DEFAULT_CHARACTER,
-      // sync 미완료 시엔 보수적으로 기본 캐릭터만 — 잠금 캐릭터를 잘못 노출하지
-      // 않게. sync 완료 후 실제 server 값으로 갱신.
-      unlockedCharacters: syncDone
-        ? (stored.unlockedCharacters ?? [DEFAULT_CHARACTER])
-        : [DEFAULT_CHARACTER],
+      unlockedCharacters,
       isAuthenticated: true,
       isAdmin: stored.role === 'admin',
       createdAt: stored.createdAt,
@@ -304,10 +307,11 @@ export function setAvatarCharacter(
   const stored = loadStored();
 
   // 잠금 캐릭터 거부 — 인증 사용자만 (게스트는 모든 캐릭터 무료).
-  // unlockedCharacters 미설정 시 backward-compat 위해 [DEFAULT_CHARACTER] fallback.
-  if (_isAuthenticated && stored) {
-    const unlocked = stored.unlockedCharacters ?? [DEFAULT_CHARACTER];
-    if (!unlocked.includes(character)) {
+  // 단 stored.unlockedCharacters 가 명시적으로 정의된 경우만 검증.
+  // undefined 면 마이그 0025 이전 stored 캐시 — 가드 skip (다음 sync 후 정확화).
+  // 이 보호가 없으면 옛 캐시 사용자가 본인 활성 캐릭터 변경 못 하는 버그 발생.
+  if (_isAuthenticated && stored?.unlockedCharacters) {
+    if (!stored.unlockedCharacters.includes(character)) {
       return { ok: false, reason: 'locked' };
     }
   }

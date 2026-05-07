@@ -10,7 +10,12 @@ export default function Hero() {
       id="hero"
       className="relative min-h-screen rounded-b-[32px] overflow-hidden isolate"
     >
-      <VideoBg src={HERO.videoUrl} />
+      {/*
+        poster — 영상 로드 전 즉시 표시할 정적 이미지. mp4 다운로드 동안 검은 화면
+        대신 OG 이미지 표시 → LCP / 첫인상 개선.
+        (사용자가 별도 hero 전용 poster 만들 때까지 OG default 재사용.)
+      */}
+      <VideoBg src={HERO.videoUrl} poster="/og/default.png" />
 
       {/* dark gradient for legibility */}
       <div

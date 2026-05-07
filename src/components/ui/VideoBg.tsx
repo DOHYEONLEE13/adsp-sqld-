@@ -112,10 +112,15 @@ export default function VideoBg({
       loop
       muted
       playsInline
-      preload="auto"
+      // 2026-05-07 — 첫 페인트 가속을 위해 'auto' → 'metadata'.
+      // 'auto' 는 영상 전체 다운로드 시도 (모바일 LTE 에선 LCP 1~3s 손실).
+      // 'metadata' 는 codec/duration 만 받고 첫 프레임 디코딩 시작 → poster 가
+      // 빠르게 사라지고 영상 재생 진입.
+      preload="metadata"
       aria-hidden="true"
-      // crossOrigin 설정 — Mux 같은 외부 CDN 의 CORS 허용을 명시적으로
-      crossOrigin="anonymous"
+      // crossOrigin — HLS 의 hls.js attach 케이스에만 필요. 직접 mp4 는 same-origin
+      // 또는 단순 fetch 라 안 붙임 (붙이면 CORS preflight 추가 라운드 트립).
+      crossOrigin={isHls ? 'anonymous' : undefined}
       poster={poster}
     >
       {!isHls ? <source src={src} type="video/mp4" /> : null}

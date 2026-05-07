@@ -109,9 +109,64 @@ Step 1~4 의 localStorage mock 을 운영 DB 로 전환.
 
 PHASE4 Step 6 — Toss Payments 통합. Premium 가격 모델.
 
+### Cloudflare 캐시 정책 강화 (1일, P0) — 2026-05-07 약점 탭 사고에서 발견
+
+**배경**: 2026-05-07 production 약점 탭 ErrorBoundary 트리거. 콘솔 에러:
+```
+TypeError: Failed to fetch dynamically imported module:
+https://quest-dp.com/assets/ProgressDashboard-B0Ar17zR.js
+```
+원인은 코드 결함 아님 — **Cloudflare 캐시 mismatch**. 사용자 브라우저가 옛 `index.html` 받음 → 그 안의 chunk hash 가 새 배포에선 존재 안 해 404. 출시 후 GitHub push 마다 같은 사고 재발 가능성 ↑.
+
+**작업 항목**:
+
+- [ ] **`index.html` 캐시 정책 — `Cache-Control: no-cache, must-revalidate`**
+  - `public/_headers` 의 `/index.html` 룰 추가 (현재는 `/*` 통합 룰만 있어 정적 자산과 같이 캐시됨)
+  - 매 요청 시 ETag 검증 → 새 빌드면 즉시 새 index.html 받음
+- [ ] **정적 자산 — `Cache-Control: public, max-age=31536000, immutable`**
+  - 이미 `public/_headers` 에 `/assets/*` 룰 있음 — 검증만
+  - Vite 가 hash 붙이므로 immutable 안전
+- [ ] **chunk 404 자동 복구** (P1, 신중) — `vite-plugin-pwa` 의 auto-reload 또는 직접 보호 코드
+  ```ts
+  // App.tsx 최상단
+  window.addEventListener('vite:preloadError', () => {
+    if (!sessionStorage.getItem('questdp.reloaded')) {
+      sessionStorage.setItem('questdp.reloaded', '1');
+      window.location.reload();
+    }
+  });
+  ```
+  - 무한 reload 방지 위해 sessionStorage flag — 첫 실패 1번만 자동 reload
+  - 방안 P (별개 작업) 와 충돌 가능 — 출시 직전 신중 검토
+
+**검증**:
+1. 배포 직후 새 chunk hash 확인
+2. 강제 새로고침 (`Ctrl+Shift+R`) 없이 일반 새로고침으로 새 빌드 도달하는지
+3. DevTools Network 탭 — `index.html` 응답에 `Cache-Control: no-cache` 헤더 확인
+
+**왜 P0 인가**: 출시 후 매 deploy 마다 일부 사용자 (옛 index.html 캐시 보유) 가 404 ErrorBoundary 경험. 첫인상 손상 + 신뢰 하락. 30분 작업으로 영구 해결.
+
 ---
 
 ## 출시 후 우선순위 작업
+
+### SEO 5축 90일 플랜 — 출시 후 안정화 (1~3개월) 후 진입 (P1)
+
+**현재 상태 (2026-05-07)**: 출시 전 Tier 0 SEO (위 P0 항목 — robots/sitemap/meta/JSON-LD/검색 콘솔 등록) 만 마무리. 그 외 모든 SEO 활동은 **출시 + 1~3개월 안정화 후** 진입.
+
+이유:
+- 사용자 데이터·결제 시스템·인증 race fix 등 출시 직전 작업이 SEO 보다 우선
+- SEO 는 누적 가치 자산 — 6~12개월 단위 효과. 안정화 끝난 후 시작해도 KPI 영향 없음
+- 콘텐츠 (blog 24편 / topic hub 30 / glossary 200) 양산은 운영 동력 분산
+
+**참조 문서**: `docs/seo-strategy.md` — 5축 90일 플랜 (측정 인프라 / SPA prerender / 콘텐츠 / E-E-A-T / 속도)
+
+**진입 트리거**:
+- Phase 4 Step 6 (결제 / Supabase 마이그레이션) 완료
+- Phase 4 Step 7 (출시 준비 통합 테스트) 통과
+- 출시 후 2~4주 incident free 운영 확인
+
+진입 후 첫 작업: Phase 0 (GSC + GA4 등록) — 1주 내. 이후 docs/seo-strategy.md 의 90일 플랜 그대로 실행.
 
 ### 콘텐츠 보강 (P1)
 

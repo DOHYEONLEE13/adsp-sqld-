@@ -1,10 +1,33 @@
 # Cloudflare Pages — 전역 응답 헤더.
+#
+# 캐시 정책 (2026-05-07 chunk 404 사고 후 강화):
+#   /*       — HTML/SPA 라우트 매번 ETag 검증 (chunk hash mismatch 방지)
+#   /assets/* — Vite hash 붙은 정적 자산 영원히 캐시 (hash 다르면 다른 파일이라 안전)
+#   /index.html — 명시적 no-cache (직접 접근 케이스 보호)
+#
+# 왜 /* 에 Cache-Control 을 붙이는가:
+#   SPA 라우트 (/, /curriculum/adsp, /blog/<slug>, /lesson/<id> 등) 가 모두
+#   _redirects 의 `/* /index.html 200` SPA fallback 으로 index.html 을 받음.
+#   Cloudflare _headers 는 "요청 URL path" 기준 매칭이라 /index.html 룰만으론
+#   /, /curriculum/adsp 같은 경로 매칭 안 됨. /* 에 no-cache 붙여야 모든 HTML
+#   응답이 매번 ETag 검증 → 새 빌드 도달 즉시 새 chunk hash 다운로드 → chunk 404 영구 해결.
+#
+#   /assets/* 룰이 더 specific 해서 hash 자산은 immutable 캐시 유지 (브라우저 캐시 무효 안 됨).
+#
+# 보안 헤더는 그대로 유지.
+
 /*
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Cache-Control: no-cache, must-revalidate
 
-# Vite 가 해시된 파일명을 쓰므로 /assets/* 는 길게 캐시.
+# Vite 가 해시된 파일명을 쓰므로 /assets/* 는 영구 캐시.
+# (hash 가 다르면 새 파일로 인식, 옛 hash 는 immutable 로 그대로 보존.)
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
+
+# index.html 직접 접근 (드문 케이스 — bot 또는 옛 링크) 도 명시적 no-cache.
+/index.html
+  Cache-Control: no-cache, must-revalidate

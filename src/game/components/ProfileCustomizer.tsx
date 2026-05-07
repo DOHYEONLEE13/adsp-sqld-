@@ -10,22 +10,20 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { Pencil, Check, Lock } from 'lucide-react';
+import { Pencil, Check } from 'lucide-react';
 import Ques from '@/components/mascot/Ques';
 import {
   AVATAR_POSES,
-  purchasePose,
   setAvatarCharacter,
   setAvatarPose,
   setDisplayName,
   useMyProfile,
 } from '@/data/profile';
 import ProfileSyncSkeleton from '@/components/profile/ProfileSyncSkeleton';
-import PurchaseConfirmModal from '@/components/ui/PurchaseConfirmModal';
 import type { MascotCharacter, QuesPose } from '@/components/mascot/types';
 
-/** 포즈 1개 잠금해제 비용. 마이그 0026 의 cost 와 동기화. */
-const POSE_PRICE_XP = 50;
+// 2026-05-08 — 캐릭터/포즈 잠금/구매 시스템 폐기. 모두 자유 사용.
+// PurchaseConfirmModal 컴포넌트는 향후 재사용 위해 보존 (다른 구매 흐름에 활용 가능).
 
 const POSE_LABELS: Record<QuesPose, string> = {
   happy: '행복',
@@ -398,13 +396,8 @@ function CharacterTabs({
 }
 
 // ─── PoseGrid ─────────────────────────────────────────────────────────────
-// 표정 그리드 (8 포즈) + 잠금/50 XP 구매 흐름.
-//
-// 보유 포즈 클릭: setDraftAvatarPose (미리보기). 사용자가 [저장하기] 누르면 server 적용.
-// 잠금 포즈 클릭: confirm → purchasePose RPC → 성공 시 미리보기 + 사용자가 저장.
-//
-// 잠금 키: `${draftCharacter}-${pose}` 형식. 사용자가 캐릭터 토글하면 그리드의 잠금
-// 상태도 그 캐릭터 기준으로 갱신.
+// 표정 그리드 (8 포즈) — 모두 자유 사용.
+// 2026-05-08 — 잠금/구매 시스템 폐기. 단순 표정 선택 + draft 미리보기 패턴.
 
 interface PoseGridProps {
   draftCharacter: MascotCharacter;
@@ -421,206 +414,40 @@ function PoseGrid({
   profile,
   poseLabels,
 }: PoseGridProps) {
-  // 2026-05-08 — 모달의 "현재 XP" 는 server total_xp 사용 (purchase_pose RPC 가
-  // 검증하는 권위 있는 값). client computePlayerStats 의 XP 와 다를 수 있음 —
-  // record_session sync 실패 시 client 만 누적되고 server 는 0 인 케이스 보호.
-  const totalXp = profile.serverTotalXp;
-
-  // 모달 상태 — 잠금 포즈 클릭 시 띄움
-  const [modalPose, setModalPose] = useState<QuesPose | null>(null);
-  const [purchasing, setPurchasing] = useState(false);
-  const [feedback, setFeedback] = useState<{
-    kind: 'ok' | 'err';
-    msg: string;
-  } | null>(null);
-
-  const handleClick = (pose: QuesPose) => {
-    setFeedback(null);
-    const key = `${draftCharacter}-${pose}`;
-    const isUnlocked = profile.unlockedPoses.includes(key);
-
-    // 보유 → 미리보기
-    if (isUnlocked) {
-      setDraftAvatarPose(pose);
-      return;
-    }
-
-    // 잠금 → 사전 검증 후 모달 오픈
-    if (purchasing) return;
-    if (!profile.isAuthenticated) {
-      setFeedback({ kind: 'err', msg: '구매하려면 로그인해 주세요.' });
-      return;
-    }
-    if (profile.pendingServerSync) {
-      setFeedback({ kind: 'err', msg: '동기화 완료 후 다시 시도해 주세요.' });
-      return;
-    }
-    setModalPose(pose);
-  };
-
-  const handleConfirm = async () => {
-    if (!modalPose) return;
-    setPurchasing(true);
-    try {
-      const result = await purchasePose(draftCharacter, modalPose);
-      if (result.ok) {
-        setFeedback({
-          kind: 'ok',
-          msg: `${poseLabels[modalPose]} 잠금해제 완료! (XP ${result.remainingXp ?? '?'} 남음)`,
-        });
-        // 잠금해제된 포즈 즉시 미리보기 적용 — 사용자가 [저장] 누르면 server 갱신.
-        setDraftAvatarPose(modalPose);
-        setModalPose(null);
-      } else {
-        const reasonMsg: Record<string, string> = {
-          insufficient_xp: 'XP 부족',
-          unknown_pose: '알 수 없는 포즈',
-          unauthenticated: '로그인이 필요합니다',
-          'sync-not-ready': '동기화 완료 후 다시 시도',
-          guest_no_purchase: '게스트는 구매할 수 없습니다',
-          rpc_error: '서버 오류 — 잠시 후 재시도',
-          no_supabase: '서버 연결 없음',
-        };
-        const msg = reasonMsg[result.reason ?? ''] ?? `실패 — ${result.reason}`;
-        setFeedback({ kind: 'err', msg });
-        setModalPose(null);
-      }
-    } finally {
-      setPurchasing(false);
-    }
-  };
-
   return (
-    <>
-      <div className="grid grid-cols-4 gap-2 md:gap-3 lg:gap-4">
-        {AVATAR_POSES.map((pose) => {
-          const key = `${draftCharacter}-${pose}`;
-          const isUnlocked = profile.unlockedPoses.includes(key);
-          const isDraft = pose === draftAvatarPose;
-          const isSaved = pose === profile.avatarPose;
-          // 진행 중 표시는 모달 안에서 — grid 셀은 신경 안 씀.
-          const isPurchasing = modalPose === pose && purchasing;
-
-          return (
-            <button
-              key={pose}
-              type="button"
-              disabled={profile.pendingServerSync || isPurchasing}
-              onClick={() => void handleClick(pose)}
-              aria-label={
-                isUnlocked
-                  ? `아바타 — ${poseLabels[pose]}${isSaved ? ' (저장됨)' : ''}${isDraft && !isSaved ? ' (선택 중)' : ''}`
-                  : `${poseLabels[pose]} 잠금 — ${POSE_PRICE_XP} XP 로 잠금해제`
-              }
-              aria-pressed={isUnlocked && isDraft}
-              className="aspect-square rounded-[14px] lg:rounded-[18px] inline-flex items-center justify-center transition active:scale-95 p-2 md:p-3 lg:p-5 relative disabled:opacity-50"
-              style={{
-                background: isDraft && isUnlocked
-                  ? 'rgba(111,255,0,0.12)'
-                  : isUnlocked
-                    ? 'rgba(239,244,255,0.04)'
-                    : 'rgba(255,176,32,0.06)',
-                border:
-                  isDraft && isUnlocked
-                    ? '2px solid #6FFF00'
-                    : isUnlocked
-                      ? isSaved
-                        ? '2px dashed rgba(111,255,0,0.35)'
-                        : '2px solid rgba(239,244,255,0.08)'
-                      : '2px dashed rgba(255,176,32,0.45)',
-              }}
-            >
-              {/* 잠금 포즈는 마스코트 흐림 처리 (Ques 가 style prop 없음 → wrapper div). */}
-              <div
-                className="w-full h-full"
-                style={
-                  !isUnlocked
-                    ? { opacity: 0.35, filter: 'grayscale(0.6)' }
-                    : undefined
-                }
-              >
-                <Ques
-                  pose={pose}
-                  character={draftCharacter}
-                  animated={false}
-                  className="w-full h-full"
-                />
-              </div>
-
-              {/* 잠금 오버레이 — 자물쇠 + 50 XP 라벨 */}
-              {!isUnlocked && (
-                <div
-                  className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
-                  style={{
-                    background:
-                      'linear-gradient(180deg, rgba(1,8,40,0.05) 0%, rgba(1,8,40,0.55) 100%)',
-                    borderRadius: '12px',
-                  }}
-                >
-                  <Lock
-                    size={16}
-                    strokeWidth={2.6}
-                    style={{ color: '#FFB020', marginBottom: 4 }}
-                    aria-hidden
-                  />
-                  <span
-                    className="kr-num tabular-nums"
-                    style={{
-                      fontSize: 10,
-                      color: '#FFB020',
-                      fontWeight: 700,
-                      letterSpacing: '0.05em',
-                    }}
-                  >
-                    {isPurchasing ? '...' : `${POSE_PRICE_XP} XP`}
-                  </span>
-                </div>
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-      {feedback ? (
-        <p
-          className="kr-body text-[11px] mt-3 leading-[1.5]"
-          role="status"
-          aria-live="polite"
-          style={{
-            color: feedback.kind === 'ok' ? '#6FFF00' : '#fca5a5',
-          }}
-        >
-          {feedback.msg}
-        </p>
-      ) : null}
-
-      {/* 잠금해제 구매 모달 (window.confirm 대체) */}
-      <PurchaseConfirmModal
-        open={modalPose !== null}
-        title="표정 잠금해제"
-        description={`한 번 잠금해제하면 영구 보유돼요. 다른 캐릭터의 같은 표정은 별도 구매가 필요해요.`}
-        itemName={modalPose ? poseLabels[modalPose] : ''}
-        itemSubtitle={
-          draftCharacter === 'tori' ? '토리 (ADSP)' : '셀리 (SQLD)'
-        }
-        itemPreview={
-          modalPose ? (
+    <div className="grid grid-cols-4 gap-2 md:gap-3 lg:gap-4">
+      {AVATAR_POSES.map((pose) => {
+        const isDraft = pose === draftAvatarPose;
+        const isSaved = pose === profile.avatarPose;
+        return (
+          <button
+            key={pose}
+            type="button"
+            disabled={profile.pendingServerSync}
+            onClick={() => setDraftAvatarPose(pose)}
+            aria-label={`아바타 — ${poseLabels[pose]}${isSaved ? ' (저장됨)' : ''}${isDraft && !isSaved ? ' (선택 중)' : ''}`}
+            aria-pressed={isDraft}
+            className="aspect-square rounded-[14px] lg:rounded-[18px] inline-flex items-center justify-center transition active:scale-95 p-2 md:p-3 lg:p-5 disabled:opacity-50"
+            style={{
+              background: isDraft
+                ? 'rgba(111,255,0,0.12)'
+                : 'rgba(239,244,255,0.04)',
+              border: isDraft
+                ? '2px solid #6FFF00'
+                : isSaved
+                  ? '2px dashed rgba(111,255,0,0.35)' // 현재 저장된 포즈는 점선 hint
+                  : '2px solid rgba(239,244,255,0.08)',
+            }}
+          >
             <Ques
-              pose={modalPose}
+              pose={pose}
               character={draftCharacter}
               animated={false}
-              className="w-14 h-14"
+              className="w-full h-full"
             />
-          ) : undefined
-        }
-        cost={POSE_PRICE_XP}
-        currentXp={totalXp}
-        onConfirm={handleConfirm}
-        onCancel={() => {
-          if (!purchasing) setModalPose(null);
-        }}
-        busy={purchasing}
-      />
-    </>
+          </button>
+        );
+      })}
+    </div>
   );
 }

@@ -221,14 +221,9 @@ export function getMyProfile(): MyProfile {
   // 인증 — server pull 결과 대기 중이면 tag/displayName 빈값 (skeleton)
   const syncDone = _syncStatus === 'ok';
   if (stored) {
-    // unlockedPoses 결정 (2026-05-08 수정):
-    //   - 정의됐으면 그대로 (server pull 결과)
-    //   - 미정의 (옛 캐시) 면 default ['tori-wave', 'selli-wave'] 만 (보수적).
-    //   이전엔 GUEST_ALL_POSES (16개 모두 보유) fallback 으로 옛 캐시 사용자
-    //   본인 포즈 잠금 미표시 의도였지만 — 결과적으로 "잠금 표시 안 보임 + 모달
-    //   안 열림" 사용자 보고 야기. server backfill 로 모든 사용자 default 만 보유
-    //   상태이므로 default fallback 이 더 정확 + 사용자 의도 (구매 시스템) 보존.
-    const unlockedPoses = stored.unlockedPoses ?? ['tori-wave', 'selli-wave'];
+    // 2026-05-08 — 잠금/구매 시스템 폐기. 모든 포즈 자유 사용.
+    // GUEST_ALL_POSES (16 entries) 반환 → UI 잠금 표시 0.
+    const unlockedPoses = GUEST_ALL_POSES;
     return {
       tag: syncDone ? stored.tag : '',
       displayName: syncDone ? stored.displayName : '',
@@ -251,7 +246,7 @@ export function getMyProfile(): MyProfile {
     avatarPose: DEFAULT_AVATAR_POSE,
     avatarCharacter: DEFAULT_CHARACTER,
     unlockedCharacters: ['tori', 'selli'],
-    unlockedPoses: ['tori-wave', 'selli-wave'],
+    unlockedPoses: GUEST_ALL_POSES,
     serverTotalXp: 0,
     isAuthenticated: true,
     isAdmin: false,
@@ -312,28 +307,13 @@ export function setDisplayName(name: string): { ok: boolean; reason?: string } {
 }
 
 /**
- * 아바타 포즈 변경. setDisplayName 동일 가드 + 잠금 포즈 거부.
- *
- * 잠금 검증: stored.unlockedPoses 가 명시적으로 정의된 경우만.
- * undefined 면 마이그 0026 이전 캐시 — 가드 skip (다음 sync 후 정확화).
- *
- * 검증 키: `${currentCharacter}-${pose}` 형식. 현재 stored.avatarCharacter 기준.
+ * 아바타 포즈 변경. 2026-05-08 — 잠금 시스템 폐기. 모든 포즈 자유 사용.
  */
 export function setAvatarPose(pose: QuesPose): { ok: boolean; reason?: string } {
   if (_isAuthenticated && _syncStatus !== 'ok') {
     return { ok: false, reason: 'sync-not-ready' };
   }
   const stored = loadStored();
-
-  // 잠금 포즈 거부 — 인증 사용자만 (게스트는 모든 포즈 무료).
-  // unlockedPoses 가 명시적으로 정의된 경우만 검증.
-  if (_isAuthenticated && stored?.unlockedPoses) {
-    const character = stored.avatarCharacter ?? DEFAULT_CHARACTER;
-    const key = `${character}-${pose}`;
-    if (!stored.unlockedPoses.includes(key)) {
-      return { ok: false, reason: 'locked' };
-    }
-  }
 
   if (!stored) {
     if (!_isAuthenticated) {
@@ -395,77 +375,9 @@ export function setAvatarCharacter(
   return { ok: true };
 }
 
-/**
- * 포즈 구매 — 50 XP 차감 + unlocked_poses 추가.
- *
- * Supabase RPC `purchase_pose(p_character_pose)` 호출. 키 형식: 'tori-happy'.
- * 성공 시 stored.unlockedPoses 즉시 갱신 + notify (낙관적).
- * 실패 시 stored 변화 0.
- *
- * 반환:
- *   ok           - 성공 여부
- *   reason       - ok=false 시 사유 ('insufficient_xp', 'unknown_pose',
- *                  'unauthenticated', 'sync-not-ready', 'guest_no_purchase',
- *                  'rpc_error', 'no_supabase')
- *   remainingXp  - 차감 후 잔액
- */
-export async function purchasePose(
-  character: MascotCharacter,
-  pose: QuesPose,
-): Promise<{ ok: boolean; reason?: string; remainingXp?: number }> {
-  if (!_isAuthenticated) {
-    return { ok: false, reason: 'guest_no_purchase' };
-  }
-  if (_syncStatus !== 'ok') {
-    return { ok: false, reason: 'sync-not-ready' };
-  }
-
-  const sb = getSupabase();
-  if (!sb) return { ok: false, reason: 'no_supabase' };
-
-  const key = `${character}-${pose}`;
-
-  try {
-    const { data, error } = await sb.rpc('purchase_pose', {
-      p_character_pose: key,
-    });
-    if (error) {
-      // eslint-disable-next-line no-console
-      console.error('[purchasePose] RPC error', error);
-      return { ok: false, reason: 'rpc_error' };
-    }
-    const r = (data as Array<{
-      ok: boolean;
-      reason: string | null;
-      remaining_xp: number;
-    }> | null)?.[0];
-    if (!r) return { ok: false, reason: 'rpc_error' };
-    if (!r.ok) {
-      return {
-        ok: false,
-        reason: r.reason ?? 'rpc_error',
-        remainingXp: r.remaining_xp,
-      };
-    }
-    // 낙관적 갱신 — unlockedPoses 추가 + serverTotalXp 차감
-    const stored = loadStored();
-    if (stored) {
-      const current = stored.unlockedPoses ?? ['tori-wave', 'selli-wave'];
-      const nextPoses = current.includes(key) ? current : [...current, key];
-      saveStored({
-        ...stored,
-        unlockedPoses: nextPoses,
-        serverTotalXp: r.remaining_xp,
-      });
-    }
-    notify();
-    return { ok: true, remainingXp: r.remaining_xp };
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error('[purchasePose] exception', e);
-    return { ok: false, reason: 'rpc_error' };
-  }
-}
+// 2026-05-08 — purchasePose() 헬퍼 제거 (잠금/구매 시스템 폐기).
+// server 측 purchase_pose RPC + unlocked_poses 컬럼은 보존 (향후 재사용 가능).
+// MyProfile.unlockedPoses 는 항상 모든 포즈 보유로 처리되어 UI 잠금 표시 X.
 
 /** 입력값이 유효한 태그 형식인지. */
 export function isValidTag(tag: string): boolean {

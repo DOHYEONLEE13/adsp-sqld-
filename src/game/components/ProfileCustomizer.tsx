@@ -23,6 +23,7 @@ import {
 import { useProgress } from '@/game/useProgress';
 import { computePlayerStats } from '@/game/rpg';
 import ProfileSyncSkeleton from '@/components/profile/ProfileSyncSkeleton';
+import PurchaseConfirmModal from '@/components/ui/PurchaseConfirmModal';
 import type { MascotCharacter, QuesPose } from '@/components/mascot/types';
 
 /** 포즈 1개 잠금해제 비용. 마이그 0026 의 cost 와 동기화. */
@@ -287,54 +288,63 @@ export default function ProfileCustomizer() {
           poseLabels={POSE_LABELS}
         />
 
-        {/* 저장 / 취소 — 변경된 경우에만 강조 노출 */}
-        <div className="mt-3 flex items-center gap-2 min-h-[36px]">
+        {/* 저장 / 취소 — 항상 표시 (변경 없을 때 disabled). 사용자 보고 2026-05-08:
+            "적용하기 버튼이 없어졌어" — 변경 없을 때 안 보여서 혼란. 항상 표시. */}
+        <div className="mt-3 flex items-center gap-2 flex-wrap">
+          <button
+            type="button"
+            onClick={onSaveAvatar}
+            disabled={profile.pendingServerSync || !avatarChanged}
+            aria-label={avatarChanged ? '아바타 저장' : '변경 사항 없음'}
+            className="kr-num inline-flex items-center gap-1.5 px-4 py-2 rounded-full transition active:scale-95 disabled:opacity-40"
+            style={{
+              background: avatarChanged
+                ? '#6FFF00'
+                : 'rgba(239,244,255,0.06)',
+              color: avatarChanged ? '#010828' : 'rgba(239,244,255,0.55)',
+              fontSize: 13,
+              fontWeight: 700,
+              border: avatarChanged
+                ? 'none'
+                : '1px solid rgba(239,244,255,0.12)',
+              cursor: avatarChanged ? 'pointer' : 'not-allowed',
+            }}
+          >
+            <Check size={14} strokeWidth={2.6} />
+            <span>저장하기</span>
+          </button>
           {avatarChanged ? (
-            <>
-              <button
-                type="button"
-                onClick={onSaveAvatar}
-                disabled={profile.pendingServerSync}
-                aria-label="아바타 저장"
-                className="kr-num inline-flex items-center gap-1.5 px-4 py-2 rounded-full transition active:scale-95 disabled:opacity-50"
-                style={{
-                  background: '#6FFF00',
-                  color: '#010828',
-                  fontSize: 13,
-                  fontWeight: 700,
-                }}
-              >
-                <Check size={14} strokeWidth={2.6} />
-                <span>저장하기</span>
-              </button>
-              <button
-                type="button"
-                onClick={onCancelAvatar}
-                aria-label="선택 취소"
-                className="kr-num px-3 py-2 rounded-full transition active:scale-95"
-                style={{
-                  background: 'transparent',
-                  color: 'var(--cream)',
-                  fontSize: 12,
-                  opacity: 0.65,
-                  border: '1px solid rgba(239,244,255,0.18)',
-                }}
-              >
-                취소
-              </button>
-              <span
-                className="kr-body ml-1"
-                style={{ fontSize: 11, color: 'rgba(239,244,255,0.55)' }}
-                aria-live="polite"
-              >
-                저장하지 않으면 사라져요
-              </span>
-            </>
-          ) : (
-            <p className="kr-body text-[11px] text-cream/50 leading-[1.55]">
-              현재 선택한 표정이 친구 리더보드에서도 표시됩니다.
-            </p>
-          )}
+            <button
+              type="button"
+              onClick={onCancelAvatar}
+              aria-label="선택 취소"
+              className="kr-num px-3 py-2 rounded-full transition active:scale-95"
+              style={{
+                background: 'transparent',
+                color: 'var(--cream)',
+                fontSize: 12,
+                opacity: 0.65,
+                border: '1px solid rgba(239,244,255,0.18)',
+              }}
+            >
+              취소
+            </button>
+          ) : null}
+          <span
+            className="kr-body"
+            style={{
+              fontSize: 11,
+              color: avatarChanged
+                ? 'rgba(239,244,255,0.55)'
+                : 'rgba(239,244,255,0.45)',
+              marginLeft: 4,
+            }}
+            aria-live="polite"
+          >
+            {avatarChanged
+              ? '저장하지 않으면 사라져요'
+              : '표정을 골라 [저장하기] 누르세요'}
+          </span>
         </div>
       </div>
     </section>
@@ -417,24 +427,26 @@ function PoseGrid({
   const stats = computePlayerStats(progress);
   const totalXp = stats.totalXp;
 
-  const [purchasing, setPurchasing] = useState<string | null>(null);
+  // 모달 상태 — 잠금 포즈 클릭 시 띄움
+  const [modalPose, setModalPose] = useState<QuesPose | null>(null);
+  const [purchasing, setPurchasing] = useState(false);
   const [feedback, setFeedback] = useState<{
     kind: 'ok' | 'err';
     msg: string;
   } | null>(null);
 
-  const handleClick = async (pose: QuesPose) => {
+  const handleClick = (pose: QuesPose) => {
     setFeedback(null);
     const key = `${draftCharacter}-${pose}`;
     const isUnlocked = profile.unlockedPoses.includes(key);
 
-    // 보유 → 미리보기 (현재 그대로)
+    // 보유 → 미리보기
     if (isUnlocked) {
       setDraftAvatarPose(pose);
       return;
     }
 
-    // 잠금 → 구매 흐름
+    // 잠금 → 사전 검증 후 모달 오픈
     if (purchasing) return;
     if (!profile.isAuthenticated) {
       setFeedback({ kind: 'err', msg: '구매하려면 로그인해 주세요.' });
@@ -444,36 +456,22 @@ function PoseGrid({
       setFeedback({ kind: 'err', msg: '동기화 완료 후 다시 시도해 주세요.' });
       return;
     }
-    if (totalXp < POSE_PRICE_XP) {
-      setFeedback({
-        kind: 'err',
-        msg: `XP ${POSE_PRICE_XP - totalXp}개 부족 — 학습으로 더 모아주세요.`,
-      });
-      return;
-    }
-    if (
-      !window.confirm(
-        `'${poseLabels[pose]}' 표정을 잠금해제할까요?\n\n` +
-          `대상: ${draftCharacter === 'tori' ? '토리 (ADSP)' : '셀리 (SQLD)'} · ${poseLabels[pose]}\n` +
-          `비용: ${POSE_PRICE_XP} XP\n` +
-          `현재 XP: ${totalXp}\n` +
-          `잠금해제 후: ${totalXp - POSE_PRICE_XP} XP\n\n` +
-          `한 번 잠금해제하면 영구 보유.`,
-      )
-    ) {
-      return;
-    }
+    setModalPose(pose);
+  };
 
-    setPurchasing(key);
+  const handleConfirm = async () => {
+    if (!modalPose) return;
+    setPurchasing(true);
     try {
-      const result = await purchasePose(draftCharacter, pose);
+      const result = await purchasePose(draftCharacter, modalPose);
       if (result.ok) {
         setFeedback({
           kind: 'ok',
-          msg: `${poseLabels[pose]} 잠금해제 완료! (XP ${result.remainingXp ?? '?'} 남음)`,
+          msg: `${poseLabels[modalPose]} 잠금해제 완료! (XP ${result.remainingXp ?? '?'} 남음)`,
         });
-        // 잠금해제된 포즈를 미리보기로 적용 — 사용자가 저장 시 적용.
-        setDraftAvatarPose(pose);
+        // 잠금해제된 포즈 즉시 미리보기 적용 — 사용자가 [저장] 누르면 server 갱신.
+        setDraftAvatarPose(modalPose);
+        setModalPose(null);
       } else {
         const reasonMsg: Record<string, string> = {
           insufficient_xp: 'XP 부족',
@@ -486,9 +484,10 @@ function PoseGrid({
         };
         const msg = reasonMsg[result.reason ?? ''] ?? `실패 — ${result.reason}`;
         setFeedback({ kind: 'err', msg });
+        setModalPose(null);
       }
     } finally {
-      setPurchasing(null);
+      setPurchasing(false);
     }
   };
 
@@ -500,7 +499,8 @@ function PoseGrid({
           const isUnlocked = profile.unlockedPoses.includes(key);
           const isDraft = pose === draftAvatarPose;
           const isSaved = pose === profile.avatarPose;
-          const isPurchasing = purchasing === key;
+          // 진행 중 표시는 모달 안에서 — grid 셀은 신경 안 씀.
+          const isPurchasing = modalPose === pose && purchasing;
 
           return (
             <button
@@ -594,6 +594,34 @@ function PoseGrid({
           {feedback.msg}
         </p>
       ) : null}
+
+      {/* 잠금해제 구매 모달 (window.confirm 대체) */}
+      <PurchaseConfirmModal
+        open={modalPose !== null}
+        title="표정 잠금해제"
+        description={`한 번 잠금해제하면 영구 보유돼요. 다른 캐릭터의 같은 표정은 별도 구매가 필요해요.`}
+        itemName={modalPose ? poseLabels[modalPose] : ''}
+        itemSubtitle={
+          draftCharacter === 'tori' ? '토리 (ADSP)' : '셀리 (SQLD)'
+        }
+        itemPreview={
+          modalPose ? (
+            <Ques
+              pose={modalPose}
+              character={draftCharacter}
+              animated={false}
+              className="w-14 h-14"
+            />
+          ) : undefined
+        }
+        cost={POSE_PRICE_XP}
+        currentXp={totalXp}
+        onConfirm={handleConfirm}
+        onCancel={() => {
+          if (!purchasing) setModalPose(null);
+        }}
+        busy={purchasing}
+      />
     </>
   );
 }

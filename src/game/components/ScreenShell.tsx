@@ -64,7 +64,13 @@ export default function ScreenShell({
           />
         </>
       ) : null}
-      <div className="relative mx-auto w-full max-w-[1240px] xl:max-w-[1320px] px-6 md:px-10 lg:px-14 xl:px-20 py-10 md:py-14 lg:py-16">
+      {/*
+        Mobile top padding pt-[72px]:
+          MobileTopBar 가 fixed top-0 z-30 (높이 56px) 으로 깔리는 페이지가 다수 — header (돌아가기 버튼)
+          가 가려지는 것 방지. 56 + 16 breathing = 72. desktop (md+) 은 MobileTopBar 미사용 (md:hidden)
+          이라 기존 py-14/16 유지.
+      */}
+      <div className="relative mx-auto w-full max-w-[1240px] xl:max-w-[1320px] px-6 md:px-10 lg:px-14 xl:px-20 pt-[72px] pb-10 md:py-14 lg:py-16">
         <header className="mb-10 md:mb-14 relative">
           {/* topRight — PlanTag 등 우상단 floating 요소 */}
           {topRight ? (

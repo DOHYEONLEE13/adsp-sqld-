@@ -11,7 +11,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react';
-import { Copy, LogIn, Trash2, UserPlus, Trophy, Zap, Flame, ArrowUpDown } from 'lucide-react';
+import { Copy, LogIn, Trash2, UserPlus, Trophy, Zap, Flame, Clock, Crown, Users } from 'lucide-react';
 import ScreenShell from './components/ScreenShell';
 import { MobileBottomNav, MobileTopBar } from './components/MobileGameNav';
 import PageAmbientBg from './components/PageAmbientBg';
@@ -135,7 +135,7 @@ export default function FriendsPage({ onExit }: Props) {
     <ScreenShell
       eyebrow="Friends"
       title="친구 경쟁"
-      subtitle="태그를 공유하면 친구를 추가하고 서로의 XP·레벨·연속 일수를 비교할 수 있어요."
+      subtitle="태그 공유 → 진도 비교."
       onExit={onExit}
       exitLabel="돌아가기"
       ambient={<PageAmbientBg />}
@@ -168,17 +168,16 @@ export default function FriendsPage({ onExit }: Props) {
       <Leaderboard rows={board} sortKey={sortKey} onChangeSort={setSortKey} />
 
       {isSignedIn ? (
-        <p className="kr-body text-[12px] text-cream/55 mt-4 leading-[1.65]">
-          ✨ 친구가 풀이를 진행하면 리더보드가 실시간으로 갱신돼요.
+        <p className="kr-body text-[11px] text-cream/45 mt-3 text-center inline-flex items-center justify-center gap-1.5 w-full">
+          <span className="text-neon">●</span> 실시간 갱신
         </p>
       ) : isSupabaseConfigured() ? (
-        <p className="kr-body text-[12px] text-cream/55 mt-4 leading-[1.65]">
-          ※ 게스트 모드 — 친구 시스템은 로그인 후 활성화돼요. 위 카드의
-          [Google 로그인] 으로 고유 태그를 발급받고 친구 진도를 비교해보세요.
+        <p className="kr-body text-[11px] text-cream/45 mt-3 text-center">
+          로그인 → 친구 시스템 활성화
         </p>
       ) : (
-        <p className="kr-body text-[12px] text-cream/55 mt-4 leading-[1.65]">
-          ※ 로컬 미리보기 — 친구 진도는 Supabase 환경 변수 설정 후 활성화됩니다.
+        <p className="kr-body text-[11px] text-cream/40 mt-3 text-center">
+          로컬 미리보기
         </p>
       )}
 
@@ -284,35 +283,57 @@ function MyTagCard({
             )}
           </div>
 
-          {/* 로그인 CTA — 고유 태그·친구 시스템 활성화 안내.
-              lg+ 에서 inner max-width 로 너무 길게 늘어지지 않도록 — "의도된 카드"
-              느낌 유지. 너무 와이드하면 메시지 + 버튼 사이 빈 공간이 어색함. */}
+          {/* 로그인 CTA — 아이콘 hero + 짧은 한 줄 + 큰 버튼 (Duolingo 스타일) */}
           <div
-            className="rounded-[16px] p-4 lg:p-5 flex flex-col sm:flex-row sm:items-center gap-3 lg:gap-5 lg:max-w-[720px]"
+            className="relative rounded-[18px] p-4 lg:p-5 flex flex-col sm:flex-row sm:items-center gap-3 lg:gap-5 lg:max-w-[720px] overflow-hidden"
             style={{
-              background: 'rgba(111,255,0,0.06)',
-              border: '1px solid rgba(111,255,0,0.22)',
+              background:
+                'linear-gradient(135deg, rgba(111,255,0,0.10), rgba(111,255,0,0.04))',
+              border: '1px solid rgba(111,255,0,0.28)',
             }}
           >
-            <div className="flex-1 min-w-0">
-              <p className="kr-body text-[13px] text-cream/85 leading-[1.55]">
-                로그인하면 <span className="text-neon">고유 태그</span> 가
-                발급되고, 친구를 추가해서 진도를 비교할 수 있어요.
+            {/* 배경 글로우 */}
+            <div
+              aria-hidden
+              className="absolute -left-6 -top-6 w-28 h-28 rounded-full blur-2xl"
+              style={{
+                background:
+                  'radial-gradient(circle, rgba(111,255,0,0.35), transparent 70%)',
+              }}
+            />
+            {/* 아이콘 hero */}
+            <div
+              className="relative shrink-0 w-12 h-12 rounded-full inline-flex items-center justify-center"
+              style={{
+                background:
+                  'linear-gradient(135deg, rgba(111,255,0,0.25), rgba(111,255,0,0.08))',
+                border: '1.5px solid rgba(111,255,0,0.45)',
+              }}
+            >
+              <Users size={22} className="text-neon" strokeWidth={2.4} />
+            </div>
+            <div className="relative flex-1 min-w-0">
+              <p className="kr-heading text-[14px] text-cream font-bold leading-tight mb-0.5">
+                친구와 진도 비교
+              </p>
+              <p className="kr-body text-[11.5px] text-cream/55 leading-tight">
+                로그인 → 고유 태그 발급
               </p>
             </div>
             <button
               type="button"
               onClick={handleLogin}
               disabled={authLoading || !isSupabaseConfigured()}
-              className="kr-heading uppercase tracking-widest inline-flex items-center justify-center gap-2 text-[12px] px-4 py-2.5 rounded-full transition active:scale-95 disabled:opacity-40 shrink-0"
+              className="relative kr-heading uppercase tracking-widest inline-flex items-center justify-center gap-2 text-[12px] px-5 py-3 rounded-full transition active:scale-95 disabled:opacity-40 shrink-0"
               style={{
-                background: '#6FFF00',
+                background: 'linear-gradient(180deg, #6FFF00, #54c800)',
                 color: '#010828',
-                boxShadow: '0 6px 18px -4px rgba(111,255,0,0.45)',
+                boxShadow:
+                  '0 8px 22px -6px rgba(111,255,0,0.55), inset 0 1px 0 rgba(255,255,255,0.3)',
               }}
             >
-              <LogIn size={13} strokeWidth={2.6} />
-              {authLoading ? '이동 중…' : 'Google 로그인'}
+              <LogIn size={14} strokeWidth={2.8} />
+              {authLoading ? '이동 중…' : 'Google'}
             </button>
           </div>
         </div>
@@ -525,10 +546,17 @@ interface BoardRow {
 type SortKey = 'tier' | 'xp' | 'streak' | 'recent';
 
 const SORT_LABEL: Record<SortKey, string> = {
-  tier: 'Tier 순',
-  xp: 'XP 순',
-  streak: '연속일 순',
-  recent: '최근 활동',
+  tier: 'Tier',
+  xp: 'XP',
+  streak: '연속',
+  recent: '최근',
+};
+
+const SORT_ICON: Record<SortKey, typeof Crown> = {
+  tier: Crown,
+  xp: Zap,
+  streak: Flame,
+  recent: Clock,
 };
 
 function Leaderboard({
@@ -550,27 +578,41 @@ function Leaderboard({
           <Trophy size={14} strokeWidth={2.4} />
           리더보드
         </h2>
-        <div className="inline-flex items-center gap-1 flex-wrap">
-          <ArrowUpDown size={11} className="text-cream/45" />
-          {(['tier', 'xp', 'streak', 'recent'] as SortKey[]).map((k) => (
-            <button
-              key={k}
-              type="button"
-              onClick={() => onChangeSort(k)}
-              className="kr-num text-[10px] uppercase tracking-widest px-2 py-1 rounded-full transition active:scale-[0.97]"
-              style={{
-                background:
-                  sortKey === k ? 'rgba(111,255,0,0.14)' : 'rgba(239,244,255,0.04)',
-                border:
-                  sortKey === k
-                    ? '1px solid rgba(111,255,0,0.45)'
-                    : '1px solid rgba(239,244,255,0.10)',
-                color: sortKey === k ? '#6FFF00' : 'rgba(239,244,255,0.55)',
-              }}
-            >
-              {SORT_LABEL[k]}
-            </button>
-          ))}
+        <div
+          className="inline-flex items-center gap-0.5 p-1 rounded-full"
+          style={{
+            background: 'rgba(239,244,255,0.04)',
+            border: '1px solid rgba(239,244,255,0.08)',
+          }}
+          role="tablist"
+          aria-label="정렬 기준"
+        >
+          {(['tier', 'xp', 'streak', 'recent'] as SortKey[]).map((k) => {
+            const Icon = SORT_ICON[k];
+            const active = sortKey === k;
+            return (
+              <button
+                key={k}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => onChangeSort(k)}
+                title={SORT_LABEL[k]}
+                className="kr-num text-[10.5px] uppercase tracking-widest inline-flex items-center gap-1 px-2 py-1.5 rounded-full transition active:scale-[0.97]"
+                style={{
+                  background: active ? 'rgba(111,255,0,0.18)' : 'transparent',
+                  color: active ? '#6FFF00' : 'rgba(239,244,255,0.5)',
+                }}
+              >
+                <Icon
+                  size={12}
+                  strokeWidth={active ? 2.6 : 2.2}
+                  fill={active && (k === 'xp' || k === 'streak') ? 'currentColor' : 'none'}
+                />
+                {active ? <span>{SORT_LABEL[k]}</span> : null}
+              </button>
+            );
+          })}
         </div>
       </div>
 

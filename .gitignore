@@ -40,6 +40,7 @@ vite.config.d.ts
 
 # local agent/tooling
 .claude/
+.gstack/
 
 # research artifacts (not part of app)
 adsp_sqld_platform_research.json

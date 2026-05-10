@@ -39,6 +39,7 @@ import { recordSingleAnswer } from '../storage';
 import { consumeEnergy } from '../energy';
 import { stepKey, unlockStepOnServer, useStepUnlocks } from '../stepUnlocks';
 import EnergyBlockModal from '../components/EnergyBlockModal';
+import LessonCompleteModal from '../components/LessonCompleteModal';
 import PageAmbientBg from '../components/PageAmbientBg';
 
 const SUBJECT_ACCENT: Record<Subject, string> = {
@@ -127,6 +128,8 @@ export default function LessonScreen({
   const lockSnapRef = useRef(lockSnap);
   lockSnapRef.current = lockSnap;
   const [energyBlock, setEnergyBlock] = useState<{ retryAfterSec: number } | null>(null);
+  /** 레슨 마지막 스텝 정답 시 축하 모달. handleChoose 에서 setTimeout 으로 set. */
+  const [showCelebration, setShowCelebration] = useState(false);
   useEffect(() => {
     if (consumedStepsRef.current.has(stepIdx)) return;
     consumedStepsRef.current.add(stepIdx);
@@ -235,6 +238,14 @@ export default function LessonScreen({
         setXpToast(null);
       }, 1800);
     }
+
+    // ── 레슨 완료 축하 트리거 ─────────────────────────────────
+    // 마지막 스텝 + 정답 시 1.4 초 후 축하 모달. 사용자가 정답 피드백 시트
+    // (해설 문구) 를 잠깐 읽을 시간을 확보한 뒤 노출. single-step 모드는
+    // 한 step 만 풀고 즉시 Zone 복귀 의도라 축하 화면 skip.
+    if (correct && !isSingleStep && stepIdx === lesson.steps.length - 1) {
+      window.setTimeout(() => setShowCelebration(true), 1400);
+    }
   };
 
   const goNextStep = () => {
@@ -304,6 +315,26 @@ export default function LessonScreen({
                 .getElementById('pricing')
                 ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 250);
+          }}
+        />
+      ) : null}
+      {showCelebration ? (
+        <LessonCompleteModal
+          subject={subject}
+          chapter={chapter}
+          chapterTitle={chapterMeta?.title}
+          topic={topic}
+          totalSteps={lesson.steps.length}
+          correctSteps={
+            Object.values(quizState).filter((q) => q?.correct).length
+          }
+          onGoToPractice={() => {
+            setShowCelebration(false);
+            onFinishGoToPractice();
+          }}
+          onClose={() => {
+            setShowCelebration(false);
+            onBack();
           }}
         />
       ) : null}

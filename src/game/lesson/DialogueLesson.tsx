@@ -25,6 +25,7 @@ import { useProgress } from '../useProgress';
 import { consumeEnergy } from '../energy';
 import { stepKey, unlockStepOnServer, useStepUnlocks } from '../stepUnlocks';
 import EnergyBlockModal from '../components/EnergyBlockModal';
+import LessonCompleteModal from '../components/LessonCompleteModal';
 import Ques from '@/components/mascot/Ques';
 import { characterForSubject } from '@/components/mascot/types';
 import TopBar from './TopBar';
@@ -174,6 +175,12 @@ export default function DialogueLesson({
   const [xpToast, setXpToast] = useState<{ amount: number; key: number } | null>(
     null,
   );
+  /** 레슨 내 정답 처리한 step idx 들 — 마지막 스텝 클리어 시 통계 표시용. */
+  const [correctStepIdxs, setCorrectStepIdxs] = useState<Set<number>>(
+    () => new Set(),
+  );
+  /** 레슨 마지막 스텝 정답 시 축하 모달. */
+  const [showCelebration, setShowCelebration] = useState(false);
 
   // 스텝이 바뀔 때 상태 초기화 + 질문 타이머 시작
   useEffect(() => {
@@ -318,6 +325,23 @@ export default function DialogueLesson({
     if (xp > 0) {
       setXpToast({ amount: xp, key: Date.now() });
       window.setTimeout(() => setXpToast(null), 1800);
+    }
+    if (ok) {
+      setCorrectStepIdxs((s) => {
+        if (s.has(stepIdx)) return s;
+        const next = new Set(s);
+        next.add(stepIdx);
+        return next;
+      });
+      // 마지막 스텝 정답 → 축하 모달 (1.4 초 후 — feedback 메시지 읽을 시간 확보).
+      // single-step 모드는 한 step 만 풀고 Zone 복귀 의도라 skip.
+      if (
+        !isSingleStep &&
+        lesson &&
+        stepIdx === lesson.steps.length - 1
+      ) {
+        window.setTimeout(() => setShowCelebration(true), 1400);
+      }
     }
   };
 
@@ -500,6 +524,23 @@ export default function DialogueLesson({
                 .getElementById('pricing')
                 ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 250);
+          }}
+        />
+      ) : null}
+      {showCelebration && lesson ? (
+        <LessonCompleteModal
+          subject={subject}
+          chapter={chapter}
+          topic={topic}
+          totalSteps={lesson.steps.length}
+          correctSteps={correctStepIdxs.size}
+          onGoToPractice={() => {
+            setShowCelebration(false);
+            onFinishGoToPractice();
+          }}
+          onClose={() => {
+            setShowCelebration(false);
+            onBack();
           }}
         />
       ) : null}

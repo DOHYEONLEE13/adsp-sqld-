@@ -10,6 +10,14 @@
   --purple-1: #b724ff;
   --purple-2: #7c3aed;
 
+  /* CTA 토큰 — 인게임 primary 버튼 fill. 2026-05-11:
+     순수 네온 (#6FFF00) 이 화면 가득 깔리면 시각 피로 + "값싸 보임" 피드백.
+     같은 hue 계열에서 채도만 낮춘 (HSL 94→90, sat 100→62) calmer green 으로
+     교체. 액센트 텍스트·점·테두리는 여전히 --neon 유지 (강조 시그널 보존). */
+  --cta-primary: #7DD850;
+  --cta-primary-dark: #5BB429;
+  --cta-text: #0A1A00;
+
   /* 과목 액센트 — JS 에서도 SUBJECT_ACCENT 로 참조됨. 변경 시 두 곳 모두 동기화. */
   --accent-adsp: #67e8f9;
   --accent-sqld: #c084fc;

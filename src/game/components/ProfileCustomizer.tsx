@@ -193,7 +193,7 @@ export default function ProfileCustomizer() {
                 }}
                 aria-label="이름 저장"
                 className="inline-flex items-center justify-center w-8 h-8 rounded-full transition active:scale-95"
-                style={{ background: '#6FFF00', color: '#010828' }}
+                style={{ background: 'var(--cta-primary)', color: 'var(--cta-text)' }}
               >
                 <Check size={14} strokeWidth={2.6} />
               </button>

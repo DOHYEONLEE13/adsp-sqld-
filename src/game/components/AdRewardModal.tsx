@@ -329,9 +329,9 @@ function IdleBody({
           onClick={onStart}
           className="w-full kr-num text-[13px] font-medium py-3 rounded-full inline-flex items-center justify-center gap-2 transition active:scale-[0.98]"
           style={{
-            background: 'var(--neon)',
-            color: '#0a1f00',
-            boxShadow: '0 6px 18px -4px rgba(111,255,0,0.55)',
+            background: 'var(--cta-primary)',
+            color: 'var(--cta-text)',
+            boxShadow: '0 5px 14px -4px rgba(125,216,80,0.45)',
           }}
         >
           <PlayCircle size={14} strokeWidth={2.4} />

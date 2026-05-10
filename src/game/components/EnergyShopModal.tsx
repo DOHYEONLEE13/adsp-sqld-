@@ -344,10 +344,10 @@ export default function EnergyShopModal({ onClose }: Props) {
                         className="flex-1 kr-num text-[13px] font-bold py-2.5 rounded-full inline-flex items-center justify-center gap-1.5 transition active:scale-[0.97]"
                         style={{
                           background:
-                            'linear-gradient(180deg, #6FFF00, #54c800)',
-                          color: '#0a1f00',
+                            'linear-gradient(180deg, var(--cta-primary), var(--cta-primary-dark))',
+                          color: 'var(--cta-text)',
                           boxShadow:
-                            '0 6px 16px -4px rgba(111,255,0,0.5), inset 0 1px 0 rgba(255,255,255,0.3)',
+                            '0 5px 14px -4px rgba(125,216,80,0.45), inset 0 1px 0 rgba(255,255,255,0.22)',
                         }}
                       >
                         <Check size={14} strokeWidth={2.8} />

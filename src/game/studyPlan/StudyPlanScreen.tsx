@@ -247,9 +247,9 @@ function DailyMinutesPicker({
               style={
                 active
                   ? {
-                      background: 'var(--neon)',
-                      color: 'var(--base)',
-                      boxShadow: '0 4px 12px -4px color-mix(in srgb, var(--neon) 60%, transparent)',
+                      background: 'var(--cta-primary)',
+                      color: 'var(--cta-text)',
+                      boxShadow: '0 4px 12px -4px color-mix(in srgb, var(--cta-primary) 60%, transparent)',
                     }
                   : {
                       background: 'rgba(255,255,255,0.04)',

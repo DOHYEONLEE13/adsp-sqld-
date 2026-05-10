@@ -185,8 +185,8 @@ function ThemeCard({ theme, selected, applied, onSelect }: ThemeCardProps) {
         <span
           className="absolute top-2 right-2 inline-flex items-center justify-center w-6 h-6 rounded-full"
           style={{
-            background: 'var(--neon)',
-            color: '#0a1f00',
+            background: 'var(--cta-primary)',
+            color: 'var(--cta-text)',
           }}
           aria-hidden
         >

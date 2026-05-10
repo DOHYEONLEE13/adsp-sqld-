@@ -192,10 +192,10 @@ export default function ReviewQuestCard({ onStartReview }: Props) {
         onClick={() => onStartReview(queue)}
         className="w-full p-3 rounded-xl kr-heading uppercase tracking-widest text-[13px] transition active:scale-[0.98] inline-flex items-center justify-center gap-2"
         style={{
-          background: 'var(--neon)',
-          color: 'var(--base)',
+          background: 'var(--cta-primary)',
+          color: 'var(--cta-text)',
           boxShadow:
-            '0 6px 20px -8px color-mix(in srgb, var(--neon) 60%, transparent)',
+            '0 5px 16px -8px color-mix(in srgb, var(--cta-primary) 60%, transparent)',
         }}
       >
         복습 시작하기 · {estMinutes}분 예상

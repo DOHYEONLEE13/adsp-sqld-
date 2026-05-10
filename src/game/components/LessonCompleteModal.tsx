@@ -113,12 +113,12 @@ export default function LessonCompleteModal({
           {/* 떠있는 "CHAPTER N CLEAR" 배지 */}
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full mb-4"
             style={{
-              background: 'linear-gradient(90deg, #6FFF00, #54c800)',
-              boxShadow: '0 6px 16px -4px rgba(111,255,0,0.5)',
+              background: 'linear-gradient(90deg, var(--cta-primary), var(--cta-primary-dark))',
+              boxShadow: '0 5px 14px -4px rgba(125,216,80,0.45)',
             }}
           >
-            <Trophy size={12} fill="#0a1f00" strokeWidth={0} />
-            <span className="kr-num text-[10px] uppercase tracking-[0.18em] font-bold" style={{ color: '#0a1f00' }}>
+            <Trophy size={12} fill="var(--cta-text)" strokeWidth={0} />
+            <span className="kr-num text-[10px] uppercase tracking-[0.18em] font-bold" style={{ color: 'var(--cta-text)' }}>
               Chapter {chapter} Clear
             </span>
           </div>
@@ -202,13 +202,13 @@ export default function LessonCompleteModal({
             onClick={onGoToPractice}
             className="w-full inline-flex items-center justify-center gap-2 py-3.5 rounded-2xl kr-num font-bold text-[14px] transition active:scale-[0.97]"
             style={{
-              background: 'linear-gradient(180deg, #6FFF00, #54c800)',
-              color: '#0a1f00',
+              background: 'linear-gradient(180deg, var(--cta-primary), var(--cta-primary-dark))',
+              color: 'var(--cta-text)',
               boxShadow:
-                '0 10px 26px -8px rgba(111,255,0,0.55), inset 0 1px 0 rgba(255,255,255,0.3)',
+                '0 8px 22px -8px rgba(125,216,80,0.5), inset 0 1px 0 rgba(255,255,255,0.22)',
             }}
           >
-            <Zap size={16} fill="#0a1f00" strokeWidth={0} />
+            <Zap size={16} fill="var(--cta-text)" strokeWidth={0} />
             실전 세트로 도전
             <ArrowRight size={16} strokeWidth={2.8} />
           </button>

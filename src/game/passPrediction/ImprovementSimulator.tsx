@@ -77,8 +77,8 @@ export default function ImprovementSimulator({
             style={
               n === selectedCount
                 ? {
-                    background: 'var(--neon)',
-                    color: 'var(--base)',
+                    background: 'var(--cta-primary)',
+                    color: 'var(--cta-text)',
                   }
                 : {
                     background: 'rgba(255,255,255,0.04)',
@@ -156,10 +156,10 @@ export default function ImprovementSimulator({
           onClick={() => onStartLearning(targetIds)}
           className="w-full p-2.5 rounded-xl kr-heading uppercase tracking-widest text-[11.5px] transition active:scale-[0.98]"
           style={{
-            background: 'var(--neon)',
-            color: 'var(--base)',
+            background: 'var(--cta-primary)',
+            color: 'var(--cta-text)',
             boxShadow:
-              '0 4px 14px -6px color-mix(in srgb, var(--neon) 60%, transparent)',
+              '0 4px 14px -6px color-mix(in srgb, var(--cta-primary) 60%, transparent)',
           }}
         >
           약점 단원 학습 시작

@@ -265,7 +265,7 @@ function MyTagCard({
                     setEditing(false);
                   }}
                   className="kr-heading text-[11px] uppercase tracking-widest px-3 py-1.5 rounded-full"
-                  style={{ background: '#6FFF00', color: '#010828' }}
+                  style={{ background: 'var(--cta-primary)', color: 'var(--cta-text)' }}
                 >
                   저장
                 </button>
@@ -326,10 +326,10 @@ function MyTagCard({
               disabled={authLoading || !isSupabaseConfigured()}
               className="relative kr-heading uppercase tracking-widest inline-flex items-center justify-center gap-2 text-[12px] px-5 py-3 rounded-full transition active:scale-95 disabled:opacity-40 shrink-0"
               style={{
-                background: 'linear-gradient(180deg, #6FFF00, #54c800)',
-                color: '#010828',
+                background: 'linear-gradient(180deg, var(--cta-primary), var(--cta-primary-dark))',
+                color: 'var(--cta-text)',
                 boxShadow:
-                  '0 8px 22px -6px rgba(111,255,0,0.55), inset 0 1px 0 rgba(255,255,255,0.3)',
+                  '0 6px 18px -6px rgba(125,216,80,0.45), inset 0 1px 0 rgba(255,255,255,0.22)',
               }}
             >
               <LogIn size={14} strokeWidth={2.8} />
@@ -373,7 +373,7 @@ function MyTagCard({
                   setEditing(false);
                 }}
                 className="kr-heading text-[11px] uppercase tracking-widest px-3 py-1.5 rounded-full"
-                style={{ background: '#6FFF00', color: '#010828' }}
+                style={{ background: 'var(--cta-primary)', color: 'var(--cta-text)' }}
               >
                 저장
               </button>
@@ -417,9 +417,9 @@ function MyTagCard({
             aria-label="태그 복사"
             className="inline-flex items-center gap-1.5 kr-heading text-[11px] uppercase tracking-widest px-3 py-2 rounded-full transition active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
             style={{
-              background: copied ? '#6FFF00' : 'rgba(111,255,0,0.12)',
-              border: `1px solid ${copied ? '#6FFF00' : 'rgba(111,255,0,0.4)'}`,
-              color: copied ? '#010828' : '#6FFF00',
+              background: copied ? 'var(--cta-primary)' : 'rgba(111,255,0,0.12)',
+              border: `1px solid ${copied ? 'var(--cta-primary)' : 'rgba(111,255,0,0.4)'}`,
+              color: copied ? 'var(--cta-text)' : '#6FFF00',
             }}
           >
             <Copy size={12} strokeWidth={2.4} />
@@ -507,8 +507,8 @@ function AddFriendCard({ myTag }: { myTag: string }) {
           disabled={!isLikelyValid || submitting}
           className="kr-heading uppercase tracking-widest text-[12px] px-4 py-2.5 rounded-full transition active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
           style={{
-            background: '#6FFF00',
-            color: '#010828',
+            background: 'var(--cta-primary)',
+            color: 'var(--cta-text)',
             letterSpacing: '0.16em',
           }}
         >
@@ -686,7 +686,7 @@ function Leaderboard({
                 {row.isMe ? (
                   <span
                     className="kr-num text-[9px] uppercase tracking-widest px-2 py-0.5 rounded-full shrink-0"
-                    style={{ background: '#6FFF00', color: '#010828' }}
+                    style={{ background: 'var(--cta-primary)', color: 'var(--cta-text)' }}
                   >
                     나
                   </span>

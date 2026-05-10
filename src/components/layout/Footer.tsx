@@ -43,7 +43,7 @@ export default function Footer() {
               links={[
                 { label: '소개', href: '/about' },
                 { label: '플레이', href: '#/game' },
-                { label: '요금제', href: '#pricing' },
+                { label: '요금제', href: '/pricing' },
               ]}
             />
             <FooterLinkGroup

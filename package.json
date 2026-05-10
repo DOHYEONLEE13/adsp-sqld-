@@ -16,6 +16,7 @@
     "audit": "node scripts/validate-questions.mjs",
     "audit:json": "node scripts/validate-questions.mjs --format=json",
     "sitemap": "node scripts/generate-sitemap.mjs",
+    "og": "node scripts/generate-og-images.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui"

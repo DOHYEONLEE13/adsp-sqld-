@@ -43,6 +43,12 @@ export default function BlogPostPage({ slug }: Props) {
     ? post.metaDescription
     : 'URL 이 잘못되었거나 콘텐츠가 이동했을 수 있어요.';
 
+  // 포스트별 OG 이미지 — scripts/generate-og-images.mjs 가 사전 생성한 PNG.
+  // 미생성 시 default 폴백 (404 시그널 없음 — 그냥 다른 이미지가 뜸).
+  const ogImageUrl = post
+    ? `https://quest-dp.com/og/blog-${post.slug}.png`
+    : 'https://quest-dp.com/og/default.png';
+
   // JSON-LD — post 있을 때만 emit
   const jsonLd = post
     ? (() => {
@@ -61,7 +67,7 @@ export default function BlogPostPage({ slug }: Props) {
             logo: { '@type': 'ImageObject', url: 'https://quest-dp.com/logo/questdp-mark.png' },
           },
           mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
-          image: 'https://quest-dp.com/og/default.png',
+          image: ogImageUrl,
           keywords: post.primaryKeyword,
         };
         const breadcrumbJsonLd = {
@@ -94,7 +100,7 @@ export default function BlogPostPage({ slug }: Props) {
     description: seoDescription,
     canonical,
     ogType: 'article',
-    ogImage: 'https://quest-dp.com/og/default.png',
+    ogImage: ogImageUrl,
     noIndex: !post,
     jsonLd,
   });

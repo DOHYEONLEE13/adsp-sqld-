@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   QuestDP sitemap — generate-sitemap.mjs 가 자동 생성.
-  생성 시각: 2026-05-10T09:32:47.093Z
-  총 URL: 987 (정적 12 + blog 4 + lesson 301 + quiz 670)
+  생성 시각: 2026-05-10T17:48:24.030Z
+  총 URL: 989 (정적 12 + blog 6 + lesson 301 + quiz 670)
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
@@ -82,6 +82,16 @@
   </url>
   <url>
     <loc>https://quest-dp.com/blog/adsp-%EB%B9%84%EC%A0%84%EA%B3%B5%EC%9E%90-%EA%B0%80%EC%9D%B4%EB%93%9C</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://quest-dp.com/blog/sqld-7%EC%9D%BC-%EC%95%95%EC%B6%95-%EB%A1%9C%EB%93%9C%EB%A7%B5</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://quest-dp.com/blog/adsp-%EB%8F%85%ED%95%99-vs-%EC%9D%B8%EA%B0%95</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

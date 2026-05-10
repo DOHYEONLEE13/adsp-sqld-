@@ -86,6 +86,23 @@ function collectQuestionIds() {
   return [...ids];
 }
 
+// ─── 블로그 slug 자동 추출 ─────────────────────────────────────
+// blog.ts 의 POSTS 배열에서 slug 정규식으로 뽑기 — 새 포스트 추가 시 sitemap
+// 자동 갱신. 이전엔 STATIC_URLS 에 하드코딩 → 누락 위험.
+
+function collectBlogSlugs() {
+  const blogFile = path.join(REPO_ROOT, 'src/data/seo/blog.ts');
+  if (!fs.existsSync(blogFile)) return [];
+  const src = fs.readFileSync(blogFile, 'utf8');
+  const slugs = new Set();
+  const slugRe = /slug:\s*'([^']+)'/g;
+  let m;
+  while ((m = slugRe.exec(src)) !== null) {
+    slugs.add(m[1]);
+  }
+  return [...slugs];
+}
+
 // ─── XML 생성 ───────────────────────────────────────────────────
 
 const STATIC_URLS = [
@@ -102,17 +119,19 @@ const STATIC_URLS = [
   { loc: '/faq/adsp', changefreq: 'monthly', priority: '0.8' },
   { loc: '/faq/sqld', changefreq: 'monthly', priority: '0.8' },
   { loc: '/glossary', changefreq: 'monthly', priority: '0.8' },
-  // Tier 2 PR 5 — Cornerstone blog posts.
+  // 블로그 인덱스 (개별 포스트는 collectBlogSlugs 로 동적 추가)
   { loc: '/blog', changefreq: 'weekly', priority: '0.85' },
-  { loc: '/blog/' + encodeURI('adsp-vs-sqld-순서'), changefreq: 'monthly', priority: '0.8' },
-  { loc: '/blog/' + encodeURI('adsp-2주-합격-로드맵'), changefreq: 'monthly', priority: '0.8' },
-  { loc: '/blog/' + encodeURI('sqld-노랭이-vs-questdp'), changefreq: 'monthly', priority: '0.8' },
-  { loc: '/blog/' + encodeURI('adsp-비전공자-가이드'), changefreq: 'monthly', priority: '0.8' },
 ];
 
-function buildSitemap(stepIds, questionIds) {
+function buildSitemap(stepIds, questionIds, blogSlugs) {
   const urls = [
     ...STATIC_URLS,
+    // 블로그 포스트 — blog.ts 에서 자동 추출 (slug 추가 시 사이트맵 자동 갱신)
+    ...blogSlugs.map((slug) => ({
+      loc: `/blog/${encodeURI(slug)}`,
+      changefreq: 'monthly',
+      priority: '0.8',
+    })),
     ...stepIds.map((id) => ({
       loc: `/lesson/${id}`,
       changefreq: 'monthly',
@@ -131,7 +150,7 @@ function buildSitemap(stepIds, questionIds) {
     '<!--',
     '  QuestDP sitemap — generate-sitemap.mjs 가 자동 생성.',
     `  생성 시각: ${new Date().toISOString()}`,
-    `  총 URL: ${urls.length} (정적 ${STATIC_URLS.length} + lesson ${stepIds.length} + quiz ${questionIds.length})`,
+    `  총 URL: ${urls.length} (정적 ${STATIC_URLS.length} + blog ${blogSlugs.length} + lesson ${stepIds.length} + quiz ${questionIds.length})`,
     '-->',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
     ...urls.map((u) =>
@@ -154,12 +173,14 @@ function buildSitemap(stepIds, questionIds) {
 
 const stepIds = collectLessonStepIds();
 const questionIds = collectQuestionIds();
+const blogSlugs = collectBlogSlugs();
 console.log(`📚 lesson step 발견: ${stepIds.length}`);
 console.log(`❓ indexable question 발견: ${questionIds.length}`);
-const xml = buildSitemap(stepIds, questionIds);
+console.log(`📝 blog post 발견: ${blogSlugs.length}`);
+const xml = buildSitemap(stepIds, questionIds, blogSlugs);
 fs.writeFileSync(OUT, xml, 'utf8');
 console.log(`✅ sitemap.xml 생성 — ${OUT}`);
 console.log(
-  `   총 URL: ${STATIC_URLS.length + stepIds.length + questionIds.length} ` +
-    `(정적 ${STATIC_URLS.length} + lesson ${stepIds.length} + quiz ${questionIds.length})`,
+  `   총 URL: ${STATIC_URLS.length + blogSlugs.length + stepIds.length + questionIds.length} ` +
+    `(정적 ${STATIC_URLS.length} + blog ${blogSlugs.length} + lesson ${stepIds.length} + quiz ${questionIds.length})`,
 );

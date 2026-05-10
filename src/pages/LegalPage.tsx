@@ -10,6 +10,7 @@ import { LEGAL_DOCS, type LegalDoc } from '@/data/legal';
 import VideoBg from '@/components/ui/VideoBg';
 import { VIDEO_URLS } from '@/data/site';
 import { useSeoMeta } from '@/lib/seo';
+import { handleNavClick } from '@/lib/navigate';
 
 interface Props {
   slug: LegalDoc['slug'];
@@ -136,7 +137,8 @@ export default function LegalPage({ slug, onBack }: Props) {
               .map((s) => (
                 <li key={s}>
                   <a
-                    href={`#/${s}`}
+                    href={`/${s}`}
+                    onClick={(e) => handleNavClick(e, `/${s}`)}
                     className="kr-heading uppercase text-[11px] tracking-widest px-4 py-2 rounded-full border border-cream/25 hover:bg-cream/10 transition inline-block"
                   >
                     {LEGAL_DOCS[s].title}

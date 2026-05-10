@@ -273,6 +273,7 @@ export default function QuizStaticPage({ questionId }: Props) {
           </p>
           <a
             href={`#/game/${q.subject}`}
+            onClick={(e) => handleNavClick(e, `#/game/${q.subject}`)}
             className="kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full active:scale-95 transition"
             style={{
               background: '#FD802E',

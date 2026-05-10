@@ -180,6 +180,7 @@ export default function LessonStaticPage({ stepId }: Props) {
           </p>
           <a
             href={`#/game/${subject}`}
+            onClick={(e) => handleNavClick(e, `#/game/${subject}`)}
             className="kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full active:scale-95 transition"
             style={{
               background: '#FD802E',

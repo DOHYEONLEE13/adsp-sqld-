@@ -332,6 +332,7 @@ function AuthButton() {
     return (
       <a
         href="#/game"
+        onClick={(e) => handleNavClick(e, '#/game')}
         className="kr-heading inline-flex items-center gap-1.5 uppercase tracking-widest text-[11px] md:text-[12px] px-4 md:px-5 py-2.5 md:py-3 rounded-full transition hover:scale-[1.03]"
         style={{
           background: '#FD802E',

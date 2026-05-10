@@ -3,9 +3,10 @@
  *
  * SPA 라우트 변경 시 page_view 수동 fire + 핵심 이벤트 헬퍼.
  *
- * 활성화:
- *   - `.env.local` 에 `VITE_GA_MEASUREMENT_ID=G-XXXXXXX` 추가 후 빌드
- *   - 토큰 없으면 모든 함수 no-op (게스트/dev 환경 안전)
+ * 활성화 정책 (2026-05-11 갱신, main.tsx 와 동기):
+ *   - production 빌드: 기본 측정 ID `G-T38EKQMQ04` 자동 활성
+ *   - dev 빌드: env var 명시 시만 활성 (실 트래픽 통계 오염 방지)
+ *   - `VITE_GA_MEASUREMENT_ID` env var 로 override 가능
  *
  * 핵심 이벤트:
  *   - `lesson_start`, `lesson_complete`, `quiz_attempt`, `quiz_correct`
@@ -23,7 +24,14 @@ declare global {
   }
 }
 
-const GA_ID = import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined;
+const GA_DEFAULT_ID = 'G-T38EKQMQ04';
+const ENV_GA_ID = import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined;
+/** 실효 측정 ID — env var override > production 기본 > undefined (dev). */
+const GA_ID: string | undefined = ENV_GA_ID
+  ? ENV_GA_ID
+  : import.meta.env.PROD
+    ? GA_DEFAULT_ID
+    : undefined;
 
 /** GA4 가 활성화 되어 있는지 (dev 환경에서도 토큰 있으면 활성). */
 export function isAnalyticsEnabled(): boolean {
@@ -84,6 +92,7 @@ export function debugAnalytics(): void {
   console.info('[analytics]', {
     enabled: isAnalyticsEnabled(),
     measurementId: GA_ID ? `${GA_ID.slice(0, 4)}…` : '(미설정)',
-    note: 'VITE_GA_MEASUREMENT_ID 가 .env.local 에 있어야 활성',
+    source: ENV_GA_ID ? 'env' : import.meta.env.PROD ? 'default(prod)' : 'none',
+    note: 'production 빌드는 기본 ID 자동 활성. dev 에서 켜려면 .env.local 에 VITE_GA_MEASUREMENT_ID 설정',
   });
 }

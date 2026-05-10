@@ -4,17 +4,28 @@ import App from './App';
 import './styles/index.css';
 
 /**
- * GA4 동적 초기화 — `VITE_GA_MEASUREMENT_ID` env var 가 있을 때만 활성.
+ * GA4 동적 초기화.
  *
- * 토큰 미설정 시 (dev / 로컬 빌드 / preview) 자동 no-op — 추적/분석 X.
- * Production 배포 시 .env.production 또는 Cloudflare Pages env 변수에
- * `VITE_GA_MEASUREMENT_ID=G-XXXXXXX` 추가하면 활성.
+ * 정책 (2026-05-11 갱신):
+ *  - **production 빌드**: 기본 측정 ID `G-T38EKQMQ04` 자동 활성 (공개 키 — gtag.js
+ *    로드 시 브라우저에 그대로 노출되므로 hard-code 안전).
+ *  - **dev 빌드**: 기본 비활성 (실 트래픽 통계 오염 방지).
+ *  - `VITE_GA_MEASUREMENT_ID` env var 로 override 가능 (staging 등 별도 속성).
  *
  * SPA send_page_view: false — 라우트 변경 시 src/lib/analytics.ts 의
  * trackPageview() 가 수동 발사 (App.tsx 의 hashchange/popstate hook).
  */
+const GA_DEFAULT_ID = 'G-T38EKQMQ04';
+
 function initGA4(): void {
-  const id = import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined;
+  const envId = import.meta.env.VITE_GA_MEASUREMENT_ID as string | undefined;
+  // dev: env var 명시된 경우만 활성 (로컬에서 일부러 켜고 싶을 때).
+  // prod: env var override 우선, 없으면 기본 ID.
+  const id = envId
+    ? envId
+    : import.meta.env.PROD
+      ? GA_DEFAULT_ID
+      : undefined;
   if (!id || !id.startsWith('G-')) return;
   if (typeof window === 'undefined') return;
 

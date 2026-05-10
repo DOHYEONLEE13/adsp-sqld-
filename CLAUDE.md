@@ -91,13 +91,13 @@ Galaxy(과목) → Planet(챕터) → Zone(토픽 로드맵)
 
 - **경로 별칭**: `@/* → src/*`
 - **폰트**: 한글 제목 `Noto Sans KR 700` (utility class `kr-heading`), 본문 `kr-body`, 필기체 Condiment + Gaegu (`.cursive`)
-- **컬러 토큰**: `--base #010828`, `--cream #EFF4FF`, `--neon #6FFF00`, accent per subject (`adsp: #67e8f9`, `sqld: #c084fc`)
+- **컬러 토큰**: `--base #010828`, `--cream #EFF4FF`, `--neon #6FFF00` (액센트 — 텍스트·점·테두리 전용), `--cta-primary #7DD850` (인게임 primary 버튼 fill — 솔리드 네온이 너무 강렬해서 톤다운한 변형, 2026-05-11), accent per subject (`adsp: #67e8f9`, `sqld: #c084fc`)
 - **3D 버튼 패턴**: `radial-gradient` 하이라이트 + `linear-gradient` 본체 + 레이어드 `box-shadow` (하단 -1px 짙은 그림자 + 외부 glow + inset 2px 하이라이트 + inset -5px 어둠)
 - **glass 카드**: `.liquid-glass` (backdrop-filter + gradient border)
 
 ---
 
-## 4. 이미 끝낸 것 (2026-04-23 기준)
+## 4. 이미 끝낸 것 (2026-05-11 기준)
 
 ### 4.1 랜딩 & 과금
 
@@ -151,6 +151,30 @@ Galaxy(과목) → Planet(챕터) → Zone(토픽 로드맵)
 - 북마크 (`#/bookmarks`)
 - 통계 페이지 (`#/stats`)
 
+### 4.7 SEO·결제·UI (2026-05-10~11)
+
+#### SEO 인프라 완비
+- **Sitemap 989 URLs** 자동 생성 (`scripts/generate-sitemap.mjs`) — 정적 12 + blog 6 + lesson 301 + quiz 670. 블로그는 `blog.ts` 정규식 자동 추출 (새 포스트 추가 시 sitemap 자동 갱신).
+- **GA4 자동 활성** — `src/main.tsx` + `src/lib/analytics.ts` 의 GA_DEFAULT_ID `G-T38EKQMQ04` production 빌드에 hardcode (공개 키, 안전). dev 빌드는 통계 오염 방지 위해 자동 비활성. `VITE_GA_MEASUREMENT_ID` env var override 가능.
+- **GSC 인증** — DNS (도메인) 방식으로 이미 인증됨. `index.html` 의 빈 meta 토큰 주석화.
+- **블로그 6 포스트 + OG 이미지** — `scripts/generate-og-images.mjs` (Playwright 1200×630, 카테고리별 액센트). 신규: SQLD 7일 압축 로드맵, ADSP 독학 vs 인강.
+- **author/publisher · geo.region · apple-mobile-web-app-** 메타 추가.
+- **`/pricing` 단독 페이지** (`src/pages/PricingPage.tsx`) — Toss 가맹점 심사 + SEO 단독 indexable. Product JSON-LD + 결제·환불 안내 inline.
+
+#### 결제 인프라
+- 토스페이먼츠 가맹 신청 완료. **MID `questd5zny`** 발급 (심사 대기 중).
+- 통신판매업 신고증 발급 후 `COMPANY.ecommerceNumber` 갱신 + 토스 심사 통과 → 결제 활성.
+
+#### UI / UX 개선
+- **EnergyShopModal** 재설계 — hero ⚡ 게이지 + ZapStack (시각적 ⚡ 다중) + BEST VALUE 스탬프 + 프리미엄 hero 카드 (gold gradient).
+- **FriendsPage** 정리 — 부제 압축, 정렬 탭 아이콘 중심 (active 만 라벨), 로그인 카드 Duolingo 스타일.
+- **LessonCompleteModal** — 마지막 스텝 정답 시 클리어 축하 (마스코트 celebrate + sparkle 5개 + 통계 3 칸 + 실전 세트 CTA). 1.4 초 딜레이로 feedback 시트 읽을 시간 확보.
+- **Zone 토픽 노드 "정복" 골드 배지** — 모든 visibleSteps 정답 시 토픽 헤더 골드 색 + Check 배지.
+- **ScreenShell mobile pt-[72px]** — MobileTopBar (h-14 fixed) 가 돌아가기 버튼 가리던 회귀 수정 (모든 ScreenShell 페이지 일관 적용).
+- **Favicon** — "Q" 글자 SVG 폐기, mascot PNG 기반으로 단일화. SVG embed 외부 PNG 차단되어 검정 사각형 사고 후 PNG 직링크로 회귀.
+- **인게임 네온 톤다운** — 솔리드 `#6FFF00` → `--cta-primary` (`#7DD850`, 채도 ~38% 낮춤) 토큰화. CSS 변수 한 곳에서 전체 게임 버튼 색감 조정 가능. Landing 의 네온 버튼은 매출 가시성 위해 유지.
+- **"지금 학습하기" hash 링크 회귀 수정** — path 라우트 (`/curriculum/...` 등) 에서 `<a href="#/game/...">` 만으론 라우트 전환 X (pathname 우선 매칭). `onClick={handleNavClick}` 추가로 `navigate()` 헬퍼 경유 — pathname 을 `/` 로 replaceState 후 hash 설정.
+
 ---
 
 ## 5. 앞으로 할 일 (우선순위 순)
@@ -159,12 +183,12 @@ Galaxy(과목) → Planet(챕터) → Zone(토픽 로드맵)
 
 1. ~~SQLD 레슨 0개~~ — **해결**. SQLD 50 step lesson + 50 reminder 완비 (2026-04-30).
 2. **ADsP·SQLD 스텝당 예제 1개 → 2~3개로 확장**. 현재 `concept-practice.json` 이 step 당 1문. 같은 개념을 다른 각도로 물어보는 드릴이 필요. 2회독 변형 문제는 ADSP Ch1 만 12개 작성됨 (`concept-practice-pass2.json`) — 나머지 챕터·SQLD 도 점진 확장 필요.
-3. **레슨 완료 축하 화면**. 마지막 스텝 예제까지 맞추면 "챕터 \[N\] 개념 클리어" 피드백 → 바로 실전 세트 유도. 현재는 "실전 세트로 마무리" 버튼이 작아서 임팩트 부족.
+3. ~~레슨 완료 축하 화면~~ — **해결** (2026-05-11). `LessonCompleteModal` — 마지막 스텝 정답 시 1.4 초 딜레이 후 마스코트 celebrate + sparkle + 통계 3 칸 + "실전 세트로 도전" primary CTA.
 
 ### 🟧 P1 — UX 완성도
 
 4. **캐러셀 기반 개념 카드**. 개념 블록이 길어질 때 세로 스크롤 대신 좌우 스와이프. 모바일 몰입 강화.
-5. **Zone 노드 "레슨 완료" 표식**. 현재는 "개념" 뱃지가 레슨 존재 여부만 표시. 해당 레슨의 모든 스텝을 풀었으면 금색/체크 상태로.
+5. ~~Zone 노드 "레슨 완료" 표식~~ — **해결** (2026-05-11). TopicSection 이 모든 visibleSteps 정답 시 토픽 헤더 골드 색 + Check "정복" 배지 + divider 그라데이션.
 6. **실전 세트 중 개념 힌트 버튼**. Quest 화면에서 해당 문항이 속한 LessonStep 으로 잠시 다녀올 수 있는 "개념 보기" 링크.
 7. **오답 복습 큐의 개념 재노출**. 같은 stat 의 문항을 복습할 때 해당 LessonStep 을 먼저 짧게 상기시키고 재풀이.
 
@@ -368,9 +392,15 @@ npm run typecheck  # tsc --noEmit
 
 ## 7. 메타
 
-- 현재 워크트리: `C:\Users\이도현\Desktop\.claude\worktrees\hardcore-shamir-47f5ab`
+- 현재 워크트리: `C:\Users\USER\Documents\adsp-sqld` (2026-05-10 PC 이전 — 옛 경로 `C:\Users\이도현\Desktop\.claude\worktrees\hardcore-shamir-47f5ab`)
 - 사용자 이메일: dohyeonlee13@gmail.com
-- 마지막 대규모 변경: **2026-05-01**
+- 마지막 대규모 변경: **2026-05-10~11**
+  - **SEO Tier 0/1 완성** — sitemap 989 URL 자동 (블로그 정규식 추출), GA4 production 자동 활성 (G-T38EKQMQ04), GSC DNS 인증, blog 6 포스트 + Playwright OG 이미지 자동 생성, `/pricing` 단독 페이지 (Toss + SEO).
+  - **UI 톤다운 + 회귀 수정** — 인게임 솔리드 네온 → `--cta-primary` (#7DD850) 토큰화. ScreenShell mobile pt-[72px] (MobileTopBar 가리던 회귀). "지금 학습하기" 등 path 라우트에서 hash 링크 무반응 → `handleNavClick` 추가. Favicon "Q" → mascot PNG (SVG embed 차단 사고 거치며 PNG 직링크 회귀).
+  - **레슨/Zone 완료 피드백** — `LessonCompleteModal` (마지막 스텝 정답 시 축하), Zone 토픽 노드 "정복" 골드 배지.
+  - **EnergyShopModal · FriendsPage 재설계** — 구매 카드 시각 hierarchy ↑, 친구 화면 텍스트 압축 + 아이콘 중심 정렬 탭.
+  - **Toss 가맹점** — MID `questd5zny` 발급, 통판신고증 발급 후 심사 통과 대기.
+- 그 이전: **2026-05-01**
   - **lessons.ts 챕터별 분할 (A-7 완료)** — 8968줄 단일 파일 → `src/data/lessons/{adsp,sqld}/<chapter>.ts` 5개 + `types.ts` + `index.ts`. 호출측 변경 0 (디렉터리 import 자동 해석). 평균 파일 1500줄 → 에디터·검색·PR 충돌 모두 가벼워짐.
   - **다기기 동기화 RLS 사고 종결 (3-layer)** — Cloudflare lock sync (cc34a28) + admin SELECT 재귀 0015 + UPDATE 재귀 0016. 부록 (1)(2) 가 `docs/postmortem-phase3-false-completion.md` 에 기록됨.
 - 그 이전: **2026-04-30**
@@ -384,14 +414,14 @@ npm run typecheck  # tsc --noEmit
 
 ## 8. 사업화 / 결제 / 세무 — 진행 상황
 
-### 현재 단계 (2026-04-29)
+### 현재 단계 (2026-05-11)
 
 | 단계 | 상태 |
 |---|---|
 | 사업자등록 | ✅ 완료 (2026-04-28 개업, 604-48-01123, 상호 "퀘스트디피", 525101 + 749609 간이과세) |
 | 통신판매업 신고 | ⏳ 진행 — 정부24. 신고증 발급되면 `COMPANY.ecommerceNumber` 갱신 |
 | 사업용 통장·카드 | ⏳ 진행 — 카카오뱅크/토스뱅크 사업자 |
-| 토스페이먼츠 가맹점 | ⏳ 통판신고증 발급 후 신청 ("디지털 콘텐츠" 카테고리) |
+| 토스페이먼츠 가맹점 | 🟡 신청 완료, **MID `questd5zny`** 발급, 심사 대기 (디지털 콘텐츠 카테고리). 통판신고증 + 사이트 심사 통과 시 결제 활성. |
 | 자비스 회계 SaaS | ⏳ 사업용 카드 발급 후 |
 
 ### 운영 정보 single source

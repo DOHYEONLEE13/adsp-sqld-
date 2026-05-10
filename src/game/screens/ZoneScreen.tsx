@@ -505,6 +505,16 @@ function TopicSection({
   const stepsWithIdx = steps.map((s, i) => ({ ...s, _origIdx: i }));
   const visibleSteps = stepsWithIdx.filter((s) => !!s.quizId);
 
+  // ── 레슨 정복 여부 (CLAUDE.md P1 §5 — 토픽 노드 완료 표식) ──
+  // 모든 visibleSteps 의 lastCorrect=true && correct>0 일 때 "정복 완료".
+  // 골드 체크 배지로 시각화 → 사용자가 무엇을 끝냈는지 한눈에.
+  const stepCompletedCount = visibleSteps.reduce((acc, s) => {
+    const stat = s.quizId ? progress.questionStats[s.quizId] : undefined;
+    return acc + (stat?.lastCorrect && (stat?.correct ?? 0) > 0 ? 1 : 0);
+  }, 0);
+  const lessonCompleted =
+    visibleSteps.length > 0 && stepCompletedCount === visibleSteps.length;
+
   // pulse 활성화 시: 첫 미완료(미정답) step 의 displayIdx 를 골라 펄스 표시 노드로.
   // 모두 완료된 토픽이면 첫 step 에 펄스 (= "다시 복기" 안내).
   const pulseDisplayIdx = pulse
@@ -530,10 +540,28 @@ function TopicSection({
           >
             Part {index}
           </span>
-          <h3 className="kr-heading text-[17px] md:text-[19px] uppercase tracking-[0.01em]">
+          <h3
+            className="kr-heading text-[17px] md:text-[19px] uppercase tracking-[0.01em]"
+            style={lessonCompleted ? { color: '#FFD66B' } : undefined}
+          >
             {topic}
           </h3>
-          {isWeak ? (
+          {/* 완료 배지 — 모든 step 정답. weak 보다 우선 (정복은 약점 상위 상태). */}
+          {lessonCompleted ? (
+            <span
+              className="kr-heading inline-flex items-center gap-1 text-[9px] uppercase tracking-widest px-2 py-0.5 rounded-full"
+              style={{
+                color: '#FFD66B',
+                background:
+                  'linear-gradient(135deg, rgba(255,214,107,0.18), rgba(255,176,32,0.12))',
+                border: '1px solid rgba(255,214,107,0.45)',
+                boxShadow: '0 0 12px -2px rgba(255,214,107,0.35)',
+              }}
+            >
+              <Check size={9} strokeWidth={3} />
+              정복
+            </span>
+          ) : isWeak ? (
             <span
               className="kr-heading inline-flex items-center gap-1 text-[9px] uppercase tracking-widest px-2 py-0.5 rounded-full"
               style={{ color: '#f87171', background: 'rgba(248, 113, 113, 0.12)' }}
@@ -542,13 +570,26 @@ function TopicSection({
               약점
             </span>
           ) : null}
-          <span className="kr-body text-[11px] text-cream/50 tabular-nums ml-auto">
-            {visibleSteps.length} steps
+          <span
+            className="kr-body text-[11px] tabular-nums ml-auto"
+            style={{
+              color: lessonCompleted
+                ? 'rgba(255,214,107,0.75)'
+                : 'rgba(239,244,255,0.5)',
+            }}
+          >
+            {lessonCompleted
+              ? `${visibleSteps.length}/${visibleSteps.length} steps`
+              : `${stepCompletedCount}/${visibleSteps.length} steps`}
           </span>
         </div>
         <div
           className="h-px mt-3"
-          style={{ background: `${accent}33` }}
+          style={{
+            background: lessonCompleted
+              ? 'linear-gradient(90deg, rgba(255,214,107,0.55), rgba(255,176,32,0.15))'
+              : `${accent}33`,
+          }}
           aria-hidden
         />
       </div>

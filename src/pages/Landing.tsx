@@ -37,12 +37,55 @@ function useScrollToHashAnchor() {
 
 export default function Landing() {
   useSeoMeta({
-    title: 'QuestDP — ADSP·SQLD 자격증, 게임으로 놀면서 합격',
+    title: 'QuestDP — ADsP 게임·SQLD 게임 학습사이트',
     description:
-      'ADsP·SQLD 자격증을 게임처럼 학습하는 마이크로러닝 SaaS. 토리·셀리와 함께 챕터를 정복하고 AI 약점 분석으로 단기 합격. 월 9,900원.',
+      'QuestDP는 ADsP 게임, SQLD 게임처럼 개념 스텝과 기출 문제를 푸는 ADSP·SQLD 학습사이트입니다. 약점 복습과 로드맵으로 시험을 준비하세요.',
     canonical: 'https://quest-dp.com/',
-    ogImage: 'https://quest-dp.com/og/default.png',
+    ogImage: 'https://quest-dp.com/og/questdp-home.png',
     ogType: 'website',
+    jsonLd: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'QuestDP',
+        alternateName: [
+          '퀘스트디피',
+          'ADsP 게임',
+          'SQLD 게임',
+          'ADSP 학습사이트',
+          'SQLD 학습사이트',
+          'ADSP SQLD 학습사이트',
+        ],
+        url: 'https://quest-dp.com/',
+        inLanguage: 'ko-KR',
+        description:
+          'ADSP·SQLD 자격증을 게임처럼 학습하는 개념 스텝, 기출 풀이, 약점 복습 중심 학습사이트.',
+        image: 'https://quest-dp.com/og/questdp-home.png',
+        publisher: {
+          '@type': 'Organization',
+          name: 'QuestDP',
+          alternateName: '퀘스트디피',
+          url: 'https://quest-dp.com/',
+          logo: 'https://quest-dp.com/logo/questdp-mark.png',
+        },
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'EducationalOrganization',
+        name: 'QuestDP',
+        alternateName: '퀘스트디피',
+        url: 'https://quest-dp.com/',
+        image: 'https://quest-dp.com/og/questdp-home.png',
+        description:
+          'ADsP 게임·SQLD 게임 방식으로 ADSP·SQLD 자격증 개념과 기출 문제를 학습하는 온라인 학습사이트.',
+        teaches: [
+          'ADsP 데이터분석준전문가',
+          'SQLD SQL 개발자',
+          'ADSP 기출문제',
+          'SQLD 기출문제',
+        ],
+      },
+    ],
   });
 
   useScrollToHashAnchor();

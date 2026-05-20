@@ -35,9 +35,9 @@ export interface SubjectFAQ {
 export const ADSP_FAQ: SubjectFAQ = {
   subject: 'adsp',
   title: 'ADsP 자주 묻는 질문',
-  metaTitle: 'ADsP 자주 묻는 질문 — 시험·합격·공부법 한 번에',
+  metaTitle: 'ADsP 학습사이트 FAQ — 시험·합격·공부법 한 번에',
   metaDescription:
-    'ADsP 데이터분석준전문가 시험 일정, 합격 기준, 비전공자 도전, SQLD 와의 차이, 공부 기간까지 — 가장 많이 검색되는 질문 30개에 답변.',
+    'ADsP 데이터분석준전문가 시험 일정, 합격 기준, 비전공자 도전, SQLD 와의 차이, 공부 기간까지 — ADsP 게임형 학습사이트 QuestDP가 답변합니다.',
   groups: [
     {
       heading: '시험 기본',
@@ -146,9 +146,9 @@ export const ADSP_FAQ: SubjectFAQ = {
 export const SQLD_FAQ: SubjectFAQ = {
   subject: 'sqld',
   title: 'SQLD 자주 묻는 질문',
-  metaTitle: 'SQLD 자주 묻는 질문 — 시험·합격·공부법 정리',
+  metaTitle: 'SQLD 학습사이트 FAQ — 시험·합격·공부법 정리',
   metaDescription:
-    'SQLD SQL 개발자 자격증 시험 일정, 합격 기준, 노랭이 책, 비전공자 도전, ADsP 와의 차이까지 — 가장 많이 검색되는 질문 25개에 답변.',
+    'SQLD SQL 개발자 자격증 시험 일정, 합격 기준, 노랭이 책, 비전공자 도전, ADsP 와의 차이까지 — SQLD 게임형 학습사이트 QuestDP가 답변합니다.',
   groups: [
     {
       heading: '시험 기본',

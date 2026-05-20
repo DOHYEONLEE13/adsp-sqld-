@@ -12,7 +12,7 @@ export const BRAND = {
   separator: '.',
   logoLeft: '퀘스트',
   logoRight: '디피',
-  tagline: 'ADSP · SQLD, 놀면서 합격',
+  tagline: 'ADsP 게임 · SQLD 게임 학습사이트',
 } as const;
 
 export const VIDEO_URLS = {
@@ -48,9 +48,9 @@ export const HERO: HeroContent = {
 
 export const ABOUT: AboutContent = {
   headingLines: ['안녕!', '난 퀘스트디피야'],
-  lead: '암기 싫어하는 수험생을 위한 게임형 학습 플랫폼. 우주를 탐험하듯 챕터를 정복하고, AI가 매일 약점을 골라 맞춤 미션을 던집니다.',
+  lead: 'ADSP 학습사이트와 SQLD 학습사이트를 찾는 수험생을 위한 게임형 문제풀이 플랫폼. 우주를 탐험하듯 챕터를 정복하고, AI가 매일 약점을 골라 맞춤 미션을 던집니다.',
   bulletLines: [
-    'ADSP · SQLD 두 은하, 행성마다 챕터, 그 안엔 토픽 존. 한 스텝씩 풀며 레벨업.',
+    'ADsP 게임 · SQLD 게임처럼 두 은하를 따라가며 개념 스텝, 기출 풀이, 챕터 모의고사를 한 번에 학습.',
     'Leitner 5단계 SRS · 오답 큐 · 약점 점수 — 오늘 풀이가 내일 다시 만나는 복습으로.',
   ],
   videoUrl: VIDEO_URLS.about,

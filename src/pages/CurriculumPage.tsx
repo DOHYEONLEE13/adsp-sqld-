@@ -31,8 +31,8 @@ const SUBJECT_LABEL: Record<'adsp' | 'sqld', string> = {
 };
 
 const SUBJECT_TAGLINE: Record<'adsp' | 'sqld', string> = {
-  adsp: '데이터의 이해부터 분석 기획·통계·머신러닝까지 — 시험 출제범위 전체.',
-  sqld: '데이터 모델링부터 SQL 기본·활용·관리 구문까지 — 시험 출제범위 전체.',
+  adsp: 'ADsP 학습사이트를 찾는 수험생을 위한 게임형 로드맵. 데이터의 이해부터 분석 기획·통계·머신러닝까지 시험 출제범위 전체.',
+  sqld: 'SQLD 학습사이트를 찾는 수험생을 위한 게임형 로드맵. 데이터 모델링부터 SQL 기본·활용·관리 구문까지 시험 출제범위 전체.',
 };
 
 const SUBJECT_ACCENT: Record<'adsp' | 'sqld', string> = {
@@ -46,10 +46,13 @@ export default function CurriculumPage({ subject }: Props) {
   const label = SUBJECT_LABEL[subject];
   const tagline = SUBJECT_TAGLINE[subject];
 
-  const seoTitle = `${label} 출제범위 · 커리큘럼 — QuestDP`;
+  const seoTitle =
+    subject === 'adsp'
+      ? 'ADsP 학습사이트 · 게임형 출제범위 커리큘럼 — QuestDP'
+      : 'SQLD 학습사이트 · 게임형 출제범위 커리큘럼 — QuestDP';
   const seoDescription =
     `${label} 시험 출제범위 전체를 ${curriculum.totalChapters}개 챕터 · ${curriculum.totalTopics}개 토픽 · ` +
-    `${curriculum.totalSteps}개 학습 스텝으로 구조화. 무료로 모든 개념을 학습하고 인터랙티브하게 풀어보세요.`;
+    `${curriculum.totalSteps}개 학습 스텝으로 구조화한 ${subject === 'adsp' ? 'ADsP 게임형 학습사이트' : 'SQLD 게임형 학습사이트'}. 무료로 개념과 기출을 풀어보세요.`;
   const canonical = `https://quest-dp.com/curriculum/${subject}`;
 
   // JSON-LD Course
@@ -66,6 +69,10 @@ export default function CurriculumPage({ subject }: Props) {
     inLanguage: 'ko-KR',
     educationalLevel: label,
     isAccessibleForFree: true,
+    keywords:
+      subject === 'adsp'
+        ? 'ADsP 학습사이트, ADSP 학습사이트, ADsP 게임, ADSP 게임'
+        : 'SQLD 학습사이트, SQLD 게임, SQL 개발자 자격증',
     hasCourseInstance: {
       '@type': 'CourseInstance',
       courseMode: 'online',

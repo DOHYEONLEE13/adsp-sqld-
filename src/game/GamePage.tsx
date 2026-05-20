@@ -42,6 +42,8 @@ import { useProgress } from './useProgress';
 import { useDevUnlockFlags } from './useDevUnlockFlags';
 import { isDevUnlockEnabled } from './passes';
 import { isDevUnlockStepsEnabled } from './stepUnlocks';
+import { useMyProfile } from '@/data/profile';
+import NicknameOnboarding from './screens/NicknameOnboarding';
 import { tryRecordPassCompletion } from './passSync';
 
 interface Props {
@@ -193,6 +195,13 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
   const [lockToast, setLockToast] = useState<string | null>(null);
   const stepLockSnap = useStepUnlocks();
   const progress = useProgress();
+  const profile = useMyProfile();
+  const [nicknameGateDone, setNicknameGateDone] = useState(false);
+  const needsNicknameGate =
+    !nicknameGateDone &&
+    !profile.pendingServerSync &&
+    profile.displayName.trim() === '' &&
+    progress.sessions.length === 0;
   // dev unlock 토글 변경 시 즉시 재렌더 — onSelectStep 의 잠금 검사에 즉시 반영.
   // 반환값은 사용하지 않고 단지 hook 구독으로 hook 변화 시 컴포넌트 재렌더만 유도.
   useDevUnlockFlags();
@@ -298,6 +307,10 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
       setScreen({ kind: 'quest', session });
     });
   };
+
+  if (needsNicknameGate) {
+    return <NicknameOnboarding onDone={() => setNicknameGateDone(true)} />;
+  }
 
   /** Daily Mission 시작. ⚡ 1 소모. */
   const startDailyMission = (subject: Subject) => {

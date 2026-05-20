@@ -15,7 +15,7 @@
 import { useState, useCallback } from 'react';
 import { OnboardingScreen } from './OnboardingScreen';
 import { DiagnosticScreen } from '../diagnostic/DiagnosticScreen';
-import { saveOnboardingResult, markOnboardingSkipped, loadOnboardingResult } from './onboardingStorage';
+import { saveOnboardingResult, loadOnboardingResult } from './onboardingStorage';
 import { buildPlanFromOnboarding, saveStudyPlan } from '../studyPlan';
 import { setActiveSubject } from '../storage';
 import type { Subject } from '@/types/question';
@@ -25,8 +25,6 @@ type ExamSubject = Extract<Subject, 'adsp' | 'sqld'>;
 interface OnboardingFlowProps {
   /** Onboarding 완전 완료 시 callback (caller 가 다음 화면으로 이동). */
   onFinish: () => void;
-  /** 사용자가 onboarding 건너뛰기 (게스트 모드 유지). */
-  onSkip?: () => void;
 }
 
 /**
@@ -42,7 +40,7 @@ type Phase =
       onDiagnosticDone: (weak_chapters: string[]) => void;
     };
 
-export function OnboardingFlow({ onFinish, onSkip }: OnboardingFlowProps) {
+export function OnboardingFlow({ onFinish }: OnboardingFlowProps) {
   const [phase, setPhase] = useState<Phase>({ kind: 'onboarding' });
 
   const handleDiagnosticEntry = useCallback(
@@ -96,13 +94,6 @@ export function OnboardingFlow({ onFinish, onSkip }: OnboardingFlowProps) {
     [onFinish],
   );
 
-  // 건너뛰기 — 스킵 플래그 마킹 후 caller 의 onSkip (App.tsx 가 #/game 으로 이동).
-  // 플래그가 없으면 needsOnboarding() === true 라 redirect loop 발생.
-  const handleSkip = useCallback(() => {
-    markOnboardingSkipped();
-    onSkip?.();
-  }, [onSkip]);
-
   // OnboardingScreen 은 항상 mount 상태로 유지 — useReducer state 보존.
   // diagnostic 진행 중엔 display 토글로 숨김 (unmount 시 state reset 되는 버그 방지).
   return (
@@ -115,7 +106,6 @@ export function OnboardingFlow({ onFinish, onSkip }: OnboardingFlowProps) {
         <OnboardingScreen
           onComplete={handleOnboardingComplete}
           onDiagnosticEntry={handleDiagnosticEntry}
-          onSkip={onSkip ? handleSkip : undefined}
         />
       </div>
       {phase.kind === 'diagnostic' && (

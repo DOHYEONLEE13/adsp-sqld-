@@ -83,36 +83,14 @@ export function loadOnboardingResult(): OnboardingResult | null {
 
 /**
  * 신규 사용자 여부.
- * mock: localStorage 에 result 가 없고 skipped flag 도 없으면 신규.
+ * mock: localStorage 에 result 가 없으면 신규.
  * 실제 운영 (마이그레이션 적용 후): profiles.persona === 'unknown' → 신규.
  */
 export function needsOnboarding(): boolean {
-  if (loadOnboardingResult() !== null) return false;
-  if (isOnboardingSkipped()) return false;
-  return true;
+  return loadOnboardingResult() === null;
 }
 
-/** 사용자가 onboarding 건너뛰기 — 게스트 모드 유지하며 game 진입 허용. */
-export function markOnboardingSkipped(): void {
-  if (typeof window === 'undefined') return;
-  try {
-    window.localStorage.setItem(SKIPPED_KEY, '1');
-  } catch {
-    // silent fail
-  }
-}
-
-/** skipped flag 조회. */
-export function isOnboardingSkipped(): boolean {
-  if (typeof window === 'undefined') return false;
-  try {
-    return window.localStorage.getItem(SKIPPED_KEY) === '1';
-  } catch {
-    return false;
-  }
-}
-
-/** 초기화 (테스트 또는 사용자 reset). result + skipped flag 모두 제거. */
+/** 초기화 (테스트 또는 사용자 reset). result + legacy skipped flag 모두 제거. */
 export function clearOnboardingResult(): void {
   if (typeof window === 'undefined') return;
   try {

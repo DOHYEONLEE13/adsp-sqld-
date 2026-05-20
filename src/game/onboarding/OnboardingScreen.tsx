@@ -49,12 +49,9 @@ interface OnboardingScreenProps {
 
   /** 진단 테스트 진입 trigger (재응시생 진단형 선택 시). */
   onDiagnosticEntry: (exams: ExamSubject[], onDiagnosticDone: (weak_chapters: string[]) => void) => void;
-
-  /** 사용자가 onboarding 건너뛰기 옵션 (게스트 모드 유지). */
-  onSkip?: () => void;
 }
 
-export function OnboardingScreen({ onComplete, onDiagnosticEntry, onSkip }: OnboardingScreenProps) {
+export function OnboardingScreen({ onComplete, onDiagnosticEntry }: OnboardingScreenProps) {
   const [state, dispatch] = useReducer(
     (s: OnboardingState, e: OnboardingEvent) => reduce(s, e),
     initialOnboardingState(),
@@ -147,15 +144,6 @@ export function OnboardingScreen({ onComplete, onDiagnosticEntry, onSkip }: Onbo
             >
               시작
             </button>
-            {onSkip && (
-              <button
-                type="button"
-                onClick={onSkip}
-                className="w-full text-center kr-body text-sm text-white/60 hover:text-white mt-3"
-              >
-                건너뛰기
-              </button>
-            )}
           </div>
         </main>
       </section>
@@ -186,7 +174,7 @@ export function OnboardingScreen({ onComplete, onDiagnosticEntry, onSkip }: Onbo
           <StepContent state={state} dispatch={dispatch} onFinish={handleFinish} />
         </div>
 
-        {/* 하단 네비 — 이전 / 건너뛰기 */}
+        {/* 하단 네비 — 이전 */}
         <div className="mt-8 max-w-[560px] mx-auto w-full flex justify-between items-center">
           {state.history.length > 0 ? (
             <button
@@ -198,15 +186,6 @@ export function OnboardingScreen({ onComplete, onDiagnosticEntry, onSkip }: Onbo
             </button>
           ) : (
             <span />
-          )}
-          {onSkip && (
-            <button
-              type="button"
-              onClick={onSkip}
-              className="kr-body text-sm text-white/60 hover:text-white"
-            >
-              건너뛰기
-            </button>
           )}
         </div>
       </main>

@@ -11,7 +11,6 @@
  *   2. 닉네임 입력 (1~12자) + Enter / 시작 버튼
  *   3. setDisplayName 성공 → onDone() → GalaxyScreen 의 needsNickname 플래그가
  *      false 로 떨어지면서 자연스럽게 chooser 노출
- *   4. "건너뛰기" — 태그(Q-XXXX-XXXX) 그대로 사용. 나중에 프로필에서 변경 가능.
  */
 
 import { useEffect, useState } from 'react';
@@ -32,7 +31,7 @@ const ACCENT = '#6FFF00';
 const MAX_LEN = 12;
 
 interface Props {
-  /** 닉네임 입력 완료 또는 건너뛰기 → galaxy chooser 로 진행. */
+  /** 닉네임 입력 완료 → galaxy chooser 로 진행. */
   onDone: () => void;
 }
 
@@ -81,11 +80,6 @@ export default function NicknameOnboarding({ onDone }: Props) {
       setError('알 수 없는 오류 — 잠시 후 다시 시도해주세요.');
       setSubmitting(false);
     }
-  };
-
-  const handleSkip = () => {
-    if (submitting) return;
-    onDone();
   };
 
   const handleGoogleLogin = async () => {
@@ -220,14 +214,9 @@ export default function NicknameOnboarding({ onDone }: Props) {
             <ArrowRight size={16} strokeWidth={2.6} />
           </button>
 
-          <button
-            type="button"
-            onClick={handleSkip}
-            disabled={submitting}
-            className="kr-body text-[12px] text-cream/55 hover:text-cream/85 transition py-2 disabled:opacity-40"
-          >
-            건너뛰기 (나중에 프로필에서 변경 가능)
-          </button>
+          <p className="kr-body text-center text-[12px] text-cream/55 leading-[1.6] px-2">
+            닉네임은 나중에 프로필에서 언제든 바꿀 수 있어요.
+          </p>
         </form>
       </div>
     </section>

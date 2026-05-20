@@ -31,7 +31,7 @@ export const SUBJECT_SHOWCASES: SubjectShowcase[] = [
     videoUrl: VIDEO_URLS.mode1,
     metaLabel: '콘텐츠',
     metaValue: '251 step · 420 문항',
-    href: '#/game/adsp',
+    href: '#/game',
   },
   {
     id: 'sqld',
@@ -41,7 +41,7 @@ export const SUBJECT_SHOWCASES: SubjectShowcase[] = [
     videoUrl: VIDEO_URLS.mode2,
     metaLabel: '콘텐츠',
     metaValue: '50 step · 250 문항',
-    href: '#/game/sqld',
+    href: '#/game',
   },
   {
     id: 'bdat',

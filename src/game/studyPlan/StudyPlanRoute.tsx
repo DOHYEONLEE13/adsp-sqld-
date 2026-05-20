@@ -128,7 +128,7 @@ export default function StudyPlanRoute() {
    * [학습 시작하기] 분기 — 첫 진입 1회만 사용자 페르소나에 따라 다른 화면으로.
    *
    *   - 재응시생 + 약점 명시 (메타인지) → '/weakness' (자기가 입력한 약점 단원이 모인 탭)
-   *   - 그 외 (재응시생 fallback / 입문자 / 진단형 v1.1) → '/game/{subject}' (학습 탭)
+   *   - 그 외 (재응시생 fallback / 입문자 / 진단형 v1.1) → '/game' (닉네임 게이트 포함 정식 학습 탭)
    *
    * 첫 진입 후 questdp_first_entry_done flag 마킹 → 이후 [학습 시작하기] 는
    * 항상 학습 탭으로. 사용자가 자유롭게 다른 탭 탐색하더라도 강제 redirect X.
@@ -152,7 +152,7 @@ export default function StudyPlanRoute() {
         return;
       }
     }
-    window.location.hash = `/game/${stable.exam}`;
+    window.location.hash = '/game';
   };
 
   const handleRegenerate = () => {

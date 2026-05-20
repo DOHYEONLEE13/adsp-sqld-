@@ -60,6 +60,15 @@ describe('onboardingStorage — Phase 4 Step 2 mock 단계', () => {
     expect(loadOnboardingResult()).toBeNull();
   });
 
+  it('legacy skipped flag no longer bypasses onboarding', () => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem('questdp_onboarding_skipped_v4', '1');
+    expect(needsOnboarding()).toBe(true);
+
+    clearOnboardingResult();
+    expect(window.localStorage.getItem('questdp_onboarding_skipped_v4')).toBeNull();
+  });
+
   it('deserializeDates: ISO string → Date', () => {
     const iso = '2026-09-01T00:00:00.000Z';
     const result = deserializeDates({ adsp: iso, sqld: undefined });

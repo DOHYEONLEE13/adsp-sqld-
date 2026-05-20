@@ -272,8 +272,8 @@ export default function QuizStaticPage({ questionId }: Props) {
             정답·해설 즉시 확인 + AI 약점 분석 + Leitner SRS 자동 복습.
           </p>
           <a
-            href={`#/game/${q.subject}`}
-            onClick={(e) => handleNavClick(e, `#/game/${q.subject}`)}
+            href="#/game"
+            onClick={(e) => handleNavClick(e, '#/game')}
             className="kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full active:scale-95 transition"
             style={{
               background: '#FD802E',

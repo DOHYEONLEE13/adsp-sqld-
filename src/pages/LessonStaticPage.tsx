@@ -179,8 +179,8 @@ export default function LessonStaticPage({ stepId }: Props) {
             정답·해설·약점 분석까지 한 화면에서 즉시 진행.
           </p>
           <a
-            href={`#/game/${subject}`}
-            onClick={(e) => handleNavClick(e, `#/game/${subject}`)}
+            href="#/game"
+            onClick={(e) => handleNavClick(e, '#/game')}
             className="kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full active:scale-95 transition"
             style={{
               background: '#FD802E',

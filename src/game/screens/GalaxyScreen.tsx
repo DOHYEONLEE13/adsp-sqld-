@@ -126,11 +126,11 @@ export default function GalaxyScreen({
   // "닉네임 미설정" = displayName.trim() === '' 만 체크하면 됨.
   //
   // sync-loading (pendingServerSync) 동안엔 surge 방지 위해 false 로 친다.
-  // - "건너뛰기" 누른 사용자는 onboardingDismissed 로 한 세션 동안 다시 안 뜸.
-  const [onboardingDismissed, setOnboardingDismissed] = useState(false);
+  // 완료 직후 profile subscription 반영 전까지 한 세션 안에서 재노출을 막는다.
+  const [nicknameGateDone, setNicknameGateDone] = useState(false);
   const hasNickname = profile.displayName.trim() !== '';
   const needsNicknameOnboarding =
-    !onboardingDismissed &&
+    !nicknameGateDone &&
     !profile.pendingServerSync &&
     !hasNickname &&
     playerStats.sessionsCount === 0;
@@ -186,7 +186,7 @@ export default function GalaxyScreen({
   // 첫 방문자 — 닉네임 onboarding 만 노출하고 chooser 는 그 후에.
   if (needsNicknameOnboarding) {
     return (
-      <NicknameOnboarding onDone={() => setOnboardingDismissed(true)} />
+      <NicknameOnboarding onDone={() => setNicknameGateDone(true)} />
     );
   }
 
@@ -1078,4 +1078,3 @@ function isToday(ts: number | undefined, now: number = Date.now()): boolean {
   d.setHours(0, 0, 0, 0);
   return ts >= d.getTime();
 }
-

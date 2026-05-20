@@ -142,27 +142,27 @@ export default function BlogIndexPage() {
         >
           <h2 className="kr-heading text-[18px] md:text-[20px] mb-2 inline-flex items-center gap-2">
             <Sparkles size={18} className="text-neon" />
-            바로 학습 시작하기
+            첫 화면에서 시작하기
           </h2>
           <p className="kr-body text-[13px] md:text-[14px] text-cream/75 leading-[1.65] mb-5">
-            가이드만 읽고 끝내지 말고, 토리·셀리와 함께 실제로 풀어보세요.
+            과목부터 정하고 뛰어들기보다, 먼저 닉네임과 학습 상황을 맞춘 뒤 시작하세요.
           </p>
           <div className="flex flex-wrap gap-3">
             <a
-              href="/curriculum/adsp"
-              onClick={(e) => handleNavClick(e, '/curriculum/adsp')}
+              href="/"
+              onClick={(e) => handleNavClick(e, '/')}
               className="kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full active:scale-95 transition"
               style={{ background: '#FD802E', color: '#010828' }}
             >
-              ADsP 커리큘럼
+              QuestDP 첫 화면으로
               <ChevronRight size={14} strokeWidth={2.6} />
             </a>
             <a
-              href="/curriculum/sqld"
-              onClick={(e) => handleNavClick(e, '/curriculum/sqld')}
+              href="#/game"
+              onClick={(e) => handleNavClick(e, '#/game')}
               className="kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full border border-cream/20 hover:border-neon/40 hover:text-neon transition"
             >
-              SQLD 커리큘럼
+              온보딩으로 시작
               <ChevronRight size={14} strokeWidth={2.6} />
             </a>
             <a

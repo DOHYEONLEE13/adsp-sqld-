@@ -58,6 +58,7 @@ export function navigate(path: string): void {
       window.history.pushState({}, '', normalized);
       window.dispatchEvent(new PopStateEvent('popstate'));
     }
+    scrollToTopAfterRouteChange();
   } else {
     // 그 외 라우트는 hash 사용 (기존 패턴 유지)
     const hashTarget = normalized.startsWith('/') ? normalized : '/' + normalized;
@@ -69,6 +70,12 @@ export function navigate(path: string): void {
       window.location.hash = hashTarget;
     }
   }
+}
+
+function scrollToTopAfterRouteChange(): void {
+  window.requestAnimationFrame(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  });
 }
 
 /** 외부 링크 / 일반 anchor 클릭을 SPA navigate 로 가로챔. */

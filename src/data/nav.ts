@@ -15,6 +15,7 @@ export const NAV_LINKS_MAIN: NavLink[] = [
   { label: '플레이', href: '#/game' },
   // 소개 — path-based (SEO indexable)
   { label: '소개', href: '/about' },
+  { label: '학습 원리', href: '/study-method' },
   { label: '요금제', href: '#pricing' },
 ];
 

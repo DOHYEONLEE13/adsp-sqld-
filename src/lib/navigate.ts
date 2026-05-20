@@ -27,6 +27,7 @@ const PATH_ROUTES = new Set([
   '/refund',
   '/glossary',
   '/blog',
+  '/study-method',
 ]);
 
 /** Path prefix 라우트 — `/lesson/:stepId`, `/quiz/:questionId`, `/curriculum/:subject`, `/faq/:subject`, `/blog/:slug` 등 동적 segment. */

@@ -108,6 +108,7 @@ function collectBlogSlugs() {
 const STATIC_URLS = [
   { loc: '/', changefreq: 'weekly', priority: '1.0' },
   { loc: '/about', changefreq: 'monthly', priority: '0.8' },
+  { loc: '/study-method', changefreq: 'monthly', priority: '0.9' },
   { loc: '/pricing', changefreq: 'monthly', priority: '0.9' },
   { loc: '/privacy', changefreq: 'yearly', priority: '0.3' },
   { loc: '/terms', changefreq: 'yearly', priority: '0.3' },

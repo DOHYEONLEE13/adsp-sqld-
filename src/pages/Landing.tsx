@@ -3,6 +3,7 @@ import TextureOverlay from '@/components/layout/TextureOverlay';
 import Footer from '@/components/layout/Footer';
 import Hero from '@/components/sections/Hero';
 import About from '@/components/sections/About';
+import StudyMethodTeaser from '@/components/sections/StudyMethodTeaser';
 import GameModes from '@/components/sections/GameModes';
 import Pricing from '@/components/sections/Pricing';
 import CTA from '@/components/sections/CTA';
@@ -84,6 +85,13 @@ export default function Landing() {
           'ADSP 기출문제',
           'SQLD 기출문제',
         ],
+        knowsAbout: [
+          '게임형 학습',
+          'Leitner SRS',
+          '약점 복습',
+          'ADsP 학습사이트',
+          'SQLD 학습사이트',
+        ],
       },
     ],
   });
@@ -106,6 +114,7 @@ export default function Landing() {
       <TextureOverlay />
       <Hero />
       <About />
+      <StudyMethodTeaser />
       <GameModes />
       <Pricing />
       <CTA />

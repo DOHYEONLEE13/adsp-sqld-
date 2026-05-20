@@ -42,6 +42,7 @@ export default function Footer() {
               title="서비스"
               links={[
                 { label: '소개', href: '/about' },
+                { label: '학습 원리', href: '/study-method' },
                 { label: '플레이', href: '#/game' },
                 { label: '요금제', href: '/pricing' },
               ]}

@@ -37,6 +37,7 @@ const RedeemPage = lazy(() => import('./pages/RedeemPage'));
 const RefundRequestPage = lazy(() => import('./pages/RefundRequestPage'));
 const LoginPage = lazy(() => import('./pages/LoginPage'));
 const PaymentCallbackPage = lazy(() => import('./pages/PaymentCallbackPage'));
+const StudyMethodPage = lazy(() => import('./pages/StudyMethodPage'));
 const LessonStaticPage = lazy(() => import('./pages/LessonStaticPage'));
 const QuizStaticPage = lazy(() => import('./pages/QuizStaticPage'));
 const PricingPage = lazy(() => import('./pages/PricingPage'));
@@ -79,6 +80,7 @@ type Route =
   | 'refund-request'
   | 'login'
   | 'payment-callback'
+  | 'study-method'
   | 'lesson-static'
   | 'quiz-static'
   | 'curriculum'
@@ -114,6 +116,7 @@ interface RouteState {
  *  - `/privacy`   → legal/privacy
  *  - `/terms`     → legal/terms
  *  - `/refund`    → legal/refund
+ *  - `/study-method` → QuestDP 학습 원리
  *
  * Hash-based (변경 위험으로 추후 PR 에서 전환):
  *  - `#/`              → landing
@@ -141,6 +144,8 @@ function getRoute(): RouteState {
   // 요금제 — Toss 가맹점 심사 + SEO indexable URL
   if (pathname === '/pricing' || pathname === '/pricing/')
     return { route: 'pricing' };
+  if (pathname === '/study-method' || pathname === '/study-method/')
+    return { route: 'study-method' };
   // Tier 2 — 정적 lesson SEO 페이지. `/lesson/:stepId`
   if (pathname.startsWith('/lesson/')) {
     const stepId = pathname.slice('/lesson/'.length);
@@ -570,6 +575,10 @@ export default function App() {
           }}
         />
       );
+    }
+
+    if (route === 'study-method') {
+      return <StudyMethodPage />;
     }
 
     if (route === 'lesson-static' && lessonStepId) {

@@ -40,19 +40,52 @@ const SUBJECT_ACCENT: Record<'adsp' | 'sqld', string> = {
   sqld: '#c084fc',
 };
 
+const EXAM_FACTS: Record<
+  'adsp' | 'sqld',
+  {
+    authority: string;
+    exam: string;
+    questions: string;
+    scoring: string;
+    scope: string;
+    strategy: string;
+    officialUrl: string;
+  }
+> = {
+  adsp: {
+    authority: 'KDATA 데이터자격검정',
+    exam: '데이터분석준전문가(ADsP)',
+    questions: '객관식 50문항 · 90분',
+    scoring: '총점 60점 이상 · 과목별 40% 미만 과락',
+    scope: '데이터 이해 10문항 · 데이터분석 기획 10문항 · 데이터분석 30문항',
+    strategy: '3과목 데이터분석 비중이 가장 커서 R 기초, 통계, 가설검정, 머신러닝을 반복 풀이로 잡는 것이 중요합니다.',
+    officialUrl: 'https://www.dataq.or.kr/www/sub/a_06.do',
+  },
+  sqld: {
+    authority: 'KDATA 데이터자격검정',
+    exam: 'SQL 개발자(SQLD)',
+    questions: '객관식 50문항 · 90분',
+    scoring: '총점 60점 이상 · 과목별 40% 미만 과락',
+    scope: '데이터 모델링의 이해 10문항 · SQL 기본 및 활용 40문항',
+    strategy: '2과목 SQL 기본 및 활용 비중이 80점이라 JOIN, 서브쿼리, 윈도우 함수, 관리 구문을 우선순위로 잡아야 합니다.',
+    officialUrl: 'https://www.dataq.or.kr/www/sub/a_04.do',
+  },
+};
+
 export default function CurriculumPage({ subject }: Props) {
   const curriculum = getCurriculum(subject);
   const accent = SUBJECT_ACCENT[subject];
   const label = SUBJECT_LABEL[subject];
   const tagline = SUBJECT_TAGLINE[subject];
+  const facts = EXAM_FACTS[subject];
 
   const seoTitle =
     subject === 'adsp'
-      ? 'ADsP 학습사이트 · 게임형 출제범위 커리큘럼 — QuestDP'
-      : 'SQLD 학습사이트 · 게임형 출제범위 커리큘럼 — QuestDP';
+      ? 'ADsP 학습사이트 · KDATA 시험범위·기출문제 커리큘럼 — QuestDP'
+      : 'SQLD 학습사이트 · KDATA 시험범위·기출문제 커리큘럼 — QuestDP';
   const seoDescription =
-    `${label} 시험 출제범위 전체를 ${curriculum.totalChapters}개 챕터 · ${curriculum.totalTopics}개 토픽 · ` +
-    `${curriculum.totalSteps}개 학습 스텝으로 구조화한 ${subject === 'adsp' ? 'ADsP 게임형 학습사이트' : 'SQLD 게임형 학습사이트'}. 무료로 개념과 기출을 풀어보세요.`;
+    `${facts.authority} 기준 ${label} 시험범위와 문제 수를 ${curriculum.totalChapters}개 챕터 · ${curriculum.totalTopics}개 토픽 · ` +
+    `${curriculum.totalSteps}개 학습 스텝으로 구조화한 ${subject === 'adsp' ? 'ADsP 게임형 학습사이트' : 'SQLD 게임형 학습사이트'}. 기출문제형 복습과 공부법까지 확인하세요.`;
   const canonical = `https://quest-dp.com/curriculum/${subject}`;
 
   // JSON-LD Course
@@ -71,8 +104,12 @@ export default function CurriculumPage({ subject }: Props) {
     isAccessibleForFree: true,
     keywords:
       subject === 'adsp'
-        ? 'ADsP 학습사이트, ADSP 학습사이트, ADsP 게임, ADSP 게임'
-        : 'SQLD 학습사이트, SQLD 게임, SQL 개발자 자격증',
+        ? 'ADsP 학습사이트, ADSP 학습사이트, ADsP 게임, ADSP 게임, KDATA ADsP, ADsP 시험 범위, ADsP 기출문제, ADsP 공부법, ADsP 문제 수, ADsP 몇문제, ADsP 3과목'
+        : 'SQLD 학습사이트, SQLD 게임, SQL 개발자 자격증, KDATA SQLD, SQLD 시험 범위, SQLD 기출문제, SQLD 공부법, SQLD 문제 수, SQLD 몇문제',
+    about:
+      subject === 'adsp'
+        ? ['KDATA ADsP', 'ADsP 시험 범위', 'ADsP 기출문제', 'ADsP 공부법']
+        : ['KDATA SQLD', 'SQLD 시험 범위', 'SQLD 기출문제', 'SQLD 공부법'],
     hasCourseInstance: {
       '@type': 'CourseInstance',
       courseMode: 'online',
@@ -165,6 +202,43 @@ export default function CurriculumPage({ subject }: Props) {
           </div>
         </header>
 
+        <section className="mb-12 rounded-[18px] border border-cream/10 bg-white/[0.03] p-5 md:p-6">
+          <div className="kr-num mb-2 text-[10px] uppercase tracking-widest text-cream/50">
+            KDATA 공식 기준 요약
+          </div>
+          <h2 className="kr-heading mb-4 text-[18px] md:text-[22px]">
+            {facts.exam} 시험 구조
+          </h2>
+          <dl className="grid gap-3 md:grid-cols-2">
+            <Fact label="시행기관" value={facts.authority} accent={accent} />
+            <Fact label="문제 수" value={facts.questions} accent={accent} />
+            <Fact label="합격 기준" value={facts.scoring} accent={accent} />
+            <Fact label="시험 범위" value={facts.scope} accent={accent} />
+          </dl>
+          <p className="kr-body mt-4 text-[13.5px] leading-[1.7] text-cream/72">
+            {facts.strategy}
+          </p>
+          <div className="mt-5 flex flex-wrap gap-2">
+            <a
+              href={`/faq/${subject}`}
+              onClick={(e) => handleNavClick(e, `/faq/${subject}`)}
+              className="kr-heading inline-flex items-center gap-2 rounded-full border border-cream/18 px-4 py-2.5 text-[11px] uppercase tracking-widest text-cream/72 transition hover:border-neon/40 hover:text-neon"
+            >
+              문제 수 · 기출문제 · 공부법 FAQ
+              <ChevronRight size={13} strokeWidth={2.5} />
+            </a>
+            <a
+              href={facts.officialUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="kr-heading inline-flex items-center gap-2 rounded-full border border-cream/18 px-4 py-2.5 text-[11px] uppercase tracking-widest text-cream/72 transition hover:border-neon/40 hover:text-neon"
+            >
+              KDATA 공식 안내
+              <ChevronRight size={13} strokeWidth={2.5} />
+            </a>
+          </div>
+        </section>
+
         {/* Chapters */}
         <div className="space-y-12">
           {curriculum.chapters.map((ch) => (
@@ -246,6 +320,19 @@ function Stat({ label, value, accent }: { label: string; value: number; accent: 
       <div className="kr-heading text-[20px] md:text-[22px]" style={{ color: accent }}>
         {value}
       </div>
+    </div>
+  );
+}
+
+function Fact({ label, value, accent }: { label: string; value: string; accent: string }) {
+  return (
+    <div className="rounded-[12px] border border-cream/8 bg-white/[0.025] px-4 py-3">
+      <dt className="kr-num mb-1 text-[10px] uppercase tracking-widest text-cream/45">
+        {label}
+      </dt>
+      <dd className="kr-body m-0 text-[13.5px] leading-[1.55] text-cream/84">
+        <span style={{ color: accent }}>{value}</span>
+      </dd>
     </div>
   );
 }

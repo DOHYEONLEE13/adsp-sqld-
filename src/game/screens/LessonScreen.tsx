@@ -37,7 +37,7 @@ import {
 import { useProgress } from '../useProgress';
 import { recordSingleAnswer } from '../storage';
 import { consumeEnergy } from '../energy';
-import { stepKey, unlockStepOnServer, useStepUnlocks } from '../stepUnlocks';
+import { stepKey, useStepUnlocks } from '../stepUnlocks';
 import EnergyBlockModal from '../components/EnergyBlockModal';
 import LessonCompleteModal from '../components/LessonCompleteModal';
 import PageAmbientBg from '../components/PageAmbientBg';
@@ -156,9 +156,6 @@ export default function LessonScreen({
         return;
       }
       // 차감 성공 시에만 visit 기록
-      if (lesson) {
-        void unlockStepOnServer(stepKey(lesson.id, stepIdx));
-      }
     });
     return () => {
       cancelled = true;
@@ -229,7 +226,12 @@ export default function LessonScreen({
     if (savedQuiz || !quizQuestion) return;
     const correct = idx === quizQuestion.answerIndex;
     const timeMs = Date.now() - startedAtRef.current;
-    const xp = recordSingleAnswer(quizQuestion.id, correct, timeMs);
+    const xp = recordSingleAnswer(
+      quizQuestion.id,
+      correct,
+      timeMs,
+      lesson ? stepKey(lesson.id, stepIdx) : null,
+    );
     setQuizState((s) => ({ ...s, [stepIdx]: { chosen: idx, correct } }));
     // 잠금 결정은 prevSolved (이전 step 정답 cross-check) 로만 — 별도 unlock 호출 X.
     if (xp > 0) {

@@ -42,9 +42,10 @@ import { useProgress } from './useProgress';
 import { useDevUnlockFlags } from './useDevUnlockFlags';
 import { isDevUnlockEnabled } from './passes';
 import { isDevUnlockStepsEnabled } from './stepUnlocks';
-import { useMyProfile } from '@/data/profile';
+import { retryProfileSync, useMyProfile } from '@/data/profile';
 import NicknameOnboarding from './screens/NicknameOnboarding';
 import { tryRecordPassCompletion } from './passSync';
+import AuthCard from './components/AuthCard';
 
 interface Props {
   /**
@@ -307,6 +308,65 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
       setScreen({ kind: 'quest', session });
     });
   };
+
+  if (!profile.isAuthenticated) {
+    return (
+      <main className="min-h-screen bg-[var(--base)] px-4 py-10 text-cream">
+        <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-md flex-col justify-center">
+          <p className="kr-heading text-[11px] font-black uppercase tracking-[0.18em] text-neon/80">
+            QuestDP Sync
+          </p>
+          <h1 className="kr-heading mt-3 text-2xl font-black leading-tight">
+            플레이는 로그인 후 시작할 수 있어요
+          </h1>
+          <p className="kr-body mt-3 text-[13px] leading-[1.7] text-cream/68">
+            진행도, XP, 에너지, 해금 상태를 서버 기준으로 맞춰서 다른 기기에서도 같은 기록으로 이어갑니다.
+          </p>
+          <div className="mt-6">
+            <AuthCard />
+          </div>
+          <button
+            type="button"
+            onClick={onExitToLanding}
+            className="kr-body mt-1 text-left text-[12px] font-bold text-cream/55 underline decoration-cream/20 underline-offset-4"
+          >
+            메인으로 돌아가기
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  if (profile.pendingServerSync) {
+    return (
+      <main className="min-h-screen bg-[var(--base)] px-4 py-10 text-cream">
+        <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-md flex-col justify-center">
+          <p className="kr-heading text-[11px] font-black uppercase tracking-[0.18em] text-neon/80">
+            Syncing
+          </p>
+          <h1 className="kr-heading mt-3 text-2xl font-black leading-tight">
+            계정 기록을 불러오는 중이에요
+          </h1>
+          <p className="kr-body mt-3 text-[13px] leading-[1.7] text-cream/68">
+            서버의 프로필, 에너지, 로드맵 해금 상태를 먼저 확인한 뒤 게임을 열게요.
+          </p>
+          {profile.syncStatus === 'failed' ? (
+            <button
+              type="button"
+              onClick={() => void retryProfileSync()}
+              className="kr-heading mt-6 h-12 rounded-[14px] bg-neon px-5 text-[13px] font-black text-[#061021]"
+            >
+              다시 시도
+            </button>
+          ) : (
+            <div className="mt-6 h-2 overflow-hidden rounded-full bg-cream/10">
+              <div className="h-full w-1/2 animate-pulse rounded-full bg-neon/80" />
+            </div>
+          )}
+        </div>
+      </main>
+    );
+  }
 
   if (needsNicknameGate) {
     return <NicknameOnboarding onDone={() => setNicknameGateDone(true)} />;

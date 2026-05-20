@@ -371,23 +371,21 @@ export async function consumeEnergy(amount = 1): Promise<ConsumeResult> {
   const sb = getSupabase();
   if (!sb) return consumeGuest(amount);
 
-  const { data: sess } = await sb.auth.getSession();
-  if (!sess.session) {
-    // 게스트 — localStorage 기반 차감
-    return consumeGuest(amount);
+  const session = await waitForSession();
+  if (!session) {
+    return { ok: false, remaining: _state.energy, retryAfterSec: 0 };
   }
 
   try {
     const { data, error } = await sb.rpc('consume_energy', { amount });
     if (error) {
-      // 네트워크 오류 시엔 진행 허용 (offline-first)
       console.warn('[energy] consume_energy RPC failed', error.message);
-      return { ok: true, remaining: _state.energy, retryAfterSec: 0 };
+      return { ok: false, remaining: _state.energy, retryAfterSec: 0 };
     }
     const row = (data ?? [])[0] as
       | { ok: boolean; remaining: number; retry_after_sec: number }
       | undefined;
-    if (!row) return { ok: true, remaining: _state.energy, retryAfterSec: 0 };
+    if (!row) return { ok: false, remaining: _state.energy, retryAfterSec: 0 };
 
     // 로컬 state 도 즉시 반영 (realtime 보다 빠른 UX)
     setState({
@@ -403,7 +401,7 @@ export async function consumeEnergy(amount = 1): Promise<ConsumeResult> {
     };
   } catch (e) {
     console.warn('[energy] exception', e);
-    return { ok: true, remaining: _state.energy, retryAfterSec: 0 };
+    return { ok: false, remaining: _state.energy, retryAfterSec: 0 };
   }
 }
 
@@ -573,8 +571,8 @@ export async function grantAdEnergy(): Promise<AdGrantResult> {
   const sb = getSupabase();
   if (!sb) return grantAdGuest();
 
-  const { data: sess } = await sb.auth.getSession();
-  if (!sess.session) return grantAdGuest();
+  const session = await waitForSession();
+  if (!session) return grantAdGuest();
 
   try {
     const { data, error } = await sb.rpc('grant_ad_energy');
@@ -664,8 +662,8 @@ export async function getAdViewsToday(): Promise<{
   const sb = getSupabase();
   if (!sb) return readGuestAdViewsToday();
 
-  const { data: sess } = await sb.auth.getSession();
-  if (!sess.session) return readGuestAdViewsToday();
+  const session = await waitForSession();
+  if (!session) return readGuestAdViewsToday();
 
   try {
     const { data, error } = await sb.rpc('get_ad_views_today');

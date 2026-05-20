@@ -15,6 +15,7 @@ import { DEFAULT_AVATAR_POSE, isValidTag, normalizeTag } from './profile';
 import type { MascotCharacter, QuesPose } from '@/components/mascot/types';
 import { DEFAULT_CHARACTER } from '@/components/mascot/types';
 import { getSupabase, onAuthStateChange } from '@/lib/supabase';
+import { waitForSession } from '@/lib/auth/waitForSession';
 
 const STORAGE_KEY = 'questdp.friends.v1';
 
@@ -142,12 +143,12 @@ export async function addFriend(rawTag: string, myTag: string): Promise<AddResul
     // 모든 supabase 호출을 단일 try/catch + timeout 안에 감쌈. getSession / RPC /
     // pull 어느 하나라도 hang/throw 하면 즉시 catch 로 흘러 UI 가 멈추지 않음.
     try {
-      const sessRes = await withTimeout(
-        sb.auth.getSession(),
-        8000,
-        'auth.getSession',
+      const session = await withTimeout(
+        waitForSession(8000),
+        8500,
+        'waitForSession',
       );
-      if (!sessRes.data.session) {
+      if (!session) {
         return { ok: false, reason: 'unauthenticated' };
       }
 
@@ -267,6 +268,7 @@ interface FriendRow {
   /** 마이그 0017 적용 후 컬럼 존재. */
   avatar_character?: string | null;
   total_xp: number;
+  lesson_xp?: number | null;
   level: number;
   streak_days: number;
   last_seen_at: string;
@@ -278,8 +280,8 @@ interface FriendRow {
 async function pullFromSupabase(): Promise<void> {
   const sb = getSupabase();
   if (!sb) return;
-  const { data: sess } = await sb.auth.getSession();
-  if (!sess.session) return;
+  const session = await waitForSession();
+  if (!session) return;
 
   // friendships → profiles join. RLS policy `profiles_read_friends` 가 자동으로
   // 친구 row 만 노출. user_id 필터는 friendships RLS 가 처리.
@@ -290,7 +292,7 @@ async function pullFromSupabase(): Promise<void> {
   const r1 = await sb
     .from('friendships')
     .select(
-      'friend_id, friend:profiles!friendships_friend_id_fkey(tag, display_name, avatar_pose, avatar_character, total_xp, level, streak_days, last_seen_at, pass_tier)',
+      'friend_id, friend:profiles!friendships_friend_id_fkey(tag, display_name, avatar_pose, avatar_character, total_xp, lesson_xp, level, streak_days, last_seen_at, pass_tier)',
     )
     .order('created_at', { ascending: false });
   if (!r1.error && r1.data) {
@@ -299,7 +301,7 @@ async function pullFromSupabase(): Promise<void> {
     const r2 = await sb
       .from('friendships')
       .select(
-        'friend_id, friend:profiles!friendships_friend_id_fkey(tag, display_name, avatar_pose, total_xp, level, streak_days, last_seen_at)',
+        'friend_id, friend:profiles!friendships_friend_id_fkey(tag, display_name, avatar_pose, total_xp, lesson_xp, level, streak_days, last_seen_at)',
       )
       .order('created_at', { ascending: false });
     if (r2.error || !r2.data) return;
@@ -327,7 +329,7 @@ async function pullFromSupabase(): Promise<void> {
         avatarPose: (f.avatar_pose as QuesPose) ?? DEFAULT_AVATAR_POSE,
         avatarCharacter: character,
         level: f.level ?? 0,
-        totalXp: f.total_xp ?? 0,
+        totalXp: (f.total_xp ?? 0) + (f.lesson_xp ?? 0),
         streakDays: f.streak_days ?? 0,
         lastSeenAt: f.last_seen_at ? Date.parse(f.last_seen_at) : 0,
         addedAt: 0,
@@ -347,8 +349,8 @@ async function serverRemoveFriend(tag: string): Promise<void> {
   const sb = getSupabase();
   if (!sb) return;
   try {
-    const { data: sess } = await sb.auth.getSession();
-    if (!sess.session) return;
+    const session = await waitForSession();
+    if (!session) return;
     // friend_id 찾기 (tag → id)
     const { data: friendRow } = await sb
       .from('profiles')
@@ -361,8 +363,8 @@ async function serverRemoveFriend(tag: string): Promise<void> {
       .from('friendships')
       .delete()
       .or(
-        `and(user_id.eq.${sess.session.user.id},friend_id.eq.${friendRow.id}),` +
-        `and(user_id.eq.${friendRow.id},friend_id.eq.${sess.session.user.id})`,
+        `and(user_id.eq.${session.user.id},friend_id.eq.${friendRow.id}),` +
+        `and(user_id.eq.${friendRow.id},friend_id.eq.${session.user.id})`,
       );
     // 친구 목록 변경 → channel filter 갱신
     void rebuildChannel();
@@ -388,14 +390,14 @@ async function rebuildChannel(): Promise<void> {
 
   const sb = getSupabase();
   if (!sb) return;
-  const { data: sess } = await sb.auth.getSession();
-  if (!sess.session) return;
+  const session = await waitForSession();
+  if (!session) return;
 
   // 친구 ID 목록 (filter 용)
   const { data: friendIds } = await sb
     .from('friendships')
     .select('friend_id')
-    .eq('user_id', sess.session.user.id);
+    .eq('user_id', session.user.id);
   const ids = (friendIds ?? []).map((r) => (r as { friend_id: string }).friend_id);
 
   if (ids.length === 0) return;

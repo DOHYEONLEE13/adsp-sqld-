@@ -4,7 +4,6 @@
  * 대상 컬럼:
  *  - active_subject ('adsp' | 'sqld' | null)
  *  - last_daily_mission_at (timestamptz)
- *  - lesson_xp (integer)
  *
  * 정책:
  *  - 인증 안 됐으면 no-op (게스트 모드).
@@ -20,7 +19,6 @@ import { trackPush } from './progressSync';
 export interface MetaPatch {
   active_subject?: 'adsp' | 'sqld' | null;
   last_daily_mission_at?: string | null;
-  lesson_xp?: number;
 }
 
 /**

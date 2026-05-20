@@ -17,6 +17,7 @@
  */
 
 import { getSupabase, onAuthStateChange } from '@/lib/supabase';
+import { waitForSession } from '@/lib/auth/waitForSession';
 import {
   mergeProgress,
   type ServerProgressMeta,
@@ -55,13 +56,13 @@ async function awaitInflightPushes(): Promise<void> {
 export async function pullProgress(): Promise<void> {
   const sb = getSupabase();
   if (!sb) return;
-  const { data: sess } = await sb.auth.getSession();
-  if (!sess.session) return;
+  const session = await waitForSession();
+  if (!session) return;
 
   // 진행 중인 push 들 먼저 마무리
   await awaitInflightPushes();
 
-  const userId = sess.session.user.id;
+  const userId = session.user.id;
 
   // 3 쿼리 병렬 — 응답 시간 ↓
   const [statsRes, sessionsRes, metaRes] = await Promise.all([
@@ -81,7 +82,7 @@ export async function pullProgress(): Promise<void> {
       .limit(200),
     sb
       .from('profiles')
-      .select('active_subject, last_daily_mission_at, lesson_xp')
+      .select('active_subject, last_daily_mission_at, total_xp, lesson_xp')
       .eq('id', userId)
       .maybeSingle(),
   ]);
@@ -99,9 +100,10 @@ export async function pullProgress(): Promise<void> {
           (metaRes.data.active_subject as 'adsp' | 'sqld' | null) ?? null,
         last_daily_mission_at:
           (metaRes.data.last_daily_mission_at as string | null) ?? null,
+        total_xp: (metaRes.data.total_xp as number | undefined) ?? 0,
         lesson_xp: (metaRes.data.lesson_xp as number | undefined) ?? 0,
       }
-    : { active_subject: null, last_daily_mission_at: null, lesson_xp: 0 };
+    : { active_subject: null, last_daily_mission_at: null, total_xp: 0, lesson_xp: 0 };
 
   const merged = mergeProgress({
     local: getSnapshot(),
@@ -188,9 +190,9 @@ export function initProgressSync(): () => void {
   void (async () => {
     const sb = getSupabase();
     if (!sb) return;
-    const { data: sess } = await sb.auth.getSession();
-    if (sess.session) {
-      await handleAuthChange(sess.session.user.id);
+    const session = await waitForSession();
+    if (session) {
+      await handleAuthChange(session.user.id);
       void pullProgress();
     }
   })();

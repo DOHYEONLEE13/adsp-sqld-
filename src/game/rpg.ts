@@ -148,7 +148,10 @@ export function computePlayerStats(store: ProgressStore): PlayerStats {
   earnedXp += store.lessonXp ?? 0;
   // 상점에서 소비한 XP — 표시 XP 에서 차감 (음수 방지로 max 0).
   const spent = store.spentXp ?? 0;
-  const totalXp = Math.max(0, earnedXp - spent);
+  const totalXp =
+    typeof store.serverTotalXp === 'number'
+      ? Math.max(0, store.serverTotalXp)
+      : Math.max(0, earnedXp - spent);
   const lvl = levelFromXp(totalXp);
   return {
     ...lvl,

@@ -33,6 +33,7 @@ import {
   onAuthStateChange,
   signInWithOAuth,
 } from '@/lib/supabase';
+import { waitForSession } from '@/lib/auth/waitForSession';
 import {
   setDisplayName,
   isValidTag,
@@ -73,7 +74,7 @@ export default function FriendsPage({ onExit }: Props) {
   useEffect(() => {
     const sb = getSupabase();
     if (!sb) return;
-    sb.auth.getSession().then(({ data }) => setIsSignedIn(!!data.session));
+    void waitForSession().then((session) => setIsSignedIn(!!session));
     const unsub = onAuthStateChange((_e, s) => setIsSignedIn(!!s));
     return () => {
       unsub();

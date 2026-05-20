@@ -23,7 +23,7 @@ import { recordSingleAnswer } from '../storage';
 import { recordReviewAttempt } from '../forgettingCurve';
 import { useProgress } from '../useProgress';
 import { consumeEnergy } from '../energy';
-import { stepKey, unlockStepOnServer, useStepUnlocks } from '../stepUnlocks';
+import { stepKey, useStepUnlocks } from '../stepUnlocks';
 import EnergyBlockModal from '../components/EnergyBlockModal';
 import LessonCompleteModal from '../components/LessonCompleteModal';
 import Ques from '@/components/mascot/Ques';
@@ -134,9 +134,6 @@ export default function DialogueLesson({
         return;
       }
       // 차감 성공 시에만 visit 기록 (= 서버 step_unlocks insert / localStorage 추가)
-      if (lesson) {
-        void unlockStepOnServer(stepKey(lesson.id, stepIdx));
-      }
     });
     return () => {
       cancelled = true;
@@ -315,7 +312,12 @@ export default function DialogueLesson({
     const ok = idx === quizQuestion.answerIndex;
     setCorrect(ok);
     const timeMs = Date.now() - startedAtRef.current;
-    const xp = recordSingleAnswer(quizQuestion.id, ok, timeMs);
+    const xp = recordSingleAnswer(
+      quizQuestion.id,
+      ok,
+      timeMs,
+      lesson ? stepKey(lesson.id, stepIdx) : null,
+    );
     // Phase 4 Step 4 — SM-2 망각 곡선 시스템에도 풀이 결과 반영.
     // onboarding 완료 사용자만 작동 (게스트는 no-op).
     void recordReviewAttempt(quizQuestion.id, ok, new Date());

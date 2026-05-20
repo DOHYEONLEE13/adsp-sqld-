@@ -33,6 +33,7 @@ interface UserRow {
   display_name: string;
   role: 'user' | 'admin';
   total_xp: number;
+  lesson_xp: number;
   level: number;
   is_premium: boolean;
   last_seen_at: string;
@@ -139,7 +140,7 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
         sb
           .from('profiles')
           .select(
-            'id, tag, display_name, role, total_xp, level, is_premium, last_seen_at, created_at',
+            'id, tag, display_name, role, total_xp, lesson_xp, level, is_premium, last_seen_at, created_at',
           )
           .order('total_xp', { ascending: false })
           .limit(100),
@@ -314,7 +315,7 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
                       {u.level}
                     </td>
                     <td className="px-4 py-3 text-right tabular-nums">
-                      {u.total_xp}
+                      {((u.total_xp ?? 0) + (u.lesson_xp ?? 0)).toLocaleString()}
                     </td>
                     <td className="px-4 py-3 text-center">
                       {u.is_premium ? (

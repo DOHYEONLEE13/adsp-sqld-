@@ -80,6 +80,8 @@ export interface ProgressStore {
    * 무한 XP 가 쌓이지 않게 함. 세트 완주 보너스 (정확도·스트릭) 는 sessions 에서 별도.
    */
   lessonXp?: number;
+  /** 로그인 사용자의 서버 기준 표시 XP. 존재하면 화면 XP 계산의 진실로 사용한다. */
+  serverTotalXp?: number;
   /**
    * 사용자가 상점 (XP→에너지 등) 에서 누적 소비한 XP. 표시 XP = totalXp - spentXp.
    * computePlayerStats 가 차감해 화면에 보여줌 — 게임 내 currency 처럼 작동.
@@ -136,6 +138,7 @@ function loadStore(): ProgressStore {
       lastDailyMissionAt: parsed.lastDailyMissionAt,
       activeSubject: parsed.activeSubject,
       lessonXp: parsed.lessonXp,
+      serverTotalXp: parsed.serverTotalXp,
       spentXp: parsed.spentXp,
       lessonAttemptsByDay: parsed.lessonAttemptsByDay ?? {},
       dailyBonusClaimedAt: parsed.dailyBonusClaimedAt,
@@ -321,6 +324,7 @@ export function recordSingleAnswer(
   questionId: string,
   correct: boolean,
   timeMs: number,
+  stepKey?: string | null,
 ): number {
   const at = Date.now();
   const prevStat = current.questionStats[questionId];
@@ -338,14 +342,8 @@ export function recordSingleAnswer(
   // 서버에도 반영 (인증돼 있을 때만, fire-and-forget). question_stats 는 PUT-style.
   const stat = next.questionStats[questionId];
   if (stat) {
-    void pushQuestionStatToServer(questionId, stat);
+    void pushQuestionStatToServer(questionId, stat, { correct, timeMs, stepKey });
   }
-  // lessonXp 변동 시 server profiles.lesson_xp 도 push (max 비교는 서버 RPC 가 아닌 단순
-  // update — 다른 기기 race 시 mergeProgress 의 max(server, local) 가 보호).
-  if (xpAwarded > 0) {
-    void pushProgressMetaToServer({ lesson_xp: nextLessonXp });
-  }
-
   return xpAwarded;
 }
 
@@ -370,8 +368,6 @@ export function claimDailyQuestBonus(): number {
     dailyBonusClaimedAt: todayKey,
     updatedAt: at,
   });
-  // 서버에 lessonXp 푸시 — 인증돼 있을 때만.
-  void pushProgressMetaToServer({ lesson_xp: nextLessonXp });
   return XP_DAILY_BONUS;
 }
 

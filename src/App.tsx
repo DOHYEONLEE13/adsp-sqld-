@@ -22,7 +22,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 import { ToastProvider } from './components/ui/Toast';
 import DevUnlockBadge from './components/DevUnlockBadge';
 import GuestDiscardToast from './components/GuestDiscardToast';
-import SlowAuthHint from './components/auth/SlowAuthHint';
+import AuthGuard from './components/auth/AuthGuard';
 import { trackPageview } from './lib/analytics';
 import { needsOnboarding } from './game/onboarding/onboardingStorage';
 
@@ -431,7 +431,8 @@ export default function App() {
         );
       }
       return (
-        <GamePage
+        <AuthGuard>
+          <GamePage
           // key 로 deep-link 진입 변화 시 GamePage 재마운트.
           // ex) /game (chooser) ↔ /game/adsp 사이 이동 시 초기 화면이 갱신됨.
           key={initialSubject ?? 'chooser'}
@@ -439,57 +440,68 @@ export default function App() {
           onExitToLanding={() => {
             window.location.hash = '';
           }}
-        />
+          />
+        </AuthGuard>
       );
     }
 
     if (route === 'stats') {
       return (
-        <StatsPage
+        <AuthGuard>
+          <StatsPage
           onExit={() => {
             window.location.hash = '/game';
           }}
-        />
+          />
+        </AuthGuard>
       );
     }
 
     if (route === 'settings') {
       return (
-        <SettingsPage
+        <AuthGuard>
+          <SettingsPage
           onExit={() => {
             window.location.hash = '/game';
           }}
-        />
+          />
+        </AuthGuard>
       );
     }
 
     if (route === 'quests') {
       return (
-        <QuestsPage
+        <AuthGuard>
+          <QuestsPage
           onExit={() => {
             window.location.hash = '/game';
           }}
-        />
+          />
+        </AuthGuard>
       );
     }
 
     if (route === 'friends') {
       return (
-        <FriendsPage
+        <AuthGuard>
+          <FriendsPage
           onExit={() => {
             window.location.hash = '/game';
           }}
-        />
+          />
+        </AuthGuard>
       );
     }
 
     if (route === 'bookmarks') {
       return (
-        <BookmarksPage
+        <AuthGuard>
+          <BookmarksPage
           onExit={() => {
             window.location.hash = '/game';
           }}
-        />
+          />
+        </AuthGuard>
       );
     }
 
@@ -609,7 +621,6 @@ export default function App() {
       </ErrorBoundary>
       <TierUpgradeToast />
       <GuestDiscardToast />
-      <SlowAuthHint />
     </ToastProvider>
   );
 }

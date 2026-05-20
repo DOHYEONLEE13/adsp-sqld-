@@ -57,7 +57,12 @@ function serverStatRow(
 }
 
 function emptyMeta(): ServerProgressMeta {
-  return { active_subject: null, last_daily_mission_at: null, lesson_xp: 0 };
+  return {
+    active_subject: null,
+    last_daily_mission_at: null,
+    total_xp: 0,
+    lesson_xp: 0,
+  };
 }
 
 // ─── 테스트 ──────────────────────────────────────────────────────────
@@ -268,17 +273,19 @@ describe('mergeProgress — meta', () => {
       local,
       serverStats: [],
       serverSessions: [],
-      serverMeta: { active_subject: null, last_daily_mission_at: null, lesson_xp: 30 },
+      serverMeta: { active_subject: null, last_daily_mission_at: null, total_xp: 70, lesson_xp: 30 },
     });
-    expect(out.lessonXp).toBe(50);
+    expect(out.lessonXp).toBe(30);
+    expect(out.serverTotalXp).toBe(100);
 
     const out2 = mergeProgress({
       local,
       serverStats: [],
       serverSessions: [],
-      serverMeta: { active_subject: null, last_daily_mission_at: null, lesson_xp: 80 },
+      serverMeta: { active_subject: null, last_daily_mission_at: null, total_xp: 70, lesson_xp: 80 },
     });
     expect(out2.lessonXp).toBe(80);
+    expect(out2.serverTotalXp).toBe(150);
   });
 
   it('activeSubject: server 우선, server null 이면 local 유지', () => {
@@ -288,7 +295,7 @@ describe('mergeProgress — meta', () => {
       local,
       serverStats: [],
       serverSessions: [],
-      serverMeta: { active_subject: 'sqld', last_daily_mission_at: null, lesson_xp: 0 },
+      serverMeta: { active_subject: 'sqld', last_daily_mission_at: null, total_xp: 0, lesson_xp: 0 },
     });
     expect(out.activeSubject).toBe('sqld');
 
@@ -296,7 +303,7 @@ describe('mergeProgress — meta', () => {
       local,
       serverStats: [],
       serverSessions: [],
-      serverMeta: { active_subject: null, last_daily_mission_at: null, lesson_xp: 0 },
+      serverMeta: { active_subject: null, last_daily_mission_at: null, total_xp: 0, lesson_xp: 0 },
     });
     expect(out2.activeSubject).toBe('adsp');
   });
@@ -311,6 +318,7 @@ describe('mergeProgress — meta', () => {
       serverMeta: {
         active_subject: null,
         last_daily_mission_at: '2024-01-01T00:00:00.000Z', // 1_704_067_200_000
+        total_xp: 0,
         lesson_xp: 0,
       },
     });

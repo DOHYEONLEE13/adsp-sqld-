@@ -14,7 +14,7 @@
  *  - meta (activeSubject, lastDailyMissionAt, lessonXp):
  *    - activeSubject: server 우선 (서버가 last-write-wins 권한)
  *    - lastDailyMissionAt: max(server, local)
- *    - lessonXp: max(server, local) — XP 손실 절대 방지
+ *    - lessonXp: server 우선. XP는 서버의 idempotent ledger가 진실.
  *
  * TODO(server-clock): lastSeenAt 이 클라 시계라 두 기기 시계 차이만큼 race.
  *   향후 RPC 에서 server now() 를 강제하는 패턴으로 마이그.
@@ -54,6 +54,7 @@ export interface ServerSessionRow {
 export interface ServerProgressMeta {
   active_subject: 'adsp' | 'sqld' | null;
   last_daily_mission_at: string | null;
+  total_xp: number;
   lesson_xp: number;
 }
 
@@ -161,8 +162,8 @@ export function mergeProgress(input: MergeInput): ProgressStore {
     : 0;
   const lastDailyMissionAt = Math.max(localDaily, serverDaily);
 
-  const localXp = local.lessonXp ?? 0;
-  const lessonXp = Math.max(localXp, serverMeta.lesson_xp);
+  const lessonXp = serverMeta.lesson_xp;
+  const serverTotalXp = Math.max(0, serverMeta.total_xp + lessonXp);
 
   // activeSubject: server 우선. server 가 null 이면 local 유지 (사용자가 방금
   // 골랐는데 push 못 한 케이스 보호).
@@ -176,6 +177,8 @@ export function mergeProgress(input: MergeInput): ProgressStore {
     lastDailyMissionAt: lastDailyMissionAt > 0 ? lastDailyMissionAt : undefined,
     activeSubject,
     lessonXp,
+    serverTotalXp,
+    spentXp: local.spentXp,
     createdAt: local.createdAt,
     updatedAt: Date.now(),
   };

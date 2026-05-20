@@ -15,7 +15,6 @@
 import { getSupabase, onAuthStateChange } from '@/lib/supabase';
 import { waitForSession } from '@/lib/auth/waitForSession';
 import type { QuestSummary } from './types';
-import { computeMaxStreak, xpForSession } from './rpg';
 
 const OUTBOX_KEY = 'questdp.session_outbox.v1';
 
@@ -76,11 +75,6 @@ function genClientId(): string {
 }
 
 function buildArgs(summary: QuestSummary): RecordSessionArgs {
-  const xp = xpForSession({
-    correctCount: summary.correctCount,
-    total: summary.total,
-    maxStreak: computeMaxStreak(summary.answers),
-  });
   return {
     p_subject: summary.subject,
     p_chapter: summary.chapter,
@@ -92,7 +86,7 @@ function buildArgs(summary: QuestSummary): RecordSessionArgs {
     p_label: summary.label ?? null,
     p_wrong_ids: summary.answers.filter((a) => !a.correct).map((a) => a.questionId),
     p_flow: null,
-    p_xp_delta: xp.total,
+    p_xp_delta: 0,
     p_answer_log: summary.answers.map((a) => ({
       question_id: a.questionId,
       correct: a.correct,
@@ -128,7 +122,7 @@ export async function pushSessionToServer(summary: QuestSummary): Promise<void> 
   }
 
   try {
-    const { error } = await sb.rpc('record_session', args);
+    const { error } = await sb.rpc('complete_quest_session', args);
     if (error) {
       console.warn('[sessionSync] RPC failed, queueing', error.message, error);
       queueSession(args);
@@ -175,7 +169,7 @@ export async function flushOutbox(): Promise<void> {
   let successCount = 0;
   for (const item of outbox.pending) {
     try {
-      const { error } = await sb.rpc('record_session', item.payload);
+      const { error } = await sb.rpc('complete_quest_session', item.payload);
       if (error) {
         console.warn('[sessionSync] flush — RPC failed', error.message, error);
         survivors.push(item);

@@ -18,6 +18,7 @@ import {
   isSupabaseConfigured,
   onAuthStateChange,
 } from '@/lib/supabase';
+import { waitForSession } from '@/lib/auth/waitForSession';
 import { setPendingAuthRedirect } from '@/lib/authGuard';
 
 type AuthState = 'checking' | 'authed' | 'guest';
@@ -50,9 +51,9 @@ export default function AuthGuard({
 
     let cancelled = false;
 
-    sb.auth.getSession().then(({ data }) => {
+    waitForSession().then((session) => {
       if (cancelled) return;
-      setState(data.session ? 'authed' : 'guest');
+      setState(session ? 'authed' : 'guest');
     });
 
     const unsub = onAuthStateChange((_event, session) => {

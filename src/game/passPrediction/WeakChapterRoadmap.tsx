@@ -43,6 +43,7 @@ interface Props {
   autoRankings: readonly WeakChapterRanking[];
   /** 미응시 단원 — 데이터 부족 시 안내용. */
   unattemptedCount?: number;
+  dDay?: number | null;
 }
 
 /**
@@ -91,6 +92,7 @@ export default function WeakChapterRoadmap({
   manualWeakChapterIds = [],
   autoRankings,
   unattemptedCount = 0,
+  dDay = null,
 }: Props) {
   const entries = unifyWeakEntries(manualWeakChapterIds, autoRankings);
 
@@ -141,19 +143,54 @@ export default function WeakChapterRoadmap({
   const autoCount = entries.filter((e) => e.source === 'auto').length;
 
   return (
-    <div className="liquid-glass rounded-[18px] px-5 py-5">
-      <div className="flex items-baseline justify-between mb-4">
+    <div className="liquid-glass rounded-[18px] px-4 py-4 sm:px-5 sm:py-5">
+      <div className="flex items-center justify-between gap-3 mb-3">
         <div>
           <div
             className="kr-num text-[10.5px] uppercase tracking-widest mb-0.5"
-            style={{ color: 'var(--neon)' }}
+            style={{ color: 'rgba(239,244,255,0.58)' }}
           >
             나의 약점
           </div>
-          <p className="kr-body text-[12px] text-cream/55 leading-[1.4]">
-            노드 클릭 → 단원 학습 트레일로 이동.
-            {manualCount > 0 && autoCount > 0 ? ' 직접 선택 + 학습 결과 통합.' : ''}
-          </p>
+        </div>
+        <div className="flex flex-wrap items-center justify-end gap-1.5">
+          {dDay !== null && dDay > 0 ? (
+            <span
+              className="kr-heading text-[11px] tabular-nums px-2.5 py-1 rounded-full"
+              aria-label={`시험까지 D-${dDay}`}
+              style={{
+                color: 'rgba(239,244,255,0.78)',
+                background: 'rgba(239,244,255,0.07)',
+                border: '1px solid rgba(239,244,255,0.10)',
+              }}
+            >
+              D-{dDay}
+            </span>
+          ) : null}
+          {manualCount > 0 ? (
+            <span
+              className="kr-num text-[10px] uppercase tracking-widest px-2 py-1 rounded-full"
+              style={{
+                color: 'rgba(239,244,255,0.68)',
+                background: 'rgba(239,244,255,0.055)',
+                border: '1px solid rgba(239,244,255,0.10)',
+              }}
+            >
+              직접 {manualCount}
+            </span>
+          ) : null}
+          {autoCount > 0 ? (
+            <span
+              className="kr-num text-[10px] uppercase tracking-widest px-2 py-1 rounded-full"
+              style={{
+                color: 'rgba(239,244,255,0.68)',
+                background: 'rgba(239,244,255,0.055)',
+                border: '1px solid rgba(239,244,255,0.10)',
+              }}
+            >
+              자동 발견 {autoCount}
+            </span>
+          ) : null}
         </div>
       </div>
 
@@ -169,7 +206,7 @@ export default function WeakChapterRoadmap({
               : `학습 결과 기반 — 정답률 ${Math.round((e.accuracy ?? 0) * 100)}%`,
           ];
           return (
-            <li key={e.chapter_id} className="relative pb-5 last:pb-0">
+            <li key={e.chapter_id} className="relative pb-4 last:pb-0">
               <button
                 type="button"
                 onClick={() => handleNodeClick(e)}
@@ -188,9 +225,9 @@ export default function WeakChapterRoadmap({
                     aria-hidden
                     className="absolute inset-1 rounded-full pointer-events-none"
                     style={{
-                      border: '1px solid rgba(255,255,255,0.45)',
+                      border: '1px solid rgba(255,255,255,0.22)',
                       boxShadow:
-                        'inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -2px 6px rgba(0,0,0,0.18)',
+                        'inset 0 1px 0 rgba(255,255,255,0.16), inset 0 -2px 6px rgba(0,0,0,0.18)',
                     }}
                   />
                   <span
@@ -208,8 +245,8 @@ export default function WeakChapterRoadmap({
 
                 {/* 라벨 */}
                 <span className="flex-1 min-w-0 block">
-                  <span className="flex items-baseline justify-between gap-2 mb-0.5">
-                    <span className="kr-body text-[13.5px] text-cream/95 truncate font-semibold">
+                  <span className="flex items-center justify-between gap-2 mb-1">
+                    <span className="kr-heading text-[14px] text-cream/95 truncate">
                       {e.chapter_name}
                     </span>
                     <ChevronRight
@@ -219,37 +256,41 @@ export default function WeakChapterRoadmap({
                     />
                   </span>
                   {/* 배지 — source 별 다르게 표시 */}
-                  <span className="flex items-center gap-2 kr-num text-[11px] tabular-nums">
+                  <span className="flex items-center gap-1.5 kr-num text-[11px] tabular-nums">
                     {e.source === 'manual' ? (
                       <span
                         className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full"
                         style={{
-                          background: 'color-mix(in srgb, var(--neon) 12%, transparent)',
-                          color: 'var(--neon)',
-                          border:
-                            '1px solid color-mix(in srgb, var(--neon) 35%, transparent)',
+                          background: 'rgba(239,244,255,0.055)',
+                          color: 'rgba(239,244,255,0.64)',
+                          border: '1px solid rgba(239,244,255,0.10)',
                         }}
                       >
                         <Check size={10} strokeWidth={2.8} aria-hidden />
-                        <span style={{ fontSize: 10 }}>직접 선택</span>
+                        <span style={{ fontSize: 10 }}>직접</span>
                       </span>
                     ) : (
                       <span
                         className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full"
                         style={{
-                          background: 'rgba(103,232,249,0.10)',
-                          color: '#67e8f9',
-                          border: '1px solid rgba(103,232,249,0.35)',
+                          background: 'rgba(239,244,255,0.055)',
+                          color: 'rgba(239,244,255,0.64)',
+                          border: '1px solid rgba(239,244,255,0.10)',
                         }}
                       >
                         <BarChart3 size={10} strokeWidth={2.4} aria-hidden />
-                        <span style={{ fontSize: 10 }}>학습 결과</span>
+                        <span style={{ fontSize: 10 }}>자동</span>
                       </span>
                     )}
                     {e.source === 'auto' && e.accuracy !== null && (
-                      <span style={{ color: 'rgba(239,244,255,0.55)' }}>
-                        정답률 {Math.round(e.accuracy * 100)}% ·{' '}
-                        {e.attempt_count}문항
+                      <span
+                        className="px-1.5 py-0.5 rounded-full"
+                        style={{
+                          color: 'rgba(239,244,255,0.68)',
+                          background: 'rgba(239,244,255,0.055)',
+                        }}
+                      >
+                        {Math.round(e.accuracy * 100)}% · {e.attempt_count}Q
                       </span>
                     )}
                   </span>
@@ -277,15 +318,17 @@ export default function WeakChapterRoadmap({
       </ol>
 
       {unattemptedCount > 0 && (
-        <p
-          className="kr-body text-[11.5px] mt-3 leading-[1.5] px-3 py-2 rounded-lg"
+        <div
+          className="kr-num text-[10.5px] mt-3 uppercase tracking-widest px-3 py-2 rounded-full inline-flex items-center gap-2"
           style={{
             background: 'rgba(255,255,255,0.04)',
             color: 'rgba(239,244,255,0.55)',
+            border: '1px solid rgba(239,244,255,0.08)',
           }}
         >
-          미응시 단원 {unattemptedCount}개 — 풀어볼수록 약점이 정확해져요.
-        </p>
+          <span>미응시</span>
+          <span>{unattemptedCount}</span>
+        </div>
       )}
     </div>
   );
@@ -296,15 +339,17 @@ export default function WeakChapterRoadmap({
 /** 정답률 → 노드 배경 (radial gradient). 낮을수록 빨강. */
 function nodeBackground(accuracy: number): string {
   const color = nodeColor(accuracy);
-  return `radial-gradient(circle at 32% 24%, ${color} 0%, ${color}d8 38%, ${color}99 78%, ${color}66 100%)`;
+  return `radial-gradient(circle at 32% 24%, ${color}e0 0%, ${color}c2 48%, ${color}99 100%)`;
 }
 
 function nodeShadow(accuracy: number): string {
   const color = nodeColor(accuracy);
-  return `0 4px 0 -1px rgba(0,0,0,0.42), 0 12px 28px -10px ${color}aa`;
+  return `0 4px 0 -1px rgba(0,0,0,0.42), 0 12px 28px -12px ${color}66`;
 }
 
-function nodeColor(accuracy: number): string {
+function nodeColor(_accuracy: number): string {
+  const accuracy = _accuracy;
+  return '#94a3b8';
   if (accuracy < 0.4) return '#fca5a5'; // 빨강 (약점 강함)
   if (accuracy < 0.65) return '#fdba74'; // 주황
   return '#fcd34d'; // 노랑

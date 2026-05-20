@@ -4,7 +4,14 @@
  * 진행/완료 상태를 progress store 에서 파생. 별도 저장 없음 — 자정 지나면 자동 리셋.
  */
 
-import { CheckCircle2, ListTodo } from 'lucide-react';
+import {
+  BookOpen,
+  CheckCircle2,
+  Layers,
+  ListTodo,
+  Target,
+  type LucideIcon,
+} from 'lucide-react';
 import { cx } from '@/lib/utils';
 import type { DailyQuest } from '../dailyQuests';
 
@@ -15,6 +22,27 @@ interface Props {
   /** compact 모드에서 클릭 시 stats 로 이동하는 핸들러. */
   onClick?: () => void;
 }
+
+const QUEST_VISUAL: Record<
+  DailyQuest['id'],
+  { Icon: LucideIcon; color: string; background: string }
+> = {
+  'daily-volume': {
+    Icon: BookOpen,
+    color: '#67e8f9',
+    background: 'rgba(103,232,249,0.10)',
+  },
+  'daily-accuracy': {
+    Icon: Target,
+    color: '#fbbf24',
+    background: 'rgba(251,191,36,0.10)',
+  },
+  'daily-variety': {
+    Icon: Layers,
+    color: '#c084fc',
+    background: 'rgba(192,132,252,0.10)',
+  },
+};
 
 export default function DailyQuestsCard({ quests, compact, onClick }: Props) {
   const done = quests.filter((q) => q.completed).length;
@@ -74,10 +102,11 @@ export default function DailyQuestsCard({ quests, compact, onClick }: Props) {
 
       {allDone ? (
         <p
-          className="kr-body text-[12px] mt-4 text-center"
+          className="kr-body text-[12px] mt-4 text-center inline-flex w-full items-center justify-center gap-1.5"
           style={{ color: '#6FFF00' }}
         >
-          🎉 오늘의 퀘스트를 모두 완료했어요! 내일 또 만나요.
+          <CheckCircle2 size={14} strokeWidth={2.6} />
+          오늘의 퀘스트를 모두 완료했어요! 내일 또 만나요.
         </p>
       ) : null}
     </section>
@@ -87,6 +116,8 @@ export default function DailyQuestsCard({ quests, compact, onClick }: Props) {
 function QuestRow({ quest }: { quest: DailyQuest }) {
   const pct = quest.target === 0 ? 0 : (quest.progress / quest.target) * 100;
   const barColor = quest.completed ? '#6FFF00' : '#a78bfa';
+  const visual = QUEST_VISUAL[quest.id];
+  const Icon = visual.Icon;
   return (
     <li
       className="rounded-[14px] lg:rounded-[18px] px-4 py-3 lg:px-5 lg:py-4 flex flex-col"
@@ -100,7 +131,21 @@ function QuestRow({ quest }: { quest: DailyQuest }) {
       }}
     >
       <div className="flex items-center gap-3 mb-2 lg:mb-3">
-        <span className="text-[22px] lg:text-[26px] leading-none">{quest.icon}</span>
+        <span
+          className="shrink-0 inline-flex h-10 w-10 items-center justify-center rounded-2xl"
+          style={{
+            background: quest.completed
+              ? 'rgba(111,255,0,0.10)'
+              : visual.background,
+          }}
+          aria-hidden
+        >
+          <Icon
+            size={19}
+            strokeWidth={2.35}
+            style={{ color: quest.completed ? '#6FFF00' : visual.color }}
+          />
+        </span>
         <div className="flex-1 min-w-0">
           <p className="kr-heading text-[12px] lg:text-[13px] uppercase tracking-wide truncate">
             {quest.title}

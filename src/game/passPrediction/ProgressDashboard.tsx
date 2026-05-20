@@ -84,7 +84,7 @@ export default function ProgressDashboard({ onExit }: Props) {
     <ScreenShell
       eyebrow="My Weakness"
       title="나의 약점"
-      subtitle="직접 선택한 단원 + 학습으로 발견한 약점, 한곳에"
+      subtitle="학습 결과로 찾은 약점 단원을 한곳에서 확인합니다."
       onExit={onExit}
       exitLabel="돌아가기"
       ambient={<PageAmbientBg />}
@@ -96,10 +96,6 @@ export default function ProgressDashboard({ onExit }: Props) {
       {!onboarding ? (
         <div className="space-y-4">
           <OnboardingPromptBanner />
-          <p className="kr-body text-[13px] text-cream/55 leading-[1.6]">
-            약점 단원은 onboarding 에서 선택하거나 학습 데이터가 쌓이면서 자동으로
-            발견돼요.
-          </p>
         </div>
       ) : !subject ? (
         <div className="liquid-glass rounded-[18px] px-5 py-4">
@@ -110,39 +106,16 @@ export default function ProgressDashboard({ onExit }: Props) {
       ) : (
         <>
           {/* 약점 통합 로드맵 — 메인 카드 (사용자 명시 + 자동 식별) */}
-          <div className="mb-5">
+          <div className="mb-4">
             <WeakChapterRoadmap
               exam={subject}
               manualWeakChapterIds={manualWeak}
               autoRankings={weakRankings}
               unattemptedCount={unattempted}
+              dDay={dDay}
             />
           </div>
 
-          {/* D-day 안내 */}
-          {dDay !== null && dDay > 0 && (
-            <div
-              className="liquid-glass rounded-[14px] px-4 py-3 mb-5 flex items-baseline justify-between"
-              style={{
-                background: 'rgba(255,255,255,0.03)',
-              }}
-            >
-              <span className="kr-num text-[11px] uppercase tracking-widest text-cream/55">
-                시험까지
-              </span>
-              <span
-                className="kr-heading text-[16px] tabular-nums"
-                style={{ color: 'var(--neon)' }}
-              >
-                D-{dDay}
-              </span>
-            </div>
-          )}
-
-          <p className="kr-body text-[11.5px] text-cream/40 leading-[1.6]">
-            노드 클릭 → 1회독 개념 설명부터 다시 보기. 학습하면서 정답률이
-            낮은 단원이 자동으로 추가돼요.
-          </p>
         </>
       )}
 

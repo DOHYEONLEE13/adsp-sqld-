@@ -133,8 +133,21 @@ export function onAuthStateChange(
 ): () => void {
   const sb = getSupabase();
   if (!sb) return () => {};
-  const { data } = sb.auth.onAuthStateChange((event, session) => cb(event, session));
-  return () => data.subscription.unsubscribe();
+  let active = true;
+  const { data } = sb.auth.onAuthStateChange((event, session) => {
+    const run = () => {
+      if (active) cb(event, session);
+    };
+    if (typeof window !== 'undefined') {
+      window.setTimeout(run, 0);
+    } else {
+      run();
+    }
+  });
+  return () => {
+    active = false;
+    data.subscription.unsubscribe();
+  };
 }
 
 /**

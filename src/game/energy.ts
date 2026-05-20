@@ -223,6 +223,10 @@ async function pullEnergy(): Promise<void> {
   });
 }
 
+export async function refreshEnergy(): Promise<void> {
+  await pullEnergy();
+}
+
 let _channelUnsub: (() => void) | null = null;
 let _syncStarted = false;
 

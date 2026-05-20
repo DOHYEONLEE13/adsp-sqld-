@@ -100,7 +100,7 @@ export default function PricingPage() {
       </header>
 
       {/* 가격 카드 3종 — 기존 Pricing 컴포넌트 재활용 */}
-      <Pricing />
+      <Pricing showIntro={false} />
 
       {/* ── Toss 심사·고객 안내용 판매 정보 블록 ─────────────────
           전자상거래법 표시 의무 + 결제 전 사용자가 봐야 하는 정보를

@@ -103,6 +103,29 @@ export function isLastSessionAdmin(): boolean {
   return _lastIsAdmin;
 }
 
+function isFutureOrLifetime(iso: unknown): boolean {
+  if (iso == null) return true;
+  if (typeof iso !== 'string') return false;
+  const t = Date.parse(iso);
+  return Number.isFinite(t) && t > Date.now();
+}
+
+async function hasActivePremiumGrant(userId: string): Promise<boolean> {
+  const sb = getSupabase();
+  if (!sb) return false;
+
+  const { data, error } = await sb
+    .from('premium_grants')
+    .select('id')
+    .eq('user_id', userId)
+    .is('revoked_at', null)
+    .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`)
+    .limit(1);
+
+  if (error || !data) return false;
+  return data.length > 0;
+}
+
 async function pull(): Promise<void> {
   const sb = getSupabase();
   if (!sb) {
@@ -123,12 +146,18 @@ async function pull(): Promise<void> {
   // 프리미엄 또는 어드민이면 enforce X (운영자 검수 + 결제 사용자는 자유)
   const { data: prof } = await sb
     .from('profiles')
-    .select('is_premium, role')
+    .select('is_premium, premium_until, role')
     .eq('id', session.user.id)
     .maybeSingle();
   const isAdmin = (prof as { role?: string } | null)?.role === 'admin';
   _lastIsAdmin = isAdmin;
-  if (prof?.is_premium || isAdmin) {
+  const profilePremium =
+    !!prof?.is_premium &&
+    isFutureOrLifetime((prof as { premium_until?: unknown } | null)?.premium_until);
+  const grantPremium = profilePremium
+    ? false
+    : await hasActivePremiumGrant(session.user.id);
+  if (profilePremium || grantPremium || isAdmin) {
     setState({ enforced: false, unlockedSet: new Set() });
     return;
   }
@@ -166,6 +195,18 @@ function startChannel() {
       .on(
         'postgres_changes',
         {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${data.session.user.id}`,
+        },
+        () => {
+          void pull();
+        },
+      )
+      .on(
+        'postgres_changes',
+        {
           event: 'INSERT',
           schema: 'public',
           table: 'step_unlocks',
@@ -184,6 +225,10 @@ function startChannel() {
       sb.removeChannel(channel);
     };
   });
+}
+
+export async function refreshStepUnlocks(): Promise<void> {
+  await pull();
 }
 
 /**

@@ -46,6 +46,7 @@ import { retryProfileSync, useMyProfile } from '@/data/profile';
 import NicknameOnboarding from './screens/NicknameOnboarding';
 import { tryRecordPassCompletion } from './passSync';
 import AuthCard from './components/AuthCard';
+import { useAuthSession } from '@/lib/auth/sessionStore';
 
 interface Props {
   /**
@@ -197,6 +198,7 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
   const stepLockSnap = useStepUnlocks();
   const progress = useProgress();
   const profile = useMyProfile();
+  const auth = useAuthSession();
   const [nicknameGateDone, setNicknameGateDone] = useState(false);
   const needsNicknameGate =
     !nicknameGateDone &&
@@ -309,7 +311,25 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
     });
   };
 
-  if (!profile.isAuthenticated) {
+  if (auth.status === 'checking') {
+    return (
+      <main className="min-h-screen bg-[var(--base)] px-4 py-10 text-cream">
+        <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-md flex-col justify-center">
+          <p className="kr-heading text-[11px] font-black uppercase tracking-[0.18em] text-neon/80">
+            Syncing
+          </p>
+          <h1 className="kr-heading mt-3 text-2xl font-black leading-tight">
+            권한 확인 중...
+          </h1>
+          <div className="mt-6 h-2 overflow-hidden rounded-full bg-cream/10">
+            <div className="h-full w-1/2 animate-pulse rounded-full bg-neon/80" />
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (auth.status !== 'authenticated') {
     return (
       <main className="min-h-screen bg-[var(--base)] px-4 py-10 text-cream">
         <div className="mx-auto flex min-h-[calc(100vh-5rem)] max-w-md flex-col justify-center">

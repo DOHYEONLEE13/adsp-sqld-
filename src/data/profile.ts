@@ -17,6 +17,7 @@ import type { MascotCharacter, QuesPose } from '@/components/mascot/types';
 import { DEFAULT_CHARACTER } from '@/components/mascot/types';
 import { getSupabase, onAuthStateChange } from '@/lib/supabase';
 import { waitForSession } from '@/lib/auth/waitForSession';
+import { getAuthSnapshot, subscribeAuthSession } from '@/lib/auth/sessionStore';
 
 const STORAGE_KEY = 'questdp.profile.v1';
 const TAG_RE = /^Q-[A-Z0-9]{4}-[A-Z0-9]{4}$/;
@@ -474,43 +475,107 @@ function notify() {
  * 모두 실패 시 syncStatus='failed' 로 전환 → UI 가 fallback (재시도 버튼) 노출.
  */
 const RETRY_DELAYS_MS = [300, 800, 2000];
+const PROFILE_FETCH_TIMEOUT_MS = 5000;
+
+interface ProfileRpcRow {
+  tag: string;
+  display_name: string | null;
+  avatar_pose: string | null;
+  avatar_character: string | null;
+  role: string | null;
+  unlocked_characters?: unknown;
+  unlocked_poses?: unknown;
+  total_xp?: unknown;
+  lesson_xp?: unknown;
+  created_at: string;
+}
+
+function withTimeout<T>(
+  promise: PromiseLike<T>,
+  timeoutMs: number,
+  label: string,
+): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timeoutId = window.setTimeout(() => {
+      reject(new Error(`${label} timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+
+    promise.then(
+      (value) => {
+        window.clearTimeout(timeoutId);
+        resolve(value);
+      },
+      (error) => {
+        window.clearTimeout(timeoutId);
+        reject(error);
+      },
+    );
+  });
+}
+
+let _pullRunId = 0;
 
 async function pullFromSupabase(): Promise<void> {
   const sb = getSupabase();
   if (!sb) return;
+  const runId = ++_pullRunId;
+  const isCurrentRun = () => runId === _pullRunId;
   // 2026-05-07 hydration race fix (방안 N):
   //   기존 sb.auth.getSession() 직접 호출은 cold cache 시 null 반환 → setAuthState(false)
   //   로 즉시 락. 5-retry 는 SELECT 응답 retry 일 뿐, 위에서 early return 하면 도달 못 함.
   //   waitForSession() 으로 hydration 대기 (3 초 timeout) → race 차단.
-  const session = await waitForSession();
+  let session = await waitForSession();
   if (!session) {
-    setAuthState(false);
+    session = getAuthSnapshot().session;
+  }
+  if (!session) {
+    if (getAuthSnapshot().status === 'checking') {
+      if (isCurrentRun()) setSyncStatus('pending');
+      return;
+    }
+    if (isCurrentRun()) setAuthState(false);
     return;
   }
+  if (!isCurrentRun()) return;
   setAuthState(true);
   setSyncStatus('pending');
 
-  const fetchOnce = () =>
-    sb
-      .from('profiles')
-      .select(
-        'tag, display_name, avatar_pose, avatar_character, role, unlocked_characters, unlocked_poses, total_xp, lesson_xp, created_at',
-      )
-      .eq('id', session.user.id)
-      .maybeSingle();
+  const fetchOnce = () => sb.rpc('ensure_my_profile').maybeSingle();
 
   for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt++) {
-    const { data, error } = await fetchOnce();
+    let result: Awaited<ReturnType<typeof fetchOnce>> | null = null;
+    try {
+      result = await withTimeout(
+        fetchOnce(),
+        PROFILE_FETCH_TIMEOUT_MS,
+        'profiles select',
+      );
+    } catch (error) {
+      if (attempt >= RETRY_DELAYS_MS.length) {
+        console.warn('[profile] pull failed', error);
+      }
+    }
+    if (!isCurrentRun()) return;
+
+    if (!result) {
+      if (attempt < RETRY_DELAYS_MS.length) {
+        await new Promise((r) => setTimeout(r, RETRY_DELAYS_MS[attempt]));
+      }
+      continue;
+    }
+
+    const { data, error } = result;
     if (!error && data) {
+      const row = data as ProfileRpcRow;
       // 성공 — localStorage 덮어쓰기
       const local = loadStored();
       const role: 'user' | 'admin' =
-        data.role === 'admin' ? 'admin' : 'user';
+        row.role === 'admin' ? 'admin' : 'user';
       // unlocked_characters — 항상 ['tori', 'selli'] (캐릭터 잠금 폐기, backward-compat 보존)
       const unlocked: MascotCharacter[] = ['tori', 'selli'];
       // server 의 unlocked_poses 를 string[] 로 안전 normalize.
       // 컬럼 미존재 (마이그 0026 미적용) 시 default ['tori-wave', 'selli-wave'].
-      const rawUnlockedPoses = (data as { unlocked_poses?: unknown }).unlocked_poses;
+      const rawUnlockedPoses = row.unlocked_poses;
       const unlockedPoses: string[] = Array.isArray(rawUnlockedPoses)
         ? rawUnlockedPoses.filter((p): p is string => typeof p === 'string')
         : ['tori-wave', 'selli-wave'];
@@ -518,8 +583,8 @@ async function pullFromSupabase(): Promise<void> {
       // total_xp = quest 세션 XP (record_session/bump_progress)
       // lesson_xp = lesson step 정답 XP (recordSingleAnswer → pushProgressMeta)
       // purchase_pose RPC 도 두 컬럼 합산해 검증 (마이그 0027).
-      const rawTotalXp = (data as { total_xp?: unknown }).total_xp;
-      const rawLessonXp = (data as { lesson_xp?: unknown }).lesson_xp;
+      const rawTotalXp = row.total_xp;
+      const rawLessonXp = row.lesson_xp;
       const safeTotal =
         typeof rawTotalXp === 'number' && rawTotalXp >= 0 ? rawTotalXp : 0;
       const safeLesson =
@@ -527,11 +592,11 @@ async function pullFromSupabase(): Promise<void> {
       const serverTotalXp = safeTotal + safeLesson;
       saveStored({
         v: 1,
-        tag: data.tag,
-        displayName: data.display_name ?? '',
-        avatarPose: (data.avatar_pose as QuesPose) ?? DEFAULT_AVATAR_POSE,
+        tag: row.tag,
+        displayName: row.display_name ?? '',
+        avatarPose: (row.avatar_pose as QuesPose) ?? DEFAULT_AVATAR_POSE,
         avatarCharacter:
-          (data.avatar_character as MascotCharacter) ?? DEFAULT_CHARACTER,
+          (row.avatar_character as MascotCharacter) ?? DEFAULT_CHARACTER,
         role,
         unlockedCharacters: unlocked,
         unlockedPoses:
@@ -540,7 +605,7 @@ async function pullFromSupabase(): Promise<void> {
             : ['tori-wave', 'selli-wave'],
         serverTotalXp,
         createdAt:
-          local?.createdAt ?? Date.parse(data.created_at) ?? Date.now(),
+          local?.createdAt ?? Date.parse(row.created_at) ?? Date.now(),
       });
       setSyncStatus('ok');
       return;
@@ -552,7 +617,7 @@ async function pullFromSupabase(): Promise<void> {
   }
 
   // 모든 retry 실패
-  setSyncStatus('failed');
+  if (isCurrentRun()) setSyncStatus('failed');
 }
 
 /** 외부 (UI 의 [재시도] 버튼) 에서 수동 트리거. */
@@ -608,6 +673,16 @@ export function initProfileSync(): () => void {
   // 즉시 한 번 pull (이미 세션 있을 수 있음)
   void pullFromSupabase();
 
+  const unsubSessionStore = subscribeAuthSession(() => {
+    const auth = getAuthSnapshot();
+    if (auth.status === 'authenticated') {
+      setAuthState(true);
+      if (_syncStatus !== 'ok') void pullFromSupabase();
+    } else if (auth.status === 'unauthenticated') {
+      setAuthState(false);
+    }
+  });
+
   const unsub = onAuthStateChange((event, session) => {
     // ⚠️ 핵심 — 모든 auth 이벤트에서 _isAuthenticated 를 즉시 session 존재
     // 여부로 동기화. pullFromSupabase 의 race / 네트워크 지연으로 stale 상태가
@@ -651,6 +726,7 @@ export function initProfileSync(): () => void {
   }
 
   return () => {
+    unsubSessionStore();
     unsub();
     if (typeof window !== 'undefined') {
       window.removeEventListener('online', onRecover);

@@ -28,6 +28,8 @@ import {
   redeemReasonMessage,
   type RedeemReason,
 } from '@/data/redemption';
+import { refreshEnergy } from '@/game/energy';
+import { refreshStepUnlocks } from '@/game/stepUnlocks';
 import VideoBg from '@/components/ui/VideoBg';
 import { VIDEO_URLS } from '@/data/site';
 
@@ -98,7 +100,11 @@ export default function RedeemPage({ onBack }: Props) {
     setSubmitting(false);
     if (r.ok) {
       setCode('');
-      await reloadGrants();
+      await Promise.all([
+        reloadGrants(),
+        refreshEnergy(),
+        refreshStepUnlocks(),
+      ]);
     }
   };
 

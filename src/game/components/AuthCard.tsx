@@ -1,96 +1,59 @@
-/**
- * AuthCard — Google OAuth 로그인 / 로그아웃 카드.
- *
- * 미로그인: "Google 로 시작" 버튼. 클릭 시 OAuth flow 시작.
- * 로그인: 이메일 표시 + 로그아웃 버튼. 진도 동기화 안내.
- *
- * env 미설정 (Supabase 비활성) 이면 안내 문구로 fallback.
- */
-
-import { useEffect, useState } from 'react';
-import { LogIn, LogOut, Cloud, CloudOff, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { Cloud, CloudOff, LogIn, LogOut, Trash2 } from 'lucide-react';
 import {
   deleteMyAccount,
-  getSupabase,
   isSupabaseConfigured,
   signInWithOAuth,
   signOut,
-  onAuthStateChange,
   type OAuthProvider,
 } from '@/lib/supabase';
+import { useAuthSession } from '@/lib/auth/sessionStore';
 
-interface SessionLite {
-  email: string;
-  userId: string;
-}
+type PendingAction = 'sign-in' | 'sign-out' | 'delete' | null;
 
 export default function AuthCard() {
-  const [session, setSession] = useState<SessionLite | null>(null);
-  const [loading, setLoading] = useState(true);
+  const auth = useAuthSession();
+  const [pendingAction, setPendingAction] = useState<PendingAction>(null);
 
-  useEffect(() => {
-    const sb = getSupabase();
-    if (!sb) {
-      setLoading(false);
-      return;
-    }
-    // 초기 세션 fetch
-    sb.auth.getSession().then(({ data }) => {
-      if (data.session) {
-        setSession({
-          email: data.session.user.email ?? '(no email)',
-          userId: data.session.user.id,
-        });
+  const session = auth.session
+    ? {
+        email: auth.session.user.email ?? '(no email)',
+        userId: auth.session.user.id,
       }
-      setLoading(false);
-    });
-    // 구독
-    const unsub = onAuthStateChange((_event, s) => {
-      if (s) {
-        setSession({
-          email: s.user.email ?? '(no email)',
-          userId: s.user.id,
-        });
-      } else {
-        setSession(null);
-      }
-    });
-    return () => {
-      unsub();
-    };
-  }, []);
+    : null;
+  const busy = pendingAction !== null || auth.status === 'checking';
 
   const handleSignIn = async (provider: OAuthProvider) => {
-    setLoading(true);
+    if (busy) return;
+    setPendingAction('sign-in');
     const result = await signInWithOAuth(provider);
     if ((result as { error?: unknown })?.error) {
-      setLoading(false);
-      window.alert('로그인 실패. 잠시 후 다시 시도해주세요.');
+      setPendingAction(null);
+      window.alert('로그인에 실패했어요. 잠시 뒤 다시 시도해주세요.');
     }
-    // 성공 시엔 redirect → 콜백 후 onAuthStateChange 가 처리
   };
 
   const handleSignOut = async () => {
-    setLoading(true);
+    setPendingAction('sign-out');
     await signOut();
-    setLoading(false);
+    setPendingAction(null);
   };
 
   const handleDelete = async () => {
-    // 2단계 confirm — 실수 방지
     const first = window.confirm(
-      '정말 계정을 삭제할까요?\n프로필·진도·친구·북마크 모두 영구 삭제됩니다.',
+      '정말 계정을 삭제할까요?\n진도, 친구, 북마크가 모두 영구 삭제됩니다.',
     );
     if (!first) return;
     const second = window.confirm(
-      '되돌릴 수 없어요. 한 번 더 확인 — 정말 삭제할까요?',
+      '되돌릴 수 없습니다. 한 번 더 확인할게요. 정말 삭제할까요?',
     );
     if (!second) return;
-    setLoading(true);
+
+    setPendingAction('delete');
     const result = await deleteMyAccount();
-    setLoading(false);
+    setPendingAction(null);
     if (result.ok) {
-      window.alert('계정이 삭제됐습니다. 안녕히 가세요.');
+      window.alert('계정이 삭제되었습니다.');
     } else {
       window.alert(`삭제 실패: ${result.error ?? '알 수 없는 오류'}`);
     }
@@ -104,7 +67,7 @@ export default function AuthCard() {
       >
         <CloudOff size={18} className="text-cream/50 shrink-0" />
         <p className="kr-body text-[12px] text-cream/65 leading-[1.55]">
-          Supabase 미설정 — 로컬 모드. 진도가 이 브라우저에만 저장돼요 (캐시 삭제 시 사라짐).
+          로그인 환경이 아직 설정되지 않았습니다. 현재 기기의 임시 기록만 사용할 수 있어요.
         </p>
       </section>
     );
@@ -121,7 +84,10 @@ export default function AuthCard() {
             <div className="flex items-center gap-2.5 min-w-0">
               <span
                 className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full"
-                style={{ background: 'rgba(111,255,0,0.12)', border: '1px solid rgba(111,255,0,0.4)' }}
+                style={{
+                  background: 'rgba(111,255,0,0.12)',
+                  border: '1px solid rgba(111,255,0,0.4)',
+                }}
               >
                 <Cloud size={14} className="text-neon" />
               </span>
@@ -137,7 +103,7 @@ export default function AuthCard() {
             <button
               type="button"
               onClick={handleSignOut}
-              disabled={loading}
+              disabled={busy}
               className="kr-num inline-flex items-center gap-1.5 text-[11px] uppercase tracking-widest px-3 py-1.5 rounded-full transition active:scale-95 disabled:opacity-40"
               style={{
                 background: 'rgba(239,244,255,0.06)',
@@ -149,17 +115,16 @@ export default function AuthCard() {
               로그아웃
             </button>
           </div>
-          {/* 탈퇴 — 매우 작은 ghost 링크. 의도적으로 눈에 안 띄게. */}
           <div className="mt-3 pt-3 border-t border-cream/8">
             <button
               type="button"
               onClick={handleDelete}
-              disabled={loading}
+              disabled={busy}
               className="kr-body text-[10.5px] inline-flex items-center gap-1 transition opacity-50 hover:opacity-90 disabled:opacity-30"
               style={{ color: 'rgba(248,113,113,0.85)' }}
             >
               <Trash2 size={10} strokeWidth={2} />
-              계정 영구 삭제 (모든 데이터 사라짐)
+              계정 영구 삭제
             </button>
           </div>
         </div>
@@ -168,13 +133,13 @@ export default function AuthCard() {
           <div className="flex items-center gap-2 mb-3">
             <CloudOff size={14} className="text-cream/50" />
             <span className="kr-num text-[10px] uppercase tracking-widest text-cream/55">
-              게스트 모드 — 진도가 이 브라우저에만 저장 (캐시 삭제 시 사라짐)
+              로그인하면 진도와 친구 비교가 기기 사이에 동기화됩니다.
             </span>
           </div>
           <button
             type="button"
-            onClick={() => handleSignIn('google')}
-            disabled={loading}
+            onClick={() => void handleSignIn('google')}
+            disabled={busy}
             className="w-full inline-flex items-center justify-center gap-2.5 kr-num text-[13px] py-2.5 rounded-full transition active:scale-[0.98] disabled:opacity-40"
             style={{
               background: '#fff',
@@ -184,11 +149,13 @@ export default function AuthCard() {
             }}
           >
             <GoogleLogo />
-            <span style={{ fontWeight: 500 }}>Google 로 시작</span>
+            <span style={{ fontWeight: 500 }}>
+              {auth.status === 'checking' ? '로그인 확인 중' : 'Google로 시작'}
+            </span>
             <LogIn size={12} strokeWidth={2.4} />
           </button>
           <p className="kr-body text-[11px] text-cream/50 mt-2 leading-[1.55]">
-            로그인하면 친구 리더보드 + 다른 기기 진도 동기화 활성화.
+            새로고침 없이 로그인 직후 같은 기록으로 이어갑니다.
           </p>
         </div>
       )}
@@ -218,3 +185,4 @@ function GoogleLogo() {
     </svg>
   );
 }
+

@@ -9,8 +9,12 @@
 
 import type { Session } from '@supabase/supabase-js';
 import { getSupabase } from '@/lib/supabase';
+import {
+  getAuthSnapshot,
+  initAuthSessionSync,
+  subscribeAuthSession,
+} from '@/lib/auth/sessionStore';
 
-const POLL_INTERVAL_MS = 100;
 const DEFAULT_TIMEOUT_MS = 3000;
 const OAUTH_CALLBACK_TIMEOUT_MS = 10000;
 const INITIAL_SESSION_READ_TIMEOUT_MS = 1000;
@@ -26,74 +30,52 @@ export async function waitForSession(
 ): Promise<Session | null> {
   const sb = getSupabase();
   if (!sb) return null;
+  initAuthSessionSync();
+
+  const current = getAuthSnapshot();
+  if (current.status === 'authenticated') return current.session;
+  if (current.status === 'unauthenticated' && !hasOAuthCallback()) return null;
 
   const effectiveTimeoutMs =
     timeoutMs ?? (hasOAuthCallback() ? OAUTH_CALLBACK_TIMEOUT_MS : DEFAULT_TIMEOUT_MS);
 
-  try {
-    const initial = await Promise.race([
-      sb.auth.getSession().then(({ data }) => data.session ?? null),
-      new Promise<'timeout'>((resolve) => {
-        window.setTimeout(
-          () => resolve('timeout'),
-          Math.min(INITIAL_SESSION_READ_TIMEOUT_MS, effectiveTimeoutMs),
-        );
-      }),
-    ]);
-    if (initial && initial !== 'timeout') return initial;
-  } catch {
-    /* fall through to listener path */
-  }
-
   return new Promise<Session | null>((resolve) => {
     let resolved = false;
-    let pollTimer: number | null = null;
     let timeoutId: number | null = null;
-    let unsub: (() => void) | null = null;
-    let pollInFlight = false;
+    let unsubStore: (() => void) | null = null;
 
     const finish = (session: Session | null) => {
       if (resolved) return;
       resolved = true;
-      if (pollTimer !== null) window.clearInterval(pollTimer);
       if (timeoutId !== null) window.clearTimeout(timeoutId);
-      if (unsub) unsub();
+      if (unsubStore) unsubStore();
       resolve(session);
     };
 
-    const subscription = sb.auth.onAuthStateChange((event, session) => {
-      if (
-        session &&
-        (event === 'INITIAL_SESSION' ||
-          event === 'SIGNED_IN' ||
-          event === 'TOKEN_REFRESHED')
-      ) {
-        finish(session);
+    unsubStore = subscribeAuthSession(() => {
+      const next = getAuthSnapshot();
+      if (next.status === 'authenticated') {
+        finish(next.session);
+      } else if (next.status === 'unauthenticated') {
+        finish(null);
       }
     });
-    unsub = () => {
-      try {
-        subscription.data.subscription.unsubscribe();
-      } catch {
-        /* ignore */
-      }
-    };
 
-    pollTimer = window.setInterval(() => {
-      if (pollInFlight) return;
-      pollInFlight = true;
-      sb.auth
-        .getSession()
-        .then(({ data }) => {
-          if (data.session) finish(data.session);
-        })
-        .catch(() => {
-          /* ignore until timeout */
-        })
-        .finally(() => {
-          pollInFlight = false;
-        });
-    }, POLL_INTERVAL_MS);
+    void Promise.race([
+      sb.auth.getSession().then(({ data }) => data.session ?? null),
+      new Promise<'timeout'>((resolveInitial) => {
+        window.setTimeout(
+          () => resolveInitial('timeout'),
+          Math.min(INITIAL_SESSION_READ_TIMEOUT_MS, effectiveTimeoutMs),
+        );
+      }),
+    ])
+      .then((initial) => {
+        if (initial && initial !== 'timeout') finish(initial);
+      })
+      .catch(() => {
+        /* store subscription or outer timeout will settle */
+      });
 
     timeoutId = window.setTimeout(() => {
       console.warn(

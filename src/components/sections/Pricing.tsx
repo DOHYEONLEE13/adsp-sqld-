@@ -1,31 +1,49 @@
-import { ArrowRight, Check, Network, Sparkles } from 'lucide-react';
+import {
+  ArrowRight,
+  Check,
+  Copy,
+  CreditCard,
+  Network,
+  Sparkles,
+  TicketPercent,
+  X,
+} from 'lucide-react';
 import { useState } from 'react';
 import { PRICING_PLANS } from '@/data/pricing';
 import { cx } from '@/lib/utils';
 import type { PricingPlan } from '@/types/site';
-import {
-  isTossConfigured,
-  requestPayment,
-  type ProductCode,
-} from '@/lib/toss';
-import { getMyProfile } from '@/data/profile';
-import {
-  getSupabase,
-  isSupabaseConfigured,
-} from '@/lib/supabase';
-import { setPendingAuthRedirect } from '@/lib/authGuard';
 
-const PLAN_TO_PRODUCT: Record<string, ProductCode | null> = {
-  free: null,
-  'premium-weekly': 'weekly',
-  'premium-monthly': 'monthly',
-};
+const BETA_COUPON_CODE = 'QDP-BETA-MAY31';
+
+function fallbackCopyText(text: string): boolean {
+  if (typeof document === 'undefined') return false;
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.setAttribute('readonly', '');
+  textarea.style.position = 'fixed';
+  textarea.style.left = '-9999px';
+  textarea.style.top = '0';
+  document.body.appendChild(textarea);
+  textarea.select();
+  textarea.setSelectionRange(0, textarea.value.length);
+  let copied = false;
+  try {
+    copied = document.execCommand('copy');
+  } catch {
+    copied = false;
+  } finally {
+    document.body.removeChild(textarea);
+  }
+  return copied;
+}
 
 interface PricingProps {
   showIntro?: boolean;
 }
 
 export default function Pricing({ showIntro = true }: PricingProps) {
+  const [betaModalOpen, setBetaModalOpen] = useState(false);
+
   return (
     <section
       id="pricing"
@@ -40,19 +58,16 @@ export default function Pricing({ showIntro = true }: PricingProps) {
             <h2 className="kr-heading text-[38px] font-medium leading-none tracking-normal text-cream md:text-[54px]">
               요금제
             </h2>
-            <div className="mt-8 inline-flex rounded-[12px] border border-cream/12 bg-cream/[0.045] p-1 text-[12px] text-cream/58">
-              <span className="rounded-[9px] bg-cream px-4 py-2 text-base shadow-[0_8px_20px_rgba(0,0,0,0.16)]">
-                개인
-              </span>
-              <span className="px-4 py-2">시험 직전</span>
-              <span className="px-4 py-2">꾸준 학습</span>
-            </div>
           </header>
         ) : null}
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-3 md:gap-6">
           {PRICING_PLANS.map((plan) => (
-            <PricingCard key={plan.id} plan={plan} />
+            <PricingCard
+              key={plan.id}
+              plan={plan}
+              onPaidClick={() => setBetaModalOpen(true)}
+            />
           ))}
         </div>
 
@@ -60,6 +75,10 @@ export default function Pricing({ showIntro = true }: PricingProps) {
           무료 플랜으로 전체 커리큘럼을 시작할 수 있습니다. 결제 전 가격과 제공 범위를 다시 확인하세요.
         </p>
       </div>
+
+      {betaModalOpen ? (
+        <BetaCouponModal onClose={() => setBetaModalOpen(false)} />
+      ) : null}
     </section>
   );
 }
@@ -157,7 +176,13 @@ function cardIcon(plan: PricingPlan) {
   );
 }
 
-function PricingCard({ plan }: { plan: PricingPlan }) {
+function PricingCard({
+  plan,
+  onPaidClick,
+}: {
+  plan: PricingPlan;
+  onPaidClick: () => void;
+}) {
   const isMax = plan.id === 'premium-monthly';
 
   return (
@@ -197,7 +222,7 @@ function PricingCard({ plan }: { plan: PricingPlan }) {
       </div>
 
       <div className="mt-7">
-        <PricingCTA plan={plan} />
+        <PricingCTA plan={plan} onPaidClick={onPaidClick} />
       </div>
 
       <div className="my-7 h-px bg-cream/10" aria-hidden />
@@ -225,10 +250,14 @@ function PricingCard({ plan }: { plan: PricingPlan }) {
   );
 }
 
-function PricingCTA({ plan }: { plan: PricingPlan }) {
+function PricingCTA({
+  plan,
+  onPaidClick,
+}: {
+  plan: PricingPlan;
+  onPaidClick: () => void;
+}) {
   const isPaid = plan.id !== 'free';
-  const productCode = PLAN_TO_PRODUCT[plan.id] ?? null;
-  const [submitting, setSubmitting] = useState(false);
   const isMonthly = plan.id === 'premium-monthly';
 
   const label = !isPaid
@@ -238,68 +267,179 @@ function PricingCTA({ plan }: { plan: PricingPlan }) {
       : 'Pro 시작하기';
 
   const handleClick = async () => {
-    if (submitting) return;
     if (!isPaid) {
       window.location.hash = '/game';
       return;
     }
 
-    if (isMonthly) {
-      window.alert(
-        '월 자동 구독은 곧 오픈 예정입니다.\n지금은 1주 단기 또는 평생 코드 (마케팅 이벤트) 로 이용 가능합니다.',
-      );
-      return;
-    }
-
-    if (!productCode) return;
-
-    if (!isTossConfigured()) {
-      window.alert(
-        '결제 시스템 준비 중입니다.\n토스 페이먼츠 가맹점 활성 후 정식 오픈 예정.',
-      );
-      return;
-    }
-
-    if (isSupabaseConfigured()) {
-      const sb = getSupabase();
-      const { data } = (await sb?.auth.getSession()) ?? { data: { session: null } };
-      if (!data.session) {
-        setPendingAuthRedirect('#pricing');
-        window.location.hash = '/login';
-        return;
-      }
-    }
-
-    setSubmitting(true);
-    try {
-      const profile = getMyProfile();
-      await requestPayment({
-        productCode,
-        customerEmail: profile.displayName ? `${profile.tag}@questdp.user` : 'guest@questdp.user',
-        customerName: profile.displayName || profile.tag || '게스트',
-      });
-    } catch (err) {
-      setSubmitting(false);
-      const msg =
-        err instanceof Error
-          ? err.message === 'toss-client-key-missing'
-            ? '결제 시스템 환경설정이 누락되어 있습니다.'
-            : `결제창 호출 실패: ${err.message}`
-          : '결제창 호출 실패. 잠시 후 다시 시도해주세요.';
-      window.alert(msg);
-    }
+    onPaidClick();
   };
 
   return (
     <button
       type="button"
       onClick={handleClick}
-      disabled={submitting}
       aria-label={label}
-      className="kr-body inline-flex h-10 w-full items-center justify-center gap-2 rounded-[8px] bg-cream px-4 text-[13px] font-bold text-base transition hover:bg-white active:scale-[0.99] disabled:cursor-wait disabled:opacity-60"
+      className="kr-body inline-flex h-10 w-full items-center justify-center gap-2 rounded-[8px] bg-cream px-4 text-[13px] font-bold text-base transition hover:bg-white active:scale-[0.99]"
     >
-      <span>{submitting ? '처리 중' : label}</span>
+      <span>{label}</span>
       <ArrowRight size={13} strokeWidth={2} aria-hidden />
     </button>
+  );
+}
+
+function BetaCouponModal({ onClose }: { onClose: () => void }) {
+  const [copied, setCopied] = useState(false);
+
+  const copyCode = async () => {
+    let ok = false;
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(BETA_COUPON_CODE);
+        ok = true;
+      }
+    } catch {
+      ok = false;
+    }
+    if (!ok) ok = fallbackCopyText(BETA_COUPON_CODE);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1800);
+  };
+
+  const goRedeem = () => {
+    window.location.hash = '/redeem';
+    onClose();
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center px-5 py-8"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="beta-coupon-title"
+    >
+      <button
+        type="button"
+        className="absolute inset-0 cursor-default bg-[rgba(1,8,40,0.76)] backdrop-blur-md"
+        aria-label="안내 닫기"
+        onClick={onClose}
+      />
+
+      <div className="relative w-full max-w-[450px] overflow-hidden rounded-[24px] border border-cream/14 bg-[rgb(7,18,36)] text-cream shadow-[0_28px_96px_rgba(0,0,0,0.58)]">
+        <div
+          aria-hidden
+          className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cream/35 to-transparent"
+        />
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="안내 닫기"
+          className="absolute right-4 top-4 z-10 inline-flex h-8 w-8 items-center justify-center rounded-full border border-cream/10 bg-cream/[0.035] text-cream/62 transition hover:border-cream/20 hover:text-cream"
+        >
+          <X size={15} strokeWidth={2.2} aria-hidden />
+        </button>
+
+        <div className="px-6 pb-5 pt-6">
+          <div className="flex items-start gap-3 pr-9">
+            <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] border border-cream/12 bg-cream/[0.045] text-cream/84">
+              <CreditCard size={20} strokeWidth={1.9} aria-hidden />
+            </div>
+            <div className="min-w-0">
+              <p className="kr-num text-[10px] uppercase tracking-[0.18em] text-cream/45">
+                QuestDP Checkout
+              </p>
+              <h3
+                id="beta-coupon-title"
+                className="kr-heading mt-1 text-[23px] font-black leading-[1.18] text-cream"
+              >
+                오픈 베타 무료 이용권
+              </h3>
+            </div>
+          </div>
+
+          <p className="kr-body mt-5 text-[13.5px] leading-[1.72] text-cream/66">
+            관심 가져주셔서 감사합니다. 현재 2026년 5월 31일까지 무료 운영 중이며, 아래 쿠폰 코드를 등록하면 프리미엄 기능을 바로 이용할 수 있습니다.
+          </p>
+        </div>
+
+        <div className="border-y border-cream/10 bg-cream/[0.025] px-6 py-4">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="kr-body text-[13px] font-bold text-cream/88">
+                Premium Beta Access
+              </p>
+              <p className="kr-body mt-1 text-[12px] leading-[1.45] text-cream/48">
+                무제한 에너지 · 자유 로드맵 · 모의고사 재시도
+              </p>
+            </div>
+            <div className="kr-heading shrink-0 text-right text-[18px] font-black text-cream">
+              ₩0
+            </div>
+          </div>
+        </div>
+
+        <div className="px-6 pb-6 pt-5">
+          <div className="rounded-[16px] border border-cream/12 bg-base/45 p-3.5">
+            <div className="mb-3 flex items-center gap-2 text-cream/58">
+              <TicketPercent size={14} strokeWidth={2} aria-hidden />
+              <p className="kr-num text-[10px] uppercase tracking-[0.18em]">
+                Coupon Code
+              </p>
+            </div>
+            <div className="flex items-stretch gap-2">
+              <code className="kr-num flex min-w-0 items-center rounded-[12px] border border-cream/10 bg-[rgba(255,255,255,0.035)] px-3 text-[13px] font-black tracking-[0.12em] text-cream">
+                {BETA_COUPON_CODE}
+              </code>
+              <button
+                type="button"
+                onClick={copyCode}
+                className={cx(
+                  'kr-body inline-flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-[12px] px-3 text-[12px] font-bold transition active:scale-[0.96]',
+                  copied
+                    ? 'bg-neon text-base shadow-[0_0_0_4px_rgba(111,255,0,0.12)]'
+                    : 'bg-cream text-base hover:bg-white',
+                )}
+              >
+                <Copy
+                  size={13}
+                  strokeWidth={2.1}
+                  aria-hidden
+                  className={copied ? 'animate-[coupon-pop_420ms_ease-out]' : undefined}
+                />
+                {copied ? '복사됨' : '복사'}
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-5 flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={goRedeem}
+              className="kr-body inline-flex h-12 w-full items-center justify-center gap-2 rounded-[12px] bg-cream px-4 text-[13px] font-black text-base transition hover:bg-white active:scale-[0.99]"
+            >
+              쿠폰 등록하고 시작
+              <ArrowRight size={14} strokeWidth={2.2} aria-hidden />
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="kr-body inline-flex h-11 w-full items-center justify-center rounded-[12px] px-4 text-[13px] font-bold text-cream/56 transition hover:text-cream"
+            >
+              요금제 더 보기
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <style>
+        {`
+          @keyframes coupon-pop {
+            0% { transform: scale(0.86) rotate(-7deg); }
+            55% { transform: scale(1.14) rotate(5deg); }
+            100% { transform: scale(1) rotate(0deg); }
+          }
+        `}
+      </style>
+    </div>
   );
 }

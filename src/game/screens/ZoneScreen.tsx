@@ -20,6 +20,7 @@ import {
   Lock,
   RefreshCcw,
   Shuffle,
+  Target,
   Trophy,
 } from 'lucide-react';
 import { SUBJECT_SCHEMAS } from '@/data/subjects';
@@ -95,6 +96,10 @@ interface Props {
    * 사용자가 화면 어디든 한 번 인터랙션하면 즉시 페이드 (지속성 X).
    */
   highlightTopic?: string;
+  /** highlightTopic 안에서 정확히 강조할 원본 step index. */
+  highlightStepIdx?: number;
+  /** 강조 출처 문항 id — 추적/접근성 라벨용. */
+  highlightQuestionId?: string;
   onStart: (params: StartParams) => void;
   /** 특정 step 노드 클릭 → 그 step 만 단독 학습. passNumber 전달 (선택). */
   onSelectStep: (topic: string, stepIdx: number, passNumber?: number) => void;
@@ -107,6 +112,8 @@ export default function ZoneScreen({
   subject,
   chapter,
   highlightTopic,
+  highlightStepIdx,
+  highlightQuestionId,
   onStart,
   onSelectStep,
   onReviewIds,
@@ -203,15 +210,29 @@ export default function ZoneScreen({
   // ── highlightTopic — "나의 약점" 탭 → 단원 노드 클릭 시 자동 강조 ──
   // 마운트 시 prop 으로 받은 topic 을 활성 강조 상태로 설정 → 10초 후 자동 페이드.
   // 사용자 인터랙션 (step 클릭 등) 시 즉시 false 로 — 인지 부하 최소화.
-  const [activeHighlight, setActiveHighlight] = useState<string | null>(
-    highlightTopic ?? null,
+  const [activeHighlight, setActiveHighlight] = useState<{
+    topic: string;
+    stepIdx?: number;
+    questionId?: string;
+  } | null>(
+    highlightTopic
+      ? {
+          topic: highlightTopic,
+          stepIdx: highlightStepIdx,
+          questionId: highlightQuestionId,
+        }
+      : null,
   );
   useEffect(() => {
     if (!highlightTopic) return;
-    setActiveHighlight(highlightTopic);
+    setActiveHighlight({
+      topic: highlightTopic,
+      stepIdx: highlightStepIdx,
+      questionId: highlightQuestionId,
+    });
     const t = window.setTimeout(() => setActiveHighlight(null), 10000);
     return () => window.clearTimeout(t);
-  }, [highlightTopic]);
+  }, [highlightTopic, highlightStepIdx, highlightQuestionId]);
   // 강조 topic 의 섹션 시작점 (Part 헤더 + Step 1) 을 sticky top bar 바로 아래로
   // 정확히 안착시킴.
   //
@@ -221,12 +242,18 @@ export default function ZoneScreen({
   // 마운트 후 첫 frame 에 layout 안정화 후 실행.
   useEffect(() => {
     if (!activeHighlight) return;
-    const el = document.querySelector<HTMLElement>(
-      `[data-highlight-topic="${cssEscape(activeHighlight)}"]`,
+    const section = document.querySelector<HTMLElement>(
+      `[data-highlight-topic="${cssEscape(activeHighlight.topic)}"]`,
     );
-    if (!el) return;
+    if (!section) return;
     const r = window.requestAnimationFrame(() => {
-      const rect = el.getBoundingClientRect();
+      const target =
+        typeof activeHighlight.stepIdx === 'number'
+          ? section.querySelector<HTMLElement>(
+              `[data-step-idx="${activeHighlight.stepIdx}"]`,
+            ) ?? section
+          : section;
+      const rect = target.getBoundingClientRect();
       const TOP_BAR_OFFSET = 88; // MobileTopBar 높이 + 여유
       const targetY = rect.top + window.scrollY - TOP_BAR_OFFSET;
       window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
@@ -410,7 +437,12 @@ export default function ZoneScreen({
                   return w ? weaknessLevel(w) === 'weak' : false;
                 })()}
                 passNumber={selectedPass}
-                pulse={activeHighlight === lesson.topic}
+                pulse={activeHighlight?.topic === lesson.topic}
+                highlightStepIdx={
+                  activeHighlight?.topic === lesson.topic
+                    ? activeHighlight.stepIdx
+                    : undefined
+                }
                 onSelectStep={(stepIdx) => {
                   // 사용자 인터랙션 발생 → 강조 즉시 페이드.
                   setActiveHighlight(null);
@@ -475,6 +507,8 @@ interface TopicSectionProps {
   passNumber: number;
   /** "나의 약점" 진입 시 본 topic 을 자동 강조 — 첫 미완료/미잠금 step 에 펄스. */
   pulse?: boolean;
+  /** 펄스를 특정 원본 step index 에 고정. 없으면 첫 미완료 step. */
+  highlightStepIdx?: number;
   onSelectStep: (stepIdx: number) => void;
   onLockedClick?: (stepIdx: number) => void;
 }
@@ -489,6 +523,7 @@ function TopicSection({
   isWeak,
   passNumber,
   pulse = false,
+  highlightStepIdx,
   onSelectStep,
   onLockedClick,
 }: TopicSectionProps) {
@@ -519,6 +554,12 @@ function TopicSection({
   // 모두 완료된 토픽이면 첫 step 에 펄스 (= "다시 복기" 안내).
   const pulseDisplayIdx = pulse
     ? (() => {
+        if (typeof highlightStepIdx === 'number') {
+          const explicitIdx = visibleSteps.findIndex(
+            (s) => s._origIdx === highlightStepIdx,
+          );
+          if (explicitIdx >= 0) return explicitIdx;
+        }
         for (let i = 0; i < visibleSteps.length; i += 1) {
           const s = visibleSteps[i];
           const stat = s.quizId ? progress.questionStats[s.quizId] : undefined;
@@ -621,6 +662,7 @@ function TopicSection({
           return (
             <StepNode
               key={step.id}
+              stepIdx={idx}
               n={displayIdx + 1}
               title={step.title}
               accent={accent}
@@ -649,6 +691,7 @@ function TopicSection({
 // ================================================================
 
 interface StepNodeProps {
+  stepIdx: number;
   n: number;
   title: string;
   accent: string;
@@ -662,6 +705,7 @@ interface StepNodeProps {
 }
 
 function StepNode({
+  stepIdx,
   n,
   title,
   accent,
@@ -673,7 +717,11 @@ function StepNode({
   onClick,
 }: StepNodeProps) {
   return (
-    <div className="flex">
+    <div
+      className="flex"
+      data-step-idx={stepIdx}
+      data-step-target={pulse ? 'true' : undefined}
+    >
       {/* 좌측: 노드 + connector */}
       <div className="flex flex-col items-center mr-4 md:mr-5">
         <button
@@ -784,6 +832,23 @@ function StepNode({
           <span className="kr-num uppercase tracking-widest text-[9px]">
             STEP {n}
           </span>
+          {pulse ? (
+            <>
+              <span style={{ color: 'rgba(239,244,255,0.4)' }}>·</span>
+              <span
+                className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 kr-heading text-[9px] uppercase tracking-widest"
+                style={{
+                  color: '#FFB4B4',
+                  background: 'rgba(248,113,113,0.12)',
+                  border: '1px solid rgba(248,113,113,0.38)',
+                  boxShadow: '0 6px 18px -14px rgba(248,113,113,0.85)',
+                }}
+              >
+                <Target size={9} strokeWidth={2.8} />
+                여기 풀기
+              </span>
+            </>
+          ) : null}
         </div>
       </button>
     </div>

@@ -129,6 +129,10 @@ interface PendingZoneOpen {
   chapter: number;
   /** 자동 강조할 topic — 본 topic 의 첫 미완료 step 노드에 펄스 애니메이션. */
   highlightTopic?: string;
+  /** topic 안에서 정확히 강조할 원본 step index. */
+  highlightStepIdx?: number;
+  /** 강조 출처 문항 id. */
+  highlightQuestionId?: string;
 }
 let _pendingZoneCache: { value: PendingZoneOpen | null; at: number } | null = null;
 function consumePendingZoneOpen(): PendingZoneOpen | null {
@@ -165,6 +169,8 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
         subject: pendingZone.subject,
         chapter: pendingZone.chapter,
         highlightTopic: pendingZone.highlightTopic,
+        highlightStepIdx: pendingZone.highlightStepIdx,
+        highlightQuestionId: pendingZone.highlightQuestionId,
       };
     }
     // 2순위: DialogueLesson 직진 (북마크 점프 등 lesson 단위 진입)
@@ -500,6 +506,8 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
           subject={screen.subject}
           chapter={screen.chapter}
           highlightTopic={screen.highlightTopic}
+          highlightStepIdx={screen.highlightStepIdx}
+          highlightQuestionId={screen.highlightQuestionId}
           onStart={(p: StartParams) =>
             startSession(
               screen.subject,

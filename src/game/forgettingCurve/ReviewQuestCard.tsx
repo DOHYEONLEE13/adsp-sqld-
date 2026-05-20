@@ -7,7 +7,7 @@
  *   - 헤더 "오늘의 복습 (망각 곡선) [N개]"
  *   - 항목 미리보기 (top 3) — chapter / topic / priority 배지
  *   - 큐 폭발 경고 (overflow > 0)
- *   - [복습 시작하기 (N분 예상)] 버튼
+ *   - [복습 위치 보기] 버튼
  *
  * 데이터 소스:
  *   - loadActiveReviewItems(userId)
@@ -27,7 +27,7 @@ import { loadOnboardingResult } from '@/game/onboarding/onboardingStorage';
 import { useProgress } from '../useProgress';
 
 interface Props {
-  /** [복습 시작] 클릭 시 caller. queue 항목 전달 → ReviewSession 진입. */
+  /** [복습 위치 보기] 클릭 시 caller. queue 항목 전달 → 학습 위치로 이동. */
   onStartReview: (queue: ReviewQueueItem[]) => void;
 }
 
@@ -109,8 +109,6 @@ export default function ReviewQuestCard({ onStartReview }: Props) {
   }
 
   const previewItems = queue.slice(0, 3);
-  const estMinutes = Math.max(1, Math.round(queue.length * 0.7)); // 문항당 ~40초 추정
-
   return (
     <div
       className="liquid-glass rounded-[20px] px-5 py-4 mb-5"
@@ -198,7 +196,7 @@ export default function ReviewQuestCard({ onStartReview }: Props) {
             '0 5px 16px -8px color-mix(in srgb, var(--cta-primary) 60%, transparent)',
         }}
       >
-        복습 시작하기 · {estMinutes}분 예상
+        복습 위치 보기
         <ChevronRight size={14} strokeWidth={2.6} />
       </button>
     </div>

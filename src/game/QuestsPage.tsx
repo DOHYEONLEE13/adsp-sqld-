@@ -149,13 +149,35 @@ export default function QuestsPage({ onExit }: Props) {
           게스트는 OnboardingPromptBanner 로 onboarding 유도. */}
       {loadOnboardingResult() ? (
         <ReviewQuestCard
-          onStartReview={() => {
-            // ReviewSession 화면 진입 — Phase 4 Step 4 v1.0 단순화:
-            // 기존 #/review 허브로 이동 (수동 복습 시스템 재활용).
-            // v1.1 에서 별도 ReviewSession 화면 분리.
-            window.location.hash = '/game';
-            // game 진입 후 사용자가 Galaxy 의 [복습] 버튼 클릭 — 안내 부족할 수 있어
-            // 후속 폴리시에서 직접 review 세션 mount 로 변경 가능.
+          onStartReview={async (queue) => {
+            const { resolveQuestionLearningTarget } = await import(
+              './learningTarget'
+            );
+            const target = queue
+              .map((item) => resolveQuestionLearningTarget(item.question_id))
+              .find((item) => item !== null);
+
+            if (!target) {
+              window.location.hash = '/game';
+              return;
+            }
+
+            try {
+              window.sessionStorage.setItem(
+                'questdp.pendingZoneOpen',
+                JSON.stringify({
+                  subject: target.subject,
+                  chapter: target.chapter,
+                  highlightTopic: target.topic ?? undefined,
+                  highlightStepIdx: target.stepIdx,
+                  highlightQuestionId: target.questionId,
+                }),
+              );
+            } catch {
+              /* quota — direct route fallback */
+            }
+
+            window.location.hash = `/game/${target.subject}`;
           }}
         />
       ) : (

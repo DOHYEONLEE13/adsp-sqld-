@@ -21,6 +21,10 @@ export type GameScreen =
        * 일정 시간 (10초) 펄스 후 자동 페이드.
        */
       highlightTopic?: string;
+      /** topic 안에서 정확히 강조할 원본 step index. 없으면 첫 미완료 step. */
+      highlightStepIdx?: number;
+      /** 강조 출처 문항 id — 추적/접근성 라벨용. */
+      highlightQuestionId?: string;
     }
   | {
       kind: 'lesson';

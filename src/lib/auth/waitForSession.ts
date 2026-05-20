@@ -1,22 +1,10 @@
 /**
- * waitForSession.ts — Supabase JS 세션 hydration 대기 헬퍼.
+ * Bounded Supabase session hydration helper.
  *
- * 문제 (2026-05-07 진단):
- *   첫 페이지 로드 (cold cache) 직후 `sb.auth.getSession()` 이 hydration 끝나기 전
- *   null 을 반환할 수 있음. energy/passSync/stepUnlocks 의 pull() 이 그대로 받아
- *   DEFAULT_GUEST 상태로 락 → 사용자 새로고침 필요.
- *
- *   profile.ts 는 onAuthStateChange (INITIAL_SESSION/TOKEN_REFRESHED 등) 로 재pull
- *   하지만 ALL pull 함수가 hydration race 에 무방비.
- *
- * 해결:
- *   pull 진입 시 waitForSession() 으로 ① getSession 즉시 체크 → ② 없으면
- *   onAuthStateChange 리스너 + 100ms polling 백업으로 timeout (3s) 까지 대기.
- *   timeout 시 null 반환 → 호출측이 graceful guest fallback.
- *
- * profile.ts 와의 관계:
- *   profile.ts 는 5-retry (응답 후) 로 SELECT 실패에 대비. 본 헬퍼는 그 전 단계
- *   (세션 hydration) 을 담당. 둘은 보호 layer 가 다름.
+ * Supabase can briefly return no session on a cold load, and OAuth PKCE
+ * callbacks can also make the first getSession() call wait while the code is
+ * exchanged. This helper waits for the auth event/polling path, but never lets
+ * the first getSession() call block the caller forever.
  */
 
 import type { Session } from '@supabase/supabase-js';
@@ -24,33 +12,45 @@ import { getSupabase } from '@/lib/supabase';
 
 const POLL_INTERVAL_MS = 100;
 const DEFAULT_TIMEOUT_MS = 3000;
+const OAUTH_CALLBACK_TIMEOUT_MS = 10000;
+const INITIAL_SESSION_READ_TIMEOUT_MS = 1000;
 
-/**
- * Supabase 세션이 hydrate 될 때까지 대기.
- *
- * @param timeoutMs 최대 대기 시간 (기본 3000ms). 초과 시 null 반환.
- * @returns Session 객체 (성공) 또는 null (게스트 / timeout).
- */
+function hasOAuthCallback(): boolean {
+  if (typeof window === 'undefined') return false;
+  const params = new URLSearchParams(window.location.search);
+  return params.has('code') || params.has('error') || params.has('error_code');
+}
+
 export async function waitForSession(
-  timeoutMs: number = DEFAULT_TIMEOUT_MS,
+  timeoutMs?: number,
 ): Promise<Session | null> {
   const sb = getSupabase();
   if (!sb) return null;
 
-  // ① 즉시 체크 — 이미 hydrated 됐으면 그대로 반환.
+  const effectiveTimeoutMs =
+    timeoutMs ?? (hasOAuthCallback() ? OAUTH_CALLBACK_TIMEOUT_MS : DEFAULT_TIMEOUT_MS);
+
   try {
-    const { data } = await sb.auth.getSession();
-    if (data.session) return data.session;
+    const initial = await Promise.race([
+      sb.auth.getSession().then(({ data }) => data.session ?? null),
+      new Promise<'timeout'>((resolve) => {
+        window.setTimeout(
+          () => resolve('timeout'),
+          Math.min(INITIAL_SESSION_READ_TIMEOUT_MS, effectiveTimeoutMs),
+        );
+      }),
+    ]);
+    if (initial && initial !== 'timeout') return initial;
   } catch {
-    /* ignore — fall through to listener path */
+    /* fall through to listener path */
   }
 
-  // ② 없으면 INITIAL_SESSION/SIGNED_IN/TOKEN_REFRESHED 이벤트 또는 polling 으로 대기.
   return new Promise<Session | null>((resolve) => {
     let resolved = false;
     let pollTimer: number | null = null;
     let timeoutId: number | null = null;
     let unsub: (() => void) | null = null;
+    let pollInFlight = false;
 
     const finish = (session: Session | null) => {
       if (resolved) return;
@@ -61,7 +61,6 @@ export async function waitForSession(
       resolve(session);
     };
 
-    // Auth event listener.
     const subscription = sb.auth.onAuthStateChange((event, session) => {
       if (
         session &&
@@ -76,34 +75,32 @@ export async function waitForSession(
       try {
         subscription.data.subscription.unsubscribe();
       } catch {
-        /* 무시 */
+        /* ignore */
       }
     };
 
-    // Polling 백업 — 이벤트 누락 (subscribe 사이의 윈도우) 보호.
     pollTimer = window.setInterval(() => {
+      if (pollInFlight) return;
+      pollInFlight = true;
       sb.auth
         .getSession()
         .then(({ data }) => {
           if (data.session) finish(data.session);
         })
         .catch(() => {
-          /* 무시 — timeout 이 cleanup */
+          /* ignore until timeout */
+        })
+        .finally(() => {
+          pollInFlight = false;
         });
     }, POLL_INTERVAL_MS);
 
-    // Timeout — 결정된 시간 후 null 로 graceful fallback.
     timeoutId = window.setTimeout(() => {
-      // 방안 R — production 진단 로그. timeout 발생 시 어떤 hydration race 가 미해결인지
-      // 사용자가 console 에서 캡처해 보고 가능. listener / polling 모두 못 잡은 케이스.
-      // 정상 흐름은 timeout 전 finish(session) 호출됨 (즉, 이 로그가 뜨면 비정상).
-      // eslint-disable-next-line no-console
       console.warn(
-        `[waitForSession] timeout after ${timeoutMs}ms — hydration 미완료. ` +
-          'profile/energy/pass/stepUnlocks 가 게스트 fallback 로 진행. ' +
-          '이후 재진입 트리거 (visibility/online/SIGNED_IN/TOKEN_REFRESHED) 가 fire 될 때 갱신.',
+        `[waitForSession] timeout after ${effectiveTimeoutMs}ms - hydration incomplete. ` +
+          'Auth-dependent sync will retry on the next auth/visibility/online event.',
       );
       finish(null);
-    }, timeoutMs);
+    }, effectiveTimeoutMs);
   });
 }

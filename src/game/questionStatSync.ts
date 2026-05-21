@@ -2,7 +2,7 @@
  * Sends single lesson answers through the server-authoritative RPC path.
  *
  * The browser still updates local progress immediately for responsive UI, but
- * server XP and server question_stats are now decided by submit_lesson_answer.
+ * server XP and server question_stats are decided by the v2 answer RPCs.
  */
 
 import { waitForSession } from '@/lib/auth/waitForSession';
@@ -29,7 +29,8 @@ export async function pushQuestionStatToServer(
       ? 'submit_lesson_question'
       : typeof attempt?.selectedIndex === 'number'
         ? 'submit_lesson_answer_v2'
-        : 'submit_lesson_answer';
+        : null;
+    if (!rpcName) return;
     const args =
       rpcName === 'submit_lesson_question'
         ? {
@@ -39,25 +40,18 @@ export async function pushQuestionStatToServer(
             p_time_ms: attempt?.timeMs ?? stat.lastTimeMs,
             p_step_key: attempt?.stepKey ?? null,
           }
-        : rpcName === 'submit_lesson_answer_v2'
-        ? {
+        : {
             p_question_id: questionId,
             p_selected_index: attempt!.selectedIndex,
             p_time_ms: attempt?.timeMs ?? stat.lastTimeMs,
             p_step_key: attempt?.stepKey ?? null,
             p_client_request_id: null,
-          }
-        : {
-            p_question_id: questionId,
-            p_correct: attempt?.correct ?? stat.lastCorrect,
-            p_time_ms: attempt?.timeMs ?? stat.lastTimeMs,
-            p_step_key: attempt?.stepKey ?? null,
           };
     const { error } = await sb.rpc(rpcName, args);
     if (error) {
       console.warn(`[questionStatSync] ${rpcName} failed`, error.message);
     }
   } catch (error) {
-    console.warn('[questionStatSync] submit_lesson_answer exception', error);
+    console.warn('[questionStatSync] lesson answer sync exception', error);
   }
 }

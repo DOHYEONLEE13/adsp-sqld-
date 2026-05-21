@@ -48,10 +48,10 @@ export const HERO: HeroContent = {
 
 export const ABOUT: AboutContent = {
   headingLines: ['안녕!', '난 퀘스트디피야'],
-  lead: 'ADSP 학습사이트와 SQLD 학습사이트를 찾는 수험생을 위한 게임형 문제풀이 플랫폼. 우주를 탐험하듯 챕터를 정복하고, AI가 매일 약점을 골라 맞춤 미션을 던집니다.',
+  lead: 'ADSP 학습사이트, SQLD 학습사이트를 찾고 있다면 QuestDP에서 개념부터 문제풀이까지 게임처럼 따라가면 돼요. 오늘 공부할 챕터와 약점이 한눈에 보입니다.',
   bulletLines: [
-    'ADsP 게임 · SQLD 게임처럼 두 은하를 따라가며 개념 스텝, 기출 풀이, 챕터 모의고사를 한 번에 학습.',
-    'Leitner 5단계 SRS · 오답 큐 · 약점 점수 — 오늘 풀이가 내일 다시 만나는 복습으로.',
+    '짧은 개념을 보고 바로 한 문제를 풀어요. 익숙해지면 기출 풀이와 챕터 모의고사로 이어집니다.',
+    '틀린 문제와 헷갈린 개념은 다시 나타나요. 오늘 푼 내용이 내일 복습 미션이 됩니다.',
   ],
   videoUrl: VIDEO_URLS.about,
 };

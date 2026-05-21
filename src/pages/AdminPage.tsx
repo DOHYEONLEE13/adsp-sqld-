@@ -10,13 +10,17 @@
  * 즉 보안의 1차 라인은 RLS, 2차 라인이 frontend 의 isAdmin 체크.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import {
   ArrowLeft,
+  CheckCircle2,
+  Eye,
+  Gauge,
   Plus,
   RefreshCcw,
   Shield,
   Sparkles,
+  Ticket,
   Trash2,
   Unlock,
   Users,
@@ -40,16 +44,91 @@ interface UserRow {
   created_at: string;
 }
 
-interface SessionStat {
-  total: number;
-  today: number;
-  thisWeek: number;
+interface TopNewQuestionUser {
+  userId: string;
+  tag: string;
+  displayName: string;
+  role: 'user' | 'admin';
+  isPremium: boolean;
+  newQuestions: number;
+  sessions: number;
+}
+
+interface QuotaReachedUser {
+  userId: string;
+  tag: string;
+  displayName: string;
+  usedCount: number;
+  limitCount: number;
+}
+
+interface CouponUsageToday {
+  userId: string;
+  tag: string;
+  displayName: string;
+  code: string;
+  newQuestions: number;
+  sessions: number;
+  grantedAt: string;
+  expiresAt: string | null;
+}
+
+interface RapidSubmitUser {
+  userId: string;
+  tag: string;
+  displayName: string;
+  submittedQuestions: number;
+  sessions: number;
+  totalTimeSec: number;
+  avgSecPerQuestion: number | null;
+}
+
+interface LearningMetrics {
+  total_users: number;
+  premium_users: number;
+  today_answered_questions: number;
+  today_completed_concepts: number;
+  total_answered_questions: number;
+  total_completed_concepts: number;
+  top_new_question_users: TopNewQuestionUser[];
+  quota_reached_users: QuotaReachedUser[];
+  coupon_usage_today: CouponUsageToday[];
+  rapid_submit_users: RapidSubmitUser[];
+}
+
+function toNumber(value: unknown): number {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string') {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+  return 0;
+}
+
+function asArray<T>(value: unknown): T[] {
+  return Array.isArray(value) ? (value as T[]) : [];
+}
+
+function normalizeLearningMetrics(value: unknown): LearningMetrics {
+  const row = (value ?? {}) as Partial<LearningMetrics>;
+  return {
+    total_users: toNumber(row.total_users),
+    premium_users: toNumber(row.premium_users),
+    today_answered_questions: toNumber(row.today_answered_questions),
+    today_completed_concepts: toNumber(row.today_completed_concepts),
+    total_answered_questions: toNumber(row.total_answered_questions),
+    total_completed_concepts: toNumber(row.total_completed_concepts),
+    top_new_question_users: asArray<TopNewQuestionUser>(row.top_new_question_users),
+    quota_reached_users: asArray<QuotaReachedUser>(row.quota_reached_users),
+    coupon_usage_today: asArray<CouponUsageToday>(row.coupon_usage_today),
+    rapid_submit_users: asArray<RapidSubmitUser>(row.rapid_submit_users),
+  };
 }
 
 export default function AdminPage({ onBack }: { onBack: () => void }) {
   const profile = useMyProfile();
   const [users, setUsers] = useState<UserRow[]>([]);
-  const [sessionStat, setSessionStat] = useState<SessionStat | null>(null);
+  const [learningMetrics, setLearningMetrics] = useState<LearningMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   /** server 직접 확인한 admin 여부. localStorage 가 stale 한 케이스 대응. */
@@ -121,22 +200,7 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
       return;
     }
     try {
-      // 2026-05-07 perf — 4 쿼리 병렬 실행 + count: estimated 로 latency 단축.
-      // 이전: sequential await × 4 = 400~2000ms.
-      // 이후: Promise.all 병렬 = max(쿼리 1개) ≈ 100~500ms.
-      // count: 'estimated' 는 PostgreSQL pg_stat 활용 → exact 대비 100x 빠름,
-      // 정확도는 ±5% (운영 대시보드 용도엔 충분, 실 마지막 1자리는 그날 cron 후 정확).
-      const todayStart = new Date();
-      todayStart.setHours(0, 0, 0, 0);
-      const weekStart = new Date(todayStart);
-      weekStart.setDate(weekStart.getDate() - 7);
-
-      const [
-        { data: rows, error: uErr },
-        { count: totalCount },
-        { count: todayCount },
-        { count: weekCount },
-      ] = await Promise.all([
+      const [userResult, metricsResult] = await Promise.all([
         sb
           .from('profiles')
           .select(
@@ -144,24 +208,16 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
           )
           .order('total_xp', { ascending: false })
           .limit(100),
-        sb.from('sessions').select('*', { count: 'estimated', head: true }),
-        sb
-          .from('sessions')
-          .select('*', { count: 'estimated', head: true })
-          .gte('ended_at', todayStart.toISOString()),
-        sb
-          .from('sessions')
-          .select('*', { count: 'estimated', head: true })
-          .gte('ended_at', weekStart.toISOString()),
+        sb.rpc('admin_learning_activity'),
       ]);
-      if (uErr) throw uErr;
+      if (userResult.error) throw userResult.error;
+      if (metricsResult.error) throw metricsResult.error;
 
-      setUsers((rows ?? []) as UserRow[]);
-      setSessionStat({
-        total: totalCount ?? 0,
-        today: todayCount ?? 0,
-        thisWeek: weekCount ?? 0,
-      });
+      setUsers((userResult.data ?? []) as UserRow[]);
+      const metricRow = Array.isArray(metricsResult.data)
+        ? metricsResult.data[0]
+        : metricsResult.data;
+      setLearningMetrics(normalizeLearningMetrics(metricRow));
     } catch (e) {
       setError(e instanceof Error ? e.message : '조회 실패');
     } finally {
@@ -255,6 +311,9 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
             서비스 사용 통계와 가입자 목록을 한눈에. 데이터는 Supabase RLS
             정책으로 admin 만 조회 가능합니다.
           </p>
+          <p className="kr-body text-[12px] text-cream/45 mt-2">
+            운영 통계와 감지 목록은 관리자 QA 계정을 제외한 사용자 기준입니다.
+          </p>
         </header>
 
         {error ? (
@@ -264,12 +323,22 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
         ) : null}
 
         {/* 통계 카드 */}
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-10">
-          <Stat label="총 가입자" value={users.length} />
-          <Stat label="프리미엄" value={users.filter((u) => u.is_premium).length} />
-          <Stat label="오늘 세션" value={sessionStat?.today ?? 0} />
-          <Stat label="누적 세션" value={sessionStat?.total ?? 0} />
+        <section className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4 mb-6">
+          <Stat label="총 가입자" value={learningMetrics?.total_users ?? users.length} />
+          <Stat
+            label="프리미엄"
+            value={
+              learningMetrics?.premium_users ??
+              users.filter((u) => u.is_premium).length
+            }
+          />
+          <Stat label="오늘 푼 문항" value={learningMetrics?.today_answered_questions ?? 0} />
+          <Stat label="오늘 완료한 개념" value={learningMetrics?.today_completed_concepts ?? 0} />
+          <Stat label="누적 푼 문항" value={learningMetrics?.total_answered_questions ?? 0} />
+          <Stat label="누적 개념 완료" value={learningMetrics?.total_completed_concepts ?? 0} />
         </section>
+
+        <LearningActivityPanels metrics={learningMetrics} loading={loading} />
 
         {/* 사용자 목록 */}
         <section>
@@ -450,6 +519,188 @@ function Stat({ label, value }: { label: string; value: number }) {
       </div>
       <div className="kr-heading text-[24px] md:text-[28px] tabular-nums">
         {value.toLocaleString('ko-KR')}
+      </div>
+    </div>
+  );
+}
+
+function LearningActivityPanels({
+  metrics,
+  loading,
+}: {
+  metrics: LearningMetrics | null;
+  loading: boolean;
+}) {
+  const topNewUsers = metrics?.top_new_question_users ?? [];
+  const quotaReachedUsers = metrics?.quota_reached_users ?? [];
+  const couponUsage = metrics?.coupon_usage_today ?? [];
+  const rapidUsers = metrics?.rapid_submit_users ?? [];
+
+  return (
+    <section className="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-10">
+      <MetricPanel
+        title="오늘 새 문제를 가장 많이 본 사용자"
+        caption="관리자 제외. 문제를 보여준 순간 기준이며 중도 이탈도 포함됩니다."
+        icon={<Eye size={15} strokeWidth={2.5} />}
+        loading={loading && !metrics}
+        empty={topNewUsers.length === 0}
+      >
+        {topNewUsers.map((row) => (
+          <MetricUserRow
+            key={row.userId}
+            tag={row.tag}
+            displayName={row.displayName}
+            value={`${row.newQuestions.toLocaleString('ko-KR')}문항`}
+            meta={`${row.sessions.toLocaleString('ko-KR')}세션${
+              row.isPremium ? ' · 프리미엄' : ''
+            }${row.role === 'admin' ? ' · admin' : ''}`}
+          />
+        ))}
+      </MetricPanel>
+
+      <MetricPanel
+        title="오늘 10개 한도에 도달한 사용자"
+        caption="관리자 제외. 무료 플랜의 KST 일일 새 문제 한도 도달 여부입니다."
+        icon={<CheckCircle2 size={15} strokeWidth={2.5} />}
+        loading={loading && !metrics}
+        empty={quotaReachedUsers.length === 0}
+      >
+        {quotaReachedUsers.map((row) => (
+          <MetricUserRow
+            key={row.userId}
+            tag={row.tag}
+            displayName={row.displayName}
+            value={`${row.usedCount.toLocaleString('ko-KR')} / ${row.limitCount.toLocaleString(
+              'ko-KR',
+            )}`}
+            meta="오늘 새 문제 사용량"
+          />
+        ))}
+      </MetricPanel>
+
+      <MetricPanel
+        title="쿠폰 사용자 중 오늘 새 문제 사용량"
+        caption="관리자 제외. 활성 쿠폰 권한 사용자의 오늘 새 문제 노출량입니다."
+        icon={<Ticket size={15} strokeWidth={2.5} />}
+        loading={loading && !metrics}
+        empty={couponUsage.length === 0}
+      >
+        {couponUsage.map((row) => (
+          <MetricUserRow
+            key={`${row.userId}-${row.code}`}
+            tag={row.tag}
+            displayName={row.displayName}
+            value={`${row.newQuestions.toLocaleString('ko-KR')}문항`}
+            meta={`${row.code} · ${row.sessions.toLocaleString('ko-KR')}세션`}
+          />
+        ))}
+      </MetricPanel>
+
+      <MetricPanel
+        title="짧은 시간에 많은 문제를 제출한 사용자"
+        caption="관리자 제외. 오늘 5문항 이상 제출한 사용자 중 문항당 시간이 짧은 순서입니다."
+        icon={<Gauge size={15} strokeWidth={2.5} />}
+        loading={loading && !metrics}
+        empty={rapidUsers.length === 0}
+      >
+        {rapidUsers.map((row) => (
+          <MetricUserRow
+            key={row.userId}
+            tag={row.tag}
+            displayName={row.displayName}
+            value={`${row.submittedQuestions.toLocaleString('ko-KR')}문항`}
+            meta={`${row.avgSecPerQuestion ?? 0}초/문항 · ${row.sessions.toLocaleString(
+              'ko-KR',
+            )}세션`}
+            tone={(row.avgSecPerQuestion ?? 999) <= 2 ? 'warn' : 'default'}
+          />
+        ))}
+      </MetricPanel>
+    </section>
+  );
+}
+
+function MetricPanel({
+  title,
+  caption,
+  icon,
+  loading,
+  empty,
+  children,
+}: {
+  title: string;
+  caption: string;
+  icon: ReactNode;
+  loading: boolean;
+  empty: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <div
+      className="rounded-[16px] p-4 md:p-5 min-h-[220px]"
+      style={{
+        background:
+          'linear-gradient(135deg, rgba(255,255,255,0.085) 0%, rgba(255,255,255,0.035) 100%)',
+        border: '1px solid rgba(255,255,255,0.13)',
+        backdropFilter: 'blur(18px)',
+        WebkitBackdropFilter: 'blur(18px)',
+      }}
+    >
+      <div className="flex items-start gap-3 mb-4">
+        <div className="mt-0.5 inline-flex h-8 w-8 items-center justify-center rounded-full border border-cream/15 bg-cream/8 text-neon">
+          {icon}
+        </div>
+        <div className="min-w-0">
+          <h3 className="kr-heading text-[14px] leading-tight">{title}</h3>
+          <p className="kr-body text-[11px] text-cream/48 mt-1 leading-[1.5]">
+            {caption}
+          </p>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="kr-body text-[12px] text-cream/45 py-8 text-center">
+          불러오는 중…
+        </div>
+      ) : empty ? (
+        <div className="kr-body text-[12px] text-cream/42 py-8 text-center">
+          데이터 없음
+        </div>
+      ) : (
+        <div className="space-y-2.5">{children}</div>
+      )}
+    </div>
+  );
+}
+
+function MetricUserRow({
+  tag,
+  displayName,
+  value,
+  meta,
+  tone = 'default',
+}: {
+  tag: string;
+  displayName: string;
+  value: string;
+  meta: string;
+  tone?: 'default' | 'warn';
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3 rounded-[12px] border border-cream/10 bg-base/25 px-3 py-2.5">
+      <div className="min-w-0">
+        <div className="kr-heading text-[12px] text-cream truncate">
+          {displayName || '—'}
+        </div>
+        <div className="kr-num text-[10px] text-cream/42 truncate mt-0.5">
+          {tag} · {meta}
+        </div>
+      </div>
+      <div
+        className="kr-num text-[12px] tabular-nums shrink-0"
+        style={{ color: tone === 'warn' ? '#fbbf24' : '#9CFF3D' }}
+      >
+        {value}
       </div>
     </div>
   );

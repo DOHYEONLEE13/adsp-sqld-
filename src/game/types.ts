@@ -71,6 +71,9 @@ export interface QuestSession {
    */
   passNumber: number;
   questions: MultipleChoiceQuestion[];
+  sessionToken?: string;
+  remainingQuota?: number | null;
+  isUnlimitedQuestions?: boolean;
   /** 현재 풀고 있는 문제 index (0-based). */
   index: number;
   answers: QuestAnswer[];
@@ -100,6 +103,9 @@ export interface QuestSummary {
   label?: string;
   /** N회독 차수 (1~). Pass 시스템과 함께 chapter completion 판정에 사용. */
   passNumber: number;
+  sessionToken?: string;
+  /** 서버 권위 세션을 이미 제출해 결과를 받은 summary. 중복 RPC 제출 방지용. */
+  serverSubmitted?: boolean;
   answers: Array<
     QuestAnswer & {
       question: MultipleChoiceQuestion;

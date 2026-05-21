@@ -41,6 +41,7 @@ import { stepKey, useStepUnlocks } from '../stepUnlocks';
 import EnergyBlockModal from '../components/EnergyBlockModal';
 import LessonCompleteModal from '../components/LessonCompleteModal';
 import PageAmbientBg from '../components/PageAmbientBg';
+import { reserveLessonQuestion } from '../serverQuestionSessions';
 
 const SUBJECT_ACCENT: Record<Subject, string> = {
   adsp: '#67e8f9',
@@ -128,6 +129,8 @@ export default function LessonScreen({
   const lockSnapRef = useRef(lockSnap);
   lockSnapRef.current = lockSnap;
   const [energyBlock, setEnergyBlock] = useState<{ retryAfterSec: number } | null>(null);
+  const [quotaBlock, setQuotaBlock] = useState<string | null>(null);
+  const [lessonTokens, setLessonTokens] = useState<Record<string, string>>({});
   /** 레슨 마지막 스텝 정답 시 축하 모달. handleChoose 에서 setTimeout 으로 set. */
   const [showCelebration, setShowCelebration] = useState(false);
   useEffect(() => {
@@ -217,7 +220,29 @@ export default function LessonScreen({
 
   // --- handlers ---
 
-  const handleStartQuiz = () => {
+  const handleStartQuiz = async () => {
+    if (quizQuestion && !lessonTokens[quizQuestion.id]) {
+      const sk = lesson ? stepKey(lesson.id, stepIdx) : null;
+      const reservation = await reserveLessonQuestion({
+        questionId: quizQuestion.id,
+        subject,
+        chapter,
+        stepKey: sk,
+      });
+      if (!reservation.ok) {
+        const message =
+          reservation.reason === 'quota_exceeded'
+            ? `오늘 새 문제는 ${reservation.remainingQuota ?? 0}개 남았어요.`
+            : '문제 이용권을 확인하지 못했어요. 잠시 뒤 다시 시도해 주세요.';
+        setQuotaBlock(message);
+        window.setTimeout(() => setQuotaBlock(null), 3200);
+        return;
+      }
+      setLessonTokens((tokens) => ({
+        ...tokens,
+        [quizQuestion.id]: reservation.sessionToken,
+      }));
+    }
     startedAtRef.current = Date.now();
     setView('quiz');
   };
@@ -231,6 +256,8 @@ export default function LessonScreen({
       correct,
       timeMs,
       lesson ? stepKey(lesson.id, stepIdx) : null,
+      idx,
+      lessonTokens[quizQuestion.id] ?? null,
     );
     setQuizState((s) => ({ ...s, [stepIdx]: { chosen: idx, correct } }));
     // 잠금 결정은 prevSolved (이전 step 정답 cross-check) 로만 — 별도 unlock 호출 X.
@@ -523,6 +550,11 @@ export default function LessonScreen({
           </button>
         </div>
       </div>
+      {quotaBlock ? (
+        <div className="fixed left-1/2 top-20 z-50 -translate-x-1/2 rounded-full border border-cyan-200/30 bg-[#071326]/95 px-4 py-2.5 kr-body text-[12px] font-bold text-cream shadow-[0_10px_35px_rgba(0,0,0,0.35)]">
+          {quotaBlock}
+        </div>
+      ) : null}
     </section>
   );
 }

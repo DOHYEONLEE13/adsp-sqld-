@@ -51,12 +51,13 @@ export default function QuestScreen({
   const current = session.questions[session.index];
   const isLearn = session.flow === 'learn';
   const isTest = session.flow === 'test';
+  const isServerDeferred = !!session.sessionToken && (current?.answerIndex ?? -1) < 0;
 
   // learn flow 에서 해설이 있으면 studying=true 로 시작. 해설 없으면 바로 풀이.
   const initialState: LocalState = {
     chosen: null,
     revealed: false,
-    studying: isLearn && !!current?.explanation,
+    studying: !isServerDeferred && isLearn && !!current?.explanation,
   };
   const [local, setLocal] = useState<LocalState>(initialState);
 
@@ -90,10 +91,10 @@ export default function QuestScreen({
     setLocal({
       chosen: null,
       revealed: false,
-      studying: isLearn && !!current?.explanation,
+      studying: !isServerDeferred && isLearn && !!current?.explanation,
     });
     setRemainingMs(TEST_TIME_LIMIT_MS);
-  }, [session.index, isLearn, current?.explanation]);
+  }, [session.index, isLearn, isServerDeferred, current?.explanation]);
 
   useEffect(() => {
     if (!isTest || !current) return;
@@ -149,6 +150,7 @@ export default function QuestScreen({
     }
     if (local.revealed) return;
     setLocal({ ...local, chosen: idx, revealed: true });
+    if (isServerDeferred) return;
 
     // 정답일 때만 XP 팝업. 이전까지의 연속 정답 수 + 1 로 streak 라벨.
     if (current && idx === current.answerIndex) {
@@ -331,10 +333,12 @@ export default function QuestScreen({
       <div className="grid grid-cols-1 gap-3">
         {current.choices.map((choice, idx) => {
           const isChosen = local.chosen === idx;
-          const isCorrect = idx === current.answerIndex;
+          const isCorrect = !isServerDeferred && idx === current.answerIndex;
           const showCorrect = !isTest && local.revealed && isCorrect;
           const showWrong =
             !isTest && local.revealed && isChosen && !isCorrect;
+          const showServerSelected =
+            isServerDeferred && local.revealed && isChosen;
           const disabled = local.studying || local.revealed;
 
           return (
@@ -347,6 +351,8 @@ export default function QuestScreen({
                 'liquid-glass rounded-[18px] px-5 py-4 md:py-5 text-left transition flex items-start gap-4',
                 !disabled && 'hover:bg-white/10 cursor-pointer',
                 local.studying && 'opacity-40',
+                showServerSelected &&
+                  'ring-2 ring-[#67e8f9]/70 bg-[rgba(103,232,249,0.08)]',
                 showCorrect &&
                   'ring-2 ring-neon bg-[rgba(111,255,0,0.10)]',
                 showWrong && 'ring-2 ring-red-400 bg-[rgba(248,113,113,0.10)]',

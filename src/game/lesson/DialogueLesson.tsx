@@ -39,6 +39,7 @@ import StudyPlanContextBar from '../studyPlan/StudyPlanContextBar';
 import { getReminder } from '@/data/reminders';
 import { PASS_TIER_VISUAL } from '@/types/passes';
 import { explanationToText } from '@/types/question';
+import { reserveLessonQuestion } from '../serverQuestionSessions';
 
 interface Props {
   subject: Subject;
@@ -107,6 +108,8 @@ export default function DialogueLesson({
   const lockSnapRef = useRef(lockSnap);
   lockSnapRef.current = lockSnap;
   const [energyBlock, setEnergyBlock] = useState<{ retryAfterSec: number } | null>(null);
+  const [quotaBlock, setQuotaBlock] = useState<string | null>(null);
+  const [lessonTokens, setLessonTokens] = useState<Record<string, string>>({});
   useEffect(() => {
     if (consumedStepsRef.current.has(stepIdx)) return;
     consumedStepsRef.current.add(stepIdx);
@@ -259,7 +262,32 @@ export default function DialogueLesson({
       : (chapterIdx + innerProgress) / chapterTotal;
 
   // --- handlers ---
-  const handleAdvanceNarrative = () => {
+  const reserveCurrentQuiz = async (): Promise<boolean> => {
+    if (!quizQuestion || lessonTokens[quizQuestion.id]) return true;
+    const sk = lesson ? stepKey(lesson.id, stepIdx) : null;
+    const reservation = await reserveLessonQuestion({
+      questionId: quizQuestion.id,
+      subject,
+      chapter,
+      stepKey: sk,
+    });
+    if (!reservation.ok) {
+      const message =
+        reservation.reason === 'quota_exceeded'
+          ? `오늘 새 문제는 ${reservation.remainingQuota ?? 0}개 남았어요.`
+          : '문제 이용권을 확인하지 못했어요. 잠시 뒤 다시 시도해 주세요.';
+      setQuotaBlock(message);
+      window.setTimeout(() => setQuotaBlock(null), 3200);
+      return false;
+    }
+    setLessonTokens((tokens) => ({
+      ...tokens,
+      [quizQuestion.id]: reservation.sessionToken,
+    }));
+    return true;
+  };
+
+  const handleAdvanceNarrative = async () => {
     if (turnIdx < dialogue.length - 1) {
       setTurnIdx(turnIdx + 1);
       return;
@@ -269,6 +297,8 @@ export default function DialogueLesson({
       handleNextStep();
       return;
     }
+    const reserved = await reserveCurrentQuiz();
+    if (!reserved) return;
     startedAtRef.current = Date.now();
     setPhase('question');
   };
@@ -317,6 +347,8 @@ export default function DialogueLesson({
       ok,
       timeMs,
       lesson ? stepKey(lesson.id, stepIdx) : null,
+      idx,
+      lessonTokens[quizQuestion.id] ?? null,
     );
     // Phase 4 Step 4 — SM-2 망각 곡선 시스템에도 풀이 결과 반영.
     // onboarding 완료 사용자만 작동 (게스트는 no-op).
@@ -468,13 +500,15 @@ export default function DialogueLesson({
           <div className="flex gap-2 flex-wrap justify-center">
             <button
               type="button"
-              onClick={() => {
+              onClick={async () => {
                 setShowReminder(false);
                 // quiz 없는 step (드물게) → 바로 다음 step. 일반/review 는 곧장 문제로.
                 if (!quizQuestion) {
                   handleNextStep();
                   return;
                 }
+                const reserved = await reserveCurrentQuiz();
+                if (!reserved) return;
                 startedAtRef.current = Date.now();
                 setPhase('question');
               }}
@@ -833,6 +867,11 @@ export default function DialogueLesson({
           accent={subject === 'sqld' ? '#c084fc' : '#67e8f9'}
           onClose={() => setSimilarOpen(false)}
         />
+      ) : null}
+      {quotaBlock ? (
+        <div className="fixed left-1/2 top-20 z-50 -translate-x-1/2 rounded-full border border-cyan-200/30 bg-[#071326]/95 px-4 py-2.5 kr-body text-[12px] font-bold text-cream shadow-[0_10px_35px_rgba(0,0,0,0.35)]">
+          {quotaBlock}
+        </div>
       ) : null}
     </section>
   );

@@ -88,7 +88,7 @@ export default function SimilarProblemsPanel({
     const timeMs = Date.now() - startedAtRef.current;
     setChosen(chosenIdx);
     setCorrect(ok);
-    recordSingleAnswer(current.id, ok, timeMs);
+    recordSingleAnswer(current.id, ok, timeMs, null, chosenIdx);
     setPhase('feedback');
   };
 

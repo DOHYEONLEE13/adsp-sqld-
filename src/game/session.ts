@@ -410,6 +410,7 @@ export function summarize(session: QuestSession): QuestSummary {
     totalTimeMs,
     label: session.label,
     passNumber: session.passNumber,
+    sessionToken: session.sessionToken,
     answers,
   };
 }

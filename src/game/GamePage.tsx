@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from 'react';
 import type { Subject } from '@/types/question';
-import type { FlowMode, GameScreen, QuestSummary } from './types';
+import type { FlowMode, GameScreen, QuestSession, QuestSummary } from './types';
 import {
   createDailyMissionSession,
   createMockExamSession,
@@ -47,6 +47,11 @@ import NicknameOnboarding from './screens/NicknameOnboarding';
 import { tryRecordPassCompletion } from './passSync';
 import AuthCard from './components/AuthCard';
 import { useAuthSession } from '@/lib/auth/sessionStore';
+import {
+  reserveQuestionSession,
+  submitReservedQuestionSession,
+  type QuestionReservationResult,
+} from './serverQuestionSessions';
 
 interface Props {
   /**
@@ -260,11 +265,52 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
 
   // initialSubject 가 있으면 그 과목을 active 로 영속화 — 다음 #/game 진입 시
   // 자동 redirect 되도록. 마운트 시 한 번 (idempotent).
+  void gateEnergy;
+
   useEffect(() => {
     if (initialSubject) setActiveSubject(initialSubject);
   }, [initialSubject]);
 
   /** 과목을 active 로 잠그고 planet 으로 전환 (chooser 에서 호출). */
+  const showQuestionReservationError = (result: QuestionReservationResult) => {
+    if (result.ok) return;
+    const message =
+      result.reason === 'quota_exceeded'
+        ? `오늘 새 문제는 ${result.remainingQuota ?? 0}개 남았어요. 이미 본 문제 복습은 계속 가능해요.`
+        : result.reason === 'premium_required'
+          ? '10문항을 넘는 긴 세션은 프리미엄에서 열려요. 무료 플랜은 10문항 연습으로 진행해요.'
+          : result.reason === 'unauthenticated'
+            ? '로그인 동기화가 끝난 뒤 다시 시작해 주세요.'
+            : '문제 세션을 서버에서 여는 중 문제가 생겼어요. 잠시 뒤 다시 시도해 주세요.';
+    setLockToast(message);
+    window.setTimeout(() => setLockToast(null), 3200);
+  };
+
+  const openReservedSession = async (
+    session: QuestSession,
+    onReserved?: () => void,
+  ) => {
+    const reservation = await reserveQuestionSession(session);
+    if (!reservation.ok) {
+      showQuestionReservationError(reservation);
+      return;
+    }
+    onReserved?.();
+    setScreen({
+      kind: 'quest',
+      session: {
+        ...session,
+        questions:
+          reservation.questions.length > 0
+            ? reservation.questions
+            : session.questions,
+        sessionToken: reservation.sessionToken,
+        remainingQuota: reservation.remainingQuota,
+        isUnlimitedQuestions: reservation.isUnlimited,
+      },
+    });
+  };
+
   const goToPlanet = (subject: Subject) => {
     setActiveSubject(subject);
     setScreen({ kind: 'planet', subject });
@@ -287,8 +333,7 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
      */
     passNumber: number = passNumberFor(subject),
   ) => {
-    void gateEnergy(() => {
-      const labelMap: Record<string, string> = {
+    const labelMap: Record<string, string> = {
         weakness: '약점 집중',
         review: '오답 복습',
       };
@@ -313,8 +358,7 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
         passNumber,
       });
       if (!session) return;
-      setScreen({ kind: 'quest', session });
-    });
+    void openReservedSession(session);
   };
 
   if (auth.status === 'checking') {
@@ -400,30 +444,23 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
 
   /** Daily Mission 시작. ⚡ 1 소모. */
   const startDailyMission = (subject: Subject) => {
-    void gateEnergy(() => {
       const session = createDailyMissionSession(subject);
       if (!session) return;
-      markDailyMissionStarted();
-      setScreen({ kind: 'quest', session });
-    });
+      void openReservedSession(session, markDailyMissionStarted);
   };
 
   /** 모의고사 — 과목 전체에서 50문항 랜덤 + 시험 모드. ⚡ 1 소모. */
   const startMockExam = (subject: Subject) => {
-    void gateEnergy(() => {
       const session = createMockExamSession(subject);
       if (!session) return;
-      setScreen({ kind: 'quest', session });
-    });
+      void openReservedSession(session);
   };
 
   /** 복습 세션 — SRS due · 오답 · 약점 혼합 15문항. ⚡ 1 소모. */
   const startReview = (subject: Subject) => {
-    void gateEnergy(() => {
       const session = createReviewSession(subject, 15);
       if (!session) return;
-      setScreen({ kind: 'quest', session });
-    });
+      void openReservedSession(session);
   };
 
   /** 모의고사 오답 복습 — 특정 문항 ID 만으로 학습 모드 세션. ⚡ 1 소모. */
@@ -433,7 +470,6 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
     questionIds: string[],
     label: string,
   ) => {
-    void gateEnergy(() => {
       const session = createReviewFromIds({
         subject,
         chapter,
@@ -442,21 +478,64 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
         label,
       });
       if (!session) return;
-      setScreen({ kind: 'quest', session });
-    });
+      void openReservedSession(session);
   };
 
   // 세션이 끝날 때 딱 한 번 저장소에 반영한 뒤 result 로 전이.
   // 추가: pass 시스템 — 챕터 단위 75% 도달했는지 서버에 검사 요청 (fire-and-forget).
   //      서버가 stamp 발급하면 channel 으로 자동 반영. 미인증·미적용 환경 = no-op.
-  const finalizeSession = (summary: QuestSummary) => {
-    recordSessionSummary(summary);
+  const finalizeSession = async (summary: QuestSummary) => {
+    let finalSummary = summary;
+    if (summary.sessionToken && !summary.serverSubmitted) {
+      try {
+        const result = await submitReservedQuestionSession(summary);
+        if (!result?.ok) {
+          setLockToast('채점 서버 응답을 확인하지 못했어요. 잠시 후 다시 시도해 주세요.');
+          window.setTimeout(() => setLockToast(null), 3000);
+          return;
+        }
+        const byId = new Map(
+          result.answers.map((answer) => [answer.questionId, answer]),
+        );
+        const answers = summary.answers.map((answer) => {
+          const serverAnswer = byId.get(answer.questionId);
+          if (!serverAnswer) return answer;
+          return {
+            ...answer,
+            chosenIndex: serverAnswer.selectedIndex,
+            correct: serverAnswer.correct,
+            timeMs: serverAnswer.timeMs,
+            question: {
+              ...answer.question,
+              answerIndex: serverAnswer.correctIndex,
+              explanation:
+                serverAnswer.explanation ?? answer.question.explanation,
+            },
+          };
+        });
+        finalSummary = {
+          ...summary,
+          total: result.total,
+          correctCount: result.correctCount,
+          accuracy: result.total === 0 ? 0 : result.correctCount / result.total,
+          totalTimeMs: result.totalTimeMs,
+          serverSubmitted: true,
+          answers,
+        };
+      } catch (error) {
+        console.warn('[GamePage] submit_question_session failed', error);
+        setLockToast('채점 서버 응답을 확인하지 못했어요. 잠시 후 다시 시도해 주세요.');
+        window.setTimeout(() => setLockToast(null), 3000);
+        return;
+      }
+    }
+    recordSessionSummary(finalSummary);
     void tryRecordPassCompletion(
-      summary.subject,
-      summary.chapter,
-      summary.passNumber ?? 1,
+      finalSummary.subject,
+      finalSummary.chapter,
+      finalSummary.passNumber ?? 1,
     );
-    setScreen({ kind: 'result', summary });
+    setScreen({ kind: 'result', summary: finalSummary });
   };
 
   const renderScreen = () => {
@@ -621,12 +700,12 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
           onAnswer={(chosen) => {
             const next = recordAnswer(screen.session, chosen);
             if (isSessionDone(next)) {
-              finalizeSession(summarize(next));
+              void finalizeSession(summarize(next));
             } else {
               setScreen({ kind: 'quest', session: next });
             }
           }}
-          onFinish={() => finalizeSession(summarize(screen.session))}
+          onFinish={() => void finalizeSession(summarize(screen.session))}
           onAbort={() => {
             // 세션 중단 — 진행 이력을 버리고 해당 챕터의 Zone 화면으로 복귀
             // (Daily Mission 처럼 chapter 가 대표값인 경우에도 유효한 행성이 됨).

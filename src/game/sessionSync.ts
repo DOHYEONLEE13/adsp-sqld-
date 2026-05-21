@@ -15,6 +15,7 @@
 import { getSupabase, onAuthStateChange } from '@/lib/supabase';
 import { waitForSession } from '@/lib/auth/waitForSession';
 import type { QuestSummary } from './types';
+import { submitReservedQuestionSession } from './serverQuestionSessions';
 
 const OUTBOX_KEY = 'questdp.session_outbox.v1';
 
@@ -39,7 +40,12 @@ interface RecordSessionArgs {
   p_wrong_ids: string[];
   p_flow: string | null;
   p_xp_delta: number;
-  p_answer_log: Array<{ question_id: string; correct: boolean; time_ms: number }>;
+  p_answer_log: Array<{
+    question_id: string;
+    correct: boolean;
+    selected_index: number;
+    time_ms: number;
+  }>;
   p_client_id: string;
 }
 
@@ -90,6 +96,7 @@ function buildArgs(summary: QuestSummary): RecordSessionArgs {
     p_answer_log: summary.answers.map((a) => ({
       question_id: a.questionId,
       correct: a.correct,
+      selected_index: a.chosenIndex,
       time_ms: a.timeMs,
     })),
     p_client_id: genClientId(),
@@ -106,6 +113,17 @@ function buildArgs(summary: QuestSummary): RecordSessionArgs {
  *   server total_xp = 0. waitForSession() 으로 hydration 대기 후 호출.
  */
 export async function pushSessionToServer(summary: QuestSummary): Promise<void> {
+  if (summary.sessionToken) {
+    if (summary.serverSubmitted) return;
+    try {
+      await submitReservedQuestionSession(summary);
+      return;
+    } catch (error) {
+      console.warn('[sessionSync] submit_question_session failed', error);
+      return;
+    }
+  }
+
   const args = buildArgs(summary);
   const sb = getSupabase();
   if (!sb) {

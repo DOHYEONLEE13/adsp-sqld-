@@ -325,6 +325,8 @@ export function recordSingleAnswer(
   correct: boolean,
   timeMs: number,
   stepKey?: string | null,
+  selectedIndex?: number,
+  sessionToken?: string | null,
 ): number {
   const at = Date.now();
   const prevStat = current.questionStats[questionId];
@@ -342,7 +344,13 @@ export function recordSingleAnswer(
   // 서버에도 반영 (인증돼 있을 때만, fire-and-forget). question_stats 는 PUT-style.
   const stat = next.questionStats[questionId];
   if (stat) {
-    void pushQuestionStatToServer(questionId, stat, { correct, timeMs, stepKey });
+    void pushQuestionStatToServer(questionId, stat, {
+      correct,
+      selectedIndex,
+      sessionToken,
+      timeMs,
+      stepKey,
+    });
   }
   return xpAwarded;
 }

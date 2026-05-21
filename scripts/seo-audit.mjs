@@ -1,0 +1,115 @@
+#!/usr/bin/env node
+/**
+ * Build-time SEO safety checks. Keeps quiz URLs out of the public SEO surface
+ * and verifies that every sitemap URL has a matching static HTML file with its
+ * own canonical and first-fetch H1.
+ */
+import fs from 'node:fs';
+import path from 'node:path';
+import { getSeoRouteManifest } from './seo-route-manifest.mjs';
+
+const DIST_DIR = path.resolve('dist');
+const REQUIRED_SITEMAPS = [
+  'sitemap-core.xml',
+  'sitemap-blog.xml',
+  'sitemap-lessons.xml',
+];
+
+const manifest = getSeoRouteManifest();
+const expectedRoutes = new Map(manifest.all.map((route) => [route.canonical, route]));
+
+assertFile(path.join(DIST_DIR, 'sitemap.xml'));
+const sitemapIndex = readDist('sitemap.xml');
+for (const sitemap of REQUIRED_SITEMAPS) {
+  if (!sitemapIndex.includes(`https://quest-dp.com/${sitemap}`)) {
+    fail(`sitemap.xml is missing ${sitemap}`);
+  }
+  assertFile(path.join(DIST_DIR, sitemap));
+}
+if (/sitemap-quiz\.xml|\/quiz\//.test(sitemapIndex)) {
+  fail('quiz sitemap or quiz URL leaked into sitemap.xml');
+}
+
+const submittedLocs = [];
+for (const sitemap of REQUIRED_SITEMAPS) {
+  const xml = readDist(sitemap);
+  if (/\/quiz\//.test(xml)) fail(`/quiz/ URL leaked into ${sitemap}`);
+  submittedLocs.push(...extractLocs(xml));
+}
+
+const submittedSet = new Set(submittedLocs);
+for (const loc of submittedLocs) {
+  if (!expectedRoutes.has(loc)) fail(`sitemap URL is not in SEO manifest: ${loc}`);
+}
+for (const [canonical] of expectedRoutes) {
+  if (!submittedSet.has(canonical)) fail(`SEO manifest URL is missing from sitemaps: ${canonical}`);
+}
+
+for (const route of manifest.all) {
+  const file = htmlPathFor(route.path);
+  assertFile(file);
+  const html = fs.readFileSync(file, 'utf8');
+  const canonicalTag = `<link rel="canonical" href="${route.canonical}"`;
+  if (!html.includes(canonicalTag)) {
+    fail(`Missing canonical for ${route.path}: expected ${route.canonical}`);
+  }
+  if (route.path !== '/' && html.includes('<link rel="canonical" href="https://quest-dp.com/"')) {
+    fail(`Root canonical leaked into ${route.path}`);
+  }
+  if (!html.includes(`<h1>${escapeHtml(route.h1)}</h1>`)) {
+    fail(`Missing static H1 snapshot for ${route.path}`);
+  }
+  if (!html.includes('data-seo-snapshot="true"')) {
+    fail(`Missing static body snapshot for ${route.path}`);
+  }
+}
+
+const htmlFiles = listIndexHtmlFiles(DIST_DIR);
+const expectedFiles = new Set(manifest.all.map((route) => path.normalize(htmlPathFor(route.path))));
+for (const file of htmlFiles) {
+  if (!expectedFiles.has(path.normalize(file))) {
+    fail(`Static HTML exists without sitemap manifest entry: ${path.relative(DIST_DIR, file)}`);
+  }
+}
+
+console.log(
+  `seo audit passed: ${manifest.all.length} static pages, ${submittedLocs.length} submitted URLs, quiz 0`,
+);
+
+function readDist(fileName) {
+  return fs.readFileSync(path.join(DIST_DIR, fileName), 'utf8');
+}
+
+function extractLocs(xml) {
+  return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+}
+
+function htmlPathFor(routePath) {
+  if (routePath === '/') return path.join(DIST_DIR, 'index.html');
+  return path.join(DIST_DIR, ...routePath.split('/').filter(Boolean), 'index.html');
+}
+
+function listIndexHtmlFiles(dir, out = []) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const file = path.join(dir, entry.name);
+    if (entry.isDirectory()) listIndexHtmlFiles(file, out);
+    else if (entry.name === 'index.html') out.push(file);
+  }
+  return out;
+}
+
+function assertFile(file) {
+  if (!fs.existsSync(file)) fail(`Missing file: ${file}`);
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function fail(message) {
+  throw new Error(`[seo-audit] ${message}`);
+}

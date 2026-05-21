@@ -10,16 +10,30 @@
 # SEO path routes — 빌드 후 생성되는 route별 HTML을 먼저 서빙.
 # Google의 첫 fetch 단계에서도 title/canonical/OG가 홈(`/`)으로 뭉치지 않게 한다.
 /study-method        /study-method/index.html        200
+/study-method/       /study-method/index.html        200
 /pricing             /pricing/index.html             200
+/pricing/            /pricing/index.html             200
 /about               /about/index.html               200
+/about/              /about/index.html               200
 /privacy             /privacy/index.html             200
+/privacy/            /privacy/index.html             200
 /terms               /terms/index.html               200
+/terms/              /terms/index.html               200
 /refund              /refund/index.html              200
+/refund/             /refund/index.html              200
 /glossary            /glossary/index.html            200
+/glossary/           /glossary/index.html            200
 /blog                /blog/index.html                200
+/blog/               /blog/index.html                200
+/blog/*              /blog/:splat/index.html         200
+/lesson/*            /lesson/:splat/index.html       200
 /curriculum/adsp     /curriculum/adsp/index.html     200
+/curriculum/adsp/    /curriculum/adsp/index.html     200
 /curriculum/sqld     /curriculum/sqld/index.html     200
+/curriculum/sqld/    /curriculum/sqld/index.html     200
 /faq/adsp            /faq/adsp/index.html            200
+/faq/adsp/           /faq/adsp/index.html            200
 /faq/sqld            /faq/sqld/index.html            200
+/faq/sqld/           /faq/sqld/index.html            200
 
 /*    /index.html   200

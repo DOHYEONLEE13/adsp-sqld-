@@ -1,100 +1,56 @@
+#!/usr/bin/env node
 /**
- * generate-static-route-html.mjs
- *
- * Vite SPA routes are rendered client-side, but search crawlers first fetch the
- * raw HTML. If every path returns the root canonical, Google can consolidate
- * otherwise indexable pages back to `/`. This script creates small per-route
- * HTML entry files after `vite build` so Cloudflare Pages serves a correct
- * first-fetch title, description, og:url, and canonical for priority SEO pages.
+ * Vite serves QuestDP as a SPA, but crawlers first fetch raw HTML. This script
+ * creates route-level HTML entries for indexable non-quiz pages so first fetch
+ * has the correct canonical, title, description, OG tags, and a small readable
+ * body snapshot before React mounts.
  */
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { DEFAULT_IMAGE, getSeoRouteManifest } from './seo-route-manifest.mjs';
 
 const DIST_DIR = path.resolve('dist');
-const SITE_ORIGIN = 'https://quest-dp.com';
-const DEFAULT_IMAGE = `${SITE_ORIGIN}/og/default.png`;
 
-const pages = [
-  {
-    path: '/study-method',
-    title: 'QuestDP 학습 원리 — ADsP·SQLD 게임형 학습사이트 설계',
-    description:
-      'ADsP·SQLD 게임형 학습사이트 QuestDP가 개념 스텝, 즉시 문제풀이, 약점 점수, 망각곡선 복습으로 시험범위를 학습시키는 원리를 정리했습니다.',
-    image: `${SITE_ORIGIN}/og/questdp-method.png`,
-    type: 'article',
-  },
-  {
-    path: '/curriculum/adsp',
-    title: 'ADsP 학습사이트 · KDATA 시험범위·기출문제 커리큘럼 — QuestDP',
-    description:
-      'KDATA ADsP 시험범위, 문제 수, 과목별 배점, 기출문제형 복습 흐름을 한 번에 보는 ADsP 학습사이트 커리큘럼입니다.',
-  },
-  {
-    path: '/curriculum/sqld',
-    title: 'SQLD 학습사이트 · KDATA 시험범위·기출문제 커리큘럼 — QuestDP',
-    description:
-      'KDATA SQLD 시험범위, 문제 수, 과목별 배점, 기출문제형 복습 흐름을 한 번에 보는 SQLD 학습사이트 커리큘럼입니다.',
-  },
-  {
-    path: '/faq/adsp',
-    title: 'ADsP 학습사이트 FAQ — KDATA 시험범위·기출문제·공부법',
-    description:
-      'ADsP 몇 문제, KDATA ADsP 시험범위, ADsP 기출문제 공부법, ADsP 합격 기준을 수험생 관점에서 정리한 FAQ입니다.',
-  },
-  {
-    path: '/faq/sqld',
-    title: 'SQLD 학습사이트 FAQ — KDATA 시험범위·기출문제·공부법',
-    description:
-      'SQLD 몇 문제, KDATA SQLD 시험범위, SQLD 기출문제 공부법, SQLD 합격 기준을 수험생 관점에서 정리한 FAQ입니다.',
-  },
-  {
-    path: '/glossary',
-    title: 'ADsP·SQLD 용어 사전 — QuestDP',
-    description:
-      'ADsP와 SQLD 시험에 자주 등장하는 데이터 분석, SQL, 모델링 용어를 초보자 기준으로 정리한 QuestDP 용어 사전입니다.',
-  },
-  {
-    path: '/blog',
-    title: 'ADsP·SQLD 공부법 블로그 — QuestDP',
-    description:
-      'ADsP 공부법, SQLD 공부법, 비전공자 학습 순서, 기출문제 복습 전략을 정리한 QuestDP 블로그입니다.',
-    type: 'blog',
-  },
-  {
-    path: '/pricing',
-    title: 'QuestDP 요금제 — ADsP·SQLD 게임형 학습사이트',
-    description:
-      'ADsP·SQLD 게임형 학습사이트 QuestDP의 무료 플랜, 오픈 베타 쿠폰, 프리미엄 이용 안내를 확인하세요.',
-  },
-  {
-    path: '/about',
-    title: 'QuestDP 소개 — ADsP·SQLD 게임형 학습사이트',
-    description:
-      'QuestDP는 한국 ADsP·SQLD 자격증 학습을 우주 탐험 RPG와 마이크로 러닝으로 재구성한 학습사이트입니다.',
-  },
-  {
-    path: '/privacy',
-    title: '개인정보처리방침 — QuestDP',
-    description: 'QuestDP 개인정보 수집, 이용, 보관, 파기 기준을 안내합니다.',
-  },
-  {
-    path: '/terms',
-    title: '이용약관 — QuestDP',
-    description: 'QuestDP 서비스 이용 조건과 회원의 권리·의무를 안내합니다.',
-  },
-  {
-    path: '/refund',
-    title: '환불 정책 — QuestDP',
-    description: 'QuestDP 결제, 환불, 청약철회 기준을 안내합니다.',
-  },
-];
+const template = await readFile(path.join(DIST_DIR, 'index.html'), 'utf8');
+const manifest = getSeoRouteManifest();
 
-function escapeHtml(value) {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+for (const route of manifest.all) {
+  if (route.path.startsWith('/quiz/')) {
+    throw new Error(`Quiz route must not be statically generated: ${route.path}`);
+  }
+  const targetFile = route.path === '/'
+    ? path.join(DIST_DIR, 'index.html')
+    : path.join(DIST_DIR, ...route.path.split('/').filter(Boolean), 'index.html');
+  await mkdir(path.dirname(targetFile), { recursive: true });
+  await writeFile(targetFile, routeHtml(template, route), 'utf8');
+}
+
+console.log(
+  `static route HTML generated: ${manifest.all.length} pages ` +
+    `(core ${manifest.core.length}, blog ${manifest.blog.length}, lessons ${manifest.lessons.length}, quiz 0)`,
+);
+
+function routeHtml(baseTemplate, route) {
+  let html = baseTemplate;
+  const image = route.image || DEFAULT_IMAGE;
+  const type = route.type || 'website';
+  html = setTitle(html, route.title);
+  html = setMetaByName(html, 'description', route.description);
+  html = setMetaByProperty(html, 'og:title', route.title);
+  html = setMetaByProperty(html, 'og:description', route.description);
+  html = setMetaByProperty(html, 'og:type', type);
+  html = setMetaByProperty(html, 'og:url', route.canonical);
+  html = setMetaByProperty(html, 'og:image', image);
+  html = setMetaByProperty(html, 'og:image:alt', `${route.h1} — QuestDP`);
+  html = setMetaByName(html, 'twitter:title', route.title);
+  html = setMetaByName(html, 'twitter:description', route.description);
+  html = setMetaByName(html, 'twitter:image', image);
+  html = setCanonical(html, route.canonical);
+  html = setImageSrc(html, image);
+  html = injectSnapshotStyle(html);
+  html = injectStaticJsonLd(html, route);
+  html = setRootSnapshot(html, route);
+  return html;
 }
 
 function setTitle(html, title) {
@@ -102,64 +58,120 @@ function setTitle(html, title) {
 }
 
 function setMetaByName(html, name, content) {
-  const escaped = escapeHtml(content);
+  const tag = `<meta name="${name}" content="${escapeHtml(content)}" />`;
   const pattern = new RegExp(
-    `<meta\\s+name=["']${name}["']\\s+content=["'][\\s\\S]*?["']\\s*\\/?>`,
+    `<meta\\s+name=["']${escapeRegExp(name)}["'][^>]*>`,
     'i',
   );
-  return html.replace(pattern, `<meta name="${name}" content="${escaped}" />`);
+  return upsertHeadTag(html, pattern, tag);
 }
 
 function setMetaByProperty(html, property, content) {
-  const escaped = escapeHtml(content);
+  const tag = `<meta property="${property}" content="${escapeHtml(content)}" />`;
   const pattern = new RegExp(
-    `<meta\\s+property=["']${property}["']\\s+content=["'][\\s\\S]*?["']\\s*\\/?>`,
+    `<meta\\s+property=["']${escapeRegExp(property)}["'][^>]*>`,
     'i',
   );
-  return html.replace(pattern, `<meta property="${property}" content="${escaped}" />`);
+  return upsertHeadTag(html, pattern, tag);
 }
 
 function setCanonical(html, canonical) {
-  return html.replace(
-    /<link\s+rel=["']canonical["']\s+href=["'][^"']*["']\s*\/?>/i,
-    `<link rel="canonical" href="${escapeHtml(canonical)}" />`,
-  );
+  const tag = `<link rel="canonical" href="${escapeHtml(canonical)}" />`;
+  const pattern = /<link\s+rel=["']canonical["'][^>]*>/i;
+  return upsertHeadTag(html, pattern, tag);
 }
 
 function setImageSrc(html, image) {
+  const tag = `<link rel="image_src" href="${escapeHtml(image)}" />`;
+  const pattern = /<link\s+rel=["']image_src["'][^>]*>/i;
+  return upsertHeadTag(html, pattern, tag);
+}
+
+function upsertHeadTag(html, pattern, tag) {
+  if (pattern.test(html)) return html.replace(pattern, tag);
+  return html.replace('</head>', `    ${tag}\n  </head>`);
+}
+
+function injectStaticJsonLd(html, route) {
+  const items = Array.isArray(route.jsonLd) ? route.jsonLd : [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: route.h1,
+      headline: route.h1,
+      description: route.description,
+      url: route.canonical,
+      inLanguage: 'ko-KR',
+      isPartOf: { '@type': 'WebSite', name: 'QuestDP', url: 'https://quest-dp.com' },
+      publisher: { '@type': 'Organization', name: 'QuestDP' },
+    },
+  ];
+  const scripts = items
+    .map((item, index) =>
+      `<script type="application/ld+json" data-seo-static="${index}">${safeJsonLd(item)}</script>`,
+    )
+    .join('\n    ');
+  return html.replace('</head>', `    ${scripts}\n  </head>`);
+}
+
+function injectSnapshotStyle(html) {
+  if (html.includes('data-seo-snapshot-style')) return html;
+  const style = `<style data-seo-snapshot-style>
+      .seo-snapshot{min-height:100vh;background:#010828;color:#eff4ff;font-family:'Noto Sans KR',system-ui,sans-serif;padding:48px 20px;box-sizing:border-box}
+      .seo-snapshot__card{max-width:860px;margin:0 auto;padding:28px;border:1px solid rgba(239,244,255,.14);border-radius:24px;background:rgba(255,255,255,.04)}
+      .seo-snapshot__eyebrow{margin:0 0 10px;color:#6fff00;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+      .seo-snapshot h1{margin:0 0 14px;font-size:clamp(28px,5vw,48px);line-height:1.18}
+      .seo-snapshot p{margin:0 0 18px;color:rgba(239,244,255,.82);font-size:16px;line-height:1.75}
+      .seo-snapshot__links{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+      .seo-snapshot__links a{color:#010828;background:#7dd850;text-decoration:none;border-radius:999px;padding:10px 14px;font-size:13px;font-weight:800}
+    </style>`;
+  return html.replace('</head>', `    ${style}\n  </head>`);
+}
+
+function setRootSnapshot(html, route) {
+  const snapshot = renderSnapshot(route);
+  if (/<div\s+id=["']root["']>\s*<\/div>/i.test(html)) {
+    return html.replace(/<div\s+id=["']root["']>\s*<\/div>/i, `<div id="root">\n${snapshot}\n    </div>`);
+  }
   return html.replace(
-    /<link\s+rel=["']image_src["']\s+href=["'][^"']*["']\s*\/?>/i,
-    `<link rel="image_src" href="${escapeHtml(image)}" />`,
+    /<div\s+id=["']root["'][^>]*>[\s\S]*?<\/div>/i,
+    `<div id="root">\n${snapshot}\n    </div>`,
   );
 }
 
-function routeHtml(template, page) {
-  const canonical = `${SITE_ORIGIN}${page.path}`;
-  const image = page.image ?? DEFAULT_IMAGE;
-  const type = page.type ?? 'website';
-
-  let html = template;
-  html = setTitle(html, page.title);
-  html = setMetaByName(html, 'description', page.description);
-  html = setMetaByProperty(html, 'og:title', page.title);
-  html = setMetaByProperty(html, 'og:description', page.description);
-  html = setMetaByProperty(html, 'og:type', type);
-  html = setMetaByProperty(html, 'og:url', canonical);
-  html = setMetaByProperty(html, 'og:image', image);
-  html = setMetaByName(html, 'twitter:title', page.title);
-  html = setMetaByName(html, 'twitter:description', page.description);
-  html = setMetaByName(html, 'twitter:image', image);
-  html = setCanonical(html, canonical);
-  html = setImageSrc(html, image);
-  return html;
+function renderSnapshot(route) {
+  const links = route.links
+    .slice(0, 6)
+    .map(
+      (link) =>
+        `<a href="${escapeHtml(encodeURI(link.href))}">${escapeHtml(link.label)}</a>`,
+    )
+    .join('\n          ');
+  return `      <main class="seo-snapshot" data-seo-snapshot="true">
+        <article class="seo-snapshot__card">
+          ${route.eyebrow ? `<p class="seo-snapshot__eyebrow">${escapeHtml(route.eyebrow)}</p>` : ''}
+          <h1>${escapeHtml(route.h1)}</h1>
+          <p>${escapeHtml(route.summary || route.description)}</p>
+          ${links ? `<nav class="seo-snapshot__links" aria-label="관련 페이지">\n          ${links}\n          </nav>` : ''}
+        </article>
+      </main>`;
 }
 
-const template = await readFile(path.join(DIST_DIR, 'index.html'), 'utf8');
-
-for (const page of pages) {
-  const targetDir = path.join(DIST_DIR, ...page.path.split('/').filter(Boolean));
-  await mkdir(targetDir, { recursive: true });
-  await writeFile(path.join(targetDir, 'index.html'), routeHtml(template, page), 'utf8');
+function safeJsonLd(value) {
+  return JSON.stringify(value)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026');
 }
 
-console.log(`✅ static route HTML 생성 — ${pages.length} pages`);
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}

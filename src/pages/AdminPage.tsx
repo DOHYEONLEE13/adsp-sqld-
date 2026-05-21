@@ -10,7 +10,7 @@
  * 즉 보안의 1차 라인은 RLS, 2차 라인이 frontend 의 isAdmin 체크.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ArrowLeft,
   Plus,
@@ -465,6 +465,33 @@ interface RedemptionCodeRow {
   note: string | null;
   expires_at: string | null;
   created_at: string;
+  last_redeemed_by: string | null;
+  last_redeemed_at: string | null;
+}
+
+interface RedemptionCodeUsageRow {
+  code: string;
+  grant_id: string;
+  user_id: string;
+  tag: string;
+  display_name: string;
+  role: 'user' | 'admin';
+  is_premium: boolean;
+  premium_until: string | null;
+  total_xp: number;
+  lesson_xp: number;
+  display_xp: number;
+  level: number;
+  energy_count: number;
+  user_created_at: string;
+  last_seen_at: string;
+  granted_at: string;
+  grant_expires_at: string | null;
+  revoked_at: string | null;
+  note: string | null;
+  code_exists: boolean;
+  code_uses: number | null;
+  code_max_uses: number | null;
 }
 
 /** 코드 무작위 suffix 생성 — 혼동되기 쉬운 0/O/1/I 제외. */
@@ -477,8 +504,33 @@ function genCodeSuffix(len = 8): string {
   return out;
 }
 
+function formatDateShort(value: string | null | undefined): string {
+  if (!value) return '없음';
+  return new Date(value).toLocaleDateString('ko-KR', {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+  });
+}
+
+function formatDateTimeShort(value: string | null | undefined): string {
+  if (!value) return '—';
+  return new Date(value).toLocaleString('ko-KR', {
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function isActivePromoGrant(row: RedemptionCodeUsageRow): boolean {
+  if (row.revoked_at) return false;
+  return !row.grant_expires_at || new Date(row.grant_expires_at) > new Date();
+}
+
 function PromoCodeManager() {
   const [codes, setCodes] = useState<RedemptionCodeRow[]>([]);
+  const [usages, setUsages] = useState<RedemptionCodeUsageRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [maxUses, setMaxUses] = useState<number>(1);
   const [note, setNote] = useState('');
@@ -493,18 +545,61 @@ function PromoCodeManager() {
       setLoading(false);
       return;
     }
-    const { data, error } = await sb
-      .from('redemption_codes')
-      .select('code, granted_tier, max_uses, uses, note, expires_at, created_at')
-      .order('created_at', { ascending: false })
-      .limit(100);
-    if (!error && data) setCodes(data as RedemptionCodeRow[]);
-    setLoading(false);
+    try {
+      const [codeResult, usageResult] = await Promise.all([
+        sb
+          .from('redemption_codes')
+          .select(
+            'code, granted_tier, max_uses, uses, note, expires_at, created_at, last_redeemed_by, last_redeemed_at',
+          )
+          .order('created_at', { ascending: false })
+          .limit(100),
+        sb.rpc('admin_redemption_code_usage'),
+      ]);
+      if (!codeResult.error && codeResult.data) {
+        setCodes(codeResult.data as RedemptionCodeRow[]);
+      }
+      if (codeResult.error) {
+        console.error('[promo] code reload failed', codeResult.error);
+        setFeedback({ kind: 'err', msg: `코드 목록 조회 실패 — ${codeResult.error.message}` });
+      }
+      if (!usageResult.error && usageResult.data) {
+        setUsages(usageResult.data as RedemptionCodeUsageRow[]);
+      }
+      if (usageResult.error) {
+        console.error('[promo] usage reload failed', usageResult.error);
+        setUsages([]);
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     void reload();
   }, []);
+
+  const usageByCode = useMemo(() => {
+    const grouped = new Map<string, RedemptionCodeUsageRow[]>();
+    for (const usage of usages) {
+      const key = usage.code.toUpperCase();
+      const list = grouped.get(key) ?? [];
+      list.push(usage);
+      grouped.set(key, list);
+    }
+    return grouped;
+  }, [usages]);
+
+  const archivedUsageGroups = useMemo(() => {
+    const currentCodes = new Set(codes.map((row) => row.code.toUpperCase()));
+    return Array.from(usageByCode.entries())
+      .filter(([code]) => !currentCodes.has(code))
+      .sort((a, b) => {
+        const aTime = Date.parse(a[1][0]?.granted_at ?? '1970-01-01');
+        const bTime = Date.parse(b[1][0]?.granted_at ?? '1970-01-01');
+        return bTime - aTime;
+      });
+  }, [codes, usageByCode]);
 
   const handleCreate = async () => {
     if (creating) return;
@@ -801,13 +896,16 @@ function PromoCodeManager() {
 
       {/* 코드 목록 */}
       <div className="rounded-[16px] border border-cream/12 overflow-hidden">
-        <div className="grid grid-cols-[1fr_80px_120px_1fr_44px] gap-2 px-4 py-3 bg-cream/8 kr-num text-[10px] uppercase tracking-widest text-cream/55">
-          <span>코드</span>
-          <span className="text-right">사용</span>
-          <span>만료</span>
-          <span>메모</span>
-          <span aria-label="삭제" />
-        </div>
+        <div className="overflow-x-auto">
+          <div className="min-w-[920px]">
+            <div className="grid grid-cols-[1.35fr_120px_115px_1fr_150px_44px] gap-2 px-4 py-3 bg-cream/8 kr-num text-[10px] uppercase tracking-widest text-cream/55">
+              <span>코드</span>
+              <span className="text-right">사용</span>
+              <span>만료</span>
+              <span>메모</span>
+              <span>최근 사용자</span>
+              <span aria-label="삭제" />
+            </div>
         {loading ? (
           <div className="px-4 py-6 kr-body text-[12px] text-cream/55 text-center">
             불러오는 중...
@@ -821,63 +919,175 @@ function PromoCodeManager() {
             const expired = isExpired(row);
             const depleted = isDepleted(row);
             const inactive = expired || depleted;
+            const codeUsages = usageByCode.get(row.code.toUpperCase()) ?? [];
+            const activeGrantCount = codeUsages.filter(isActivePromoGrant).length;
+            const totalGrantCount = codeUsages.length;
+            const countMismatch = row.uses !== totalGrantCount;
+            const latestUsage =
+              codeUsages.find((u) => u.user_id === row.last_redeemed_by) ??
+              codeUsages[0];
             return (
-              <div
-                key={row.code}
-                className="grid grid-cols-[1fr_80px_120px_1fr_44px] gap-2 px-4 py-3 border-t border-cream/8 items-center"
-                style={{ opacity: inactive ? 0.55 : 1 }}
-              >
-                <span className="kr-num text-[12.5px] tabular-nums break-all">
-                  {row.code}
-                </span>
-                <span className="kr-num text-[11.5px] text-cream/75 text-right tabular-nums">
-                  {row.uses}/{row.max_uses}
-                  {depleted ? (
-                    <span className="kr-heading text-[8.5px] uppercase ml-1 text-cream/50">
-                      소진
+              <div key={row.code} className="border-t border-cream/8" style={{ opacity: inactive ? 0.55 : 1 }}>
+                <div className="grid grid-cols-[1.35fr_120px_115px_1fr_150px_44px] gap-2 px-4 py-3 items-center">
+                  <span className="kr-num text-[12.5px] tabular-nums break-all">
+                    {row.code}
+                  </span>
+                  <span className="kr-num text-[11.5px] text-cream/75 text-right tabular-nums">
+                    <span className={countMismatch ? 'text-[#fca5a5]' : ''}>
+                      {row.uses}/{row.max_uses}
                     </span>
-                  ) : null}
-                </span>
-                <span className="kr-num text-[11px] text-cream/65">
-                  {row.expires_at
-                    ? new Date(row.expires_at).toLocaleDateString('ko-KR', {
-                        year: '2-digit',
-                        month: '2-digit',
-                        day: '2-digit',
-                      })
-                    : '없음'}
-                  {expired ? (
-                    <span className="kr-heading text-[8.5px] uppercase ml-1 text-[#fca5a5]">
-                      만료
+                    <span className="block text-[9.5px] text-cream/45">
+                      기록 {totalGrantCount} · 활성 {activeGrantCount}
                     </span>
-                  ) : null}
-                </span>
-                <span className="kr-body text-[11.5px] text-cream/65 truncate">
-                  {row.note || '—'}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => void handleDelete(row.code)}
-                  disabled={deleting === row.code}
-                  aria-label={`${row.code} 삭제 — 사용자 권한 박탈 옵션 포함`}
-                  title={
-                    deleting === row.code
-                      ? '처리 중...'
-                      : '삭제 — 코드 사용자 권한 박탈 옵션 포함'
-                  }
-                  className="inline-flex items-center justify-center w-7 h-7 rounded-md hover:bg-red-500/15 text-cream/55 hover:text-red-300 transition disabled:opacity-40"
-                >
-                  {deleting === row.code ? (
-                    <RefreshCcw size={11} strokeWidth={2.4} className="animate-spin" />
-                  ) : (
-                    <Trash2 size={12} strokeWidth={2.4} />
-                  )}
-                </button>
+                    {depleted ? (
+                      <span className="kr-heading text-[8.5px] uppercase text-cream/50">
+                        소진
+                      </span>
+                    ) : null}
+                    {countMismatch ? (
+                      <span className="kr-heading text-[8.5px] uppercase text-[#fca5a5]">
+                        점검
+                      </span>
+                    ) : null}
+                  </span>
+                  <span className="kr-num text-[11px] text-cream/65">
+                    {formatDateShort(row.expires_at)}
+                    {expired ? (
+                      <span className="kr-heading text-[8.5px] uppercase ml-1 text-[#fca5a5]">
+                        만료
+                      </span>
+                    ) : null}
+                  </span>
+                  <span className="kr-body text-[11.5px] text-cream/65 truncate">
+                    {row.note || '—'}
+                  </span>
+                  <span className="kr-body text-[11.5px] text-cream/70 min-w-0">
+                    {latestUsage ? (
+                      <>
+                        <span className="block truncate font-bold text-cream/85">
+                          {latestUsage.display_name || latestUsage.tag}
+                        </span>
+                        <span className="block kr-num text-[9.5px] text-cream/45">
+                          {formatDateTimeShort(row.last_redeemed_at ?? latestUsage.granted_at)}
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-cream/38">없음</span>
+                    )}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => void handleDelete(row.code)}
+                    disabled={deleting === row.code}
+                    aria-label={`${row.code} 삭제 — 사용자 권한 박탈 옵션 포함`}
+                    title={
+                      deleting === row.code
+                        ? '처리 중...'
+                        : '삭제 — 코드 사용자 권한 박탈 옵션 포함'
+                    }
+                    className="inline-flex items-center justify-center w-7 h-7 rounded-md hover:bg-red-500/15 text-cream/55 hover:text-red-300 transition disabled:opacity-40"
+                  >
+                    {deleting === row.code ? (
+                      <RefreshCcw size={11} strokeWidth={2.4} className="animate-spin" />
+                    ) : (
+                      <Trash2 size={12} strokeWidth={2.4} />
+                    )}
+                  </button>
+                </div>
+
+                {codeUsages.length > 0 ? (
+                  <details className="px-4 pb-3">
+                    <summary className="cursor-pointer select-none kr-num text-[10.5px] uppercase tracking-widest text-cream/55 hover:text-neon transition">
+                      사용자 {totalGrantCount}명 보기
+                    </summary>
+                    <div className="mt-2 overflow-hidden rounded-xl border border-cream/10 bg-[#050C2A]/55">
+                      {codeUsages.map((usage) => {
+                        const active = isActivePromoGrant(usage);
+                        return (
+                          <div
+                            key={usage.grant_id}
+                            className="grid grid-cols-[1fr_95px_95px_80px_100px] gap-2 px-3 py-2 border-t first:border-t-0 border-cream/8 items-center"
+                          >
+                            <div className="min-w-0">
+                              <span className="block kr-body text-[12px] font-bold text-cream truncate">
+                                {usage.display_name || '닉네임 없음'}
+                              </span>
+                              <span className="block kr-num text-[10px] text-cream/45">
+                                {usage.tag}
+                              </span>
+                            </div>
+                            <span className="kr-num text-[10.5px] text-cream/62">
+                              {formatDateTimeShort(usage.granted_at)}
+                            </span>
+                            <span className="kr-num text-[10.5px] text-cream/62">
+                              {formatDateShort(usage.grant_expires_at)}
+                            </span>
+                            <span
+                              className="kr-heading text-[9px] uppercase tracking-widest"
+                              style={{ color: active ? '#9CFF3D' : '#fca5a5' }}
+                            >
+                              {active ? '활성' : '비활성'}
+                            </span>
+                            <span className="kr-num text-[10.5px] text-right text-cream/62">
+                              XP {usage.display_xp}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </details>
+                ) : null}
               </div>
             );
           })
         )}
+          </div>
+        </div>
       </div>
+
+      {archivedUsageGroups.length > 0 ? (
+        <div className="mt-4 rounded-[16px] border border-cream/12 bg-cream/[0.035] p-4">
+          <div className="kr-heading text-[12px] uppercase tracking-widest text-cream/72">
+            삭제된 코드 사용 이력
+          </div>
+          <p className="mt-1 kr-body text-[11.5px] text-cream/50">
+            코드 row 는 삭제됐지만 premium grant 감사 기록은 남아있는 항목입니다.
+          </p>
+          <div className="mt-3 space-y-2">
+            {archivedUsageGroups.map(([code, group]) => {
+              const activeCount = group.filter(isActivePromoGrant).length;
+              return (
+                <details key={code} className="rounded-xl border border-cream/10 bg-[#050C2A]/55 px-3 py-2">
+                  <summary className="cursor-pointer select-none kr-num text-[11px] text-cream/72">
+                    {code} · 전체 {group.length}명 · 활성 {activeCount}명
+                  </summary>
+                  <div className="mt-2 divide-y divide-cream/8">
+                    {group.map((usage) => (
+                      <div key={usage.grant_id} className="grid grid-cols-[1fr_95px_80px_90px] gap-2 py-2 items-center">
+                        <span className="kr-body text-[12px] text-cream/82 truncate">
+                          {usage.display_name || usage.tag}
+                        </span>
+                        <span className="kr-num text-[10.5px] text-cream/55">
+                          {formatDateTimeShort(usage.granted_at)}
+                        </span>
+                        <span
+                          className="kr-heading text-[9px] uppercase tracking-widest"
+                          style={{ color: isActivePromoGrant(usage) ? '#9CFF3D' : '#fca5a5' }}
+                        >
+                          {isActivePromoGrant(usage) ? '활성' : '비활성'}
+                        </span>
+                        <span className="kr-num text-[10.5px] text-right text-cream/55">
+                          XP {usage.display_xp}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </details>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
 
       <p className="mt-3 kr-body text-[11.5px] text-cream/55 leading-[1.65]">
         ※ 발급된 코드는 사용자가 <code className="px-1 py-0.5 rounded bg-cream/10 text-cream/85">#/redeem</code>{' '}

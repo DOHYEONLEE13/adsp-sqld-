@@ -320,15 +320,15 @@ function BetaCouponModal({ onClose }: { onClose: () => void }) {
     >
       <button
         type="button"
-        className="absolute inset-0 cursor-default bg-[rgba(1,8,40,0.76)] backdrop-blur-md"
+        className="beta-coupon-backdrop absolute inset-0 cursor-default bg-[rgba(1,8,40,0.76)] backdrop-blur-md"
         aria-label="안내 닫기"
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-[450px] overflow-hidden rounded-[24px] border border-cream/14 bg-[rgb(7,18,36)] text-cream shadow-[0_28px_96px_rgba(0,0,0,0.58)]">
+      <div className="beta-coupon-panel relative w-full max-w-[450px] overflow-hidden rounded-[24px] border border-cream/14 bg-[rgb(7,18,36)] text-cream shadow-[0_28px_96px_rgba(0,0,0,0.58)]">
         <div
           aria-hidden
-          className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cream/35 to-transparent"
+          className="beta-coupon-line absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cream/35 to-transparent"
         />
         <button
           type="button"
@@ -341,7 +341,7 @@ function BetaCouponModal({ onClose }: { onClose: () => void }) {
 
         <div className="px-6 pb-5 pt-6">
           <div className="flex items-start gap-3 pr-9">
-            <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] border border-cream/12 bg-cream/[0.045] text-cream/84">
+            <div className="beta-coupon-icon inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] border border-cream/12 bg-cream/[0.045] text-cream/84">
               <CreditCard size={20} strokeWidth={1.9} aria-hidden />
             </div>
             <div className="min-w-0">
@@ -352,13 +352,13 @@ function BetaCouponModal({ onClose }: { onClose: () => void }) {
                 id="beta-coupon-title"
                 className="kr-heading mt-1 text-[23px] font-black leading-[1.18] text-cream"
               >
-                오픈 베타 무료 이용권
+                관심 가져주셔서 감사합니다.
               </h3>
             </div>
           </div>
 
           <p className="kr-body mt-5 text-[13.5px] leading-[1.72] text-cream/66">
-            관심 가져주셔서 감사합니다. 현재 2026년 5월 31일까지 무료 운영 중이며, 아래 쿠폰 코드를 등록하면 프리미엄 기능을 바로 이용할 수 있습니다.
+            현재 2026년 5월 31일까지 오픈 베타로 무료 운영 중입니다. 아래 쿠폰 코드를 등록하시면 오픈 베타 무료 이용권을 제공받아 프리미엄 기능을 바로 이용할 수 있습니다.
           </p>
         </div>
 
@@ -437,6 +437,76 @@ function BetaCouponModal({ onClose }: { onClose: () => void }) {
             0% { transform: scale(0.86) rotate(-7deg); }
             55% { transform: scale(1.14) rotate(5deg); }
             100% { transform: scale(1) rotate(0deg); }
+          }
+          .beta-coupon-backdrop {
+            animation: beta-coupon-backdrop-in 220ms ease-out both;
+          }
+          .beta-coupon-panel {
+            transform-origin: 50% 42%;
+            animation: beta-coupon-panel-in 420ms cubic-bezier(.16, 1, .3, 1) both;
+          }
+          .beta-coupon-line {
+            transform-origin: center;
+            animation: beta-coupon-line-in 520ms 120ms cubic-bezier(.16, 1, .3, 1) both;
+          }
+          .beta-coupon-icon {
+            animation: beta-coupon-icon-in 520ms 150ms cubic-bezier(.18, 1.25, .32, 1) both;
+          }
+          @keyframes beta-coupon-backdrop-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+          }
+          @keyframes beta-coupon-panel-in {
+            0% {
+              opacity: 0;
+              transform: translateY(18px) scale(0.965);
+              filter: blur(8px);
+            }
+            62% {
+              opacity: 1;
+              transform: translateY(-2px) scale(1.006);
+              filter: blur(0);
+            }
+            100% {
+              opacity: 1;
+              transform: translateY(0) scale(1);
+              filter: blur(0);
+            }
+          }
+          @keyframes beta-coupon-line-in {
+            from {
+              opacity: 0;
+              transform: scaleX(0.2);
+            }
+            to {
+              opacity: 1;
+              transform: scaleX(1);
+            }
+          }
+          @keyframes beta-coupon-icon-in {
+            0% {
+              opacity: 0;
+              transform: translateY(8px) scale(0.78) rotate(-8deg);
+            }
+            70% {
+              opacity: 1;
+              transform: translateY(-1px) scale(1.08) rotate(3deg);
+            }
+            100% {
+              opacity: 1;
+              transform: translateY(0) scale(1) rotate(0deg);
+            }
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .beta-coupon-backdrop,
+            .beta-coupon-panel,
+            .beta-coupon-line,
+            .beta-coupon-icon,
+            .beta-coupon-panel * {
+              animation-duration: 1ms !important;
+              animation-delay: 0ms !important;
+              transition-duration: 1ms !important;
+            }
           }
         `}
       </style>

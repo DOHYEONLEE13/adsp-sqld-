@@ -102,6 +102,11 @@ export interface LessonStep {
    */
   quizId?: string;
   /**
+   * Optional follow-up drills for the same concept. These appear after the
+   * primary quiz without changing the lesson step itself.
+   */
+  extraQuizIds?: string[];
+  /**
    * 명시적 sub-step 그룹 키. 미지정 시 id 의 `-s\d+` prefix 가 그룹.
    * 한 lesson 안에서 여러 주제 패밀리 (예: s4 안의 DB / DW / DM / Lake)
    * 를 trail 로 따로 묶고 싶을 때 같은 group 값을 공유하게 설정.

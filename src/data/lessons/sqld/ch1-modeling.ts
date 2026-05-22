@@ -424,6 +424,7 @@ const SQLD_1_1: Lesson = {
       id: 'sqld-1-1-s7',
       title: '관계 — 관차선 + 교차 엔터티',
       quizId: 'sqld-1-1-cp-07',
+      extraQuizIds: ['sqld-sql-lab-036'],
       group: 'sqld-1-1-g3-attr-rel',
       dialogue: [
         { pose: 'wave', text: '[관계(Relationship)]는 두 엔터티 사이의 [논리적 연결]!' },

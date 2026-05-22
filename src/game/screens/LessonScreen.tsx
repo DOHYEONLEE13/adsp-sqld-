@@ -104,9 +104,10 @@ export default function LessonScreen({
   const [stepIdx, setStepIdx] = useState(initialStepIdx ?? 0);
   // 'concept' → 개념 카드 보여주는 중, 'quiz' → 문제 풀이 중
   const [view, setView] = useState<'concept' | 'quiz'>('concept');
+  const [quizIdx, setQuizIdx] = useState(0);
   // 스텝별 선택/채점 상태: { [stepIdx]: { chosen, correct } }
   const [quizState, setQuizState] = useState<
-    Record<number, { chosen: number; correct: boolean }>
+    Record<string, { chosen: number; correct: boolean }>
   >({});
 
   /** XP 획득 토스트 — `+10` 같이 잠깐 떴다 사라짐. */
@@ -214,10 +215,19 @@ export default function LessonScreen({
   const chapterRatio =
     chapterTotal === 0 ? 0 : (chapterIdx + 1) / chapterTotal;
 
-  const quizQuestion = currentStep.quizId
-    ? getQuizQuestion(currentStep.quizId)
-    : null;
-  const savedQuiz = quizState[stepIdx];
+  const stepQuizIds = [
+    currentStep.quizId,
+    ...(currentStep.extraQuizIds ?? []),
+  ].filter((id): id is string => !!id);
+  const activeQuizIdx =
+    stepQuizIds.length === 0
+      ? 0
+      : Math.min(quizIdx, stepQuizIds.length - 1);
+  const activeQuizId = stepQuizIds[activeQuizIdx];
+  const quizQuestion = activeQuizId ? getQuizQuestion(activeQuizId) : null;
+  const hasNextQuizInStep = activeQuizIdx < stepQuizIds.length - 1;
+  const quizStateKey = `${stepIdx}:${activeQuizIdx}`;
+  const savedQuiz = quizState[quizStateKey];
 
   // --- handlers ---
 
@@ -260,7 +270,7 @@ export default function LessonScreen({
       idx,
       lessonTokens[quizQuestion.id] ?? null,
     );
-    setQuizState((s) => ({ ...s, [stepIdx]: { chosen: idx, correct } }));
+    setQuizState((s) => ({ ...s, [quizStateKey]: { chosen: idx, correct } }));
     // 잠금 결정은 prevSolved (이전 step 정답 cross-check) 로만 — 별도 unlock 호출 X.
     if (xp > 0) {
       setXpToast({ amount: xp, key: Date.now() });
@@ -273,9 +283,54 @@ export default function LessonScreen({
     // 마지막 스텝 + 정답 시 1.4 초 후 축하 모달. 사용자가 정답 피드백 시트
     // (해설 문구) 를 잠깐 읽을 시간을 확보한 뒤 노출. single-step 모드는
     // 한 step 만 풀고 즉시 Zone 복귀 의도라 축하 화면 skip.
-    if (correct && !isSingleStep && stepIdx === lesson.steps.length - 1) {
+    if (
+      correct &&
+      !isSingleStep &&
+      stepIdx === lesson.steps.length - 1 &&
+      !hasNextQuizInStep
+    ) {
       window.setTimeout(() => setShowCelebration(true), 1400);
     }
+  };
+
+  const goNextQuizInStep = async () => {
+    const nextQuizIdx = activeQuizIdx + 1;
+    const nextQuizId = stepQuizIds[nextQuizIdx];
+    if (!nextQuizId) {
+      goNextStep();
+      return;
+    }
+    const nextQuestion = getQuizQuestion(nextQuizId);
+    if (!nextQuestion) {
+      goNextStep();
+      return;
+    }
+    if (!lessonTokens[nextQuestion.id]) {
+      const sk = lesson ? stepKey(lesson.id, stepIdx) : null;
+      const reservation = await reserveLessonQuestion({
+        questionId: nextQuestion.id,
+        subject,
+        chapter,
+        stepKey: sk,
+      });
+      if (!reservation.ok) {
+        const message =
+          reservation.reason === 'quota_exceeded'
+            ? `오늘 새 문제는 ${reservation.remainingQuota ?? 0}개 남아있어요.`
+            : '문제 이용권을 확인하지 못했어요. 잠시 후 다시 시도해 주세요.';
+        setQuotaBlock(message);
+        window.setTimeout(() => setQuotaBlock(null), 3200);
+        return;
+      }
+      setLessonTokens((tokens) => ({
+        ...tokens,
+        [nextQuestion.id]: reservation.sessionToken,
+      }));
+    }
+    setQuizIdx(nextQuizIdx);
+    startedAtRef.current = Date.now();
+    setView('quiz');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const goNextStep = () => {
@@ -289,6 +344,7 @@ export default function LessonScreen({
       // 잠금은 prevSolved 로만 결정 — 별도 unlock 호출 X.
       // 다음 step mount useEffect 가 ⚡ 차감 + visit 기록 처리.
       setStepIdx(nextIdx);
+      setQuizIdx(0);
       setView('concept');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
@@ -308,9 +364,11 @@ export default function LessonScreen({
   const goPrevStep = () => {
     if (!canGoPrev) return;
     if (view === 'quiz') {
+      setQuizIdx(0);
       setView('concept');
     } else {
       setStepIdx(stepIdx - 1);
+      setQuizIdx(0);
       setView('quiz');
     }
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -356,7 +414,7 @@ export default function LessonScreen({
           topic={topic}
           totalSteps={lesson.steps.length}
           correctSteps={
-            Object.values(quizState).filter((q) => q?.correct).length
+            lesson.steps.filter((_, i) => quizState[`${i}:0`]?.correct).length
           }
           onGoToPractice={() => {
             setShowCelebration(false);
@@ -510,19 +568,25 @@ export default function LessonScreen({
             />
           ) : savedQuiz ? (
             <PrimaryButton
-              onClick={goNextStep}
-              accent={isLastStep ? '#6FFF00' : accent}
+              onClick={() => {
+                if (hasNextQuizInStep) {
+                  void goNextQuizInStep();
+                } else {
+                  goNextStep();
+                }
+              }}
+              accent={isLastStep && !hasNextQuizInStep ? '#6FFF00' : accent}
               icon={
-                isLastStep ? (
+                isLastStep && !hasNextQuizInStep ? (
                   <Sparkles size={18} strokeWidth={2.6} />
                 ) : (
                   <ArrowRight size={18} strokeWidth={2.6} />
                 )
               }
               label={
-                isLastStep
+                hasNextQuizInStep ? '다음 SQL 문제' : isLastStep
                   ? '실전 세트로 마무리'
-                  : `다음 개념 — ${lesson.steps[stepIdx + 1]?.title ?? ''}`
+                  : `다음 개념 - ${lesson.steps[stepIdx + 1]?.title ?? ''}`
               }
             />
           ) : (

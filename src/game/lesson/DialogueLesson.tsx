@@ -163,6 +163,7 @@ export default function DialogueLesson({
   const [phase, setPhase] = useState<Phase>(initialPhase);
   const [chosen, setChosen] = useState<number | null>(null);
   const [correct, setCorrect] = useState<boolean | null>(null);
+  const [quizIdx, setQuizIdx] = useState(0);
   // 회독 진입 시 reminder 카드 노출 여부. true 면 카드 화면, false 면 본 학습으로 진입.
   // review step (id 끝이 `-review`) 은 첫 진입에도 강제로 카드 노출.
   // 단, 북마크 점프 (initialPhase='question') 인 경우엔 reminder 도 스킵 — 사용자가
@@ -189,6 +190,7 @@ export default function DialogueLesson({
     setPhase('narrate');
     setChosen(null);
     setCorrect(null);
+    setQuizIdx(0);
     setSimilarOpen(false); // 다음 step 진입 시 패널 자동 닫기 (안전망)
     // 새 step 이 review 면 reminder 카드 강제 노출. 그 외엔 isReplay 모드일 때만.
     const nextStep = lesson?.steps[stepIdx];
@@ -221,7 +223,16 @@ export default function DialogueLesson({
   // 그룹 끝 review step — id 가 `-review` 로 끝나면 무조건 2회독 UX 강제 (reminder
   // 카드 + 그룹 overview quiz 재사용). 강제 노출은 useEffect/initial state 에서
   // 처리하므로 여기서 별도 분기 불필요.
-  const quizQuestion = step.quizId ? getQuizQuestion(step.quizId) : null;
+  const stepQuizIds = [step.quizId, ...(step.extraQuizIds ?? [])].filter(
+    (id): id is string => !!id,
+  );
+  const activeQuizIdx =
+    stepQuizIds.length === 0
+      ? 0
+      : Math.min(quizIdx, stepQuizIds.length - 1);
+  const activeQuizId = stepQuizIds[activeQuizIdx];
+  const quizQuestion = activeQuizId ? getQuizQuestion(activeQuizId) : null;
+  const hasNextQuizInStep = activeQuizIdx < stepQuizIds.length - 1;
 
   // ── Sub-step group trail ─────────────────────────────────────────────
   // 명시적 step.group 우선. 없으면 id 의 `-s\d+` prefix 가 그룹 키.
@@ -263,11 +274,11 @@ export default function DialogueLesson({
       : (chapterIdx + innerProgress) / chapterTotal;
 
   // --- handlers ---
-  const reserveCurrentQuiz = async (): Promise<boolean> => {
-    if (!quizQuestion || lessonTokens[quizQuestion.id]) return true;
+  const reserveQuiz = async (questionId: string): Promise<boolean> => {
+    if (lessonTokens[questionId]) return true;
     const sk = lesson ? stepKey(lesson.id, stepIdx) : null;
     const reservation = await reserveLessonQuestion({
-      questionId: quizQuestion.id,
+      questionId,
       subject,
       chapter,
       stepKey: sk,
@@ -283,9 +294,14 @@ export default function DialogueLesson({
     }
     setLessonTokens((tokens) => ({
       ...tokens,
-      [quizQuestion.id]: reservation.sessionToken,
+      [questionId]: reservation.sessionToken,
     }));
     return true;
+  };
+
+  const reserveCurrentQuiz = async (): Promise<boolean> => {
+    if (!quizQuestion) return true;
+    return reserveQuiz(quizQuestion.id);
   };
 
   const handleAdvanceNarrative = async () => {
@@ -373,11 +389,30 @@ export default function DialogueLesson({
       if (
         !isSingleStep &&
         lesson &&
-        stepIdx === lesson.steps.length - 1
+        stepIdx === lesson.steps.length - 1 &&
+        !hasNextQuizInStep
       ) {
         window.setTimeout(() => setShowCelebration(true), 1400);
       }
     }
+  };
+
+  const handleNextQuestionInStep = async () => {
+    const nextQuizIdx = activeQuizIdx + 1;
+    const nextQuizId = stepQuizIds[nextQuizIdx];
+    if (!nextQuizId) {
+      handleNextStep();
+      return;
+    }
+    const reserved = await reserveQuiz(nextQuizId);
+    if (!reserved) return;
+    setQuizIdx(nextQuizIdx);
+    setChosen(null);
+    setCorrect(null);
+    setSimilarOpen(false);
+    startedAtRef.current = Date.now();
+    setPhase('question');
+    window.scrollTo({ top: 0, behavior: 'auto' });
   };
 
   const handleNextStep = () => {
@@ -444,7 +479,7 @@ export default function DialogueLesson({
         <TopBar
           progress={progress}
           stepProgress={innerProgress}
-          questionId={step.quizId}
+          questionId={quizQuestion?.id ?? step.quizId}
           accent={visual.color}
           onExit={onBack}
         />
@@ -834,7 +869,14 @@ export default function DialogueLesson({
             let onContinue: () => void;
             let secondaryCtaLabel: string | undefined;
             let onSecondary: (() => void) | undefined;
-            if (hasNext) {
+            if (hasNextQuizInStep) {
+              ctaLabel = '다음 SQL 문제';
+              onContinue = () => {
+                void handleNextQuestionInStep();
+              };
+              secondaryCtaLabel = '나가기';
+              onSecondary = handleBackToZone;
+            } else if (hasNext) {
               ctaLabel = '다음 단계';
               onContinue = handleNextStep;
               secondaryCtaLabel = '← 돌아가기';

@@ -14,6 +14,7 @@ const SQLD_2_1: Lesson = {
       id: 'sqld-2-1-s1',
       title: 'SQL 4명령군 — DDL / DML / DCL / TCL',
       quizId: 'sqld-2-1-cp-01',
+      extraQuizIds: ['sqld-sql-lab-001'],
       dialogue: [
         { pose: 'wave', text: 'SQL 명령어들은 역할에 따라 [4가지 군]으로 분류돼! 시험 빈출!' },
         { pose: 'think', text: '① [DDL (Data Definition Language)]: 데이터의 [구조] 정의·변경.' },
@@ -79,6 +80,7 @@ const SQLD_2_1: Lesson = {
       id: 'sqld-2-1-s2',
       title: '관계대수 — SQL 의 수학적 뿌리',
       quizId: 'sqld-2-1-cp-02',
+      extraQuizIds: ['sqld-sql-lab-003'],
       dialogue: [
         { pose: 'wave', text: 'SQL 은 [관계대수(Relational Algebra)] 라는 수학에서 출발했어!' },
         { pose: 'think', text: '관계대수는 [집합 연산]을 [릴레이션(테이블)]에 적용하는 형식 이론!' },
@@ -132,6 +134,7 @@ const SQLD_2_1: Lesson = {
       id: 'sqld-2-1-s3',
       title: 'SELECT 실행 순서 — "FWGHSO" 프웨그하셀오',
       quizId: 'sqld-2-1-cp-03',
+      extraQuizIds: ['sqld-sql-lab-002'],
       dialogue: [
         { pose: 'wave', text: 'SQL 의 [작성 순서] 와 [실제 실행 순서] 가 달라! 가장 중요한 시험 포인트!' },
         { pose: 'think', text: '우리는 [SELECT] 부터 쓰지만 DB 엔진은 [FROM] 부터 처리!' },
@@ -202,6 +205,7 @@ const SQLD_2_1: Lesson = {
       id: 'sqld-2-1-s4',
       title: 'ALIAS · DISTINCT · 문자열 연결',
       quizId: 'sqld-2-1-cp-04',
+      extraQuizIds: ['sqld-sql-lab-004'],
       dialogue: [
         { pose: 'wave', text: '[ALIAS(별칭)]는 컬럼이나 테이블에 [임시 이름]을 부여하는 기능!' },
         { pose: 'think', text: '왜 필요? 결과 컬럼명을 한국어로 보고 싶거나, JOIN 시 같은 컬럼명을 구분해야 할 때!' },
@@ -270,6 +274,7 @@ const SQLD_2_1: Lesson = {
       id: 'sqld-2-1-s5',
       title: '문자 함수 — SUBSTR / TRIM / REPLACE / INSTR',
       quizId: 'sqld-2-1-cp-05',
+      extraQuizIds: ['sqld-sql-lab-005'],
       dialogue: [
         { pose: 'wave', text: '문자 함수는 SQLD 시험·실무 모두 [필수]! 출제 비중 높음!' },
         { pose: 'think', text: '가장 자주 쓰는 [SUBSTR(s, p, len)] 부터!' },
@@ -335,6 +340,7 @@ const SQLD_2_1: Lesson = {
       id: 'sqld-2-1-s6',
       title: '숫자 / 날짜 / 변환 함수',
       quizId: 'sqld-2-1-cp-06',
+      extraQuizIds: ['sqld-sql-lab-006'],
       dialogue: [
         { pose: 'wave', text: '문자 함수 다음은 [숫자]·[날짜]·[변환] 함수! 짧지만 함정 많음!' },
         { pose: 'think', text: '[ABS(n)]: 절댓값. ABS(-3)=3, ABS(-10.4)=10.4!' },
@@ -415,6 +421,7 @@ const SQLD_2_1: Lesson = {
       id: 'sqld-2-1-s7',
       title: '집계 함수 + NULL 처리 함정',
       quizId: 'sqld-2-1-cp-07',
+      extraQuizIds: ['sqld-sql-lab-007'],
       dialogue: [
         { pose: 'wave', text: '[집계 함수(Aggregate Function)]는 [여러 행을 하나의 값으로 요약]!' },
         { pose: 'think', text: '5대 집계함수: COUNT·SUM·AVG·MIN·MAX!' },
@@ -486,6 +493,7 @@ const SQLD_2_1: Lesson = {
       id: 'sqld-2-1-s8',
       title: 'NULL 처리 함수 4종 — NVL / NVL2 / NULLIF / COALESCE',
       quizId: 'sqld-2-1-cp-08',
+      extraQuizIds: ['sqld-sql-lab-009'],
       dialogue: [
         { pose: 'wave', text: 'NULL 을 [다른 값으로 치환]하는 함수 [4가지]! 한 번에 정리!' },
         { pose: 'think', text: '① [NVL(c, repl)]: c 가 [NULL 이면 repl], 아니면 c!' },
@@ -544,6 +552,7 @@ const SQLD_2_1: Lesson = {
       id: 'sqld-2-1-s9',
       title: 'CASE / DECODE — 조건 분기',
       quizId: 'sqld-2-1-cp-09',
+      extraQuizIds: ['sqld-sql-lab-010'],
       dialogue: [
         { pose: 'wave', text: '[CASE]와 [DECODE]는 SQL 의 [if-else]! 조건 분기를 SQL 안에서 처리!' },
         { pose: 'think', text: 'CASE 는 [2가지 형태]: [Searched CASE] (조건절) / [Simple CASE] (값 매칭)!' },
@@ -608,6 +617,7 @@ const SQLD_2_1: Lesson = {
       id: 'sqld-2-1-s10',
       title: 'WHERE 절 — 비교 / 조건 / LIKE / NULL / 우선순위',
       quizId: 'sqld-2-1-cp-10',
+      extraQuizIds: ['sqld-sql-lab-008', 'sqld-sql-lab-011', 'sqld-sql-lab-012'],
       dialogue: [
         { pose: 'wave', text: 'WHERE 절은 [행 단위 필터]! 조건에 맞는 튜플(행)만 통과!' },
         { pose: 'think', text: '연산자가 많아 정리 필요!' },
@@ -688,6 +698,7 @@ const SQLD_2_1: Lesson = {
       id: 'sqld-2-1-s11',
       title: 'GROUP BY · HAVING — 그룹화와 그룹 필터',
       quizId: 'sqld-2-1-cp-11',
+      extraQuizIds: ['sqld-sql-lab-013'],
       dialogue: [
         { pose: 'wave', text: '[GROUP BY]는 [같은 값을 가진 행을 묶어 한 줄로 요약]!' },
         { pose: 'think', text: '예: 부서별 평균급여 — GROUP BY 부서 후 AVG(급여) 계산. 부서마다 한 줄!' },
@@ -756,6 +767,7 @@ const SQLD_2_1: Lesson = {
       id: 'sqld-2-1-s12',
       title: 'ORDER BY — 정렬 + NULL 처리',
       quizId: 'sqld-2-1-cp-12',
+      extraQuizIds: ['sqld-sql-lab-014'],
       dialogue: [
         { pose: 'wave', text: 'ORDER BY 는 결과의 [최종 정렬]! SELECT 의 가장 마지막 절!' },
         { pose: 'think', text: '[ASC] = 오름차순 (기본·생략 가능). [DESC] = 내림차순!' },
@@ -835,6 +847,7 @@ const SQLD_2_2: Lesson = {
       id: 'sqld-2-2-s1',
       title: 'JOIN 4종 — INNER / LEFT / RIGHT / FULL OUTER',
       quizId: 'sqld-2-2-cp-01',
+      extraQuizIds: ['sqld-sql-lab-015', 'sqld-sql-lab-016'],
       dialogue: [
         { pose: 'wave', text: '[JOIN]은 [여러 테이블을 한 결과로 묶는 가장 강력한 도구]! 시험 빈출 1순위!' },
         { pose: 'think', text: 'JOIN 종류 [4가지]: [INNER] · [LEFT OUTER] · [RIGHT OUTER] · [FULL OUTER]!' },
@@ -1090,6 +1103,7 @@ const SQLD_2_2: Lesson = {
       id: 'sqld-2-2-s5',
       title: '다중행 비교 — EXISTS · IN · ANY · ALL',
       quizId: 'sqld-2-2-cp-05',
+      extraQuizIds: ['sqld-sql-lab-017'],
       dialogue: [
         { pose: 'wave', text: '다중행 서브쿼리와 함께 쓰는 [4가지 연산자]! 의미가 미묘하게 달라!' },
         { pose: 'think', text: '[IN]: 서브쿼리 결과 [집합에 포함]되는지 검사!' },
@@ -1152,6 +1166,7 @@ const SQLD_2_2: Lesson = {
       id: 'sqld-2-2-s6',
       title: '집합 연산자 4종 — UNION / UNION ALL / INTERSECT / MINUS',
       quizId: 'sqld-2-2-cp-06',
+      extraQuizIds: ['sqld-sql-lab-018'],
       dialogue: [
         { pose: 'wave', text: '[집합 연산자]는 [두 쿼리 결과를 세로로 합치는] 도구!' },
         { pose: 'think', text: 'JOIN 이 [가로 결합] 이라면, 집합 연산자는 [세로 결합]!' },
@@ -1220,6 +1235,7 @@ const SQLD_2_2: Lesson = {
       id: 'sqld-2-2-s7',
       title: '그룹 함수 — ROLLUP · CUBE · GROUPING SETS',
       quizId: 'sqld-2-2-cp-07',
+      extraQuizIds: ['sqld-sql-lab-019'],
       dialogue: [
         { pose: 'wave', text: 'GROUP BY 의 [확장 형태] 3총사 — [ROLLUP], [CUBE], [GROUPING SETS]!' },
         { pose: 'think', text: '소계·총계·다양한 조합을 한 쿼리로 만드는 도구!' },
@@ -1285,6 +1301,7 @@ const SQLD_2_2: Lesson = {
       id: 'sqld-2-2-s8',
       title: '윈도우 함수 — 순위 (RANK · DENSE_RANK · ROW_NUMBER)',
       quizId: 'sqld-2-2-cp-08',
+      extraQuizIds: ['sqld-sql-lab-020'],
       dialogue: [
         { pose: 'wave', text: '[윈도우 함수(Window Function)]는 GROUP BY 없이 [그룹 내 위치] 같은 값을 계산!' },
         { pose: 'think', text: '문법: [함수() OVER (PARTITION BY 그룹 ORDER BY 정렬)]!' },
@@ -1350,6 +1367,7 @@ const SQLD_2_2: Lesson = {
       id: 'sqld-2-2-s9',
       title: '윈도우 — 집계 + PARTITION BY + 누적합',
       quizId: 'sqld-2-2-cp-09',
+      extraQuizIds: ['sqld-sql-lab-021'],
       dialogue: [
         { pose: 'wave', text: '집계함수 (SUM, AVG, MIN, MAX, COUNT) 도 OVER 절과 함께 쓰면 [윈도우 함수]가 돼!' },
         { pose: 'think', text: 'OVER() 가 [비어있으면] [전체 행]을 한 윈도우로!' },
@@ -1407,6 +1425,7 @@ const SQLD_2_2: Lesson = {
       id: 'sqld-2-2-s10',
       title: 'LAG / LEAD / FIRST_VALUE + 범위 지정 (ROWS · RANGE)',
       quizId: 'sqld-2-2-cp-10',
+      extraQuizIds: ['sqld-sql-lab-022', 'sqld-sql-lab-023'],
       dialogue: [
         { pose: 'wave', text: '윈도우 함수 응용 — [행 간 참조] + [범위 지정]!' },
         { pose: 'think', text: '[행 간 참조 함수 4종]: LAG·LEAD·FIRST_VALUE·LAST_VALUE!' },
@@ -1479,6 +1498,7 @@ const SQLD_2_2: Lesson = {
       id: 'sqld-2-2-s11',
       title: 'TOP N · 비율 · 계층형 · PIVOT/UNPIVOT',
       quizId: 'sqld-2-2-cp-11',
+      extraQuizIds: ['sqld-sql-lab-024', 'sqld-sql-lab-025', 'sqld-sql-lab-026'],
       dialogue: [
         { pose: 'wave', text: '윈도우 함수의 [응용 4세트] — TOP N · 비율 · 계층형 · PIVOT!' },
         { pose: 'think', text: '[TOP N]: 상위 N 개 추출. DBMS 마다 표현 다름!' },
@@ -1564,6 +1584,7 @@ const SQLD_2_2: Lesson = {
       id: 'sqld-2-2-s12',
       title: '정규표현식 — 기호 + Oracle 함수 5종',
       quizId: 'sqld-2-2-cp-12',
+      extraQuizIds: ['sqld-sql-lab-027'],
       dialogue: [
         { pose: 'wave', text: '[정규표현식(Regular Expression)]은 [패턴 매칭] 도구!' },
         { pose: 'think', text: '예: 이메일 검증·전화번호 검증·특정 형식 검색에 필수!' },
@@ -1660,6 +1681,7 @@ const SQLD_2_3: Lesson = {
       id: 'sqld-2-3-s1',
       title: 'DML 3총사 — INSERT / UPDATE / DELETE',
       quizId: 'sqld-2-3-cp-01',
+      extraQuizIds: ['sqld-sql-lab-028', 'sqld-sql-lab-029'],
       dialogue: [
         { pose: 'wave', text: '관리 구문의 시작은 [DML]! 데이터 자체를 다루는 명령들!' },
         { pose: 'think', text: '3총사: [INSERT]·[UPDATE]·[DELETE]!' },
@@ -1722,6 +1744,7 @@ const SQLD_2_3: Lesson = {
       id: 'sqld-2-3-s2',
       title: 'MERGE — UPSERT (INSERT + UPDATE 통합)',
       quizId: 'sqld-2-3-cp-02',
+      extraQuizIds: ['sqld-sql-lab-030'],
       dialogue: [
         { pose: 'wave', text: '[MERGE]는 [INSERT 와 UPDATE 를 하나로 묶은] 강력한 명령!' },
         { pose: 'think', text: '왜 필요? 매번 "있으면 UPDATE, 없으면 INSERT" 패턴 (UPSERT) 을 자주 함!' },
@@ -1781,6 +1804,7 @@ const SQLD_2_3: Lesson = {
       id: 'sqld-2-3-s3',
       title: 'TCL — COMMIT · ROLLBACK · SAVEPOINT',
       quizId: 'sqld-2-3-cp-03',
+      extraQuizIds: ['sqld-sql-lab-031'],
       dialogue: [
         { pose: 'wave', text: '[TCL (Transaction Control Language)]은 [트랜잭션 제어]!' },
         { pose: 'think', text: '3종: [COMMIT]·[ROLLBACK]·[SAVEPOINT]!' },
@@ -1899,6 +1923,7 @@ const SQLD_2_3: Lesson = {
       id: 'sqld-2-3-s5',
       title: 'CREATE TABLE + 데이터 타입 + 제약',
       quizId: 'sqld-2-3-cp-05',
+      extraQuizIds: ['sqld-sql-lab-034'],
       dialogue: [
         { pose: 'wave', text: '[CREATE TABLE]은 새 테이블의 [구조를 정의]!' },
         { pose: 'think', text: '컬럼명 + 데이터 타입 + 제약조건을 모두 한 번에!' },
@@ -1973,6 +1998,7 @@ const SQLD_2_3: Lesson = {
       id: 'sqld-2-3-s6',
       title: 'ALTER · DROP · TRUNCATE — 구조 변경/삭제',
       quizId: 'sqld-2-3-cp-06',
+      extraQuizIds: ['sqld-sql-lab-032'],
       dialogue: [
         { pose: 'wave', text: '테이블 구조 변경 + 삭제 명령들!' },
         { pose: 'think', text: '[ALTER TABLE] — 5가지 형태! ADD / MODIFY / DROP COLUMN / RENAME / ADD CONSTRAINT!' },
@@ -2043,6 +2069,7 @@ const SQLD_2_3: Lesson = {
       id: 'sqld-2-3-s7',
       title: '제약조건 6종 + CTAS + VIEW',
       quizId: 'sqld-2-3-cp-07',
+      extraQuizIds: ['sqld-sql-lab-033'],
       dialogue: [
         { pose: 'wave', text: '제약조건 [6종]을 정확히! 시험 빈출!' },
         { pose: 'think', text: '[PRIMARY KEY (PK)]: [유일성 + NOT NULL]! 테이블당 [1개만]!' },
@@ -2122,6 +2149,7 @@ const SQLD_2_3: Lesson = {
       id: 'sqld-2-3-s8',
       title: 'DCL — GRANT / REVOKE + 두 OPTION 차이',
       quizId: 'sqld-2-3-cp-08',
+      extraQuizIds: ['sqld-sql-lab-035'],
       dialogue: [
         { pose: 'wave', text: '[DCL (Data Control Language)]은 [권한 관리]!' },
         { pose: 'think', text: '[GRANT]: 권한 [부여]! [REVOKE]: 권한 [회수]!' },

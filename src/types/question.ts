@@ -109,6 +109,22 @@ export interface SqlQuestionContext {
   trace?: string[];
 }
 
+export interface SqlOrderingInteraction {
+  kind: 'sql_ordering';
+  /** 반드시 화면에 표시해 어떤 SQL 문법 기준인지 명확히 한다. */
+  dialect: SqlDialect;
+  /** 짧은 동작 안내. 예: "블록을 순서대로 눌러 SQL을 완성하세요." */
+  instruction?: string;
+  /** answer 길이 + 1 개의 SQL 조각. 각 조각 사이에 빈칸이 들어간다. */
+  template: string[];
+  /** 사용자가 고를 수 있는 SQL 문법 블록. */
+  tokens: string[];
+  /** 정답 블록 순서. */
+  answer: string[];
+}
+
+export type QuestionInteraction = SqlOrderingInteraction;
+
 export interface QuestionBase {
   /** Stable unique id. Recommended: `<subject>-<chapter>-<index>` */
   id: string;
@@ -126,6 +142,7 @@ export interface QuestionBase {
   source?: string;
   tags?: string[];
   sqlContext?: SqlQuestionContext;
+  interaction?: QuestionInteraction;
   /**
    * 풀이/해설.
    *  - string: 단순 한 줄/문단 — 기존 데이터 그대로 호환

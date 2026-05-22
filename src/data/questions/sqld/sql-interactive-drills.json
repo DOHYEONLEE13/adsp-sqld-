@@ -1,0 +1,458 @@
+{
+  "subject": "sqld",
+  "meta": {
+    "version": "2026.05.22",
+    "updatedAt": "2026-05-22",
+    "source": "SQLD scope, QuestDP original interactive drills",
+    "notes": "SQL interpretation and block-ordering drills. Original examples; no source text is copied."
+  },
+  "questions": [
+    {
+      "id": "sqld-sql-read-001",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "subtopic": "SELECT 논리 실행 순서",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "source": "SQLD 범위 기반 QuestDP 오리지널 드릴",
+      "tags": ["select-order", "where", "having"],
+      "question": "다음 SQL에서 HAVING이 필요한 이유로 가장 적절한 것은?",
+      "sqlContext": {
+        "dialect": "standard",
+        "title": "그룹 조건 위치",
+        "focus": ["GROUP BY", "HAVING"],
+        "sql": "SELECT DEPT_ID, AVG(SAL) AS AVG_SAL\nFROM EMP\nGROUP BY DEPT_ID\nHAVING AVG(SAL) >= 5000;",
+        "trace": [
+          "WHERE는 그룹화 전 행을 거른다.",
+          "GROUP BY 이후에 부서별 평균이 만들어진다.",
+          "그룹별 평균 조건은 HAVING에서 판단한다."
+        ]
+      },
+      "choices": [
+        "AVG(SAL)은 그룹화 이후 계산되므로 그룹 조건은 HAVING에 둔다.",
+        "HAVING은 SELECT보다 먼저 실행되므로 별칭 AVG_SAL을 반드시 써야 한다.",
+        "WHERE에서는 숫자 비교를 사용할 수 없어서 HAVING만 가능하다.",
+        "GROUP BY가 있으면 모든 조건은 무조건 HAVING으로만 써야 한다."
+      ],
+      "answerIndex": 0,
+      "explanation": "집계 함수 결과는 GROUP BY 이후에 생깁니다. 행 단위 조건은 WHERE, 그룹 단위 조건은 HAVING으로 구분합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-read-002",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "subtopic": "상호연관 서브쿼리",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "source": "SQLD 범위 기반 QuestDP 오리지널 드릴",
+      "tags": ["correlated-subquery", "exists"],
+      "question": "다음 SQL의 의미로 가장 적절한 것은?",
+      "sqlContext": {
+        "dialect": "standard",
+        "title": "EXISTS 해석",
+        "focus": ["EXISTS", "상호연관"],
+        "sql": "SELECT C.CUST_ID\nFROM CUSTOMER C\nWHERE EXISTS (\n  SELECT 1\n  FROM ORDERS O\n  WHERE O.CUST_ID = C.CUST_ID\n);",
+        "trace": [
+          "바깥 CUSTOMER의 CUST_ID를 안쪽 ORDERS가 참조한다.",
+          "매칭 주문이 하나라도 있으면 EXISTS가 TRUE가 된다.",
+          "주문이 있는 고객만 남는다."
+        ]
+      },
+      "choices": [
+        "주문이 한 번이라도 존재하는 고객을 조회한다.",
+        "주문이 없는 고객만 조회한다.",
+        "CUSTOMER와 ORDERS의 모든 가능한 조합을 만든다.",
+        "고객별 주문 금액 합계가 1 이상인 고객만 조회한다."
+      ],
+      "answerIndex": 0,
+      "explanation": "EXISTS는 서브쿼리 결과 행 존재 여부를 봅니다. 이 SQL은 각 고객에 대해 같은 CUST_ID의 주문이 있는지 확인합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-read-003",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "subtopic": "윈도우 함수",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "source": "SQLD 범위 기반 QuestDP 오리지널 드릴",
+      "tags": ["window-function", "partition-by"],
+      "question": "다음 SQL이 반환하는 BONUS_RANK의 의미로 가장 적절한 것은?",
+      "sqlContext": {
+        "dialect": "standard",
+        "title": "PARTITION BY 해석",
+        "focus": ["RANK", "PARTITION BY"],
+        "sql": "SELECT EMP_ID, DEPT_ID, BONUS,\n       RANK() OVER (PARTITION BY DEPT_ID ORDER BY BONUS DESC) AS BONUS_RANK\nFROM EMP;",
+        "trace": [
+          "DEPT_ID별로 파티션을 나눈다.",
+          "각 부서 안에서 BONUS 내림차순으로 순위를 매긴다.",
+          "RANK는 동점 뒤 순위를 건너뛴다."
+        ]
+      },
+      "choices": [
+        "각 부서 안에서 BONUS가 높은 순서의 순위이다.",
+        "전체 회사에서 BONUS가 낮은 순서의 순위이다.",
+        "부서별 평균 BONUS를 한 행으로 압축한 결과이다.",
+        "BONUS가 NULL인 행만 따로 모은 번호이다."
+      ],
+      "answerIndex": 0,
+      "explanation": "PARTITION BY DEPT_ID는 부서별로 그룹을 나누되 행 수는 유지합니다. ORDER BY BONUS DESC 기준으로 각 부서 내부 순위를 계산합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-read-004",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "관리 구문",
+      "subtopic": "DDL 자동 커밋",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "source": "SQLD 범위 기반 QuestDP 오리지널 드릴",
+      "tags": ["oracle", "ddl", "commit"],
+      "question": "Oracle 기준 다음 실행 후 ROLLBACK의 효과로 가장 적절한 것은?",
+      "sqlContext": {
+        "dialect": "oracle",
+        "title": "DDL 자동 COMMIT",
+        "focus": ["Oracle", "DDL", "ROLLBACK"],
+        "sql": "INSERT INTO T VALUES (1);\nCREATE TABLE T_BACKUP (ID NUMBER);\nROLLBACK;",
+        "trace": [
+          "Oracle에서 DDL은 전후 트랜잭션을 COMMIT할 수 있다.",
+          "CREATE TABLE 실행 시 앞선 INSERT도 커밋된다.",
+          "이후 ROLLBACK으로 INSERT를 되돌릴 수 없다."
+        ]
+      },
+      "choices": [
+        "INSERT 결과는 이미 커밋되어 ROLLBACK으로 되돌아가지 않는다.",
+        "CREATE TABLE만 취소되고 INSERT는 대기 상태로 남는다.",
+        "INSERT와 CREATE TABLE이 모두 취소된다.",
+        "ROLLBACK은 DDL 뒤에서는 항상 문법 오류로 실패한다."
+      ],
+      "answerIndex": 0,
+      "explanation": "Oracle의 DDL은 자동 COMMIT 성격이 있어 앞선 DML까지 확정될 수 있습니다. 따라서 DDL 이후 ROLLBACK이 이전 INSERT를 되돌리지 못합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-order-001",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "subtopic": "SELECT 기본 구조",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "source": "SQLD 범위 기반 QuestDP 오리지널 인터랙션",
+      "tags": ["sql-ordering", "select"],
+      "question": "블록을 순서대로 눌러 기본 조회문을 완성하세요.",
+      "sqlContext": {
+        "dialect": "standard",
+        "title": "기본 SELECT",
+        "focus": ["Standard SQL", "SELECT"]
+      },
+      "interaction": {
+        "kind": "sql_ordering",
+        "dialect": "standard",
+        "instruction": "위 빈칸을 왼쪽부터 채우세요.",
+        "template": ["", " EMP_ID, NAME\n", " EMP\n", " DEPT_ID = 10\n", " NAME;"],
+        "tokens": ["WHERE", "SELECT", "ORDER BY", "FROM"],
+        "answer": ["SELECT", "FROM", "WHERE", "ORDER BY"]
+      },
+      "choices": [
+        "SELECT → FROM → WHERE → ORDER BY",
+        "FROM → WHERE → SELECT → ORDER BY",
+        "SELECT → WHERE → FROM → ORDER BY",
+        "WHERE → SELECT → FROM → ORDER BY"
+      ],
+      "answerIndex": 0,
+      "explanation": "기본 조회문은 SELECT로 표시할 컬럼을 정하고 FROM에서 테이블을 지정한 뒤, WHERE로 행을 거르고 ORDER BY로 최종 정렬합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-order-002",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "subtopic": "GROUP BY와 HAVING",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "source": "SQLD 범위 기반 QuestDP 오리지널 인터랙션",
+      "tags": ["sql-ordering", "group-by", "having"],
+      "question": "부서별 평균 급여가 5000 이상인 부서를 찾는 SQL을 완성하세요.",
+      "sqlContext": {
+        "dialect": "standard",
+        "title": "그룹 조건",
+        "focus": ["GROUP BY", "HAVING"]
+      },
+      "interaction": {
+        "kind": "sql_ordering",
+        "dialect": "standard",
+        "instruction": "집계 조건은 HAVING에 둡니다.",
+        "template": [
+          "SELECT DEPT_ID, AVG(SAL)\n",
+          " EMP\n",
+          " DEPT_ID\n",
+          " AVG(SAL) >= 5000;"
+        ],
+        "tokens": ["GROUP BY", "FROM", "HAVING"],
+        "answer": ["FROM", "GROUP BY", "HAVING"]
+      },
+      "choices": [
+        "FROM → GROUP BY → HAVING",
+        "FROM → HAVING → GROUP BY",
+        "GROUP BY → FROM → HAVING",
+        "HAVING → FROM → GROUP BY"
+      ],
+      "answerIndex": 0,
+      "explanation": "테이블은 FROM에서 정하고, DEPT_ID별로 GROUP BY 한 뒤, 그룹별 AVG(SAL) 조건은 HAVING에 둡니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-order-003",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "subtopic": "JOIN",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "source": "SQLD 범위 기반 QuestDP 오리지널 인터랙션",
+      "tags": ["sql-ordering", "join"],
+      "question": "사원과 부서를 매칭하는 INNER JOIN을 완성하세요.",
+      "sqlContext": {
+        "dialect": "standard",
+        "title": "JOIN 구조",
+        "focus": ["INNER JOIN", "ON"]
+      },
+      "interaction": {
+        "kind": "sql_ordering",
+        "dialect": "standard",
+        "instruction": "JOIN 뒤에는 연결 조건 ON이 따라옵니다.",
+        "template": [
+          "SELECT E.EMP_ID, D.DEPT_NAME\n",
+          " EMP E\n",
+          " DEPT D\n",
+          " E.DEPT_ID = D.DEPT_ID;"
+        ],
+        "tokens": ["FROM", "ON", "INNER JOIN"],
+        "answer": ["FROM", "INNER JOIN", "ON"]
+      },
+      "choices": [
+        "FROM → INNER JOIN → ON",
+        "INNER JOIN → FROM → ON",
+        "FROM → ON → INNER JOIN",
+        "ON → FROM → INNER JOIN"
+      ],
+      "answerIndex": 0,
+      "explanation": "JOIN 구문은 FROM 기준 테이블을 둔 뒤 INNER JOIN으로 결합할 테이블을 쓰고, ON에서 두 테이블의 연결 조건을 지정합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-order-004",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "subtopic": "NOT EXISTS",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "source": "SQLD 범위 기반 QuestDP 오리지널 인터랙션",
+      "tags": ["sql-ordering", "not-exists", "null-safe"],
+      "question": "계약이 없는 고객을 찾는 NULL 안전 패턴을 완성하세요.",
+      "sqlContext": {
+        "dialect": "standard",
+        "title": "NOT EXISTS",
+        "focus": ["NULL 안전", "서브쿼리"]
+      },
+      "interaction": {
+        "kind": "sql_ordering",
+        "dialect": "standard",
+        "instruction": "NOT IN 대신 NOT EXISTS로 생각하세요.",
+        "template": [
+          "SELECT C.CUST_ID\nFROM CUSTOMER C\n",
+          " (\n  SELECT 1\n  FROM CONTRACT CT\n  ",
+          " CT.CUST_ID = C.CUST_ID\n);"
+        ],
+        "tokens": ["WHERE", "WHERE NOT EXISTS"],
+        "answer": ["WHERE NOT EXISTS", "WHERE"]
+      },
+      "choices": [
+        "WHERE NOT EXISTS → WHERE",
+        "WHERE → WHERE NOT EXISTS",
+        "NOT IN → WHERE",
+        "WHERE EXISTS → WHERE"
+      ],
+      "answerIndex": 0,
+      "explanation": "바깥 WHERE에는 NOT EXISTS를 두고, 안쪽 서브쿼리 WHERE에서 고객 키 매칭 조건을 씁니다. NULL이 섞여도 NOT IN보다 안전합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-order-005",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "subtopic": "집합 연산자",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "source": "SQLD 범위 기반 QuestDP 오리지널 인터랙션",
+      "tags": ["sql-ordering", "union"],
+      "question": "두 조회 결과를 중복 제거해 합치는 SQL을 완성하세요.",
+      "sqlContext": {
+        "dialect": "standard",
+        "title": "UNION",
+        "focus": ["집합 연산자", "ORDER BY 위치"]
+      },
+      "interaction": {
+        "kind": "sql_ordering",
+        "dialect": "standard",
+        "instruction": "ORDER BY는 전체 집합 연산 뒤에 한 번만 둡니다.",
+        "template": [
+          "SELECT EMAIL FROM CUSTOMER_A\n",
+          "\nSELECT EMAIL FROM CUSTOMER_B\n",
+          " EMAIL;"
+        ],
+        "tokens": ["ORDER BY", "UNION"],
+        "answer": ["UNION", "ORDER BY"]
+      },
+      "choices": [
+        "UNION → ORDER BY",
+        "ORDER BY → UNION",
+        "UNION ALL → WHERE",
+        "INTERSECT → ORDER BY"
+      ],
+      "answerIndex": 0,
+      "explanation": "UNION은 중복을 제거해 두 결과를 합칩니다. 집합 연산자의 ORDER BY는 마지막 SELECT 뒤에 전체 결과 기준으로 한 번만 씁니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-order-006",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "subtopic": "Oracle TOP N",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "source": "SQLD 범위 기반 QuestDP 오리지널 인터랙션",
+      "tags": ["sql-ordering", "oracle", "rownum", "top-n"],
+      "question": "Oracle 구버전 기준 매출 상위 3건 조회 패턴을 완성하세요.",
+      "sqlContext": {
+        "dialect": "oracle",
+        "title": "ROWNUM TOP N",
+        "focus": ["Oracle", "ROWNUM"]
+      },
+      "interaction": {
+        "kind": "sql_ordering",
+        "dialect": "oracle",
+        "instruction": "정렬을 먼저 하고 바깥에서 ROWNUM을 거릅니다.",
+        "template": [
+          "SELECT *\n",
+          " (\n  SELECT * FROM SALE\n  ",
+          " AMT DESC\n)\n",
+          " ROWNUM <= 3;"
+        ],
+        "tokens": ["ORDER BY", "WHERE", "FROM"],
+        "answer": ["FROM", "ORDER BY", "WHERE"]
+      },
+      "choices": [
+        "FROM → ORDER BY → WHERE",
+        "FROM → WHERE → ORDER BY",
+        "WHERE → FROM → ORDER BY",
+        "ORDER BY → FROM → WHERE"
+      ],
+      "answerIndex": 0,
+      "explanation": "Oracle 구버전 ROWNUM은 정렬 전에 붙을 수 있습니다. 그래서 인라인뷰 안에서 ORDER BY를 먼저 수행하고 바깥 WHERE ROWNUM <= N으로 제한합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-order-007",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "관리 구문",
+      "subtopic": "MERGE",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "source": "SQLD 범위 기반 QuestDP 오리지널 인터랙션",
+      "tags": ["sql-ordering", "merge"],
+      "question": "MERGE의 기본 절 순서를 완성하세요.",
+      "sqlContext": {
+        "dialect": "oracle",
+        "title": "MERGE 구조",
+        "focus": ["MERGE", "UPSERT"]
+      },
+      "interaction": {
+        "kind": "sql_ordering",
+        "dialect": "oracle",
+        "instruction": "대상, 소스, 매칭 조건, 분기 순서입니다.",
+        "template": [
+          "",
+          " MEMBER M\n",
+          " MEMBER_STAGE S\n",
+          " (M.ID = S.ID)\n",
+          " UPDATE SET M.NAME = S.NAME\n",
+          " INSERT (ID, NAME) VALUES (S.ID, S.NAME);"
+        ],
+        "tokens": ["WHEN MATCHED THEN", "MERGE INTO", "ON", "WHEN NOT MATCHED THEN", "USING"],
+        "answer": ["MERGE INTO", "USING", "ON", "WHEN MATCHED THEN", "WHEN NOT MATCHED THEN"]
+      },
+      "choices": [
+        "MERGE INTO → USING → ON → WHEN MATCHED THEN → WHEN NOT MATCHED THEN",
+        "USING → MERGE INTO → ON → WHEN NOT MATCHED THEN → WHEN MATCHED THEN",
+        "MERGE INTO → ON → USING → WHEN MATCHED THEN → WHEN NOT MATCHED THEN",
+        "ON → MERGE INTO → USING → WHEN MATCHED THEN → WHEN NOT MATCHED THEN"
+      ],
+      "answerIndex": 0,
+      "explanation": "MERGE는 대상 테이블(MERGE INTO), 소스(USING), 매칭 조건(ON)을 먼저 정한 뒤 MATCHED/NOT MATCHED 분기로 UPDATE 또는 INSERT를 수행합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-order-008",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "관리 구문",
+      "subtopic": "CREATE TABLE",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "source": "SQLD 범위 기반 QuestDP 오리지널 인터랙션",
+      "tags": ["sql-ordering", "ddl", "constraint"],
+      "question": "학생 테이블 생성 SQL의 핵심 블록을 완성하세요.",
+      "sqlContext": {
+        "dialect": "oracle",
+        "title": "CREATE TABLE",
+        "focus": ["DDL", "제약조건"]
+      },
+      "interaction": {
+        "kind": "sql_ordering",
+        "dialect": "oracle",
+        "instruction": "컬럼 정의 뒤에 제약조건을 붙입니다.",
+        "template": [
+          "",
+          " STUDENT (\n  ID NUMBER ",
+          ",\n  NAME VARCHAR2(20) ",
+          "\n);"
+        ],
+        "tokens": ["CREATE TABLE", "NOT NULL", "PRIMARY KEY"],
+        "answer": ["CREATE TABLE", "PRIMARY KEY", "NOT NULL"]
+      },
+      "choices": [
+        "CREATE TABLE → PRIMARY KEY → NOT NULL",
+        "PRIMARY KEY → CREATE TABLE → NOT NULL",
+        "CREATE TABLE → NOT NULL → PRIMARY KEY",
+        "NOT NULL → CREATE TABLE → PRIMARY KEY"
+      ],
+      "answerIndex": 0,
+      "explanation": "Oracle 기준 CREATE TABLE로 객체를 만들고, ID에는 PRIMARY KEY, NAME에는 NOT NULL 같은 제약조건을 컬럼 정의 뒤에 붙일 수 있습니다.",
+      "status": "guidebook-verified"
+    }
+  ]
+}

@@ -26,7 +26,7 @@ import {
   Trophy,
   XCircle,
 } from 'lucide-react';
-import type { Subject } from '@/types/question';
+import type { MultipleChoiceQuestion, Subject } from '@/types/question';
 import { SUBJECT_SCHEMAS } from '@/data/subjects';
 import {
   getChapterSteps,
@@ -43,6 +43,10 @@ import LessonCompleteModal from '../components/LessonCompleteModal';
 import PageAmbientBg from '../components/PageAmbientBg';
 import { reserveLessonQuestion } from '../serverQuestionSessions';
 import SqlQuestionContextCard from '../components/SqlQuestionContextCard';
+import SqlOrderingPanel, {
+  isSqlOrderingQuestion,
+  sqlOrderingCorrectAnswerText,
+} from '../lesson/SqlOrderingPanel';
 
 const SUBJECT_ACCENT: Record<Subject, string> = {
   adsp: '#67e8f9',
@@ -476,7 +480,7 @@ export default function LessonScreen({
             <button
               type="button"
               onClick={onBack}
-              className="shrink-0 inline-flex items-center gap-1.5 kr-heading text-[10.5px] uppercase tracking-widest text-cream/70 hover:text-neon transition"
+              className="game-back-button shrink-0 inline-flex items-center gap-1.5 kr-heading text-[10.5px] uppercase tracking-widest transition"
               aria-label="존으로 돌아가기"
             >
               <ArrowLeft size={13} strokeWidth={2.4} />
@@ -575,7 +579,7 @@ export default function LessonScreen({
                   goNextStep();
                 }
               }}
-              accent={isLastStep && !hasNextQuizInStep ? '#6FFF00' : accent}
+              accent={isLastStep && !hasNextQuizInStep ? 'var(--neon)' : accent}
               icon={
                 isLastStep && !hasNextQuizInStep ? (
                   <Sparkles size={18} strokeWidth={2.6} />
@@ -586,7 +590,7 @@ export default function LessonScreen({
               label={
                 hasNextQuizInStep ? '다음 SQL 문제' : isLastStep
                   ? '실전 세트로 마무리'
-                  : `다음 개념 - ${lesson.steps[stepIdx + 1]?.title ?? ''}`
+                  : `다음 개념 — ${lesson.steps[stepIdx + 1]?.title ?? ''}`
               }
             />
           ) : (
@@ -651,7 +655,7 @@ function ProgressBar({
         className="absolute top-0 left-0 bottom-0 transition-all duration-500"
         style={{
           width: `${chapterSolvedRatio * 100}%`,
-          background: 'rgba(111,255,0,0.35)',
+          background: 'var(--neon-35)',
         }}
       />
       {/* 현재 스텝 위치 */}
@@ -836,9 +840,9 @@ function BlockCard({ block, accent }: { block: LessonBlock; accent: string }) {
     case 'callout': {
       const toneMap = {
         mnemonic: {
-          color: '#6FFF00',
-          bg: 'rgba(111,255,0,0.08)',
-          border: 'rgba(111,255,0,0.35)',
+          color: 'var(--neon)',
+          bg: 'var(--neon-08)',
+          border: 'var(--neon-35)',
           label: '암기법',
           Icon: Brain,
         },
@@ -895,96 +899,111 @@ function BlockCard({ block, accent }: { block: LessonBlock; accent: string }) {
 // ================================================================
 
 interface QuizViewProps {
-  question: {
-    id: string;
-    question: string;
-    choices: string[];
-    answerIndex: number;
-    sqlContext?: import('@/types/question').SqlQuestionContext;
-    /** string 또는 ExplanationObj 모두 허용 — 호출 측이 이미 string 으로 변환했거나 객체 그대로. */
-    explanation?: string | import('@/types/question').ExplanationObj;
-  };
+  question: MultipleChoiceQuestion;
   saved?: { chosen: number; correct: boolean };
   onChoose: (idx: number) => void;
 }
 
 function QuizView({ question, saved, onChoose }: QuizViewProps) {
+  const isOrderingQuestion = isSqlOrderingQuestion(question);
+
   return (
-    <div className="space-y-4">
+    <div className={isOrderingQuestion ? 'space-y-2.5' : 'space-y-4'}>
       {/* 문항 */}
       <div
-        className="rounded-[20px] p-6 md:p-7"
+        className={
+          isOrderingQuestion
+            ? 'rounded-[16px] p-3 md:p-4'
+            : 'rounded-[20px] p-6 md:p-7'
+        }
         style={{
           background: 'rgba(251,191,36,0.05)',
           border: '1px solid rgba(251,191,36,0.28)',
         }}
       >
-        <div className="kr-heading uppercase text-[10.5px] tracking-widest text-[#fbbf24] mb-2 inline-flex items-center gap-1.5">
+        <div
+          className={
+            'kr-heading uppercase tracking-widest text-[#fbbf24] inline-flex items-center gap-1.5 ' +
+            (isOrderingQuestion ? 'mb-1.5 text-[9.5px]' : 'mb-2 text-[10.5px]')
+          }
+        >
           <Trophy size={12} strokeWidth={2.6} />
           예제
         </div>
-        <p className="kr-body text-[15px] md:text-[16px] leading-[1.7] text-cream/95 whitespace-pre-line">
+        <p
+          className={
+            'kr-body text-cream/95 whitespace-pre-line ' +
+            (isOrderingQuestion
+              ? 'text-[12.5px] md:text-[13.5px] leading-[1.45]'
+              : 'text-[15px] md:text-[16px] leading-[1.7]')
+          }
+        >
           {question.question}
         </p>
-        <SqlQuestionContextCard
-          context={question.sqlContext}
-          revealed={!!saved}
-          className="mt-4"
-        />
+        {!isOrderingQuestion ? (
+          <SqlQuestionContextCard
+            context={question.sqlContext}
+            revealed={!!saved}
+            className="mt-4"
+          />
+        ) : null}
       </div>
 
-      {/* 선지 */}
-      <div className="space-y-2.5">
-        {question.choices.map((c, i) => {
-          const isChosen = saved?.chosen === i;
-          const isAnswer = question.answerIndex === i;
-          const revealed = !!saved;
-          let state:
-            | 'default'
-            | 'chosen-correct'
-            | 'chosen-wrong'
-            | 'answer-reveal'
-            | 'dim' = 'default';
-          if (revealed) {
-            if (isChosen && saved!.correct) state = 'chosen-correct';
-            else if (isChosen && !saved!.correct) state = 'chosen-wrong';
-            else if (isAnswer) state = 'answer-reveal';
-            else state = 'dim';
-          }
-          const styles = choiceStyle(state);
-          return (
-            <button
-              key={i}
-              type="button"
-              disabled={revealed}
-              onClick={() => onChoose(i)}
-              className="w-full text-left rounded-[14px] p-4 md:p-5 transition-all disabled:cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-neon"
-              style={styles}
-            >
-              <div className="flex items-start gap-3">
-                <span
-                  className="shrink-0 w-7 h-7 rounded-full kr-heading text-[12px] inline-flex items-center justify-center tabular-nums"
-                  style={{
-                    background: 'rgba(255,255,255,0.08)',
-                    color: 'inherit',
-                  }}
-                >
-                  {i + 1}
-                </span>
-                <span className="kr-body text-[13.5px] md:text-[14.5px] leading-[1.6] flex-1 whitespace-pre-line">
-                  {c}
-                </span>
-                {revealed && isAnswer ? (
-                  <CheckCircle2 size={18} strokeWidth={2.4} className="shrink-0 text-neon" />
-                ) : null}
-                {revealed && isChosen && !saved!.correct ? (
-                  <XCircle size={18} strokeWidth={2.4} className="shrink-0 text-[#f87171]" />
-                ) : null}
-              </div>
-            </button>
-          );
-        })}
-      </div>
+      {isOrderingQuestion ? (
+        <SqlOrderingPanel question={question} saved={saved} onChoose={onChoose} />
+      ) : (
+        <div className="space-y-2.5">
+          {question.choices.map((c, i) => {
+            const isChosen = saved?.chosen === i;
+            const isAnswer = question.answerIndex === i;
+            const revealed = !!saved;
+            let state:
+              | 'default'
+              | 'chosen-correct'
+              | 'chosen-wrong'
+              | 'answer-reveal'
+              | 'dim' = 'default';
+            if (revealed) {
+              if (isChosen && saved!.correct) state = 'chosen-correct';
+              else if (isChosen && !saved!.correct) state = 'chosen-wrong';
+              else if (isAnswer) state = 'answer-reveal';
+              else state = 'dim';
+            }
+            const styles = choiceStyle(state);
+            return (
+              <button
+                key={i}
+                type="button"
+                disabled={revealed}
+                onClick={() => onChoose(i)}
+                className="w-full text-left rounded-[14px] p-4 md:p-5 transition-all disabled:cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-neon"
+                style={styles}
+              >
+                <div className="flex items-start gap-3">
+                  <span
+                    className="shrink-0 w-7 h-7 rounded-full kr-heading text-[12px] inline-flex items-center justify-center tabular-nums"
+                    style={{
+                      background: 'rgba(255,255,255,0.08)',
+                      color: 'inherit',
+                    }}
+                  >
+                    {i + 1}
+                  </span>
+                  <span className="kr-body text-[13.5px] md:text-[14.5px] leading-[1.6] flex-1 whitespace-pre-line">
+                    {c}
+                  </span>
+                  {revealed && isAnswer ? (
+                    <CheckCircle2 size={18} strokeWidth={2.4} className="shrink-0 text-neon" />
+                  ) : null}
+                  {revealed && isChosen && !saved!.correct ? (
+                    <XCircle size={18} strokeWidth={2.4} className="shrink-0 text-[#f87171]" />
+                  ) : null}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* 해설 */}
       {saved ? (
@@ -992,16 +1011,16 @@ function QuizView({ question, saved, onChoose }: QuizViewProps) {
           className="rounded-[20px] p-5 md:p-6"
           style={{
             background: saved.correct
-              ? 'rgba(111,255,0,0.08)'
+              ? 'var(--neon-08)'
               : 'rgba(248,113,113,0.08)',
             border: `1px solid ${
-              saved.correct ? 'rgba(111,255,0,0.35)' : 'rgba(248,113,113,0.35)'
+              saved.correct ? 'var(--neon-35)' : 'rgba(248,113,113,0.35)'
             }`,
           }}
         >
           <div
             className="kr-heading uppercase text-[10.5px] tracking-widest mb-1.5 inline-flex items-center gap-1.5"
-            style={{ color: saved.correct ? '#6FFF00' : '#f87171' }}
+            style={{ color: saved.correct ? 'var(--neon)' : '#f87171' }}
           >
             {saved.correct ? (
               <>
@@ -1009,7 +1028,10 @@ function QuizView({ question, saved, onChoose }: QuizViewProps) {
               </>
             ) : (
               <>
-                <XCircle size={12} strokeWidth={2.6} /> 오답 · 정답은 {question.answerIndex + 1}번
+                <XCircle size={12} strokeWidth={2.6} /> 오답 ·{' '}
+                {sqlOrderingCorrectAnswerText(question)
+                  ? '정답 순서'
+                  : `정답은 ${question.answerIndex + 1}번`}
               </>
             )}
           </div>
@@ -1054,10 +1076,10 @@ function choiceStyle(
       };
     case 'chosen-correct':
       return {
-        background: 'rgba(111,255,0,0.14)',
-        border: '1.5px solid #6FFF00',
+        background: 'var(--neon-14)',
+        border: '1.5px solid var(--neon)',
         color: '#eaffd0',
-        boxShadow: '0 0 0 3px rgba(111,255,0,0.18)',
+        boxShadow: '0 0 0 3px var(--neon-18)',
       };
     case 'chosen-wrong':
       return {
@@ -1067,8 +1089,8 @@ function choiceStyle(
       };
     case 'answer-reveal':
       return {
-        background: 'rgba(111,255,0,0.08)',
-        border: '1.5px dashed rgba(111,255,0,0.6)',
+        background: 'var(--neon-08)',
+        border: '1.5px dashed var(--neon-60)',
         color: '#dfffc6',
       };
     case 'dim':

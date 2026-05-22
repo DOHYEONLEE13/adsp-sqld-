@@ -31,6 +31,10 @@ import { characterForSubject } from '@/components/mascot/types';
 import TopBar from './TopBar';
 import SpeechBubble from './SpeechBubble';
 import OptionsPanel from './OptionsPanel';
+import SqlOrderingPanel, {
+  isSqlOrderingQuestion,
+  sqlOrderingCorrectAnswerText,
+} from './SqlOrderingPanel';
 import FeedbackSheet from './FeedbackSheet';
 import SimilarProblemsPanel from '../components/SimilarProblemsPanel';
 import { countSimilarQuestions } from '../similarQuestions';
@@ -232,6 +236,9 @@ export default function DialogueLesson({
       : Math.min(quizIdx, stepQuizIds.length - 1);
   const activeQuizId = stepQuizIds[activeQuizIdx];
   const quizQuestion = activeQuizId ? getQuizQuestion(activeQuizId) : null;
+  const isOrderingQuestion = quizQuestion
+    ? isSqlOrderingQuestion(quizQuestion)
+    : false;
   const hasNextQuizInStep = activeQuizIdx < stepQuizIds.length - 1;
 
   // ── Sub-step group trail ─────────────────────────────────────────────
@@ -479,7 +486,7 @@ export default function DialogueLesson({
         <TopBar
           progress={progress}
           stepProgress={innerProgress}
-          questionId={quizQuestion?.id ?? step.quizId}
+          questionId={step.quizId}
           accent={visual.color}
           onExit={onBack}
         />
@@ -619,7 +626,7 @@ export default function DialogueLesson({
       <PageAmbientBg blur />
       <TopBar
         progress={progress}
-        questionId={step.quizId}
+        questionId={quizQuestion?.id ?? step.quizId}
         accent={subject === 'sqld' ? '#c084fc' : '#67e8f9'}
         onExit={onBack}
       />
@@ -655,11 +662,20 @@ export default function DialogueLesson({
         </div>
       ) : null}
 
-      <main className="flex-1 mx-auto w-full max-w-[820px] lg:max-w-[1000px] xl:max-w-[1180px] px-5 md:px-8 lg:px-12 xl:px-16 pt-6 lg:pt-10 pb-36">
+      <main
+        className={
+          'flex-1 mx-auto w-full max-w-[820px] lg:max-w-[1000px] xl:max-w-[1180px] px-5 md:px-8 lg:px-12 xl:px-16 pb-36 ' +
+          (isOrderingQuestion && phase !== 'narrate'
+            ? 'pt-2 lg:pt-5'
+            : 'pt-6 lg:pt-10')
+        }
+      >
         {/* 캐릭터 + 말풍선 영역 */}
-        <div
-          className={
-            'flex gap-4 md:gap-6 ' +
+          <div
+            className={
+            (isOrderingQuestion && phase !== 'narrate'
+              ? 'flex gap-2 md:gap-4 '
+              : 'flex gap-4 md:gap-6 ') +
             (bubblePlacement === 'top'
               ? 'flex-col items-center'
               : 'items-start')
@@ -672,14 +688,21 @@ export default function DialogueLesson({
               size={isMobile ? 140 : 180}
             />
           </div>
-          <div className="flex-1 w-full pt-2">
+          <div
+            className={
+              'flex-1 w-full ' +
+              (isOrderingQuestion && phase !== 'narrate' ? 'pt-0' : 'pt-2')
+            }
+          >
             {bubbleText ? (
               <SpeechBubble
                 text={bubbleText}
                 placement={bubblePlacement}
               />
             ) : null}
-            {(phase === 'question' || phase === 'feedback') && quizQuestion?.sqlContext ? (
+            {(phase === 'question' || phase === 'feedback') &&
+            quizQuestion?.sqlContext &&
+            !isOrderingQuestion ? (
               <SqlQuestionContextCard
                 context={quizQuestion.sqlContext}
                 revealed={phase === 'feedback'}
@@ -778,17 +801,17 @@ export default function DialogueLesson({
                         background: current
                           ? 'var(--subject-accent)'
                           : completed
-                            ? 'linear-gradient(#010828, #010828) padding-box, rgba(111,255,0,0.22) border-box'
+                            ? 'linear-gradient(#010828, #010828) padding-box, var(--neon-22) border-box'
                             : 'linear-gradient(#010828, #010828) padding-box, rgba(239,244,255,0.06) border-box',
                         border: current
                           ? '2px solid var(--subject-accent)'
                           : completed
-                            ? '1.5px solid rgba(111,255,0,0.55)'
+                            ? '1.5px solid var(--neon-55)'
                             : '1.5px solid rgba(239,244,255,0.22)',
                         boxShadow: current
                           ? '0 0 12px var(--subject-accent), 0 0 0 3px rgba(1,8,40,1)'
                           : `0 0 0 3px var(--base, #010828)`,
-                        color: completed ? '#9CFF3D' : 'transparent',
+                        color: completed ? 'var(--neon)' : 'transparent',
                       }}
                     >
                       {completed ? (
@@ -828,31 +851,48 @@ export default function DialogueLesson({
           </nav>
         ) : null}
 
-        {/* question / feedback 단계 — 4지선다 */}
+        {/* question / feedback 단계 — 4지선다 또는 SQL 순서 조립 */}
         {(phase === 'question' || phase === 'feedback') && quizQuestion ? (
-          <div className="mt-8">
+          <div className={isOrderingQuestion ? 'mt-3' : 'mt-8'}>
             {phase === 'question' ? (
-              <div className="flex justify-start mb-4">
+              <div className={isOrderingQuestion ? 'flex justify-start mb-2' : 'flex justify-start mb-4'}>
                 <button
                   type="button"
                   onClick={handleGoPrev}
                   aria-label="대사로 돌아가기"
-                  className="kr-heading uppercase tracking-widest text-[11px] md:text-[12px] px-3.5 py-2 rounded-full inline-flex items-center gap-1.5 transition liquid-glass hover:bg-white/10"
+                  className={
+                    'kr-heading uppercase tracking-widest rounded-full inline-flex items-center gap-1.5 transition liquid-glass hover:bg-white/10 ' +
+                    (isOrderingQuestion
+                      ? 'text-[10px] px-2.5 py-1.5'
+                      : 'text-[11px] md:text-[12px] px-3.5 py-2')
+                  }
                 >
                   <ChevronLeft size={13} strokeWidth={2.6} />
                   대사 다시 보기
                 </button>
               </div>
             ) : null}
-            <OptionsPanel
-              choices={quizQuestion.choices}
-              chosen={chosen}
-              correctIndex={
-                phase === 'feedback' ? quizQuestion.answerIndex : null
-              }
-              graded={phase === 'feedback'}
-              onChoose={handleChoose}
-            />
+            {isSqlOrderingQuestion(quizQuestion) ? (
+              <SqlOrderingPanel
+                question={quizQuestion}
+                saved={
+                  phase === 'feedback' && correct !== null && chosen !== null
+                    ? { chosen, correct }
+                    : undefined
+                }
+                onChoose={handleChoose}
+              />
+            ) : (
+              <OptionsPanel
+                choices={quizQuestion.choices}
+                chosen={chosen}
+                correctIndex={
+                  phase === 'feedback' ? quizQuestion.answerIndex : null
+                }
+                graded={phase === 'feedback'}
+                onChoose={handleChoose}
+              />
+            )}
           </div>
         ) : null}
       </main>
@@ -896,7 +936,8 @@ export default function DialogueLesson({
                 explanation={explanationToText(quizQuestion.explanation)}
                 correctAnswerText={
                   !correct
-                    ? quizQuestion.choices[quizQuestion.answerIndex]
+                    ? sqlOrderingCorrectAnswerText(quizQuestion) ??
+                      quizQuestion.choices[quizQuestion.answerIndex]
                     : undefined
                 }
                 ctaLabel={ctaLabel}

@@ -59,17 +59,21 @@ describe('lessons split — 전수 무결성 검증', () => {
     );
   });
 
-  it('3. 모든 step.quizId 가 getQuizQuestion 으로 MCQ 매칭됨', () => {
+  it('3. 모든 step.quizId / extraQuizIds 가 getQuizQuestion 으로 MCQ 매칭됨', () => {
     // 단, quizId 가 없는 review (그룹 복습) step 은 검증 대상 아님.
     const broken: string[] = [];
     for (const lesson of ALL_LESSONS) {
       for (const step of lesson.steps) {
-        if (!step.quizId) continue; // review step skip
-        const q = getQuizQuestion(step.quizId);
-        if (!q) {
-          broken.push(
-            `${step.id} (lesson ${lesson.id}) → quizId "${step.quizId}" 매칭 실패`,
-          );
+        const quizIds = [step.quizId, ...(step.extraQuizIds ?? [])].filter(
+          (id): id is string => !!id,
+        );
+        for (const quizId of quizIds) {
+          const q = getQuizQuestion(quizId);
+          if (!q) {
+            broken.push(
+              `${step.id} (lesson ${lesson.id}) → quizId "${quizId}" 매칭 실패`,
+            );
+          }
         }
       }
     }

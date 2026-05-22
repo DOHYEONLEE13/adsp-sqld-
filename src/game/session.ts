@@ -36,6 +36,9 @@ export type SamplingMode = 'random' | 'weakness' | 'review';
  */
 export function isPlayable(q: Question): q is MultipleChoiceQuestion {
   if (q.type !== 'multiple_choice') return false;
+  // SQL 순서 조립형은 레슨 전용 인터랙션이다.
+  // Quest/모의고사 랜덤 세션은 아직 selected_index 기반 객관식만 안전하게 처리한다.
+  if (q.interaction?.kind === 'sql_ordering') return false;
   if (q.status === 'restored' || q.status === 'deprecated') return false;
   if (q.needsDistractors) return false;
   return true;

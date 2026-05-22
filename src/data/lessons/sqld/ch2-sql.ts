@@ -134,7 +134,7 @@ const SQLD_2_1: Lesson = {
       id: 'sqld-2-1-s3',
       title: 'SELECT 실행 순서 — "FWGHSO" 프웨그하셀오',
       quizId: 'sqld-2-1-cp-03',
-      extraQuizIds: ['sqld-sql-lab-002'],
+      extraQuizIds: ['sqld-sql-lab-002', 'sqld-sql-order-001'],
       dialogue: [
         { pose: 'wave', text: 'SQL 의 [작성 순서] 와 [실제 실행 순서] 가 달라! 가장 중요한 시험 포인트!' },
         { pose: 'think', text: '우리는 [SELECT] 부터 쓰지만 DB 엔진은 [FROM] 부터 처리!' },
@@ -698,7 +698,7 @@ const SQLD_2_1: Lesson = {
       id: 'sqld-2-1-s11',
       title: 'GROUP BY · HAVING — 그룹화와 그룹 필터',
       quizId: 'sqld-2-1-cp-11',
-      extraQuizIds: ['sqld-sql-lab-013'],
+      extraQuizIds: ['sqld-sql-lab-013', 'sqld-sql-read-001', 'sqld-sql-order-002'],
       dialogue: [
         { pose: 'wave', text: '[GROUP BY]는 [같은 값을 가진 행을 묶어 한 줄로 요약]!' },
         { pose: 'think', text: '예: 부서별 평균급여 — GROUP BY 부서 후 AVG(급여) 계산. 부서마다 한 줄!' },
@@ -847,7 +847,7 @@ const SQLD_2_2: Lesson = {
       id: 'sqld-2-2-s1',
       title: 'JOIN 4종 — INNER / LEFT / RIGHT / FULL OUTER',
       quizId: 'sqld-2-2-cp-01',
-      extraQuizIds: ['sqld-sql-lab-015', 'sqld-sql-lab-016'],
+      extraQuizIds: ['sqld-sql-lab-015', 'sqld-sql-lab-016', 'sqld-sql-order-003'],
       dialogue: [
         { pose: 'wave', text: '[JOIN]은 [여러 테이블을 한 결과로 묶는 가장 강력한 도구]! 시험 빈출 1순위!' },
         { pose: 'think', text: 'JOIN 종류 [4가지]: [INNER] · [LEFT OUTER] · [RIGHT OUTER] · [FULL OUTER]!' },
@@ -1103,7 +1103,7 @@ const SQLD_2_2: Lesson = {
       id: 'sqld-2-2-s5',
       title: '다중행 비교 — EXISTS · IN · ANY · ALL',
       quizId: 'sqld-2-2-cp-05',
-      extraQuizIds: ['sqld-sql-lab-017'],
+      extraQuizIds: ['sqld-sql-lab-017', 'sqld-sql-read-002', 'sqld-sql-order-004'],
       dialogue: [
         { pose: 'wave', text: '다중행 서브쿼리와 함께 쓰는 [4가지 연산자]! 의미가 미묘하게 달라!' },
         { pose: 'think', text: '[IN]: 서브쿼리 결과 [집합에 포함]되는지 검사!' },
@@ -1166,7 +1166,7 @@ const SQLD_2_2: Lesson = {
       id: 'sqld-2-2-s6',
       title: '집합 연산자 4종 — UNION / UNION ALL / INTERSECT / MINUS',
       quizId: 'sqld-2-2-cp-06',
-      extraQuizIds: ['sqld-sql-lab-018'],
+      extraQuizIds: ['sqld-sql-lab-018', 'sqld-sql-order-005'],
       dialogue: [
         { pose: 'wave', text: '[집합 연산자]는 [두 쿼리 결과를 세로로 합치는] 도구!' },
         { pose: 'think', text: 'JOIN 이 [가로 결합] 이라면, 집합 연산자는 [세로 결합]!' },
@@ -1301,7 +1301,7 @@ const SQLD_2_2: Lesson = {
       id: 'sqld-2-2-s8',
       title: '윈도우 함수 — 순위 (RANK · DENSE_RANK · ROW_NUMBER)',
       quizId: 'sqld-2-2-cp-08',
-      extraQuizIds: ['sqld-sql-lab-020'],
+      extraQuizIds: ['sqld-sql-lab-020', 'sqld-sql-read-003'],
       dialogue: [
         { pose: 'wave', text: '[윈도우 함수(Window Function)]는 GROUP BY 없이 [그룹 내 위치] 같은 값을 계산!' },
         { pose: 'think', text: '문법: [함수() OVER (PARTITION BY 그룹 ORDER BY 정렬)]!' },
@@ -1498,7 +1498,7 @@ const SQLD_2_2: Lesson = {
       id: 'sqld-2-2-s11',
       title: 'TOP N · 비율 · 계층형 · PIVOT/UNPIVOT',
       quizId: 'sqld-2-2-cp-11',
-      extraQuizIds: ['sqld-sql-lab-024', 'sqld-sql-lab-025', 'sqld-sql-lab-026'],
+      extraQuizIds: ['sqld-sql-lab-024', 'sqld-sql-lab-025', 'sqld-sql-lab-026', 'sqld-sql-order-006'],
       dialogue: [
         { pose: 'wave', text: '윈도우 함수의 [응용 4세트] — TOP N · 비율 · 계층형 · PIVOT!' },
         { pose: 'think', text: '[TOP N]: 상위 N 개 추출. DBMS 마다 표현 다름!' },
@@ -1744,7 +1744,7 @@ const SQLD_2_3: Lesson = {
       id: 'sqld-2-3-s2',
       title: 'MERGE — UPSERT (INSERT + UPDATE 통합)',
       quizId: 'sqld-2-3-cp-02',
-      extraQuizIds: ['sqld-sql-lab-030'],
+      extraQuizIds: ['sqld-sql-lab-030', 'sqld-sql-order-007'],
       dialogue: [
         { pose: 'wave', text: '[MERGE]는 [INSERT 와 UPDATE 를 하나로 묶은] 강력한 명령!' },
         { pose: 'think', text: '왜 필요? 매번 "있으면 UPDATE, 없으면 INSERT" 패턴 (UPSERT) 을 자주 함!' },
@@ -1868,6 +1868,7 @@ const SQLD_2_3: Lesson = {
       id: 'sqld-2-3-s4',
       title: 'AUTOCOMMIT — Oracle vs SQL Server 동작 차이',
       quizId: 'sqld-2-3-cp-04',
+      extraQuizIds: ['sqld-sql-read-004'],
       dialogue: [
         { pose: 'wave', text: '[AUTOCOMMIT] 은 SQL 실행 후 [자동 COMMIT 여부]!' },
         { pose: 'think', text: 'DBMS 마다 동작이 [완전히 다름]! 시험 단골 함정!' },
@@ -1923,7 +1924,7 @@ const SQLD_2_3: Lesson = {
       id: 'sqld-2-3-s5',
       title: 'CREATE TABLE + 데이터 타입 + 제약',
       quizId: 'sqld-2-3-cp-05',
-      extraQuizIds: ['sqld-sql-lab-034'],
+      extraQuizIds: ['sqld-sql-lab-034', 'sqld-sql-order-008'],
       dialogue: [
         { pose: 'wave', text: '[CREATE TABLE]은 새 테이블의 [구조를 정의]!' },
         { pose: 'think', text: '컬럼명 + 데이터 타입 + 제약조건을 모두 한 번에!' },

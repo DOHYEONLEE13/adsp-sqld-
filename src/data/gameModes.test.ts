@@ -23,7 +23,7 @@ function actualSteps(subject: Subject): number {
 
 function actualPlayableQuestions(subject: Subject): number {
   // 차단 status: restored (legacy) + deprecated (Phase 3 v2 신규).
-  // 동기화: src/game/session.ts isPlayable.
+  // 랜딩의 "문항"은 레슨 전용 SQL 순서 조립형까지 포함한 학습 콘텐츠 수.
   return ALL_QUESTIONS.filter(
     (q) =>
       q.subject === subject &&

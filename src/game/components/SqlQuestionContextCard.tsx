@@ -5,12 +5,14 @@ import { cx } from '@/lib/utils';
 interface Props {
   context?: SqlQuestionContext;
   revealed?: boolean;
+  compact?: boolean;
   className?: string;
 }
 
 export default function SqlQuestionContextCard({
   context,
   revealed = false,
+  compact = false,
   className,
 }: Props) {
   if (!context) return null;
@@ -18,24 +20,39 @@ export default function SqlQuestionContextCard({
   return (
     <div
       className={cx(
-        'rounded-[18px] border border-white/10 bg-[#050b24]/72 p-4 md:p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.07)]',
+        compact
+          ? 'rounded-[14px] border border-white/10 bg-[#050b24]/72 p-2.5 md:p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.07)]'
+          : 'rounded-[18px] border border-white/10 bg-[#050b24]/72 p-4 md:p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.07)]',
         className,
       )}
     >
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 kr-heading text-[10.5px] uppercase tracking-[0.08em] text-cream/70">
+      <div className={cx('flex flex-wrap items-center', compact ? 'gap-1.5' : 'gap-2')}>
+        <span
+          className={cx(
+            'inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] kr-heading uppercase tracking-[0.08em] text-cream/70',
+            compact ? 'px-2.5 py-1 text-[9.5px]' : 'px-3 py-1.5 text-[10.5px]',
+          )}
+        >
           <Database size={13} strokeWidth={2.4} />
           SQL Lab
         </span>
         {context.dialect ? (
-          <span className="rounded-full bg-white/[0.05] px-3 py-1.5 kr-heading text-[10.5px] uppercase tracking-[0.08em] text-cream/55">
+          <span
+            className={cx(
+              'rounded-full bg-white/[0.05] kr-heading uppercase tracking-[0.08em] text-cream/55',
+              compact ? 'px-2.5 py-1 text-[9.5px]' : 'px-3 py-1.5 text-[10.5px]',
+            )}
+          >
             {dialectLabel(context.dialect)}
           </span>
         ) : null}
         {context.focus?.map((item) => (
           <span
             key={item}
-            className="rounded-full bg-[rgba(192,132,252,0.11)] px-3 py-1.5 kr-body text-[11.5px] text-[#d8b4fe]"
+            className={cx(
+              'rounded-full bg-[rgba(192,132,252,0.11)] kr-body text-[#d8b4fe]',
+              compact ? 'px-2.5 py-1 text-[10.5px]' : 'px-3 py-1.5 text-[11.5px]',
+            )}
           >
             {item}
           </span>
@@ -43,13 +60,18 @@ export default function SqlQuestionContextCard({
       </div>
 
       {context.title || context.prompt ? (
-        <div className="mt-3">
+        <div className={compact ? 'mt-2' : 'mt-3'}>
           {context.title ? (
-            <p className="kr-heading text-[13px] uppercase text-cream/90">
+            <p
+              className={cx(
+                'kr-heading uppercase text-cream/90',
+                compact ? 'text-[11.5px]' : 'text-[13px]',
+              )}
+            >
               {context.title}
             </p>
           ) : null}
-          {context.prompt ? (
+          {context.prompt && !compact ? (
             <p className="kr-body mt-1 text-[12.5px] leading-[1.65] text-cream/62">
               {context.prompt}
             </p>
@@ -66,14 +88,24 @@ export default function SqlQuestionContextCard({
       ) : null}
 
       {context.sql ? (
-        <div className="mt-4 overflow-hidden rounded-[14px] border border-[#67e8f9]/15 bg-[#020817]">
-          <div className="flex items-center gap-2 border-b border-white/10 px-3 py-2 text-[#67e8f9]">
+        <div
+          className={cx(
+            'overflow-hidden rounded-[14px] border border-[#67e8f9]/15 bg-[#020817]',
+            compact ? 'mt-2' : 'mt-4',
+          )}
+        >
+          <div className={cx('flex items-center gap-2 border-b border-white/10 text-[#67e8f9]', compact ? 'px-2.5 py-1.5' : 'px-3 py-2')}>
             <Code2 size={14} strokeWidth={2.4} />
             <span className="kr-heading text-[10.5px] uppercase tracking-[0.08em]">
               Query
             </span>
           </div>
-          <pre className="overflow-x-auto p-3 text-[12px] leading-[1.7] text-cream/88">
+          <pre
+            className={cx(
+              'overflow-x-auto text-cream/88',
+              compact ? 'p-2.5 text-[11px] leading-[1.45]' : 'p-3 text-[12px] leading-[1.7]',
+            )}
+          >
             <code>{context.sql}</code>
           </pre>
         </div>

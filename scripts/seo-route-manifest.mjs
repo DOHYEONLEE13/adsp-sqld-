@@ -183,6 +183,24 @@ const CORE_ROUTES = [
   },
   {
     group: 'core',
+    path: '/contact',
+    changefreq: 'monthly',
+    priority: '0.5',
+    title: '고객문의 — QuestDP',
+    description:
+      'QuestDP 고객문의 페이지. 결제·환불, 계정·로그인, ADsP·SQLD 학습 및 문제 오류를 이메일로 문의할 수 있습니다.',
+    h1: 'QuestDP 고객문의',
+    eyebrow: 'Support',
+    summary:
+      '메일 앱이 열리지 않아도 이메일 주소를 복사해 문의할 수 있습니다. 결제·환불, 계정·로그인, 학습·문제 오류, 기술 오류 문의에 필요한 정보를 안내합니다.',
+    links: [
+      { href: '/pricing', label: '요금제' },
+      { href: '/refund', label: '환불 정책' },
+      { href: '/terms', label: '이용약관' },
+    ],
+  },
+  {
+    group: 'core',
     path: '/about',
     changefreq: 'monthly',
     priority: '0.8',

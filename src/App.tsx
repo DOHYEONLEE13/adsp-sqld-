@@ -41,6 +41,7 @@ const StudyMethodPage = lazy(() => import('./pages/StudyMethodPage'));
 const LessonStaticPage = lazy(() => import('./pages/LessonStaticPage'));
 const QuizStaticPage = lazy(() => import('./pages/QuizStaticPage'));
 const PricingPage = lazy(() => import('./pages/PricingPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
 const CurriculumPage = lazy(() => import('./pages/CurriculumPage'));
 const FaqPage = lazy(() => import('./pages/FaqPage'));
 const GlossaryPage = lazy(() => import('./pages/GlossaryPage'));
@@ -88,7 +89,8 @@ type Route =
   | 'glossary'
   | 'blog-index'
   | 'blog-post'
-  | 'pricing';
+  | 'pricing'
+  | 'contact';
 
 interface RouteState {
   route: Route;
@@ -144,6 +146,8 @@ function getRoute(): RouteState {
   // 요금제 — Toss 가맹점 심사 + SEO indexable URL
   if (pathname === '/pricing' || pathname === '/pricing/')
     return { route: 'pricing' };
+  if (pathname === '/contact' || pathname === '/contact/')
+    return { route: 'contact' };
   if (pathname === '/study-method' || pathname === '/study-method/')
     return { route: 'study-method' };
   // Tier 2 — 정적 lesson SEO 페이지. `/lesson/:stepId`
@@ -611,6 +615,10 @@ export default function App() {
 
     if (route === 'pricing') {
       return <PricingPage />;
+    }
+
+    if (route === 'contact') {
+      return <ContactPage />;
     }
 
     return <Landing />;

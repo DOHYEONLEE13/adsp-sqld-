@@ -23,7 +23,7 @@ export const NAV_LINKS_SUPPORT: NavLink[] = [
   { label: '쿠폰 등록', href: '#/redeem' },
   // 환불 정책 — path-based (SEO indexable)
   { label: '환불 정책', href: '/refund' },
-  { label: '고객문의', href: `mailto:${COMPANY.email}` },
+  { label: '고객문의', href: '/contact' },
 ];
 
 /** 호환용 — 기존 import 처가 있으면 main 만 노출. */

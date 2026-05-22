@@ -58,6 +58,7 @@ export default function Footer() {
             <FooterLinkGroup
               title="문의"
               links={[
+                { label: '고객문의', href: '/contact' },
                 { label: COMPANY.email, href: `mailto:${COMPANY.email}` },
               ]}
             />

@@ -17,7 +17,7 @@ const OG_IMAGE = 'https://quest-dp.com/og/questdp-method.png';
 const METHOD_STEPS = [
   {
     title: '개념을 작게 자른다',
-    body: 'ADsP 175개, SQLD 50개 학습 스텝으로 시험범위를 나누고 한 스텝마다 한 가지 판단만 익힙니다.',
+    body: 'ADsP 251개, SQLD 65개 학습 스텝으로 시험범위를 나누고 한 스텝마다 한 가지 판단만 익힙니다.',
     icon: Route,
     color: '#67e8f9',
   },

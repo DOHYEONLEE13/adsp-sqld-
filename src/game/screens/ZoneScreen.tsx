@@ -308,8 +308,8 @@ export default function ZoneScreen({
             {chapterMeta?.title ?? `Chapter ${chapter}`}
           </h1>
           <p className="kr-body text-[12px] md:text-[13px] text-cream/65 mt-3 leading-[1.65] max-w-xl">
-            노드를 하나씩 따라가며 개념을 정복하세요. 한 노드 = 한 개의 짧은 step
-            (개념 + 확인 문제 한 묶음).
+            동그라미를 순서대로 눌러보세요. 짧은 개념을 보고, 바로 한 문제로
+            이해했는지 확인합니다.
           </p>
 
           {/* ── 회독 탭 ──

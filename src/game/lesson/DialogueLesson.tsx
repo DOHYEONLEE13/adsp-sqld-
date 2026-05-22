@@ -256,6 +256,21 @@ export default function DialogueLesson({
   );
   const currentInGroup = groupSteps.findIndex((s) => s.id === step.id);
 
+  const groupTrailLabel = (key: string): string => {
+    if (key.includes('g1-basic')) return '기초 진행';
+    if (key.includes('g2-features')) return '특징 진행';
+    if (key.includes('g3-perspectives')) return '관점 진행';
+    if (key.includes('g4-stages')) return '단계 진행';
+    if (key.includes('g5-schema')) return '스키마 진행';
+    if (key.includes('g2-entity')) return '엔터티 진행';
+    if (key.includes('g3-attr-rel')) return '속성·관계 진행';
+    if (key.includes('g4-identifier')) return '식별자 진행';
+    return '개념 진행';
+  };
+  const trailLabel = groupTrailLabel(currentGroupKey);
+  const shouldShowGroupTrail =
+    groupSteps.length > 1 || currentGroupKey.includes('g1-basic');
+
   // step.title 에서 trail 라벨 추출 — ' — ' 와 ' (' 앞부분만.
   // 예: 'DIKW ① 데이터 (Data) — raw 값' → 'DIKW ① 데이터'
   const shortLabel = (title: string): string => {
@@ -746,7 +761,8 @@ export default function DialogueLesson({
         {/*
           Sub-step trail — 그룹 안 단계 (DIKW 5단계 등) 세로 배치.
           narrate 단계만 노출 (문제 풀 때는 선지가 우선이라 숨김).
-          그룹 step 1개뿐이면 안 보임 (의미 없음).
+          그룹 step 1개뿐이면 기본적으로 숨김. 단, SQLD 첫 기초 그룹처럼
+          시작 맥락이 필요한 경우에는 짧은 1/1 트레일로 노출.
 
           시각:
             ✓ DIKW 피라미드        ← 완료
@@ -755,16 +771,16 @@ export default function DialogueLesson({
             ○ DIKW ③ 지식         ← 미진행
             ○ DIKW ④ 지혜         ← 미진행
         */}
-        {phase === 'narrate' && groupSteps.length > 1 ? (
+        {phase === 'narrate' && shouldShowGroupTrail ? (
           <nav
-            aria-label="개념 진행"
+            aria-label={trailLabel}
             className="mt-10 max-w-[420px] mx-auto"
           >
             <div
               className="kr-num text-[10px] uppercase tracking-[0.18em] mb-3.5"
               style={{ color: 'rgba(239,244,255,0.45)' }}
             >
-              개념 진행 · {currentInGroup + 1} / {groupSteps.length}
+              {trailLabel} · {currentInGroup + 1} / {groupSteps.length}
             </div>
             <ol className="flex flex-col gap-6 md:gap-5 list-none p-0 m-0 relative">
               {/*

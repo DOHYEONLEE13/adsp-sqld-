@@ -13,7 +13,7 @@
  * 스텝을 보고 있는지" 를 표시합니다. 맞춘 수는 실시간 누적됩니다.
  */
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   ArrowLeft,
   ArrowRight,
@@ -47,6 +47,7 @@ import SqlOrderingPanel, {
   isSqlOrderingQuestion,
   sqlOrderingCorrectAnswerText,
 } from '../lesson/SqlOrderingPanel';
+import GlossaryKeyword, { GLOSSARY_TERMS } from '../lesson/GlossaryKeyword';
 
 const SUBJECT_ACCENT: Record<Subject, string> = {
   adsp: '#67e8f9',
@@ -691,6 +692,25 @@ function ConceptView({
   );
 }
 
+function LessonRichText({ text }: { text: string }): ReactNode {
+  return text.split(/(\[[^\]]+\])/g).map((part, idx) => {
+    const match = /^\[([^\]]+)\]$/.exec(part);
+    if (!match) return part;
+
+    const term = GLOSSARY_TERMS[match[1]];
+    if (!term) return part;
+
+    return (
+      <GlossaryKeyword
+        key={`${match[1]}-${idx}`}
+        label={match[1]}
+        term={term}
+        buttonClassName="inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 align-baseline font-bold text-neon underline decoration-dotted underline-offset-4 transition hover:bg-neon/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-neon"
+      />
+    );
+  });
+}
+
 function BlockCard({ block, accent }: { block: LessonBlock; accent: string }) {
   switch (block.kind) {
     case 'intro':
@@ -718,7 +738,7 @@ function BlockCard({ block, accent }: { block: LessonBlock; accent: string }) {
             </span>
           </div>
           <p className="kr-body text-[14.5px] md:text-[15.5px] leading-[1.85] text-cream/90">
-            {block.body}
+            <LessonRichText text={block.body} />
           </p>
         </div>
       );
@@ -729,7 +749,7 @@ function BlockCard({ block, accent }: { block: LessonBlock; accent: string }) {
             {block.title}
           </h3>
           <p className="kr-body text-[14px] md:text-[14.5px] leading-[1.8] text-cream/85 whitespace-pre-line">
-            {block.body}
+            <LessonRichText text={block.body} />
           </p>
         </div>
       );
@@ -756,7 +776,7 @@ function BlockCard({ block, accent }: { block: LessonBlock; accent: string }) {
                   className="absolute left-0 top-[0.65em] w-1.5 h-1.5 rounded-full"
                   style={{ background: accent, boxShadow: `0 0 8px ${accent}` }}
                 />
-                {item}
+                <LessonRichText text={item} />
               </li>
             ))}
           </ul>
@@ -833,7 +853,7 @@ function BlockCard({ block, accent }: { block: LessonBlock; accent: string }) {
             {block.title ?? '예시'}
           </h3>
           <p className="kr-body text-[13.5px] md:text-[14.5px] leading-[1.8] text-cream/88">
-            {block.body}
+            <LessonRichText text={block.body} />
           </p>
         </div>
       );
@@ -885,7 +905,7 @@ function BlockCard({ block, accent }: { block: LessonBlock; accent: string }) {
               {block.title}
             </h4>
             <p className="kr-body text-[13.5px] md:text-[14px] leading-[1.8] text-cream/85">
-              {block.body}
+              <LessonRichText text={block.body} />
             </p>
           </div>
         </div>

@@ -8,6 +8,7 @@
  */
 
 import { Fragment } from 'react';
+import GlossaryKeyword, { GLOSSARY_TERMS } from './GlossaryKeyword';
 
 /**
  * 브래킷 기반 하이라이트. 매칭되지 않은 `[` 나 `]` 는 리터럴로 유지.
@@ -48,6 +49,8 @@ export function renderHighlighted(text: string) {
       {parts.map((p, idx) =>
         typeof p === 'string' ? (
           <Fragment key={idx}>{p}</Fragment>
+        ) : GLOSSARY_TERMS[p.kw] ? (
+          <GlossaryKeyword key={idx} label={p.kw} term={GLOSSARY_TERMS[p.kw]} />
         ) : (
           <span key={idx} className="dialogue-keyword">
             {p.kw}

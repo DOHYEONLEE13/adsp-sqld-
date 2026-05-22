@@ -87,7 +87,7 @@ export default function PricingPage() {
 
       {/* 페이지 헤더 — 가격 페이지 명확히 (Toss 심사·SEO 양쪽 친화) */}
       <header className="max-w-[1200px] mx-auto px-6 md:px-10 pt-28 md:pt-32 pb-6 md:pb-10 text-center">
-        <span className="kr-heading uppercase tracking-[0.22em] text-[11px] md:text-[12px] text-neon">
+        <span className="kr-heading uppercase tracking-[0.22em] text-[11px] md:text-[12px] text-[#D1F843]">
           Pricing
         </span>
         <h1 className="kr-heading text-[36px] md:text-[52px] lg:text-[60px] leading-[1.1] mt-3">
@@ -133,7 +133,7 @@ export default function PricingPage() {
               <a
                 href="/refund"
                 onClick={(e) => handleNavClick(e, '/refund')}
-                className="text-neon hover:underline"
+                className="text-[#D1F843] hover:underline"
               >
                 환불 정책
               </a>
@@ -141,7 +141,7 @@ export default function PricingPage() {
               <a
                 href="/terms"
                 onClick={(e) => handleNavClick(e, '/terms')}
-                className="text-neon hover:underline"
+                className="text-[#D1F843] hover:underline"
               >
                 이용약관
               </a>

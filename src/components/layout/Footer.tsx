@@ -24,10 +24,10 @@ export default function Footer() {
                 className="w-9 h-9 shrink-0 rounded-full transition-transform group-hover:scale-105"
               />
               <span className="logo-wordmark uppercase text-[20px] leading-none">
-                <span className="text-cream group-hover:text-neon transition-colors">
+                <span className="text-cream transition-colors group-hover:text-[#D1F843]">
                   Quest
                 </span>
-                <span className="text-neon">DP</span>
+                <span className="text-[#D1F843]">DP</span>
               </span>
             </a>
             <p className="kr-body text-[12px] leading-[1.65] text-cream/55">
@@ -127,7 +127,7 @@ function FooterLinkGroup({ title, links }: FooterLinkGroupProps) {
                     ? (e) => handleNavClick(e, link.href)
                     : undefined
                 }
-                className="text-cream/55 hover:text-neon transition-colors break-all"
+                className="break-all text-cream/55 transition-colors hover:text-[#D1F843]"
                 {...(link.href.startsWith('mailto:')
                   ? {}
                   : link.href.startsWith('http')

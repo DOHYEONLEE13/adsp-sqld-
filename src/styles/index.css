@@ -58,6 +58,32 @@
   --subject-accent: var(--accent-sqld);
 }
 
+/* Accent utility guard.
+   Vite dev 서버가 Tailwind config 변경 전 생성한 neon 유틸을 들고 있으면
+   일부 공개 페이지 hover/eyebrow 색만 예전 초록으로 남는다. 자주 쓰는
+   neon 유틸은 CSS 변수 기반으로 한 번 더 덮어 색상 일관성을 보장한다. */
+.text-neon { color: var(--neon) !important; }
+.text-neon\/65 { color: rgb(var(--neon-rgb) / 0.65) !important; }
+.text-neon\/70 { color: rgb(var(--neon-rgb) / 0.70) !important; }
+.text-neon\/80 { color: rgb(var(--neon-rgb) / 0.80) !important; }
+.text-neon\/85 { color: rgb(var(--neon-rgb) / 0.85) !important; }
+.hover\:text-neon:hover { color: var(--neon) !important; }
+.group:hover .group-hover\:text-neon { color: var(--neon) !important; }
+
+.bg-neon { background-color: var(--neon) !important; }
+.bg-neon\/10 { background-color: rgb(var(--neon-rgb) / 0.10) !important; }
+.bg-neon\/15 { background-color: rgb(var(--neon-rgb) / 0.15) !important; }
+.bg-neon\/\[0\.055\] { background-color: rgb(var(--neon-rgb) / 0.055) !important; }
+
+.border-neon\/20 { border-color: rgb(var(--neon-rgb) / 0.20) !important; }
+.border-neon\/25 { border-color: rgb(var(--neon-rgb) / 0.25) !important; }
+.border-neon\/30 { border-color: rgb(var(--neon-rgb) / 0.30) !important; }
+.border-neon\/40 { border-color: rgb(var(--neon-rgb) / 0.40) !important; }
+.border-neon\/50 { border-color: rgb(var(--neon-rgb) / 0.50) !important; }
+.hover\:border-neon\/40:hover { border-color: rgb(var(--neon-rgb) / 0.40) !important; }
+.focus\:border-neon\/50:focus { border-color: rgb(var(--neon-rgb) / 0.50) !important; }
+.marker\:text-neon\/70::marker { color: rgb(var(--neon-rgb) / 0.70) !important; }
+
 /* ===== Dialogue highlight — [키워드] → 두꺼운 폰트만 (과거 색+점선밑줄 제거).
    톤다운 이유: 한 문장에 여러 키워드가 모두 색칠되면 시선이 분산되고 "AI 슬롭"
    느낌이 강해진다. 핵심 단어 강조는 굵기만으로 충분. 정말 결정적인 항목이

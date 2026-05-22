@@ -80,14 +80,14 @@ export default function LegalPage({ slug, onBack }: Props) {
             }
           }}
           aria-label="홈으로"
-          className="inline-flex items-center gap-2 kr-heading uppercase text-[11px] tracking-widest text-cream/75 hover:text-neon transition mb-8"
+          className="inline-flex items-center gap-2 kr-heading uppercase text-[11px] tracking-widest text-cream/75 transition hover:text-[#D1F843] mb-8"
         >
           <ArrowLeft size={14} strokeWidth={2.4} />
           홈으로
         </button>
 
         <header className="mb-10 md:mb-12 pb-6 border-b border-cream/15">
-          <div className="kr-heading uppercase text-[10px] tracking-widest text-neon/85 mb-3">
+          <div className="kr-heading uppercase text-[10px] tracking-widest text-[#D1F843]/85 mb-3">
             QuestDP · {slug.toUpperCase()}
           </div>
           <h1 className="kr-heading text-[32px] md:text-[44px] leading-[1.1] mb-4">

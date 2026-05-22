@@ -25,7 +25,7 @@ const METHOD_STEPS = [
     title: '바로 한 문제를 푼다',
     body: '설명을 오래 읽기보다 방금 본 개념을 즉시 객관식 문제로 확인해 기억을 행동으로 바꿉니다.',
     icon: CheckCircle2,
-    color: '#7DD850',
+    color: '#D1F843',
   },
   {
     title: '약점 점수를 계산한다',
@@ -137,14 +137,14 @@ export default function StudyMethodPage() {
         <a
           href="/"
           onClick={(e) => handleNavClick(e, '/')}
-          className="mb-8 inline-flex items-center gap-2 text-[11px] uppercase tracking-widest text-cream/65 transition hover:text-neon"
+          className="mb-8 inline-flex items-center gap-2 text-[11px] uppercase tracking-widest text-cream/65 transition hover:text-[#D1F843]"
         >
           <ArrowLeft size={14} strokeWidth={2.4} />
           홈으로
         </a>
 
         <header className="mb-12 border-b border-cream/10 pb-9">
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-neon/30 bg-neon/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-neon">
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#D1F843]/30 bg-[#D1F843]/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-widest text-[#D1F843]">
             <Brain size={13} strokeWidth={2.4} />
             Study Method
           </div>
@@ -241,9 +241,9 @@ export default function StudyMethodPage() {
 
         <section
           aria-labelledby="weakness-score"
-          className="mb-14 rounded-[20px] border border-neon/20 bg-neon/[0.055] p-6 md:p-8"
+          className="mb-14 rounded-[20px] border border-[#D1F843]/20 bg-[#D1F843]/[0.055] p-6 md:p-8"
         >
-          <div className="mb-4 inline-flex items-center gap-2 text-neon">
+          <div className="mb-4 inline-flex items-center gap-2 text-[#D1F843]">
             <Sparkles size={18} strokeWidth={2.4} />
             <span className="kr-num text-[11px] uppercase tracking-widest">Weakness Logic</span>
           </div>

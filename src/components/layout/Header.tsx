@@ -244,10 +244,10 @@ function Logo() {
       />
       {/* 워드마크 — Sora ExtraBold (.logo-wordmark) + DP 만 neon accent */}
       <span className="logo-wordmark uppercase text-[22px] md:text-[28px] leading-none">
-        <span className="text-cream group-hover:text-neon transition-colors">
+        <span className="text-cream transition-colors group-hover:text-[#D1F843]">
           Quest
         </span>
-        <span className="text-neon">DP</span>
+        <span className="text-[#D1F843]">DP</span>
       </span>
     </a>
   );
@@ -291,7 +291,7 @@ function NavSection({
                 }}
                 target={isExternal ? '_blank' : undefined}
                 rel={isExternal ? 'noopener noreferrer' : undefined}
-                className="block kr-heading uppercase tracking-widest text-[14px] md:text-[15px] py-4 px-5 rounded-[16px] border border-cream/10 bg-white/[0.03] text-cream/90 hover:bg-white/[0.08] hover:text-neon hover:border-neon/40 transition"
+                className="block kr-heading uppercase tracking-widest text-[14px] md:text-[15px] py-4 px-5 rounded-[16px] border border-cream/10 bg-white/[0.03] text-cream/90 transition hover:border-[#D1F843]/40 hover:bg-white/[0.08] hover:text-[#D1F843]"
               >
                 {link.label}
               </a>

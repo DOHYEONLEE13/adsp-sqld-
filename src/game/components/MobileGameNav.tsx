@@ -180,10 +180,10 @@ export function MobileTopBar({ subject }: TopProps) {
             type="button"
             onClick={handleShare}
             aria-label="XP 공유하기"
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full transition active:scale-95"
+            className="inline-flex items-center gap-1.5 px-0 py-1 transition active:scale-95"
             style={{
-              background: 'rgba(255,176,32,0.16)',
-              border: '1px solid rgba(255,176,32,0.5)',
+              background: 'transparent',
+              border: '0',
             }}
           >
             <span

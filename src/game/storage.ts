@@ -181,6 +181,28 @@ function commit(next: ProgressStore): void {
   for (const l of listeners) l();
 }
 
+function applyLessonXpCorrection(
+  localOptimisticXp: number,
+  serverAwardedXp: number,
+): void {
+  const safeLocal = Math.max(0, Math.floor(localOptimisticXp));
+  const safeServer = Math.max(0, Math.floor(serverAwardedXp));
+  const correction = safeServer - safeLocal;
+  if (correction === 0) return;
+
+  const next: ProgressStore = {
+    ...current,
+    lessonXp: Math.max(0, (current.lessonXp ?? 0) + correction),
+    updatedAt: Date.now(),
+  };
+
+  if (typeof current.serverTotalXp === 'number') {
+    next.serverTotalXp = Math.max(0, current.serverTotalXp + correction);
+  }
+
+  commit(next);
+}
+
 // ----------------------------------------------------------------
 // Mutations
 // ----------------------------------------------------------------
@@ -337,9 +359,18 @@ export function recordSingleAnswer(
 
   let next = applyAnswer(current, questionId, { correct, timeMs, at });
   const nextLessonXp = (current.lessonXp ?? 0) + xpAwarded;
+  const nextServerTotalXp =
+    typeof current.serverTotalXp === 'number'
+      ? Math.max(0, current.serverTotalXp + xpAwarded)
+      : current.serverTotalXp;
   // 일일 퀘스트 / streak 계산용 — 학습 모드 풀이도 일별로 집계.
   next = bumpLessonAttempt(next, questionId, at);
-  commit({ ...next, lessonXp: nextLessonXp, updatedAt: at });
+  commit({
+    ...next,
+    lessonXp: nextLessonXp,
+    serverTotalXp: nextServerTotalXp,
+    updatedAt: at,
+  });
 
   // 서버에도 반영 (인증돼 있을 때만, fire-and-forget). question_stats 는 PUT-style.
   const stat = next.questionStats[questionId];
@@ -350,6 +381,9 @@ export function recordSingleAnswer(
       sessionToken,
       timeMs,
       stepKey,
+    }).then((result) => {
+      if (!result) return;
+      applyLessonXpCorrection(xpAwarded, result.xpAwarded);
     });
   }
   return xpAwarded;

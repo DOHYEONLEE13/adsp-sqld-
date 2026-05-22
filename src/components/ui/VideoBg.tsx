@@ -1,103 +1,174 @@
-import { useEffect, useRef } from 'react';
-import Hls from 'hls.js';
+import { useEffect, useRef, useState } from 'react';
 import { cx } from '@/lib/utils';
 
 interface Props {
   src: string;
   className?: string;
-  /** `cover` fills and crops, `native` keeps aspect ratio (no cropping). */
+  /** `cover` fills and crops, `native` keeps aspect ratio without cropping. */
   fit?: 'cover' | 'native';
-  /** 영상 로드 전 / 자동재생 차단 시 보여줄 정적 이미지. Mux 의 thumbnail URL 권장. */
+  /** Static image shown before the video is requested or when autoplay is blocked. */
   poster?: string;
+  /** `immediate` is for above-the-fold media; `visible` avoids loading offscreen media. */
+  loading?: 'immediate' | 'visible';
+  /** IntersectionObserver root margin for lazy video hydration. */
+  rootMargin?: string;
+  /** Native video preload hint after the source is attached. */
+  preload?: 'none' | 'metadata' | 'auto';
+  /** Pause background playback when it leaves the viewport. */
+  pauseWhenHidden?: boolean;
 }
+
+type HlsInstance = {
+  destroy: () => void;
+  startLoad: () => void;
+  recoverMediaError: () => void;
+  loadSource: (src: string) => void;
+  attachMedia: (media: HTMLMediaElement) => void;
+  on: (event: string, callback: (event: string, data: { fatal?: boolean; type?: string }) => void) => void;
+};
 
 /**
  * Reusable autoplay/loop/muted background video.
  *
- * `.m3u8` (HLS) 도 지원:
- *   - iOS Safari · macOS Safari → 네이티브 HLS (canPlayType 매칭)
- *   - 그 외 (Chrome · Firefox · Edge) → hls.js 로 MSE attach
- *   - HLS 미지원 환경 → 어두운 그라디언트 fallback (영상만 안 보임)
- *
- * autoplay 가 일부 환경 (iOS Low Power, 모바일 데이터 절약) 에서 동작하지 않는
- * 케이스를 대비해 manifest parsed / loadedmetadata 후 video.play() 를 명시 호출.
- * 호출이 reject 돼도 silent — 그라디언트 배경이 그대로 유지됨.
+ * Offscreen videos do not receive a `src` until they approach the viewport.
+ * HLS support is dynamically imported so landing pages do not pay for hls.js.
  */
 export default function VideoBg({
   src,
   className,
   fit = 'cover',
   poster,
+  loading = 'visible',
+  rootMargin = '120px 0px',
+  preload = 'metadata',
+  pauseWhenHidden = true,
 }: Props) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const hlsRef = useRef<HlsInstance | null>(null);
+  const [shouldLoad, setShouldLoad] = useState(() => loading === 'immediate');
   const isHls = src.toLowerCase().includes('.m3u8');
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || shouldLoad) return;
 
-    /** 명시적으로 play() — promise 무시 (자동재생 정책 위반 시 그라디언트로 fallback). */
+    if (loading === 'immediate' || !('IntersectionObserver' in window)) {
+      setShouldLoad(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        setShouldLoad(true);
+        observer.disconnect();
+      },
+      { rootMargin, threshold: 0.18 },
+    );
+
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [loading, rootMargin, shouldLoad]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !shouldLoad) return;
+
+    let disposed = false;
+
     const tryPlay = () => {
-      const p = video.play();
-      if (p && typeof p.catch === 'function') {
-        p.catch(() => {
-          /* autoplay 차단 — 사용자 클릭 시점에 다시 시도해도 OK. silent. */
+      if (disposed) return;
+      const playPromise = video.play();
+      if (playPromise && typeof playPromise.catch === 'function') {
+        playPromise.catch(() => {
+          // Autoplay can be blocked by browser or data-saver settings. The poster stays visible.
         });
       }
     };
 
-    // ── mp4 등 — 브라우저 기본 재생 흐름. play() 명시만 추가.
+    const onLoaded = () => tryPlay();
+    video.addEventListener('loadedmetadata', onLoaded, { once: true });
+
     if (!isHls) {
-      // metadata 가 로드되면 즉시 play 시도
-      const onLoaded = () => tryPlay();
-      video.addEventListener('loadedmetadata', onLoaded, { once: true });
-      // 이미 metadata 가 있으면 (캐시) 곧장 시도
+      video.load();
       if (video.readyState >= 1) tryPlay();
-      return () => video.removeEventListener('loadedmetadata', onLoaded);
-    }
-
-    // ── HLS — Safari 네이티브 우선
-    if (video.canPlayType('application/vnd.apple.mpegurl')) {
-      video.src = src;
-      const onLoaded = () => tryPlay();
-      video.addEventListener('loadedmetadata', onLoaded, { once: true });
-      return () => video.removeEventListener('loadedmetadata', onLoaded);
-    }
-
-    // ── HLS — hls.js (Chrome/FF/Edge)
-    if (Hls.isSupported()) {
-      const hls = new Hls({
-        enableWorker: true,
-        lowLatencyMode: false,
-        // 네트워크 일시 오류 시 자동 복구
-        fragLoadingMaxRetry: 6,
-        manifestLoadingMaxRetry: 4,
-      });
-      hls.loadSource(src);
-      hls.attachMedia(video);
-      hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        // manifest 파싱 끝 → 이제 play 가능 상태
-        tryPlay();
-      });
-      hls.on(Hls.Events.ERROR, (_event, data) => {
-        if (data.fatal) {
-          // fatal 에러 — 복구 시도. 실패해도 그라디언트 배경 fallback.
-          if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
-            hls.startLoad();
-          } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
-            hls.recoverMediaError();
-          } else {
-            hls.destroy();
-          }
-        }
-      });
       return () => {
-        hls.destroy();
+        disposed = true;
+        video.removeEventListener('loadedmetadata', onLoaded);
       };
     }
 
-    // ── HLS 미지원 환경 (구형 브라우저) — 영상 없이 그라디언트만
-  }, [src, isHls]);
+    if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = src;
+      video.load();
+      if (video.readyState >= 1) tryPlay();
+      return () => {
+        disposed = true;
+        video.removeEventListener('loadedmetadata', onLoaded);
+        video.removeAttribute('src');
+        video.load();
+      };
+    }
+
+    void import('hls.js').then(({ default: Hls }) => {
+      if (disposed || !Hls.isSupported()) return;
+
+      const hls = new Hls({
+        enableWorker: true,
+        lowLatencyMode: false,
+        fragLoadingMaxRetry: 4,
+        manifestLoadingMaxRetry: 3,
+      }) as HlsInstance;
+
+      hlsRef.current = hls;
+      hls.loadSource(src);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => tryPlay());
+      hls.on(Hls.Events.ERROR, (_event, data) => {
+        if (!data.fatal) return;
+        if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+          hls.startLoad();
+        } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+          hls.recoverMediaError();
+        } else {
+          hls.destroy();
+        }
+      });
+    });
+
+    return () => {
+      disposed = true;
+      video.removeEventListener('loadedmetadata', onLoaded);
+      hlsRef.current?.destroy();
+      hlsRef.current = null;
+      video.removeAttribute('src');
+      video.load();
+    };
+  }, [src, isHls, shouldLoad]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !shouldLoad || !pauseWhenHidden || !('IntersectionObserver' in window)) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          const playPromise = video.play();
+          if (playPromise && typeof playPromise.catch === 'function') {
+            playPromise.catch(() => {});
+          }
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.08 },
+    );
+
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [pauseWhenHidden, shouldLoad]);
 
   return (
     <video
@@ -112,18 +183,11 @@ export default function VideoBg({
       loop
       muted
       playsInline
-      // 2026-05-07 — 첫 페인트 가속을 위해 'auto' → 'metadata'.
-      // 'auto' 는 영상 전체 다운로드 시도 (모바일 LTE 에선 LCP 1~3s 손실).
-      // 'metadata' 는 codec/duration 만 받고 첫 프레임 디코딩 시작 → poster 가
-      // 빠르게 사라지고 영상 재생 진입.
-      preload="metadata"
+      preload={shouldLoad ? preload : 'none'}
       aria-hidden="true"
-      // crossOrigin — HLS 의 hls.js attach 케이스에만 필요. 직접 mp4 는 same-origin
-      // 또는 단순 fetch 라 안 붙임 (붙이면 CORS preflight 추가 라운드 트립).
-      crossOrigin={isHls ? 'anonymous' : undefined}
+      crossOrigin={isHls && shouldLoad ? 'anonymous' : undefined}
       poster={poster}
-    >
-      {!isHls ? <source src={src} type="video/mp4" /> : null}
-    </video>
+      src={!isHls && shouldLoad ? src : undefined}
+    />
   );
 }

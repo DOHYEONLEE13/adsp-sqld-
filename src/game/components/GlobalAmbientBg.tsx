@@ -32,6 +32,10 @@ export default function GlobalAmbientBg() {
   const theme = useTheme();
   const blurClass = state.blur ? ' blur-md scale-110' : '';
 
+  if (!state.active) {
+    return null;
+  }
+
   return (
     <div
       aria-hidden

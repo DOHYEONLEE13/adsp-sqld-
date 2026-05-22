@@ -16,7 +16,7 @@ export default function Hero() {
         깜빡임 발생 (사용자 보고 2026-05-07) → poster 제거. preload="metadata"
         는 그대로 유지해 첫 프레임까지 LTE 1~3s 단축 효과는 보존.
       */}
-      <VideoBg src={HERO.videoUrl} />
+      <VideoBg src={HERO.videoUrl} loading="immediate" preload="metadata" />
 
       {/* dark gradient for legibility */}
       <div

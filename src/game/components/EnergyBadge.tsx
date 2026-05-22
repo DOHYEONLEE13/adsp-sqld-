@@ -13,9 +13,15 @@
  *   1초마다 useState 로 갱신
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Infinity as InfinityIcon, Zap } from 'lucide-react';
-import { useEnergy, isUnlimited, ENERGY_CAP, type EnergyState } from '../energy';
+import {
+  useEnergy,
+  isUnlimited,
+  ENERGY_CAP,
+  refreshEnergy,
+  type EnergyState,
+} from '../energy';
 import EnergyShopModal from './EnergyShopModal';
 
 const REGEN_AFTER_MS = 30 * 60 * 1000; // 30분
@@ -77,6 +83,21 @@ function CountedBadge({
   const remainingMs = Math.max(0, nextRegenAt - now);
   const mm = Math.floor(remainingMs / 60000);
   const ss = Math.floor((remainingMs % 60000) / 1000);
+  const refreshedCycleRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!showTimer) {
+      refreshedCycleRef.current = null;
+      return;
+    }
+    if (remainingMs > 0) {
+      refreshedCycleRef.current = null;
+      return;
+    }
+    if (refreshedCycleRef.current === state.energyUpdatedAt) return;
+    refreshedCycleRef.current = state.energyUpdatedAt;
+    void refreshEnergy();
+  }, [remainingMs, showTimer, state.energyUpdatedAt]);
 
   // 항상 탭 가능 — 충전 상점 모달 (XP 구매 + 광고).
   const title =

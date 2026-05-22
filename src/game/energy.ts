@@ -204,6 +204,31 @@ async function pullEnergy(): Promise<void> {
     setState(guestStateFrom(guest));
     return;
   }
+  const { data: rpcData, error: rpcError } = await sb.rpc('get_energy_state');
+  const energyRow = (rpcData ?? [])[0] as
+    | {
+        energy: number;
+        energy_updated_at: string | null;
+        is_premium: boolean;
+        is_admin: boolean;
+        retry_after_sec: number;
+      }
+    | undefined;
+
+  if (!rpcError && energyRow) {
+    setState({
+      authenticated: true,
+      isPremium: !!energyRow.is_premium,
+      isAdmin: !!energyRow.is_admin,
+      energy: energyRow.energy ?? 0,
+      energyUpdatedAt: energyRow.energy_updated_at
+        ? Date.parse(energyRow.energy_updated_at)
+        : Date.now(),
+    });
+    return;
+  }
+
+  // RPC 배포 전 로컬 환경 보호용 fallback. 운영에서는 get_energy_state 가 권위 소스.
   const { data } = await sb
     .from('profiles')
     .select('energy_count, energy_updated_at, is_premium, role')
@@ -212,14 +237,21 @@ async function pullEnergy(): Promise<void> {
   if (!data) return;
   const isAdmin = (data as { role?: string }).role === 'admin';
   const isPremium = !!data.is_premium;
+  const rawEnergy = data.energy_count ?? 0;
+  const updatedAt = data.energy_updated_at
+    ? Date.parse(data.energy_updated_at)
+    : Date.now();
+  const elapsed = Math.max(0, Date.now() - updatedAt);
+  const gained = Math.floor(elapsed / REGEN_MS);
+  const visibleEnergy = isPremium || isAdmin ? 999 : Math.min(CAP, rawEnergy + gained);
+  const visibleUpdatedAt =
+    visibleEnergy >= CAP ? Date.now() : updatedAt + gained * REGEN_MS;
   setState({
     authenticated: true,
     isPremium,
     isAdmin,
-    energy: isPremium || isAdmin ? 999 : (data.energy_count ?? 0),
-    energyUpdatedAt: data.energy_updated_at
-      ? Date.parse(data.energy_updated_at)
-      : Date.now(),
+    energy: visibleEnergy,
+    energyUpdatedAt: visibleUpdatedAt,
   });
 }
 
@@ -397,6 +429,7 @@ export async function consumeEnergy(amount = 1): Promise<ConsumeResult> {
       energy: row.remaining,
       energyUpdatedAt: Date.now(),
     });
+    void pullEnergy();
 
     return {
       ok: row.ok,

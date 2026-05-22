@@ -6,7 +6,7 @@ export default {
       colors: {
         base: '#010828',
         cream: '#EFF4FF',
-        neon: '#6FFF00',
+        neon: '#D1F843',
       },
       fontFamily: {
         grotesk: ['Anton', 'Noto Sans KR', 'sans-serif'],

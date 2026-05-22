@@ -136,7 +136,7 @@ export default function FriendsPage({ onExit }: Props) {
     <ScreenShell
       eyebrow="Friends"
       title="친구 경쟁"
-      subtitle="태그 공유 → 진도 비교."
+      subtitle="친구 태그로 서로를 추가하고, XP와 연속 학습을 함께 비교해요."
       onExit={onExit}
       exitLabel="돌아가기"
       ambient={<PageAmbientBg />}
@@ -289,8 +289,8 @@ function MyTagCard({
             className="relative rounded-[18px] p-4 lg:p-5 flex flex-col sm:flex-row sm:items-center gap-3 lg:gap-5 lg:max-w-[720px] overflow-hidden"
             style={{
               background:
-                'linear-gradient(135deg, rgba(111,255,0,0.10), rgba(111,255,0,0.04))',
-              border: '1px solid rgba(111,255,0,0.28)',
+                'linear-gradient(135deg, var(--neon-10), var(--neon-04))',
+              border: '1px solid var(--neon-28)',
             }}
           >
             {/* 배경 글로우 */}
@@ -299,7 +299,7 @@ function MyTagCard({
               className="absolute -left-6 -top-6 w-28 h-28 rounded-full blur-2xl"
               style={{
                 background:
-                  'radial-gradient(circle, rgba(111,255,0,0.35), transparent 70%)',
+                  'radial-gradient(circle, var(--neon-35), transparent 70%)',
               }}
             />
             {/* 아이콘 hero */}
@@ -307,8 +307,8 @@ function MyTagCard({
               className="relative shrink-0 w-12 h-12 rounded-full inline-flex items-center justify-center"
               style={{
                 background:
-                  'linear-gradient(135deg, rgba(111,255,0,0.25), rgba(111,255,0,0.08))',
-                border: '1.5px solid rgba(111,255,0,0.45)',
+                  'linear-gradient(135deg, var(--neon-25), var(--neon-08))',
+                border: '1.5px solid var(--neon-45)',
               }}
             >
               <Users size={22} className="text-neon" strokeWidth={2.4} />
@@ -418,9 +418,9 @@ function MyTagCard({
             aria-label="태그 복사"
             className="inline-flex items-center gap-1.5 kr-heading text-[11px] uppercase tracking-widest px-3 py-2 rounded-full transition active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
             style={{
-              background: copied ? 'var(--cta-primary)' : 'rgba(111,255,0,0.12)',
-              border: `1px solid ${copied ? 'var(--cta-primary)' : 'rgba(111,255,0,0.4)'}`,
-              color: copied ? 'var(--cta-text)' : '#6FFF00',
+              background: copied ? 'var(--cta-primary)' : 'var(--neon-12)',
+              border: `1px solid ${copied ? 'var(--cta-primary)' : 'var(--neon-40)'}`,
+              color: copied ? 'var(--cta-text)' : 'var(--neon)',
             }}
           >
             <Copy size={12} strokeWidth={2.4} />
@@ -520,7 +520,7 @@ function AddFriendCard({ myTag }: { myTag: string }) {
         <p
           className="kr-body text-[12px] mt-3"
           style={{
-            color: feedback.tone === 'ok' ? '#6FFF00' : '#f87171',
+            color: feedback.tone === 'ok' ? 'var(--neon)' : '#f87171',
           }}
         >
           {feedback.msg}
@@ -601,8 +601,8 @@ function Leaderboard({
                 title={SORT_LABEL[k]}
                 className="kr-num text-[10.5px] uppercase tracking-widest inline-flex items-center gap-1 px-2 py-1.5 rounded-full transition active:scale-[0.97]"
                 style={{
-                  background: active ? 'rgba(111,255,0,0.18)' : 'transparent',
-                  color: active ? '#6FFF00' : 'rgba(239,244,255,0.5)',
+                  background: active ? 'var(--neon-18)' : 'transparent',
+                  color: active ? 'var(--neon)' : 'rgba(239,244,255,0.5)',
                 }}
               >
                 <Icon
@@ -624,10 +624,10 @@ function Leaderboard({
             className="rounded-[14px] px-4 py-3 flex items-center gap-3 relative overflow-hidden"
             style={{
               background: row.isMe
-                ? 'rgba(111,255,0,0.08)'
+                ? 'var(--neon-08)'
                 : 'rgba(239,244,255,0.04)',
               border: row.isMe
-                ? '1px solid rgba(111,255,0,0.35)'
+                ? '1px solid var(--neon-35)'
                 : '1px solid rgba(239,244,255,0.06)',
             }}
           >
@@ -665,10 +665,10 @@ function Leaderboard({
               className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full overflow-hidden"
               style={{
                 background: row.isMe
-                  ? 'rgba(111,255,0,0.14)'
+                  ? 'var(--neon-14)'
                   : 'rgba(253,128,46,0.14)',
                 border: row.isMe
-                  ? '1.5px solid rgba(111,255,0,0.45)'
+                  ? '1.5px solid var(--neon-45)'
                   : '1.5px solid rgba(253,128,46,0.4)',
               }}
             >

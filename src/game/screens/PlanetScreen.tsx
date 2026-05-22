@@ -96,7 +96,7 @@ export default function PlanetScreen({
             type="button"
             onClick={onBack}
             aria-label="은하로 돌아가기"
-            className="mb-5 inline-flex items-center gap-2 kr-heading text-[11px] uppercase tracking-widest text-cream/75 hover:text-neon transition"
+            className="game-back-button mb-5 inline-flex items-center gap-2 kr-heading text-[11px] uppercase tracking-widest transition"
           >
             <ArrowLeft size={14} strokeWidth={2.4} />
             은하로

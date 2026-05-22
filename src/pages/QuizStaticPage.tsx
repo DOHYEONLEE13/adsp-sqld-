@@ -183,17 +183,17 @@ export default function QuizStaticPage({ questionId }: Props) {
                   className="rounded-[14px] px-4 py-3.5 transition flex items-start gap-3"
                   style={{
                     background: showHighlight
-                      ? 'rgba(111,255,0,0.10)'
+                      ? 'var(--neon-10)'
                       : 'rgba(255,255,255,0.03)',
                     border: showHighlight
-                      ? '1.5px solid rgba(111,255,0,0.5)'
+                      ? '1.5px solid var(--neon-50)'
                       : '1px solid rgba(239,244,255,0.10)',
                   }}
                 >
                   <span
                     className="kr-heading inline-flex items-center justify-center w-6 h-6 rounded-full text-[11px] shrink-0"
                     style={{
-                      background: showHighlight ? '#6FFF00' : 'rgba(239,244,255,0.08)',
+                      background: showHighlight ? 'var(--neon)' : 'rgba(239,244,255,0.08)',
                       color: showHighlight ? '#010828' : 'rgba(239,244,255,0.7)',
                     }}
                   >
@@ -207,7 +207,7 @@ export default function QuizStaticPage({ questionId }: Props) {
                       size={18}
                       strokeWidth={2.4}
                       className="ml-auto shrink-0"
-                      style={{ color: '#6FFF00' }}
+                      style={{ color: 'var(--neon)' }}
                     />
                   ) : null}
                 </li>
@@ -223,9 +223,9 @@ export default function QuizStaticPage({ questionId }: Props) {
             onClick={() => setRevealed((v) => !v)}
             className="kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full transition active:scale-95"
             style={{
-              background: revealed ? 'rgba(111,255,0,0.14)' : '#FD802E',
-              color: revealed ? '#9CFF3D' : '#010828',
-              border: revealed ? '1.5px solid rgba(111,255,0,0.4)' : 'none',
+              background: revealed ? 'var(--neon-14)' : '#FD802E',
+              color: revealed ? 'var(--neon)' : '#010828',
+              border: revealed ? '1.5px solid var(--neon-40)' : 'none',
               boxShadow: revealed ? 'none' : '0 8px 22px -6px rgba(253,128,46,0.55)',
             }}
             aria-expanded={revealed}
@@ -235,10 +235,10 @@ export default function QuizStaticPage({ questionId }: Props) {
           </button>
 
           {revealed ? (
-            <div className="mt-5 rounded-[16px] p-5 md:p-6" style={{ background: 'rgba(111,255,0,0.06)', border: '1px solid rgba(111,255,0,0.3)' }}>
+            <div className="mt-5 rounded-[16px] p-5 md:p-6" style={{ background: 'var(--neon-06)', border: '1px solid var(--neon-30)' }}>
               <div className="kr-num text-[10.5px] uppercase tracking-widest text-neon/85 mb-2">정답</div>
               <p className="kr-heading text-[16px] md:text-[18px] mb-4 text-cream">
-                <span className="kr-num inline-flex items-center justify-center w-7 h-7 rounded-full text-[11px] mr-2" style={{ background: '#6FFF00', color: '#010828' }}>
+                <span className="kr-num inline-flex items-center justify-center w-7 h-7 rounded-full text-[11px] mr-2" style={{ background: 'var(--neon)', color: '#010828' }}>
                   {['A', 'B', 'C', 'D', 'E'][q.answerIndex]}
                 </span>
                 {q.choices[q.answerIndex]}
@@ -259,7 +259,7 @@ export default function QuizStaticPage({ questionId }: Props) {
         <section
           className="rounded-[20px] p-6 md:p-8 mb-10"
           style={{
-            background: `linear-gradient(135deg, ${accent}1a 0%, rgba(111,255,0,0.08) 100%)`,
+            background: `linear-gradient(135deg, ${accent}1a 0%, var(--neon-08) 100%)`,
             border: `1px solid ${accent}40`,
           }}
         >
@@ -394,7 +394,7 @@ function renderHighlighted(text: string): React.ReactNode {
         <span
           key={i}
           className="text-neon font-semibold"
-          style={{ borderBottom: '1px dashed rgba(111,255,0,0.4)' }}
+          style={{ borderBottom: '1px dashed var(--neon-40)' }}
         >
           {m[1]}
         </span>

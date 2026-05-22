@@ -309,8 +309,8 @@ function IdleBody({
       <span
         className="inline-flex items-center gap-1.5 mt-3 px-3 py-1 rounded-full"
         style={{
-          background: 'rgba(111,255,0,0.10)',
-          border: '1px solid rgba(111,255,0,0.35)',
+          background: 'var(--neon-10)',
+          border: '1px solid var(--neon-35)',
         }}
         aria-label={`오늘 남은 광고 보기 ${remaining}회 중 ${dailyCap}회`}
       >
@@ -492,8 +492,8 @@ function CapBody({ character }: { character: MascotCharacter }) {
       <span
         className="inline-flex items-center justify-center w-11 h-11 rounded-full mb-3"
         style={{
-          background: 'rgba(111,255,0,0.18)',
-          border: '1px solid rgba(111,255,0,0.55)',
+          background: 'var(--neon-18)',
+          border: '1px solid var(--neon-55)',
         }}
       >
         <Check size={18} strokeWidth={2.6} style={{ color: 'var(--neon)' }} />

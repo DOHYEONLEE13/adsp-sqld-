@@ -145,8 +145,8 @@ export default function RefundRequestPage({ onBack }: Props) {
             <span
               className="inline-flex items-center justify-center w-12 h-12 rounded-full"
               style={{
-                background: 'rgba(111,255,0,0.12)',
-                border: '1px solid rgba(111,255,0,0.5)',
+                background: 'var(--neon-12)',
+                border: '1px solid var(--neon-50)',
               }}
             >
               <Check size={20} className="text-neon" />
@@ -230,11 +230,11 @@ export default function RefundRequestPage({ onBack }: Props) {
                 style={{
                   background:
                     eligibility === 'within7'
-                      ? 'rgba(111,255,0,0.10)'
+                      ? 'var(--neon-10)'
                       : 'rgba(252,211,77,0.10)',
                   border:
                     eligibility === 'within7'
-                      ? '1px solid rgba(111,255,0,0.4)'
+                      ? '1px solid var(--neon-40)'
                       : '1px solid rgba(252,211,77,0.4)',
                   color:
                     eligibility === 'within7'
@@ -269,8 +269,8 @@ export default function RefundRequestPage({ onBack }: Props) {
               disabled={submitting || !email || !paidDate}
               className="w-full kr-num inline-flex items-center justify-center gap-2 text-[12px] uppercase tracking-widest py-3 rounded-xl transition active:scale-[0.98] disabled:opacity-40"
               style={{
-                background: 'rgba(111,255,0,0.16)',
-                border: '1px solid rgba(111,255,0,0.5)',
+                background: 'var(--neon-16)',
+                border: '1px solid var(--neon-50)',
                 color: 'var(--neon)',
               }}
             >

@@ -195,7 +195,7 @@ export default function QuestScreen({
             style={{
               width: `${((progress.curr - 1) / progress.total) * 100}%`,
               background:
-                'linear-gradient(90deg, var(--purple-1), var(--purple-2), #6FFF00)',
+                'linear-gradient(90deg, var(--purple-1), var(--purple-2), var(--neon))',
             }}
           />
         </div>
@@ -360,7 +360,7 @@ export default function QuestScreen({
                 showServerSelected &&
                   'ring-2 ring-[#67e8f9]/70 bg-[rgba(103,232,249,0.08)]',
                 showCorrect &&
-                  'ring-2 ring-neon bg-[rgba(111,255,0,0.10)]',
+                  'ring-2 ring-neon bg-[var(--neon-10)]',
                 showWrong && 'ring-2 ring-red-400 bg-[rgba(248,113,113,0.10)]',
               )}
             >

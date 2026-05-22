@@ -81,14 +81,14 @@ export default function ScreenShell({
             <button
               type="button"
               onClick={onExit}
-              className="kr-heading inline-flex items-center gap-2 text-[12px] uppercase tracking-widest text-cream/70 hover:text-neon transition mb-6"
+              className="game-back-button kr-heading inline-flex items-center gap-2 text-[12px] uppercase tracking-widest transition mb-6"
             >
               <ArrowLeft size={16} strokeWidth={2.5} />
               {exitLabel}
             </button>
           ) : null}
 
-          <span className="kr-heading uppercase tracking-widest text-[11px] md:text-[12px] block leading-none text-neon">
+          <span className="game-section-eyebrow kr-heading uppercase tracking-widest text-[11px] md:text-[12px] block leading-none">
             {eyebrow}
           </span>
           <h1 className="kr-heading uppercase leading-[1.05] text-[32px] md:text-[48px] lg:text-[60px] xl:text-[68px] mt-3">

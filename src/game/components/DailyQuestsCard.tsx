@@ -64,8 +64,8 @@ export default function DailyQuestsCard({ quests, compact, onClick }: Props) {
         <span
           className="ml-1 text-[10px] px-2 py-0.5 rounded-full tabular-nums"
           style={{
-            background: allDone ? 'rgba(111,255,0,0.18)' : 'rgba(255,255,255,0.08)',
-            color: allDone ? '#6FFF00' : 'rgba(239,244,255,0.85)',
+            background: allDone ? 'var(--neon-18)' : 'rgba(255,255,255,0.08)',
+            color: allDone ? 'var(--neon)' : 'rgba(239,244,255,0.85)',
           }}
         >
           {done}/{total}
@@ -78,7 +78,7 @@ export default function DailyQuestsCard({ quests, compact, onClick }: Props) {
     <section
       className="liquid-glass rounded-[24px] p-5 md:p-6"
       style={
-        allDone ? { boxShadow: '0 0 40px -12px rgba(111,255,0,0.6)' } : undefined
+        allDone ? { boxShadow: '0 0 40px -12px var(--neon-60)' } : undefined
       }
     >
       <div className="flex items-center justify-between mb-4">
@@ -88,7 +88,7 @@ export default function DailyQuestsCard({ quests, compact, onClick }: Props) {
         </h2>
         <span
           className="kr-heading text-[11px] tabular-nums"
-          style={{ color: allDone ? '#6FFF00' : 'rgba(239,244,255,0.6)' }}
+          style={{ color: allDone ? 'var(--neon)' : 'rgba(239,244,255,0.6)' }}
         >
           {done} / {total} 완료
         </span>
@@ -103,7 +103,7 @@ export default function DailyQuestsCard({ quests, compact, onClick }: Props) {
       {allDone ? (
         <p
           className="kr-body text-[12px] mt-4 text-center inline-flex w-full items-center justify-center gap-1.5"
-          style={{ color: '#6FFF00' }}
+          style={{ color: 'var(--neon)' }}
         >
           <CheckCircle2 size={14} strokeWidth={2.6} />
           오늘의 퀘스트를 모두 완료했어요! 내일 또 만나요.
@@ -115,7 +115,7 @@ export default function DailyQuestsCard({ quests, compact, onClick }: Props) {
 
 function QuestRow({ quest }: { quest: DailyQuest }) {
   const pct = quest.target === 0 ? 0 : (quest.progress / quest.target) * 100;
-  const barColor = quest.completed ? '#6FFF00' : '#a78bfa';
+  const barColor = quest.completed ? 'var(--neon)' : '#a78bfa';
   const visual = QUEST_VISUAL[quest.id];
   const Icon = visual.Icon;
   return (
@@ -123,10 +123,10 @@ function QuestRow({ quest }: { quest: DailyQuest }) {
       className="rounded-[14px] lg:rounded-[18px] px-4 py-3 lg:px-5 lg:py-4 flex flex-col"
       style={{
         background: quest.completed
-          ? 'rgba(111,255,0,0.08)'
+          ? 'var(--neon-08)'
           : 'rgba(239,244,255,0.04)',
         border: quest.completed
-          ? '1px solid rgba(111,255,0,0.25)'
+          ? '1px solid var(--neon-25)'
           : '1px solid rgba(239,244,255,0.06)',
       }}
     >
@@ -135,7 +135,7 @@ function QuestRow({ quest }: { quest: DailyQuest }) {
           className="shrink-0 inline-flex h-10 w-10 items-center justify-center rounded-2xl"
           style={{
             background: quest.completed
-              ? 'rgba(111,255,0,0.10)'
+              ? 'var(--neon-10)'
               : visual.background,
           }}
           aria-hidden
@@ -143,7 +143,7 @@ function QuestRow({ quest }: { quest: DailyQuest }) {
           <Icon
             size={19}
             strokeWidth={2.35}
-            style={{ color: quest.completed ? '#6FFF00' : visual.color }}
+            style={{ color: quest.completed ? 'var(--neon)' : visual.color }}
           />
         </span>
         <div className="flex-1 min-w-0">
@@ -158,7 +158,7 @@ function QuestRow({ quest }: { quest: DailyQuest }) {
           <CheckCircle2
             size={20}
             strokeWidth={2.4}
-            style={{ color: '#6FFF00' }}
+            style={{ color: 'var(--neon)' }}
           />
         ) : (
           <span className="kr-heading text-[11px] lg:text-[12px] text-cream/50 tabular-nums shrink-0">

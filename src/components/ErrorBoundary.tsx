@@ -135,7 +135,7 @@ function DefaultFallback({ error, onReset }: DefaultFallbackProps) {
           style={{
             padding: '10px 18px',
             borderRadius: 999,
-            background: '#6FFF00',
+            background: 'var(--neon)',
             color: '#010828',
             fontSize: 13,
             fontWeight: 700,

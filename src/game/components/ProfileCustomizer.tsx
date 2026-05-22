@@ -209,9 +209,9 @@ export default function ProfileCustomizer() {
               aria-label="닉네임 설정"
               className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full transition active:scale-95"
               style={{
-                background: 'rgba(111,255,0,0.12)',
-                border: '1px solid #6FFF00',
-                color: '#6FFF00',
+                background: 'var(--neon-12)',
+                border: '1px solid var(--neon)',
+                color: 'var(--neon)',
               }}
             >
               <Pencil size={12} strokeWidth={2.4} />
@@ -295,7 +295,7 @@ export default function ProfileCustomizer() {
             className="kr-num inline-flex items-center gap-1.5 px-4 py-2 rounded-full transition active:scale-95 disabled:opacity-40"
             style={{
               background: avatarChanged
-                ? '#6FFF00'
+                ? 'var(--neon)'
                 : 'rgba(239,244,255,0.06)',
               color: avatarChanged ? '#010828' : 'rgba(239,244,255,0.55)',
               fontSize: 13,
@@ -379,12 +379,12 @@ function CharacterTabs({
             className="kr-heading uppercase tracking-widest text-[11px] md:text-[12px] px-4 py-2 rounded-full transition active:scale-95 disabled:opacity-50"
             style={{
               background: isActive
-                ? 'rgba(111,255,0,0.16)'
+                ? 'var(--neon-16)'
                 : 'rgba(239,244,255,0.04)',
               border: isActive
-                ? '1.5px solid #6FFF00'
+                ? '1.5px solid var(--neon)'
                 : '1.5px solid rgba(239,244,255,0.10)',
-              color: isActive ? '#6FFF00' : 'rgba(239,244,255,0.65)',
+              color: isActive ? 'var(--neon)' : 'rgba(239,244,255,0.65)',
             }}
           >
             {characterLabel[c]}
@@ -430,12 +430,12 @@ function PoseGrid({
             className="aspect-square rounded-[14px] lg:rounded-[18px] inline-flex items-center justify-center transition active:scale-95 p-2 md:p-3 lg:p-5 disabled:opacity-50"
             style={{
               background: isDraft
-                ? 'rgba(111,255,0,0.12)'
+                ? 'var(--neon-12)'
                 : 'rgba(239,244,255,0.04)',
               border: isDraft
-                ? '2px solid #6FFF00'
+                ? '2px solid var(--neon)'
                 : isSaved
-                  ? '2px dashed rgba(111,255,0,0.35)' // 현재 저장된 포즈는 점선 hint
+                  ? '2px dashed var(--neon-35)' // 현재 저장된 포즈는 점선 hint
                   : '2px solid rgba(239,244,255,0.08)',
             }}
           >

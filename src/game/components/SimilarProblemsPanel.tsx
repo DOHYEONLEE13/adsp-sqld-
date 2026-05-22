@@ -229,17 +229,17 @@ export default function SimilarProblemsPanel({
               className="mt-5 rounded-[14px] p-4"
               style={{
                 background: correct
-                  ? 'rgba(111,255,0,0.10)'
+                  ? 'var(--neon-10)'
                   : 'rgba(255,107,107,0.08)',
                 border: correct
-                  ? '1px solid rgba(111,255,0,0.4)'
+                  ? '1px solid var(--neon-40)'
                   : '1px solid rgba(255,107,107,0.4)',
               }}
             >
               <p
                 className="kr-heading uppercase text-[11px] tracking-widest mb-2"
                 style={{
-                  color: correct ? '#9CFF3D' : '#ff9c9c',
+                  color: correct ? 'var(--neon)' : '#ff9c9c',
                 }}
               >
                 {correct ? '정답!' : '오답'}

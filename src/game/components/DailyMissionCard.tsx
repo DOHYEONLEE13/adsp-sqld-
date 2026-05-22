@@ -41,16 +41,16 @@ export default function DailyMissionCard({
       className="liquid-glass rounded-[24px] p-5 md:p-6 w-full text-left transition hover:bg-white/10"
       style={{
         background:
-          'linear-gradient(135deg, rgba(124,58,237,0.10), rgba(111,255,0,0.08))',
+          'linear-gradient(135deg, rgba(124,58,237,0.10), var(--neon-08))',
       }}
     >
       <div className="flex items-center gap-4">
         <span
           className="w-12 h-12 rounded-full inline-flex items-center justify-center shrink-0"
           style={{
-            background: 'rgba(111, 255, 0, 0.14)',
-            color: '#6FFF00',
-            boxShadow: '0 0 32px -6px rgba(111, 255, 0, 0.45) inset',
+            background: 'var(--neon-14)',
+            color: 'var(--neon)',
+            boxShadow: '0 0 32px -6px var(--neon-45) inset',
           }}
         >
           <Sparkles size={20} strokeWidth={2.4} />
@@ -64,8 +64,8 @@ export default function DailyMissionCard({
               <span
                 className="kr-heading inline-flex items-center gap-1 text-[10px] uppercase tracking-widest px-2 py-1 rounded-full"
                 style={{
-                  color: '#6FFF00',
-                  background: 'rgba(111,255,0,0.12)',
+                  color: 'var(--neon)',
+                  background: 'var(--neon-12)',
                 }}
               >
                 <CheckCircle2 size={12} strokeWidth={2.6} />

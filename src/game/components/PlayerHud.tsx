@@ -58,7 +58,7 @@ export default function PlayerHud({ stats }: Props) {
               style={{
                 width: `${pct}%`,
                 background:
-                  'linear-gradient(90deg, #6FFF00 0%, #67e8f9 55%, #c084fc 100%)',
+                  'linear-gradient(90deg, var(--neon) 0%, #67e8f9 55%, #c084fc 100%)',
                 boxShadow: '0 0 10px rgba(103,232,249,0.5)',
               }}
             />

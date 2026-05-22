@@ -6,12 +6,40 @@
 :root {
   --bg: #010828;
   --cream: #EFF4FF;
-  --neon: #6FFF00;
+  --neon: #D1F843;
+  --neon-rgb: 209 248 67;
+  --neon-02: rgb(var(--neon-rgb) / 0.02);
+  --neon-04: rgb(var(--neon-rgb) / 0.04);
+  --neon-06: rgb(var(--neon-rgb) / 0.06);
+  --neon-08: rgb(var(--neon-rgb) / 0.08);
+  --neon-10: rgb(var(--neon-rgb) / 0.10);
+  --neon-12: rgb(var(--neon-rgb) / 0.12);
+  --neon-14: rgb(var(--neon-rgb) / 0.14);
+  --neon-15: rgb(var(--neon-rgb) / 0.15);
+  --neon-16: rgb(var(--neon-rgb) / 0.16);
+  --neon-18: rgb(var(--neon-rgb) / 0.18);
+  --neon-20: rgb(var(--neon-rgb) / 0.20);
+  --neon-22: rgb(var(--neon-rgb) / 0.22);
+  --neon-25: rgb(var(--neon-rgb) / 0.25);
+  --neon-28: rgb(var(--neon-rgb) / 0.28);
+  --neon-30: rgb(var(--neon-rgb) / 0.30);
+  --neon-32: rgb(var(--neon-rgb) / 0.32);
+  --neon-35: rgb(var(--neon-rgb) / 0.35);
+  --neon-40: rgb(var(--neon-rgb) / 0.40);
+  --neon-45: rgb(var(--neon-rgb) / 0.45);
+  --neon-50: rgb(var(--neon-rgb) / 0.50);
+  --neon-55: rgb(var(--neon-rgb) / 0.55);
+  --neon-60: rgb(var(--neon-rgb) / 0.60);
+  --neon-80: rgb(var(--neon-rgb) / 0.80);
+  --neon-85: rgb(var(--neon-rgb) / 0.85);
+  --neon-92: rgb(var(--neon-rgb) / 0.92);
+  --neon-95: rgb(var(--neon-rgb) / 0.95);
+  --neon-100: rgb(var(--neon-rgb) / 1);
   --purple-1: #b724ff;
   --purple-2: #7c3aed;
 
   /* CTA 토큰 — 인게임 primary 버튼 fill. 2026-05-11:
-     순수 네온 (#6FFF00) 이 화면 가득 깔리면 시각 피로 + "값싸 보임" 피드백.
+     순수 네온 (var(--neon)) 이 화면 가득 깔리면 시각 피로 + "값싸 보임" 피드백.
      같은 hue 계열에서 채도만 낮춘 (HSL 94→90, sat 100→62) calmer green 으로
      교체. 액센트 텍스트·점·테두리는 여전히 --neon 유지 (강조 시그널 보존). */
   --cta-primary: #7DD850;
@@ -183,6 +211,20 @@ button {
   letter-spacing: -0.003em;
   font-feature-settings: 'tnum';
   font-variant-numeric: tabular-nums;
+}
+
+.game-back-button {
+  color: rgb(239 244 255 / 0.68);
+  padding: 0;
+}
+
+.game-back-button:hover {
+  color: rgb(239 244 255 / 0.9);
+  transform: translateY(-1px);
+}
+
+.game-section-eyebrow {
+  color: var(--neon);
 }
 
 .cursive {
@@ -387,11 +429,11 @@ button {
     rgba(32, 44, 96, 0.8) 0%,
     rgba(18, 28, 68, 0.9) 100%
   ) !important;
-  border-color: rgba(111, 255, 0, 0.45) !important;
+  border-color: var(--neon-45) !important;
   transform: translateY(-1px);
   box-shadow:
     0 10px 26px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(111, 255, 0, 0.2),
+    0 0 0 1px var(--neon-20),
     inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
 }
 
@@ -402,13 +444,13 @@ button {
 .battle-choice.is-correct {
   background: linear-gradient(
     180deg,
-    rgba(111, 255, 0, 0.25) 0%,
-    rgba(82, 194, 0, 0.35) 100%
+    var(--neon-25) 0%,
+    color-mix(in srgb, var(--cta-primary-dark) 35%, transparent) 100%
   ) !important;
-  border-color: rgba(111, 255, 0, 0.8) !important;
+  border-color: var(--neon-80) !important;
   box-shadow:
-    0 0 0 1px rgba(111, 255, 0, 0.6),
-    0 0 24px rgba(111, 255, 0, 0.45) !important;
+    0 0 0 1px var(--neon-60),
+    0 0 24px var(--neon-45) !important;
 }
 
 .battle-choice.is-wrong {
@@ -446,13 +488,38 @@ button {
   }
 }
 
+@keyframes qd-pulse-ring-resume {
+  0% {
+    box-shadow:
+      0 0 0 0 rgba(209, 248, 67, 0.52),
+      0 0 0 0 rgba(103, 232, 249, 0.28);
+  }
+  60% {
+    box-shadow:
+      0 0 0 10px rgba(209, 248, 67, 0),
+      0 0 0 18px rgba(103, 232, 249, 0);
+  }
+  100% {
+    box-shadow:
+      0 0 0 0 rgba(209, 248, 67, 0),
+      0 0 0 0 rgba(103, 232, 249, 0);
+  }
+}
+
 .qd-pulse-ring {
   animation: qd-pulse-ring 1.6s ease-out infinite;
+}
+
+.qd-pulse-ring-resume {
+  animation-name: qd-pulse-ring-resume;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .qd-pulse-ring {
     animation: none;
     box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.6);
+  }
+  .qd-pulse-ring-resume {
+    box-shadow: 0 0 0 3px rgba(209, 248, 67, 0.6);
   }
 }

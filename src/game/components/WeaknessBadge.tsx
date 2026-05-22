@@ -30,8 +30,8 @@ export default function WeaknessBadge({ weakness }: Props) {
     },
     ok: {
       label: '안정',
-      color: '#6FFF00',
-      bg: 'rgba(111, 255, 0, 0.10)',
+      color: 'var(--neon)',
+      bg: 'var(--neon-10)',
       icon: <Check size={12} strokeWidth={2.8} />,
     },
   } as const;

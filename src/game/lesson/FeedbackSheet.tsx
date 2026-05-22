@@ -41,9 +41,9 @@ export default function FeedbackSheet({
   onSimilarProblems,
   similarCount,
 }: Props) {
-  const accent = correct ? '#6FFF00' : '#f87171';
+  const accent = correct ? 'var(--neon)' : '#f87171';
   const tintBg = correct
-    ? 'rgba(111,255,0,0.12)'
+    ? 'var(--neon-12)'
     : 'rgba(248,113,113,0.12)';
 
   // 정답 상세 보기 — 기본은 접힘. 메인은 헤딩 + 정답만, 풀 해설은 토글 후 expansion.
@@ -92,7 +92,7 @@ export default function FeedbackSheet({
               {!correct && correctAnswerText ? (
                 <p className="kr-body text-[12.5px] md:text-[13px] text-cream/75 mt-1 leading-[1.5]">
                   정답:{' '}
-                  <span style={{ color: '#6FFF00', fontWeight: 600 }}>
+                  <span style={{ color: 'var(--neon)', fontWeight: 600 }}>
                     {correctAnswerText}
                   </span>
                 </p>
@@ -145,8 +145,8 @@ export default function FeedbackSheet({
                 <span
                   className="kr-num tabular-nums px-1.5 py-0.5 rounded-full text-[9.5px]"
                   style={{
-                    background: 'rgba(111,255,0,0.15)',
-                    color: '#9CFF3D',
+                    background: 'var(--neon-15)',
+                    color: 'var(--neon)',
                   }}
                 >
                   {Math.min(similarCount ?? 0, 9)}
@@ -217,10 +217,10 @@ export default function FeedbackSheet({
                       borderTop: '1px solid rgba(239,244,255,0.08)',
                     }}
                   >
-                    <span className="kr-num text-[10px] uppercase tracking-[0.18em] mr-2" style={{ color: '#6FFF00' }}>
+                    <span className="kr-num text-[10px] uppercase tracking-[0.18em] mr-2" style={{ color: 'var(--neon)' }}>
                       정답
                     </span>
-                    <span style={{ color: '#9CFF3D', fontWeight: 600 }}>
+                    <span style={{ color: 'var(--neon)', fontWeight: 600 }}>
                       {correctAnswerText}
                     </span>
                   </p>

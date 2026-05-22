@@ -25,6 +25,8 @@ export type GameScreen =
       highlightStepIdx?: number;
       /** 강조 출처 문항 id — 추적/접근성 라벨용. */
       highlightQuestionId?: string;
+      /** 강조 이유. 약점 탭은 red, 학습 복귀는 과목 accent로 표시. */
+      highlightReason?: 'weakness' | 'resume';
     }
   | {
       kind: 'lesson';

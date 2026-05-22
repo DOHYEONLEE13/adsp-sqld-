@@ -18,6 +18,7 @@ import {
 } from './session';
 import {
   clearActiveSubject,
+  getSnapshot,
   markDailyMissionStarted,
   recordSessionSummary,
   setActiveSubject,
@@ -52,6 +53,11 @@ import {
   submitReservedQuestionSession,
   type QuestionReservationResult,
 } from './serverQuestionSessions';
+import {
+  resolveChapterLearningResume,
+  resolveLearningResume,
+  saveLearningResume,
+} from './learningResume';
 
 interface Props {
   /**
@@ -176,6 +182,7 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
         highlightTopic: pendingZone.highlightTopic,
         highlightStepIdx: pendingZone.highlightStepIdx,
         highlightQuestionId: pendingZone.highlightQuestionId,
+        highlightReason: 'weakness',
       };
     }
     // 2순위: DialogueLesson 직진 (북마크 점프 등 lesson 단위 진입)
@@ -198,9 +205,21 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
         passNumber: pending.passNumber ?? passNumberFor(pending.subject),
       };
     }
-    return initialSubject
-      ? { kind: 'planet', subject: initialSubject }
-      : { kind: 'galaxy' };
+    if (initialSubject) {
+      const resume = resolveLearningResume(initialSubject, getSnapshot());
+      if (resume) {
+        return {
+          kind: 'zone',
+          subject: resume.subject,
+          chapter: resume.chapter,
+          highlightTopic: resume.topic,
+          highlightStepIdx: resume.stepIdx,
+          highlightReason: 'resume',
+        };
+      }
+      return { kind: 'planet', subject: initialSubject };
+    }
+    return { kind: 'galaxy' };
   });
   const [energyBlock, setEnergyBlock] = useState<{ retryAfterSec: number } | null>(
     null,
@@ -231,6 +250,13 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
       if (pending.phase === 'question' && typeof window !== 'undefined') {
         window.sessionStorage.setItem('questdp.pendingLessonPhase', 'question');
       }
+      saveLearningResume({
+        subject: pending.subject,
+        chapter: pending.chapter,
+        topic: pending.topic,
+        stepIdx: pending.stepIdx,
+        stepId: pending.stepId,
+      });
       setScreen({
         kind: 'lesson',
         subject: pending.subject,
@@ -313,7 +339,19 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
 
   const goToPlanet = (subject: Subject) => {
     setActiveSubject(subject);
-    setScreen({ kind: 'planet', subject });
+    const resume = resolveLearningResume(subject, progress);
+    setScreen(
+      resume
+        ? {
+            kind: 'zone',
+            subject: resume.subject,
+            chapter: resume.chapter,
+            highlightTopic: resume.topic,
+            highlightStepIdx: resume.stepIdx,
+            highlightReason: 'resume',
+          }
+        : { kind: 'planet', subject },
+    );
   };
 
   /** 일반 세션 시작. ⚡ 1 소모. */
@@ -563,9 +601,28 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
       return (
         <PlanetScreen
           subject={screen.subject}
-          onSelectChapter={(chapter) =>
-            setScreen({ kind: 'zone', subject: screen.subject, chapter })
-          }
+          onSelectChapter={(chapter) => {
+            const resume = resolveChapterLearningResume(
+              screen.subject,
+              chapter,
+              progress,
+            );
+            if (resume) {
+              saveLearningResume(resume);
+            }
+            setScreen(
+              resume
+                ? {
+                    kind: 'zone',
+                    subject: screen.subject,
+                    chapter,
+                    highlightTopic: resume.topic,
+                    highlightStepIdx: resume.stepIdx,
+                    highlightReason: 'resume',
+                  }
+                : { kind: 'zone', subject: screen.subject, chapter },
+            );
+          }}
           onBack={() => {
             // "다른 과목" 의미 — activeSubject 해제해서 chooser 가 다시 노출되게.
             // 새로고침 시에도 chooser 로 떨어지도록 URL 도 정리.
@@ -587,6 +644,7 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
           highlightTopic={screen.highlightTopic}
           highlightStepIdx={screen.highlightStepIdx}
           highlightQuestionId={screen.highlightQuestionId}
+          highlightReason={screen.highlightReason}
           onStart={(p: StartParams) =>
             startSession(
               screen.subject,
@@ -633,6 +691,15 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
             }
             // 자동 해금 제거 — 정답 맞춰야 다음 step 해금 (DialogueLesson/LessonScreen
             // 의 handleChoose 가 처리). 진입만으로는 unlock 안 됨.
+            if (targetStep) {
+              saveLearningResume({
+                subject: screen.subject,
+                chapter: screen.chapter,
+                topic,
+                stepIdx,
+                stepId: targetStep.id,
+              });
+            }
             setScreen({
               kind: 'lesson',
               subject: screen.subject,

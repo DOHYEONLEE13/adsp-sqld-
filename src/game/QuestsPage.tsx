@@ -194,8 +194,8 @@ export default function QuestsPage({ onExit }: Props) {
           className="liquid-glass rounded-[16px] px-4 py-3 mt-4 flex items-center justify-between gap-3"
           style={{
             background:
-              'linear-gradient(135deg, rgba(111,255,0,0.12), rgba(255,176,32,0.12))',
-            border: '1px solid rgba(111,255,0,0.4)',
+              'linear-gradient(135deg, var(--neon-12), rgba(255,176,32,0.12))',
+            border: '1px solid var(--neon-40)',
           }}
         >
           <div className="flex items-center gap-2">
@@ -227,9 +227,9 @@ export default function QuestsPage({ onExit }: Props) {
           className="fixed left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-full kr-heading text-[12px] uppercase tracking-widest"
           style={{
             top: '20%',
-            background: 'rgba(111,255,0,0.95)',
+            background: 'var(--neon-95)',
             color: 'var(--base)',
-            boxShadow: '0 14px 40px rgba(111,255,0,0.45)',
+            boxShadow: '0 14px 40px var(--neon-45)',
           }}
         >
           🎉 일일 퀘스트 완료! +{bonusToast} XP

@@ -12,7 +12,7 @@ interface Props {
   colors?: string[];
 }
 
-const DEFAULT_COLORS = ['#6FFF00', '#67e8f9', '#c084fc', '#fbbf24'];
+const DEFAULT_COLORS = ['var(--neon)', '#67e8f9', '#c084fc', '#fbbf24'];
 
 export default function CorrectBurst({
   count = 12,

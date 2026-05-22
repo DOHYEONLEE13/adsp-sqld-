@@ -76,7 +76,7 @@ export default function ThemePicker() {
             background: dirty ? 'var(--neon)' : 'rgba(239,244,255,0.06)',
             color: dirty ? '#0a1f00' : 'rgba(239,244,255,0.4)',
             border: dirty ? 'none' : '1px solid rgba(239,244,255,0.1)',
-            boxShadow: dirty ? '0 6px 18px -4px rgba(111,255,0,0.55)' : 'none',
+            boxShadow: dirty ? '0 6px 18px -4px var(--neon-55)' : 'none',
           }}
         >
           <Check size={13} strokeWidth={2.6} />
@@ -140,7 +140,7 @@ function ThemeCard({ theme, selected, applied, onSelect }: ThemeCardProps) {
           ? '2px solid var(--neon)'
           : '1.5px solid rgba(239,244,255,0.14)',
         boxShadow: selected
-          ? '0 0 0 1px rgba(111,255,0,0.3), 0 6px 18px -10px rgba(111,255,0,0.5)'
+          ? '0 0 0 1px var(--neon-30), 0 6px 18px -10px var(--neon-50)'
           : '0 2px 8px -4px rgba(0,0,0,0.4)',
       }}
     >
@@ -170,8 +170,8 @@ function ThemeCard({ theme, selected, applied, onSelect }: ThemeCardProps) {
         <span
           className="absolute top-2 right-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full kr-num text-[9.5px]"
           style={{
-            background: 'rgba(111,255,0,0.18)',
-            border: '1px solid rgba(111,255,0,0.55)',
+            background: 'var(--neon-18)',
+            border: '1px solid var(--neon-55)',
             color: 'var(--neon)',
             letterSpacing: '0.05em',
           }}

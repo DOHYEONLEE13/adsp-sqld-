@@ -116,7 +116,7 @@ export default function ProgressIndicator({
                       width: `${pct}%`,
                       background:
                         pct >= 100
-                          ? '#6FFF00'
+                          ? 'var(--neon)'
                           : pct >= 50
                             ? 'var(--neon)'
                             : '#67e8f9',

@@ -193,7 +193,7 @@ export default function RedeemPage({ onBack }: Props) {
                     border: '1px solid rgba(239,244,255,0.18)',
                   }}
                   onFocus={(e) =>
-                    (e.target.style.borderColor = 'rgba(111,255,0,0.5)')
+                    (e.target.style.borderColor = 'var(--neon-50)')
                   }
                   onBlur={(e) =>
                     (e.target.style.borderColor = 'rgba(239,244,255,0.18)')
@@ -205,8 +205,8 @@ export default function RedeemPage({ onBack }: Props) {
                   disabled={submitting || !code.trim()}
                   className="kr-num inline-flex items-center justify-center gap-2 text-[12px] uppercase tracking-widest px-5 py-3 rounded-xl transition active:scale-[0.97] disabled:opacity-40"
                   style={{
-                    background: 'rgba(111,255,0,0.16)',
-                    border: '1px solid rgba(111,255,0,0.5)',
+                    background: 'var(--neon-16)',
+                    border: '1px solid var(--neon-50)',
                     color: 'var(--neon)',
                   }}
                 >
@@ -226,10 +226,10 @@ export default function RedeemPage({ onBack }: Props) {
                   className="mt-4 px-4 py-3 rounded-xl flex items-start gap-2.5 kr-body text-[13px] leading-[1.6]"
                   style={{
                     background: result.ok
-                      ? 'rgba(111,255,0,0.10)'
+                      ? 'var(--neon-10)'
                       : 'rgba(248,113,113,0.10)',
                     border: result.ok
-                      ? '1px solid rgba(111,255,0,0.4)'
+                      ? '1px solid var(--neon-40)'
                       : '1px solid rgba(248,113,113,0.4)',
                     color: result.ok
                       ? 'rgba(196,255,128,0.95)'

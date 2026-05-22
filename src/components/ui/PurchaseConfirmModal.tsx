@@ -113,10 +113,10 @@ export default function PurchaseConfirmModal({
         style={{
           background:
             'linear-gradient(180deg, rgba(20,32,46,0.98) 0%, rgba(14,24,36,0.98) 100%)',
-          border: '1px solid rgba(111,255,0,0.30)',
+          border: '1px solid var(--neon-30)',
           borderRadius: '20px',
           boxShadow:
-            '0 20px 60px -12px rgba(0,0,0,0.7), 0 0 0 1px rgba(111,255,0,0.08) inset',
+            '0 20px 60px -12px rgba(0,0,0,0.7), 0 0 0 1px var(--neon-08) inset',
           padding: '20px 22px',
         }}
       >
@@ -153,8 +153,8 @@ export default function PurchaseConfirmModal({
           <div
             className="mb-4 flex items-center gap-3 px-3 py-3 rounded-[14px]"
             style={{
-              background: 'rgba(111,255,0,0.06)',
-              border: '1px solid rgba(111,255,0,0.20)',
+              background: 'var(--neon-06)',
+              border: '1px solid var(--neon-20)',
             }}
           >
             <div className="shrink-0 w-14 h-14 inline-flex items-center justify-center">
@@ -212,7 +212,7 @@ export default function PurchaseConfirmModal({
             <span
               className="kr-num tabular-nums font-bold"
               style={{
-                color: insufficient ? '#fca5a5' : '#6FFF00',
+                color: insufficient ? '#fca5a5' : 'var(--neon)',
               }}
             >
               {remaining.toLocaleString('ko-KR')} XP
@@ -256,13 +256,13 @@ export default function PurchaseConfirmModal({
             style={{
               background: insufficient
                 ? 'rgba(252,165,165,0.15)'
-                : '#6FFF00',
+                : 'var(--neon)',
               color: insufficient ? '#fca5a5' : '#010828',
               fontSize: 13,
               fontWeight: 700,
               boxShadow: insufficient
                 ? 'none'
-                : '0 6px 18px -4px rgba(111,255,0,0.45)',
+                : '0 6px 18px -4px var(--neon-45)',
             }}
           >
             {busy ? '잠금해제 중…' : insufficient ? 'XP 부족' : `${cost} XP 사용`}

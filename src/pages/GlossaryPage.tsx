@@ -23,7 +23,7 @@ import { handleNavClick } from '@/lib/navigate';
 const SUBJECT_BADGE: Record<GlossaryTerm['subject'], { label: string; color: string }> = {
   adsp: { label: 'ADsP', color: '#67e8f9' },
   sqld: { label: 'SQLD', color: '#c084fc' },
-  common: { label: '공통', color: '#9CFF3D' },
+  common: { label: '공통', color: 'var(--neon)' },
 };
 
 export default function GlossaryPage() {
@@ -109,7 +109,7 @@ export default function GlossaryPage() {
           <div className="flex items-center gap-2 flex-wrap">
             <Tag color="#67e8f9">ADsP</Tag>
             <Tag color="#c084fc">SQLD</Tag>
-            <Tag color="#9CFF3D">공통</Tag>
+            <Tag color="var(--neon)">공통</Tag>
           </div>
         </header>
 
@@ -154,7 +154,7 @@ export default function GlossaryPage() {
         <section
           className="mt-14 rounded-[20px] p-6 md:p-8"
           style={{
-            background: 'linear-gradient(135deg, rgba(103,232,249,0.12) 0%, rgba(192,132,252,0.12) 60%, rgba(111,255,0,0.08) 100%)',
+            background: 'linear-gradient(135deg, rgba(103,232,249,0.12) 0%, rgba(192,132,252,0.12) 60%, var(--neon-08) 100%)',
             border: '1px solid rgba(192,132,252,0.4)',
           }}
         >

@@ -386,9 +386,9 @@ export default function EnergyShopModal({ onClose }: Props) {
             onClick={() => setAdOpen(true)}
             className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl transition active:scale-[0.98] mb-3"
             style={{
-              background: 'rgba(111,255,0,0.08)',
+              background: 'var(--neon-08)',
               color: 'var(--neon)',
-              border: '1px solid rgba(111,255,0,0.35)',
+              border: '1px solid var(--neon-35)',
             }}
           >
             <Play size={14} fill="currentColor" strokeWidth={0} />
@@ -398,7 +398,7 @@ export default function EnergyShopModal({ onClose }: Props) {
             <span
               className="kr-num text-[10px] px-1.5 py-0.5 rounded-full ml-1"
               style={{
-                background: 'rgba(111,255,0,0.18)',
+                background: 'var(--neon-18)',
                 color: 'var(--neon)',
               }}
             >
@@ -486,11 +486,11 @@ export default function EnergyShopModal({ onClose }: Props) {
               style={{
                 background:
                   flash.kind === 'ok'
-                    ? 'rgba(111,255,0,0.12)'
+                    ? 'var(--neon-12)'
                     : 'rgba(248,113,113,0.12)',
                 border:
                   flash.kind === 'ok'
-                    ? '1px solid rgba(111,255,0,0.4)'
+                    ? '1px solid var(--neon-40)'
                     : '1px solid rgba(248,113,113,0.4)',
                 color: flash.kind === 'ok' ? 'var(--neon)' : '#fca5a5',
               }}

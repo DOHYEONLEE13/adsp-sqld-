@@ -166,7 +166,7 @@ export default function LessonStaticPage({ stepId }: Props) {
         <section
           className="rounded-[20px] p-6 md:p-8 mb-10"
           style={{
-            background: `linear-gradient(135deg, ${accent}1a 0%, rgba(111,255,0,0.08) 100%)`,
+            background: `linear-gradient(135deg, ${accent}1a 0%, var(--neon-08) 100%)`,
             border: `1px solid ${accent}40`,
           }}
         >
@@ -328,7 +328,7 @@ function BlockRenderer({ block, accent }: { block: LessonBlock; accent: string }
     case 'callout':
       const toneStyle =
         block.tone === 'mnemonic'
-          ? { bg: 'rgba(111,255,0,0.08)', border: 'rgba(111,255,0,0.4)', color: '#9CFF3D' }
+          ? { bg: 'var(--neon-08)', border: 'var(--neon-40)', color: 'var(--neon)' }
           : block.tone === 'warn'
             ? { bg: 'rgba(248,113,113,0.08)', border: 'rgba(248,113,113,0.4)', color: '#fca5a5' }
             : { bg: 'rgba(255,176,32,0.08)', border: 'rgba(255,176,32,0.4)', color: '#FFB020' };

@@ -60,15 +60,15 @@ export default function PlanTag({ size = 'sm', className }: Props) {
         border: '1px solid rgba(239,244,255,0.18)',
       },
       PRO: {
-        bg: 'rgba(111,255,0,0.1)',
-        color: '#9CFF3D',
-        border: '1px solid rgba(111,255,0,0.4)',
+        bg: 'var(--neon-10)',
+        color: 'var(--neon)',
+        border: '1px solid var(--neon-40)',
       },
       MAX: {
-        bg: 'linear-gradient(180deg, #6FFF00 0%, #5BD600 100%)',
+        bg: 'linear-gradient(180deg, var(--neon) 0%, var(--cta-primary-dark) 100%)',
         color: '#010828',
-        border: '1px solid rgba(111,255,0,0.55)',
-        shadow: '0 4px 12px -3px rgba(111,255,0,0.55)',
+        border: '1px solid var(--neon-55)',
+        shadow: '0 4px 12px -3px var(--neon-55)',
       },
     };
 

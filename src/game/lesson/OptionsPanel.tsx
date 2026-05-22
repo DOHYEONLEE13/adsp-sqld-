@@ -86,8 +86,8 @@ function styleFor(state: State): React.CSSProperties {
     case 'correct':
       return {
         ...base,
-        background: 'rgba(111,255,0,0.12)',
-        border: '2px solid #6FFF00',
+        background: 'var(--neon-12)',
+        border: '2px solid var(--neon)',
       };
     case 'wrong':
       return {
@@ -98,7 +98,7 @@ function styleFor(state: State): React.CSSProperties {
     case 'revealed':
       return {
         ...base,
-        border: '2px dashed #6FFF00',
+        border: '2px dashed var(--neon)',
       };
     default:
       return base;
@@ -107,9 +107,9 @@ function styleFor(state: State): React.CSSProperties {
 
 function badgeBg(state: State) {
   if (state === 'selected') return 'var(--subject-accent)';
-  if (state === 'correct') return '#6FFF00';
+  if (state === 'correct') return 'var(--neon)';
   if (state === 'wrong') return '#f87171';
-  if (state === 'revealed') return 'rgba(111,255,0,0.2)';
+  if (state === 'revealed') return 'var(--neon-20)';
   return 'rgba(255,255,255,0.08)';
 }
 

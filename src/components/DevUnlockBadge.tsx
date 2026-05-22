@@ -20,10 +20,10 @@ export default function DevUnlockBadge() {
     <div
       className="fixed top-2 left-1/2 -translate-x-1/2 z-[60] inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full kr-heading uppercase text-[10px] tracking-widest"
       style={{
-        background: 'rgba(111,255,0,0.92)',
+        background: 'var(--neon-92)',
         color: 'var(--base)',
-        boxShadow: '0 4px 16px rgba(111,255,0,0.4)',
-        border: '1px solid rgba(111,255,0,1)',
+        boxShadow: '0 4px 16px var(--neon-40)',
+        border: '1px solid var(--neon-100)',
       }}
       aria-label="검수 모드 활성"
     >
@@ -35,7 +35,7 @@ export default function DevUnlockBadge() {
         className="ml-1 px-1.5 py-0.5 rounded-full text-[9px]"
         style={{
           background: 'rgba(1,8,40,0.85)',
-          color: '#6FFF00',
+          color: 'var(--neon)',
         }}
       >
         OFF

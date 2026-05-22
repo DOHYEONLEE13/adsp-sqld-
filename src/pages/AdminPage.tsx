@@ -424,10 +424,10 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
           className="mt-10 p-5 rounded-[16px] border"
           style={{
             background: bypassActive
-              ? 'linear-gradient(135deg, rgba(111,255,0,0.10), rgba(111,255,0,0.04))'
+              ? 'linear-gradient(135deg, var(--neon-10), var(--neon-04))'
               : 'rgba(239,244,255,0.04)',
             borderColor: bypassActive
-              ? 'rgba(111,255,0,0.45)'
+              ? 'var(--neon-45)'
               : 'rgba(239,244,255,0.12)',
           }}
         >
@@ -459,14 +459,14 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
               className="kr-heading uppercase text-[11px] tracking-widest px-4 py-2.5 rounded-full transition shrink-0"
               style={{
                 background: bypassActive
-                  ? 'rgba(111,255,0,0.95)'
+                  ? 'var(--neon-95)'
                   : 'rgba(239,244,255,0.08)',
                 color: bypassActive ? 'var(--base)' : 'var(--cream)',
                 border: bypassActive
-                  ? '1px solid rgba(111,255,0,1)'
+                  ? '1px solid var(--neon-100)'
                   : '1px solid rgba(239,244,255,0.25)',
                 boxShadow: bypassActive
-                  ? '0 6px 20px rgba(111,255,0,0.35)'
+                  ? '0 6px 20px var(--neon-35)'
                   : 'none',
               }}
             >
@@ -698,7 +698,7 @@ function MetricUserRow({
       </div>
       <div
         className="kr-num text-[12px] tabular-nums shrink-0"
-        style={{ color: tone === 'warn' ? '#fbbf24' : '#9CFF3D' }}
+        style={{ color: tone === 'warn' ? '#fbbf24' : 'var(--neon)' }}
       >
         {value}
       </div>
@@ -1124,9 +1124,9 @@ function PromoCodeManager() {
             disabled={creating}
             className="kr-num inline-flex items-center gap-1.5 text-[12px] uppercase tracking-widest px-4 py-2.5 rounded-lg transition active:scale-[0.97] disabled:opacity-40"
             style={{
-              background: 'rgba(111,255,0,0.16)',
-              color: '#9CFF3D',
-              border: '1px solid rgba(111,255,0,0.4)',
+              background: 'var(--neon-16)',
+              color: 'var(--neon)',
+              border: '1px solid var(--neon-40)',
             }}
           >
             <Plus size={12} strokeWidth={2.6} />
@@ -1137,7 +1137,7 @@ function PromoCodeManager() {
           <div
             className="mt-3 kr-body text-[12px]"
             style={{
-              color: feedback.kind === 'ok' ? '#9CFF3D' : '#fca5a5',
+              color: feedback.kind === 'ok' ? 'var(--neon)' : '#fca5a5',
             }}
           >
             {feedback.msg}
@@ -1275,7 +1275,7 @@ function PromoCodeManager() {
                             </span>
                             <span
                               className="kr-heading text-[9px] uppercase tracking-widest"
-                              style={{ color: active ? '#9CFF3D' : '#fca5a5' }}
+                              style={{ color: active ? 'var(--neon)' : '#fca5a5' }}
                             >
                               {active ? '활성' : '비활성'}
                             </span>
@@ -1323,7 +1323,7 @@ function PromoCodeManager() {
                         </span>
                         <span
                           className="kr-heading text-[9px] uppercase tracking-widest"
-                          style={{ color: isActivePromoGrant(usage) ? '#9CFF3D' : '#fca5a5' }}
+                          style={{ color: isActivePromoGrant(usage) ? 'var(--neon)' : '#fca5a5' }}
                         >
                           {isActivePromoGrant(usage) ? '활성' : '비활성'}
                         </span>

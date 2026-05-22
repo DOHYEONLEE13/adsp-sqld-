@@ -27,7 +27,7 @@ import {
   signInWithOAuth,
 } from '@/lib/supabase';
 
-const ACCENT = '#6FFF00';
+const ACCENT = 'var(--neon)';
 const MAX_LEN = 12;
 
 interface Props {

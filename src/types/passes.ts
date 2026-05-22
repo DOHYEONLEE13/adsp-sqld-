@@ -53,7 +53,7 @@ export const PASS_TIER_VISUAL: Record<
   silver: { color: '#94a3b8', glow: 'rgba(52,211,153,0.35)', mascotPose: 'think' }, // 은 + emerald glow
   gold:   { color: '#fbbf24', glow: 'rgba(251,191,36,0.45)', mascotPose: 'lightbulb' },
   platinum: { color: '#67e8f9', glow: 'rgba(192,132,252,0.4)', mascotPose: 'celebrate' },
-  master: { color: '#6FFF00', glow: 'rgba(111,255,0,0.55)', mascotPose: 'celebrate' },
+  master: { color: 'var(--neon)', glow: 'var(--neon-55)', mascotPose: 'celebrate' },
 };
 
 /** 챕터 + 회독 단위 영구 stamp. Supabase pass_stamps 테이블의 row 와 1:1. */

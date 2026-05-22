@@ -148,7 +148,7 @@ export function MobileTopBar({ subject }: TopProps) {
                   className="kr-num text-[13px] truncate max-w-[110px] text-left"
                   style={{
                     color: isUnset
-                      ? 'rgba(111,255,0,0.85)'
+                      ? 'var(--neon-85)'
                       : 'var(--cream)',
                   }}
                   title={isUnset ? '닉네임 설정하기' : profile.displayName}

@@ -508,8 +508,8 @@ function WeakRoadmapCard({ roadmap }: { roadmap: WeakRoadmap }) {
       <div
         className="rounded-xl px-4 py-3 flex items-baseline justify-between gap-3"
         style={{
-          background: 'rgba(111,255,0,0.08)',
-          border: '1px solid rgba(111,255,0,0.32)',
+          background: 'var(--neon-08)',
+          border: '1px solid var(--neon-32)',
         }}
       >
         <div className="min-w-0 flex-1">

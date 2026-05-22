@@ -173,7 +173,7 @@ export default function PassSection() {
             aria-expanded={explainOpen}
             aria-controls="pass-tier-explain-panel"
             className="kr-num inline-flex items-center gap-1 text-[10.5px] uppercase tracking-widest mt-2.5 transition opacity-75 hover:opacity-100"
-            style={{ color: explainOpen ? '#6FFF00' : 'rgba(239,244,255,0.85)' }}
+            style={{ color: explainOpen ? 'var(--neon)' : 'rgba(239,244,255,0.85)' }}
           >
             <HelpCircle size={11} strokeWidth={2.4} />
             TIER 원리 자세히 보기
@@ -309,8 +309,8 @@ function TierRulesExplainer() {
       id="pass-tier-explain"
       className="mb-5 px-4 py-4 rounded-2xl"
       style={{
-        background: 'rgba(111,255,0,0.06)',
-        border: '1px solid rgba(111,255,0,0.25)',
+        background: 'var(--neon-06)',
+        border: '1px solid var(--neon-25)',
       }}
     >
       <p className="kr-body text-[13px] text-cream/85 leading-[1.65] mb-3">
@@ -377,9 +377,9 @@ function RuleRow({
         style={{
           width: 20,
           height: 20,
-          background: 'rgba(111,255,0,0.18)',
-          border: '1px solid rgba(111,255,0,0.45)',
-          color: '#6FFF00',
+          background: 'var(--neon-18)',
+          border: '1px solid var(--neon-45)',
+          color: 'var(--neon)',
           fontWeight: 600,
           marginTop: 1,
         }}

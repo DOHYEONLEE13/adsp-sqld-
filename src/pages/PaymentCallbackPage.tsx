@@ -122,12 +122,12 @@ export default function PaymentCallbackPage({ onBack }: Props) {
           {phase === 'verifying' ? (
             <>
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-full mb-5"
-                style={{ background: 'rgba(111,255,0,0.10)' }}>
+                style={{ background: 'var(--neon-10)' }}>
                 <Loader2
                   size={28}
                   strokeWidth={2.4}
                   className="animate-spin"
-                  style={{ color: '#6FFF00' }}
+                  style={{ color: 'var(--neon)' }}
                 />
               </div>
               <h1 className="kr-heading text-[20px] md:text-[24px] mb-2">
@@ -142,8 +142,8 @@ export default function PaymentCallbackPage({ onBack }: Props) {
           ) : phase === 'success' ? (
             <>
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-full mb-5"
-                style={{ background: 'rgba(111,255,0,0.18)' }}>
-                <CheckCircle2 size={32} strokeWidth={2.4} style={{ color: '#6FFF00' }} />
+                style={{ background: 'var(--neon-18)' }}>
+                <CheckCircle2 size={32} strokeWidth={2.4} style={{ color: 'var(--neon)' }} />
               </div>
               <h1 className="kr-heading text-[22px] md:text-[26px] mb-2">
                 결제 완료!
@@ -161,9 +161,9 @@ export default function PaymentCallbackPage({ onBack }: Props) {
                 onClick={() => (window.location.hash = '/game')}
                 className="kr-heading uppercase tracking-widest text-[12px] mt-6 px-6 py-3 rounded-full"
                 style={{
-                  background: '#6FFF00',
+                  background: 'var(--neon)',
                   color: '#010828',
-                  boxShadow: '0 8px 20px -6px rgba(111,255,0,0.5)',
+                  boxShadow: '0 8px 20px -6px var(--neon-50)',
                 }}
               >
                 바로 학습하러 가기

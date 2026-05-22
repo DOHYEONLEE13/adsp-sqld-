@@ -80,9 +80,9 @@ export default function SettingsPage({ onExit }: Props) {
           onClick={() => setThemeModalOpen(true)}
           className="kr-num text-[12.5px] font-medium px-4 py-2.5 rounded-full inline-flex items-center justify-center gap-1.5 transition active:scale-[0.98] hover:bg-white/10"
           style={{
-            background: 'rgba(111,255,0,0.10)',
+            background: 'var(--neon-10)',
             color: 'var(--neon)',
-            border: '1px solid rgba(111,255,0,0.35)',
+            border: '1px solid var(--neon-35)',
           }}
         >
           배경 테마 변경하기

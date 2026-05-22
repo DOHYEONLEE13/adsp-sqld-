@@ -25,7 +25,7 @@ export default function ProgressBadge({
     agg.solved === 0
       ? 'var(--cream)'
       : agg.accuracy >= 0.8
-        ? '#6FFF00'
+        ? 'var(--neon)'
         : agg.accuracy >= 0.5
           ? '#a78bfa'
           : '#f87171';
@@ -55,7 +55,7 @@ export default function ProgressBadge({
               background:
                 ratio === 0
                   ? 'transparent'
-                  : 'linear-gradient(90deg, var(--purple-1), var(--purple-2), #6FFF00)',
+                  : 'linear-gradient(90deg, var(--purple-1), var(--purple-2), var(--neon))',
             }}
           />
         </div>

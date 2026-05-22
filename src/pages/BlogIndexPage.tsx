@@ -136,7 +136,7 @@ export default function BlogIndexPage() {
         <section
           className="mt-14 rounded-[20px] p-6 md:p-8"
           style={{
-            background: 'linear-gradient(135deg, rgba(103,232,249,0.12) 0%, rgba(192,132,252,0.12) 60%, rgba(111,255,0,0.08) 100%)',
+            background: 'linear-gradient(135deg, rgba(103,232,249,0.12) 0%, rgba(192,132,252,0.12) 60%, var(--neon-08) 100%)',
             border: '1px solid rgba(192,132,252,0.4)',
           }}
         >

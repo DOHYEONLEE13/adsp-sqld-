@@ -66,7 +66,7 @@ export default function TopBar({
                 style={{
                   width: `${chapter * 100}%`,
                   background:
-                    'linear-gradient(90deg, var(--subject-accent), #6FFF00)',
+                    'linear-gradient(90deg, var(--subject-accent), var(--neon))',
                   boxShadow: '0 0 18px -2px var(--subject-accent)',
                 }}
               />
@@ -83,7 +83,7 @@ export default function TopBar({
               style={{
                 color:
                   chapterPct >= 100
-                    ? '#9CFF3D'
+                    ? 'var(--neon)'
                     : 'var(--subject-accent, #67e8f9)',
                 textShadow: '0 1px 2px rgba(0,0,0,0.4)',
               }}

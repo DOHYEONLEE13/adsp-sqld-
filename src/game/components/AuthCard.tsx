@@ -85,8 +85,8 @@ export default function AuthCard() {
               <span
                 className="shrink-0 inline-flex items-center justify-center w-8 h-8 rounded-full"
                 style={{
-                  background: 'rgba(111,255,0,0.12)',
-                  border: '1px solid rgba(111,255,0,0.4)',
+                  background: 'var(--neon-12)',
+                  border: '1px solid var(--neon-40)',
                 }}
               >
                 <Cloud size={14} className="text-neon" />

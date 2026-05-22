@@ -290,7 +290,7 @@ function BlockRenderer({ block }: { block: BlogBlock }) {
     case 'callout': {
       const tone =
         block.tone === 'tip'
-          ? { bg: 'rgba(111,255,0,0.08)', border: 'rgba(111,255,0,0.4)', color: '#9CFF3D' }
+          ? { bg: 'var(--neon-08)', border: 'var(--neon-40)', color: 'var(--neon)' }
           : block.tone === 'warn'
             ? { bg: 'rgba(248,113,113,0.08)', border: 'rgba(248,113,113,0.4)', color: '#fca5a5' }
             : { bg: 'rgba(255,176,32,0.08)', border: 'rgba(255,176,32,0.4)', color: '#FFB020' };

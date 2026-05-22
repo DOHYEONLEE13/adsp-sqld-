@@ -80,10 +80,10 @@ export default function LessonCompleteModal({
         className="relative w-full max-w-[460px] max-h-[92vh] overflow-y-auto rounded-[28px] p-0"
         style={{
           background:
-            'radial-gradient(120% 80% at 50% 0%, rgba(111,255,0,0.22) 0%, rgba(20,32,46,0.98) 55%)',
-          border: '1.5px solid rgba(111,255,0,0.5)',
+            'radial-gradient(120% 80% at 50% 0%, var(--neon-22) 0%, rgba(20,32,46,0.98) 55%)',
+          border: '1.5px solid var(--neon-50)',
           boxShadow:
-            '0 28px 70px -10px rgba(111,255,0,0.4), 0 0 0 1px rgba(255,255,255,0.05) inset',
+            '0 28px 70px -10px var(--neon-40), 0 0 0 1px rgba(255,255,255,0.05) inset',
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -130,7 +130,7 @@ export default function LessonCompleteModal({
               className="absolute inset-0 rounded-full blur-2xl"
               style={{
                 background:
-                  'radial-gradient(circle, rgba(111,255,0,0.55), transparent 70%)',
+                  'radial-gradient(circle, var(--neon-55), transparent 70%)',
                 transform: 'scale(1.6)',
               }}
               animate={{ opacity: [0.55, 0.85, 0.55] }}
@@ -152,7 +152,7 @@ export default function LessonCompleteModal({
             className="kr-heading text-[26px] md:text-[30px] leading-[1.2] mb-1"
             style={{ color: '#EFF4FF' }}
           >
-            <span style={{ color: '#9CFF3D' }}>{topic}</span> 정복!
+            <span style={{ color: 'var(--neon)' }}>{topic}</span> 정복!
           </h2>
           <p className="kr-body text-[13px] text-cream/70 leading-[1.55]">
             개념 파악 완료 — 이제 실전 감각 끌어올릴 차례
@@ -178,7 +178,7 @@ export default function LessonCompleteModal({
               label="정답"
               value={correctSteps}
               suffix={`/${totalSteps}`}
-              color="#9CFF3D"
+              color="var(--neon)"
             />
             <Stat
               label="정확도"
@@ -283,7 +283,7 @@ function Sparkle({
     <motion.div
       aria-hidden
       className="absolute pointer-events-none"
-      style={{ left: x, top: y, color: '#9CFF3D' }}
+      style={{ left: x, top: y, color: 'var(--neon)' }}
       initial={{ opacity: 0, scale: 0.4 }}
       animate={{
         opacity: [0, 1, 0.4, 1, 0],

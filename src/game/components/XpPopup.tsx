@@ -19,11 +19,11 @@ export default function XpPopup({ xp, label }: Props) {
       aria-hidden
       className="xp-popup pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 kr-heading text-[13px] uppercase tracking-widest inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full"
       style={{
-        background: 'rgba(111, 255, 0, 0.16)',
-        color: '#6FFF00',
-        border: '1px solid rgba(111, 255, 0, 0.4)',
-        boxShadow: '0 6px 18px -6px rgba(111, 255, 0, 0.55)',
-        textShadow: '0 0 14px rgba(111, 255, 0, 0.6)',
+        background: 'var(--neon-16)',
+        color: 'var(--neon)',
+        border: '1px solid var(--neon-40)',
+        boxShadow: '0 6px 18px -6px var(--neon-55)',
+        textShadow: '0 0 14px var(--neon-60)',
       }}
     >
       <Sparkles size={12} strokeWidth={2.8} />+{xp} XP

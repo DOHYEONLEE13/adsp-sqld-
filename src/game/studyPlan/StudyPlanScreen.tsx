@@ -322,9 +322,9 @@ function feasibilityMessage(
         body: idealDaily
           ? `이상적 페이스: 매일 ${idealDaily}. 입력하신 매일 ${userDaily}로 여유가 있어 — 개념을 깊게 파거나 변형 문제까지 풀어볼 수 있어. ${bufferNote}`
           : `시간이 여유있어. 개념을 깊게 파고 변형 문제까지 풀어보자. ${bufferNote}`,
-        accent: '#6FFF00',
-        borderColor: 'rgba(111,255,0,0.45)',
-        bg: 'linear-gradient(135deg, rgba(111,255,0,0.08), rgba(111,255,0,0.02))',
+        accent: 'var(--neon)',
+        borderColor: 'var(--neon-45)',
+        bg: 'linear-gradient(135deg, var(--neon-08), var(--neon-02))',
       };
   }
 }

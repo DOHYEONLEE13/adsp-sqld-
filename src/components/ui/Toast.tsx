@@ -239,8 +239,8 @@ function ToastCard({
 
 const TONE: Record<ToastKind, { bg: string; border: string; icon: string }> = {
   success: {
-    bg: 'rgba(111,255,0,0.12)',
-    border: 'rgba(111,255,0,0.45)',
+    bg: 'var(--neon-12)',
+    border: 'var(--neon-45)',
     icon: '✓',
   },
   error: {

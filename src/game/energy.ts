@@ -261,6 +261,15 @@ export async function refreshEnergy(): Promise<void> {
 
 let _channelUnsub: (() => void) | null = null;
 let _syncStarted = false;
+let _channelSeq = 0;
+
+function nextEnergyChannelName(userId: string): string {
+  const randomSuffix =
+    typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : `${Date.now()}-${++_channelSeq}-${Math.random().toString(36).slice(2)}`;
+  return `my-energy-${userId}-${randomSuffix}`;
+}
 
 function startRealtimeChannel() {
   const sb = getSupabase();
@@ -272,7 +281,9 @@ function startRealtimeChannel() {
     // 재사용 → 동시 호출 시 이미 subscribed 된 채널에 .on() 추가 시도 → 에러
     // ("cannot add postgres_changes callbacks for realtime:my-energy after subscribe()").
     // unique suffix 로 race 영구 해소. _channelUnsub 가 옛 채널 정리하므로 누적 leak 0.
-    const channelName = `my-energy-${data.session.user.id}-${Date.now()}`;
+    _channelUnsub?.();
+    _channelUnsub = null;
+    const channelName = nextEnergyChannelName(data.session.user.id);
     const channel = sb
       .channel(channelName)
       .on(

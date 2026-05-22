@@ -168,7 +168,7 @@ export default function ReviewPage({ onStartSession, onExit }: Props) {
                   ? '#f87171'
                   : lvl === 'watch'
                     ? '#fbbf24'
-                    : '#6FFF00';
+                    : 'var(--neon)';
               const schema = SUBJECT_SCHEMAS[t.subject];
               const chTitle =
                 schema.chapters.find((c) => c.chapter === t.chapter)?.title ??

@@ -122,7 +122,7 @@ export default function ResultScreen({
                 className={cx(
                   'liquid-glass rounded-[18px] p-4 md:p-5 flex gap-4 items-start',
                   a.correct
-                    ? 'ring-1 ring-[rgba(111,255,0,0.35)]'
+                    ? 'ring-1 ring-[var(--neon-35)]'
                     : 'ring-1 ring-[rgba(248,113,113,0.35)]',
                 )}
               >
@@ -251,9 +251,9 @@ function KpiCard({
 
 function verdictFor(acc: number): { title: string; accent: string } {
   if (acc >= 0.9)
-    return { title: '완벽한 항해', accent: '#6FFF00' };
+    return { title: '완벽한 항해', accent: 'var(--neon)' };
   if (acc >= 0.7)
-    return { title: '안정적인 탐사', accent: '#6FFF00' };
+    return { title: '안정적인 탐사', accent: 'var(--neon)' };
   if (acc >= 0.5)
     return { title: '계속 전진', accent: '#a78bfa' };
   return { title: '재정비가 필요', accent: '#f87171' };

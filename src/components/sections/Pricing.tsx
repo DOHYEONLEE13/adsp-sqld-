@@ -191,7 +191,7 @@ function PricingCard({
       className={cx(
         'flex min-h-[560px] flex-col rounded-[18px] border px-6 py-7 md:px-7 md:py-8',
         isMax
-          ? 'border-[rgba(125,216,80,0.36)] bg-[rgba(8,22,42,0.78)] shadow-[0_22px_58px_rgba(111,255,0,0.10)]'
+          ? 'border-[rgba(125,216,80,0.36)] bg-[rgba(8,22,42,0.78)] shadow-[0_22px_58px_var(--neon-10)]'
           : 'border-[rgba(239,244,255,0.13)] bg-cream/[0.035]',
       )}
     >
@@ -396,7 +396,7 @@ function BetaCouponModal({ onClose }: { onClose: () => void }) {
                 className={cx(
                   'kr-body inline-flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-[12px] px-3 text-[12px] font-bold transition active:scale-[0.96]',
                   copied
-                    ? 'bg-neon text-base shadow-[0_0_0_4px_rgba(111,255,0,0.12)]'
+                    ? 'bg-neon text-base shadow-[0_0_0_4px_var(--neon-12)]'
                     : 'bg-cream text-base hover:bg-white',
                 )}
               >

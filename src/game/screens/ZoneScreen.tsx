@@ -100,6 +100,8 @@ interface Props {
   highlightStepIdx?: number;
   /** 강조 출처 문항 id — 추적/접근성 라벨용. */
   highlightQuestionId?: string;
+  /** 강조 이유. 약점 탭은 red, 학습 복귀는 과목 accent로 표시. */
+  highlightReason?: 'weakness' | 'resume';
   onStart: (params: StartParams) => void;
   /** 특정 step 노드 클릭 → 그 step 만 단독 학습. passNumber 전달 (선택). */
   onSelectStep: (topic: string, stepIdx: number, passNumber?: number) => void;
@@ -114,6 +116,7 @@ export default function ZoneScreen({
   highlightTopic,
   highlightStepIdx,
   highlightQuestionId,
+  highlightReason = 'weakness',
   onStart,
   onSelectStep,
   onReviewIds,
@@ -214,12 +217,14 @@ export default function ZoneScreen({
     topic: string;
     stepIdx?: number;
     questionId?: string;
+    reason: 'weakness' | 'resume';
   } | null>(
     highlightTopic
       ? {
           topic: highlightTopic,
           stepIdx: highlightStepIdx,
           questionId: highlightQuestionId,
+          reason: highlightReason,
         }
       : null,
   );
@@ -229,10 +234,11 @@ export default function ZoneScreen({
       topic: highlightTopic,
       stepIdx: highlightStepIdx,
       questionId: highlightQuestionId,
+      reason: highlightReason,
     });
     const t = window.setTimeout(() => setActiveHighlight(null), 10000);
     return () => window.clearTimeout(t);
-  }, [highlightTopic, highlightStepIdx, highlightQuestionId]);
+  }, [highlightTopic, highlightStepIdx, highlightQuestionId, highlightReason]);
   // 강조 topic 의 섹션 시작점 (Part 헤더 + Step 1) 을 sticky top bar 바로 아래로
   // 정확히 안착시킴.
   //
@@ -286,7 +292,7 @@ export default function ZoneScreen({
             type="button"
             onClick={onBack}
             aria-label="행성으로 돌아가기"
-            className="mb-5 inline-flex items-center gap-2 kr-heading text-[11px] uppercase tracking-widest text-cream/75 hover:text-neon transition"
+            className="game-back-button mb-5 inline-flex items-center gap-2 kr-heading text-[11px] uppercase tracking-widest transition"
           >
             <ArrowLeft size={14} strokeWidth={2.4} />
             행성으로
@@ -438,6 +444,7 @@ export default function ZoneScreen({
                 })()}
                 passNumber={selectedPass}
                 pulse={activeHighlight?.topic === lesson.topic}
+                pulseReason={activeHighlight?.reason ?? 'weakness'}
                 highlightStepIdx={
                   activeHighlight?.topic === lesson.topic
                     ? activeHighlight.stepIdx
@@ -507,6 +514,7 @@ interface TopicSectionProps {
   passNumber: number;
   /** "나의 약점" 진입 시 본 topic 을 자동 강조 — 첫 미완료/미잠금 step 에 펄스. */
   pulse?: boolean;
+  pulseReason?: 'weakness' | 'resume';
   /** 펄스를 특정 원본 step index 에 고정. 없으면 첫 미완료 step. */
   highlightStepIdx?: number;
   onSelectStep: (stepIdx: number) => void;
@@ -523,6 +531,7 @@ function TopicSection({
   isWeak,
   passNumber,
   pulse = false,
+  pulseReason = 'weakness',
   highlightStepIdx,
   onSelectStep,
   onLockedClick,
@@ -671,6 +680,7 @@ function TopicSection({
               locked={locked}
               isLast={displayIdx === visibleSteps.length - 1}
               pulse={displayIdx === pulseDisplayIdx}
+              pulseReason={pulseReason}
               onClick={() => {
                 if (locked) {
                   onLockedClick?.(idx);
@@ -701,6 +711,7 @@ interface StepNodeProps {
   isLast: boolean;
   /** "나의 약점" 진입 자동 강조 — 펄스 링 + 살짝 강한 보더. */
   pulse?: boolean;
+  pulseReason?: 'weakness' | 'resume';
   onClick: () => void;
 }
 
@@ -714,8 +725,11 @@ function StepNode({
   locked,
   isLast,
   pulse = false,
+  pulseReason = 'weakness',
   onClick,
 }: StepNodeProps) {
+  const pulseLabel = pulseReason === 'resume' ? '여기서 시작' : '여기 풀기';
+  const pulseA11y = pulseReason === 'resume' ? '학습 복귀 — 여기서부터' : '약점 — 여기서부터';
   return (
     <div
       className="flex"
@@ -727,10 +741,12 @@ function StepNode({
         <button
           type="button"
           onClick={onClick}
-          aria-label={`Step ${n} ${title}${completed ? ' (완료)' : locked ? ' (잠김 — 앞 단계 먼저)' : ''}${pulse ? ' (약점 — 여기서부터)' : ''}`}
+          aria-label={`Step ${n} ${title}${completed ? ' (완료)' : locked ? ' (잠김 — 앞 단계 먼저)' : ''}${pulse ? ` (${pulseA11y})` : ''}`}
           aria-disabled={locked}
           className={`relative w-11 h-11 md:w-12 md:h-12 rounded-full inline-flex items-center justify-center transition shrink-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-neon${
-            pulse ? ' qd-pulse-ring' : ''
+            pulse
+              ? ` qd-pulse-ring${pulseReason === 'resume' ? ' qd-pulse-ring-resume' : ''}`
+              : ''
           }`}
           style={{
             // 잠금 step 도 어두운 별 사진 배경 위에서 보이도록 살짝 어두운 backdrop
@@ -838,14 +854,23 @@ function StepNode({
               <span
                 className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 kr-heading text-[9px] uppercase tracking-widest"
                 style={{
-                  color: '#FFB4B4',
-                  background: 'rgba(248,113,113,0.12)',
-                  border: '1px solid rgba(248,113,113,0.38)',
-                  boxShadow: '0 6px 18px -14px rgba(248,113,113,0.85)',
+                  color: pulseReason === 'resume' ? accent : '#FFB4B4',
+                  background:
+                    pulseReason === 'resume'
+                      ? `${accent}18`
+                      : 'rgba(248,113,113,0.12)',
+                  border:
+                    pulseReason === 'resume'
+                      ? `1px solid ${accent}66`
+                      : '1px solid rgba(248,113,113,0.38)',
+                  boxShadow:
+                    pulseReason === 'resume'
+                      ? `0 6px 18px -14px ${accent}`
+                      : '0 6px 18px -14px rgba(248,113,113,0.85)',
                 }}
               >
                 <Target size={9} strokeWidth={2.8} />
-                여기 풀기
+                {pulseLabel}
               </span>
             </>
           ) : null}
@@ -1098,7 +1123,7 @@ function ModeChip({ icon, title, onClick, disabled, accent }: ModeChipProps) {
   const fg = {
     purple: '#a78bfa',
     red: '#f87171',
-    neon: '#6FFF00',
+    neon: 'var(--neon)',
     cyan: '#67e8f9',
     amber: '#fbbf24',
   }[accent];

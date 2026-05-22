@@ -291,7 +291,9 @@ function StreakCalendar({
         const bg =
           b.attempts === 0
             ? 'rgba(239,244,255,0.06)'
-            : `rgba(111, 255, 0, ${0.15 + intensity * 0.7})`;
+            : `color-mix(in srgb, var(--neon) ${Math.round(
+                15 + intensity * 70,
+              )}%, transparent)`;
         const title = `${b.day} · ${b.attempts}문항${
           b.attempts > 0 ? ` · ${Math.round(b.accuracy * 100)}%` : ''
         }`;
@@ -466,7 +468,7 @@ function SubjectRow({
 // ------------------------------------------------------------------
 
 function accuracyAccent(acc: number): string {
-  if (acc >= 0.8) return '#6FFF00';
+  if (acc >= 0.8) return 'var(--neon)';
   if (acc >= 0.5) return '#a78bfa';
   return '#f87171';
 }
@@ -474,7 +476,7 @@ function accuracyAccent(acc: number): string {
 function weaknessColor(score: number): string {
   if (score >= 0.55) return '#f87171';
   if (score >= 0.4) return '#fbbf24';
-  return '#6FFF00';
+  return 'var(--neon)';
 }
 
 // formatRelativeTime — 최근 세션 섹션 제거로 미사용. 향후 재도입 시 git history 참조.

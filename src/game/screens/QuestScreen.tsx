@@ -24,6 +24,7 @@ import { useBookmarks } from '../useBookmarks';
 import XpPopup from '../components/XpPopup';
 import CorrectBurst from '../components/CorrectBurst';
 import { XP_PER_CORRECT } from '../rpg';
+import SqlQuestionContextCard from '../components/SqlQuestionContextCard';
 
 interface Props {
   session: QuestSession;
@@ -292,6 +293,11 @@ export default function QuestScreen({
         <p className="kr-body text-[15px] md:text-[17px] leading-[1.8] mt-3 whitespace-pre-wrap">
           {current.question}
         </p>
+        <SqlQuestionContextCard
+          context={current.sqlContext}
+          revealed={!isTest && local.revealed}
+          className="mt-4"
+        />
 
         {/* 메모 입력 — 저장은 blur 에 + Ctrl/Cmd+Enter. */}
         {!isTest && noteOpen ? (
@@ -361,7 +367,7 @@ export default function QuestScreen({
               <span className="kr-heading text-[13px] uppercase tracking-widest text-cream/70 shrink-0 mt-0.5">
                 {String.fromCharCode(65 + idx)}
               </span>
-              <span className="kr-body text-[14px] md:text-[15px] leading-[1.7] flex-1">
+              <span className="kr-body text-[14px] md:text-[15px] leading-[1.7] flex-1 whitespace-pre-wrap">
                 {choice}
               </span>
               {showCorrect ? (

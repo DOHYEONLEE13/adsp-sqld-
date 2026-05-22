@@ -1,4 +1,5 @@
 import { waitForSession } from '@/lib/auth/waitForSession';
+import { ALL_QUESTIONS } from '@/lib/questions';
 import { getSupabase } from '@/lib/supabase';
 import type { MultipleChoiceQuestion } from '@/types/question';
 import type { QuestSession, QuestSummary } from './types';
@@ -46,44 +47,61 @@ function toInt(value: unknown, fallback: number): number {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
+const LOCAL_SQL_CONTEXT_BY_ID = new Map(
+  ALL_QUESTIONS.flatMap((question) =>
+    question.type === 'multiple_choice' && question.sqlContext
+      ? [[question.id, question.sqlContext] as const]
+      : [],
+  ),
+);
+
 function asQuestionList(value: unknown): MultipleChoiceQuestion[] {
   if (!Array.isArray(value)) return [];
   return value
     .map((raw) => asRecord(raw))
     .filter((raw) => typeof raw.id === 'string' && Array.isArray(raw.choices))
-    .map((raw) => ({
-      id: String(raw.id),
-      subject: raw.subject === 'sqld' ? 'sqld' : 'adsp',
-      chapter:
-        typeof raw.chapter === 'number'
-          ? raw.chapter
-          : toInt(raw.chapter, 0),
-      chapterTitle: String(raw.chapterTitle ?? ''),
-      topic: String(raw.topic ?? raw.rawTopic ?? ''),
-      subtopic:
-        typeof raw.subtopic === 'string' && raw.subtopic
-          ? raw.subtopic
-          : undefined,
-      difficulty:
-        typeof raw.difficulty === 'number' &&
-        raw.difficulty >= 1 &&
-        raw.difficulty <= 5
-          ? (raw.difficulty as MultipleChoiceQuestion['difficulty'])
-          : undefined,
-      pass:
-        typeof raw.pass === 'number'
-          ? raw.pass
-          : toInt(raw.pass, 1),
-      type: 'multiple_choice',
-      question: String(raw.question ?? ''),
-      choices: (raw.choices as unknown[]).map((choice) => String(choice)),
-      // 서버가 제출 전까지 정답을 공개하지 않는다.
-      answerIndex: -1,
-      status:
-        typeof raw.status === 'string'
-          ? (raw.status as MultipleChoiceQuestion['status'])
-          : undefined,
-    }));
+    .map((raw) => {
+      const id = String(raw.id);
+      return {
+        id,
+        subject: raw.subject === 'sqld' ? 'sqld' : 'adsp',
+        chapter:
+          typeof raw.chapter === 'number'
+            ? raw.chapter
+            : toInt(raw.chapter, 0),
+        chapterTitle: String(raw.chapterTitle ?? ''),
+        topic: String(raw.topic ?? raw.rawTopic ?? ''),
+        subtopic:
+          typeof raw.subtopic === 'string' && raw.subtopic
+            ? raw.subtopic
+            : undefined,
+        difficulty:
+          typeof raw.difficulty === 'number' &&
+          raw.difficulty >= 1 &&
+          raw.difficulty <= 5
+            ? (raw.difficulty as MultipleChoiceQuestion['difficulty'])
+            : undefined,
+        pass:
+          typeof raw.pass === 'number'
+            ? raw.pass
+            : toInt(raw.pass, 1),
+        sqlContext:
+          raw.sqlContext && typeof raw.sqlContext === 'object'
+            ? (raw.sqlContext as MultipleChoiceQuestion['sqlContext'])
+            : raw.sql_context && typeof raw.sql_context === 'object'
+              ? (raw.sql_context as MultipleChoiceQuestion['sqlContext'])
+              : LOCAL_SQL_CONTEXT_BY_ID.get(id),
+        type: 'multiple_choice',
+        question: String(raw.question ?? ''),
+        choices: (raw.choices as unknown[]).map((choice) => String(choice)),
+        // 서버가 제출 전까지 정답을 공개하지 않는다.
+        answerIndex: -1,
+        status:
+          typeof raw.status === 'string'
+            ? (raw.status as MultipleChoiceQuestion['status'])
+            : undefined,
+      };
+    });
 }
 
 export async function reserveQuestionSession(

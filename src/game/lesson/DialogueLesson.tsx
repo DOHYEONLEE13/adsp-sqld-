@@ -36,6 +36,7 @@ import SimilarProblemsPanel from '../components/SimilarProblemsPanel';
 import { countSimilarQuestions } from '../similarQuestions';
 import PageAmbientBg from '../components/PageAmbientBg';
 import StudyPlanContextBar from '../studyPlan/StudyPlanContextBar';
+import SqlQuestionContextCard from '../components/SqlQuestionContextCard';
 import { getReminder } from '@/data/reminders';
 import { PASS_TIER_VISUAL } from '@/types/passes';
 import { explanationToText } from '@/types/question';
@@ -641,6 +642,13 @@ export default function DialogueLesson({
               <SpeechBubble
                 text={bubbleText}
                 placement={bubblePlacement}
+              />
+            ) : null}
+            {(phase === 'question' || phase === 'feedback') && quizQuestion?.sqlContext ? (
+              <SqlQuestionContextCard
+                context={quizQuestion.sqlContext}
+                revealed={phase === 'feedback'}
+                className="mt-4"
               />
             ) : null}
           </div>

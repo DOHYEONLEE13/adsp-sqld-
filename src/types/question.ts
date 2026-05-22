@@ -83,6 +83,32 @@ export interface AuditMeta {
   audited_at?: string;
 }
 
+export type SqlDialect =
+  | 'standard'
+  | 'oracle'
+  | 'sqlserver'
+  | 'mysql'
+  | 'postgresql'
+  | 'mixed';
+
+export interface SqlContextTable {
+  name: string;
+  columns: string[];
+  rows: Array<Record<string, string | number | null>>;
+}
+
+export interface SqlQuestionContext {
+  /** SQLD is mostly interpretation-first, so this is displayed as a read-only lab. */
+  dialect?: SqlDialect;
+  title?: string;
+  prompt?: string;
+  focus?: string[];
+  tables?: SqlContextTable[];
+  sql?: string;
+  expectedShape?: string;
+  trace?: string[];
+}
+
 export interface QuestionBase {
   /** Stable unique id. Recommended: `<subject>-<chapter>-<index>` */
   id: string;
@@ -99,6 +125,7 @@ export interface QuestionBase {
   /** 출처. e.g. "2024년 제38회 기출", "자체 예상" */
   source?: string;
   tags?: string[];
+  sqlContext?: SqlQuestionContext;
   /**
    * 풀이/해설.
    *  - string: 단순 한 줄/문단 — 기존 데이터 그대로 호환

@@ -42,6 +42,7 @@ import EnergyBlockModal from '../components/EnergyBlockModal';
 import LessonCompleteModal from '../components/LessonCompleteModal';
 import PageAmbientBg from '../components/PageAmbientBg';
 import { reserveLessonQuestion } from '../serverQuestionSessions';
+import SqlQuestionContextCard from '../components/SqlQuestionContextCard';
 
 const SUBJECT_ACCENT: Record<Subject, string> = {
   adsp: '#67e8f9',
@@ -835,6 +836,7 @@ interface QuizViewProps {
     question: string;
     choices: string[];
     answerIndex: number;
+    sqlContext?: import('@/types/question').SqlQuestionContext;
     /** string 또는 ExplanationObj 모두 허용 — 호출 측이 이미 string 으로 변환했거나 객체 그대로. */
     explanation?: string | import('@/types/question').ExplanationObj;
   };
@@ -860,6 +862,11 @@ function QuizView({ question, saved, onChoose }: QuizViewProps) {
         <p className="kr-body text-[15px] md:text-[16px] leading-[1.7] text-cream/95 whitespace-pre-line">
           {question.question}
         </p>
+        <SqlQuestionContextCard
+          context={question.sqlContext}
+          revealed={!!saved}
+          className="mt-4"
+        />
       </div>
 
       {/* 선지 */}

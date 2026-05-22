@@ -1,0 +1,1061 @@
+{
+  "subject": "sqld",
+  "meta": {
+    "version": "2026.05.22",
+    "updatedAt": "2026-05-22",
+    "source": "SQLD summary PDF scope, QuestDP original reconstruction",
+    "notes": "SQLD exam-fit drills. These questions are original examples derived from the scope, not copied from source text."
+  },
+  "questions": [
+    {
+      "id": "sqld-sql-lab-001",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "subtopic": "SQL 명령군",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["sql-command-group", "ddl", "dml", "dcl", "tcl"],
+      "question": "다음 명령어 묶음 중 역할 분류가 가장 자연스러운 것은?",
+      "choices": [
+        "CREATE, ALTER, DROP은 테이블 구조를 다루므로 DDL이다.",
+        "COMMIT, ROLLBACK은 권한을 다루므로 DCL이다.",
+        "GRANT, REVOKE는 트랜잭션 저장 여부를 다루므로 TCL이다.",
+        "INSERT, UPDATE, DELETE는 테이블 구조를 바꾸므로 DDL이다."
+      ],
+      "answerIndex": 0,
+      "explanation": "DDL은 객체 구조 정의·변경·삭제 계열입니다. COMMIT/ROLLBACK은 TCL, GRANT/REVOKE는 DCL, INSERT/UPDATE/DELETE는 DML입니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-002",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "subtopic": "SELECT 논리 실행 순서",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["select-order", "alias", "where"],
+      "question": "다음 SQL이 실패하는 가장 직접적인 이유는?",
+      "sqlContext": {
+        "dialect": "standard",
+        "title": "SELECT 별칭 사용 위치",
+        "focus": ["실행 순서", "ALIAS"],
+        "tables": [
+          {
+            "name": "EMP",
+            "columns": ["EMP_ID", "SAL"],
+            "rows": [
+              { "EMP_ID": 1, "SAL": 300 },
+              { "EMP_ID": 2, "SAL": 600 }
+            ]
+          }
+        ],
+        "sql": "SELECT EMP_ID, SAL * 12 AS YEAR_SAL\nFROM EMP\nWHERE YEAR_SAL >= 5000;",
+        "expectedShape": "오류 여부를 먼저 판단하세요.",
+        "trace": [
+          "FROM에서 EMP를 읽는다.",
+          "WHERE는 SELECT보다 먼저 실행된다.",
+          "YEAR_SAL 별칭은 SELECT 단계에서 생기므로 WHERE 단계에서는 아직 모른다."
+        ]
+      },
+      "choices": [
+        "WHERE가 SELECT보다 먼저 실행되어 YEAR_SAL 별칭을 알 수 없기 때문이다.",
+        "SAL * 12처럼 산술식을 SELECT에 쓸 수 없기 때문이다.",
+        "WHERE 절에서는 숫자 비교 연산자를 사용할 수 없기 때문이다.",
+        "EMP_ID를 함께 SELECT하면 반드시 GROUP BY가 필요하기 때문이다."
+      ],
+      "answerIndex": 0,
+      "explanation": "논리 처리 순서는 FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY입니다. SELECT에서 만든 별칭은 ORDER BY에서는 쓸 수 있지만 WHERE에서는 사용할 수 없습니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-003",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "subtopic": "관계대수",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["relational-algebra", "selection", "projection"],
+      "question": "관계대수 기호와 SQL 절의 연결로 가장 적절한 것은?",
+      "choices": [
+        "σ는 조건에 맞는 행을 고르는 연산이므로 WHERE와 가깝다.",
+        "π는 두 릴레이션의 교집합을 구하므로 INTERSECT와 같다.",
+        "×는 중복을 제거하는 연산이므로 DISTINCT와 같다.",
+        "∩는 모든 가능한 행 조합을 만들므로 CROSS JOIN과 같다."
+      ],
+      "answerIndex": 0,
+      "explanation": "σ(Selection)는 조건을 만족하는 행 선택, π(Projection)는 열 선택입니다. ×는 Cartesian product, ∩는 교집합입니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-004",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "subtopic": "DISTINCT와 NULL",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["distinct", "null", "count"],
+      "question": "다음 SQL의 결과로 가장 적절한 것은?",
+      "sqlContext": {
+        "dialect": "standard",
+        "title": "DISTINCT는 같은 값 조합을 한 번만 남긴다",
+        "focus": ["DISTINCT", "NULL"],
+        "tables": [
+          {
+            "name": "LOGS",
+            "columns": ["USER_ID", "CHANNEL"],
+            "rows": [
+              { "USER_ID": 1, "CHANNEL": "APP" },
+              { "USER_ID": 1, "CHANNEL": "APP" },
+              { "USER_ID": 2, "CHANNEL": null },
+              { "USER_ID": 2, "CHANNEL": null }
+            ]
+          }
+        ],
+        "sql": "SELECT DISTINCT USER_ID, CHANNEL\nFROM LOGS;",
+        "expectedShape": "결과 행 수를 고르세요.",
+        "trace": [
+          "(1, APP)은 두 번 있지만 한 행만 남는다.",
+          "(2, NULL)도 같은 값 조합으로 보아 한 행만 남는다.",
+          "최종 결과는 2행이다."
+        ]
+      },
+      "choices": ["1행", "2행", "3행", "4행"],
+      "answerIndex": 1,
+      "explanation": "DISTINCT는 선택한 컬럼 조합 전체가 같은 행을 하나로 줄입니다. 이 예시에서는 (1, APP), (2, NULL) 두 조합만 남습니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-005",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "subtopic": "문자 함수",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["substr", "oracle", "string-function"],
+      "question": "Oracle 기준 다음 결과로 옳은 것은?",
+      "sqlContext": {
+        "dialect": "oracle",
+        "title": "SUBSTR 위치 계산",
+        "focus": ["SUBSTR"],
+        "sql": "SELECT SUBSTR('QUESTDP', 2, 3) AS A,\n       SUBSTR('QUESTDP', -2) AS B\nFROM DUAL;",
+        "expectedShape": "A와 B의 값을 순서대로 고르세요.",
+        "trace": [
+          "SUBSTR('QUESTDP', 2, 3)은 2번째 문자부터 3글자라 UES이다.",
+          "SUBSTR('QUESTDP', -2)는 뒤에서 2번째부터 끝까지라 DP이다."
+        ]
+      },
+      "choices": ["A=QUE, B=DP", "A=UES, B=DP", "A=UES, B=TP", "A=EST, B=QP"],
+      "answerIndex": 1,
+      "explanation": "Oracle의 SUBSTR은 시작 위치가 1부터 시작합니다. 음수 시작 위치는 문자열 끝에서 거꾸로 세므로 -2는 뒤에서 두 번째 문자부터입니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-006",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "subtopic": "숫자 함수",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["round", "trunc", "number-function"],
+      "question": "Oracle 기준 다음 식의 결과로 옳은 것은?",
+      "sqlContext": {
+        "dialect": "oracle",
+        "title": "음수 자릿수 반올림과 버림",
+        "focus": ["ROUND", "TRUNC"],
+        "sql": "SELECT ROUND(148.6, -1) AS A,\n       TRUNC(148.6, -1) AS B\nFROM DUAL;",
+        "expectedShape": "A와 B의 값을 고르세요.",
+        "trace": [
+          "-1 자릿수는 10의 자리 기준이다.",
+          "148.6은 10의 자리 반올림 시 150이 된다.",
+          "10의 자리 버림은 140이다."
+        ]
+      },
+      "choices": ["A=140, B=150", "A=150, B=140", "A=149, B=148", "A=148.6, B=148"],
+      "answerIndex": 1,
+      "explanation": "ROUND(n, -1)은 10의 자리에서 반올림하고, TRUNC(n, -1)은 10의 자리 아래를 버립니다. 따라서 150과 140입니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-007",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "subtopic": "집계 함수와 NULL",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["count", "sum", "null", "aggregate"],
+      "question": "다음 SQL 결과로 옳은 것은?",
+      "sqlContext": {
+        "dialect": "standard",
+        "title": "COUNT(*)와 COUNT(컬럼)의 차이",
+        "focus": ["COUNT", "NULL"],
+        "tables": [
+          {
+            "name": "SCORE",
+            "columns": ["ID", "POINT"],
+            "rows": [
+              { "ID": 1, "POINT": 10 },
+              { "ID": 2, "POINT": null },
+              { "ID": 3, "POINT": 20 }
+            ]
+          }
+        ],
+        "sql": "SELECT COUNT(*) AS C1,\n       COUNT(POINT) AS C2,\n       SUM(POINT) AS S\nFROM SCORE;",
+        "expectedShape": "C1, C2, S를 순서대로 고르세요.",
+        "trace": [
+          "COUNT(*)는 행 자체를 세므로 NULL 여부와 무관하게 3이다.",
+          "COUNT(POINT)는 POINT가 NULL인 행을 제외하므로 2이다.",
+          "SUM은 NULL을 제외하고 10+20을 계산하므로 30이다."
+        ]
+      },
+      "choices": ["C1=3, C2=2, S=30", "C1=2, C2=2, S=30", "C1=3, C2=3, S=NULL", "C1=3, C2=2, S=NULL"],
+      "answerIndex": 0,
+      "explanation": "COUNT(*)는 NULL 포함 전체 행 수를 세고, COUNT(컬럼)과 SUM/AVG/MIN/MAX는 NULL을 제외하고 계산합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-008",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "subtopic": "NULL 비교",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["null", "is-null", "where"],
+      "question": "직업이 입력되지 않은 회원만 조회하려면 어떤 조건이 가장 적절한가?",
+      "sqlContext": {
+        "dialect": "standard",
+        "title": "NULL은 = 로 비교하지 않는다",
+        "focus": ["IS NULL"],
+        "tables": [
+          {
+            "name": "MEMBER",
+            "columns": ["ID", "JOB"],
+            "rows": [
+              { "ID": 1, "JOB": "학생" },
+              { "ID": 2, "JOB": null },
+              { "ID": 3, "JOB": "개발자" }
+            ]
+          }
+        ],
+        "expectedShape": "WHERE 뒤에 들어갈 조건을 고르세요.",
+        "trace": [
+          "NULL은 값이 아니라 알 수 없음에 가깝다.",
+          "= NULL 비교는 참/거짓으로 확정되지 않는다.",
+          "NULL 여부는 IS NULL 또는 IS NOT NULL을 사용한다."
+        ]
+      },
+      "choices": ["JOB = NULL", "JOB != NULL", "JOB IS NULL", "JOB IN NULL"],
+      "answerIndex": 2,
+      "explanation": "NULL은 일반 비교 연산자 =, !=로 비교하지 않습니다. NULL인 행은 IS NULL, NULL이 아닌 행은 IS NOT NULL을 사용합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-009",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "subtopic": "NULL 처리 함수",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["coalesce", "nvl", "nullif"],
+      "question": "다음 결과로 옳은 것은?",
+      "sqlContext": {
+        "dialect": "oracle",
+        "title": "COALESCE와 NULLIF",
+        "focus": ["COALESCE", "NULLIF"],
+        "sql": "SELECT COALESCE(NULL, NULL, 'A', 'B') AS X,\n       NULLIF(100, 100) AS Y,\n       NULLIF(100, 90) AS Z\nFROM DUAL;",
+        "expectedShape": "X, Y, Z를 순서대로 고르세요.",
+        "trace": [
+          "COALESCE는 왼쪽부터 첫 번째 NOT NULL 값을 반환한다.",
+          "NULLIF(a,b)는 두 값이 같으면 NULL을 반환한다.",
+          "두 값이 다르면 첫 번째 값을 반환한다."
+        ]
+      },
+      "choices": ["X=A, Y=NULL, Z=100", "X=NULL, Y=100, Z=NULL", "X=B, Y=NULL, Z=90", "X=A, Y=100, Z=100"],
+      "answerIndex": 0,
+      "explanation": "COALESCE는 첫 NOT NULL인 A를 반환합니다. NULLIF(100,100)은 NULL, NULLIF(100,90)은 첫 번째 값 100을 반환합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-010",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "subtopic": "CASE와 NULL",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["case", "null", "decode"],
+      "question": "COL 값이 NULL일 때 다음 Simple CASE의 결과는?",
+      "sqlContext": {
+        "dialect": "standard",
+        "title": "Simple CASE의 WHEN NULL 함정",
+        "focus": ["CASE", "NULL"],
+        "sql": "CASE COL\n  WHEN NULL THEN '없음'\n  ELSE '기타'\nEND",
+        "expectedShape": "COL이 NULL인 한 행을 기준으로 판단하세요.",
+        "trace": [
+          "Simple CASE는 내부적으로 COL = 비교값 형태로 판단한다.",
+          "COL = NULL은 참이 되지 않는다.",
+          "WHEN NULL에 걸리지 않아 ELSE로 간다."
+        ]
+      },
+      "choices": ["없음", "기타", "NULL", "오류"],
+      "answerIndex": 1,
+      "explanation": "Simple CASE의 WHEN NULL은 NULL 비교 함정 때문에 원하는 대로 동작하지 않습니다. NULL 분기는 CASE WHEN COL IS NULL THEN ... 형태가 안전합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-011",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "subtopic": "LIKE와 ESCAPE",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["like", "escape", "wildcard"],
+      "question": "상품명이 문자 그대로 '_SALE'로 끝나는 행만 찾고 싶다. 가장 적절한 조건은?",
+      "sqlContext": {
+        "dialect": "standard",
+        "title": "와일드카드 문자를 문자 그대로 찾기",
+        "focus": ["LIKE", "ESCAPE"],
+        "tables": [
+          {
+            "name": "ITEM",
+            "columns": ["NAME"],
+            "rows": [
+              { "NAME": "SUMMER_SALE" },
+              { "NAME": "WINTERXSALE" },
+              { "NAME": "SALE" }
+            ]
+          }
+        ],
+        "expectedShape": "WHERE NAME 뒤에 들어갈 조건을 고르세요.",
+        "trace": [
+          "_는 임의의 한 글자 와일드카드이다.",
+          "문자 그대로의 _를 찾으려면 ESCAPE 문자를 정한다.",
+          "'%/_SALE' ESCAPE '/'는 _SALE로 끝나는 문자열을 찾는다."
+        ]
+      },
+      "choices": [
+        "LIKE '%_SALE'",
+        "LIKE '%/_SALE' ESCAPE '/'",
+        "LIKE '_SALE%'",
+        "LIKE '%-SALE' ESCAPE '_'"
+      ],
+      "answerIndex": 1,
+      "explanation": "_는 한 글자 와일드카드이므로 문자 자체의 밑줄을 찾으려면 ESCAPE를 써야 합니다. 여기서는 /_가 밑줄 문자 자체를 뜻합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-012",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "subtopic": "연산자 우선순위",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["operator-precedence", "and", "or"],
+      "question": "다음 조건을 만족하는 행 수는?",
+      "sqlContext": {
+        "dialect": "standard",
+        "title": "AND는 OR보다 먼저 묶인다",
+        "focus": ["AND", "OR"],
+        "tables": [
+          {
+            "name": "T",
+            "columns": ["ID", "A", "B"],
+            "rows": [
+              { "ID": 1, "A": "Y", "B": "N" },
+              { "ID": 2, "A": "N", "B": "Y" },
+              { "ID": 3, "A": "Y", "B": "Y" }
+            ]
+          }
+        ],
+        "sql": "SELECT COUNT(*)\nFROM T\nWHERE A = 'Y' OR B = 'Y' AND ID = 2;",
+        "expectedShape": "괄호가 없을 때의 우선순위를 적용하세요.",
+        "trace": [
+          "AND가 OR보다 먼저 계산된다.",
+          "조건은 A='Y' OR (B='Y' AND ID=2)로 해석된다.",
+          "ID 1과 3은 A='Y', ID 2는 뒤 조건을 만족하므로 3행이다."
+        ]
+      },
+      "choices": ["1행", "2행", "3행", "0행"],
+      "answerIndex": 2,
+      "explanation": "괄호가 없으면 NOT, AND, OR 순으로 처리됩니다. 이 문제는 A='Y'인 두 행과 B='Y'이면서 ID=2인 한 행이 모두 통과합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-013",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "subtopic": "GROUP BY와 HAVING",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["group-by", "having", "aggregate"],
+      "question": "부서별 급여 합계가 1000 이상인 부서만 조회하려 한다. 빈칸에 들어갈 절로 가장 적절한 것은?",
+      "sqlContext": {
+        "dialect": "standard",
+        "title": "그룹 결과 조건은 HAVING",
+        "focus": ["GROUP BY", "HAVING"],
+        "tables": [
+          {
+            "name": "EMP",
+            "columns": ["DEPT", "SAL"],
+            "rows": [
+              { "DEPT": "A", "SAL": 600 },
+              { "DEPT": "A", "SAL": 500 },
+              { "DEPT": "B", "SAL": 300 }
+            ]
+          }
+        ],
+        "sql": "SELECT DEPT, SUM(SAL)\nFROM EMP\nGROUP BY DEPT\n____;",
+        "expectedShape": "빈칸에 들어갈 조건 절을 고르세요.",
+        "trace": [
+          "SUM(SAL)은 그룹을 만든 뒤 계산된다.",
+          "그룹 계산 결과에 대한 조건은 HAVING에서 건다."
+        ]
+      },
+      "choices": [
+        "WHERE SUM(SAL) >= 1000",
+        "HAVING SUM(SAL) >= 1000",
+        "ORDER BY SUM(SAL) >= 1000",
+        "GROUP BY SUM(SAL) >= 1000"
+      ],
+      "answerIndex": 1,
+      "explanation": "WHERE는 행 단위 필터이고 집계 결과가 아직 없습니다. GROUP BY 이후의 집계값 조건은 HAVING 절을 사용합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-014",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "subtopic": "ORDER BY와 NULL",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["order-by", "null", "oracle", "sqlserver"],
+      "question": "오름차순 정렬 시 NULL 기본 위치에 대한 설명으로 가장 적절한 것은?",
+      "choices": [
+        "Oracle은 ASC에서 NULL을 뒤쪽에, SQL Server는 앞쪽에 둔다.",
+        "Oracle과 SQL Server 모두 NULL을 항상 맨 앞에 둔다.",
+        "Oracle과 SQL Server 모두 NULL을 항상 맨 뒤에 둔다.",
+        "NULL은 정렬 대상이 아니므로 ORDER BY를 쓰면 오류가 난다."
+      ],
+      "answerIndex": 0,
+      "explanation": "SQLD에서 자주 묻는 DBMS 차이입니다. Oracle은 ASC 기준 NULL이 뒤쪽, SQL Server는 ASC 기준 NULL이 앞쪽에 오는 것으로 정리합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-015",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "subtopic": "INNER JOIN 중복 매칭",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["join", "inner-join", "cardinality"],
+      "question": "다음 INNER JOIN 결과 행 수는?",
+      "sqlContext": {
+        "dialect": "standard",
+        "title": "같은 키가 여러 번 있으면 조합 수만큼 나온다",
+        "focus": ["INNER JOIN", "행 수"],
+        "tables": [
+          {
+            "name": "A",
+            "columns": ["K", "A_VAL"],
+            "rows": [
+              { "K": "X", "A_VAL": 1 },
+              { "K": "X", "A_VAL": 2 },
+              { "K": "Y", "A_VAL": 3 }
+            ]
+          },
+          {
+            "name": "B",
+            "columns": ["K", "B_VAL"],
+            "rows": [
+              { "K": "X", "B_VAL": "a" },
+              { "K": "X", "B_VAL": "b" },
+              { "K": "Z", "B_VAL": "c" }
+            ]
+          }
+        ],
+        "sql": "SELECT *\nFROM A JOIN B ON A.K = B.K;",
+        "expectedShape": "결과 행 수를 고르세요.",
+        "trace": [
+          "공통 키는 X뿐이다.",
+          "A의 X 2행과 B의 X 2행이 서로 조합된다.",
+          "2 x 2 = 4행이다."
+        ]
+      },
+      "choices": ["1행", "2행", "4행", "6행"],
+      "answerIndex": 2,
+      "explanation": "JOIN은 같은 키가 여러 행이면 모든 조합을 만듭니다. A에 X가 2개, B에 X가 2개라서 결과는 4행입니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-016",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "subtopic": "OUTER JOIN",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["left-join", "outer-join", "null"],
+      "question": "다음 LEFT OUTER JOIN 결과에 반드시 포함되는 행은?",
+      "sqlContext": {
+        "dialect": "standard",
+        "title": "LEFT JOIN은 왼쪽을 보존한다",
+        "focus": ["LEFT JOIN"],
+        "tables": [
+          {
+            "name": "STUDENT",
+            "columns": ["SID", "NAME", "CLASS_ID"],
+            "rows": [
+              { "SID": 1, "NAME": "민수", "CLASS_ID": 10 },
+              { "SID": 2, "NAME": "지아", "CLASS_ID": 99 }
+            ]
+          },
+          {
+            "name": "CLASS",
+            "columns": ["CLASS_ID", "TITLE"],
+            "rows": [
+              { "CLASS_ID": 10, "TITLE": "SQL" }
+            ]
+          }
+        ],
+        "sql": "SELECT S.NAME, C.TITLE\nFROM STUDENT S\nLEFT JOIN CLASS C ON S.CLASS_ID = C.CLASS_ID;",
+        "expectedShape": "매칭되지 않는 왼쪽 행의 처리 방식을 고르세요.",
+        "trace": [
+          "민수는 CLASS_ID 10이 매칭되어 SQL이 나온다.",
+          "지아는 CLASS_ID 99가 매칭되지 않는다.",
+          "LEFT JOIN은 지아를 남기고 오른쪽 컬럼 TITLE은 NULL로 채운다."
+        ]
+      },
+      "choices": [
+        "민수, SQL",
+        "지아, NULL",
+        "민수, NULL",
+        "지아 행은 결과에서 제거된다."
+      ],
+      "answerIndex": 1,
+      "explanation": "LEFT OUTER JOIN은 왼쪽 테이블의 모든 행을 보존합니다. 오른쪽 테이블에 매칭이 없으면 오른쪽 컬럼만 NULL이 됩니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-017",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "subtopic": "NOT IN과 NULL",
+      "type": "multiple_choice",
+      "difficulty": 4,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["not-in", "null", "exists"],
+      "question": "계약이 없는 회원을 찾으려 한다. CONTRACT.MEMBER_ID에 NULL이 섞일 수 있을 때 가장 안전한 방식은?",
+      "sqlContext": {
+        "dialect": "standard",
+        "title": "NOT IN의 NULL 함정",
+        "focus": ["NOT EXISTS", "NULL"],
+        "tables": [
+          {
+            "name": "MEMBER",
+            "columns": ["ID"],
+            "rows": [
+              { "ID": 1 },
+              { "ID": 2 }
+            ]
+          },
+          {
+            "name": "CONTRACT",
+            "columns": ["MEMBER_ID"],
+            "rows": [
+              { "MEMBER_ID": 1 },
+              { "MEMBER_ID": null }
+            ]
+          }
+        ],
+        "expectedShape": "NULL에 강한 반대 조건을 고르세요.",
+        "trace": [
+          "NOT IN의 비교 대상 목록에 NULL이 있으면 UNKNOWN 문제가 생긴다.",
+          "반존재 조건은 NOT EXISTS로 상관 조건을 쓰는 편이 안전하다."
+        ]
+      },
+      "choices": [
+        "WHERE M.ID NOT IN (SELECT MEMBER_ID FROM CONTRACT)",
+        "WHERE NOT EXISTS (SELECT 1 FROM CONTRACT C WHERE C.MEMBER_ID = M.ID)",
+        "WHERE M.ID <> (SELECT MEMBER_ID FROM CONTRACT)",
+        "WHERE EXISTS (SELECT 1 FROM CONTRACT C WHERE C.MEMBER_ID IS NULL)"
+      ],
+      "answerIndex": 1,
+      "explanation": "NOT IN은 서브쿼리 결과에 NULL이 섞이면 의도와 다르게 어떤 행도 확정적으로 통과하지 못할 수 있습니다. NOT EXISTS는 해당 회원의 매칭 존재 여부를 직접 확인하므로 안전합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-018",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "subtopic": "집합 연산자",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["union", "union-all", "set-operator"],
+      "question": "집합 연산자에 대한 설명으로 옳은 것은?",
+      "choices": [
+        "UNION은 중복 행을 제거하고, UNION ALL은 중복을 유지한다.",
+        "INTERSECT는 첫 번째 결과에서 두 번째 결과를 빼는 차집합이다.",
+        "MINUS는 두 SELECT 결과를 모두 중복 포함해 이어 붙인다.",
+        "집합 연산자는 컬럼 개수와 데이터 타입이 달라도 자동 보정된다."
+      ],
+      "answerIndex": 0,
+      "explanation": "UNION은 중복을 제거하고 UNION ALL은 중복을 유지합니다. INTERSECT는 교집합, MINUS/EXCEPT는 차집합이며 컬럼 구조가 맞아야 합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-019",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "subtopic": "ROLLUP과 CUBE",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["rollup", "cube", "grouping-sets"],
+      "question": "ROLLUP(REGION, ITEM)의 그룹 생성 순서로 가장 적절한 것은?",
+      "choices": [
+        "(REGION, ITEM) → (REGION) → 전체",
+        "(REGION, ITEM) → (ITEM) → 전체",
+        "(REGION) → (ITEM) → (REGION, ITEM) → 전체",
+        "(REGION, ITEM) → (REGION) → (ITEM) → 전체"
+      ],
+      "answerIndex": 0,
+      "explanation": "ROLLUP은 컬럼 순서에 따라 오른쪽부터 하나씩 제거하며 소계와 총계를 만듭니다. CUBE는 가능한 모든 조합을 생성합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-020",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "subtopic": "윈도우 순위 함수",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["row_number", "rank", "dense_rank", "window-function"],
+      "question": "점수 내림차순이 100, 100, 90, 80일 때 RANK와 DENSE_RANK 결과로 옳은 것은?",
+      "choices": [
+        "RANK: 1,1,3,4 / DENSE_RANK: 1,1,2,3",
+        "RANK: 1,2,3,4 / DENSE_RANK: 1,1,3,4",
+        "RANK: 1,1,2,3 / DENSE_RANK: 1,1,3,4",
+        "RANK: 1,2,2,3 / DENSE_RANK: 1,2,3,4"
+      ],
+      "answerIndex": 0,
+      "explanation": "RANK는 동점 뒤 순위를 건너뜁니다. DENSE_RANK는 동점 뒤에도 순위를 건너뛰지 않습니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-021",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "subtopic": "윈도우 함수와 GROUP BY",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["window-function", "group-by", "over"],
+      "question": "윈도우 함수와 GROUP BY의 차이로 가장 적절한 것은?",
+      "choices": [
+        "윈도우 함수는 행 수를 유지한 채 계산값을 붙일 수 있다.",
+        "윈도우 함수는 반드시 결과 행 수를 그룹 수로 줄인다.",
+        "GROUP BY는 OVER 절이 있어야만 사용할 수 있다.",
+        "GROUP BY와 윈도우 함수는 출력 행 수가 항상 같다."
+      ],
+      "answerIndex": 0,
+      "explanation": "GROUP BY는 여러 행을 그룹별 한 행으로 줄이는 반면, 윈도우 함수는 기존 행을 유지하면서 각 행에 계산 결과를 붙일 수 있습니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-022",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "subtopic": "ROWS와 RANGE",
+      "type": "multiple_choice",
+      "difficulty": 4,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["rows", "range", "window-frame"],
+      "question": "ORDER BY 값이 10, 10, 20일 때 누적합에서 ROWS와 RANGE의 차이를 가장 잘 설명한 것은?",
+      "choices": [
+        "ROWS는 실제 행 단위로 누적하고, RANGE는 같은 정렬값을 같은 범위로 묶을 수 있다.",
+        "ROWS는 동점 행을 항상 제외하고, RANGE는 NULL 행만 계산한다.",
+        "ROWS와 RANGE는 어떤 DBMS에서도 완전히 같은 결과만 만든다.",
+        "RANGE는 GROUP BY가 있을 때만 사용할 수 있고 윈도우 함수와는 무관하다."
+      ],
+      "answerIndex": 0,
+      "explanation": "ROWS는 물리적인 행 수 기준이고 RANGE는 정렬 값의 범위 기준입니다. 같은 ORDER BY 값이 있는 경우 누적 결과가 달라질 수 있습니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-023",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "subtopic": "LAST_VALUE 프레임",
+      "type": "multiple_choice",
+      "difficulty": 4,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["last_value", "window-frame"],
+      "question": "LAST_VALUE를 파티션의 진짜 마지막 값으로 쓰려면 주의해야 할 점은?",
+      "choices": [
+        "프레임 끝을 UNBOUNDED FOLLOWING까지 넓혀야 의도한 마지막 행을 볼 수 있다.",
+        "LAST_VALUE는 ORDER BY 없이만 사용할 수 있다.",
+        "LAST_VALUE는 GROUP BY와 함께 쓰면 항상 전체 마지막 값을 반환한다.",
+        "LAST_VALUE는 NULL이 하나라도 있으면 문법 오류가 난다."
+      ],
+      "answerIndex": 0,
+      "explanation": "기본 프레임은 현재 행까지로 제한되는 경우가 많아 LAST_VALUE가 현재 행 값을 반환할 수 있습니다. 전체 파티션의 마지막 값을 보려면 프레임을 끝까지 지정해야 합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-024",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "subtopic": "TOP N과 ROWNUM",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["top-n", "rownum", "oracle"],
+      "question": "Oracle에서 매출 상위 3건을 안정적으로 조회하는 방식으로 가장 적절한 것은?",
+      "choices": [
+        "SELECT * FROM (SELECT * FROM SALE ORDER BY AMT DESC) WHERE ROWNUM <= 3",
+        "SELECT * FROM SALE WHERE ROWNUM <= 3 ORDER BY AMT DESC",
+        "SELECT * FROM SALE WHERE ROWNUM = 3 ORDER BY AMT DESC",
+        "SELECT * FROM SALE WHERE ROWNUM > 3 ORDER BY AMT DESC"
+      ],
+      "answerIndex": 0,
+      "explanation": "Oracle의 ROWNUM은 정렬 전에 붙을 수 있으므로 먼저 인라인 뷰에서 ORDER BY를 수행한 뒤 바깥에서 ROWNUM <= N을 거는 방식이 안전합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-025",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "subtopic": "계층형 질의",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["hierarchical-query", "connect-by", "prior"],
+      "question": "Oracle 계층형 질의에서 루트 행을 지정하는 절은?",
+      "choices": ["START WITH", "CONNECT BY", "ORDER SIBLINGS BY", "SYS_CONNECT_BY_PATH"],
+      "answerIndex": 0,
+      "explanation": "START WITH는 계층 탐색을 시작할 루트 조건을 지정합니다. CONNECT BY는 부모-자식 연결 규칙, ORDER SIBLINGS BY는 같은 레벨 정렬입니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-026",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "subtopic": "PIVOT",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["pivot", "unpivot", "aggregate"],
+      "question": "PIVOT에 대한 설명으로 가장 적절한 것은?",
+      "choices": [
+        "행 값을 열 방향으로 펼치며, 여러 행을 한 칸으로 모으기 위해 집계 함수가 필요하다.",
+        "열을 행으로 바꾸는 기능이므로 UNPIVOT과 완전히 같은 문법이다.",
+        "PIVOT은 WHERE 절에서만 사용할 수 있고 FROM 절에서는 사용할 수 없다.",
+        "PIVOT은 NULL 비교 전용 함수라서 집계와는 관계가 없다."
+      ],
+      "answerIndex": 0,
+      "explanation": "PIVOT은 LONG 형태의 행 값을 WIDE 형태의 열로 재구성합니다. 여러 행이 같은 교차점에 모일 수 있으므로 MAX, SUM 같은 집계 함수가 필요합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-027",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "subtopic": "정규 표현식",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["regexp_like", "regular-expression"],
+      "question": "Oracle 기준 휴대전화 번호가 010으로 시작하는지 검사하는 조건으로 가장 적절한 것은?",
+      "choices": [
+        "REGEXP_LIKE(PHONE, '^010')",
+        "REGEXP_LIKE(PHONE, '010$')",
+        "REGEXP_LIKE(PHONE, '[^010]')",
+        "REGEXP_LIKE(PHONE, '010?')"
+      ],
+      "answerIndex": 0,
+      "explanation": "^는 문자열의 시작을 뜻합니다. 따라서 '^010'은 010으로 시작하는 문자열을 검사합니다. '$'는 끝, '[^...]'는 부정 문자 집합입니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-028",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "관리 구문",
+      "subtopic": "INSERT",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["insert", "null", "dml"],
+      "question": "다음 INSERT 실행 후 AMT 컬럼 값으로 가장 적절한 것은?",
+      "sqlContext": {
+        "dialect": "standard",
+        "title": "명시하지 않은 컬럼의 값",
+        "focus": ["INSERT", "NULL"],
+        "sql": "CREATE TABLE ORDERS (\n  ORDER_ID NUMBER PRIMARY KEY,\n  AMT NUMBER NULL\n);\n\nINSERT INTO ORDERS (ORDER_ID) VALUES (1);",
+        "expectedShape": "AMT 컬럼의 저장 값을 고르세요.",
+        "trace": [
+          "INSERT에서 ORDER_ID만 명시했다.",
+          "AMT는 NULL 허용 컬럼이다.",
+          "명시하지 않은 AMT에는 NULL이 들어간다."
+        ]
+      },
+      "choices": ["0", "1", "NULL", "문자열 빈 값"],
+      "answerIndex": 2,
+      "explanation": "INSERT에서 컬럼 목록을 명시하면 그 컬럼에만 값이 들어갑니다. 생략된 컬럼은 기본값이 있으면 기본값, 없고 NULL 허용이면 NULL입니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-029",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "관리 구문",
+      "subtopic": "UPDATE와 DELETE",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["update", "delete", "where"],
+      "question": "UPDATE나 DELETE에서 WHERE 절을 생략했을 때의 설명으로 옳은 것은?",
+      "choices": [
+        "조건이 없으므로 대상 테이블의 모든 행에 적용될 수 있다.",
+        "WHERE가 없으면 SQL 표준상 항상 문법 오류가 난다.",
+        "첫 번째 행에만 적용되고 나머지 행은 유지된다.",
+        "PK가 있는 행만 자동으로 제외된다."
+      ],
+      "answerIndex": 0,
+      "explanation": "UPDATE와 DELETE에서 WHERE 절은 대상을 제한하는 역할입니다. WHERE를 생략하면 모든 행이 대상이 될 수 있어 매우 위험합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-030",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "관리 구문",
+      "subtopic": "MERGE",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["merge", "matched", "not-matched"],
+      "question": "MERGE 문에서 ON 조건을 만족하는 기존 행에 주로 수행되는 절은?",
+      "choices": [
+        "WHEN MATCHED THEN UPDATE",
+        "WHEN NOT MATCHED THEN INSERT",
+        "WHEN MATCHED THEN CREATE",
+        "WHEN NOT MATCHED THEN COMMIT"
+      ],
+      "answerIndex": 0,
+      "explanation": "MERGE는 원본 데이터와 대상 테이블을 비교해 있으면 UPDATE, 없으면 INSERT하는 형태가 일반적입니다. ON 조건을 만족하면 MATCHED 분기로 갑니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-031",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "관리 구문",
+      "subtopic": "SAVEPOINT",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["savepoint", "rollback", "tcl"],
+      "question": "다음 실행 후 T에 남는 최종 행은?",
+      "sqlContext": {
+        "dialect": "standard",
+        "title": "SAVEPOINT로 일부만 되돌리기",
+        "focus": ["SAVEPOINT", "ROLLBACK"],
+        "sql": "INSERT INTO T VALUES (1);\nSAVEPOINT S1;\nINSERT INTO T VALUES (2);\nSAVEPOINT S2;\nINSERT INTO T VALUES (3);\nROLLBACK TO S2;",
+        "expectedShape": "COMMIT 전 같은 트랜잭션 안이라고 가정합니다.",
+        "trace": [
+          "1을 넣고 S1을 만든다.",
+          "2를 넣고 S2를 만든다.",
+          "3을 넣은 뒤 S2로 롤백하므로 3만 취소된다."
+        ]
+      },
+      "choices": ["1만 남는다", "1과 2가 남는다", "1, 2, 3이 모두 남는다", "모든 행이 사라진다"],
+      "answerIndex": 1,
+      "explanation": "ROLLBACK TO S2는 S2 이후 작업만 되돌립니다. S2 이전에 수행된 1, 2 삽입은 유지됩니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-032",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "관리 구문",
+      "subtopic": "TRUNCATE와 DROP",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["truncate", "drop", "delete", "ddl"],
+      "question": "DELETE, TRUNCATE, DROP 비교로 옳은 것은?",
+      "choices": [
+        "DELETE는 행 삭제, TRUNCATE는 데이터 비우기, DROP은 객체 삭제에 가깝다.",
+        "TRUNCATE는 WHERE 절로 일부 행만 선택해 삭제하는 DML이다.",
+        "DROP은 데이터만 지우고 테이블 구조는 항상 유지한다.",
+        "DELETE는 DDL이므로 일반적으로 ROLLBACK 대상이 아니다."
+      ],
+      "answerIndex": 0,
+      "explanation": "DELETE는 DML로 행을 삭제합니다. TRUNCATE는 DDL 성격으로 테이블 구조는 남기고 데이터를 비우며, DROP은 테이블 객체 자체를 삭제합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-033",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "관리 구문",
+      "subtopic": "제약조건",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["constraint", "primary-key", "foreign-key", "unique", "check"],
+      "question": "제약조건 설명으로 옳지 않은 것은?",
+      "choices": [
+        "PRIMARY KEY는 중복과 NULL을 허용하지 않는다.",
+        "FOREIGN KEY는 참조 무결성과 관련된다.",
+        "UNIQUE는 일반적으로 중복 값을 제한한다.",
+        "CHECK는 다른 테이블의 행 존재 여부를 항상 직접 검사하는 제약조건이다."
+      ],
+      "answerIndex": 3,
+      "explanation": "CHECK는 한 행의 컬럼 값이 조건을 만족하는지 제한하는 데 사용합니다. 다른 테이블 참조 관계는 FOREIGN KEY의 영역입니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-034",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "관리 구문",
+      "subtopic": "문자 자료형",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["char", "varchar", "datatype"],
+      "question": "CHAR와 VARCHAR 비교로 가장 적절한 것은?",
+      "choices": [
+        "CHAR는 고정 길이, VARCHAR는 가변 길이 문자열 저장에 적합하다.",
+        "CHAR는 숫자 전용이고 VARCHAR는 날짜 전용이다.",
+        "VARCHAR는 항상 고정 길이로 공백을 채운다.",
+        "CHAR와 VARCHAR는 SQLD에서 완전히 같은 자료형으로 본다."
+      ],
+      "answerIndex": 0,
+      "explanation": "CHAR(n)은 고정 길이 문자열, VARCHAR(n)은 최대 길이 안에서 실제 값 길이에 맞춰 저장하는 가변 길이 문자열로 이해하면 됩니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-035",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "관리 구문",
+      "subtopic": "권한 부여 옵션",
+      "type": "multiple_choice",
+      "difficulty": 3,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["grant", "revoke", "with-grant-option", "with-admin-option"],
+      "question": "WITH GRANT OPTION에 대한 설명으로 가장 적절한 것은?",
+      "choices": [
+        "객체 권한을 받은 사용자가 그 권한을 다른 사용자에게 다시 부여할 수 있게 한다.",
+        "시스템 권한을 받은 사용자가 테이블 구조를 자동으로 백업하게 한다.",
+        "권한 회수 시 이미 전달된 권한이 절대 영향을 받지 않게 한다.",
+        "COMMIT 없이도 DML을 영구 저장하게 만드는 TCL 옵션이다."
+      ],
+      "answerIndex": 0,
+      "explanation": "WITH GRANT OPTION은 객체 권한을 다른 사용자에게 다시 부여할 수 있게 하는 옵션입니다. 시스템 권한 재부여는 WITH ADMIN OPTION과 구분합니다.",
+      "status": "guidebook-verified"
+    },
+    {
+      "id": "sqld-sql-lab-036",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "subtopic": "M:N 관계와 교차 엔터티",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "source": "SQLD PDF 범위 기반 오리지널 드릴",
+      "tags": ["many-to-many", "intersection-entity", "erd"],
+      "question": "학생과 과목이 서로 M:N 관계일 때 관계형 데이터베이스 모델에서 가장 자연스러운 설계는?",
+      "choices": [
+        "학생과 과목 사이에 수강 같은 교차 엔터티를 두어 두 개의 1:M 관계로 푼다.",
+        "학생 테이블의 한 컬럼에 모든 과목명을 쉼표로 이어 저장한다.",
+        "과목 테이블을 없애고 학생 이름을 과목명으로 사용한다.",
+        "M:N 관계는 관계형 데이터베이스에서 아무 처리 없이 그대로 PK가 된다."
+      ],
+      "answerIndex": 0,
+      "explanation": "관계형 DB에서 M:N 관계는 직접 표현하기 어렵습니다. 보통 수강, 주문상세 같은 교차 엔터티를 두어 두 개의 1:M 관계로 분해합니다.",
+      "status": "guidebook-verified"
+    }
+  ]
+}

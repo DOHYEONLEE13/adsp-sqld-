@@ -81,7 +81,7 @@ const SQLD_1_1: Lesson = {
     },
     {
       id: 'sqld-1-1-s1c',
-      title: '단순화 — 좋은 모델의 첫 조건',
+      title: '단순화',
       quizId: 'sqld-1-1-cp-01c',
       group: 'sqld-1-1-g2-features',
       dialogue: [
@@ -114,7 +114,7 @@ const SQLD_1_1: Lesson = {
     },
     {
       id: 'sqld-1-1-s1d',
-      title: '추상화 — 핵심만 남기기',
+      title: '추상화',
       quizId: 'sqld-1-1-cp-01c-abstract',
       group: 'sqld-1-1-g2-features',
       dialogue: [
@@ -147,7 +147,7 @@ const SQLD_1_1: Lesson = {
     },
     {
       id: 'sqld-1-1-s1e',
-      title: '명확화 — 헷갈리지 않게 표현하기',
+      title: '명확화',
       quizId: 'sqld-1-1-cp-01c-clear',
       group: 'sqld-1-1-g2-features',
       dialogue: [
@@ -222,7 +222,7 @@ const SQLD_1_1: Lesson = {
     },
     {
       id: 'sqld-1-1-s1g',
-      title: '데이터 관점 — 무엇을 저장하나',
+      title: '데이터 관점',
       quizId: 'sqld-1-1-cp-01d-data',
       group: 'sqld-1-1-g3-perspectives',
       dialogue: [
@@ -256,7 +256,7 @@ const SQLD_1_1: Lesson = {
     },
     {
       id: 'sqld-1-1-s1h',
-      title: '프로세스 관점 — 업무 흐름 보기',
+      title: '프로세스 관점',
       quizId: 'sqld-1-1-cp-01d-process',
       group: 'sqld-1-1-g3-perspectives',
       dialogue: [
@@ -289,7 +289,7 @@ const SQLD_1_1: Lesson = {
     },
     {
       id: 'sqld-1-1-s1i',
-      title: '상관 관점 — 업무와 데이터 연결',
+      title: '상관 관점',
       quizId: 'sqld-1-1-cp-01d-interaction',
       group: 'sqld-1-1-g3-perspectives',
       dialogue: [
@@ -323,7 +323,7 @@ const SQLD_1_1: Lesson = {
     },
     {
       id: 'sqld-1-1-s2',
-      title: '모델링 단계 — 개념 → 논리 → 물리',
+      title: '모델링 단계',
       quizId: 'sqld-1-1-cp-02',
       group: 'sqld-1-1-g4-stages',
       dialogue: [
@@ -359,7 +359,7 @@ const SQLD_1_1: Lesson = {
     },
     {
       id: 'sqld-1-1-s2a',
-      title: '개념적 모델링 — 큰 그림 그리기',
+      title: '개념적 모델링',
       quizId: 'sqld-1-1-cp-02-conceptual',
       group: 'sqld-1-1-g4-stages',
       dialogue: [
@@ -393,7 +393,7 @@ const SQLD_1_1: Lesson = {
     },
     {
       id: 'sqld-1-1-s2b',
-      title: '논리적 모델링 — 구조 정리하기',
+      title: '논리적 모델링',
       quizId: 'sqld-1-1-cp-02-logical',
       group: 'sqld-1-1-g4-stages',
       dialogue: [
@@ -426,7 +426,7 @@ const SQLD_1_1: Lesson = {
     },
     {
       id: 'sqld-1-1-s2c',
-      title: '물리적 모델링 — 실제 DB에 맞추기',
+      title: '물리적 모델링',
       quizId: 'sqld-1-1-cp-02-physical',
       group: 'sqld-1-1-g4-stages',
       dialogue: [
@@ -496,7 +496,7 @@ const SQLD_1_1: Lesson = {
     },
     {
       id: 'sqld-1-1-s3a',
-      title: '외부 스키마 — 사용자별 화면',
+      title: '외부 스키마',
       quizId: 'sqld-1-1-cp-03-external',
       group: 'sqld-1-1-g5-schema',
       dialogue: [
@@ -529,7 +529,7 @@ const SQLD_1_1: Lesson = {
     },
     {
       id: 'sqld-1-1-s3b',
-      title: '개념 스키마 — 조직 전체 통합',
+      title: '개념 스키마',
       quizId: 'sqld-1-1-cp-03-conceptual',
       group: 'sqld-1-1-g5-schema',
       dialogue: [
@@ -563,7 +563,7 @@ const SQLD_1_1: Lesson = {
     },
     {
       id: 'sqld-1-1-s3c',
-      title: '내부 스키마 — 실제 저장 구조',
+      title: '내부 스키마',
       quizId: 'sqld-1-1-cp-03-internal',
       group: 'sqld-1-1-g5-schema',
       dialogue: [
@@ -596,7 +596,7 @@ const SQLD_1_1: Lesson = {
     },
     {
       id: 'sqld-1-1-s3d',
-      title: '데이터 독립성 — 변경 영향 줄이기',
+      title: '데이터 독립성',
       quizId: 'sqld-1-1-cp-03-independence',
       group: 'sqld-1-1-g5-schema',
       dialogue: [
@@ -696,7 +696,23 @@ const SQLD_1_1: Lesson = {
                 },
                 {
                       pose: "lightbulb",
-                      text: "[업무 필요]·[식별 가능]·[인스턴스 2개 이상]·[속성 보유]·[관계 보유]."
+                      text: "1. [업무 필요]: 실제 업무에서 관리해야 하는 대상이어야 해. 예를 들면 수강신청에서 학생, 과목, 신청 기록처럼."
+                },
+                {
+                      pose: "think",
+                      text: "2. [식별 가능]: 각각을 구분할 수 있어야 해. 학생은 학번, 과목은 과목코드처럼 기준이 있어야 하지."
+                },
+                {
+                      pose: "happy",
+                      text: "3. [인스턴스 2개 이상]: 실제 예시가 여러 개 있어야 해. 학생 한 명만 있는 표라면 엔터티로 보기 애매해."
+                },
+                {
+                      pose: "lightbulb",
+                      text: "4. [속성 보유]: 설명할 값이 있어야 해. 학생이라면 이름, 학번, 학과 같은 정보가 속성이야."
+                },
+                {
+                      pose: "think",
+                      text: "5. [관계 보유]: 다른 엔터티와 연결돼야 해. 학생은 수강신청을 통해 과목과 이어질 수 있어."
                 },
                 {
                       pose: "happy",
@@ -710,17 +726,17 @@ const SQLD_1_1: Lesson = {
           blocks: [
                 {
                       kind: "intro",
-                      body: "엔터티는 업무에 필요하고, 각각을 구분할 수 있어야 하며, 여러 행과 여러 속성을 가질 수 있어야 합니다."
+                      body: "엔터티는 현실의 대상을 DB에서 따로 관리하기 위해 만든 표의 후보입니다. 그래서 “업무에 필요한가?”, “각각을 구분할 수 있는가?”, “실제 예시가 여러 개 있는가?”, “설명할 속성이 있는가?”, “다른 대상과 연결되는가?”를 차례대로 확인합니다."
                 },
                 {
                       kind: "keypoints",
                       title: "엔터티 5요건",
                       items: [
-                            "업무에서 필요한 정보",
-                            "유일하게 식별 가능",
-                            "2개 이상의 인스턴스",
-                            "2개 이상의 속성 보유",
-                            "다른 엔터티와 관계 존재"
+                            "업무 필요: 실제 업무에서 관리할 이유가 있어야 함",
+                            "식별 가능: 학생의 학번처럼 각각을 구분할 기준이 있어야 함",
+                            "인스턴스 2개 이상: 실제 사례가 여러 건 존재해야 함",
+                            "속성 보유: 이름, 날짜, 금액처럼 설명할 값이 있어야 함",
+                            "관계 보유: 다른 엔터티와 업무적으로 연결될 수 있어야 함"
                       ]
                 },
                 {
@@ -779,7 +795,7 @@ const SQLD_1_1: Lesson = {
     },
     {
           id: "sqld-1-1-s5-kind",
-          title: "엔터티 분류 — 유형·개념·사건",
+          title: "엔터티 분류",
           quizId: "sqld-1-1-cp-05-kind",
           group: "sqld-1-1-g7-entity-types",
           dialogue: [
@@ -841,7 +857,7 @@ const SQLD_1_1: Lesson = {
     },
     {
           id: "sqld-1-1-s5-time",
-          title: "엔터티 분류 — 기본·중심·행위",
+          title: "엔터티 분류",
           quizId: "sqld-1-1-cp-05-time",
           group: "sqld-1-1-g7-entity-types",
           dialogue: [
@@ -983,7 +999,7 @@ const SQLD_1_1: Lesson = {
     },
     {
           id: "sqld-1-1-s6-origin",
-          title: "속성 분류 — 기본·설계·파생",
+          title: "속성 분류",
           quizId: "sqld-1-1-cp-06-origin",
           group: "sqld-1-1-g8-attributes",
           dialogue: [
@@ -1041,7 +1057,7 @@ const SQLD_1_1: Lesson = {
     },
     {
           id: "sqld-1-1-s6-shape",
-          title: "속성 분류 — 단일·복합·다중값",
+          title: "속성 분류",
           quizId: "sqld-1-1-cp-06-shape",
           group: "sqld-1-1-g8-attributes",
           dialogue: [
@@ -1099,7 +1115,7 @@ const SQLD_1_1: Lesson = {
     },
     {
           id: "sqld-1-1-s6-role",
-          title: "속성 분류 — PK·FK·일반",
+          title: "속성 분류",
           quizId: "sqld-1-1-cp-06-role",
           group: "sqld-1-1-g8-attributes",
           dialogue: [
@@ -1192,7 +1208,7 @@ const SQLD_1_1: Lesson = {
     },
     {
           id: "sqld-1-1-s7-elements",
-          title: "관계 3요소 — 관차선",
+          title: "관계 3요소",
           quizId: "sqld-1-1-cp-07-elements",
           group: "sqld-1-1-g9-relationship",
           dialogue: [
@@ -2097,7 +2113,7 @@ const SQLD_1_2: Lesson = {
     },
     {
           id: "sqld-1-2-s3-1nf",
-          title: "1NF — 원자값",
+          title: "1NF",
           quizId: "sqld-1-2-cp-03-1nf",
           group: "sqld-1-2-g3-normal-forms",
           dialogue: [
@@ -2128,7 +2144,7 @@ const SQLD_1_2: Lesson = {
     },
     {
           id: "sqld-1-2-s3-2nf",
-          title: "2NF — 부분 종속 제거",
+          title: "2NF",
           quizId: "sqld-1-2-cp-03-2nf",
           group: "sqld-1-2-g3-normal-forms",
           dialogue: [
@@ -2160,7 +2176,7 @@ const SQLD_1_2: Lesson = {
     },
     {
           id: "sqld-1-2-s3-3nf",
-          title: "3NF — 이행 종속 제거",
+          title: "3NF",
           quizId: "sqld-1-2-cp-03-3nf",
           group: "sqld-1-2-g3-normal-forms",
           dialogue: [
@@ -2191,7 +2207,7 @@ const SQLD_1_2: Lesson = {
     },
     {
           id: "sqld-1-2-s3-bcnf",
-          title: "BCNF — 결정자=후보키",
+          title: "BCNF",
           quizId: "sqld-1-2-cp-03-bcnf",
           group: "sqld-1-2-g3-normal-forms",
           dialogue: [

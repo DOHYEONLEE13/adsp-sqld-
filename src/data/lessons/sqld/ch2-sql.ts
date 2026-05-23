@@ -12,7 +12,7 @@ const SQLD_2_1: Lesson = {
   steps: [
     {
       id: 'sqld-2-1-s1',
-      title: 'SQL 4명령군 — DDL / DML / DCL / TCL',
+      title: 'SQL 4명령군',
       quizId: 'sqld-2-1-cp-01',
       extraQuizIds: ['sqld-sql-lab-001'],
       dialogue: [
@@ -78,7 +78,7 @@ const SQLD_2_1: Lesson = {
     },
     {
       id: 'sqld-2-1-s2',
-      title: '관계대수 — SQL 의 수학적 뿌리',
+      title: '관계대수',
       quizId: 'sqld-2-1-cp-02',
       extraQuizIds: ['sqld-sql-lab-003'],
       dialogue: [
@@ -272,7 +272,7 @@ const SQLD_2_1: Lesson = {
     },
     {
       id: 'sqld-2-1-s5',
-      title: '문자 함수 — SUBSTR / TRIM / REPLACE / INSTR',
+      title: '문자 함수',
       quizId: 'sqld-2-1-cp-05',
       extraQuizIds: ['sqld-sql-lab-005'],
       dialogue: [
@@ -491,7 +491,7 @@ const SQLD_2_1: Lesson = {
     },
     {
       id: 'sqld-2-1-s8',
-      title: 'NULL 처리 함수 4종 — NVL / NVL2 / NULLIF / COALESCE',
+      title: 'NULL 처리 함수 4종',
       quizId: 'sqld-2-1-cp-08',
       extraQuizIds: ['sqld-sql-lab-009'],
       dialogue: [
@@ -550,7 +550,7 @@ const SQLD_2_1: Lesson = {
     },
     {
       id: 'sqld-2-1-s9',
-      title: 'CASE / DECODE — 조건 분기',
+      title: 'CASE / DECODE',
       quizId: 'sqld-2-1-cp-09',
       extraQuizIds: ['sqld-sql-lab-010'],
       dialogue: [
@@ -615,7 +615,7 @@ const SQLD_2_1: Lesson = {
     },
     {
       id: 'sqld-2-1-s10',
-      title: 'WHERE 절 — 비교 / 조건 / LIKE / NULL / 우선순위',
+      title: 'WHERE 절',
       quizId: 'sqld-2-1-cp-10',
       extraQuizIds: ['sqld-sql-lab-008', 'sqld-sql-lab-011', 'sqld-sql-lab-012'],
       dialogue: [
@@ -696,7 +696,7 @@ const SQLD_2_1: Lesson = {
     },
     {
       id: 'sqld-2-1-s11',
-      title: 'GROUP BY · HAVING — 그룹화와 그룹 필터',
+      title: 'GROUP BY · HAVING',
       quizId: 'sqld-2-1-cp-11',
       extraQuizIds: ['sqld-sql-lab-013', 'sqld-sql-read-001', 'sqld-sql-order-002'],
       dialogue: [
@@ -765,7 +765,7 @@ const SQLD_2_1: Lesson = {
     },
     {
       id: 'sqld-2-1-s12',
-      title: 'ORDER BY — 정렬 + NULL 처리',
+      title: 'ORDER BY',
       quizId: 'sqld-2-1-cp-12',
       extraQuizIds: ['sqld-sql-lab-014'],
       dialogue: [
@@ -845,7 +845,7 @@ const SQLD_2_2: Lesson = {
   steps: [
     {
       id: 'sqld-2-2-s1',
-      title: 'JOIN 4종 — INNER / LEFT / RIGHT / FULL OUTER',
+      title: 'JOIN 4종',
       quizId: 'sqld-2-2-cp-01',
       extraQuizIds: ['sqld-sql-lab-015', 'sqld-sql-lab-016', 'sqld-sql-order-003'],
       dialogue: [
@@ -910,7 +910,7 @@ const SQLD_2_2: Lesson = {
     },
     {
       id: 'sqld-2-2-s2',
-      title: 'JOIN 조건 표기 — NATURAL / USING / ON',
+      title: 'JOIN 조건 표기',
       quizId: 'sqld-2-2-cp-02',
       dialogue: [
         { pose: 'wave', text: 'JOIN 의 [매칭 조건]을 명시하는 3가지 방법! 각각 특징 다름!' },
@@ -1038,7 +1038,7 @@ const SQLD_2_2: Lesson = {
     },
     {
       id: 'sqld-2-2-s4',
-      title: '서브쿼리 6종 — 위치 + 결과 형태별',
+      title: '서브쿼리 6종',
       quizId: 'sqld-2-2-cp-04',
       dialogue: [
         { pose: 'wave', text: '[서브쿼리(Subquery)]는 [쿼리 안의 또 다른 쿼리]! 강력한 도구!' },
@@ -1101,7 +1101,7 @@ const SQLD_2_2: Lesson = {
     },
     {
       id: 'sqld-2-2-s5',
-      title: '다중행 비교 — EXISTS · IN · ANY · ALL',
+      title: '다중행 비교',
       quizId: 'sqld-2-2-cp-05',
       extraQuizIds: ['sqld-sql-lab-017', 'sqld-sql-read-002', 'sqld-sql-order-004'],
       dialogue: [
@@ -1164,7 +1164,7 @@ const SQLD_2_2: Lesson = {
     },
     {
       id: 'sqld-2-2-s6',
-      title: '집합 연산자 4종 — UNION / UNION ALL / INTERSECT / MINUS',
+      title: '집합 연산자 4종',
       quizId: 'sqld-2-2-cp-06',
       extraQuizIds: ['sqld-sql-lab-018', 'sqld-sql-order-005'],
       dialogue: [
@@ -1233,7 +1233,7 @@ const SQLD_2_2: Lesson = {
     },
     {
       id: 'sqld-2-2-s7',
-      title: '그룹 함수 — ROLLUP · CUBE · GROUPING SETS',
+      title: '그룹 함수',
       quizId: 'sqld-2-2-cp-07',
       extraQuizIds: ['sqld-sql-lab-019'],
       dialogue: [
@@ -1299,7 +1299,7 @@ const SQLD_2_2: Lesson = {
     },
     {
       id: 'sqld-2-2-s8',
-      title: '윈도우 함수 — 순위 (RANK · DENSE_RANK · ROW_NUMBER)',
+      title: '윈도우 함수',
       quizId: 'sqld-2-2-cp-08',
       extraQuizIds: ['sqld-sql-lab-020', 'sqld-sql-read-003'],
       dialogue: [
@@ -1365,7 +1365,7 @@ const SQLD_2_2: Lesson = {
     },
     {
       id: 'sqld-2-2-s9',
-      title: '윈도우 — 집계 + PARTITION BY + 누적합',
+      title: '윈도우',
       quizId: 'sqld-2-2-cp-09',
       extraQuizIds: ['sqld-sql-lab-021'],
       dialogue: [
@@ -1582,7 +1582,7 @@ const SQLD_2_2: Lesson = {
     },
     {
       id: 'sqld-2-2-s12',
-      title: '정규표현식 — 기호 + Oracle 함수 5종',
+      title: '정규표현식',
       quizId: 'sqld-2-2-cp-12',
       extraQuizIds: ['sqld-sql-lab-027'],
       dialogue: [
@@ -1679,7 +1679,7 @@ const SQLD_2_3: Lesson = {
   steps: [
     {
       id: 'sqld-2-3-s1',
-      title: 'DML 3총사 — INSERT / UPDATE / DELETE',
+      title: 'DML 3총사',
       quizId: 'sqld-2-3-cp-01',
       extraQuizIds: ['sqld-sql-lab-028', 'sqld-sql-lab-029'],
       dialogue: [
@@ -1742,7 +1742,7 @@ const SQLD_2_3: Lesson = {
     },
     {
       id: 'sqld-2-3-s2',
-      title: 'MERGE — UPSERT (INSERT + UPDATE 통합)',
+      title: 'MERGE',
       quizId: 'sqld-2-3-cp-02',
       extraQuizIds: ['sqld-sql-lab-030', 'sqld-sql-order-007'],
       dialogue: [
@@ -1802,7 +1802,7 @@ const SQLD_2_3: Lesson = {
     },
     {
       id: 'sqld-2-3-s3',
-      title: 'TCL — COMMIT · ROLLBACK · SAVEPOINT',
+      title: 'TCL',
       quizId: 'sqld-2-3-cp-03',
       extraQuizIds: ['sqld-sql-lab-031'],
       dialogue: [
@@ -1866,7 +1866,7 @@ const SQLD_2_3: Lesson = {
     },
     {
       id: 'sqld-2-3-s4',
-      title: 'AUTOCOMMIT — Oracle vs SQL Server 동작 차이',
+      title: 'AUTOCOMMIT',
       quizId: 'sqld-2-3-cp-04',
       extraQuizIds: ['sqld-sql-read-004'],
       dialogue: [
@@ -1997,7 +1997,7 @@ const SQLD_2_3: Lesson = {
     },
     {
       id: 'sqld-2-3-s6',
-      title: 'ALTER · DROP · TRUNCATE — 구조 변경/삭제',
+      title: 'ALTER · DROP · TRUNCATE',
       quizId: 'sqld-2-3-cp-06',
       extraQuizIds: ['sqld-sql-lab-032'],
       dialogue: [
@@ -2148,7 +2148,7 @@ const SQLD_2_3: Lesson = {
     },
     {
       id: 'sqld-2-3-s8',
-      title: 'DCL — GRANT / REVOKE + 두 OPTION 차이',
+      title: 'DCL',
       quizId: 'sqld-2-3-cp-08',
       extraQuizIds: ['sqld-sql-lab-035'],
       dialogue: [

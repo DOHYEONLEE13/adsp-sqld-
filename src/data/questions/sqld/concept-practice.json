@@ -726,6 +726,76 @@
       }
     },
     {
+      "id": "sqld-1-1-cp-05-kind-type",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "“학생”처럼 실제로 존재하고 눈에 보이는 대상을 나타내는 엔터티 분류는?",
+      "choices": [
+        "사건 엔터티",
+        "유형 엔터티",
+        "기본 엔터티",
+        "개념 엔터티"
+      ],
+      "answerIndex": 1,
+      "explanation": "학생, 책, 고객처럼 실제로 존재하고 눈에 보이거나 만질 수 있는 대상은 유형 엔터티입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "유무형 엔터티 분류를 유형·개념·사건별로 각각 확인하도록 보강"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "사건 엔터티만 묻고 지나가면 유형/개념 구분 연습이 부족하기 때문",
+        "audited_at": "2026-05-24",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-05-KIND-TYPE"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-05-kind-concept",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "“학과”처럼 만질 수는 없지만 기준으로 구분할 수 있는 대상을 나타내는 엔터티 분류는?",
+      "choices": [
+        "유형 엔터티",
+        "행위 엔터티",
+        "사건 엔터티",
+        "개념 엔터티"
+      ],
+      "answerIndex": 3,
+      "explanation": "학과, 과목, 부서처럼 물리적 형태는 없지만 기준으로 구분할 수 있는 대상은 개념 엔터티입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "유무형 엔터티 분류를 유형·개념·사건별로 각각 확인하도록 보강"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "사건 엔터티만 묻고 지나가면 유형/개념 구분 연습이 부족하기 때문",
+        "audited_at": "2026-05-24",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-05-KIND-CONCEPT"
+      }
+    },
+    {
       "id": "sqld-1-1-cp-05-time",
       "subject": "sqld",
       "chapter": 1,

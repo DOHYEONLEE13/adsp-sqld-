@@ -12,7 +12,15 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  BookOpen,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  ClipboardList,
+  UserRound,
+} from 'lucide-react';
+import { motion } from 'framer-motion';
 import type { Subject } from '@/types/question';
 import {
   getChapterSteps,
@@ -31,6 +39,7 @@ import { characterForSubject } from '@/components/mascot/types';
 import TopBar from './TopBar';
 import SpeechBubble from './SpeechBubble';
 import OptionsPanel from './OptionsPanel';
+import GlossaryKeyword, { GLOSSARY_TERMS } from './GlossaryKeyword';
 import SqlOrderingPanel, {
   isSqlOrderingQuestion,
   sqlOrderingCorrectAnswerText,
@@ -262,6 +271,8 @@ export default function DialogueLesson({
     if (key.includes('g3-perspectives')) return '관점 진행';
     if (key.includes('g4-stages')) return '단계 진행';
     if (key.includes('g5-schema')) return '스키마 진행';
+    if (key.includes('g6-entity')) return '엔터티 기초 진행';
+    if (key.includes('g7-entity-types')) return '엔터티 분류 진행';
     if (key.includes('g2-entity')) return '엔터티 진행';
     if (key.includes('g3-attr-rel')) return '속성·관계 진행';
     if (key.includes('g4-identifier')) return '식별자 진행';
@@ -284,6 +295,14 @@ export default function DialogueLesson({
     groupSteps.length > 1 ||
     currentGroupKey.includes('g1-basic') ||
     currentGroupKey.startsWith('sqld-2-');
+  const entityTypeDiagramMode = (() => {
+    if (phase !== 'narrate' || step.id !== 'sqld-1-1-s5-kind') return null;
+    if (turnIdx < 1) return null;
+    if (turnIdx <= 2) return 'type';
+    if (turnIdx <= 4) return 'concept';
+    if (turnIdx <= 6) return 'event';
+    return 'all';
+  })();
 
   // step.title 에서 trail 라벨 추출 — ' — ' 와 ' (' 앞부분만.
   // 예: 'DIKW ① 데이터 (Data) — raw 값' → 'DIKW ① 데이터'
@@ -323,7 +342,7 @@ export default function DialogueLesson({
       const message =
         reservation.reason === 'quota_exceeded'
           ? `오늘 새 문제는 ${reservation.remainingQuota ?? 0}개 남았어요.`
-          : '문제 이용권을 확인하지 못했어요. 잠시 뒤 다시 시도해 주세요.';
+          : '문제를 불러오지 못했어요. 잠시 뒤 다시 시도해 주세요.';
       setQuotaBlock(message);
       window.setTimeout(() => setQuotaBlock(null), 3200);
       return false;
@@ -883,6 +902,10 @@ export default function DialogueLesson({
           </nav>
         ) : null}
 
+        {entityTypeDiagramMode ? (
+          <EntityTypeErdDiagram mode={entityTypeDiagramMode} />
+        ) : null}
+
         {/* question / feedback 단계 — 4지선다 또는 SQL 순서 조립 */}
         {(phase === 'question' || phase === 'feedback') && quizQuestion ? (
           <div className={isOrderingQuestion ? 'mt-3' : 'mt-8'}>
@@ -997,5 +1020,407 @@ export default function DialogueLesson({
         </div>
       ) : null}
     </section>
+  );
+}
+
+type EntityDiagramMode = 'type' | 'concept' | 'event' | 'all';
+
+function EntityTypeErdDiagram({ mode }: { mode: EntityDiagramMode }) {
+  return (
+    <motion.figure
+      key={mode}
+      className="mt-6 mx-auto w-full max-w-[560px]"
+      aria-label="학생, 수강, 과목 엔터티 예시 ERD"
+      initial={{ opacity: 0, y: 18, scale: 0.98, filter: 'blur(7px)' }}
+      animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      transition={{ type: 'spring', stiffness: 340, damping: 30, mass: 0.82 }}
+    >
+      {mode === 'all' ? (
+        <>
+          <div className="md:hidden">
+            <MobileEntityTypeErd mode={mode} />
+          </div>
+          <svg
+            viewBox="0 0 760 260"
+            role="img"
+            className="hidden h-auto w-full md:block"
+            aria-labelledby="entity-type-erd-title entity-type-erd-desc"
+          >
+            <title id="entity-type-erd-title">엔터티 유무형 분류 예시 ERD</title>
+            <desc id="entity-type-erd-desc">
+              학생은 유형 엔터티, 수강은 사건 엔터티, 과목은 개념 엔터티로 표현한 예시입니다.
+            </desc>
+            <defs>
+              <filter id="erd-soft-shadow" x="-10%" y="-20%" width="120%" height="150%">
+                <feDropShadow dx="0" dy="8" stdDeviation="8" floodColor="#000000" floodOpacity="0.18" />
+              </filter>
+            </defs>
+
+            <rect
+              x="8"
+              y="8"
+              width="744"
+              height="244"
+              rx="18"
+              fill="rgba(1,8,40,0.72)"
+              stroke="rgba(239,244,255,0.18)"
+              strokeWidth="2"
+            />
+
+            <g filter="url(#erd-soft-shadow)">
+              <EntityBox x={38} y={44} title="학생" rows={['학번', '생년월일', '이름']} label="유형 엔터티" accent="#c084fc" />
+              <EntityBox x={305} y={44} title="수강" rows={['학번', '과목명', '학점']} label="사건 엔터티" accent="#c084fc" />
+              <EntityBox x={572} y={44} title="과목" rows={['과목명', '강의실', '교수']} label="개념 엔터티" accent="#c084fc" />
+            </g>
+
+            <RelationLine x1={197} x2={305} y={103} left="one" right="many" />
+            <RelationLine x1={464} x2={572} y={103} left="many" right="one" />
+          </svg>
+        </>
+      ) : (
+        <MobileEntityTypeErd mode={mode} />
+      )}
+      <figcaption className="sr-only">
+        학생은 실제로 존재하는 유형 엔터티, 수강은 발생한 일을 기록하는 사건 엔터티, 과목은 기준으로 구분하는 개념 엔터티입니다.
+      </figcaption>
+    </motion.figure>
+  );
+}
+
+function MobileEntityTypeErd({ mode }: { mode: EntityDiagramMode }) {
+  const boxes = [
+    {
+      kind: 'type',
+      title: '학생',
+      rows: ['학번', '생년월일', '이름'],
+      label: '유형 엔터티',
+      note: '눈에 보이는 대상',
+      instance: '김민지',
+      accent: '#c084fc',
+      relation: '1 : N',
+      Icon: UserRound,
+    },
+    {
+      kind: 'event',
+      title: '수강',
+      rows: ['학번', '과목명', '학점'],
+      label: '사건 엔터티',
+      note: '일어난 일을 남긴 기록',
+      instance: '김민지의 SQL 기본 수강',
+      accent: '#c084fc',
+      relation: 'N : 1',
+      Icon: ClipboardList,
+    },
+    {
+      kind: 'concept',
+      title: '과목',
+      rows: ['과목명', '강의실', '교수'],
+      label: '개념 엔터티',
+      note: '기준으로 나누는 묶음',
+      instance: 'SQL 기본',
+      accent: '#c084fc',
+      relation: null,
+      Icon: BookOpen,
+    },
+  ] as const;
+  const displayBoxes =
+    mode === 'all'
+      ? boxes
+      : boxes.filter((box) => box.kind === mode);
+
+  return (
+    <div className="space-y-2.5">
+      {displayBoxes.map((box, index) => (
+        <div key={box.title}>
+          <motion.div
+            className="relative overflow-hidden rounded-[20px] border p-4"
+            style={{
+              borderColor: `${box.accent}66`,
+              background:
+                'linear-gradient(145deg, rgba(12,22,52,0.96) 0%, rgba(5,11,31,0.96) 100%)',
+            }}
+            initial={{ opacity: 0, y: 14, scale: 0.985 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{
+              type: 'spring',
+              stiffness: 360,
+              damping: 32,
+              mass: 0.75,
+              delay: mode === 'all' ? index * 0.055 : 0.02,
+            }}
+          >
+            <div
+              aria-hidden
+              className="absolute left-0 top-0 h-full w-1"
+              style={{
+                background: box.accent,
+              }}
+            />
+            <div className="relative flex items-start justify-between gap-3 border-b border-cream/10 pb-3">
+              <div className="flex min-w-0 items-start gap-3">
+                <div
+                  className="grid h-10 w-10 shrink-0 place-items-center rounded-[14px] border"
+                  style={{
+                    color: box.accent,
+                    borderColor: `${box.accent}44`,
+                    background: `${box.accent}10`,
+                  }}
+                  aria-hidden
+                >
+                  <box.Icon size={20} strokeWidth={2.35} />
+                </div>
+                <div className="min-w-0">
+                  <div className="kr-heading text-[22px] leading-none text-cream">
+                    {box.title}
+                  </div>
+                  <div
+                    className="kr-num mt-2 inline-flex rounded-full border px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.12em]"
+                    style={{
+                      color: box.accent,
+                      borderColor: `${box.accent}55`,
+                      background: `${box.accent}14`,
+                    }}
+                  >
+                    {box.label}
+                  </div>
+                </div>
+              </div>
+              <div className="kr-body max-w-[116px] text-right text-[12px] font-bold leading-snug text-cream/70">
+                {box.note}
+              </div>
+            </div>
+            <div className="relative mt-3 rounded-[14px] border border-cream/10 bg-white/[0.04] px-3 py-2.5">
+              <div className="flex items-center">
+                <GlossaryKeyword
+                  label="인스턴스 예시"
+                  term={GLOSSARY_TERMS['인스턴스']}
+                  buttonClassName="kr-num inline-flex items-center gap-1 rounded-full px-0 py-0 text-[9px] font-black uppercase tracking-[0.16em] text-cream/50 underline decoration-dotted underline-offset-4 transition hover:text-cream focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c084fc]"
+                />
+              </div>
+              <div className="kr-heading mt-1 text-[14px] leading-snug text-cream">
+                {box.instance}
+              </div>
+            </div>
+            <div className="relative mt-3">
+              <div className="mb-1.5 flex items-center">
+                <GlossaryKeyword
+                  label="속성"
+                  term={GLOSSARY_TERMS['속성']}
+                  buttonClassName="kr-num inline-flex items-center gap-1 rounded-full px-0 py-0 text-[9px] font-black uppercase tracking-[0.16em] text-cream/50 underline decoration-dotted underline-offset-4 transition hover:text-cream focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c084fc]"
+                />
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {box.rows.map((row) => (
+                  <div
+                    key={row}
+                    className="rounded-[12px] border border-cream/10 bg-white/[0.055] px-2 py-2.5 text-center kr-body text-[13px] font-black leading-none text-cream/90"
+                  >
+                    {row}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+          {mode === 'all' && index < displayBoxes.length - 1 ? (
+            <motion.div
+              className="flex items-center justify-center py-1"
+              initial={{ opacity: 0, y: -4 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, delay: 0.09 + index * 0.055 }}
+            >
+              <div className="relative flex flex-col items-center">
+                <div
+                  className="h-4 w-px"
+                  style={{
+                    background: 'rgba(192,132,252,0.42)',
+                  }}
+                />
+                <div className="flex items-center gap-2">
+                  <span
+                    className="h-2.5 w-2.5 rounded-full border"
+                    style={{
+                      borderColor: box.accent,
+                      background: 'rgba(192,132,252,0.16)',
+                    }}
+                  />
+                  <div className="kr-num rounded-full border border-cream/15 bg-[#071326]/80 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-cream/72">
+                    {box.relation}
+                  </div>
+                  <span
+                    className="h-2.5 w-2.5 rounded-full border"
+                    style={{
+                      borderColor: displayBoxes[index + 1].accent,
+                      background: 'rgba(192,132,252,0.16)',
+                    }}
+                  />
+                </div>
+                <div
+                  className="h-4 w-px"
+                  style={{
+                    background: 'rgba(192,132,252,0.42)',
+                  }}
+                />
+              </div>
+            </motion.div>
+          ) : null}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function EntityBox({
+  x,
+  y,
+  title,
+  rows,
+  label,
+  accent,
+}: {
+  x: number;
+  y: number;
+  title: string;
+  rows: string[];
+  label: string;
+  accent: string;
+}) {
+  const width = 150;
+  const headerHeight = 36;
+  const rowHeight = 28;
+  const height = headerHeight + rowHeight * rows.length;
+
+  return (
+    <g>
+      <rect
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        rx="10"
+        fill="rgba(239,244,255,0.94)"
+        stroke={accent}
+        strokeWidth="2"
+      />
+      <rect
+        x={x}
+        y={y}
+        width={width}
+        height={headerHeight}
+        rx="10"
+        fill="rgba(255,255,255,0.96)"
+      />
+      <path
+        d={`M ${x} ${y + headerHeight} H ${x + width}`}
+        stroke="rgba(1,8,40,0.32)"
+        strokeWidth="1.5"
+      />
+      <text
+        x={x + 16}
+        y={y + 24}
+        fill="#071326"
+        fontSize="17"
+        fontWeight="800"
+        fontFamily="Noto Sans KR, sans-serif"
+      >
+        {title}
+      </text>
+      {rows.map((row, index) => {
+        const rowY = y + headerHeight + rowHeight * index;
+        return (
+          <g key={row}>
+            {index > 0 ? (
+              <path
+                d={`M ${x} ${rowY} H ${x + width}`}
+                stroke="rgba(1,8,40,0.16)"
+                strokeWidth="1"
+              />
+            ) : null}
+            <text
+              x={x + 16}
+              y={rowY + 20}
+              fill="#1b2746"
+              fontSize="15"
+              fontWeight="650"
+              fontFamily="Noto Sans KR, sans-serif"
+            >
+              {row}
+            </text>
+          </g>
+        );
+      })}
+      <text
+        x={x + width / 2}
+        y={y + height + 32}
+        textAnchor="middle"
+        fill={accent}
+        fontSize="18"
+        fontWeight="900"
+        fontFamily="Noto Sans KR, sans-serif"
+      >
+        {label}
+      </text>
+    </g>
+  );
+}
+
+function RelationLine({
+  x1,
+  x2,
+  y,
+  left,
+  right,
+}: {
+  x1: number;
+  x2: number;
+  y: number;
+  left: 'one' | 'many';
+  right: 'one' | 'many';
+}) {
+  const renderEnd = (x: number, side: 'left' | 'right', type: 'one' | 'many') => {
+    const dir = side === 'left' ? -1 : 1;
+    if (type === 'one') {
+      return (
+        <g>
+          <path
+            d={`M ${x + dir * 8} ${y - 18} V ${y + 18}`}
+            stroke="rgba(239,244,255,0.88)"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+        </g>
+      );
+    }
+
+    return (
+      <g>
+        <circle
+          cx={x + dir * 10}
+          cy={y}
+          r="8"
+          fill="none"
+          stroke="rgba(239,244,255,0.78)"
+          strokeWidth="2.5"
+        />
+        <path
+          d={`M ${x + dir * 6} ${y} L ${x + dir * 28} ${y - 17} M ${x + dir * 6} ${y} L ${x + dir * 28} ${y} M ${x + dir * 6} ${y} L ${x + dir * 28} ${y + 17}`}
+          stroke="rgba(239,244,255,0.88)"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+      </g>
+    );
+  };
+
+  return (
+    <g>
+      <path
+        d={`M ${x1 + 12} ${y} H ${x2 - 12}`}
+        stroke="rgba(239,244,255,0.74)"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      {renderEnd(x1, 'right', left)}
+      {renderEnd(x2, 'left', right)}
+    </g>
   );
 }

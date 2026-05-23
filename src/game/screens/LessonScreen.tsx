@@ -249,7 +249,7 @@ export default function LessonScreen({
         const message =
           reservation.reason === 'quota_exceeded'
             ? `오늘 새 문제는 ${reservation.remainingQuota ?? 0}개 남았어요.`
-            : '문제 이용권을 확인하지 못했어요. 잠시 뒤 다시 시도해 주세요.';
+            : '문제를 불러오지 못했어요. 잠시 뒤 다시 시도해 주세요.';
         setQuotaBlock(message);
         window.setTimeout(() => setQuotaBlock(null), 3200);
         return;
@@ -322,7 +322,7 @@ export default function LessonScreen({
         const message =
           reservation.reason === 'quota_exceeded'
             ? `오늘 새 문제는 ${reservation.remainingQuota ?? 0}개 남아있어요.`
-            : '문제 이용권을 확인하지 못했어요. 잠시 후 다시 시도해 주세요.';
+            : '문제를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.';
         setQuotaBlock(message);
         window.setTimeout(() => setQuotaBlock(null), 3200);
         return;

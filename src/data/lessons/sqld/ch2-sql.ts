@@ -83,8 +83,9 @@ const SQLD_2_1: Lesson = {
       extraQuizIds: ['sqld-sql-lab-003'],
       dialogue: [
         { pose: 'wave', text: 'SQL 은 [관계대수(Relational Algebra)] 라는 수학에서 출발했어!' },
-        { pose: 'think', text: '관계대수는 [집합 연산]을 [릴레이션(테이블)]에 적용하는 형식 이론!' },
-        { pose: 'lightbulb', text: 'SQL 명령들은 결국 이 관계대수 연산을 풀어쓴 것! 시험에 기호 매칭 출제!' },
+        { pose: 'think', text: '처음엔 어렵게 느껴지지만, 일단 [릴레이션 = 테이블]이라고 생각하면 돼.' },
+        { pose: 'lightbulb', text: '관계대수는 테이블에서 [행을 고르고], [열을 고르고], [테이블끼리 합치는] 규칙이야.' },
+        { pose: 'happy', text: 'SQL 명령들은 결국 이 관계대수 연산을 사람이 쓰기 쉽게 풀어쓴 것!' },
         { pose: 'happy', text: '[단항 연산자] 2개: [σ Selection] · [π Projection]!' },
         { pose: 'think', text: 'σ (시그마) = WHERE 와 같음. 조건 만족 [행]만 선택.' },
         { pose: 'lightbulb', text: 'π (파이) = SELECT 의 컬럼 지정과 같음. 특정 [열]만 추출.' },
@@ -98,7 +99,7 @@ const SQLD_2_1: Lesson = {
         {
           kind: 'intro',
           body:
-            '관계대수는 1970 년 Codd 가 제안한 관계형 DB 의 수학적 기반. SQL 의 모든 연산은 결국 관계대수의 합성. 시험에는 "단항/이항/조인 연산자 매칭" 이 자주 등장합니다.',
+            '관계대수는 관계형 DB가 테이블을 다루는 기본 규칙입니다. 초보자는 “테이블에서 행을 고른다, 열을 고른다, 두 테이블을 합친다” 정도로 먼저 잡으면 됩니다. 시험에는 기호와 의미를 연결하는 문제가 자주 나옵니다.',
         },
         {
           kind: 'table',
@@ -132,7 +133,7 @@ const SQLD_2_1: Lesson = {
     },
     {
       id: 'sqld-2-1-s3',
-      title: 'SELECT 실행 순서 — "FWGHSO" 프웨그하셀오',
+      title: 'SELECT 실행 순서',
       quizId: 'sqld-2-1-cp-03',
       extraQuizIds: ['sqld-sql-lab-002', 'sqld-sql-order-001'],
       dialogue: [
@@ -203,7 +204,7 @@ const SQLD_2_1: Lesson = {
     },
     {
       id: 'sqld-2-1-s4',
-      title: 'ALIAS · DISTINCT · 문자열 연결',
+      title: 'ALIAS와 DISTINCT',
       quizId: 'sqld-2-1-cp-04',
       extraQuizIds: ['sqld-sql-lab-004'],
       dialogue: [
@@ -338,7 +339,7 @@ const SQLD_2_1: Lesson = {
     },
     {
       id: 'sqld-2-1-s6',
-      title: '숫자 / 날짜 / 변환 함수',
+      title: '숫자·날짜 함수',
       quizId: 'sqld-2-1-cp-06',
       extraQuizIds: ['sqld-sql-lab-006'],
       dialogue: [
@@ -419,7 +420,7 @@ const SQLD_2_1: Lesson = {
     },
     {
       id: 'sqld-2-1-s7',
-      title: '집계 함수 + NULL 처리 함정',
+      title: '집계 함수',
       quizId: 'sqld-2-1-cp-07',
       extraQuizIds: ['sqld-sql-lab-007'],
       dialogue: [
@@ -491,7 +492,7 @@ const SQLD_2_1: Lesson = {
     },
     {
       id: 'sqld-2-1-s8',
-      title: 'NULL 처리 함수 4종',
+      title: 'NULL 처리 함수',
       quizId: 'sqld-2-1-cp-08',
       extraQuizIds: ['sqld-sql-lab-009'],
       dialogue: [
@@ -550,7 +551,7 @@ const SQLD_2_1: Lesson = {
     },
     {
       id: 'sqld-2-1-s9',
-      title: 'CASE / DECODE',
+      title: 'CASE와 DECODE',
       quizId: 'sqld-2-1-cp-09',
       extraQuizIds: ['sqld-sql-lab-010'],
       dialogue: [
@@ -974,7 +975,7 @@ const SQLD_2_2: Lesson = {
     },
     {
       id: 'sqld-2-2-s3',
-      title: 'CROSS JOIN · SELF JOIN',
+      title: 'CROSS와 SELF JOIN',
       quizId: 'sqld-2-2-cp-03',
       dialogue: [
         { pose: 'wave', text: '특수 JOIN [2종] — CROSS 와 SELF!' },
@@ -1038,7 +1039,7 @@ const SQLD_2_2: Lesson = {
     },
     {
       id: 'sqld-2-2-s4',
-      title: '서브쿼리 6종',
+      title: '서브쿼리',
       quizId: 'sqld-2-2-cp-04',
       dialogue: [
         { pose: 'wave', text: '[서브쿼리(Subquery)]는 [쿼리 안의 또 다른 쿼리]! 강력한 도구!' },
@@ -1164,7 +1165,7 @@ const SQLD_2_2: Lesson = {
     },
     {
       id: 'sqld-2-2-s6',
-      title: '집합 연산자 4종',
+      title: '집합 연산자',
       quizId: 'sqld-2-2-cp-06',
       extraQuizIds: ['sqld-sql-lab-018', 'sqld-sql-order-005'],
       dialogue: [
@@ -1303,7 +1304,7 @@ const SQLD_2_2: Lesson = {
       quizId: 'sqld-2-2-cp-08',
       extraQuizIds: ['sqld-sql-lab-020', 'sqld-sql-read-003'],
       dialogue: [
-        { pose: 'wave', text: '[윈도우 함수(Window Function)]는 GROUP BY 없이 [그룹 내 위치] 같은 값을 계산!' },
+        { pose: 'wave', text: '[윈도우 함수(Window Function)]는 원래 행을 그대로 두고 옆에 계산값을 붙이는 기능이야.' },
         { pose: 'think', text: '문법: [함수() OVER (PARTITION BY 그룹 ORDER BY 정렬)]!' },
         { pose: 'lightbulb', text: 'PARTITION BY 가 그룹 (부서별 등), ORDER BY 가 그룹 내 순서!' },
         { pose: 'happy', text: '순위 함수 [3총사] — 시험 빈출 1순위!' },
@@ -1315,14 +1316,14 @@ const SQLD_2_2: Lesson = {
         { pose: 'happy', text: 'DENSE_RANK = [1, 1, 2, 3] (연속)!' },
         { pose: 'think', text: 'ROW_NUMBER = [1, 2, 3, 4] (동점도 별개 번호)!' },
         { pose: 'lightbulb', text: '시험 함정! 두 명 동률 후 다음 사람의 순위 — RANK=3, DENSE_RANK=2, ROW_NUMBER=3!' },
-        { pose: 'happy', text: 'GROUP BY 와 차이: 윈도우 함수는 [원본 행 수 유지]! GROUP BY 는 행을 압축!' },
+        { pose: 'happy', text: 'GROUP BY 는 행을 줄이고, 윈도우 함수는 행을 유지해. 이 차이가 핵심이야!' },
         { pose: 'idle', text: '동점 후 다음 사람 순위가 2 면? DENSE_RANK!' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            '윈도우 함수는 GROUP BY 와 달리 행 수를 유지하면서 그룹별 순위·누적·이동 평균 등을 계산. 분석·BI 보고서·랭킹 등에 필수. 시험에서는 RANK / DENSE_RANK / ROW_NUMBER 의 차이를 묻는 매칭이 단골.',
+            '윈도우 함수는 행을 줄이지 않고 각 행 옆에 순위, 누적합, 그룹 평균 같은 값을 붙입니다. “직원 목록은 그대로 두고 각 직원의 부서 평균도 같이 보고 싶다” 같은 상황에서 사용합니다.',
         },
         {
           kind: 'example',
@@ -1365,11 +1366,11 @@ const SQLD_2_2: Lesson = {
     },
     {
       id: 'sqld-2-2-s9',
-      title: '윈도우',
+      title: '집계 윈도우 함수',
       quizId: 'sqld-2-2-cp-09',
       extraQuizIds: ['sqld-sql-lab-021'],
       dialogue: [
-        { pose: 'wave', text: '집계함수 (SUM, AVG, MIN, MAX, COUNT) 도 OVER 절과 함께 쓰면 [윈도우 함수]가 돼!' },
+        { pose: 'wave', text: 'SUM, AVG 같은 집계함수도 [OVER]를 붙이면 행을 줄이지 않는 윈도우 함수가 돼!' },
         { pose: 'think', text: 'OVER() 가 [비어있으면] [전체 행]을 한 윈도우로!' },
         { pose: 'lightbulb', text: '예: SUM(판매액) OVER () = 모든 행의 [총합] 을 각 행 옆에 표시!' },
         { pose: 'happy', text: '[PARTITION BY 컬럼]: 컬럼별로 그룹 나눠 그룹별 집계!' },
@@ -1423,13 +1424,13 @@ const SQLD_2_2: Lesson = {
     },
     {
       id: 'sqld-2-2-s10',
-      title: 'LAG / LEAD / FIRST_VALUE + 범위 지정 (ROWS · RANGE)',
+      title: '행 간 참조 함수',
       quizId: 'sqld-2-2-cp-10',
       extraQuizIds: ['sqld-sql-lab-022', 'sqld-sql-lab-023'],
       dialogue: [
-        { pose: 'wave', text: '윈도우 함수 응용 — [행 간 참조] + [범위 지정]!' },
-        { pose: 'think', text: '[행 간 참조 함수 4종]: LAG·LEAD·FIRST_VALUE·LAST_VALUE!' },
-        { pose: 'lightbulb', text: '[LAG(col, n)]: [n 행 이전] 값! n 생략 시 1 행 이전!' },
+        { pose: 'wave', text: '이번에는 “이전 행”, “다음 행” 값을 가져오는 윈도우 함수를 볼 거야.' },
+        { pose: 'think', text: '[LAG]는 이전 행, [LEAD]는 다음 행을 가져와. 매출을 어제와 비교할 때 자주 써.' },
+        { pose: 'lightbulb', text: '[FIRST_VALUE]는 범위 안의 첫 값, [LAST_VALUE]는 범위 안의 마지막 값이야.' },
         { pose: 'happy', text: '예: 일별 매출 비교에서 어제 매출 가져오기!' },
         { pose: 'think', text: '[LEAD(col, n)]: [n 행 이후] 값! 다음 매출!' },
         { pose: 'lightbulb', text: '[FIRST_VALUE(col)]: 윈도우의 [첫 값]!' },
@@ -1496,12 +1497,12 @@ const SQLD_2_2: Lesson = {
     },
     {
       id: 'sqld-2-2-s11',
-      title: 'TOP N · 비율 · 계층형 · PIVOT/UNPIVOT',
+      title: 'TOP N과 응용',
       quizId: 'sqld-2-2-cp-11',
       extraQuizIds: ['sqld-sql-lab-024', 'sqld-sql-lab-025', 'sqld-sql-lab-026', 'sqld-sql-order-006'],
       dialogue: [
-        { pose: 'wave', text: '윈도우 함수의 [응용 4세트] — TOP N · 비율 · 계층형 · PIVOT!' },
-        { pose: 'think', text: '[TOP N]: 상위 N 개 추출. DBMS 마다 표현 다름!' },
+        { pose: 'wave', text: '이번 step은 SQL 결과를 “보고서처럼” 다듬는 응용 문법들이야.' },
+        { pose: 'think', text: '[TOP N]은 상위 N개만 보는 문법이야. 다만 DBMS마다 쓰는 방식이 달라.' },
         { pose: 'lightbulb', text: 'SQL Server: [TOP N], MySQL: [LIMIT N], Oracle 12c+: [FETCH FIRST N ROWS ONLY]!' },
         { pose: 'happy', text: 'Oracle 구버전: [ROWNUM <= N] (단! 정렬 후 ROWNUM 위해 인라인뷰 필요)!' },
         { pose: 'think', text: '동률 포함하려면 [WITH TIES]! 5위 동점이 3명이면 5개 → 7개 반환!' },
@@ -1922,12 +1923,12 @@ const SQLD_2_3: Lesson = {
     },
     {
       id: 'sqld-2-3-s5',
-      title: 'CREATE TABLE + 데이터 타입 + 제약',
+      title: 'CREATE TABLE',
       quizId: 'sqld-2-3-cp-05',
       extraQuizIds: ['sqld-sql-lab-034', 'sqld-sql-order-008'],
       dialogue: [
-        { pose: 'wave', text: '[CREATE TABLE]은 새 테이블의 [구조를 정의]!' },
-        { pose: 'think', text: '컬럼명 + 데이터 타입 + 제약조건을 모두 한 번에!' },
+        { pose: 'wave', text: '[CREATE TABLE]은 DB 안에 새 표의 설계도를 만드는 명령이야.' },
+        { pose: 'think', text: '표 이름, 컬럼 이름, 데이터 타입, 제약조건을 한 번에 정해.' },
         { pose: 'lightbulb', text: '데이터 타입 [4가지 핵심]: CHAR / VARCHAR2 / NUMBER / DATE!' },
         { pose: 'happy', text: '[CHAR(n)]: [고정 길이] 문자열! 남는 자리 [공백 채움]!' },
         { pose: 'think', text: '예: CHAR(10) 컬럼에 "abc" 저장 → "abc       " (공백 7칸 추가)!' },
@@ -2068,11 +2069,11 @@ const SQLD_2_3: Lesson = {
     },
     {
       id: 'sqld-2-3-s7',
-      title: '제약조건 6종 + CTAS + VIEW',
+      title: '제약조건',
       quizId: 'sqld-2-3-cp-07',
       extraQuizIds: ['sqld-sql-lab-033'],
       dialogue: [
-        { pose: 'wave', text: '제약조건 [6종]을 정확히! 시험 빈출!' },
+        { pose: 'wave', text: '제약조건은 이상한 데이터가 들어오지 못하게 막는 안전장치야.' },
         { pose: 'think', text: '[PRIMARY KEY (PK)]: [유일성 + NOT NULL]! 테이블당 [1개만]!' },
         { pose: 'lightbulb', text: '단, PK 는 [복합 컬럼] 으로 만들 수 있음! (학번, 과목코드) 같이!' },
         { pose: 'happy', text: '[UNIQUE (UK)]: [유일]만! NULL 허용! 한 테이블 [여러 개] 가능!' },

@@ -930,7 +930,7 @@ function ChapterMockExamPath({
           챕터 모의고사
         </h3>
         <p className="kr-body text-[12px] md:text-[12.5px] text-cream/65 mt-1.5 leading-[1.55]">
-          시험 모드 · 즉시 채점 X. 풀고 나면 [오답 복습] 으로 약점 다지기.
+          실제 시험처럼 끝까지 풀어봐요. 제출 후 틀린 문제만 바로 다시 연습할 수 있어요.
         </p>
       </div>
 

@@ -28,6 +28,7 @@ const TIER_ICON: Record<PassTier, string> = {
 interface Props {
   tier: PassTier;
   size?: 'xs' | 'sm' | 'md' | 'lg';
+  variant?: 'pill' | 'plain';
   /** 의미 텍스트 (1회독 진행 중 …) 표시 여부. */
   showMeaning?: boolean;
   /** 클릭 가능한지 (탭 등). */
@@ -47,6 +48,7 @@ const SIZE_TOKENS = {
 export default function PassTierBadge({
   tier,
   size = 'sm',
+  variant = 'pill',
   showMeaning = false,
   onClick,
   active = false,
@@ -55,6 +57,7 @@ export default function PassTierBadge({
   const visual = PASS_TIER_VISUAL[tier];
   const tokens = SIZE_TOKENS[size];
   const Wrapper = onClick ? 'button' : 'span';
+  const plain = variant === 'plain';
 
   return (
     <Wrapper
@@ -62,8 +65,8 @@ export default function PassTierBadge({
       onClick={onClick}
       className={[
         'kr-num inline-flex items-center rounded-full transition select-none uppercase tracking-widest',
-        tokens.px,
-        tokens.py,
+        plain ? 'px-0' : tokens.px,
+        plain ? 'py-0' : tokens.py,
         tokens.gap,
         tokens.text,
         onClick ? 'active:scale-[0.97] cursor-pointer' : '',
@@ -72,10 +75,16 @@ export default function PassTierBadge({
         .filter(Boolean)
         .join(' ')}
       style={{
-        background: active ? `${visual.color}33` : 'rgba(239,244,255,0.06)',
-        border: `1px solid ${active ? visual.color : 'rgba(239,244,255,0.18)'}`,
+        background: plain
+          ? 'transparent'
+          : active
+            ? `${visual.color}33`
+            : 'rgba(239,244,255,0.06)',
+        border: plain
+          ? '0'
+          : `1px solid ${active ? visual.color : 'rgba(239,244,255,0.18)'}`,
         color: active ? visual.color : 'var(--cream)',
-        boxShadow: active ? `0 0 14px ${visual.glow}` : undefined,
+        boxShadow: !plain && active ? `0 0 14px ${visual.glow}` : undefined,
       }}
     >
       <span className={tokens.icon} aria-hidden>

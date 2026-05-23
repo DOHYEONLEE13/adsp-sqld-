@@ -159,6 +159,7 @@ export function MobileTopBar({ subject }: TopProps) {
                   <PassTierBadge
                     tier={passSnap.tier}
                     size="xs"
+                    variant="plain"
                     className="mt-0.5"
                   />
                 ) : null}

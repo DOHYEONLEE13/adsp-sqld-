@@ -2,6 +2,7 @@ import { SUBJECT_SCHEMAS } from '@/data/subjects';
 import { getLessonsInChapter } from '@/data/lessons';
 import type { Subject } from '@/types/question';
 import type { ProgressStore } from './storage';
+import { hasEverSolved } from './progressPredicates';
 
 const STORAGE_KEY = 'questdp.learningResume.v1';
 
@@ -82,7 +83,7 @@ function flattenSubject(subject: Subject): FlatStep[] {
 function isCompleted(step: FlatStep, progress: ProgressStore): boolean {
   if (!step.quizId) return false;
   const stat = progress.questionStats[step.quizId];
-  return !!stat?.lastCorrect && (stat.correct ?? 0) > 0;
+  return hasEverSolved(stat);
 }
 
 function toTarget(step: FlatStep): LearningResumeTarget {

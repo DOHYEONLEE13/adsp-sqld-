@@ -30,6 +30,18 @@ function solved(): QuestionStat {
   };
 }
 
+function solvedThenMissed(): QuestionStat {
+  return {
+    attempts: 2,
+    correct: 1,
+    wrongStreak: 1,
+    lastCorrect: false,
+    lastSeenAt: Date.now(),
+    lastTimeMs: 10_000,
+    avgTimeMs: 10_000,
+  };
+}
+
 describe('learningResume', () => {
   beforeEach(() => {
     const storage = new Map<string, string>();
@@ -73,6 +85,32 @@ describe('learningResume', () => {
       stepId: visible[0].step.id,
     });
     progress.questionStats[visible[0].step.quizId!] = solved();
+
+    const resume = resolveLearningResume('sqld', progress);
+
+    expect(resume).toMatchObject({
+      subject: 'sqld',
+      chapter: 1,
+      topic: lesson.topic,
+      stepIdx: visible[1].stepIdx,
+    });
+  });
+
+  it('keeps a step completed even if the latest review answer was wrong', () => {
+    const progress = makeProgress();
+    const lesson = getLessonsInChapter('sqld', 1)[0];
+    const visible = lesson.steps
+      .map((step, stepIdx) => ({ step, stepIdx }))
+      .filter(({ step }) => !!step.quizId);
+
+    saveLearningResume({
+      subject: 'sqld',
+      chapter: 1,
+      topic: lesson.topic,
+      stepIdx: visible[0].stepIdx,
+      stepId: visible[0].step.id,
+    });
+    progress.questionStats[visible[0].step.quizId!] = solvedThenMissed();
 
     const resume = resolveLearningResume('sqld', progress);
 

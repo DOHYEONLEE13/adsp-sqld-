@@ -48,6 +48,7 @@ import SqlOrderingPanel, {
   sqlOrderingCorrectAnswerText,
 } from '../lesson/SqlOrderingPanel';
 import GlossaryKeyword, { GLOSSARY_TERMS } from '../lesson/GlossaryKeyword';
+import { hasEverSolved } from '../progressPredicates';
 
 const SUBJECT_ACCENT: Record<Subject, string> = {
   adsp: '#67e8f9',
@@ -210,8 +211,8 @@ export default function LessonScreen({
       // review (quiz-less) step 은 풀이 카운트에서 제외.
       if (!entry.step.quizId) continue;
       const stat = progress.questionStats[entry.step.quizId];
-      // 최근에 맞혔고 오답 streak 가 0 이면 "풀었음" 으로 간주.
-      if (stat && stat.correct > 0 && stat.lastCorrect) n++;
+      // 한 번이라도 맞혔으면 "풀었음" 으로 간주. 이후 복습 오답은 완료 진도를 지우지 않는다.
+      if (hasEverSolved(stat)) n++;
     }
     return n;
   }, [chapterSteps, progress]);

@@ -43,6 +43,7 @@ import { isStepLocked, useStepUnlocks } from '../stepUnlocks';
 import { isFinaleStep, isFinaleStepLocked } from '../finale';
 import { useDevUnlockFlags } from '../useDevUnlockFlags';
 import { usePassSnapshot } from '../passSync';
+import { hasEverSolved } from '../progressPredicates';
 import {
   chapterPassProgress,
   currentPassFor,
@@ -550,11 +551,11 @@ function TopicSection({
   const visibleSteps = stepsWithIdx.filter((s) => !!s.quizId);
 
   // ── 레슨 정복 여부 (CLAUDE.md P1 §5 — 토픽 노드 완료 표식) ──
-  // 모든 visibleSteps 의 lastCorrect=true && correct>0 일 때 "정복 완료".
+  // 한 번이라도 맞힌 visible step 은 "정복 완료"로 본다. 이후 복습 오답은 완료 진도를 지우지 않는다.
   // 골드 체크 배지로 시각화 → 사용자가 무엇을 끝냈는지 한눈에.
   const stepCompletedCount = visibleSteps.reduce((acc, s) => {
     const stat = s.quizId ? progress.questionStats[s.quizId] : undefined;
-    return acc + (stat?.lastCorrect && (stat?.correct ?? 0) > 0 ? 1 : 0);
+    return acc + (hasEverSolved(stat) ? 1 : 0);
   }, 0);
   const lessonCompleted =
     visibleSteps.length > 0 && stepCompletedCount === visibleSteps.length;
@@ -572,7 +573,7 @@ function TopicSection({
         for (let i = 0; i < visibleSteps.length; i += 1) {
           const s = visibleSteps[i];
           const stat = s.quizId ? progress.questionStats[s.quizId] : undefined;
-          const completed = !!stat?.lastCorrect && (stat?.correct ?? 0) > 0;
+          const completed = hasEverSolved(stat);
           if (!completed) return i;
         }
         return 0;
@@ -652,7 +653,7 @@ function TopicSection({
           const stat = step.quizId
             ? progress.questionStats[step.quizId]
             : undefined;
-          const completed = !!stat?.lastCorrect && (stat?.correct ?? 0) > 0;
+          const completed = hasEverSolved(stat);
           const attempted = !!stat && (stat.attempts ?? 0) > 0;
           // 이전 step 클리어 여부 — visibleSteps 기준으로 prev 산정.
           const prevStep = displayIdx > 0 ? visibleSteps[displayIdx - 1] : null;

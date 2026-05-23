@@ -7,13 +7,14 @@
  *   - admin 검수 모드 (DEV_UNLOCK_STEPS_KEY) 만 우회 가능.
  *
  * 완주 정의: 해당 subject 의 모든 LessonStep (quizId 보유 + 자기 자신/review 제외)
- * 의 questionStat.lastCorrect === true.
+ * 의 questionStat.correct > 0.
  */
 
 import type { ProgressStore } from './storage';
 import { ALL_LESSONS } from '@/data/lessons';
 import type { Subject } from '@/types/question';
 import { isDevUnlockStepsEnabled } from './stepUnlocks';
+import { hasEverSolved } from './progressPredicates';
 
 /** id 끝이 `-finale` 인 step 인지. */
 export function isFinaleStep(step: { id: string }): boolean {
@@ -21,7 +22,7 @@ export function isFinaleStep(step: { id: string }): boolean {
 }
 
 /**
- * 해당 subject 의 모든 quiz step 이 lastCorrect 인가.
+ * 해당 subject 의 모든 quiz step 을 한 번이라도 맞혔는가.
  * review step (quizId 없음) + finale step 자체는 카운트에서 제외.
  */
 export function isSubjectCompleted(
@@ -34,7 +35,7 @@ export function isSubjectCompleted(
       if (!step.quizId) continue; // review step skip
       if (isFinaleStep(step)) continue; // finale 자체 skip
       const stat = progress.questionStats[step.quizId];
-      if (!stat || !stat.lastCorrect) return false;
+      if (!hasEverSolved(stat)) return false;
     }
   }
   return true;

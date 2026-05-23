@@ -16,6 +16,7 @@ import type { QuestSummary } from './types';
 import { pushSessionToServer } from './sessionSync';
 import { pushQuestionStatToServer } from './questionStatSync';
 import { pushProgressMetaToServer } from './progressMetaSync';
+import { claimDailyQuestBonusOnServer } from './dailyBonusSync';
 
 const STORAGE_KEY = 'questdp.progress.v1';
 const SCHEMA_VERSION = 1 as const;
@@ -184,17 +185,25 @@ function commit(next: ProgressStore): void {
 function applyLessonXpCorrection(
   localOptimisticXp: number,
   serverAwardedXp: number,
+  options: { clearDailyBonusClaim?: string } = {},
 ): void {
   const safeLocal = Math.max(0, Math.floor(localOptimisticXp));
   const safeServer = Math.max(0, Math.floor(serverAwardedXp));
   const correction = safeServer - safeLocal;
-  if (correction === 0) return;
+  if (correction === 0 && !options.clearDailyBonusClaim) return;
 
   const next: ProgressStore = {
     ...current,
     lessonXp: Math.max(0, (current.lessonXp ?? 0) + correction),
     updatedAt: Date.now(),
   };
+
+  if (
+    options.clearDailyBonusClaim &&
+    next.dailyBonusClaimedAt === options.clearDailyBonusClaim
+  ) {
+    next.dailyBonusClaimedAt = undefined;
+  }
 
   if (typeof current.serverTotalXp === 'number') {
     next.serverTotalXp = Math.max(0, current.serverTotalXp + correction);
@@ -382,8 +391,7 @@ export function recordSingleAnswer(
       timeMs,
       stepKey,
     }).then((result) => {
-      if (!result) return;
-      applyLessonXpCorrection(xpAwarded, result.xpAwarded);
+      applyLessonXpCorrection(xpAwarded, result?.xpAwarded ?? 0);
     });
   }
   return xpAwarded;
@@ -409,6 +417,15 @@ export function claimDailyQuestBonus(): number {
     lessonXp: nextLessonXp,
     dailyBonusClaimedAt: todayKey,
     updatedAt: at,
+  });
+  void claimDailyQuestBonusOnServer().then((result) => {
+    if (!result || !result.ok) {
+      applyLessonXpCorrection(XP_DAILY_BONUS, 0, {
+        clearDailyBonusClaim: todayKey,
+      });
+      return;
+    }
+    applyLessonXpCorrection(XP_DAILY_BONUS, result.xpAwarded);
   });
   return XP_DAILY_BONUS;
 }

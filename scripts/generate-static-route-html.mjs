@@ -10,6 +10,8 @@ import path from 'node:path';
 import { DEFAULT_IMAGE, getSeoRouteManifest } from './seo-route-manifest.mjs';
 
 const DIST_DIR = path.resolve('dist');
+const CONTENT_PROTECTION_NOTICE =
+  'QuestDP의 개념 설명·문제·해설은 자체 제작 학습 콘텐츠입니다. 무단 복제·배포·재판매·상업적 이용이 확인되면 서비스 이용 제한 및 관련 법령에 따른 법적 조치를 진행할 수 있습니다.';
 
 const template = await readFile(path.join(DIST_DIR, 'index.html'), 'utf8');
 const manifest = getSeoRouteManifest();
@@ -144,6 +146,7 @@ function injectSnapshotStyle(html) {
       .seo-snapshot__images figcaption{margin-top:8px;color:rgba(239,244,255,.72);font-size:13px;line-height:1.55}
       .seo-snapshot__links{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
       .seo-snapshot__links a{color:#010828;background:#7dd850;text-decoration:none;border-radius:999px;padding:10px 14px;font-size:13px;font-weight:800}
+      .seo-snapshot__notice{margin-top:22px;padding-top:18px;border-top:1px solid rgba(239,244,255,.12);color:rgba(239,244,255,.62);font-size:12px;line-height:1.65}
     </style>`;
   return html.replace('</head>', `    ${style}\n  </head>`);
 }
@@ -181,6 +184,7 @@ function renderSnapshot(route) {
           <p>${escapeHtml(route.summary || route.description)}</p>
           ${images ? `<div class="seo-snapshot__images">\n          ${images}\n          </div>` : ''}
           ${links ? `<nav class="seo-snapshot__links" aria-label="관련 페이지">\n          ${links}\n          </nav>` : ''}
+          <p class="seo-snapshot__notice">${escapeHtml(CONTENT_PROTECTION_NOTICE)}</p>
         </article>
       </main>`;
 }

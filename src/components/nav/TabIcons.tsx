@@ -52,7 +52,32 @@ function base(p: TabIconProps) {
 export function BookTabIcon(props: TabIconProps) {
   return (
     <svg {...base(props)}>
-      <path d="M3 5a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v14.5a.5.5 0 0 1-.85.36A4 4 0 0 0 8.34 18.5H5a2 2 0 0 1-2-2V5zm18 0a2 2 0 0 0-2-2h-5a2 2 0 0 0-2 2v14.5a.5.5 0 0 0 .85.36 4 4 0 0 1 2.81-1.36H19a2 2 0 0 0 2-2V5z" />
+      <path
+        d="M4.4 5.2c0-.95.77-1.72 1.72-1.72h3.15c1.52 0 2.73.78 2.73 1.76V19.3c-.7-.92-1.78-1.52-3.18-1.52h-2.7a1.72 1.72 0 0 1-1.72-1.72V5.2Z"
+        fill="currentColor"
+        fillOpacity="0.25"
+      />
+      <path
+        d="M19.6 5.2c0-.95-.77-1.72-1.72-1.72h-3.15c-1.52 0-2.73.78-2.73 1.76V19.3c.7-.92 1.78-1.52 3.18-1.52h2.7a1.72 1.72 0 0 0 1.72-1.72V5.2Z"
+        fill="currentColor"
+        fillOpacity="0.18"
+      />
+      <path
+        d="M4.4 5.2c0-.95.77-1.72 1.72-1.72h3.15c1.52 0 2.73.78 2.73 1.76V19.3c-.7-.92-1.78-1.52-3.18-1.52h-2.7a1.72 1.72 0 0 1-1.72-1.72V5.2ZM19.6 5.2c0-.95-.77-1.72-1.72-1.72h-3.15c-1.52 0-2.73.78-2.73 1.76V19.3c.7-.92 1.78-1.52 3.18-1.52h2.7a1.72 1.72 0 0 0 1.72-1.72V5.2ZM12 5.15v14.2M7.25 7.35h2.25M7.25 10.05h2.25M7.25 12.75h2.1M14.5 7.35h2.25M14.5 10.05h2.25M14.65 12.75h2.1"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.7"
+      />
+      <path
+        d="M8.15 15.55c1.45 0 2.75.42 3.85 1.24 1.1-.82 2.4-1.24 3.85-1.24"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="1.45"
+        strokeOpacity="0.78"
+      />
     </svg>
   );
 }
@@ -64,7 +89,25 @@ export function BookTabIcon(props: TabIconProps) {
 export function FlagTabIcon(props: TabIconProps) {
   return (
     <svg {...base(props)}>
-      <path d="M5 2a1 1 0 0 1 1 1v1h12.4a1 1 0 0 1 .81 1.59L17 9l2.21 3.41A1 1 0 0 1 18.4 14H6v7a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1z" />
+      <path
+        d="M6 3.4v17.2"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeWidth="2"
+      />
+      <path
+        d="M7 4.4h10.7c.75 0 1.15.87.67 1.45L16.25 8.4l2.12 2.55c.48.58.08 1.45-.67 1.45H7V4.4Z"
+        fill="currentColor"
+        fillOpacity="0.26"
+      />
+      <path
+        d="M7 4.4h10.7c.75 0 1.15.87.67 1.45L16.25 8.4l2.12 2.55c.48.58.08 1.45-.67 1.45H7"
+        fill="none"
+        stroke="currentColor"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
     </svg>
   );
 }
@@ -76,7 +119,19 @@ export function FlagTabIcon(props: TabIconProps) {
 export function TrophyTabIcon(props: TabIconProps) {
   return (
     <svg {...base(props)}>
-      <path d="M6 2a1 1 0 0 0-1 1v1H3a2 2 0 0 0-2 2v1a4 4 0 0 0 3.6 3.98A7.01 7.01 0 0 0 9 14.92V17H8a2 2 0 0 0-2 2v2a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1v-2a2 2 0 0 0-2-2h-1v-2.08a7.01 7.01 0 0 0 4.4-3.94A4 4 0 0 0 23 7V6a2 2 0 0 0-2-2h-2V3a1 1 0 0 0-1-1H6zm0 4H3v1c0 .87.56 1.61 1.34 1.88A12 12 0 0 1 4 6.5V6zm14 0c-.04.17-.04.34-.04.5 0 .85-.13 1.66-.32 2.43A2 2 0 0 0 21 7V6h-1z" />
+      <path
+        d="M7.2 4h9.6v3.9c0 2.9-1.88 5.35-4.8 5.35S7.2 10.8 7.2 7.9V4Z"
+        fill="currentColor"
+        fillOpacity="0.25"
+      />
+      <path
+        d="M7.2 5.2H4.7c-.75 0-1.35.6-1.35 1.35v.75c0 2.15 1.65 3.75 3.85 3.85M16.8 5.2h2.5c.75 0 1.35.6 1.35 1.35v.75c0 2.15-1.65 3.75-3.85 3.85M7.2 4h9.6v3.9c0 2.9-1.88 5.35-4.8 5.35S7.2 10.8 7.2 7.9V4ZM12 13.25v3.3M8.8 20h6.4M10 16.55h4c.72 0 1.3.58 1.3 1.3V20H8.7v-2.15c0-.72.58-1.3 1.3-1.3Z"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.75"
+      />
     </svg>
   );
 }
@@ -88,7 +143,20 @@ export function TrophyTabIcon(props: TabIconProps) {
 export function UserTabIcon(props: TabIconProps) {
   return (
     <svg {...base(props)}>
-      <path d="M12 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM3 22a9 9 0 1 1 18 0 1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" />
+      <circle cx="12" cy="8" r="4.1" fill="currentColor" fillOpacity="0.24" />
+      <path
+        d="M12 12.1c-4.45 0-7.7 2.85-7.7 6.25 0 .93.75 1.65 1.68 1.65h12.04c.93 0 1.68-.72 1.68-1.65 0-3.4-3.25-6.25-7.7-6.25Z"
+        fill="currentColor"
+        fillOpacity="0.18"
+      />
+      <path
+        d="M16.1 8A4.1 4.1 0 1 1 7.9 8a4.1 4.1 0 0 1 8.2 0ZM4.3 18.35c0-3.4 3.25-6.25 7.7-6.25s7.7 2.85 7.7 6.25c0 .93-.75 1.65-1.68 1.65H5.98c-.93 0-1.68-.72-1.68-1.65Z"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.75"
+      />
     </svg>
   );
 }
@@ -113,7 +181,24 @@ export function ChartTabIcon(props: TabIconProps) {
 export function FlameTabIcon(props: TabIconProps) {
   return (
     <svg {...base(props)}>
-      <path d="M12 2c.5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5A2.5 2.5 0 0 0 11 11c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6z" />
+      <path
+        d="M12.2 2.9c.34 2.32 1.65 4.08 3.35 5.57 1.73 1.52 2.95 3.12 2.95 5.55a6.5 6.5 0 0 1-13 0c0-1.3.46-2.47 1.17-3.42.47 1.03 1.44 1.73 2.63 1.73 1.58 0 2.7-1.15 2.7-2.83 0-1.1-.38-1.9-.78-2.72-.7-1.42-.45-2.73.98-3.88Z"
+        fill="currentColor"
+        fillOpacity="0.2"
+      />
+      <path
+        d="M12.2 2.9c.34 2.32 1.65 4.08 3.35 5.57 1.73 1.52 2.95 3.12 2.95 5.55a6.5 6.5 0 0 1-13 0c0-1.3.46-2.47 1.17-3.42.47 1.03 1.44 1.73 2.63 1.73 1.58 0 2.7-1.15 2.7-2.83 0-1.1-.38-1.9-.78-2.72-.7-1.42-.45-2.73.98-3.88Z"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.75"
+      />
+      <path
+        d="M12.15 17.9c1.45-.42 2.25-1.5 2.25-2.85 0-.9-.35-1.58-.95-2.22-.2 1.02-.88 1.58-1.72 2.18-.8.57-1.2 1.1-1.2 1.85 0 .78.62 1.35 1.62 1.04Z"
+        fill="currentColor"
+        fillOpacity="0.72"
+      />
     </svg>
   );
 }

@@ -22,8 +22,43 @@ const PREFIX_BY_CHARACTER: Record<MascotCharacter, string> = {
   selli: 'selli',
 };
 
+const FAST_WIDTHS = [160, 320, 480] as const;
+const PRELOADED = new Set<string>();
+
 function poseSrc(character: MascotCharacter, pose: QuesPose): string {
   return `/mascot/${PREFIX_BY_CHARACTER[character]}-${pose}.png`;
+}
+
+function fastPoseSrc(
+  character: MascotCharacter,
+  pose: QuesPose,
+  width: (typeof FAST_WIDTHS)[number],
+): string {
+  return `/mascot/fast/${PREFIX_BY_CHARACTER[character]}-${pose}-${width}.png`;
+}
+
+function poseSrcSet(character: MascotCharacter, pose: QuesPose): string {
+  return FAST_WIDTHS.map((width) => `${fastPoseSrc(character, pose, width)} ${width}w`).join(
+    ', ',
+  );
+}
+
+export function preloadMascotPoses(
+  character: MascotCharacter,
+  poses: QuesPose[],
+): void {
+  if (typeof window === 'undefined') return;
+
+  for (const pose of poses) {
+    for (const width of [320, 480] as const) {
+      const src = fastPoseSrc(character, pose, width);
+      if (PRELOADED.has(src)) continue;
+      PRELOADED.add(src);
+      const image = new Image();
+      image.decoding = 'async';
+      image.src = src;
+    }
+  }
 }
 
 interface Props {
@@ -40,6 +75,8 @@ interface Props {
   size?: number;
   /** false 면 호흡/크로스페이드 등 모든 애니메이션 비활성. 접근성 · 배포 성능용. */
   animated?: boolean;
+  /** 첫 화면에서 반드시 보여야 하는 마스코트는 high priority 로 가져온다. */
+  priority?: boolean;
   className?: string;
 }
 
@@ -48,9 +85,11 @@ export default function Ques({
   character = DEFAULT_CHARACTER,
   size,
   animated = true,
+  priority = false,
   className,
 }: Props) {
   const src = poseSrc(character, pose);
+  const displaySize = size !== undefined ? `${size}px` : '(max-width: 640px) 96px, 140px';
 
   return (
     <div
@@ -72,8 +111,13 @@ export default function Ques({
         >
           <img
             src={src}
+            srcSet={poseSrcSet(character, pose)}
+            sizes={displaySize}
             alt=""
             {...(size !== undefined ? { width: size, height: size } : {})}
+            decoding="async"
+            loading={priority ? 'eager' : undefined}
+            fetchPriority={priority ? 'high' : 'auto'}
             draggable={false}
             className={[
               'w-full h-full object-contain',

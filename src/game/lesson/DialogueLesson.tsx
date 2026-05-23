@@ -525,6 +525,7 @@ export default function DialogueLesson({
               pose={passNumber === 2 ? 'think' : 'lightbulb'}
               character={characterForSubject(subject)}
               size={120}
+              priority
             />
           </div>
           <span
@@ -715,6 +716,7 @@ export default function DialogueLesson({
               pose={questPose}
               character={characterForSubject(subject)}
               size={isMobile ? 140 : 180}
+              priority
             />
           </div>
           <div

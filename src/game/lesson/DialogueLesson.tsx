@@ -265,11 +265,25 @@ export default function DialogueLesson({
     if (key.includes('g2-entity')) return '엔터티 진행';
     if (key.includes('g3-attr-rel')) return '속성·관계 진행';
     if (key.includes('g4-identifier')) return '식별자 진행';
+    if (key.includes('query-basics')) return 'SQL 기초 진행';
+    if (key.includes('functions')) return '함수 진행';
+    if (key.includes('filter-sort')) return '조건·정렬 진행';
+    if (key.includes('joins')) return 'JOIN 진행';
+    if (key.includes('subqueries')) return '서브쿼리 진행';
+    if (key.includes('set-group')) return '집합·그룹 진행';
+    if (key.includes('window-apps')) return '윈도우 진행';
+    if (key.includes('regex')) return '정규식 진행';
+    if (key.includes('g1-dml')) return 'DML 진행';
+    if (key.includes('transaction')) return '트랜잭션 진행';
+    if (key.includes('ddl-constraints')) return 'DDL 진행';
+    if (key.includes('g4-dcl')) return '권한 진행';
     return '개념 진행';
   };
   const trailLabel = groupTrailLabel(currentGroupKey);
   const shouldShowGroupTrail =
-    groupSteps.length > 1 || currentGroupKey.includes('g1-basic');
+    groupSteps.length > 1 ||
+    currentGroupKey.includes('g1-basic') ||
+    currentGroupKey.startsWith('sqld-2-');
 
   // step.title 에서 trail 라벨 추출 — ' — ' 와 ' (' 앞부분만.
   // 예: 'DIKW ① 데이터 (Data) — raw 값' → 'DIKW ① 데이터'

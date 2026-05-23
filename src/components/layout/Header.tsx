@@ -85,20 +85,20 @@ function MenuOverlay({ onClose }: { onClose: () => void }) {
         role="dialog"
         aria-modal="true"
         aria-label="메뉴"
-        className="fixed top-0 left-0 right-0 z-[61]"
-        initial={{ y: '-100%' }}
-        animate={{ y: 0 }}
-        exit={{ y: '-100%' }}
+        className="fixed inset-y-0 right-0 z-[61] w-[min(88vw,390px)] max-w-[calc(100vw-28px)]"
+        initial={{ x: '100%' }}
+        animate={{ x: 0 }}
+        exit={{ x: '100%' }}
         transition={{ type: 'tween', duration: 0.3, ease: [0.18, 0.9, 0.4, 1] }}
       >
         <div
-          className="max-w-layout mx-auto px-6 md:px-12 py-7 md:py-9"
+          className="h-full overflow-y-auto px-6 md:px-7 py-7 md:py-9"
           style={{
             background: 'rgba(1,8,40,0.95)',
             backdropFilter: 'blur(18px)',
             WebkitBackdropFilter: 'blur(18px)',
-            borderBottom: '1px solid rgba(239,244,255,0.10)',
-            boxShadow: '0 16px 40px -10px rgba(0,0,0,0.55)',
+            borderLeft: '1px solid rgba(239,244,255,0.10)',
+            boxShadow: '-18px 0 44px -16px rgba(0,0,0,0.65)',
           }}
         >
           {/* 패널 헤더 — 라벨 + 닫기 */}

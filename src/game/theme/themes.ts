@@ -130,7 +130,7 @@ export const THEMES: Theme[] = [
 ];
 
 /** 기본 테마 — 사용자 미선택 / 잘못된 id 일 때 fallback. */
-export const DEFAULT_THEME_ID = 'video-original';
+export const DEFAULT_THEME_ID = 'stars-css';
 
 export function getThemeById(id: string | null): Theme {
   return THEMES.find((t) => t.id === id) ?? THEMES.find((t) => t.id === DEFAULT_THEME_ID) ?? THEMES[0];

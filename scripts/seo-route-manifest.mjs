@@ -16,6 +16,54 @@ const SUBJECT_LABEL = {
   sqld: 'SQLD SQL 개발자',
 };
 
+const STUDY_METHOD_IMAGES = [
+  {
+    url: `${SITE_ORIGIN}/seo/features/questdp-course-selection.jpg`,
+    title: 'QuestDP 과목 선택 화면',
+    caption: 'ADsP와 SQLD 중 원하는 자격증 카드를 골라 학습 은하로 진입하는 화면',
+  },
+  {
+    url: `${SITE_ORIGIN}/seo/features/questdp-sqld-learning-roadmap.jpg`,
+    title: 'QuestDP SQLD 학습 로드맵',
+    caption: 'SQLD SQL 기본 및 활용 챕터의 개념 스텝을 따라가는 학습 탭',
+  },
+  {
+    url: `${SITE_ORIGIN}/seo/features/questdp-daily-quests.jpg`,
+    title: 'QuestDP 오늘의 퀘스트',
+    caption: '오늘 복습할 문제와 일일 미션을 모아 보여주는 퀘스트 탭',
+  },
+  {
+    url: `${SITE_ORIGIN}/seo/features/questdp-weakness-analysis.jpg`,
+    title: 'QuestDP 나의 약점',
+    caption: '학습 결과를 바탕으로 다시 볼 약점 단원을 보여주는 나의 약점 탭',
+  },
+  {
+    url: `${SITE_ORIGIN}/seo/features/questdp-friends-ranking.jpg`,
+    title: 'QuestDP 친구 비교',
+    caption: '친구 태그를 추가하고 XP 리더보드를 비교하는 친구 탭',
+  },
+  {
+    url: `${SITE_ORIGIN}/seo/features/questdp-sqld-lesson-having.jpg`,
+    title: 'QuestDP 개념 레슨 화면',
+    caption: 'SQLD HAVING 개념을 마스코트와 함께 학습하는 레슨 화면',
+  },
+  {
+    url: `${SITE_ORIGIN}/seo/features/questdp-chapter-mock-exams.jpg`,
+    title: 'QuestDP 챕터 모의고사',
+    caption: 'SQLD 챕터 모의고사 1, 2, 3, FINAL을 선택하는 학습 화면',
+  },
+  {
+    url: `${SITE_ORIGIN}/seo/features/questdp-study-dashboard.jpg`,
+    title: 'QuestDP 학습 대시보드',
+    caption: '프로필, 북마크, 누적 학습 상태를 확인하는 통계 탭',
+  },
+  {
+    url: `${SITE_ORIGIN}/seo/features/questdp-pricing-plans.jpg`,
+    title: 'QuestDP 요금제 화면',
+    caption: '무료, Pro, Max 플랜을 비교하는 요금제 페이지',
+  },
+];
+
 const CORE_ROUTES = [
   {
     group: 'core',
@@ -50,6 +98,7 @@ const CORE_ROUTES = [
     summary:
       '처음 보는 개념은 작은 단위로 나누고, 바로 문제를 풀고, 틀린 지점은 약점 노드와 복습 큐로 다시 만납니다. QuestDP는 시험 범위를 읽는 공부에서 끝내지 않고 행동하는 공부로 바꿉니다.',
     image: `${SITE_ORIGIN}/og/questdp-method.png`,
+    images: STUDY_METHOD_IMAGES,
     type: 'article',
     links: [
       { href: '/curriculum/adsp', label: 'ADsP 시험 범위' },

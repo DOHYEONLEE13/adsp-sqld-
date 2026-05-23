@@ -5,6 +5,7 @@ import {
   ChevronRight,
   Clock3,
   Gauge,
+  Image as ImageIcon,
   Route,
   Sparkles,
 } from 'lucide-react';
@@ -75,9 +76,95 @@ const FAQS = [
   },
 ] as const;
 
+const FEATURE_IMAGES = [
+  {
+    title: '과목 선택 화면',
+    src: '/seo/features/questdp-course-selection.jpg',
+    alt: 'QuestDP 메인 게임 화면에서 ADsP, SQLD, 빅데이터분석기사 학습 카드를 선택하는 화면',
+    caption: '처음에는 ADsP와 SQLD 중 원하는 자격증 카드를 골라 학습 은하로 진입합니다.',
+    width: 1246,
+    height: 913,
+  },
+  {
+    title: 'SQLD 학습 로드맵',
+    src: '/seo/features/questdp-sqld-learning-roadmap.jpg',
+    alt: 'QuestDP 학습 탭에서 SQLD SQL 기본 및 활용 챕터의 개념 스텝을 따라가는 화면',
+    caption: '학습 탭은 챕터와 개념 스텝을 순서대로 보여주고, 바로 문제 풀이로 이어집니다.',
+    width: 450,
+    height: 917,
+  },
+  {
+    title: '오늘의 퀘스트',
+    src: '/seo/features/questdp-daily-quests.jpg',
+    alt: 'QuestDP 퀘스트 탭에서 오늘의 복습, 풀이량, 정확도 미션을 확인하는 화면',
+    caption: '퀘스트 탭은 오늘 복습할 문제와 일일 미션을 모아 짧은 학습 목표로 바꿉니다.',
+    width: 463,
+    height: 918,
+  },
+  {
+    title: '나의 약점',
+    src: '/seo/features/questdp-weakness-analysis.jpg',
+    alt: 'QuestDP 나의 약점 탭에서 ADsP 약점 단원과 정답률, 미응시 문항을 확인하는 화면',
+    caption: '약점 탭은 학습 결과를 바탕으로 다시 볼 단원을 한곳에 모아 보여줍니다.',
+    width: 448,
+    height: 918,
+  },
+  {
+    title: '친구 비교',
+    src: '/seo/features/questdp-friends-ranking.jpg',
+    alt: 'QuestDP 친구 탭에서 친구 태그를 추가하고 XP 리더보드를 비교하는 화면',
+    caption: '친구 탭은 태그로 친구를 추가하고 XP와 연속 학습을 함께 비교하게 합니다.',
+    width: 448,
+    height: 913,
+  },
+  {
+    title: '개념 레슨 화면',
+    src: '/seo/features/questdp-sqld-lesson-having.jpg',
+    alt: 'QuestDP SQLD 레슨 화면에서 HAVING 개념을 마스코트와 함께 학습하는 화면',
+    caption: '레슨 화면은 짧은 개념 설명과 진행률을 보여주고 바로 확인 문제로 이어집니다.',
+    width: 448,
+    height: 914,
+  },
+  {
+    title: '챕터 모의고사',
+    src: '/seo/features/questdp-chapter-mock-exams.jpg',
+    alt: 'QuestDP 학습 탭에서 SQLD 챕터 모의고사 1, 2, 3, FINAL을 선택하는 화면',
+    caption: '챕터 모의고사는 실제 시험처럼 풀고 제출 후 틀린 문제를 다시 연습하게 합니다.',
+    width: 1251,
+    height: 914,
+  },
+  {
+    title: '학습 대시보드',
+    src: '/seo/features/questdp-study-dashboard.jpg',
+    alt: 'QuestDP 프로필과 통계 탭에서 마스코트, 태그, 북마크 문제와 학습 정보를 확인하는 화면',
+    caption: '통계와 프로필 화면은 내 캐릭터, 태그, 북마크, 누적 학습 상태를 한 화면에 모읍니다.',
+    width: 462,
+    height: 912,
+  },
+  {
+    title: '요금제 화면',
+    src: '/seo/features/questdp-pricing-plans.jpg',
+    alt: 'QuestDP 요금제 페이지에서 무료, Pro, Max 플랜을 비교하는 화면',
+    caption: '요금제 화면은 무료 플랜과 집중 학습용 유료 플랜의 차이를 명확히 비교합니다.',
+    width: 443,
+    height: 915,
+  },
+] as const;
+
 export default function StudyMethodPage() {
   const seoDescription =
     'QuestDP가 ADsP·SQLD를 게임형 학습사이트로 설계한 방식. 개념 스텝, 즉시 문제풀이, 약점 점수, 망각곡선 기반 Leitner 복습 큐로 시험범위를 학습하는 원리를 정리했습니다.';
+  const featureImageObjects = FEATURE_IMAGES.map((image) => ({
+    '@type': 'ImageObject',
+    name: image.title,
+    url: `https://quest-dp.com${image.src}`,
+    contentUrl: `https://quest-dp.com${image.src}`,
+    caption: image.caption,
+    description: image.alt,
+    width: image.width,
+    height: image.height,
+    inLanguage: 'ko-KR',
+  }));
 
   const articleJsonLd = {
     '@context': 'https://schema.org',
@@ -85,7 +172,16 @@ export default function StudyMethodPage() {
     headline: 'QuestDP 학습 원리',
     description: seoDescription,
     inLanguage: 'ko-KR',
-    image: OG_IMAGE,
+    image: [OG_IMAGE, ...FEATURE_IMAGES.map((image) => `https://quest-dp.com${image.src}`)],
+    primaryImageOfPage: {
+      '@type': 'ImageObject',
+      url: OG_IMAGE,
+      contentUrl: OG_IMAGE,
+      width: 1200,
+      height: 630,
+      caption: 'QuestDP 대표 이미지',
+    },
+    associatedMedia: featureImageObjects,
     datePublished: '2026-05-21',
     dateModified: '2026-05-21',
     author: { '@type': 'Organization', name: 'QuestDP', url: 'https://quest-dp.com' },
@@ -235,6 +331,48 @@ export default function StudyMethodPage() {
                 <span>{row.structure}</span>
                 <span className="hidden md:block">{row.useCase}</span>
               </div>
+            ))}
+          </div>
+        </section>
+
+        <section aria-labelledby="feature-images" className="mb-14">
+          <div className="mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div>
+              <div className="mb-3 inline-flex items-center gap-2 text-[#D1F843]">
+                <ImageIcon size={17} strokeWidth={2.4} />
+                <span className="kr-num text-[11px] uppercase tracking-widest">
+                  Visual Search
+                </span>
+              </div>
+              <h2 id="feature-images" className="kr-heading text-[24px] md:text-[30px]">
+                화면만 봐도 이해되는 QuestDP 기능
+              </h2>
+            </div>
+            <p className="kr-body max-w-[430px] text-[13.5px] leading-[1.75] text-cream/62">
+              Google AI 검색과 네이버 AI 브리핑이 기능을 더 잘 이해할 수 있도록 주요 탭을
+              이미지, 대체 텍스트, 캡션으로 함께 설명합니다.
+            </p>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            {FEATURE_IMAGES.map((image, index) => (
+              <figure key={image.src} className={index === 0 ? 'md:col-span-2' : undefined}>
+                <div className="overflow-hidden rounded-[18px] border border-cream/10 bg-white/[0.035]">
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    width={image.width}
+                    height={image.height}
+                    loading={index === 0 ? 'eager' : 'lazy'}
+                    decoding="async"
+                    className="block h-auto w-full"
+                  />
+                </div>
+                <figcaption className="kr-body mt-3 text-[13px] leading-[1.65] text-cream/68">
+                  <strong className="kr-heading mr-2 text-cream">{image.title}</strong>
+                  {image.caption}
+                </figcaption>
+              </figure>
             ))}
           </div>
         </section>

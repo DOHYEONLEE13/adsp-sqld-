@@ -101,6 +101,22 @@ function injectStaticJsonLd(html, route) {
       headline: route.h1,
       description: route.description,
       url: route.canonical,
+      image: route.images?.length
+        ? [route.image || DEFAULT_IMAGE, ...route.images.map((image) => image.url)]
+        : route.image || DEFAULT_IMAGE,
+      primaryImageOfPage: {
+        '@type': 'ImageObject',
+        url: route.image || DEFAULT_IMAGE,
+        contentUrl: route.image || DEFAULT_IMAGE,
+      },
+      associatedMedia: route.images?.map((image) => ({
+        '@type': 'ImageObject',
+        url: image.url,
+        contentUrl: image.url,
+        name: image.title,
+        caption: image.caption,
+        inLanguage: 'ko-KR',
+      })),
       inLanguage: 'ko-KR',
       isPartOf: { '@type': 'WebSite', name: 'QuestDP', url: 'https://quest-dp.com' },
       publisher: { '@type': 'Organization', name: 'QuestDP' },
@@ -122,6 +138,10 @@ function injectSnapshotStyle(html) {
       .seo-snapshot__eyebrow{margin:0 0 10px;color:#6fff00;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
       .seo-snapshot h1{margin:0 0 14px;font-size:clamp(28px,5vw,48px);line-height:1.18}
       .seo-snapshot p{margin:0 0 18px;color:rgba(239,244,255,.82);font-size:16px;line-height:1.75}
+      .seo-snapshot__images{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:22px}
+      .seo-snapshot__images figure{margin:0}
+      .seo-snapshot__images img{display:block;width:100%;height:auto;border-radius:16px;border:1px solid rgba(239,244,255,.14);background:rgba(255,255,255,.04)}
+      .seo-snapshot__images figcaption{margin-top:8px;color:rgba(239,244,255,.72);font-size:13px;line-height:1.55}
       .seo-snapshot__links{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
       .seo-snapshot__links a{color:#010828;background:#7dd850;text-decoration:none;border-radius:999px;padding:10px 14px;font-size:13px;font-weight:800}
     </style>`;
@@ -147,11 +167,19 @@ function renderSnapshot(route) {
         `<a href="${escapeHtml(encodeURI(link.href))}">${escapeHtml(link.label)}</a>`,
     )
     .join('\n          ');
+  const images = (route.images || [])
+    .slice(0, 6)
+    .map(
+      (image) =>
+        `<figure><img src="${escapeHtml(image.url)}" alt="${escapeHtml(image.caption)}" loading="lazy" /><figcaption>${escapeHtml(image.title)} — ${escapeHtml(image.caption)}</figcaption></figure>`,
+    )
+    .join('\n          ');
   return `      <main class="seo-snapshot" data-seo-snapshot="true">
         <article class="seo-snapshot__card">
           ${route.eyebrow ? `<p class="seo-snapshot__eyebrow">${escapeHtml(route.eyebrow)}</p>` : ''}
           <h1>${escapeHtml(route.h1)}</h1>
           <p>${escapeHtml(route.summary || route.description)}</p>
+          ${images ? `<div class="seo-snapshot__images">\n          ${images}\n          </div>` : ''}
           ${links ? `<nav class="seo-snapshot__links" aria-label="관련 페이지">\n          ${links}\n          </nav>` : ''}
         </article>
       </main>`;

@@ -1,4 +1,4 @@
-import { BRAND, COMPANY } from '@/data/site';
+import { BRAND, COMPANY, CONTENT_PROTECTION_NOTICE } from '@/data/site';
 import { handleNavClick } from '@/lib/navigate';
 
 export default function Footer() {
@@ -88,11 +88,16 @@ export default function Footer() {
         </div>
 
         {/* 하단 — 저작권 */}
-        <div className="flex flex-col sm:flex-row sm:justify-between gap-3 text-[11px] uppercase tracking-widest text-cream/45">
-          <p>
-            © {year} {BRAND.nameKr}. ALL RIGHTS RESERVED.
+        <div className="flex flex-col gap-3 text-[11px] uppercase tracking-widest text-cream/45">
+          <p className="kr-body normal-case tracking-normal leading-[1.7] text-cream/45 max-w-3xl">
+            {CONTENT_PROTECTION_NOTICE}
           </p>
-          <p>최종 개정 · {COMPANY.policyUpdatedAt}</p>
+          <div className="flex flex-col sm:flex-row sm:justify-between gap-3">
+            <p>
+              © {year} {BRAND.nameKr}. ALL RIGHTS RESERVED.
+            </p>
+            <p>최종 개정 · {COMPANY.policyUpdatedAt}</p>
+          </div>
         </div>
       </div>
     </footer>

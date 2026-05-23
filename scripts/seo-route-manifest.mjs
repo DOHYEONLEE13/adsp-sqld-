@@ -283,10 +283,12 @@ const CORE_ROUTES = [
     changefreq: 'yearly',
     priority: '0.3',
     title: '이용약관 — QuestDP',
-    description: 'QuestDP 서비스 이용 조건과 회원의 권리·의무를 안내합니다.',
+    description:
+      'QuestDP 서비스 이용 조건, 회원의 권리·의무, 개념 설명·문제·해설 콘텐츠 보호 기준을 안내합니다.',
     h1: '이용약관',
     eyebrow: 'Legal',
-    summary: 'QuestDP 서비스 이용에 필요한 기본 약관과 책임 범위를 안내합니다.',
+    summary:
+      'QuestDP 서비스 이용에 필요한 기본 약관과 책임 범위, 개념 설명·문제·해설의 무단 복제·배포 금지 기준을 안내합니다.',
     links: [{ href: '/privacy', label: '개인정보처리방침' }],
   },
   {

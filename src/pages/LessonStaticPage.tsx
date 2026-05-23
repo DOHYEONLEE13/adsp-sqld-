@@ -27,6 +27,7 @@ import {
   getChapterTitle,
 } from '@/lib/lesson-lookup';
 import type { LessonBlock } from '@/data/lessons';
+import { CONTENT_PROTECTION_NOTICE } from '@/data/site';
 import { handleNavClick } from '@/lib/navigate';
 
 interface Props {
@@ -225,6 +226,9 @@ export default function LessonStaticPage({ stepId }: Props) {
 
         {/* Footer mini-CTA */}
         <div className="mt-12 pt-6 border-t border-cream/10 text-center">
+          <p className="kr-body text-[11.5px] leading-[1.65] text-cream/40 max-w-2xl mx-auto mb-4">
+            {CONTENT_PROTECTION_NOTICE}
+          </p>
           <p className="kr-body text-[12px] text-cream/50 mb-3">
             총 225 step · 631 문항 · 토리·셀리와 함께 RPG 처럼 학습
           </p>

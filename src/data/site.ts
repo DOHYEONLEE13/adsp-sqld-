@@ -94,5 +94,8 @@ export const COMPANY = {
   openedAt: '2026-04-28',
   hostingProvider: 'Cloudflare Pages',
   /** 약관·정책의 마지막 개정일. 변경 시 같이 갱신. */
-  policyUpdatedAt: '2026-04-29',
+  policyUpdatedAt: '2026-05-24',
 } as const;
+
+export const CONTENT_PROTECTION_NOTICE =
+  'QuestDP의 개념 설명·문제·해설은 자체 제작 학습 콘텐츠입니다. 무단 복제·배포·재판매·상업적 이용이 확인되면 서비스 이용 제한 및 관련 법령에 따른 법적 조치를 진행할 수 있습니다.';

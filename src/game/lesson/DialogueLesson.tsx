@@ -715,7 +715,7 @@ export default function DialogueLesson({
             <Ques
               pose={questPose}
               character={characterForSubject(subject)}
-              size={isMobile ? 140 : 180}
+              size={isMobile ? 152 : 196}
               priority
             />
           </div>

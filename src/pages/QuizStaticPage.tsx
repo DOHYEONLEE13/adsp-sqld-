@@ -32,6 +32,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { findQuestionById } from '@/lib/question-lookup';
+import { CONTENT_PROTECTION_NOTICE } from '@/data/site';
 import { explanationToText } from '@/types/question';
 import type { MultipleChoiceQuestion } from '@/types/question';
 import { handleNavClick } from '@/lib/navigate';
@@ -316,6 +317,9 @@ export default function QuizStaticPage({ questionId }: Props) {
 
         {/* Footer mini-CTA */}
         <div className="mt-12 pt-6 border-t border-cream/10 text-center">
+          <p className="kr-body text-[11.5px] leading-[1.65] text-cream/40 max-w-2xl mx-auto mb-4">
+            {CONTENT_PROTECTION_NOTICE}
+          </p>
           <p className="kr-body text-[12px] text-cream/50 mb-3">
             225 step + 631 문항 — 토리·셀리와 함께 RPG 처럼 학습
           </p>

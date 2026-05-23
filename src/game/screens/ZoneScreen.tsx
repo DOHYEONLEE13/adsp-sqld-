@@ -822,7 +822,7 @@ function StepNode({
           {title}
         </h4>
         <div
-          className="mt-1 flex items-center gap-2 kr-body text-[10.5px]"
+          className="mt-1 flex flex-wrap items-center gap-2 kr-body text-[10.5px]"
           style={{
             color: 'rgba(239,244,255,0.7)',
             // 메타 라벨도 동일 — 작은 글자라 더 필요.

@@ -749,13 +749,30 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
               screen.passNumber ?? 1,
             )
           }
-          onBack={() =>
+          onBack={(currentStepIdx) => {
+            const stepIdx =
+              typeof currentStepIdx === 'number'
+                ? currentStepIdx
+                : screen.stepIdx ?? 0;
+            const targetStep = _lesson?.steps[stepIdx];
+            if (targetStep) {
+              saveLearningResume({
+                subject: screen.subject,
+                chapter: screen.chapter,
+                topic: screen.topic,
+                stepIdx,
+                stepId: targetStep.id,
+              });
+            }
             setScreen({
               kind: 'zone',
               subject: screen.subject,
               chapter: screen.chapter,
-            })
-          }
+              highlightTopic: screen.topic,
+              highlightStepIdx: stepIdx,
+              highlightReason: 'resume',
+            });
+          }}
         />
       );
     }

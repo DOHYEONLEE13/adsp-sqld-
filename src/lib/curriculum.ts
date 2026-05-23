@@ -3,11 +3,11 @@
  *
  * Tier 2 programmatic SEO 의 pillar 페이지 (`/curriculum/:subject`).
  * 한 과목의 전체 챕터 → 토픽 → lesson → step 트리를 구성해서, 모든
- * lesson 정적 페이지 (316개) 를 한 곳에서 들어갈 수 있는 hub 를 만든다.
+ * lesson 정적 페이지 (353개) 를 한 곳에서 들어갈 수 있는 hub 를 만든다.
  *
  * SEO 이점:
  *   - 고볼륨 키워드 진입 — "ADsP 출제범위", "SQLD 시험범위", "ADsP 커리큘럼"
- *   - lesson 페이지 316개로 향하는 internal link 그래프의 root
+ *   - lesson 페이지 353개로 향하는 internal link 그래프의 root
  *   - JSON-LD ItemList 로 구조화
  */
 

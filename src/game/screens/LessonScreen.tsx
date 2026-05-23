@@ -65,7 +65,7 @@ interface Props {
   /** 레슨 완료 후 "실전 세트" 로 넘어갈 때. */
   onFinishGoToPractice: () => void;
   /** 상단 "Zone 으로". */
-  onBack: () => void;
+  onBack: (stepIdx?: number) => void;
 }
 
 export default function LessonScreen({
@@ -190,7 +190,7 @@ export default function LessonScreen({
           </button>
           <button
             type="button"
-            onClick={onBack}
+            onClick={() => onBack(stepIdx)}
             className="block mt-3 mx-auto kr-heading text-[11px] text-cream/60 hover:text-neon"
           >
             존으로 돌아가기
@@ -341,7 +341,7 @@ export default function LessonScreen({
   const goNextStep = () => {
     if (isSingleStep) {
       // single-step 모드 — 한 step 만 풀고 Zone 복귀.
-      onBack();
+      onBack(stepIdx);
       return;
     }
     if (stepIdx < lesson.steps.length - 1) {
@@ -397,7 +397,7 @@ export default function LessonScreen({
           subject={subject}
           onClose={() => {
             setEnergyBlock(null);
-            onBack();
+            onBack(stepIdx);
           }}
           onUpgrade={() => {
             // 랜딩의 #pricing 섹션으로 이동 → SPA 가 hashchange 로 landing 전환
@@ -427,7 +427,7 @@ export default function LessonScreen({
           }}
           onClose={() => {
             setShowCelebration(false);
-            onBack();
+            onBack(stepIdx);
           }}
         />
       ) : null}
@@ -480,7 +480,7 @@ export default function LessonScreen({
           <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={onBack}
+              onClick={() => onBack(stepIdx)}
               className="game-back-button shrink-0 inline-flex items-center gap-1.5 kr-heading text-[10.5px] uppercase tracking-widest transition"
               aria-label="존으로 돌아가기"
             >

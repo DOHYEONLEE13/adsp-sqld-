@@ -5,7 +5,7 @@
  *
  * 목적:
  *   - 고볼륨 키워드 진입 ("ADsP 출제범위", "SQLD 시험범위", "ADsP 커리큘럼")
- *   - 316 lesson 페이지로 향하는 internal link 그래프의 root (pillar ↔ supporting)
+ *   - 353 lesson 페이지로 향하는 internal link 그래프의 root (pillar ↔ supporting)
  *   - 사용자가 한 화면에서 전체 커리큘럼을 훑고 원하는 토픽으로 점프
  *
  * SEO 요소:

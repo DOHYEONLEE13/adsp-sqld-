@@ -4,7 +4,7 @@
     "version": "0.2.0",
     "updatedAt": "2026-05-23",
     "source": "개념 학습용 자체 제작 문항 — PDF 요약 노트 + 기출 변형",
-    "notes": "SQLD 스텝 기반 레슨 예제. LessonStep.quizId 와 1:1 매칭. 65문항 (1-1: 25, 1-2: 8, 2-1: 12, 2-2: 12, 2-3: 8)."
+    "notes": "SQLD 스텝 기반 레슨 예제. LessonStep.quizId 와 1:1 매칭. 102문항 (1-1: 41, 1-2: 29, 2-1: 12, 2-2: 12, 2-3: 8)."
   },
   "questions": [
     {
@@ -592,57 +592,207 @@
       "chapterTitle": "데이터 모델링의 이해",
       "topic": "데이터 모델링의 이해",
       "type": "multiple_choice",
-      "difficulty": 2,
-      "question": "엔터티가 갖춰야 할 특성으로 옳지 않은 것은?",
+      "difficulty": 1,
+      "question": "엔터티(Entity)에 가장 가까운 설명은?",
       "choices": [
-        "업무에서 필요한 정보여야 한다",
-        "유일하게 식별되어야 한다",
-        "반드시 영속적으로 저장되어야 한다",
-        "2개 이상의 인스턴스를 가져야 한다"
+        "DB에서 관리하고 싶은 대상",
+        "SQL 실행 순서",
+        "화면 디자인 색상",
+        "서버 배포 방식"
       ],
-      "answerIndex": 2,
-      "explanation": "엔터티 5요건은 업무 필요·식별성·2개 이상 인스턴스·속성 보유·관계 필수. \"영속적 저장\"은 조건이 아닙니다 (임시 엔터티도 가능).",
+      "answerIndex": 0,
+      "explanation": "엔터티는 업무에서 관리해야 하는 대상입니다. DB에서는 보통 테이블 후보가 됩니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
-        "fixed": [],
-        "changed_fields": [
-          "status"
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
         ],
-        "reason": "markdown 검수 반영",
-        "audited_at": "2026-05-05",
-        "auditor": "md_to_json (claude-code)",
-        "source_md": "Q-SQLD-1-1-0004"
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-04"
       }
     },
     {
-      "id": "sqld-1-1-cp-05",
+      "id": "sqld-1-1-cp-04-requirements",
       "subject": "sqld",
       "chapter": 1,
       "chapterTitle": "데이터 모델링의 이해",
       "topic": "데이터 모델링의 이해",
       "type": "multiple_choice",
       "difficulty": 2,
-      "question": "엔터티의 발생 시점에 따른 분류가 아닌 것은?",
+      "question": "엔터티의 요건으로 옳지 않은 것은?",
       "choices": [
-        "기본 엔터티",
-        "중심 엔터티",
-        "관계 엔터티",
-        "행위 엔터티"
+        "업무에서 필요해야 한다",
+        "유일하게 식별 가능해야 한다",
+        "반드시 영구 저장되어야 한다",
+        "다른 엔터티와 관계가 있을 수 있어야 한다"
       ],
       "answerIndex": 2,
-      "explanation": "발생 시점 분류는 기본·중심·행위 (3가지뿐). \"관계 엔터티\"는 분류명에 없습니다 (가짜 보기). 유무형 분류는 유형·개념·사건 (\"개사유\").",
+      "explanation": "엔터티는 영속 저장이 필수 요건은 아닙니다. 임시로 관리하는 대상도 엔터티가 될 수 있습니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
-        "fixed": [],
-        "changed_fields": [
-          "status"
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
         ],
-        "reason": "markdown 검수 반영",
-        "audited_at": "2026-05-05",
-        "auditor": "md_to_json (claude-code)",
-        "source_md": "Q-SQLD-1-1-0005"
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-04-REQUIREMENTS"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-04-naming",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "엔터티 이름 짓기 규칙으로 가장 적절한 것은?",
+      "choices": [
+        "약어를 많이 사용한다",
+        "현업에서 쓰는 단수 명사를 사용한다",
+        "같은 이름을 여러 곳에서 반복한다",
+        "의미가 모호해도 짧으면 좋다"
+      ],
+      "answerIndex": 1,
+      "explanation": "엔터티 이름은 현업 용어를 쓰고, 약어를 지양하며, 단수 명사로 명확하게 짓는 것이 좋습니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-04-NAMING"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-05-kind",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "“수강신청”처럼 특정 시점에 발생한 일을 나타내는 엔터티 분류는?",
+      "choices": [
+        "유형 엔터티",
+        "개념 엔터티",
+        "사건 엔터티",
+        "기본 엔터티"
+      ],
+      "answerIndex": 2,
+      "explanation": "수강신청, 주문, 결제처럼 특정 시점에 발생한 일은 사건 엔터티로 볼 수 있습니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-05-KIND"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-05-time",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "발생 시점에 따른 엔터티 분류에 해당하는 것은?",
+      "choices": [
+        "기본 엔터티",
+        "개념 엔터티",
+        "유형 엔터티",
+        "복합 엔터티"
+      ],
+      "answerIndex": 0,
+      "explanation": "발생 시점 분류는 기본·중심·행위 엔터티입니다. 유형·개념·사건은 유무형 분류입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-05-TIME"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-05-check",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "다음 중 서로 다른 분류 기준이 섞인 보기는?",
+      "choices": [
+        "유형·개념·사건",
+        "기본·중심·행위",
+        "학생·과목·수강신청",
+        "기본·중심·관계"
+      ],
+      "answerIndex": 3,
+      "explanation": "기본·중심·행위가 발생 시점 분류입니다. 관계 엔터티는 이 분류명이 아닙니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-05-CHECK"
       }
     },
     {
@@ -652,27 +802,137 @@
       "chapterTitle": "데이터 모델링의 이해",
       "topic": "데이터 모델링의 이해",
       "type": "multiple_choice",
-      "difficulty": 2,
-      "question": "다른 속성으로부터 계산이나 변형으로 생성되는 속성은?",
+      "difficulty": 1,
+      "question": "속성(Attribute)에 가장 가까운 설명은?",
       "choices": [
-        "기본 속성",
-        "설계 속성",
-        "일반 속성",
-        "파생 속성"
+        "엔터티의 세부 정보",
+        "테이블 간 연결선",
+        "데이터베이스 서버 이름",
+        "SQL 명령어 묶음"
       ],
-      "answerIndex": 3,
-      "explanation": "기본=업무에 원래 존재, 설계=설계 시 새로 정의, 파생=계산·변형으로 생성. 합계, 평균, 나이(생년월일에서 계산) 등이 파생 속성.",
+      "answerIndex": 0,
+      "explanation": "속성은 엔터티를 설명하는 세부 정보입니다. 테이블에서는 보통 컬럼이 됩니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
-        "fixed": [],
-        "changed_fields": [
-          "status"
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
         ],
-        "reason": "markdown 검수 반영",
-        "audited_at": "2026-05-05",
-        "auditor": "md_to_json (claude-code)",
-        "source_md": "Q-SQLD-1-1-0006"
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-06"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-06-origin",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "다른 속성에서 계산해 만든 “총점”은 어떤 속성인가?",
+      "choices": [
+        "기본 속성",
+        "설계 속성",
+        "파생 속성",
+        "외래 속성"
+      ],
+      "answerIndex": 2,
+      "explanation": "파생 속성은 다른 속성에서 계산하거나 가공해서 만든 속성입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-06-ORIGIN"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-06-shape",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "한 학생이 여러 개의 이메일을 가질 수 있다면 이메일은 어떤 분류에 가까운가?",
+      "choices": [
+        "단일 속성",
+        "복합 속성",
+        "다중값 속성",
+        "주식별자"
+      ],
+      "answerIndex": 2,
+      "explanation": "한 인스턴스가 여러 값을 가질 수 있으면 다중값 속성입니다. 보통 별도 테이블로 분리합니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-06-SHAPE"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-06-role",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "다른 테이블의 기본키를 참조하는 속성은?",
+      "choices": [
+        "PK 속성",
+        "FK 속성",
+        "파생 속성",
+        "복합 속성"
+      ],
+      "answerIndex": 1,
+      "explanation": "FK 속성은 다른 엔터티의 식별자를 참조하는 속성입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-06-ROLE"
       }
     },
     {
@@ -682,27 +942,137 @@
       "chapterTitle": "데이터 모델링의 이해",
       "topic": "데이터 모델링의 이해",
       "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "관계(Relationship)에 가장 가까운 설명은?",
+      "choices": [
+        "엔터티 사이의 업무적 연결",
+        "속성의 값 범위",
+        "테이블의 저장 위치",
+        "화면의 색상 규칙"
+      ],
+      "answerIndex": 0,
+      "explanation": "관계는 엔터티들이 업무적으로 어떻게 연결되는지 표현합니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-07"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-07-elements",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
       "difficulty": 2,
-      "question": "관계의 구성요소(\"관차선\")가 아닌 것은?",
+      "question": "관계의 3요소 “관차선”에 포함되지 않는 것은?",
       "choices": [
         "관계명",
         "차수",
         "선택사양",
-        "연결성"
+        "파생속성"
       ],
       "answerIndex": 3,
-      "explanation": "관계 구성은 관계명(Membership) · 차수(Cardinality) · 선택사양(Optionality) — \"관차선\". \"연결성\"은 별개 보기.",
+      "explanation": "관차선은 관계명, 차수, 선택사양입니다. 파생속성은 속성 분류와 관련된 용어입니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
-        "fixed": [],
-        "changed_fields": [
-          "status"
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
         ],
-        "reason": "markdown 검수 반영",
-        "audited_at": "2026-05-05",
-        "auditor": "md_to_json (claude-code)",
-        "source_md": "Q-SQLD-1-1-0007"
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-07-ELEMENTS"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-07-cardinality",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "부서 하나에 여러 사원이 소속될 때 가장 자연스러운 차수는?",
+      "choices": [
+        "1:1",
+        "1:M",
+        "M:N",
+        "0:0"
+      ],
+      "answerIndex": 1,
+      "explanation": "부서 하나가 여러 사원과 연결되므로 1:M 관계입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-07-CARDINALITY"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-07-bridge",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "학생과 과목의 M:N 관계를 관계형 DB로 풀 때 중간에 두기 좋은 엔터티는?",
+      "choices": [
+        "수강신청",
+        "학과명",
+        "학생이름",
+        "과목설명"
+      ],
+      "answerIndex": 0,
+      "explanation": "M:N 관계는 수강신청 같은 교차 엔터티를 넣어 두 개의 1:M 관계로 풀 수 있습니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-07-BRIDGE"
       }
     },
     {
@@ -712,27 +1082,102 @@
       "chapterTitle": "데이터 모델링의 이해",
       "topic": "데이터 모델링의 이해",
       "type": "multiple_choice",
-      "difficulty": 3,
-      "question": "주식별자에 관한 설명 중 옳지 않은 것은?",
+      "difficulty": 1,
+      "question": "식별자의 역할로 가장 적절한 것은?",
       "choices": [
-        "각 인스턴스를 유일하게 식별할 수 있어야 한다",
-        "주식별자 값은 NULL이어도 된다",
-        "값이 자주 변하지 않아야 한다",
-        "유일성을 만족하는 선에서 최소한의 속성으로 구성한다"
+        "인스턴스를 구분한다",
+        "SQL 문장을 정렬한다",
+        "화면 색상을 지정한다",
+        "서버 비용을 계산한다"
       ],
-      "answerIndex": 1,
-      "explanation": "주식별자 4요건 — 유일성·최소성·불변성·존재성(NOT NULL). NULL 절대 허용 X. 의미성도 요건이 아닙니다.",
+      "answerIndex": 0,
+      "explanation": "식별자는 엔터티 안의 각 인스턴스를 구분하는 값입니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
-        "fixed": [],
-        "changed_fields": [
-          "status"
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
         ],
-        "reason": "markdown 검수 반영",
-        "audited_at": "2026-05-05",
-        "auditor": "md_to_json (claude-code)",
-        "source_md": "Q-SQLD-1-1-0008"
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-08"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-08-types",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "식별자 분류 기준으로 옳지 않은 것은?",
+      "choices": [
+        "주식별자/보조식별자",
+        "내부식별자/외부식별자",
+        "단일식별자/복합식별자",
+        "삽입식별자/삭제식별자"
+      ],
+      "answerIndex": 3,
+      "explanation": "식별자 분류에는 주/보조, 내부/외부, 단일/복합, 본질/인조 등이 있습니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-08-TYPES"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-08-main",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "주식별자 4요건 “유최불존”에 해당하지 않는 것은?",
+      "choices": [
+        "유일성",
+        "최소성",
+        "불변성",
+        "의미성"
+      ],
+      "answerIndex": 3,
+      "explanation": "주식별자 4요건은 유일성·최소성·불변성·존재성입니다. 의미성은 요건이 아닙니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-08-MAIN"
       }
     },
     {
@@ -742,27 +1187,102 @@
       "chapterTitle": "데이터 모델링의 이해",
       "topic": "데이터 모델링의 이해",
       "type": "multiple_choice",
-      "difficulty": 3,
-      "question": "식별자 관계와 비식별자 관계에 관한 설명으로 옳지 않은 것은?",
+      "difficulty": 2,
+      "question": "식별자 관계의 핵심 특징은?",
       "choices": [
-        "식별자 관계는 부모로부터 받은 식별자를 자식의 주식별자로 사용한다",
-        "비식별자 관계는 부모로부터 받은 속성을 자식의 일반 속성으로 사용한다",
-        "IE 표기법에서 식별자 관계는 실선, 비식별자 관계는 점선으로 표시한다",
-        "식별자 관계인 부모-자식 관계는 항상 1:1 관계가 된다"
+        "부모 식별자가 자식 PK에 포함된다",
+        "부모 식별자가 화면 색상에 쓰인다",
+        "자식이 부모를 전혀 참조하지 않는다",
+        "항상 M:N으로만 표현된다"
       ],
-      "answerIndex": 3,
-      "explanation": "식별자 관계는 1:1 또는 1:M 모두 가능. 부모 PK 만으로 자식 PK 구성 시 1:1, 다른 속성과 합쳐 PK 구성 시 1:M.",
+      "answerIndex": 0,
+      "explanation": "식별자 관계는 부모의 식별자가 자식의 주식별자 일부가 되는 관계입니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
-        "fixed": [],
-        "changed_fields": [
-          "status"
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
         ],
-        "reason": "markdown 검수 반영",
-        "audited_at": "2026-05-05",
-        "auditor": "md_to_json (claude-code)",
-        "source_md": "Q-SQLD-1-1-0009"
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-09"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-09-nonident",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "비식별자 관계에 가장 가까운 설명은?",
+      "choices": [
+        "부모 식별자가 자식의 일반 속성/FK로만 존재한다",
+        "부모 식별자가 자식 PK에 반드시 포함된다",
+        "자식 테이블이 존재할 수 없다",
+        "무조건 1:1 관계다"
+      ],
+      "answerIndex": 0,
+      "explanation": "비식별자 관계에서는 부모 식별자가 자식의 PK가 아니라 일반 속성 또는 FK로 존재합니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-09-NONIDENT"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-09-compare",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "식별자 관계와 비식별자 관계를 가르는 가장 중요한 기준은?",
+      "choices": [
+        "부모 식별자가 자식 PK에 포함되는지",
+        "테이블 이름이 한글인지",
+        "속성이 3개 이상인지",
+        "데이터가 영구 저장되는지"
+      ],
+      "answerIndex": 0,
+      "explanation": "부모 식별자가 자식 PK에 포함되면 식별자 관계, 포함되지 않으면 비식별자 관계로 봅니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-09-COMPARE"
       }
     },
     {
@@ -772,27 +1292,102 @@
       "chapterTitle": "데이터 모델링의 이해",
       "topic": "데이터 모델링의 이해",
       "type": "multiple_choice",
-      "difficulty": 3,
-      "question": "다음 중 키와 무결성의 짝으로 옳지 않은 것은?",
+      "difficulty": 2,
+      "question": "후보키 중 대표로 선택되어 테이블의 행을 구분하는 키는?",
       "choices": [
-        "기본키 (PK) — 개체 무결성",
-        "외래키 (FK) — 참조 무결성",
-        "CHECK 제약 — 도메인 무결성",
-        "외래키 (FK) — 내부식별자"
+        "기본키",
+        "외래키",
+        "슈퍼키",
+        "대체키"
       ],
-      "answerIndex": 3,
-      "explanation": "외래키는 다른 테이블의 PK 를 참조하므로 외부식별자입니다. 내부식별자는 엔터티 내부에서 스스로 생성되는 식별자.",
+      "answerIndex": 0,
+      "explanation": "기본키는 후보키 중 대표로 선택한 키입니다. 테이블의 각 행을 구분하는 중심 키입니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
-        "fixed": [],
-        "changed_fields": [
-          "status"
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
         ],
-        "reason": "markdown 검수 반영",
-        "audited_at": "2026-05-05",
-        "auditor": "md_to_json (claude-code)",
-        "source_md": "Q-SQLD-1-1-0010"
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-10"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-10-integrity",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "외래키가 실제 존재하는 부모 값을 참조해야 한다는 규칙은?",
+      "choices": [
+        "개체 무결성",
+        "참조 무결성",
+        "도메인 무결성",
+        "정렬 무결성"
+      ],
+      "answerIndex": 1,
+      "explanation": "참조 무결성은 FK가 존재하지 않는 부모를 가리키지 않도록 보장하는 규칙입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-10-INTEGRITY"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-10-pk-unique",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "PK와 UNIQUE의 차이로 가장 적절한 것은?",
+      "choices": [
+        "PK는 대표 식별자이고 NULL을 허용하지 않는다",
+        "UNIQUE는 항상 테이블당 하나만 가능하다",
+        "PK는 중복을 허용한다",
+        "UNIQUE는 외래키만 만들 수 있다"
+      ],
+      "answerIndex": 0,
+      "explanation": "PK는 테이블 대표 식별자이며 NULL을 허용하지 않습니다. UNIQUE는 중복 방지 제약입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-10-PK-UNIQUE"
       }
     },
     {
@@ -802,8 +1397,8 @@
       "chapterTitle": "데이터 모델링의 이해",
       "topic": "데이터 모델과 성능",
       "type": "multiple_choice",
-      "difficulty": 2,
-      "question": "다음 중 이상 현상(Anomaly)이 아닌 것은?",
+      "difficulty": 1,
+      "question": "이상 현상(Anomaly) 3종에 해당하지 않는 것은?",
       "choices": [
         "삽입 이상",
         "삭제 이상",
@@ -811,18 +1406,128 @@
         "조회 이상"
       ],
       "answerIndex": 3,
-      "explanation": "이상 현상 3종은 삽입·삭제·갱신 이상 (\"삽삭갱\"). 조회는 부작용이 없습니다.",
+      "explanation": "이상 현상은 삽입·삭제·갱신 이상입니다. 조회 이상은 표준 분류가 아닙니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
-        "fixed": [],
-        "changed_fields": [
-          "status"
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
         ],
-        "reason": "markdown 검수 반영",
-        "audited_at": "2026-05-05",
-        "auditor": "md_to_json (claude-code)",
-        "source_md": "Q-SQLD-1-2-0001"
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-01"
+      }
+    },
+    {
+      "id": "sqld-1-2-cp-01-insert",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "신설 학과만 등록하고 싶은데 학생 정보까지 필요하다면 어떤 이상인가?",
+      "choices": [
+        "삽입 이상",
+        "삭제 이상",
+        "갱신 이상",
+        "정렬 이상"
+      ],
+      "answerIndex": 0,
+      "explanation": "원하는 정보만 넣지 못하고 불필요한 정보가 필요하면 삽입 이상입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-01-INSERT"
+      }
+    },
+    {
+      "id": "sqld-1-2-cp-01-delete",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "마지막 학생을 삭제했더니 학과 정보까지 사라지는 문제는?",
+      "choices": [
+        "삽입 이상",
+        "삭제 이상",
+        "갱신 이상",
+        "도메인 이상"
+      ],
+      "answerIndex": 1,
+      "explanation": "삭제하면서 보존해야 할 정보까지 사라지면 삭제 이상입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-01-DELETE"
+      }
+    },
+    {
+      "id": "sqld-1-2-cp-01-update",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "같은 학과명이 여러 행에 있어 일부만 수정되어 모순이 생기는 문제는?",
+      "choices": [
+        "삽입 이상",
+        "삭제 이상",
+        "갱신 이상",
+        "참조 이상"
+      ],
+      "answerIndex": 2,
+      "explanation": "일부만 갱신되어 같은 정보가 서로 달라지면 갱신 이상입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-01-UPDATE"
       }
     },
     {
@@ -832,27 +1537,137 @@
       "chapterTitle": "데이터 모델링의 이해",
       "topic": "데이터 모델과 성능",
       "type": "multiple_choice",
-      "difficulty": 3,
-      "question": "함수적 종속에 대한 설명으로 옳지 않은 것은?",
+      "difficulty": 1,
+      "question": "A 값을 알면 B 값이 하나로 결정될 때 쓰는 표현은?",
       "choices": [
-        "A 속성에 의해 B가 유일하게 결정되면 A → B 라 한다",
-        "결정자는 A, 종속자는 B 이다",
-        "완전 함수적 종속은 종속자가 기본키의 일부에만 종속되는 경우다",
-        "부분 함수적 종속을 제거하면 제2정규형이 된다"
+        "A → B",
+        "A ⊕ B",
+        "A LIKE B",
+        "A ORDER B"
       ],
-      "answerIndex": 2,
-      "explanation": "완전 함수적 종속은 기본키 \"전체\"에 종속. 일부에만 종속되는 것은 부분 함수적 종속이며, 이를 제거하면 2NF.",
+      "answerIndex": 0,
+      "explanation": "A가 B를 결정하면 A → B로 표현합니다. 이때 A는 결정자, B는 종속자입니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
-        "fixed": [],
-        "changed_fields": [
-          "status"
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
         ],
-        "reason": "markdown 검수 반영",
-        "audited_at": "2026-05-05",
-        "auditor": "md_to_json (claude-code)",
-        "source_md": "Q-SQLD-1-2-0002"
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-02"
+      }
+    },
+    {
+      "id": "sqld-1-2-cp-02-full",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "복합키 전체가 있어야 성적이 결정되는 경우는?",
+      "choices": [
+        "완전 함수 종속",
+        "부분 함수 종속",
+        "이행 함수 종속",
+        "참조 종속"
+      ],
+      "answerIndex": 0,
+      "explanation": "기본키 전체에 종속되면 완전 함수 종속입니다. 복합키 일부만으로는 결정되지 않아야 합니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-02-FULL"
+      }
+    },
+    {
+      "id": "sqld-1-2-cp-02-partial",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "복합키 중 일부만으로 학생이름이 결정되는 경우는?",
+      "choices": [
+        "완전 함수 종속",
+        "부분 함수 종속",
+        "이행 함수 종속",
+        "도메인 종속"
+      ],
+      "answerIndex": 1,
+      "explanation": "복합키 일부에만 종속되면 부분 함수 종속입니다. 이를 제거하면 제2정규형으로 갑니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-02-PARTIAL"
+      }
+    },
+    {
+      "id": "sqld-1-2-cp-02-transitive",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "학번 → 학과코드 → 학과명처럼 간접으로 결정되는 관계는?",
+      "choices": [
+        "완전 함수 종속",
+        "부분 함수 종속",
+        "이행 함수 종속",
+        "외래 함수 종속"
+      ],
+      "answerIndex": 2,
+      "explanation": "한 번 건너서 결정되는 구조는 이행 함수 종속입니다. 학번 → 학과코드 → 학과명이 대표 예입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-02-TRANSITIVE"
       }
     },
     {
@@ -862,27 +1677,172 @@
       "chapterTitle": "데이터 모델링의 이해",
       "topic": "데이터 모델과 성능",
       "type": "multiple_choice",
-      "difficulty": 3,
-      "question": "\"기본키 전체에 대해 완전 함수적 종속을 만족\"하는 정규형은?",
+      "difficulty": 1,
+      "question": "정규형 순서로 옳은 것은?",
       "choices": [
-        "제1정규형",
-        "제2정규형",
-        "제3정규형",
-        "BCNF"
+        "1NF → 2NF → 3NF → BCNF",
+        "BCNF → 3NF → 2NF → 1NF",
+        "2NF → 1NF → BCNF → 3NF",
+        "1NF → BCNF → 2NF → 3NF"
       ],
-      "answerIndex": 1,
-      "explanation": "1NF=원자값, 2NF=부분 함수 종속 제거(완전 함수 종속), 3NF=이행 함수 종속 제거, BCNF=결정자=후보키 (\"도부이결\").",
+      "answerIndex": 0,
+      "explanation": "정규형은 1NF, 2NF, 3NF, BCNF 순서로 조건이 강해집니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
-        "fixed": [],
-        "changed_fields": [
-          "status"
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
         ],
-        "reason": "markdown 검수 반영",
-        "audited_at": "2026-05-05",
-        "auditor": "md_to_json (claude-code)",
-        "source_md": "Q-SQLD-1-2-0003"
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-03"
+      }
+    },
+    {
+      "id": "sqld-1-2-cp-03-1nf",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "1NF가 요구하는 핵심 조건은?",
+      "choices": [
+        "속성 값의 원자성",
+        "부분 종속 제거",
+        "이행 종속 제거",
+        "모든 결정자가 후보키"
+      ],
+      "answerIndex": 0,
+      "explanation": "1NF는 한 칸에 하나의 값, 즉 원자값을 요구합니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-03-1NF"
+      }
+    },
+    {
+      "id": "sqld-1-2-cp-03-2nf",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "2NF에서 제거해야 하는 것은?",
+      "choices": [
+        "부분 함수 종속",
+        "이행 함수 종속",
+        "모든 후보키",
+        "참조 무결성"
+      ],
+      "answerIndex": 0,
+      "explanation": "2NF는 부분 함수 종속을 제거한 상태입니다. 복합키 일부에만 매달린 속성을 분리합니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-03-2NF"
+      }
+    },
+    {
+      "id": "sqld-1-2-cp-03-3nf",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "3NF에서 제거해야 하는 것은?",
+      "choices": [
+        "부분 함수 종속",
+        "이행 함수 종속",
+        "모든 기본키",
+        "정렬 기준"
+      ],
+      "answerIndex": 1,
+      "explanation": "3NF는 이행 함수 종속을 제거한 상태입니다. 기본키가 아닌 속성끼리의 간접 종속을 줄입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-03-3NF"
+      }
+    },
+    {
+      "id": "sqld-1-2-cp-03-bcnf",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "BCNF의 핵심 조건은?",
+      "choices": [
+        "모든 결정자가 후보키다",
+        "모든 속성이 NULL이다",
+        "모든 테이블을 하나로 합친다",
+        "모든 FK를 삭제한다"
+      ],
+      "answerIndex": 0,
+      "explanation": "BCNF는 모든 결정자가 후보키인 더 강한 정규형입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-03-BCNF"
       }
     },
     {
@@ -892,27 +1852,102 @@
       "chapterTitle": "데이터 모델링의 이해",
       "topic": "데이터 모델과 성능",
       "type": "multiple_choice",
-      "difficulty": 2,
-      "question": "반정규화(Denormalization)를 고려하기 가장 적절한 상황은?",
+      "difficulty": 1,
+      "question": "반정규화를 고려하기 가장 적절한 상황은?",
       "choices": [
-        "INSERT/UPDATE 성능 향상이 필요할 때",
-        "조회 시 대량의 JOIN 으로 응답이 느릴 때",
-        "저장 공간을 최소화해야 할 때",
-        "데이터 일관성이 최우선 요구사항일 때"
+        "조회 시 반복 JOIN으로 응답이 느릴 때",
+        "중복을 무조건 0으로 만들어야 할 때",
+        "PK를 삭제해야 할 때",
+        "데이터를 절대 조회하지 않을 때"
       ],
-      "answerIndex": 1,
-      "explanation": "반정규화는 조회 성능 향상이 목적입니다. 컬럼 중복·테이블 통합·파생 컬럼·요약 테이블 등으로 JOIN 횟수를 줄입니다. 갱신 부담↑·일관성 리스크↑.",
+      "answerIndex": 0,
+      "explanation": "반정규화는 주로 조회 성능 개선을 위해 고려합니다. 반복 JOIN이나 집계가 병목일 때 검토합니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
-        "fixed": [],
-        "changed_fields": [
-          "status"
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
         ],
-        "reason": "markdown 검수 반영",
-        "audited_at": "2026-05-05",
-        "auditor": "md_to_json (claude-code)",
-        "source_md": "Q-SQLD-1-2-0004"
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-04"
+      }
+    },
+    {
+      "id": "sqld-1-2-cp-04-methods",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "반정규화 방법에 해당하는 것은?",
+      "choices": [
+        "요약 테이블 생성",
+        "모든 컬럼 삭제",
+        "PK 중복 허용",
+        "WHERE 절 금지"
+      ],
+      "answerIndex": 0,
+      "explanation": "요약 테이블, 컬럼 중복, 파생 컬럼, 테이블 통합 등이 반정규화 방법입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-04-METHODS"
+      }
+    },
+    {
+      "id": "sqld-1-2-cp-04-tradeoff",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "반정규화의 대가로 가장 적절한 것은?",
+      "choices": [
+        "갱신 부담과 일관성 리스크 증가",
+        "모든 JOIN 제거로 무조건 안전",
+        "저장 공간이 항상 감소",
+        "무결성 문제가 자동 해결"
+      ],
+      "answerIndex": 0,
+      "explanation": "중복을 허용하므로 갱신 부담과 일관성 리스크가 커질 수 있습니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-04-TRADEOFF"
       }
     },
     {
@@ -922,40 +1957,103 @@
       "chapterTitle": "데이터 모델링의 이해",
       "topic": "데이터 모델과 성능",
       "type": "multiple_choice",
-      "difficulty": 2,
-      "question": "계층형 데이터 모델에 대한 설명으로 옳은 것은?",
+      "difficulty": 1,
+      "question": "특수 관계의 예로 가장 적절한 것은?",
       "choices": [
-        "두 개의 다른 테이블을 1:M 으로 연결한 모델",
-        "같은 테이블을 자기 참조 — 셀프 조인·계층형 질의로 처리",
-        "관계형 DB 에서는 표현할 수 없는 모델",
-        "엔터티 간의 개체 무결성을 자동 보장한다"
+        "사원 테이블의 상사사번이 다시 사원 테이블을 참조한다",
+        "모든 테이블을 삭제한다",
+        "컬럼명을 영어로만 쓴다",
+        "NULL을 0으로 바꾼다"
       ],
-      "answerIndex": 1,
-      "explanation": "계층형 모델 (예: 사원-상사) 은 같은 테이블이 자기 자신을 참조하는 구조. 셀프 조인 또는 CONNECT BY 같은 계층형 질의로 다룹니다.",
+      "answerIndex": 0,
+      "explanation": "같은 엔터티를 다시 참조하는 구조는 계층형/순환 관계의 예입니다.",
       "source": "개념 예제",
-      "_audit": {
-        "fixed": [],
-        "changed_fields": [
-          "status"
-        ],
-        "reason": "markdown 검수 반영",
-        "audited_at": "2026-05-05",
-        "auditor": "md_to_json (claude-code)",
-        "source_md": "Q-SQLD-1-2-0005"
-      },
       "status": "self-reviewed",
-      "_audit_history": [
-        {
-          "fixed": [
-            "B2"
-          ],
-          "changed_fields": [
-            "choices"
-          ],
-          "reason": "정답 길이 압축 (50→30자) + 다른 보기 보강",
-          "audited_at": "2026-04-29"
-        }
-      ]
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-05"
+      }
+    },
+    {
+      "id": "sqld-1-2-cp-05-hierarchy",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "계층형 관계를 다루는 대표 방식으로 적절한 것은?",
+      "choices": [
+        "셀프 조인",
+        "테이블 삭제",
+        "PK 제거",
+        "무조건 반정규화"
+      ],
+      "answerIndex": 0,
+      "explanation": "사원-상사처럼 같은 테이블을 참조하는 구조는 셀프 조인 등으로 다룰 수 있습니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-05-HIERARCHY"
+      }
+    },
+    {
+      "id": "sqld-1-2-cp-05-exclusive",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "상호배타 관계에 가장 가까운 예시는?",
+      "choices": [
+        "결제는 카드 또는 계좌이체 중 하나만 선택된다",
+        "학생은 이름을 반드시 가진다",
+        "학번은 중복될 수 없다",
+        "점수는 평균을 낸다"
+      ],
+      "answerIndex": 0,
+      "explanation": "상호배타 관계는 여러 부모 후보 중 하나만 선택되는 구조입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-05-EXCLUSIVE"
+      }
     },
     {
       "id": "sqld-1-2-cp-06",
@@ -964,27 +2062,102 @@
       "chapterTitle": "데이터 모델링의 이해",
       "topic": "데이터 모델과 성능",
       "type": "multiple_choice",
-      "difficulty": 2,
-      "question": "트랜잭션이 동시에 실행될 때 다른 트랜잭션의 영향을 받지 않고 독립적으로 실행되어야 하는 ACID 특성은?",
+      "difficulty": 1,
+      "question": "트랜잭션에 가장 가까운 설명은?",
       "choices": [
-        "원자성(Atomicity)",
-        "일관성(Consistency)",
-        "고립성(Isolation)",
-        "지속성(Durability)"
+        "하나로 묶어 처리해야 하는 DB 작업 단위",
+        "화면의 카드 색상",
+        "컬럼 이름 규칙",
+        "검색엔진 설명문"
       ],
-      "answerIndex": 2,
-      "explanation": "고립성(Isolation) — 동시에 실행되는 트랜잭션이 서로 간섭하지 않음. 격리 수준(Read Uncommitted ~ Serializable) 으로 강도 조정.",
+      "answerIndex": 0,
+      "explanation": "트랜잭션은 여러 SQL을 하나의 논리 작업 단위로 묶는 개념입니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
-        "fixed": [],
-        "changed_fields": [
-          "status"
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
         ],
-        "reason": "markdown 검수 반영",
-        "audited_at": "2026-05-05",
-        "auditor": "md_to_json (claude-code)",
-        "source_md": "Q-SQLD-1-2-0006"
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-06"
+      }
+    },
+    {
+      "id": "sqld-1-2-cp-06-acid",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "ACID 중 “전부 성공 또는 전부 취소”를 뜻하는 것은?",
+      "choices": [
+        "원자성",
+        "일관성",
+        "고립성",
+        "지속성"
+      ],
+      "answerIndex": 0,
+      "explanation": "원자성은 트랜잭션이 전부 성공하거나 전부 취소되어야 한다는 성질입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-06-ACID"
+      }
+    },
+    {
+      "id": "sqld-1-2-cp-06-isolation",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "격리수준이 강해지는 순서로 옳은 것은?",
+      "choices": [
+        "Read Uncommitted → Read Committed → Repeatable Read → Serializable",
+        "Serializable → Repeatable Read → Read Committed → Read Uncommitted",
+        "Read Committed → Read Uncommitted → Serializable → Repeatable Read",
+        "Repeatable Read → Serializable → Read Uncommitted → Read Committed"
+      ],
+      "answerIndex": 0,
+      "explanation": "일반적으로 RU < RC < RR < Serializable 순서로 강해집니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-06-ISOLATION"
       }
     },
     {
@@ -994,27 +2167,137 @@
       "chapterTitle": "데이터 모델링의 이해",
       "topic": "데이터 모델과 성능",
       "type": "multiple_choice",
-      "difficulty": 3,
-      "question": "NULL 에 대한 설명으로 옳은 것은?",
+      "difficulty": 1,
+      "question": "NULL에 대한 설명으로 옳은 것은?",
       "choices": [
-        "NULL 은 0과 같은 의미다",
-        "집계함수 중 SUM/AVG 는 NULL 을 무시하지만 COUNT(*) 는 NULL 도 포함한다",
-        "NULL = NULL 은 TRUE 이다",
-        "Oracle 에서 ORDER BY ASC 시 NULL 은 가장 앞에 위치한다"
+        "0과 같은 값이다",
+        "값이 없거나 알 수 없다는 의미에 가깝다",
+        "항상 TRUE다",
+        "무조건 정렬에서 맨 앞이다"
       ],
       "answerIndex": 1,
-      "explanation": "COUNT(*) 는 모든 행 — NULL 포함. SUM/AVG/MIN/MAX/COUNT(컬럼) 은 NULL 무시. NULL = NULL 은 UNKNOWN. Oracle ASC 시 NULL 은 끝(NULLS LAST).",
+      "explanation": "NULL은 0이나 빈 문자열이 아니라 값이 없거나 알 수 없음을 나타냅니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
-        "fixed": [],
-        "changed_fields": [
-          "status"
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
         ],
-        "reason": "markdown 검수 반영",
-        "audited_at": "2026-05-05",
-        "auditor": "md_to_json (claude-code)",
-        "source_md": "Q-SQLD-1-2-0007"
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-07"
+      }
+    },
+    {
+      "id": "sqld-1-2-cp-07-compare",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "NULL 값을 찾을 때 올바른 조건은?",
+      "choices": [
+        "col = NULL",
+        "col <> NULL",
+        "col IS NULL",
+        "col LIKE NULL"
+      ],
+      "answerIndex": 2,
+      "explanation": "NULL 여부는 IS NULL 또는 IS NOT NULL로 확인해야 합니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-07-COMPARE"
+      }
+    },
+    {
+      "id": "sqld-1-2-cp-07-aggregate",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "COUNT(*)와 COUNT(컬럼)의 차이로 옳은 것은?",
+      "choices": [
+        "COUNT(*)는 NULL 행도 포함해 행 수를 센다",
+        "COUNT(컬럼)은 항상 COUNT(*)와 같다",
+        "COUNT(*)는 NULL이 있으면 실패한다",
+        "COUNT(컬럼)은 NULL만 센다"
+      ],
+      "answerIndex": 0,
+      "explanation": "COUNT(*)는 행 수를 세므로 NULL이 있어도 포함합니다. COUNT(컬럼)은 NULL을 제외합니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-07-AGGREGATE"
+      }
+    },
+    {
+      "id": "sqld-1-2-cp-07-sort",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "Oracle 기준 ORDER BY ASC에서 NULL의 기본 위치로 가장 가까운 것은?",
+      "choices": [
+        "맨 뒤",
+        "맨 앞",
+        "항상 중간",
+        "정렬 불가"
+      ],
+      "answerIndex": 0,
+      "explanation": "Oracle은 ASC 정렬에서 NULL을 큰 값처럼 다뤄 뒤쪽에 둡니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-07-SORT"
       }
     },
     {
@@ -1024,27 +2307,102 @@
       "chapterTitle": "데이터 모델링의 이해",
       "topic": "데이터 모델과 성능",
       "type": "multiple_choice",
-      "difficulty": 2,
-      "question": "인조식별자(Surrogate Key)의 특징으로 옳지 않은 것은?",
+      "difficulty": 1,
+      "question": "본질식별자에 가까운 예시는?",
       "choices": [
-        "비즈니스 의미와 무관하게 인위적으로 생성된 식별자다",
-        "유지보수가 용이하고 변경 리스크가 적다",
-        "주민번호나 사업자번호처럼 업무에 이미 존재하는 값을 활용한다",
-        "데이터 중복 가능성과 불필요한 인덱스 부담이 단점이다"
+        "학번",
+        "자동 증가 id",
+        "UUID",
+        "랜덤 시퀀스"
       ],
-      "answerIndex": 2,
-      "explanation": "인조식별자는 인위적 생성 (일련번호·UUID). 주민번호 등 업무에 이미 존재하는 값을 사용하는 것은 본질식별자입니다.",
+      "answerIndex": 0,
+      "explanation": "본질식별자는 업무에 원래 존재하는 식별자입니다. 학번은 본질식별자에 가깝습니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
-        "fixed": [],
-        "changed_fields": [
-          "status"
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
         ],
-        "reason": "markdown 검수 반영",
-        "audited_at": "2026-05-05",
-        "auditor": "md_to_json (claude-code)",
-        "source_md": "Q-SQLD-1-2-0008"
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-08"
+      }
+    },
+    {
+      "id": "sqld-1-2-cp-08-surrogate",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "인조식별자를 쓰는 이유로 적절한 것은?",
+      "choices": [
+        "업무 정책 변화와 개인정보 노출 리스크를 줄일 수 있다",
+        "항상 사람이 의미를 바로 알 수 있다",
+        "중복 검증이 절대 필요 없다",
+        "모든 FK가 자동 삭제된다"
+      ],
+      "answerIndex": 0,
+      "explanation": "인조식별자는 의미 없는 내부 ID라서 업무 값 변경과 개인정보 노출에 강합니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-08-SURROGATE"
+      }
+    },
+    {
+      "id": "sqld-1-2-cp-08-practice",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델과 성능",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "실무에서 가장 안정적인 식별자 설계에 가까운 것은?",
+      "choices": [
+        "인조 PK + 본질 값 UNIQUE",
+        "주민번호를 모든 테이블 PK로 직접 사용",
+        "PK 없이 이름만 사용",
+        "중복을 허용하고 나중에 수동 정리"
+      ],
+      "answerIndex": 0,
+      "explanation": "PK는 인조식별자로 안정적으로 두고, 업무상 중복되면 안 되는 값은 UNIQUE로 관리하는 방식이 흔합니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-23",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-2-CP-08-PRACTICE"
       }
     },
     {

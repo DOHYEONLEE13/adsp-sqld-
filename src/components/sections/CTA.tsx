@@ -164,7 +164,7 @@ function TrustCard() {
         ADSP · SQLD
       </div>
       <p className="kr-body text-[13px] leading-[1.55] mb-3 text-cream">
-        733문항 · 316 step 마이크로 러닝 · 실시간 친구 리더보드. 무료 회원도 모든
+        770문항 · 353 step 마이크로 러닝 · 실시간 친구 리더보드. 무료 회원도 모든
         콘텐츠를 볼 수 있어요.
       </p>
       <div className="flex flex-wrap gap-x-3 gap-y-2 kr-body text-[11px] text-cream/70">

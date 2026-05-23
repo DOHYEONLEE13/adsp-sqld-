@@ -62,7 +62,7 @@ interface Props {
    */
   passNumber?: number;
   onFinishGoToPractice: () => void;
-  onBack: () => void;
+  onBack: (stepIdx?: number) => void;
 }
 
 type Phase = 'narrate' | 'question' | 'feedback';
@@ -209,7 +209,7 @@ export default function DialogueLesson({
           <h2 className="kr-heading text-[18px] mb-2">레슨 준비 중</h2>
           <button
             type="button"
-            onClick={onBack}
+            onClick={() => onBack(stepIdx)}
             className="block mt-3 mx-auto kr-heading text-[11px] text-cream/60 hover:text-neon"
           >
             돌아가기
@@ -447,7 +447,7 @@ export default function DialogueLesson({
     } else {
       // 마지막 step — single-step 모드는 Zone 복귀, legacy 는 실전 세트.
       if (isSingleStep) {
-        onBack();
+        onBack(stepIdx);
       } else {
         onFinishGoToPractice();
       }
@@ -455,7 +455,7 @@ export default function DialogueLesson({
   };
 
   const handleBackToZone = () => {
-    onBack();
+    onBack(stepIdx);
   };
 
   // === 렌더 ===
@@ -503,7 +503,7 @@ export default function DialogueLesson({
           stepProgress={innerProgress}
           questionId={step.quizId}
           accent={visual.color}
-          onExit={onBack}
+          onExit={() => onBack(stepIdx)}
         />
         <div className="flex-1 flex flex-col items-center justify-center px-5 md:px-8 py-10 max-w-[640px] mx-auto w-full">
           <div className="mb-5">
@@ -608,7 +608,7 @@ export default function DialogueLesson({
           subject={subject}
           onClose={() => {
             setEnergyBlock(null);
-            onBack();
+            onBack(stepIdx);
           }}
           onUpgrade={() => {
             // 랜딩의 #pricing 섹션으로 이동 → SPA 가 hashchange 로 landing 전환
@@ -634,7 +634,7 @@ export default function DialogueLesson({
           }}
           onClose={() => {
             setShowCelebration(false);
-            onBack();
+            onBack(stepIdx);
           }}
         />
       ) : null}
@@ -643,7 +643,7 @@ export default function DialogueLesson({
         progress={progress}
         questionId={quizQuestion?.id ?? step.quizId}
         accent={subject === 'sqld' ? '#c084fc' : '#67e8f9'}
-        onExit={onBack}
+        onExit={() => onBack(stepIdx)}
       />
       {/*
         Phase 4 Step 3 작업 B — "이번 주 목표" 컨텍스트 띠.

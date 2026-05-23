@@ -382,3 +382,74 @@
 - 각 하위 개념은 되도록 한 화면에 들어가는 말풍선 길이로 유지한다.
 - 생소한 시험 용어는 클릭 설명 또는 직후 쉬운 문장 중 하나로 처리한다.
 - 로컬 문제를 추가하면 Supabase seed와 총량 표기를 같이 갱신한다.
+
+## 2026-05-23 — SQLD 엔터티/성능 파트 마이크로 스텝 세분화
+
+### 사용자가 발견한 문제
+
+- SQLD 1과목 후반의 엔터티·속성·관계·식별자와 데이터 모델 성능 파트가 ADSP 1과목보다 훨씬 긴 책식 설명으로 묶여 있었다.
+- 초보자는 “엔터티 5요건 + 명명 규칙”, “속성 3×3×3”, “트랜잭션 ACID + 격리수준” 같은 제목만 봐도 부담을 느낄 수 있었다.
+- 한 노드 안에서 여러 개념을 한꺼번에 읽고 한 문제만 푸는 구조라, 실제로 어떤 하위 개념을 이해했는지 확인하기 어려웠다.
+
+### 수정한 방향
+
+- SQLD 1-1의 기존 7개 큰 스텝을 23개 마이크로 스텝으로 세분화했다.
+- SQLD 1-2의 기존 8개 큰 스텝을 29개 마이크로 스텝으로 세분화했다.
+- 각 마이크로 스텝마다 전용 concept-practice 문제를 1개씩 연결했다.
+- 설명 톤은 “시험 요약”보다 “처음 보는 사용자가 예시로 따라오는 말투”로 낮췄다.
+- 정답 위치가 한쪽으로 몰리지 않도록 answerIndex를 섞었다.
+
+### 사용자에게 주는 좋은 영향
+
+- 모바일 화면에서 한 번에 읽어야 하는 문장량이 줄어든다.
+- 사용자가 “방금 배운 한 개념”을 바로 문제로 확인하므로 기억 고리가 짧아진다.
+- 엔터티/속성/관계/정규화처럼 초보자가 처음 막히는 용어를 더 천천히 받아들일 수 있다.
+- 나중에 문제 품질을 개선할 때 어떤 하위 개념의 문제가 약한지 더 정확히 추적할 수 있다.
+
+### 반영 파일
+
+- `src/data/lessons/sqld/ch1-modeling.ts`
+- `src/data/questions/sqld/concept-practice.json`
+- `src/data/reminders.ts`
+- SQLD concept-practice는 `102문항` 기준으로 갱신된다.
+- SQLD 레슨 스텝은 `102 step`, 전체 레슨 스텝은 `353 step` 기준으로 갱신된다.
+- 전체 playable 문항 표기는 `770문항` 기준으로 갱신된다.
+- `node scripts/validate-questions.mjs` 기준 전체 raw 문항 수는 `771`가 되어야 한다.
+
+### 검증
+
+- `node scripts/validate-questions.mjs` 통과: 전체 raw 문항 `771`, 결함 `0`.
+- `npm run typecheck` 통과.
+- `npm test -- --run` 통과: 35 files, 515 tests.
+- `npm run build` 통과: sitemap `373 URL`, lesson `353`, quiz `0`.
+
+### 문제 수정 운영 단계
+
+앞으로 Codex를 통해 개념/문제를 수정할 때는 아래 3단계를 하나의 작업 단위로 본다.
+
+1. **Codex가 문제 수정**
+   - 사용자의 의도, 실제 수정 내용, 왜 그렇게 바꿨는지, 사용자에게 주는 학습 효과를 이 로그에 기록한다.
+   - 로컬 파일 기준으로 `LessonStep`, `quizId`, `concept-practice`, `reminders`, 표시 카운트를 함께 맞춘다.
+   - 최소 검증은 `node scripts/validate-questions.mjs`, `npm run typecheck`, 필요 시 테스트/빌드까지 수행한다.
+
+2. **사용자가 검수**
+   - 사용자가 `localhost` 브라우저에서 실제 학습 흐름, 문장 난이도, 모바일 가독성, 정답/해설 납득 가능성을 확인한다.
+   - 사용자가 짚은 이상한 개념, 과도한 문장, 순서 문제, 보기 편향은 다시 이 로그에 남기고 수정한다.
+   - 이 단계가 끝나기 전에는 “콘텐츠 완료”로 보지 않는다.
+
+3. **Supabase 연동**
+   - v2 서버 문제풀이에서는 Supabase `public.questions`가 채점과 XP 지급의 기준이므로, 로컬 문제 수정분을 서버 문제은행에 반드시 upsert한다.
+   - Supabase 반영 전에는 화면에는 새 문제가 보여도 서버가 예전 문제/정답 기준으로 채점할 수 있어 XP가 오르지 않을 수 있다.
+   - 반영 후에는 대상 `question_id` 개수, 대표 문항의 `stem`, `choices`, `answer_index`, `is_playable=true`를 조회해 로컬과 서버가 맞는지 확인한다.
+   - 이번 SQLD 1-1/1-2 마이크로 스텝 작업의 Supabase seed 파일은 `supabase/migrations/0051_seed_sqld_entity_performance_micro_steps.sql`이다.
+
+### Supabase 연동 기록
+
+- 반영 전 `public.questions`에 존재한 대상 문항은 `14 / 52`개였다.
+- `0051_seed_sqld_entity_performance_micro_steps.sql` 기준 SQLD 1-1/1-2 마이크로 스텝 문항 `52`개를 Supabase `public.questions`에 upsert했다.
+- 반영 후 대상 문항은 `52 / 52`개로 확인했고, 누락 ID는 없었다.
+- 대표 검증 문항:
+  - `sqld-1-1-cp-04`: 서버 지문이 “엔터티(Entity)에 가장 가까운 설명은?”으로 갱신됐고, 정답은 `0`번이다.
+  - `sqld-1-1-cp-04-requirements`: 서버 지문이 “엔터티의 요건으로 옳지 않은 것은?”으로 갱신됐고, 정답은 `2`번이다.
+  - `sqld-1-2-cp-08-practice`: 서버 지문/보기/정답이 로컬 문제은행과 일치하고 `is_playable=true`다.
+- 이 반영으로 로컬 화면의 새 SQLD 문제와 서버 채점 기준이 맞춰져, 정답인데 XP가 `240 → 250`으로 유지되지 않던 원인을 제거했다.

@@ -49,6 +49,7 @@ Galaxy(과목) → Planet(챕터) → Zone(토픽 로드맵)
      5. **번들 grep**: `curl <prod-url>/assets/index-*.js` 받아서 새 식별자 1건 이상
    - 위 5단계 증거 없이 "수정 완료", "배포 완료", "동작 확인" 같은 보고 절대 금지.
    - 사용자에게 검증 요청은 5단계 증거 확보 후에만.
+10. **개념·문제 수정 전 문서 읽기**. 콘텐츠 수정 작업은 먼저 `docs/content-edit-guide.md`와 `docs/content-edit-checklist.md`를 읽고 진행한다. 상세 이력은 `docs/content-edit-log.md`에서 날짜, step, `quizId`, `extraQuizIds`, Supabase 키워드로 검색한다.
 
 ---
 

@@ -1,5 +1,9 @@
 # QuestDP Content Edit Log
 
+> **읽는 순서.** 개념·문제 수정 전에는 이 긴 로그를 처음부터 읽지 말고, 먼저 `docs/content-edit-guide.md`와 `docs/content-edit-checklist.md`를 읽는다. 이 파일은 상세 근거 보관소이므로 필요한 날짜, step, `quizId`, `extraQuizIds`, Supabase 키워드로 검색해서 참고한다.
+>
+> **새 기록 방식.** 앞으로 새 항목은 "사용자가 발견한 문제 / 수정한 방향 / 사용자에게 주는 좋은 영향 / 반영 파일 / Supabase 반영 여부"만 짧게 남긴다. 재발 방지 규칙으로 승격할 내용은 guide 또는 checklist에 반영한다.
+
 이 문서는 개념·문제 수정 과정에서 Codex가 단순 지시 반영을 넘어서, 무엇을 어떻게 고쳤고 왜 그렇게 고쳤는지, 학습자에게 어떤 효과가 있는지 누적 기록하기 위한 파일이다.
 
 ## 2026-05-23 — SQLD 콘텐츠 개편 시작 기준
@@ -939,3 +943,198 @@
 - `src/data/lessons/sqld/ch1-modeling.ts`
 - `src/data/questions/sqld/concept-practice.json`
 - `supabase/migrations/0055_seed_sqld_logical_independence_drill.sql`
+
+## 2026-05-25 — SQLD 관계 ERD 표기 도식 추가
+
+### 사용자가 발견한 문제
+
+- `차수와 선택사양` 개념을 말로만 설명하면, 실제 ERD에서 선 끝의 `|`, `O`, 까마귀발 모양을 어떻게 읽어야 하는지 연결이 약했다.
+- 첨부 예시처럼 IE 표기법과 Barker 표기법의 차이를 한 번에 보여주는 시각 설명이 필요했다.
+- 초보자는 `1:N`, `선택`, `필수`라는 말을 들어도 실제 학생-수강내역 관계에서 어떤 의미인지 바로 감을 잡기 어렵다.
+
+### 수정한 방향
+
+- `차수와 선택사양` 스텝의 대사 뒤에 ERD 표기 설명을 추가했다.
+  - ERD는 차수와 선택사양을 선 끝 기호로 압축해서 보여준다고 연결했다.
+  - `|`는 반드시 하나, `O`는 없어도 됨, 까마귀발은 여러 개라는 기본 해석을 먼저 제시했다.
+  - 학생 한 명과 수강내역 여러 건 예시로 바로 이어지게 했다.
+- `관계란 무엇인가` 스텝에서 ERD가 처음 언급될 때, 뒤에서 선 읽는 법을 볼 것이라는 예고 문장을 덧붙였다.
+- `DialogueLesson`에 `RelationshipErdDiagram`을 추가했다.
+  - `notation` 모드: `1:1 필수`, `1:1 선택`, `1:N 필수`, `1:N 선택`을 IE/Barker 표기 카드로 비교한다.
+  - `example` 모드: 학생과 수강내역 엔터티를 카드로 보여주고, 학생 1명은 수강내역 0..N건을 가질 수 있다는 관계를 도식화한다.
+- 기존 엔터티 ERD처럼 등장 모션을 넣어, 설명 문장이 바뀔 때 도식이 자연스럽게 나타나도록 했다.
+- 도식이 보이는 동안에는 하단 개념 진행 목록을 숨겨 모바일 첫 화면의 시각 부담을 줄였다.
+
+### 사용자에게 주는 좋은 영향
+
+- 사용자는 관계의 3요소 중 `차수`와 `선택사양`을 시험 용어가 아니라 실제 ERD 기호로 읽는 법까지 함께 익힌다.
+- IE/Barker 표기법을 외우는 표가 아니라 `필수/선택`, `하나/여러 개`의 의미로 이해할 수 있다.
+- 이후 식별자 관계, 비식별자 관계, 교차 엔터티 문제를 볼 때 ERD 선 모양을 더 빠르게 해석할 수 있다.
+
+### 반영 파일
+
+- `src/data/lessons/sqld/ch1-modeling.ts`
+- `src/game/lesson/DialogueLesson.tsx`
+
+## 2026-05-25 — SQLD 관계 3요소 암기어 표현 정리
+
+### 사용자가 발견한 문제
+
+- `관차선 구성요소를 골라보자`라는 문장이 `관차선` 자체를 공식 개념처럼 보이게 만들 수 있었다.
+- 실제 핵심 개념은 `관계명·차수·선택사양`이고, `관차선`은 그 세 단어를 기억하기 위한 암기 도구일 뿐이다.
+
+### 수정한 방향
+
+- 레슨 대사를 `관계의 3요소에 포함되지 않는 것을 골라보자`로 바꿨다.
+- 문제 문항도 `관계의 3요소에 포함되지 않는 것은?`으로 정리했다.
+- 해설에서만 “관차선은 관계명, 차수, 선택사양을 기억하기 위한 암기어”라고 설명하도록 바꿨다.
+- 실제 플레이에서 서버가 내려주는 문항도 같은 표현이 되도록 Supabase 문제은행을 동기화하고 마이그레이션을 추가했다.
+
+### 사용자에게 주는 좋은 영향
+
+- 사용자는 암기어와 실제 시험 개념을 혼동하지 않는다.
+- `관차선`을 외워도, 답을 고를 때는 관계의 3요소를 기준으로 판단하게 된다.
+
+### 반영 파일
+
+- `src/data/lessons/sqld/ch1-modeling.ts`
+- `src/data/questions/sqld/concept-practice.json`
+- `supabase/migrations/0056_update_sqld_relationship_elements_copy.sql`
+
+## 2026-05-25 — SQLD 식별자 분류 축약 표현 해소
+
+### 사용자가 발견한 문제
+
+- `주/보조, 내부/외부, 단일/복합, 본질/인조`처럼 축약해서 보여주면 처음 배우는 사용자는 각각이 모두 `식별자` 분류라는 사실을 바로 알아차리기 어렵다.
+- 특히 `주식별자/보조식별자`처럼 전체 명칭을 먼저 보여준 뒤, 한 쌍씩 설명해야 개념이 누락되지 않는다.
+
+### 수정한 방향
+
+- `식별자 4가지 분류` 대사에서 모든 분류명을 전체 명칭으로 줄바꿈 처리했다.
+  - `주식별자/보조식별자`
+  - `내부식별자/외부식별자`
+  - `단일식별자/복합식별자`
+  - `본질식별자/인조식별자`
+- `먼저 주식별자/보조식별자부터 알아보자` 흐름을 추가했다.
+- 네 쌍 모두를 한 문장씩 풀어서 설명했다.
+- 상세 표도 축약어 대신 전체 명칭과 쉬운 예시로 바꿨다.
+- 로컬 문제 해설도 `주/보조` 같은 축약어 대신 전체 식별자 명칭으로 정리했다.
+- Supabase 문제은행 반영용 마이그레이션을 추가했고, 라이브 DB의 기존 문제 해설도 같은 표현으로 동기화했다.
+
+### 사용자에게 주는 좋은 영향
+
+- 사용자는 축약어를 해독하느라 멈추지 않고, 어떤 기준으로 식별자를 나누는지 바로 따라갈 수 있다.
+- `주식별자`, `내부식별자`, `복합식별자`, `인조식별자`처럼 시험에 나오는 실제 용어가 더 정확하게 남는다.
+- 이후 `주식별자 4요건`, `식별자 관계`, `본질식별자 vs 인조식별자`로 이어지는 흐름이 부드러워진다.
+
+### 반영 파일
+
+- `src/data/lessons/sqld/ch1-modeling.ts`
+- `src/data/questions/sqld/concept-practice.json`
+- `supabase/migrations/0057_update_sqld_identifier_types_copy.sql`
+
+## 2026-05-25 — SQLD 식별자 분류 추가 확인 문제 3개
+
+### 사용자가 발견한 문제
+
+- `식별자 4가지 분류`에서 전체 분류 기준은 묻고 있었지만, 다음 세 쌍을 각각 확인하는 문제가 없었다.
+  - `내부식별자/외부식별자`
+  - `단일식별자/복합식별자`
+  - `본질식별자/인조식별자`
+- 설명만 보고 넘어가면 실제 사례에서 어떤 분류인지 고르는 힘이 약할 수 있었다.
+
+### 수정한 방향
+
+- `식별자 4가지 분류` 스텝에 `extraQuizIds` 3개를 추가했다.
+- 새 문제를 각각 다음 기준으로 만들었다.
+  - 수강내역이 학생의 학번을 가져와 참조하는 상황 → `외부식별자`
+  - 학번과 과목ID를 함께 묶어 구분하는 상황 → `복합식별자`
+  - 시스템이 자동 생성한 주문ID로 구분하는 상황 → `인조식별자`
+- SQLD 랜딩 카운트도 실제 playable 문항 수에 맞춰 `353문항`에서 `356문항`으로 갱신했다.
+- Supabase 문제은행 반영용 seed 마이그레이션을 추가했고, 라이브 DB에도 새 문제 3개를 upsert했다.
+- 이후 SQLD 1과목 레슨에서 참조하는 `quizId`/`extraQuizIds`가 Supabase `questions`에 모두 존재하는지 대조해 누락 0건을 확인했다.
+
+### 사용자에게 주는 좋은 영향
+
+- 사용자는 네 가지 식별자 분류 기준을 단순 암기하지 않고, 실제 예시에서 바로 구분해볼 수 있다.
+- 뒤에 나오는 `식별자 관계`, `본질식별자 vs 인조식별자` 개념으로 넘어가기 전 기초 분류가 더 단단해진다.
+- 추가 문제들이 같은 스텝 안에서 이어져 나오기 때문에 학습 흐름이 끊기지 않는다.
+
+### 반영 파일
+
+- `src/data/lessons/sqld/ch1-modeling.ts`
+- `src/data/questions/sqld/concept-practice.json`
+- `src/data/gameModes.ts`
+- `supabase/migrations/0058_seed_sqld_identifier_type_followup_drills.sql`
+
+## 2026-05-25 — 재발 방지 기록: 로컬 문제 추가 후 Supabase 미동기화 오류
+
+### 실제로 발생한 문제
+
+- `식별자 4가지 분류` 스텝에 `extraQuizIds`로 새 문제 3개를 연결했다.
+- 로컬 JSON과 레슨 파일은 정상이라 `typecheck`, 레슨 통합 테스트, 빌드는 통과했다.
+- 하지만 실제 플레이에서는 `문제를 불러오지 못했어요. 잠시 뒤 다시 시도해 주세요.` 토스트가 떴다.
+- 원인은 로컬에 추가한 문제 ID가 Supabase `public.questions`에 아직 없었기 때문이다.
+- QuestDP v2 문제풀이 구조는 클라이언트 문제은행만으로 문제를 시작하지 않는다. 레슨 문제 진입 시 `start_lesson_question` RPC가 Supabase `questions`에서 해당 `question_id`를 찾아 세션을 예약한다.
+- 따라서 로컬 `concept-practice.json`에 문제가 있어도, 서버 `questions`에 같은 `id`가 없으면 사용자는 문제 화면으로 들어갈 수 없다.
+
+### 왜 이 실수가 위험한가
+
+- 로컬 테스트만 보면 문제가 없어 보인다.
+- `getQuizQuestion()`은 로컬 JSON에서 문제를 찾기 때문에 레슨 통합 테스트는 통과할 수 있다.
+- 그러나 실제 사용자는 서버 예약 단계를 거치므로, Supabase 누락은 런타임에서만 터진다.
+- 특히 `extraQuizIds`는 기존 문제 뒤에 이어서 호출되므로, 앞부분은 정상처럼 보이다가 특정 시점에서 갑자기 실패한다.
+- 이 상태로 배포하면 “콘텐츠는 보이는데 문제만 안 열리는” 가장 헷갈리는 장애가 된다.
+
+### 이번에 확인한 직접 원인
+
+- 누락됐던 서버 문제 ID:
+  - `sqld-1-1-cp-08-types-internal-external`
+  - `sqld-1-1-cp-08-types-single-composite`
+  - `sqld-1-1-cp-08-types-natural-surrogate`
+- Supabase에서 다음 대조 쿼리로 누락 여부를 확인했다.
+
+```sql
+with expected(id) as (
+  select unnest(array[
+    'sqld-1-1-cp-08-types-internal-external',
+    'sqld-1-1-cp-08-types-single-composite',
+    'sqld-1-1-cp-08-types-natural-surrogate'
+  ]::text[])
+)
+select expected.id
+from expected
+left join public.questions q using (id)
+where q.id is null
+order by expected.id;
+```
+
+- 처음에는 3개가 모두 누락되어 있었다.
+- `supabase/migrations/0058_seed_sqld_identifier_type_followup_drills.sql` 내용을 라이브 Supabase에 upsert했다.
+- 이후 SQLD 1과목 레슨에서 참조하는 전체 `quizId`/`extraQuizIds`를 Supabase `questions`와 대조했고 누락 0건을 확인했다.
+
+### 앞으로 문제를 추가할 때 반드시 지킬 체크리스트
+
+1. `src/data/questions/.../concept-practice.json`에 새 문제를 추가한다.
+2. `src/data/lessons/...`에서 `quizId` 또는 `extraQuizIds`로 연결한다.
+3. `src/data/gameModes.ts`의 표시 문항 수를 실제 playable 수와 맞춘다.
+4. Supabase 반영용 migration 또는 seed SQL을 만든다.
+5. 라이브 Supabase `public.questions`에 같은 `id`를 upsert한다.
+6. 로컬 검증을 실행한다.
+   - `node scripts/validate-questions.mjs --file=src/data/questions/sqld/concept-practice.json`
+   - `npm test -- --run src/data/lessons/lessons.integration.test.ts src/data/gameModes.test.ts`
+   - `npm run typecheck`
+   - `npm run build`
+7. 서버 대조 쿼리로 `quizId`/`extraQuizIds` 누락이 0건인지 확인한다.
+8. 브라우저에서 실제로 해당 스텝의 `문제 풀기` 버튼을 눌러 서버 예약이 되는지 확인한다.
+
+### 절대 하지 말아야 할 우회
+
+- 서버에 없는 문제를 클라이언트 로컬 문제은행에서 바로 풀게 만드는 fallback을 만들지 않는다.
+- `start_lesson_question` 실패를 조용히 무시하고 다음 문제로 넘기지 않는다.
+- XP가 안 오르는 문제를 “로컬호스트라서 그런 것”으로 추정하지 않는다.
+- Supabase 반영 전에는 “수정 완료”라고 말하지 않는다.
+
+### 다음 Codex가 기억해야 할 한 줄
+
+`quizId` 또는 `extraQuizIds`를 추가했다면, 로컬 JSON 수정만으로는 끝난 것이 아니다. 반드시 Supabase `public.questions`에 같은 `id`가 있어야 실제 플레이, 채점, XP 지급이 정상 작동한다.

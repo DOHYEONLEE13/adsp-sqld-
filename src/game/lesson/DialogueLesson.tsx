@@ -326,6 +326,12 @@ export default function DialogueLesson({
     }
     return null;
   })();
+  const relationshipDiagramMode = (() => {
+    if (phase !== 'narrate' || step.id !== 'sqld-1-1-s7-cardinality') return null;
+    if (turnIdx < 3) return null;
+    if (turnIdx <= 4) return 'notation';
+    return 'example';
+  })();
 
   // step.title 에서 trail 라벨 추출 — ' — ' 와 ' (' 앞부분만.
   // 예: 'DIKW ① 데이터 (Data) — raw 값' → 'DIKW ① 데이터'
@@ -832,7 +838,8 @@ export default function DialogueLesson({
         {phase === 'narrate' &&
         shouldShowGroupTrail &&
         !schemaDiagramMode &&
-        !entityTypeDiagramMode ? (
+        !entityTypeDiagramMode &&
+        !relationshipDiagramMode ? (
           <nav
             aria-label={trailLabel}
             className="mt-10 max-w-[420px] mx-auto"
@@ -934,6 +941,10 @@ export default function DialogueLesson({
 
         {entityTypeDiagramMode ? (
           <EntityTypeErdDiagram mode={entityTypeDiagramMode} />
+        ) : null}
+
+        {relationshipDiagramMode ? (
+          <RelationshipErdDiagram mode={relationshipDiagramMode} />
         ) : null}
 
         {/* question / feedback 단계 — 4지선다 또는 SQL 순서 조립 */}
@@ -1543,6 +1554,278 @@ function MobileEntityTypeErd({ mode }: { mode: EntityDiagramMode }) {
         </div>
       ))}
     </div>
+  );
+}
+
+type RelationshipDiagramMode = 'notation' | 'example';
+
+function RelationshipErdDiagram({ mode }: { mode: RelationshipDiagramMode }) {
+  return (
+    <motion.figure
+      key={mode}
+      className="mt-6 mx-auto w-full max-w-[560px]"
+      aria-label="ERD 관계 차수와 선택사양 표기 설명"
+      initial={{ opacity: 0, y: 18, scale: 0.98, filter: 'blur(7px)' }}
+      animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      transition={{ type: 'spring', stiffness: 340, damping: 30, mass: 0.82 }}
+    >
+      {mode === 'notation' ? (
+        <RelationshipNotationCards />
+      ) : (
+        <RelationshipExampleCard />
+      )}
+      <figcaption className="sr-only">
+        ERD에서는 선 끝의 막대, 동그라미, 까마귀발 모양으로 필수 여부와 연결 개수를 표현합니다.
+      </figcaption>
+    </motion.figure>
+  );
+}
+
+function RelationshipNotationCards() {
+  const rows = [
+    {
+      ratio: '1 : 1',
+      option: '필수',
+      note: '반드시 하나',
+      optional: false,
+      many: false,
+    },
+    {
+      ratio: '1 : 1',
+      option: '선택',
+      note: '없거나 하나',
+      optional: true,
+      many: false,
+    },
+    {
+      ratio: '1 : N',
+      option: '필수',
+      note: '하나 이상 가능',
+      optional: false,
+      many: true,
+    },
+    {
+      ratio: '1 : N',
+      option: '선택',
+      note: '없거나 여러 개',
+      optional: true,
+      many: true,
+    },
+  ] as const;
+
+  return (
+    <div className="rounded-[24px] border border-cream/14 bg-[#06122d]/94 p-3.5 shadow-[0_18px_48px_rgba(0,0,0,0.28)]">
+      <div className="mb-3 flex items-end justify-between gap-3 px-1">
+        <div>
+          <div className="kr-num text-[10px] font-black uppercase tracking-[0.18em] text-[#c084fc]">
+            ERD SIGNAL
+          </div>
+          <div className="kr-heading mt-1 text-[19px] leading-none text-cream">
+            선 끝 기호
+          </div>
+        </div>
+        <div className="kr-body text-right text-[11px] font-bold leading-snug text-cream/54">
+          차수 + 선택사양
+        </div>
+      </div>
+
+      <div className="grid gap-2.5">
+        {rows.map((row, index) => (
+          <motion.div
+            key={`${row.ratio}-${row.option}`}
+            className="rounded-[18px] border border-cream/10 bg-white/[0.045] p-3"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.18, delay: index * 0.045 }}
+          >
+            <div className="mb-2.5 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <span className="kr-num rounded-full border border-[#c084fc]/35 bg-[#c084fc]/12 px-2.5 py-1 text-[10px] font-black text-[#d8b4fe]">
+                  {row.ratio}
+                </span>
+                <span className="kr-heading text-[13px] text-cream">
+                  {row.option}
+                </span>
+              </div>
+              <span className="kr-body text-[11px] font-bold text-cream/58">
+                {row.note}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="rounded-[14px] border border-cream/10 bg-[#091735]/80 px-2 py-2">
+                <div className="kr-num mb-1 text-[9px] font-black uppercase tracking-[0.16em] text-cream/45">
+                  IE 표기
+                </div>
+                <NotationPreview optional={row.optional} many={row.many} />
+              </div>
+              <div className="rounded-[14px] border border-cream/10 bg-[#091735]/80 px-2 py-2">
+                <div className="kr-num mb-1 text-[9px] font-black uppercase tracking-[0.16em] text-cream/45">
+                  Barker
+                </div>
+                <NotationPreview
+                  optional={row.optional}
+                  many={row.many}
+                  dashed={row.optional}
+                />
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function RelationshipExampleCard() {
+  return (
+    <div className="rounded-[24px] border border-cream/14 bg-[#06122d]/94 p-3.5 shadow-[0_18px_48px_rgba(0,0,0,0.28)]">
+      <div className="mb-3 flex items-end justify-between gap-3 px-1">
+        <div>
+          <div className="kr-num text-[10px] font-black uppercase tracking-[0.18em] text-[#c084fc]">
+            EXAMPLE ERD
+          </div>
+          <div className="kr-heading mt-1 text-[19px] leading-none text-cream">
+            학생 ↔ 수강내역
+          </div>
+        </div>
+        <div className="kr-body text-right text-[11px] font-bold leading-snug text-cream/54">
+          1명과 0..N건
+        </div>
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-[1fr_120px_1fr] md:items-center">
+        <RelationshipEntityCard
+          title="학생"
+          caption="반드시 1명"
+          rows={['학생ID', '이름', '전화번호', '이메일']}
+          Icon={UserRound}
+        />
+        <div className="rounded-[18px] border border-[#c084fc]/25 bg-[#c084fc]/8 px-3 py-3">
+          <div className="kr-num mb-1 text-center text-[9px] font-black uppercase tracking-[0.16em] text-[#d8b4fe]">
+            관계
+          </div>
+          <NotationPreview optional many />
+          <div className="mt-1.5 text-center kr-body text-[11px] font-bold leading-snug text-cream/64">
+            학생 1명은 수강내역이 없거나 여러 개
+          </div>
+        </div>
+        <RelationshipEntityCard
+          title="수강내역"
+          caption="0개 이상 가능"
+          rows={['학생ID', '과목ID', '학점']}
+          Icon={ClipboardList}
+        />
+      </div>
+
+      <div className="mt-3 rounded-[16px] border border-cream/10 bg-white/[0.04] px-3 py-2.5">
+        <div className="kr-body text-[12px] font-bold leading-[1.55] text-cream/76">
+          수강내역 한 건은 반드시 학생 한 명에게 속합니다. 반대로 학생은 아직 수강내역이 없을 수도 있고,
+          여러 과목을 들으면 수강내역이 여러 건 생길 수 있습니다.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RelationshipEntityCard({
+  title,
+  caption,
+  rows,
+  Icon,
+}: {
+  title: string;
+  caption: string;
+  rows: string[];
+  Icon: LucideIcon;
+}) {
+  return (
+    <div className="rounded-[20px] border border-[#c084fc]/36 bg-[#0b1836]/92 p-3.5">
+      <div className="flex items-center justify-between gap-3 border-b border-cream/10 pb-3">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <div
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-[13px] border border-[#c084fc]/35 bg-[#c084fc]/10 text-[#d8b4fe]"
+            aria-hidden
+          >
+            <Icon size={18} strokeWidth={2.45} />
+          </div>
+          <div className="kr-heading text-[20px] leading-none text-cream">
+            {title}
+          </div>
+        </div>
+        <div className="kr-body text-right text-[11px] font-black leading-snug text-cream/56">
+          {caption}
+        </div>
+      </div>
+      <div className="mt-3 grid gap-2">
+        {rows.map((row) => (
+          <div
+            key={row}
+            className="rounded-[12px] border border-cream/10 bg-white/[0.055] px-3 py-2 text-center kr-body text-[12px] font-black leading-none text-cream/86"
+          >
+            {row}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function NotationPreview({
+  optional,
+  many,
+  dashed = false,
+}: {
+  optional: boolean;
+  many: boolean;
+  dashed?: boolean;
+}) {
+  return (
+    <svg
+      viewBox="0 0 132 38"
+      role="img"
+      className="h-9 w-full"
+      aria-label={`${optional ? '선택' : '필수'} ${many ? '다' : '일'} 관계 표기`}
+    >
+      <path
+        d="M 12 19 H 118"
+        stroke="rgba(239,244,255,0.76)"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeDasharray={dashed ? '7 7' : undefined}
+      />
+      <path
+        d="M 22 8 V 30"
+        stroke="#d8b4fe"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+      {optional ? (
+        <circle
+          cx="83"
+          cy="19"
+          r="8"
+          fill="#06122d"
+          stroke="#d8b4fe"
+          strokeWidth="2.5"
+        />
+      ) : null}
+      {many ? (
+        <path
+          d="M 99 19 L 120 8 M 99 19 L 120 19 M 99 19 L 120 30"
+          stroke="#d8b4fe"
+          strokeWidth="3"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      ) : (
+        <path
+          d="M 110 8 V 30"
+          stroke="#d8b4fe"
+          strokeWidth="3"
+          strokeLinecap="round"
+        />
+      )}
+    </svg>
   );
 }
 

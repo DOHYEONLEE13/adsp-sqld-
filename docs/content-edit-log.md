@@ -911,3 +911,31 @@
 - `supabase/migrations/0054_seed_sqld_entity_kind_followup_drills.sql`
 - `src/game/lesson/DialogueLesson.tsx`
 - `src/game/screens/LessonScreen.tsx`
+
+## 2026-05-24 — SQLD 데이터 독립성 논리/물리 문제 분리
+
+### 사용자가 발견한 문제
+
+- `데이터 독립성` 스텝에서 물리적 독립성 문제만 먼저 확인하고 있어, 논리적 독립성 예시를 배운 직후 바로 확인하는 문제가 부족했다.
+- 직전 수정에서 논리적 독립성 예시가 나오는 순간 물리적 독립성 그림이 하이라이트되는 타이밍 오류가 있었기 때문에, 문제 추가도 순서가 어긋나면 다시 혼란을 만들 수 있었다.
+
+### 수정한 방향
+
+- `데이터 독립성` 스텝의 첫 문제를 `논리적 독립성` 확인 문제로 바꿨다.
+  - 새 문제 ID: `sqld-1-1-cp-03-logical-independence`
+  - 정답은 “장학금 정보를 DB 전체 구조에 추가해도 기존 학생 성적 화면은 그대로다”로 설정했다.
+- 기존 `물리적 독립성` 문제는 `extraQuizIds`로 뒤에 이어지게 했다.
+- 대사 흐름은 `논리적 독립성 설명/예시 → 물리적 독립성 설명/예시 → 논리 문제 → 물리 문제` 순서가 되도록 정리했다.
+- 서버 문제 예약 오류가 나지 않도록 Supabase `questions` 테이블 seed 마이그레이션도 함께 추가했다.
+
+### 사용자에게 주는 좋은 영향
+
+- 사용자는 논리적 독립성과 물리적 독립성을 각각 배운 직후 별도 문제로 확인할 수 있다.
+- “구조가 바뀌면 논리, 저장 방식이 바뀌면 물리”라는 구분 기준이 문제 풀이를 통해 더 단단하게 남는다.
+- 로컬 문제은행과 Supabase 문제은행의 ID가 맞아, 추가 문제에서 문제 로드/예약 오류가 재발할 가능성이 줄어든다.
+
+### 반영 파일
+
+- `src/data/lessons/sqld/ch1-modeling.ts`
+- `src/data/questions/sqld/concept-practice.json`
+- `supabase/migrations/0055_seed_sqld_logical_independence_drill.sql`

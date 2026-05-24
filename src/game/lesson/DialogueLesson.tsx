@@ -13,13 +13,19 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  AppWindow,
   BookOpen,
   Check,
   ChevronLeft,
   ChevronRight,
   ClipboardList,
+  Database,
+  Eye,
+  Layers,
+  Server,
   UserRound,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { Subject } from '@/types/question';
 import {
@@ -302,6 +308,23 @@ export default function DialogueLesson({
     if (turnIdx <= 4) return 'concept';
     if (turnIdx <= 6) return 'event';
     return 'all';
+  })();
+  const schemaDiagramMode = (() => {
+    if (phase !== 'narrate') return null;
+    if (step.id === 'sqld-1-1-s3') {
+      if (turnIdx < 1) return null;
+      return 'overview';
+    }
+    if (step.id === 'sqld-1-1-s3a') return 'external';
+    if (step.id === 'sqld-1-1-s3b') return 'conceptual';
+    if (step.id === 'sqld-1-1-s3c') return 'internal';
+    if (step.id === 'sqld-1-1-s3d') {
+      if (turnIdx < 2) return 'overview';
+      if (turnIdx <= 3) return 'logical';
+      if (turnIdx <= 5) return 'physical';
+      return 'overview';
+    }
+    return null;
   })();
 
   // step.title 에서 trail 라벨 추출 — ' — ' 와 ' (' 앞부분만.
@@ -806,7 +829,10 @@ export default function DialogueLesson({
             ○ DIKW ③ 지식         ← 미진행
             ○ DIKW ④ 지혜         ← 미진행
         */}
-        {phase === 'narrate' && shouldShowGroupTrail ? (
+        {phase === 'narrate' &&
+        shouldShowGroupTrail &&
+        !schemaDiagramMode &&
+        !entityTypeDiagramMode ? (
           <nav
             aria-label={trailLabel}
             className="mt-10 max-w-[420px] mx-auto"
@@ -900,6 +926,10 @@ export default function DialogueLesson({
               })}
             </ol>
           </nav>
+        ) : null}
+
+        {schemaDiagramMode ? (
+          <AnsiSparcSchemaDiagram mode={schemaDiagramMode} />
         ) : null}
 
         {entityTypeDiagramMode ? (
@@ -1020,6 +1050,253 @@ export default function DialogueLesson({
         </div>
       ) : null}
     </section>
+  );
+}
+
+type SchemaDiagramMode =
+  | 'overview'
+  | 'external'
+  | 'conceptual'
+  | 'internal'
+  | 'logical'
+  | 'physical';
+
+function AnsiSparcSchemaDiagram({ mode }: { mode: SchemaDiagramMode }) {
+  const isOverview = mode === 'overview';
+  const isLogical = mode === 'logical';
+  const isPhysical = mode === 'physical';
+  const isExternalActive = isOverview || isLogical || mode === 'external';
+  const isConceptualActive =
+    isOverview || isLogical || isPhysical || mode === 'conceptual';
+  const isInternalActive = isOverview || isPhysical || mode === 'internal';
+  const isDatabaseActive = isOverview || isPhysical || mode === 'internal';
+
+  return (
+    <motion.figure
+      key={`ansi-sparc-${mode}`}
+      className="mt-5 mx-auto w-full max-w-[560px]"
+      aria-label="ANSI/SPARC 3-스키마 구조도"
+      initial={{ opacity: 0, y: 16, scale: 0.985, filter: 'blur(6px)' }}
+      animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      transition={{ type: 'spring', stiffness: 330, damping: 30, mass: 0.8 }}
+    >
+      <div className="relative overflow-hidden rounded-[24px] border border-cream/10 bg-[#050d26]/95 p-3 shadow-[0_18px_44px_rgba(0,0,0,0.22)]">
+        <div className="grid grid-cols-3 gap-2">
+          {['학생 앱', '교수 앱', '관리자 앱'].map((label) => (
+            <ApplicationPill key={label} label={label} />
+          ))}
+        </div>
+
+        <div className="relative mt-3 rounded-[22px] border border-cream/10 bg-white/[0.035] py-3 pl-9 pr-3">
+          <div className="absolute left-2 top-1/2 -translate-y-1/2 rounded-full border border-cream/10 bg-[#071326]/90 px-1.5 py-3 text-center">
+            <span className="kr-num text-[10px] font-black tracking-[0.2em] text-cream/58 [writing-mode:vertical-rl]">
+              DBMS
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            <SchemaLayerCard
+              title="외부 스키마"
+              subtitle="View"
+              hint="사용자별 화면"
+              Icon={Eye}
+              active={isExternalActive}
+              compact
+            />
+            <SchemaLayerCard
+              title="외부 스키마"
+              subtitle="View"
+              hint="필요한 것만"
+              Icon={Eye}
+              active={isExternalActive}
+              compact
+            />
+          </div>
+
+          <SchemaConnector
+            label={isLogical ? '논리적 독립성' : '외부 ↕ 개념'}
+            active={isLogical || isExternalActive}
+          />
+
+          <SchemaLayerCard
+            title="개념 스키마"
+            subtitle="Conceptual Schema"
+            hint="전체 DB 설계도"
+            Icon={Layers}
+            active={isConceptualActive}
+          />
+
+          <SchemaConnector
+            label={isPhysical ? '물리적 독립성' : '개념 ↕ 내부'}
+            active={isPhysical || isInternalActive}
+          />
+
+          <SchemaLayerCard
+            title="내부 스키마"
+            subtitle="Internal Schema"
+            hint="저장 방식"
+            Icon={Server}
+            active={isInternalActive}
+          />
+        </div>
+
+        <SchemaConnector label="내부 ↕ 실제 데이터" active={isDatabaseActive} short />
+        <DatabaseCylinder active={isDatabaseActive} />
+      </div>
+      <figcaption className="sr-only">
+        응용 프로그램은 외부 스키마인 View를 통해 DBMS에 접근하고, 개념 스키마는 전체
+        데이터베이스 구조를, 내부 스키마는 실제 저장 방식을 나타냅니다.
+      </figcaption>
+    </motion.figure>
+  );
+}
+
+function ApplicationPill({ label }: { label: string }) {
+  return (
+    <div className="flex min-h-10 items-center justify-center gap-1.5 rounded-[14px] border border-cream/10 bg-white/[0.055] px-2">
+      <AppWindow size={15} strokeWidth={2.4} className="shrink-0 text-cream/64" />
+      <div className="min-w-0">
+        <div className="kr-heading truncate text-[11px] leading-none text-cream/92">
+          {label}
+        </div>
+        <div className="kr-num mt-1 truncate text-[8px] font-black uppercase tracking-[0.16em] text-cream/38">
+          Application
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SchemaLayerCard({
+  title,
+  subtitle,
+  hint,
+  Icon,
+  active,
+  compact = false,
+}: {
+  title: string;
+  subtitle: string;
+  hint: string;
+  Icon: LucideIcon;
+  active: boolean;
+  compact?: boolean;
+}) {
+  const accent = '#c084fc';
+  return (
+    <motion.div
+      className={
+        'relative overflow-hidden rounded-[17px] border transition ' +
+        (compact ? 'px-3 py-3' : 'px-3.5 py-3.5')
+      }
+      style={{
+        borderColor: active ? `${accent}88` : 'rgba(239,244,255,0.12)',
+        background: active
+          ? 'linear-gradient(145deg, rgba(35,22,69,0.84), rgba(10,18,48,0.94))'
+          : 'rgba(255,255,255,0.04)',
+      }}
+      animate={{
+        scale: active ? 1 : 0.992,
+      }}
+      transition={{ type: 'spring', stiffness: 420, damping: 32 }}
+    >
+      <div className="flex items-start gap-2.5">
+        <div
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-[13px] border"
+          style={{
+            borderColor: active ? `${accent}66` : 'rgba(239,244,255,0.12)',
+            background: active ? `${accent}18` : 'rgba(255,255,255,0.035)',
+            color: active ? accent : 'rgba(239,244,255,0.58)',
+          }}
+          aria-hidden
+        >
+          <Icon size={18} strokeWidth={2.45} />
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="kr-heading truncate text-[15px] leading-tight text-cream">
+            {title}
+          </div>
+          <div className="kr-num mt-1 truncate text-[8px] font-black uppercase tracking-[0.16em] text-cream/42">
+            {subtitle}
+          </div>
+        </div>
+      </div>
+      <div className="kr-body mt-2 text-[11px] font-bold leading-none text-cream/64">
+        {hint}
+      </div>
+    </motion.div>
+  );
+}
+
+function SchemaConnector({
+  label,
+  active,
+  short = false,
+}: {
+  label: string;
+  active: boolean;
+  short?: boolean;
+}) {
+  const accent = '#c084fc';
+  return (
+    <div className={'flex flex-col items-center justify-center ' + (short ? 'py-2' : 'py-2.5')}>
+      <div
+        className={short ? 'h-3 w-px' : 'h-4 w-px'}
+        style={{ background: active ? `${accent}80` : 'rgba(239,244,255,0.18)' }}
+      />
+      <div
+        className="kr-num rounded-full border px-3 py-1 text-[9px] font-black uppercase tracking-[0.12em]"
+        style={{
+          color: active ? '#f3e8ff' : 'rgba(239,244,255,0.46)',
+          borderColor: active ? `${accent}66` : 'rgba(239,244,255,0.12)',
+          background: active ? `${accent}18` : 'rgba(255,255,255,0.035)',
+        }}
+      >
+        {label}
+      </div>
+      <div
+        className={short ? 'h-3 w-px' : 'h-4 w-px'}
+        style={{ background: active ? `${accent}80` : 'rgba(239,244,255,0.18)' }}
+      />
+    </div>
+  );
+}
+
+function DatabaseCylinder({ active }: { active: boolean }) {
+  const accent = '#c084fc';
+  return (
+    <div className="flex justify-center pb-1">
+      <div
+        className="relative h-[74px] w-[156px] rounded-b-[32px] border-x border-b px-4 pt-5 text-center"
+        style={{
+          borderColor: active ? `${accent}70` : 'rgba(239,244,255,0.16)',
+          background: active
+            ? 'linear-gradient(180deg, rgba(35,22,69,0.82), rgba(8,16,42,0.96))'
+            : 'rgba(255,255,255,0.04)',
+        }}
+      >
+        <div
+          className="absolute -top-3 left-[-1px] h-6 w-[calc(100%+2px)] rounded-[999px] border"
+          style={{
+            borderColor: active ? `${accent}70` : 'rgba(239,244,255,0.16)',
+            background: active ? 'rgba(35,22,69,0.98)' : 'rgba(12,20,45,0.98)',
+          }}
+        />
+        <Database
+          size={18}
+          strokeWidth={2.45}
+          className="relative mx-auto mb-1"
+          style={{ color: active ? accent : 'rgba(239,244,255,0.56)' }}
+          aria-hidden
+        />
+        <div className="relative kr-heading text-[15px] leading-none text-cream">
+          Database
+        </div>
+        <div className="relative kr-body mt-1 text-[10px] font-bold text-cream/54">
+          실제 데이터
+        </div>
+      </div>
+    </div>
   );
 }
 

@@ -597,7 +597,8 @@ const SQLD_1_1: Lesson = {
     {
       id: 'sqld-1-1-s3d',
       title: '데이터 독립성',
-      quizId: 'sqld-1-1-cp-03-independence',
+      quizId: 'sqld-1-1-cp-03-logical-independence',
+      extraQuizIds: ['sqld-1-1-cp-03-independence'],
       group: 'sqld-1-1-g5-schema',
       dialogue: [
         { pose: 'think', text: '3계층을 나누는 이유는 [데이터 독립성] 때문이야.' },
@@ -606,7 +607,7 @@ const SQLD_1_1: Lesson = {
         { pose: 'lightbulb', text: '예를 들어 장학금 정보를 새로 추가해도 학생 성적 화면이 그대로라면 논리적 독립성이야.' },
         { pose: 'think', text: '[물리적 독립성]은 내부 스키마가 바뀌어도 개념·외부 영향이 적은 것.' },
         { pose: 'happy', text: '예를 들어 성적 데이터를 더 빠른 저장공간으로 옮겨도 학생 화면이 그대로라면 물리적 독립성이야.' },
-        { pose: 'idle', text: '[데이터 독립성] 문제를 풀어보자!' },
+        { pose: 'idle', text: '[논리적 독립성]과 [물리적 독립성] 문제를 순서대로 풀어보자!' },
       ],
       blocks: [
         {

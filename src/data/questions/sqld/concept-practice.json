@@ -2,9 +2,9 @@
   "subject": "sqld",
   "meta": {
     "version": "0.2.0",
-    "updatedAt": "2026-05-23",
+    "updatedAt": "2026-05-24",
     "source": "개념 학습용 자체 제작 문항 — PDF 요약 노트 + 기출 변형",
-    "notes": "SQLD 스텝 기반 레슨 예제. LessonStep.quizId 와 1:1 매칭. 102문항 (1-1: 41, 1-2: 29, 2-1: 12, 2-2: 12, 2-3: 8)."
+    "notes": "SQLD 스텝 기반 레슨 예제. LessonStep.quizId 와 extraQuizIds 매칭. 105문항."
   },
   "questions": [
     {
@@ -551,6 +551,38 @@
         "audited_at": "2026-05-23",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-1-0003-INTERNAL"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-03-logical-independence",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "논리적 독립성에 가장 가까운 상황은?",
+      "choices": [
+        "인덱스나 저장 위치를 바꿔도 화면과 전체 구조가 그대로다",
+        "사용자별 화면을 여러 개 만드는 것이다",
+        "장학금 정보를 DB 전체 구조에 추가해도 기존 학생 성적 화면은 그대로다",
+        "데이터 파일을 더 빠른 저장공간으로 옮기는 것이다"
+      ],
+      "answerIndex": 2,
+      "explanation": "논리적 독립성은 개념 스키마가 바뀌어도 외부 스키마에 주는 영향을 줄이는 성질입니다. 새로 관리할 데이터 구조가 추가되어도 기존 사용자 화면이 그대로라면 논리적 독립성에 가깝습니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "논리적 독립성 전용 확인 문제 추가"
+        ],
+        "changed_fields": [
+          "new_question"
+        ],
+        "reason": "데이터 독립성 스텝에서 논리적 독립성과 물리적 독립성을 각각 문제로 확인하기 위함",
+        "audited_at": "2026-05-24",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-0003-LOGICAL-INDEPENDENCE"
       }
     },
     {

@@ -75,7 +75,7 @@ export default function BlogPostPage({ slug }: Props) {
           '@type': 'BreadcrumbList',
           itemListElement: [
             { '@type': 'ListItem', position: 1, name: '홈', item: 'https://quest-dp.com/' },
-            { '@type': 'ListItem', position: 2, name: '블로그', item: 'https://quest-dp.com/blog' },
+            { '@type': 'ListItem', position: 2, name: '블로그', item: 'https://quest-dp.com/blog/' },
             { '@type': 'ListItem', position: 3, name: post.title, item: canonical },
           ],
         };

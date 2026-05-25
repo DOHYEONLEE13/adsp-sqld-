@@ -32,7 +32,7 @@ export default function PricingPage() {
     title: '요금제 — QuestDP | 1주 4,900원 · 월 9,900원',
     description:
       'QuestDP 의 ADSP·SQLD 자격증 학습 구독 요금. 무료 (제한 풀이) · 1주 단기 4,900원 · 월 구독 9,900원 (주당 약 2,475원). 환불 정책·사업자 정보 안내.',
-    canonical: 'https://quest-dp.com/pricing',
+    canonical: 'https://quest-dp.com/pricing/',
     ogImage: 'https://quest-dp.com/og/default.png',
     ogType: 'website',
     jsonLd: [
@@ -51,7 +51,7 @@ export default function PricingPage() {
           price: p.price.replace(/[^\d]/g, ''),
           priceCurrency: 'KRW',
           availability: 'https://schema.org/InStock',
-          url: 'https://quest-dp.com/pricing',
+          url: 'https://quest-dp.com/pricing/',
           seller: {
             '@type': 'Organization',
             name: BRAND.nameKr,
@@ -73,7 +73,7 @@ export default function PricingPage() {
             '@type': 'ListItem',
             position: 2,
             name: '요금제',
-            item: 'https://quest-dp.com/pricing',
+            item: 'https://quest-dp.com/pricing/',
           },
         ],
       },

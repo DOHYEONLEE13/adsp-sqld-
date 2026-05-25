@@ -135,13 +135,13 @@ function getRoute(): RouteState {
 
   // 1. Path-based 라우트 우선 (legal pages + Tier 2 lesson — SEO indexable)
   const pathname = window.location.pathname;
-  if (pathname === '/about')
+  if (pathname === '/about' || pathname === '/about/')
     return { route: 'legal', legalSlug: 'about' };
-  if (pathname === '/privacy')
+  if (pathname === '/privacy' || pathname === '/privacy/')
     return { route: 'legal', legalSlug: 'privacy' };
-  if (pathname === '/terms')
+  if (pathname === '/terms' || pathname === '/terms/')
     return { route: 'legal', legalSlug: 'terms' };
-  if (pathname === '/refund')
+  if (pathname === '/refund' || pathname === '/refund/')
     return { route: 'legal', legalSlug: 'refund' };
   // 요금제 — Toss 가맹점 심사 + SEO indexable URL
   if (pathname === '/pricing' || pathname === '/pricing/')
@@ -178,7 +178,7 @@ function getRoute(): RouteState {
     }
   }
   // Tier 2 — 용어 사전. `/glossary`
-  if (pathname === '/glossary') {
+  if (pathname === '/glossary' || pathname === '/glossary/') {
     return { route: 'glossary' };
   }
   // Tier 2 — 블로그 인덱스 + 포스트. `/blog`, `/blog/:slug`

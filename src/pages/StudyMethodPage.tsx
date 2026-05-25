@@ -12,7 +12,7 @@ import {
 import { useSeoMeta } from '@/lib/seo';
 import { handleNavClick } from '@/lib/navigate';
 
-const CANONICAL = 'https://quest-dp.com/study-method';
+const CANONICAL = 'https://quest-dp.com/study-method/';
 const OG_IMAGE = 'https://quest-dp.com/og/questdp-method.png';
 
 const METHOD_STEPS = [

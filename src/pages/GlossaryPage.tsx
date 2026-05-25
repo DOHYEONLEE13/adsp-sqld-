@@ -27,7 +27,7 @@ const SUBJECT_BADGE: Record<GlossaryTerm['subject'], { label: string; color: str
 };
 
 export default function GlossaryPage() {
-  const canonical = 'https://quest-dp.com/glossary';
+  const canonical = 'https://quest-dp.com/glossary/';
 
   // 카테고리별 그룹핑 — schema 순서 유지
   const grouped = useMemo(() => {

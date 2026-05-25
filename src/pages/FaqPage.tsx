@@ -38,7 +38,7 @@ export default function FaqPage({ subject }: Props) {
   const data = ALL_FAQ[subject];
   const accent = SUBJECT_ACCENT[subject];
   const label = SUBJECT_LABEL[subject];
-  const canonical = `https://quest-dp.com/faq/${subject}`;
+  const canonical = `https://quest-dp.com/faq/${subject}/`;
 
   // FAQPage JSON-LD — Q&A 평탄화
   const faqJsonLd = {
@@ -61,7 +61,7 @@ export default function FaqPage({ subject }: Props) {
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: '홈', item: 'https://quest-dp.com/' },
-      { '@type': 'ListItem', position: 2, name: label, item: `https://quest-dp.com/curriculum/${subject}` },
+      { '@type': 'ListItem', position: 2, name: label, item: `https://quest-dp.com/curriculum/${subject}/` },
       { '@type': 'ListItem', position: 3, name: '자주 묻는 질문', item: canonical },
     ],
   };

@@ -15,7 +15,7 @@ import { ALL_BLOG_POSTS, BLOG_CATEGORY_LABEL, type BlogPost } from '@/data/seo/b
 import { handleNavClick } from '@/lib/navigate';
 
 export default function BlogIndexPage() {
-  const canonical = 'https://quest-dp.com/blog';
+  const canonical = 'https://quest-dp.com/blog/';
   const seoTitle = 'QuestDP 블로그 — ADsP·SQLD 학습 가이드';
   const seoDescription =
     `ADsP vs SQLD 우선순위, 2주 합격 로드맵, SQLD 노랭이 vs QuestDP, 비전공자 가이드까지 — 한국 데이터 자격증 합격에 필요한 코너스톤 콘텐츠 ${ALL_BLOG_POSTS.length}편.`;

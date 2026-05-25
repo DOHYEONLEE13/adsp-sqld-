@@ -49,7 +49,7 @@ export default function LegalPage({ slug, onBack }: Props) {
   useSeoMeta({
     title: meta.title,
     description: meta.description,
-    canonical: `https://quest-dp.com/${slug}`,
+    canonical: `https://quest-dp.com/${slug}/`,
     ogImage: 'https://quest-dp.com/og/default.png',
     ogType: 'website',
   });

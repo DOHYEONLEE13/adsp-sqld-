@@ -16,7 +16,7 @@ import { BRAND, COMPANY } from '@/data/site';
 import { handleNavClick } from '@/lib/navigate';
 import { useSeoMeta } from '@/lib/seo';
 
-const CANONICAL = 'https://quest-dp.com/contact';
+const CANONICAL = 'https://quest-dp.com/contact/';
 const SUPPORT_SUBJECT = 'QuestDP 고객문의';
 
 const INQUIRY_GUIDE = [

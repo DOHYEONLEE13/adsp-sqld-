@@ -86,7 +86,7 @@ export default function CurriculumPage({ subject }: Props) {
   const seoDescription =
     `${facts.authority} 기준 ${label} 시험범위와 문제 수를 ${curriculum.totalChapters}개 챕터 · ${curriculum.totalTopics}개 토픽 · ` +
     `${curriculum.totalSteps}개 학습 스텝으로 구조화한 ${subject === 'adsp' ? 'ADsP 게임형 학습사이트' : 'SQLD 게임형 학습사이트'}. 기출문제형 복습과 공부법까지 확인하세요.`;
-  const canonical = `https://quest-dp.com/curriculum/${subject}`;
+  const canonical = `https://quest-dp.com/curriculum/${subject}/`;
 
   // JSON-LD Course
   const courseJsonLd = {

@@ -5,6 +5,22 @@ import url from 'node:url';
 export const SITE_ORIGIN = 'https://quest-dp.com';
 export const DEFAULT_IMAGE = `${SITE_ORIGIN}/og/default.png`;
 
+const TRAILING_SLASH_CANONICAL_PATHS = new Set([
+  '/study-method',
+  '/curriculum/adsp',
+  '/curriculum/sqld',
+  '/faq/adsp',
+  '/faq/sqld',
+  '/glossary',
+  '/blog',
+  '/pricing',
+  '/contact',
+  '/about',
+  '/privacy',
+  '/terms',
+  '/refund',
+]);
+
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
@@ -320,7 +336,11 @@ export function getSeoRouteManifest() {
 
 export function canonicalForPath(routePath) {
   if (routePath === '/') return `${SITE_ORIGIN}/`;
-  return `${SITE_ORIGIN}${encodeURI(routePath)}`;
+  const cleanPath = routePath.endsWith('/')
+    ? routePath.slice(0, -1)
+    : routePath;
+  const suffix = TRAILING_SLASH_CANONICAL_PATHS.has(cleanPath) ? '/' : '';
+  return `${SITE_ORIGIN}${encodeURI(cleanPath)}${suffix}`;
 }
 
 function collectBlogRoutes() {

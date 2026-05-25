@@ -907,13 +907,13 @@
       "difficulty": 1,
       "question": "속성(Attribute)에 가장 가까운 설명은?",
       "choices": [
-        "엔터티의 세부 정보",
-        "테이블 간 연결선",
+        "더 이상 나누지 않고 하나의 의미로 쓰는 데이터 항목",
+        "엔터티 사이를 연결하는 선",
         "데이터베이스 서버 이름",
         "SQL 명령어 묶음"
       ],
       "answerIndex": 0,
-      "explanation": "속성은 엔터티를 설명하는 세부 정보입니다. 테이블에서는 보통 컬럼이 됩니다.",
+      "explanation": "속성은 엔터티를 설명하는 최소 데이터 단위입니다. 한 속성에 하나의 의미만 담는 특징을 원자성이라고 합니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
@@ -933,6 +933,76 @@
       }
     },
     {
+      "id": "sqld-1-1-cp-06-origin-basic",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "다음 중 기본 속성에 가장 가까운 것은?",
+      "choices": [
+        "주문번호처럼 시스템이 새로 만든 값",
+        "총점처럼 다른 값에서 계산한 값",
+        "이름처럼 업무에 원래 존재하는 값",
+        "엔터티 사이를 잇는 관계선"
+      ],
+      "answerIndex": 2,
+      "explanation": "기본 속성은 업무에 원래 존재하는 속성입니다. 이름, 생년월일, 주소처럼 현실 업무에서 자연스럽게 필요한 값이 여기에 가깝습니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 속성 분류를 기본·설계·파생 속성별로 분리"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "기본 속성을 배운 직후 바로 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-25",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-06-ORIGIN-BASIC"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-06-origin-designed",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "다음 중 설계 속성에 가장 가까운 것은?",
+      "choices": [
+        "회원을 관리하려고 시스템이 만든 회원ID",
+        "학생의 생년월일",
+        "생년월일로 계산한 나이",
+        "학생과 과목 사이의 수강 관계"
+      ],
+      "answerIndex": 0,
+      "explanation": "설계 속성은 업무에 원래 있던 값이 아니라 시스템 설계 과정에서 필요해서 만든 속성입니다. 회원ID, 주문번호, 일련번호가 대표 예시입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 속성 분류를 기본·설계·파생 속성별로 분리"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "설계 속성을 배운 직후 바로 확인 문제를 제공하기 위함",
+        "audited_at": "2026-05-25",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-06-ORIGIN-DESIGNED"
+      }
+    },
+    {
       "id": "sqld-1-1-cp-06-origin",
       "subject": "sqld",
       "chapter": 1,
@@ -940,15 +1010,15 @@
       "topic": "데이터 모델링의 이해",
       "type": "multiple_choice",
       "difficulty": 2,
-      "question": "다른 속성에서 계산해 만든 “총점”은 어떤 속성인가?",
+      "question": "생년월일을 이용해 계산한 “나이”는 어떤 속성에 가까운가?",
       "choices": [
         "기본 속성",
         "설계 속성",
-        "파생 속성",
-        "외래 속성"
+        "외래 속성",
+        "파생 속성"
       ],
-      "answerIndex": 2,
-      "explanation": "파생 속성은 다른 속성에서 계산하거나 가공해서 만든 속성입니다.",
+      "answerIndex": 3,
+      "explanation": "파생 속성은 다른 속성에서 계산하거나 가공해서 만든 속성입니다. 나이는 생년월일이라는 원본 값에서 계산할 수 있으므로 파생 속성에 가깝습니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
@@ -962,9 +1032,79 @@
           "explanation"
         ],
         "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-1-CP-06-ORIGIN"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-06-shape-single",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "다음 중 단일 속성에 가장 가까운 것은?",
+      "choices": [
+        "주소처럼 시/구/상세주소로 나눌 수 있는 값",
+        "학번처럼 하나의 의미로 쓰는 값",
+        "이메일처럼 여러 개 등록할 수 있는 값",
+        "총점처럼 계산해서 만든 값"
+      ],
+      "answerIndex": 1,
+      "explanation": "단일 속성은 하나의 의미로 쓰는 속성입니다. 학번처럼 더 쪼개 관리할 필요가 없는 값을 떠올리면 쉽습니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 속성 분류를 초보자용 마이크로 스텝으로 재구성"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "단일·복합·다중값 속성을 한꺼번에 묻지 않고 각 개념 직후 확인하기 위함",
+        "audited_at": "2026-05-25",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-06-SHAPE-SINGLE"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-06-shape-composite",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "다음 중 복합 속성으로 보기 가장 쉬운 것은?",
+      "choices": [
+        "학번",
+        "주소",
+        "학생ID",
+        "총점"
+      ],
+      "answerIndex": 1,
+      "explanation": "주소는 시, 구, 상세주소처럼 하위 속성으로 나눠 볼 수 있으므로 복합 속성에 가깝습니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 속성 분류를 초보자용 마이크로 스텝으로 재구성"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "단일·복합·다중값 속성을 한꺼번에 묻지 않고 각 개념 직후 확인하기 위함",
+        "audited_at": "2026-05-25",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-06-SHAPE-COMPOSITE"
       }
     },
     {
@@ -988,7 +1128,7 @@
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 속성 분류를 초보자용 마이크로 스텝으로 재구성"
         ],
         "changed_fields": [
           "question",
@@ -996,10 +1136,45 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "단일·복합·다중값 속성을 한꺼번에 묻지 않고 각 개념 직후 확인하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-1-CP-06-SHAPE"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-06-role-pk",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "학생 표에서 한 학생을 겹치지 않게 구분하는 대표 속성은?",
+      "choices": [
+        "학생 이름",
+        "학번",
+        "전화번호",
+        "학과명"
+      ],
+      "answerIndex": 1,
+      "explanation": "학번은 학생 한 명을 유일하게 구분하는 대표값으로 쓸 수 있으므로 PK 속성에 가깝습니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 속성 역할 분류를 초보자용 마이크로 스텝으로 재구성"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "PK·FK·일반 속성을 한꺼번에 묻지 않고 각 개념 직후 확인하기 위함",
+        "audited_at": "2026-05-25",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-06-ROLE-PK"
       }
     },
     {
@@ -1010,20 +1185,20 @@
       "topic": "데이터 모델링의 이해",
       "type": "multiple_choice",
       "difficulty": 1,
-      "question": "다른 테이블의 기본키를 참조하는 속성은?",
+      "question": "학생 표의 학과ID가 학과 표의 학과ID를 가리킨다면, 학생 표의 학과ID는?",
       "choices": [
         "PK 속성",
         "FK 속성",
-        "파생 속성",
-        "복합 속성"
+        "일반 속성",
+        "파생 속성"
       ],
       "answerIndex": 1,
-      "explanation": "FK 속성은 다른 엔터티의 식별자를 참조하는 속성입니다.",
+      "explanation": "FK 속성은 다른 테이블의 대표값을 참조해 두 테이블을 연결하는 속성입니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 속성 역할 분류를 초보자용 마이크로 스텝으로 재구성"
         ],
         "changed_fields": [
           "question",
@@ -1031,10 +1206,45 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "PK·FK·일반 속성을 한꺼번에 묻지 않고 각 개념 직후 확인하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-1-CP-06-ROLE"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-06-role-general",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "다음 중 일반 속성에 가장 가까운 것은?",
+      "choices": [
+        "학생을 대표로 구분하는 학번",
+        "학과 표를 가리키는 학과ID",
+        "학생을 설명하는 이름",
+        "다른 값으로 계산한 총점"
+      ],
+      "answerIndex": 2,
+      "explanation": "이름은 PK처럼 행을 대표로 구분하거나 FK처럼 다른 테이블을 참조하는 값이 아니라, 학생을 설명하는 일반 속성입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 속성 역할 분류를 초보자용 마이크로 스텝으로 재구성"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "PK·FK·일반 속성을 한꺼번에 묻지 않고 각 개념 직후 확인하기 위함",
+        "audited_at": "2026-05-25",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-06-ROLE-GENERAL"
       }
     },
     {
@@ -1140,6 +1350,76 @@
         "audited_at": "2026-05-23",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-1-CP-07-CARDINALITY"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-07-erd-order",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "ERD 작성 순서로 가장 적절한 것은?",
+      "choices": [
+        "관계명 기술 → 엔터티 도출 → 관계 차수 설정 → 엔터티 배치 → 필수/선택사양 기술",
+        "엔터티 배치 → 관계명 기술 → 엔터티 도출 → 관계 설정 → 필수/선택사양 기술",
+        "엔터티 도출 → 엔터티 배치 → 관계 설정 → 관계명 기술 → 관계 차수 설정 → 필수/선택사양 기술",
+        "관계 차수 설정 → 엔터티 도출 → 관계 설정 → 필수/선택사양 기술 → 엔터티 배치"
+      ],
+      "answerIndex": 2,
+      "explanation": "ERD는 엔터티를 먼저 도출하고 배치한 뒤, 관계를 설정하고 관계명·차수·필수/선택사양을 차례로 기술합니다. 도배설명차선으로 기억하면 순서가 잡힙니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD ERD 작성 순서와 배치 시험 포인트를 추가"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "ERD 작성 순서가 시험 포인트인데 기존 관계 설명 흐름에 없었기 때문",
+        "audited_at": "2026-05-25",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-07-ERD-ORDER"
+      }
+    },
+    {
+      "id": "sqld-1-1-cp-07-erd-placement",
+      "subject": "sqld",
+      "chapter": 1,
+      "chapterTitle": "데이터 모델링의 이해",
+      "topic": "데이터 모델링의 이해",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "ERD에서 핵심 엔터티 배치로 가장 적절한 것은?",
+      "choices": [
+        "중요한 엔터티를 왼쪽 상단 쪽에 두고, 추가 엔터티를 우측이나 하단으로 확장한다",
+        "모든 엔터티를 반드시 가나다순으로만 배치한다",
+        "관계선이 많이 꼬이도록 핵심 엔터티를 가장 아래에 둔다",
+        "속성이 가장 적은 엔터티만 왼쪽 상단에 둔다"
+      ],
+      "answerIndex": 0,
+      "explanation": "ERD 배치에서는 중요한 엔터티를 왼쪽 상단 쪽에 두고, 추가로 발생하는 엔터티를 우측·하단으로 배치하면 흐름을 읽기 쉽고 관계선이 덜 꼬입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD ERD 작성 순서와 배치 시험 포인트를 추가"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "ERD 배치가 시험 포인트인데 기존 관계 설명 흐름에 없었기 때문",
+        "audited_at": "2026-05-25",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-1-1-CP-07-ERD-PLACEMENT"
       }
     },
     {
@@ -1395,20 +1675,20 @@
       "topic": "데이터 모델링의 이해",
       "type": "multiple_choice",
       "difficulty": 2,
-      "question": "식별자 관계의 핵심 특징은?",
+      "question": "수강신청 엔터티의 PK가 (학번, 과목코드)이고, 학번은 학생 PK, 과목코드는 과목 PK에서 온 값이다. 이 관계 설명으로 가장 알맞은 것은?",
       "choices": [
-        "부모 식별자가 자식 PK에 포함된다",
-        "부모 식별자가 화면 색상에 쓰인다",
-        "자식이 부모를 전혀 참조하지 않는다",
-        "항상 M:N으로만 표현된다"
+        "비식별자 관계다. 부모 키가 자식 PK에 들어가지 않기 때문이다",
+        "식별자 관계다. 부모 PK가 자식 PK의 일부가 되기 때문이다",
+        "관계가 아니다. 학번과 과목코드는 속성이 될 수 없기 때문이다",
+        "항상 1:1 관계다. PK가 두 개이면 한 건만 저장되기 때문이다"
       ],
-      "answerIndex": 0,
-      "explanation": "식별자 관계는 부모의 식별자가 자식의 주식별자 일부가 되는 관계입니다.",
+      "answerIndex": 1,
+      "explanation": "식별자 관계는 부모 엔터티의 주식별자가 자식 엔터티의 주식별자 일부가 되는 관계입니다. 수강신청 PK가 학생의 학번과 과목의 과목코드를 포함하므로 식별자 관계로 볼 수 있습니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 식별자 관계를 수강신청 예시 중심으로 재구성"
         ],
         "changed_fields": [
           "question",
@@ -1416,8 +1696,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "부모 PK가 자식 PK에 포함되는지를 예시로 판단하게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-1-CP-09"
       }
@@ -1430,20 +1710,20 @@
       "topic": "데이터 모델링의 이해",
       "type": "multiple_choice",
       "difficulty": 2,
-      "question": "비식별자 관계에 가장 가까운 설명은?",
+      "question": "주문 엔터티의 PK는 주문ID이고, 고객ID는 고객을 참조하는 FK로만 저장된다. 이 관계 설명으로 가장 알맞은 것은?",
       "choices": [
-        "부모 식별자가 자식의 일반 속성/FK로만 존재한다",
-        "부모 식별자가 자식 PK에 반드시 포함된다",
-        "자식 테이블이 존재할 수 없다",
-        "무조건 1:1 관계다"
+        "식별자 관계다. 고객ID가 주문 PK에 포함되기 때문이다",
+        "M:N 관계다. 주문ID와 고객ID가 모두 숫자이기 때문이다",
+        "비식별자 관계다. 부모 키가 자식 PK가 아니라 FK로만 존재하기 때문이다",
+        "관계가 아니다. FK는 엔터티 사이를 연결하지 않기 때문이다"
       ],
-      "answerIndex": 0,
-      "explanation": "비식별자 관계에서는 부모 식별자가 자식의 PK가 아니라 일반 속성 또는 FK로 존재합니다.",
+      "answerIndex": 2,
+      "explanation": "비식별자 관계에서는 부모 식별자가 자식의 PK에 포함되지 않고 일반 속성 또는 FK로만 존재합니다. 주문은 주문ID로 구분되고 고객ID는 참조 값으로만 쓰이므로 비식별자 관계입니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 비식별자 관계를 별도 PK와 FK 예시로 재구성"
         ],
         "changed_fields": [
           "question",
@@ -1451,8 +1731,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "비식별자 관계의 기준을 부모 키의 위치로 판단하게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-1-CP-09-NONIDENT"
       }
@@ -1467,18 +1747,18 @@
       "difficulty": 2,
       "question": "식별자 관계와 비식별자 관계를 가르는 가장 중요한 기준은?",
       "choices": [
-        "부모 식별자가 자식 PK에 포함되는지",
         "테이블 이름이 한글인지",
-        "속성이 3개 이상인지",
-        "데이터가 영구 저장되는지"
+        "자식 엔터티의 속성 개수가 많은지",
+        "관계명이 동사형으로 쓰였는지",
+        "부모 식별자가 자식 PK에 포함되는지"
       ],
-      "answerIndex": 0,
-      "explanation": "부모 식별자가 자식 PK에 포함되면 식별자 관계, 포함되지 않으면 비식별자 관계로 봅니다.",
+      "answerIndex": 3,
+      "explanation": "두 관계를 가르는 핵심은 부모 식별자가 자식 PK에 포함되는지입니다. 포함되면 식별자 관계, PK에 포함되지 않고 FK로만 있으면 비식별자 관계입니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 식별자/비식별자 관계 비교 기준을 명확화"
         ],
         "changed_fields": [
           "question",
@@ -1486,8 +1766,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "정답 위치 반복을 피하고 핵심 기준을 직접 확인하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-1-CP-09-COMPARE"
       }

@@ -11,7 +11,7 @@
  * 즉 이 컴포넌트가 마운트되는 시점엔 lesson.steps[0].dialogue 가 존재함을 가정.
  */
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import {
   AppWindow,
   BookOpen,
@@ -279,6 +279,7 @@ export default function DialogueLesson({
     if (key.includes('g5-schema')) return '스키마 진행';
     if (key.includes('g6-entity')) return '엔터티 기초 진행';
     if (key.includes('g7-entity-types')) return '엔터티 분류 진행';
+    if (key.includes('g8-attributes')) return '속성 분류 진행';
     if (key.includes('g2-entity')) return '엔터티 진행';
     if (key.includes('g3-attr-rel')) return '속성·관계 진행';
     if (key.includes('g4-identifier')) return '식별자 진행';
@@ -301,6 +302,14 @@ export default function DialogueLesson({
     groupSteps.length > 1 ||
     currentGroupKey.includes('g1-basic') ||
     currentGroupKey.startsWith('sqld-2-');
+  const trailSectionLabel = (stepId: string): string | null => {
+    if (!currentGroupKey.includes('g8-attributes')) return null;
+    if (stepId === 'sqld-1-1-s6') return '속성 기초';
+    if (stepId === 'sqld-1-1-s6-origin') return '특성에 따른 분류';
+    if (stepId === 'sqld-1-1-s6-shape') return '분해·값 개수에 따른 분류';
+    if (stepId === 'sqld-1-1-s6-role') return '구성 방식에 따른 분류';
+    return null;
+  };
   const entityTypeDiagramMode = (() => {
     if (phase !== 'narrate' || step.id !== 'sqld-1-1-s5-kind') return null;
     if (turnIdx < 1) return null;
@@ -327,10 +336,33 @@ export default function DialogueLesson({
     return null;
   })();
   const relationshipDiagramMode = (() => {
-    if (phase !== 'narrate' || step.id !== 'sqld-1-1-s7-cardinality') return null;
-    if (turnIdx < 3) return null;
-    if (turnIdx <= 4) return 'notation';
-    return 'example';
+    if (phase !== 'narrate') return null;
+    if (step.id === 'sqld-1-1-s7-cardinality') {
+      if (turnIdx < 3) return null;
+      if (turnIdx <= 4) return 'notation';
+      return 'example';
+    }
+    if (step.id === 'sqld-1-1-s7-erd-order') {
+      if (turnIdx < 1) return null;
+      return 'order';
+    }
+    return null;
+  })();
+  const identifierRelationshipDiagramMode = (() => {
+    if (phase !== 'narrate') return null;
+    if (step.id === 'sqld-1-1-s9') {
+      if (turnIdx < 1) return null;
+      return 'identifying';
+    }
+    if (step.id === 'sqld-1-1-s9-nonident') {
+      if (turnIdx < 1) return null;
+      return 'nonidentifying';
+    }
+    if (step.id === 'sqld-1-1-s9-compare') {
+      if (turnIdx < 1) return null;
+      return 'compare';
+    }
+    return null;
   })();
 
   // step.title 에서 trail 라벨 추출 — ' — ' 와 ' (' 앞부분만.
@@ -839,7 +871,8 @@ export default function DialogueLesson({
         shouldShowGroupTrail &&
         !schemaDiagramMode &&
         !entityTypeDiagramMode &&
-        !relationshipDiagramMode ? (
+        !relationshipDiagramMode &&
+        !identifierRelationshipDiagramMode ? (
           <nav
             aria-label={trailLabel}
             className="mt-10 max-w-[420px] mx-auto"
@@ -866,69 +899,81 @@ export default function DialogueLesson({
                 const completed = i < currentInGroup;
                 const current = i === currentInGroup;
                 const label = shortLabel(s.title);
+                const sectionLabel = trailSectionLabel(s.id);
                 return (
-                  <li
-                    key={s.id}
-                    className="flex items-center gap-3 relative"
-                    aria-current={current ? 'step' : undefined}
-                  >
-                    {/* 좌측 마커 — 완료/현재/미진행 */}
-                    <span
-                      aria-hidden
-                      className="shrink-0 inline-flex items-center justify-center rounded-full relative z-10 transition-all"
-                      style={{
-                        width: current ? 16 : 14,
-                        height: current ? 16 : 14,
-                        // background 를 base 색 (#010828) 으로 깔고 그 위에 색상 layer
-                        // → 라인이 마커 뒤에서 잘려 보임. 이전엔 alpha 0.18 등으로
-                        //   투명도가 있어 라인이 뚫고 보였음.
-                        background: current
-                          ? 'var(--subject-accent)'
-                          : completed
-                            ? 'linear-gradient(#010828, #010828) padding-box, var(--neon-22) border-box'
-                            : 'linear-gradient(#010828, #010828) padding-box, rgba(239,244,255,0.06) border-box',
-                        border: current
-                          ? '2px solid var(--subject-accent)'
-                          : completed
-                            ? '1.5px solid var(--neon-55)'
-                            : '1.5px solid rgba(239,244,255,0.22)',
-                        boxShadow: current
-                          ? '0 0 12px var(--subject-accent), 0 0 0 3px rgba(1,8,40,1)'
-                          : `0 0 0 3px var(--base, #010828)`,
-                        color: completed ? 'var(--neon)' : 'transparent',
-                      }}
-                    >
-                      {completed ? (
-                        <Check size={9} strokeWidth={3.4} />
-                      ) : null}
-                    </span>
-
-                    {/* 라벨 */}
-                    <span
-                      title={s.title}
-                      className="kr-body text-[12.5px] leading-tight flex-1"
-                      style={{
-                        color: current
-                          ? 'var(--subject-accent)'
-                          : completed
-                            ? 'rgba(239,244,255,0.85)'
-                            : 'rgba(239,244,255,0.5)',
-                        fontWeight: current ? 700 : completed ? 500 : 400,
-                      }}
-                    >
-                      {label}
-                    </span>
-
-                    {/* 우측 — 현재일 때만 progress % */}
-                    {current ? (
-                      <span
-                        className="kr-num text-[10px] tabular-nums shrink-0"
-                        style={{ color: 'var(--subject-accent)' }}
+                  <Fragment key={s.id}>
+                    {sectionLabel ? (
+                      <li
+                        aria-hidden="true"
+                        className="relative z-10 ml-[26px] -mb-2 mt-1"
                       >
-                        {Math.round(innerProgress * 100)}%
-                      </span>
+                        <span className="kr-num inline-flex rounded-full border border-cream/10 bg-[#06112a]/95 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-cream/42 shadow-[0_0_0_3px_var(--base,#010828)]">
+                          {sectionLabel}
+                        </span>
+                      </li>
                     ) : null}
-                  </li>
+                    <li
+                      className="flex items-center gap-3 relative"
+                      aria-current={current ? 'step' : undefined}
+                    >
+                      {/* 좌측 마커 — 완료/현재/미진행 */}
+                      <span
+                        aria-hidden
+                        className="shrink-0 inline-flex items-center justify-center rounded-full relative z-10 transition-all"
+                        style={{
+                          width: current ? 16 : 14,
+                          height: current ? 16 : 14,
+                          // background 를 base 색 (#010828) 으로 깔고 그 위에 색상 layer
+                          // → 라인이 마커 뒤에서 잘려 보임. 이전엔 alpha 0.18 등으로
+                          //   투명도가 있어 라인이 뚫고 보였음.
+                          background: current
+                            ? 'var(--subject-accent)'
+                            : completed
+                              ? 'linear-gradient(#010828, #010828) padding-box, var(--neon-22) border-box'
+                              : 'linear-gradient(#010828, #010828) padding-box, rgba(239,244,255,0.06) border-box',
+                          border: current
+                            ? '2px solid var(--subject-accent)'
+                            : completed
+                              ? '1.5px solid var(--neon-55)'
+                              : '1.5px solid rgba(239,244,255,0.22)',
+                          boxShadow: current
+                            ? '0 0 12px var(--subject-accent), 0 0 0 3px rgba(1,8,40,1)'
+                            : `0 0 0 3px var(--base, #010828)`,
+                          color: completed ? 'var(--neon)' : 'transparent',
+                        }}
+                      >
+                        {completed ? (
+                          <Check size={9} strokeWidth={3.4} />
+                        ) : null}
+                      </span>
+
+                      {/* 라벨 */}
+                      <span
+                        title={s.title}
+                        className="kr-body text-[12.5px] leading-tight flex-1"
+                        style={{
+                          color: current
+                            ? 'var(--subject-accent)'
+                            : completed
+                              ? 'rgba(239,244,255,0.85)'
+                              : 'rgba(239,244,255,0.5)',
+                          fontWeight: current ? 700 : completed ? 500 : 400,
+                        }}
+                      >
+                        {label}
+                      </span>
+
+                      {/* 우측 — 현재일 때만 progress % */}
+                      {current ? (
+                        <span
+                          className="kr-num text-[10px] tabular-nums shrink-0"
+                          style={{ color: 'var(--subject-accent)' }}
+                        >
+                          {Math.round(innerProgress * 100)}%
+                        </span>
+                      ) : null}
+                    </li>
+                  </Fragment>
                 );
               })}
             </ol>
@@ -945,6 +990,10 @@ export default function DialogueLesson({
 
         {relationshipDiagramMode ? (
           <RelationshipErdDiagram mode={relationshipDiagramMode} />
+        ) : null}
+
+        {identifierRelationshipDiagramMode ? (
+          <IdentifierRelationshipDiagram mode={identifierRelationshipDiagramMode} />
         ) : null}
 
         {/* question / feedback 단계 — 4지선다 또는 SQL 순서 조립 */}
@@ -1557,7 +1606,7 @@ function MobileEntityTypeErd({ mode }: { mode: EntityDiagramMode }) {
   );
 }
 
-type RelationshipDiagramMode = 'notation' | 'example';
+type RelationshipDiagramMode = 'notation' | 'example' | 'order';
 
 function RelationshipErdDiagram({ mode }: { mode: RelationshipDiagramMode }) {
   return (
@@ -1569,15 +1618,144 @@ function RelationshipErdDiagram({ mode }: { mode: RelationshipDiagramMode }) {
       animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
       transition={{ type: 'spring', stiffness: 340, damping: 30, mass: 0.82 }}
     >
-      {mode === 'notation' ? (
+      {mode === 'order' ? (
+        <ErdOrderSheet />
+      ) : mode === 'notation' ? (
         <RelationshipNotationCards />
       ) : (
         <RelationshipExampleCard />
       )}
       <figcaption className="sr-only">
-        ERD에서는 선 끝의 막대, 동그라미, 까마귀발 모양으로 필수 여부와 연결 개수를 표현합니다.
+        ERD 관계 표기와 작성 순서를 설명합니다.
       </figcaption>
     </motion.figure>
+  );
+}
+
+function ErdOrderSheet() {
+  const rows: Array<{
+    no: string;
+    key: string;
+    task: string;
+    point: string;
+    accent?: boolean;
+  }> = [
+    {
+      no: '1',
+      key: '도',
+      task: '엔터티 도출',
+      point: '관리할 대상 찾기',
+    },
+    {
+      no: '2',
+      key: '배',
+      task: '엔터티 배치',
+      point: '중요 엔터티는 왼쪽 상단',
+      accent: true,
+    },
+    {
+      no: '3',
+      key: '설',
+      task: '관계 설정',
+      point: '연결되는 엔터티 잇기',
+    },
+    {
+      no: '4',
+      key: '명',
+      task: '관계명 기술',
+      point: '수강한다, 주문한다',
+    },
+    {
+      no: '5',
+      key: '차',
+      task: '관계 차수 설정',
+      point: '1:1, 1:N, M:N',
+    },
+    {
+      no: '6',
+      key: '선',
+      task: '필수/선택사양 기술',
+      point: '반드시? 없어도 됨?',
+    },
+  ];
+
+  return (
+    <div className="overflow-hidden rounded-[24px] border border-cream/10 bg-[#06122d]/92 p-3.5 shadow-[0_18px_42px_rgba(0,0,0,0.22)]">
+      <div className="mb-2.5 flex items-end justify-between gap-3 px-0.5">
+        <div>
+          <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-cream/38">
+            ERD ORDER
+          </div>
+          <div className="kr-heading mt-1 text-[19px] leading-none text-cream">
+            도배설명차선
+          </div>
+        </div>
+        <div className="kr-body text-right text-[11px] font-bold leading-snug text-cream/48">
+          작성 순서
+        </div>
+      </div>
+
+      <div className="mb-2.5 flex flex-wrap gap-1.5">
+        {rows.map((row) => (
+          <span
+            key={`mnemonic-${row.key}`}
+            className={
+              'grid h-6 min-w-6 place-items-center rounded-full border px-2 kr-heading text-[10.5px] ' +
+              (row.accent
+                ? 'border-[#c084fc]/45 bg-[#c084fc]/16 text-[#ead7ff]'
+                : 'border-cream/10 bg-white/[0.045] text-cream/58')
+            }
+          >
+            {row.key}
+          </span>
+        ))}
+      </div>
+
+      <div className="rounded-[20px] border border-cream/10 bg-[#081632]/82 p-2">
+        {rows.map((row, index) => (
+          <motion.div
+            key={row.no}
+            className={
+              'grid grid-cols-[34px_1fr] gap-2.5 rounded-[15px] px-2.5 py-2 ' +
+              (row.accent ? 'bg-[#c084fc]/12' : index % 2 === 0 ? 'bg-white/[0.045]' : 'bg-transparent')
+            }
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.18, delay: index * 0.04 }}
+          >
+            <div className="flex flex-col items-center gap-1">
+              <span className="kr-num text-[9px] font-black text-cream/34">
+                {row.no}
+              </span>
+              <span
+                className={
+                  'grid h-7 w-7 place-items-center rounded-full border kr-heading text-[11px] ' +
+                  (row.accent
+                    ? 'border-[#c084fc]/52 bg-[#c084fc]/16 text-[#ead7ff]'
+                    : 'border-cream/12 bg-white/[0.045] text-cream/62')
+                }
+              >
+                {row.key}
+              </span>
+            </div>
+            <div className="min-w-0">
+              <div className="kr-heading text-[12.5px] leading-snug text-cream">
+                {row.task}
+              </div>
+              <div className="mt-0.5 kr-body text-[10.5px] font-bold leading-snug text-cream/55">
+                {row.point}
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      <div className="mt-2.5 rounded-[16px] border border-cream/10 bg-white/[0.035] px-3 py-2">
+        <div className="kr-body text-[11.5px] font-bold leading-[1.45] text-cream/64">
+          배치는 가독성 문제입니다. 핵심 엔터티를 먼저 보이는 위치에 두면 관계선이 덜 꼬입니다.
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -1761,6 +1939,293 @@ function RelationshipEntityCard({
           <div
             key={row}
             className="rounded-[12px] border border-cream/10 bg-white/[0.055] px-3 py-2 text-center kr-body text-[12px] font-black leading-none text-cream/86"
+          >
+            {row}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+type IdentifierRelationshipMode = 'identifying' | 'nonidentifying' | 'compare';
+
+function IdentifierRelationshipDiagram({
+  mode,
+}: {
+  mode: IdentifierRelationshipMode;
+}) {
+  return (
+    <motion.figure
+      className="mt-6 mx-auto w-full max-w-[560px]"
+      initial={{ opacity: 0, y: 18, scale: 0.97, filter: 'blur(4px)' }}
+      animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      transition={{ type: 'spring', stiffness: 320, damping: 30, mass: 0.82 }}
+    >
+      {mode === 'identifying' ? (
+        <IdentifyingRelationCard />
+      ) : mode === 'nonidentifying' ? (
+        <NonIdentifyingRelationCard />
+      ) : (
+        <IdentifierCompareCard />
+      )}
+      <figcaption className="sr-only">
+        식별자 관계와 비식별자 관계에서 부모 식별자가 자식 엔터티 안에 들어가는 위치를 비교합니다.
+      </figcaption>
+    </motion.figure>
+  );
+}
+
+function IdentifyingRelationCard() {
+  return (
+    <div className="rounded-[24px] border border-cream/10 bg-[#06122d]/94 p-3.5 shadow-[0_18px_44px_rgba(0,0,0,0.24)]">
+      <div className="mb-3 flex items-end justify-between gap-3 px-1">
+        <div>
+          <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-[#c084fc]/85">
+            IDENTIFYING
+          </div>
+          <div className="kr-heading mt-1 text-[19px] leading-none text-cream">
+            부모 PK가 자식 PK 안으로
+          </div>
+        </div>
+        <div className="kr-body text-right text-[11px] font-black leading-snug text-cream/52">
+          강한 연결
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2.5">
+        <IdentifierEntityCard
+          title="학생"
+          caption="부모"
+          Icon={UserRound}
+          pkRows={['학번']}
+          attrRows={['이름']}
+        />
+        <IdentifierEntityCard
+          title="과목"
+          caption="부모"
+          Icon={BookOpen}
+          pkRows={['과목코드']}
+          attrRows={['과목명']}
+        />
+      </div>
+
+      <div className="my-2.5 flex items-center gap-2 px-1">
+        <div className="h-px flex-1 bg-[#c084fc]/24" />
+        <div className="rounded-full border border-[#c084fc]/28 bg-[#c084fc]/10 px-3 py-1 kr-body text-[11px] font-black text-[#ead7ff]">
+          두 부모 키가 합쳐짐
+        </div>
+        <div className="h-px flex-1 bg-[#c084fc]/24" />
+      </div>
+
+      <IdentifierEntityCard
+        title="수강신청"
+        caption="자식"
+        Icon={ClipboardList}
+        pkRows={['학번', '과목코드']}
+        attrRows={['신청일', '학점']}
+        highlightPk
+      />
+
+      <div className="mt-3 rounded-[16px] border border-[#c084fc]/18 bg-[#c084fc]/8 px-3 py-2.5">
+        <div className="kr-body text-[12px] font-bold leading-[1.55] text-cream/76">
+          수강신청은 학생과 과목의 PK를 받아 자기 PK를 완성합니다. 그래서 부모 키가 비어 있으면 수강신청 한 건도 구분할 수 없습니다.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function NonIdentifyingRelationCard() {
+  return (
+    <div className="rounded-[24px] border border-cream/10 bg-[#06122d]/94 p-3.5 shadow-[0_18px_44px_rgba(0,0,0,0.24)]">
+      <div className="mb-3 flex items-end justify-between gap-3 px-1">
+        <div>
+          <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-cream/42">
+            NON IDENTIFYING
+          </div>
+          <div className="kr-heading mt-1 text-[19px] leading-none text-cream">
+            부모 키는 FK로만
+          </div>
+        </div>
+        <div className="kr-body text-right text-[11px] font-black leading-snug text-cream/52">
+          약한 연결
+        </div>
+      </div>
+
+      <IdentifierEntityCard
+        title="고객"
+        caption="부모"
+        Icon={UserRound}
+        pkRows={['고객ID']}
+        attrRows={['이름']}
+      />
+
+      <div className="my-2.5 flex items-center gap-2 px-1">
+        <div className="h-px flex-1 border-t border-dashed border-cream/18" />
+        <div className="rounded-full border border-cream/12 bg-white/[0.045] px-3 py-1 kr-body text-[11px] font-black text-cream/64">
+          참조만 함
+        </div>
+        <div className="h-px flex-1 border-t border-dashed border-cream/18" />
+      </div>
+
+      <IdentifierEntityCard
+        title="주문"
+        caption="자식"
+        Icon={ClipboardList}
+        pkRows={['주문ID']}
+        attrRows={['고객ID(FK)', '주문일']}
+        highlightFk
+      />
+
+      <div className="mt-3 rounded-[16px] border border-cream/10 bg-white/[0.04] px-3 py-2.5">
+        <div className="kr-body text-[12px] font-bold leading-[1.55] text-cream/72">
+          주문은 주문ID만으로 구분됩니다. 고객ID는 고객을 가리키는 FK지만, 주문의 PK 안에는 들어가지 않습니다.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function IdentifierCompareCard() {
+  return (
+    <div className="rounded-[24px] border border-cream/10 bg-[#06122d]/94 p-3.5 shadow-[0_18px_44px_rgba(0,0,0,0.24)]">
+      <div className="mb-3 px-1">
+        <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-cream/42">
+          PK POSITION
+        </div>
+        <div className="kr-heading mt-1 text-[19px] leading-none text-cream">
+          기준은 자식 PK 안쪽/바깥쪽
+        </div>
+      </div>
+
+      <div className="grid gap-2.5">
+        <IdentifierRuleRow
+          title="식별자 관계"
+          badge="PK 안"
+          body="부모 PK가 자식 PK의 일부가 됩니다."
+          accent
+        />
+        <IdentifierRuleRow
+          title="비식별자 관계"
+          badge="PK 밖"
+          body="부모 키는 자식의 FK 또는 일반 속성으로만 남습니다."
+        />
+      </div>
+    </div>
+  );
+}
+
+function IdentifierRuleRow({
+  title,
+  badge,
+  body,
+  accent = false,
+}: {
+  title: string;
+  badge: string;
+  body: string;
+  accent?: boolean;
+}) {
+  return (
+    <div
+      className={
+        'flex items-center gap-3 rounded-[18px] border px-3 py-3 ' +
+        (accent
+          ? 'border-[#c084fc]/32 bg-[#c084fc]/10'
+          : 'border-cream/10 bg-white/[0.045]')
+      }
+    >
+      <div
+        className={
+          'grid h-12 w-12 shrink-0 place-items-center rounded-[16px] border kr-heading text-[12px] ' +
+          (accent
+            ? 'border-[#c084fc]/45 bg-[#c084fc]/12 text-[#ead7ff]'
+            : 'border-cream/12 bg-white/[0.045] text-cream/58')
+        }
+      >
+        {badge}
+      </div>
+      <div className="min-w-0">
+        <div className="kr-heading text-[14px] leading-snug text-cream">
+          {title}
+        </div>
+        <div className="mt-1 kr-body text-[11.5px] font-bold leading-snug text-cream/62">
+          {body}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function IdentifierEntityCard({
+  title,
+  caption,
+  pkRows,
+  attrRows,
+  Icon,
+  highlightPk = false,
+  highlightFk = false,
+}: {
+  title: string;
+  caption: string;
+  pkRows: string[];
+  attrRows: string[];
+  Icon: LucideIcon;
+  highlightPk?: boolean;
+  highlightFk?: boolean;
+}) {
+  return (
+    <div className="rounded-[20px] border border-cream/10 bg-[#081632]/88 p-3">
+      <div className="flex items-center justify-between gap-2 border-b border-cream/10 pb-2.5">
+        <div className="flex min-w-0 items-center gap-2">
+          <div
+            className="grid h-8 w-8 shrink-0 place-items-center rounded-[12px] border border-cream/12 bg-white/[0.045] text-cream/68"
+            aria-hidden
+          >
+            <Icon size={16} strokeWidth={2.4} />
+          </div>
+          <div className="kr-heading text-[17px] leading-none text-cream">
+            {title}
+          </div>
+        </div>
+        <div className="kr-num text-[9px] font-black uppercase tracking-[0.12em] text-cream/38">
+          {caption}
+        </div>
+      </div>
+
+      <div className="mt-2.5 grid gap-1.5">
+        <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-cream/40">
+          PK
+        </div>
+        {pkRows.map((row) => (
+          <div
+            key={`pk-${row}`}
+            className={
+              'rounded-[12px] border px-2.5 py-2 text-center kr-body text-[12px] font-black leading-none ' +
+              (highlightPk
+                ? 'border-[#c084fc]/40 bg-[#c084fc]/14 text-[#ead7ff]'
+                : 'border-cream/10 bg-white/[0.055] text-cream/86')
+            }
+          >
+            {row}
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-2.5 grid gap-1.5">
+        <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-cream/36">
+          속성
+        </div>
+        {attrRows.map((row) => (
+          <div
+            key={`attr-${row}`}
+            className={
+              'rounded-[12px] border px-2.5 py-2 text-center kr-body text-[11.5px] font-bold leading-none ' +
+              (highlightFk && row.includes('FK')
+                ? 'border-[#67e8f9]/30 bg-[#67e8f9]/10 text-[#dffbff]'
+                : 'border-cream/10 bg-white/[0.035] text-cream/62')
+            }
           >
             {row}
           </div>

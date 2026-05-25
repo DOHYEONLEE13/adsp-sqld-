@@ -1397,6 +1397,16 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://quest-dp.com/lesson/sqld-1-1-s6-derived</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://quest-dp.com/lesson/sqld-1-1-s6-designed</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://quest-dp.com/lesson/sqld-1-1-s6-origin</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -1407,7 +1417,27 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://quest-dp.com/lesson/sqld-1-1-s6-role-fk</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://quest-dp.com/lesson/sqld-1-1-s6-role-general</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://quest-dp.com/lesson/sqld-1-1-s6-shape</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://quest-dp.com/lesson/sqld-1-1-s6-shape-composite</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://quest-dp.com/lesson/sqld-1-1-s6-shape-multivalue</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -1428,6 +1458,11 @@
   </url>
   <url>
     <loc>https://quest-dp.com/lesson/sqld-1-1-s7-elements</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://quest-dp.com/lesson/sqld-1-1-s7-erd-order</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

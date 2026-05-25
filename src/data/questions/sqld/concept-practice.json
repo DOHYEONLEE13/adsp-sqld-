@@ -1898,7 +1898,7 @@
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -1906,8 +1906,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-01"
       }
@@ -1920,7 +1920,7 @@
       "topic": "데이터 모델과 성능",
       "type": "multiple_choice",
       "difficulty": 1,
-      "question": "신설 학과만 등록하고 싶은데 학생 정보까지 필요하다면 어떤 이상인가?",
+      "question": "신설 학과만 저장하고 싶은데 학생 정보까지 있어야 저장된다. 어떤 이상인가?",
       "choices": [
         "삽입 이상",
         "삭제 이상",
@@ -1928,12 +1928,12 @@
         "정렬 이상"
       ],
       "answerIndex": 0,
-      "explanation": "원하는 정보만 넣지 못하고 불필요한 정보가 필요하면 삽입 이상입니다.",
+      "explanation": "원하는 정보만 넣지 못하고 불필요한 정보까지 요구되면 삽입 이상입니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -1941,8 +1941,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-01-INSERT"
       }
@@ -1955,7 +1955,7 @@
       "topic": "데이터 모델과 성능",
       "type": "multiple_choice",
       "difficulty": 1,
-      "question": "마지막 학생을 삭제했더니 학과 정보까지 사라지는 문제는?",
+      "question": "마지막 학생 행을 지웠더니 학과 정보까지 사라졌다. 어떤 이상인가?",
       "choices": [
         "삽입 이상",
         "삭제 이상",
@@ -1968,7 +1968,7 @@
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -1976,8 +1976,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-01-DELETE"
       }
@@ -1990,7 +1990,7 @@
       "topic": "데이터 모델과 성능",
       "type": "multiple_choice",
       "difficulty": 1,
-      "question": "같은 학과명이 여러 행에 있어 일부만 수정되어 모순이 생기는 문제는?",
+      "question": "같은 학과명이 여러 행에 있어 일부만 수정되며 서로 다른 이름이 남았다. 어떤 이상인가?",
       "choices": [
         "삽입 이상",
         "삭제 이상",
@@ -1998,12 +1998,12 @@
         "참조 이상"
       ],
       "answerIndex": 2,
-      "explanation": "일부만 갱신되어 같은 정보가 서로 달라지면 갱신 이상입니다.",
+      "explanation": "중복된 값을 일부만 고쳐 데이터가 서로 모순되면 갱신 이상입니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2011,8 +2011,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-01-UPDATE"
       }
@@ -2025,20 +2025,20 @@
       "topic": "데이터 모델과 성능",
       "type": "multiple_choice",
       "difficulty": 1,
-      "question": "A 값을 알면 B 값이 하나로 결정될 때 쓰는 표현은?",
+      "question": "학번을 알면 학생 이름이 하나로 정해진다. 이 관계를 가장 잘 표현한 것은?",
       "choices": [
-        "A → B",
-        "A ⊕ B",
-        "A LIKE B",
-        "A ORDER B"
+        "이름 → 학번",
+        "학번 → 이름",
+        "학번 LIKE 이름",
+        "학번 ORDER 이름"
       ],
-      "answerIndex": 0,
-      "explanation": "A가 B를 결정하면 A → B로 표현합니다. 이때 A는 결정자, B는 종속자입니다.",
+      "answerIndex": 1,
+      "explanation": "학번이 이름을 결정하므로 학번 → 이름으로 표현합니다. 왼쪽은 결정자, 오른쪽은 종속자입니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2046,8 +2046,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-02"
       }
@@ -2060,20 +2060,20 @@
       "topic": "데이터 모델과 성능",
       "type": "multiple_choice",
       "difficulty": 2,
-      "question": "복합키 전체가 있어야 성적이 결정되는 경우는?",
+      "question": "학번과 과목코드를 함께 알아야 성적이 결정된다. 가장 가까운 설명은?",
       "choices": [
-        "완전 함수 종속",
         "부분 함수 종속",
         "이행 함수 종속",
+        "완전 함수 종속",
         "참조 종속"
       ],
-      "answerIndex": 0,
-      "explanation": "기본키 전체에 종속되면 완전 함수 종속입니다. 복합키 일부만으로는 결정되지 않아야 합니다.",
+      "answerIndex": 2,
+      "explanation": "복합키 전체가 있어야 값이 결정되면 완전 함수 종속입니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2081,8 +2081,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-02-FULL"
       }
@@ -2095,20 +2095,20 @@
       "topic": "데이터 모델과 성능",
       "type": "multiple_choice",
       "difficulty": 2,
-      "question": "복합키 중 일부만으로 학생이름이 결정되는 경우는?",
+      "question": "PK가 학번+과목코드인데 학생이름은 학번만으로 결정된다. 어떤 종속인가?",
       "choices": [
         "완전 함수 종속",
-        "부분 함수 종속",
         "이행 함수 종속",
-        "도메인 종속"
+        "도메인 종속",
+        "부분 함수 종속"
       ],
-      "answerIndex": 1,
-      "explanation": "복합키 일부에만 종속되면 부분 함수 종속입니다. 이를 제거하면 제2정규형으로 갑니다.",
+      "answerIndex": 3,
+      "explanation": "복합키 전체가 아니라 일부 키에만 매달린 속성이 있으면 부분 함수 종속입니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2116,8 +2116,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-02-PARTIAL"
       }
@@ -2130,20 +2130,20 @@
       "topic": "데이터 모델과 성능",
       "type": "multiple_choice",
       "difficulty": 2,
-      "question": "학번 → 학과코드 → 학과명처럼 간접으로 결정되는 관계는?",
+      "question": "학번 → 학과코드 → 학과명처럼 한 번 거쳐서 결정되는 관계는?",
       "choices": [
         "완전 함수 종속",
-        "부분 함수 종속",
         "이행 함수 종속",
+        "부분 함수 종속",
         "외래 함수 종속"
       ],
-      "answerIndex": 2,
-      "explanation": "한 번 건너서 결정되는 구조는 이행 함수 종속입니다. 학번 → 학과코드 → 학과명이 대표 예입니다.",
+      "answerIndex": 1,
+      "explanation": "A가 B를 정하고 B가 C를 정해 A가 C까지 간접으로 정하면 이행 함수 종속입니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2151,8 +2151,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-02-TRANSITIVE"
       }
@@ -2178,7 +2178,7 @@
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2186,8 +2186,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-03"
       }
@@ -2202,18 +2202,18 @@
       "difficulty": 1,
       "question": "1NF가 요구하는 핵심 조건은?",
       "choices": [
-        "속성 값의 원자성",
         "부분 종속 제거",
-        "이행 종속 제거",
-        "모든 결정자가 후보키"
+        "모든 결정자가 후보키",
+        "속성 값의 원자성",
+        "이행 종속 제거"
       ],
-      "answerIndex": 0,
+      "answerIndex": 2,
       "explanation": "1NF는 한 칸에 하나의 값, 즉 원자값을 요구합니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2221,8 +2221,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-03-1NF"
       }
@@ -2237,18 +2237,18 @@
       "difficulty": 2,
       "question": "2NF에서 제거해야 하는 것은?",
       "choices": [
-        "부분 함수 종속",
         "이행 함수 종속",
+        "부분 함수 종속",
         "모든 후보키",
         "참조 무결성"
       ],
-      "answerIndex": 0,
-      "explanation": "2NF는 부분 함수 종속을 제거한 상태입니다. 복합키 일부에만 매달린 속성을 분리합니다.",
+      "answerIndex": 1,
+      "explanation": "2NF는 복합키 일부에만 매달린 부분 함수 종속을 제거한 상태입니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2256,8 +2256,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-03-2NF"
       }
@@ -2273,17 +2273,17 @@
       "question": "3NF에서 제거해야 하는 것은?",
       "choices": [
         "부분 함수 종속",
-        "이행 함수 종속",
         "모든 기본키",
-        "정렬 기준"
+        "정렬 기준",
+        "이행 함수 종속"
       ],
-      "answerIndex": 1,
-      "explanation": "3NF는 이행 함수 종속을 제거한 상태입니다. 기본키가 아닌 속성끼리의 간접 종속을 줄입니다.",
+      "answerIndex": 3,
+      "explanation": "3NF는 기본키가 아닌 속성끼리 이어지는 이행 함수 종속을 제거한 상태입니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2291,8 +2291,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-03-3NF"
       }
@@ -2318,7 +2318,7 @@
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2326,8 +2326,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-03-BCNF"
       }
@@ -2342,18 +2342,18 @@
       "difficulty": 1,
       "question": "반정규화를 고려하기 가장 적절한 상황은?",
       "choices": [
-        "조회 시 반복 JOIN으로 응답이 느릴 때",
-        "중복을 무조건 0으로 만들어야 할 때",
         "PK를 삭제해야 할 때",
-        "데이터를 절대 조회하지 않을 때"
+        "데이터를 절대 조회하지 않을 때",
+        "조회 시 반복 JOIN으로 응답이 느릴 때",
+        "중복을 무조건 0으로 만들어야 할 때"
       ],
-      "answerIndex": 0,
+      "answerIndex": 2,
       "explanation": "반정규화는 주로 조회 성능 개선을 위해 고려합니다. 반복 JOIN이나 집계가 병목일 때 검토합니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2361,8 +2361,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-04"
       }
@@ -2377,18 +2377,18 @@
       "difficulty": 2,
       "question": "반정규화 방법에 해당하는 것은?",
       "choices": [
-        "요약 테이블 생성",
         "모든 컬럼 삭제",
         "PK 중복 허용",
-        "WHERE 절 금지"
+        "WHERE 절 금지",
+        "월별 매출 요약 테이블 생성"
       ],
-      "answerIndex": 0,
+      "answerIndex": 3,
       "explanation": "요약 테이블, 컬럼 중복, 파생 컬럼, 테이블 통합 등이 반정규화 방법입니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2396,8 +2396,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-04-METHODS"
       }
@@ -2412,18 +2412,18 @@
       "difficulty": 2,
       "question": "반정규화의 대가로 가장 적절한 것은?",
       "choices": [
-        "갱신 부담과 일관성 리스크 증가",
         "모든 JOIN 제거로 무조건 안전",
+        "갱신 부담과 일관성 리스크 증가",
         "저장 공간이 항상 감소",
         "무결성 문제가 자동 해결"
       ],
-      "answerIndex": 0,
-      "explanation": "중복을 허용하므로 갱신 부담과 일관성 리스크가 커질 수 있습니다.",
+      "answerIndex": 1,
+      "explanation": "중복을 허용하므로 수정할 곳이 늘고, 일부만 바뀌면 값이 서로 달라질 수 있습니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2431,8 +2431,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-04-TRADEOFF"
       }
@@ -2447,18 +2447,18 @@
       "difficulty": 1,
       "question": "특수 관계의 예로 가장 적절한 것은?",
       "choices": [
-        "사원 테이블의 상사사번이 다시 사원 테이블을 참조한다",
         "모든 테이블을 삭제한다",
         "컬럼명을 영어로만 쓴다",
+        "사원 테이블의 상사사번이 다시 사원 테이블을 참조한다",
         "NULL을 0으로 바꾼다"
       ],
-      "answerIndex": 0,
+      "answerIndex": 2,
       "explanation": "같은 엔터티를 다시 참조하는 구조는 계층형/순환 관계의 예입니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2466,8 +2466,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-05"
       }
@@ -2480,7 +2480,7 @@
       "topic": "데이터 모델과 성능",
       "type": "multiple_choice",
       "difficulty": 1,
-      "question": "계층형 관계를 다루는 대표 방식으로 적절한 것은?",
+      "question": "사원과 상사처럼 같은 테이블 안에서 위아래 구조를 다루는 대표 방식은?",
       "choices": [
         "셀프 조인",
         "테이블 삭제",
@@ -2488,12 +2488,12 @@
         "무조건 반정규화"
       ],
       "answerIndex": 0,
-      "explanation": "사원-상사처럼 같은 테이블을 참조하는 구조는 셀프 조인 등으로 다룰 수 있습니다.",
+      "explanation": "사원-상사처럼 같은 테이블을 다시 참조하는 구조는 셀프 조인 등으로 다룰 수 있습니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2501,8 +2501,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-05-HIERARCHY"
       }
@@ -2517,18 +2517,18 @@
       "difficulty": 2,
       "question": "상호배타 관계에 가장 가까운 예시는?",
       "choices": [
-        "결제는 카드 또는 계좌이체 중 하나만 선택된다",
         "학생은 이름을 반드시 가진다",
         "학번은 중복될 수 없다",
-        "점수는 평균을 낸다"
+        "점수는 평균을 낸다",
+        "결제는 카드 또는 계좌이체 중 하나만 선택된다"
       ],
-      "answerIndex": 0,
-      "explanation": "상호배타 관계는 여러 부모 후보 중 하나만 선택되는 구조입니다.",
+      "answerIndex": 3,
+      "explanation": "상호배타 관계는 여러 후보 중 하나만 선택되는 구조입니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2536,8 +2536,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-05-EXCLUSIVE"
       }
@@ -2552,18 +2552,18 @@
       "difficulty": 1,
       "question": "트랜잭션에 가장 가까운 설명은?",
       "choices": [
-        "하나로 묶어 처리해야 하는 DB 작업 단위",
         "화면의 카드 색상",
+        "하나로 묶어 처리해야 하는 DB 작업 단위",
         "컬럼 이름 규칙",
         "검색엔진 설명문"
       ],
-      "answerIndex": 0,
+      "answerIndex": 1,
       "explanation": "트랜잭션은 여러 SQL을 하나의 논리 작업 단위로 묶는 개념입니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2571,8 +2571,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-06"
       }
@@ -2587,18 +2587,18 @@
       "difficulty": 1,
       "question": "ACID 중 “전부 성공 또는 전부 취소”를 뜻하는 것은?",
       "choices": [
-        "원자성",
         "일관성",
         "고립성",
+        "원자성",
         "지속성"
       ],
-      "answerIndex": 0,
+      "answerIndex": 2,
       "explanation": "원자성은 트랜잭션이 전부 성공하거나 전부 취소되어야 한다는 성질입니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2606,8 +2606,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-06-ACID"
       }
@@ -2628,12 +2628,12 @@
         "Repeatable Read → Serializable → Read Uncommitted → Read Committed"
       ],
       "answerIndex": 0,
-      "explanation": "일반적으로 RU < RC < RR < Serializable 순서로 강해집니다.",
+      "explanation": "일반적으로 RU < RC < RR < Serializable 순서로 강해집니다. 강할수록 일관성은 좋아지지만 성능 부담이 커질 수 있습니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2641,8 +2641,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-06-ISOLATION"
       }
@@ -2658,17 +2658,17 @@
       "question": "NULL에 대한 설명으로 옳은 것은?",
       "choices": [
         "0과 같은 값이다",
-        "값이 없거나 알 수 없다는 의미에 가깝다",
         "항상 TRUE다",
-        "무조건 정렬에서 맨 앞이다"
+        "무조건 정렬에서 맨 앞이다",
+        "값이 없거나 알 수 없다는 의미에 가깝다"
       ],
-      "answerIndex": 1,
+      "answerIndex": 3,
       "explanation": "NULL은 0이나 빈 문자열이 아니라 값이 없거나 알 수 없음을 나타냅니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2676,8 +2676,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-07"
       }
@@ -2703,7 +2703,7 @@
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2711,8 +2711,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-07-COMPARE"
       }
@@ -2727,18 +2727,18 @@
       "difficulty": 2,
       "question": "COUNT(*)와 COUNT(컬럼)의 차이로 옳은 것은?",
       "choices": [
-        "COUNT(*)는 NULL 행도 포함해 행 수를 센다",
         "COUNT(컬럼)은 항상 COUNT(*)와 같다",
+        "COUNT(*)는 NULL 행도 포함해 행 수를 센다",
         "COUNT(*)는 NULL이 있으면 실패한다",
         "COUNT(컬럼)은 NULL만 센다"
       ],
-      "answerIndex": 0,
+      "answerIndex": 1,
       "explanation": "COUNT(*)는 행 수를 세므로 NULL이 있어도 포함합니다. COUNT(컬럼)은 NULL을 제외합니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2746,8 +2746,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-07-AGGREGATE"
       }
@@ -2773,7 +2773,7 @@
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2781,8 +2781,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-07-SORT"
       }
@@ -2797,18 +2797,18 @@
       "difficulty": 1,
       "question": "본질식별자에 가까운 예시는?",
       "choices": [
-        "학번",
         "자동 증가 id",
         "UUID",
+        "학번",
         "랜덤 시퀀스"
       ],
-      "answerIndex": 0,
+      "answerIndex": 2,
       "explanation": "본질식별자는 업무에 원래 존재하는 식별자입니다. 학번은 본질식별자에 가깝습니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2816,8 +2816,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-08"
       }
@@ -2832,18 +2832,18 @@
       "difficulty": 2,
       "question": "인조식별자를 쓰는 이유로 적절한 것은?",
       "choices": [
-        "업무 정책 변화와 개인정보 노출 리스크를 줄일 수 있다",
         "항상 사람이 의미를 바로 알 수 있다",
+        "업무 정책 변화와 개인정보 노출 리스크를 줄일 수 있다",
         "중복 검증이 절대 필요 없다",
         "모든 FK가 자동 삭제된다"
       ],
-      "answerIndex": 0,
+      "answerIndex": 1,
       "explanation": "인조식별자는 의미 없는 내부 ID라서 업무 값 변경과 개인정보 노출에 강합니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2851,8 +2851,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-08-SURROGATE"
       }
@@ -2867,18 +2867,18 @@
       "difficulty": 2,
       "question": "실무에서 가장 안정적인 식별자 설계에 가까운 것은?",
       "choices": [
-        "인조 PK + 본질 값 UNIQUE",
         "주민번호를 모든 테이블 PK로 직접 사용",
         "PK 없이 이름만 사용",
-        "중복을 허용하고 나중에 수동 정리"
+        "중복을 허용하고 나중에 수동 정리",
+        "인조 PK + 본질 값 UNIQUE"
       ],
-      "answerIndex": 0,
+      "answerIndex": 3,
       "explanation": "PK는 인조식별자로 안정적으로 두고, 업무상 중복되면 안 되는 값은 UNIQUE로 관리하는 방식이 흔합니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [
-          "SQLD 모델링/성능 개념을 모바일 마이크로 스텝으로 세분화"
+          "SQLD 데이터 모델과 성능 Part 2 전체를 초보자용 흐름으로 재작성"
         ],
         "changed_fields": [
           "question",
@@ -2886,8 +2886,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "각 세부 개념 직후 즉시 확인 문제를 제공하기 위함",
-        "audited_at": "2026-05-23",
+        "reason": "Part 2의 정규화·성능·트랜잭션·NULL 개념을 처음 보는 사용자도 단계별로 이해하고 바로 확인 문제를 풀 수 있게 하기 위함",
+        "audited_at": "2026-05-25",
         "auditor": "codex",
         "source_md": "Q-SQLD-1-2-CP-08-PRACTICE"
       }

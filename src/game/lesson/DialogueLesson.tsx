@@ -310,6 +310,13 @@ export default function DialogueLesson({
     if (stepId === 'sqld-1-1-s6-role') return '구성 방식에 따른 분류';
     return null;
   };
+  const dataModelingDiagramMode = (() => {
+    if (phase !== 'narrate' || step.id !== 'sqld-1-1-s1') return null;
+    if (turnIdx < 1) return null;
+    if (turnIdx <= 2) return 'reality';
+    if (turnIdx <= 3) return 'modeling';
+    return 'schema';
+  })();
   const entityTypeDiagramMode = (() => {
     if (phase !== 'narrate' || step.id !== 'sqld-1-1-s5-kind') return null;
     if (turnIdx < 1) return null;
@@ -854,6 +861,10 @@ export default function DialogueLesson({
           </div>
         ) : null}
 
+        {dataModelingDiagramMode ? (
+          <DataModelingIntroDiagram mode={dataModelingDiagramMode} />
+        ) : null}
+
         {/*
           Sub-step trail — 그룹 안 단계 (DIKW 5단계 등) 세로 배치.
           narrate 단계만 노출 (문제 풀 때는 선지가 우선이라 숨김).
@@ -869,6 +880,7 @@ export default function DialogueLesson({
         */}
         {phase === 'narrate' &&
         shouldShowGroupTrail &&
+        !dataModelingDiagramMode &&
         !schemaDiagramMode &&
         !entityTypeDiagramMode &&
         !relationshipDiagramMode &&
@@ -1357,6 +1369,231 @@ function DatabaseCylinder({ active }: { active: boolean }) {
         </div>
       </div>
     </div>
+  );
+}
+
+type DataModelingDiagramMode = 'reality' | 'modeling' | 'schema';
+
+function DataModelingIntroDiagram({ mode }: { mode: DataModelingDiagramMode }) {
+  const realityActive = mode === 'reality';
+  const modelingActive = mode === 'modeling';
+  const schemaActive = mode === 'schema';
+
+  return (
+    <motion.figure
+      key={`data-modeling-${mode}`}
+      className="mx-auto mt-6 w-full max-w-[560px]"
+      aria-label="현실 세계의 정보가 데이터 모델링을 거쳐 데이터베이스 구조가 되는 과정"
+      initial={{ opacity: 0, y: 18, scale: 0.98, filter: 'blur(6px)' }}
+      animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      transition={{ type: 'spring', stiffness: 340, damping: 31, mass: 0.82 }}
+    >
+      <div className="relative overflow-hidden rounded-[26px] border border-[#c084fc]/24 bg-[#06122d]/94 p-4 shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-70"
+          style={{
+            background:
+              'radial-gradient(circle at 20% 8%, rgba(192,132,252,0.18), transparent 34%), radial-gradient(circle at 88% 18%, rgba(103,232,249,0.12), transparent 32%)',
+          }}
+        />
+
+        <div className="relative mb-4 flex items-end justify-between gap-3">
+          <div>
+            <div className="kr-num text-[9px] font-black uppercase tracking-[0.18em] text-[#c084fc]/85">
+              DATA MODELING
+            </div>
+            <div className="kr-heading mt-1 text-[20px] leading-tight text-cream">
+              현실을 DB 설계도로
+            </div>
+          </div>
+          <div className="kr-body max-w-[118px] text-right text-[11px] font-bold leading-snug text-cream/56">
+            수강신청을
+            <br />
+            구조로 정리
+          </div>
+        </div>
+
+        <div className="relative grid gap-3">
+          <DataModelingRealityPanel active={realityActive} />
+          <DataModelingFlowBridge active={modelingActive} />
+          <DataModelingSchemaPanel active={schemaActive} />
+        </div>
+      </div>
+      <figcaption className="sr-only">
+        학생, 과목, 교수, 시간표 같은 현실 정보가 데이터 모델링을 통해 학생, 수강, 과목 같은 데이터베이스 구조로 정리됩니다.
+      </figcaption>
+    </motion.figure>
+  );
+}
+
+function DataModelingRealityPanel({ active }: { active: boolean }) {
+  const items: Array<{ label: string; caption: string; Icon: LucideIcon }> = [
+    { label: '학생', caption: '누가', Icon: UserRound },
+    { label: '과목', caption: '무엇을', Icon: BookOpen },
+    { label: '교수', caption: '누가 담당', Icon: AppWindow },
+    { label: '시간표', caption: '언제', Icon: Layers },
+  ];
+
+  return (
+    <motion.div
+      className={active ? 'relative rounded-[22px] border p-3.5' : 'relative rounded-[18px] border p-3'}
+      style={{
+        borderColor: active ? 'rgba(192,132,252,0.62)' : 'rgba(239,244,255,0.12)',
+        background: active
+          ? 'linear-gradient(145deg, rgba(22,20,60,0.96), rgba(8,16,42,0.96))'
+          : 'rgba(255,255,255,0.035)',
+      }}
+      animate={{ opacity: active ? 1 : 0.74, scale: active ? 1 : 0.992 }}
+      transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+    >
+      <div className={active ? 'mb-3 flex items-center justify-between gap-3' : 'mb-2 flex items-center justify-between gap-3'}>
+        <div className={active ? 'kr-heading text-[16px] leading-none text-cream' : 'kr-heading text-[13px] leading-none text-cream/72'}>
+          현실 세계
+        </div>
+        <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-cream/40">
+          raw facts
+        </div>
+      </div>
+      <div className={active ? 'grid grid-cols-2 gap-2' : 'grid grid-cols-4 gap-1.5'}>
+        {items.map((item, index) => (
+          <motion.div
+            key={item.label}
+            className={
+              active
+                ? 'flex items-center gap-2.5 rounded-[16px] border border-cream/10 bg-white/[0.055] px-3 py-2.5'
+                : 'flex min-w-0 flex-col items-center justify-center gap-1 rounded-[12px] border border-cream/10 bg-white/[0.04] px-1.5 py-2'
+            }
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.04, duration: 0.18 }}
+          >
+            <div
+              className={active ? 'grid h-9 w-9 shrink-0 place-items-center rounded-[13px] border' : 'grid h-7 w-7 shrink-0 place-items-center rounded-[10px] border'}
+              style={{
+                color: active ? '#d8b4fe' : 'rgba(239,244,255,0.55)',
+                borderColor: active ? 'rgba(192,132,252,0.38)' : 'rgba(239,244,255,0.12)',
+                background: active ? 'rgba(192,132,252,0.12)' : 'rgba(255,255,255,0.035)',
+              }}
+              aria-hidden
+            >
+              <item.Icon size={active ? 17 : 13} strokeWidth={2.35} />
+            </div>
+            <div className={active ? 'min-w-0' : 'min-w-0 text-center'}>
+              <div className={active ? 'kr-heading text-[14px] leading-none text-cream' : 'truncate kr-heading text-[10.5px] leading-none text-cream/64'}>
+                {item.label}
+              </div>
+              {active ? (
+                <div className="mt-1 kr-body text-[10.5px] font-bold leading-none text-cream/45">
+                  {item.caption}
+                </div>
+              ) : null}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
+function DataModelingFlowBridge({ active }: { active: boolean }) {
+  return (
+    <motion.div
+      className="relative flex items-center gap-3 px-1"
+      animate={{ opacity: active ? 1 : 0.72 }}
+      transition={{ duration: 0.18 }}
+      aria-hidden
+    >
+      <div className="h-px flex-1 bg-gradient-to-r from-transparent via-[#c084fc]/28 to-[#c084fc]/10" />
+      <div
+        className={active ? 'relative grid h-[74px] w-[74px] shrink-0 place-items-center rounded-[24px] border' : 'relative grid h-[54px] w-[54px] shrink-0 place-items-center rounded-[18px] border'}
+        style={{
+          borderColor: active ? 'rgba(209,248,67,0.64)' : 'rgba(239,244,255,0.14)',
+          background: active
+            ? 'linear-gradient(145deg, rgba(209,248,67,0.16), rgba(103,232,249,0.10))'
+            : 'rgba(255,255,255,0.04)',
+          boxShadow: active ? '0 16px 34px rgba(0,0,0,0.28)' : 'none',
+        }}
+      >
+        <div className={active ? 'absolute inset-[11px] rounded-[18px] border border-white/10' : 'absolute inset-[8px] rounded-[13px] border border-white/10'} />
+        <Database
+          size={active ? 25 : 19}
+          strokeWidth={2.5}
+          className={active ? 'text-[#d1f843]' : 'text-cream/48'}
+        />
+        <div className="absolute -bottom-3 rounded-full border border-cream/10 bg-[#071326] px-3 py-1 kr-num text-[9px] font-black uppercase tracking-[0.12em] text-cream/68">
+          MODELING
+        </div>
+      </div>
+      <div className="h-px flex-1 bg-gradient-to-r from-[#c084fc]/10 via-[#67e8f9]/28 to-transparent" />
+    </motion.div>
+  );
+}
+
+function DataModelingSchemaPanel({ active }: { active: boolean }) {
+  const tables = [
+    { title: '학생', rows: ['학번', '이름'], Icon: UserRound },
+    { title: '수강', rows: ['학번', '과목코드'], Icon: ClipboardList },
+    { title: '과목', rows: ['과목코드', '과목명'], Icon: BookOpen },
+  ] as const;
+
+  return (
+    <motion.div
+      className={active ? 'relative rounded-[22px] border p-3.5' : 'relative rounded-[18px] border p-3'}
+      style={{
+        borderColor: active ? 'rgba(103,232,249,0.52)' : 'rgba(239,244,255,0.12)',
+        background: active
+          ? 'linear-gradient(145deg, rgba(9,34,56,0.96), rgba(8,16,42,0.96))'
+          : 'rgba(255,255,255,0.035)',
+      }}
+      animate={{ opacity: active ? 1 : 0.78, scale: active ? 1 : 0.992 }}
+      transition={{ type: 'spring', stiffness: 320, damping: 28 }}
+    >
+      <div className={active ? 'mb-3 flex items-center justify-between gap-3' : 'mb-2 flex items-center justify-between gap-3'}>
+        <div className={active ? 'kr-heading text-[16px] leading-none text-cream' : 'kr-heading text-[13px] leading-none text-cream/72'}>
+          DB 구조
+        </div>
+        <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-cream/40">
+          tables
+        </div>
+      </div>
+
+      <div className="grid grid-cols-3 gap-2">
+        {tables.map((table, index) => (
+          <motion.div
+            key={table.title}
+            className={active ? 'rounded-[16px] border border-cream/10 bg-[#081632]/88 p-2.5' : 'rounded-[12px] border border-cream/10 bg-[#081632]/70 p-2'}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.045, duration: 0.18 }}
+          >
+            <div className={active ? 'flex items-center gap-1.5 border-b border-cream/10 pb-2' : 'flex items-center justify-center gap-1.5'}>
+              <table.Icon
+                size={active ? 14 : 12}
+                strokeWidth={2.4}
+                className={active ? 'text-[#67e8f9]' : 'text-cream/48'}
+                aria-hidden
+              />
+              <div className={active ? 'kr-heading text-[13px] leading-none text-cream' : 'kr-heading text-[10.5px] leading-none text-cream/64'}>
+                {table.title}
+              </div>
+            </div>
+            {active ? (
+              <div className="mt-2 grid gap-1.5">
+                {table.rows.map((row) => (
+                  <div
+                    key={row}
+                    className="rounded-[10px] border border-cream/10 bg-white/[0.045] px-1.5 py-1.5 text-center kr-body text-[10.5px] font-black leading-none text-cream/76"
+                  >
+                    {row}
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
   );
 }
 

@@ -1986,22 +1986,44 @@ const SQLD_1_1: Lesson = {
           dialogue: [
                 {
                       pose: "think",
-                      text: "[무결성]은 데이터가 틀어지지 않게 지키는 규칙이야."
+                      text: "[무결성]은 DB 안의 데이터가 약속한 규칙을 계속 지키는 상태야."
                 },
                 {
                       pose: "lightbulb",
-                      text: "[개체]는 PK, [참조]는 FK, [도메인]은 값 범위와 관련 있어."
+                      text: "예를 들어 학생 표에서 학번이 비어 있거나 중복되면 한 학생을 정확히 찾을 수 없겠지?"
                 },
                 {
                       pose: "happy",
-                      text: "PK는 비어 있으면 안 되고, FK는 없는 부모를 가리키면 안 돼."
+                      text: "또 수강 테이블의 학번이 실제 학생 표에 없다면 연결이 끊긴 데이터가 돼."
+                },
+                {
+                      pose: "lightbulb",
+                      text: "그래서 [개체 무결성]은 PK, [참조 무결성]은 FK, [도메인 무결성]은 값 범위를 지켜."
                 },
                 {
                       pose: "idle",
-                      text: "무결성 종류를 맞춰보자."
+                      text: "이제 무결성 종류를 맞춰보자."
                 }
           ],
           blocks: [
+                {
+                      kind: "intro",
+                      body: "무결성은 데이터가 정확하고 일관된 상태를 유지하도록 DB가 지키는 규칙입니다. 저장하거나 수정하거나 삭제할 때도 이 규칙이 깨지면 안 됩니다."
+                },
+                {
+                      kind: "example",
+                      title: "학생 DB 예시",
+                      body: "학번이 비어 있으면 학생 한 명을 구분할 수 없습니다. 수강 기록이 없는 학번을 가리키면 학생과 수강 기록의 연결도 깨집니다. 학년 칸에 99가 들어가도 현실과 맞지 않습니다."
+                },
+                {
+                      kind: "keypoints",
+                      title: "무결성은 무엇을 지킬까?",
+                      items: [
+                            "개체 무결성: 한 행을 구분하는 PK가 비거나 중복되지 않게 지킴",
+                            "참조 무결성: FK가 실제로 존재하는 부모 행을 가리키게 지킴",
+                            "도메인 무결성: 값이 허용된 범위와 형식 안에 들어오게 지킴"
+                      ]
+                },
                 {
                       kind: "table",
                       title: "무결성 3종",
@@ -2013,20 +2035,26 @@ const SQLD_1_1: Lesson = {
                       rows: [
                             [
                                   "개체 무결성",
-                                  "기본키는 NULL 불가·중복 불가",
-                                  "학번 PK"
+                                  "PK는 NULL 불가·중복 불가",
+                                  "학번이 비거나 겹치면 안 됨"
                             ],
                             [
                                   "참조 무결성",
-                                  "외래키는 실제 부모를 참조",
-                                  "없는 학과ID 금지"
+                                  "FK는 실제 부모를 참조",
+                                  "없는 학번을 수강 기록에 쓰면 안 됨"
                             ],
                             [
                                   "도메인 무결성",
                                   "속성 값은 허용 범위 안",
-                                  "학년 1~4"
+                                  "학년은 1~4 같은 범위 안"
                             ]
                       ]
+                },
+                {
+                      kind: "callout",
+                      tone: "mnemonic",
+                      title: "PK · FK · 값 범위",
+                      body: "문제에서 PK가 나오면 개체 무결성, FK가 나오면 참조 무결성, 값의 범위나 형식이 나오면 도메인 무결성을 떠올리면 됩니다."
                 }
           ]
     },
@@ -2092,1092 +2120,1173 @@ const SQLD_1_1: Lesson = {
 };
 
 const SQLD_1_2: Lesson = {
-  id: 'sqld-1-2',
-  subject: 'sqld',
+  id: "sqld-1-2",
+  subject: "sqld",
   chapter: 1,
-  chapterTitle: '데이터 모델링의 이해',
-  topic: '데이터 모델과 성능',
-  title: '정규화·반정규화·트랜잭션·NULL',
-  hook: '좋은 테이블은 "중복 없고 이상 안 생기게" 쪼갠 것. 단, 성능 필요하면 합친다.',
-  estimatedMinutes: 34,
+  chapterTitle: "데이터 모델링의 이해",
+  topic: "데이터 모델과 성능",
+  title: "정규화·성능·트랜잭션·NULL",
+  hook: "중복 때문에 생기는 문제를 정규화로 줄이고, 성능이 필요할 때만 신중하게 보정한다.",
+  estimatedMinutes: 42,
   steps: [
     {
-          id: "sqld-1-2-s1",
-          title: "이상 현상이란",
-          quizId: "sqld-1-2-cp-01",
-          group: "sqld-1-2-g1-anomaly",
-          dialogue: [
-                {
-                      pose: "wave",
-                      text: "[이상 현상]은 한 테이블에 정보를 너무 많이 섞었을 때 생기는 부작용이야."
-                },
-                {
-                      pose: "think",
-                      text: "학생 정보와 학과 정보를 한 표에 같이 넣으면 학과명이 여러 번 반복될 수 있어."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "이 중복 때문에 삽입·삭제·갱신 문제가 생겨."
-                },
-                {
-                      pose: "idle",
-                      text: "이상 현상 3종을 먼저 확인해보자."
-                }
-          ],
-          blocks: [
-                {
-                      kind: "intro",
-                      body: "이상 현상은 중복된 데이터 때문에 데이터를 넣거나 지우거나 고칠 때 생기는 부작용입니다."
-                },
-                {
-                      kind: "keypoints",
-                      title: "3종",
-                      items: [
-                            "삽입 이상",
-                            "삭제 이상",
-                            "갱신 이상"
-                      ]
-                },
-                {
-                      kind: "callout",
-                      tone: "mnemonic",
-                      title: "삽·삭·갱",
-                      body: "조회 이상은 없습니다. 삽입·삭제·갱신만 기억하세요."
-                }
+      id: "sqld-1-2-s1",
+      title: "이상 현상이란",
+      quizId: "sqld-1-2-cp-01",
+      group: "sqld-1-2-g1-anomaly",
+      dialogue: [
+        {
+          pose: "wave",
+          text: "[이상 현상]은 한 표에 너무 많은 정보를 섞어 놓았을 때 생기는 문제야."
+        },
+        {
+          pose: "think",
+          text: "학생 정보, 학과 정보, 수강 정보를 한 표에 몰아넣으면 같은 학과명이 계속 반복될 수 있어."
+        },
+        {
+          pose: "lightbulb",
+          text: "그 반복 때문에 데이터를 넣을 때, 지울 때, 고칠 때 사고가 생겨."
+        },
+        {
+          pose: "idle",
+          text: "이상 현상 3종부터 잡아보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "intro",
+          body: "이상 현상은 중복된 데이터 때문에 삽입·삭제·갱신 과정에서 생기는 부작용입니다."
+        },
+        {
+          kind: "keypoints",
+          title: "이상 현상 3종",
+          items: [
+            "삽입 이상",
+            "삭제 이상",
+            "갱신 이상"
           ]
+        },
+        {
+          kind: "callout",
+          tone: "mnemonic",
+          title: "삽·삭·갱",
+          body: "SQLD에서는 삽입·삭제·갱신 이상을 묻습니다. “조회 이상”은 표준 분류가 아닙니다."
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s1-insert",
-          title: "삽입 이상",
-          quizId: "sqld-1-2-cp-01-insert",
-          group: "sqld-1-2-g1-anomaly",
-          dialogue: [
-                {
-                      pose: "think",
-                      text: "[삽입 이상]은 넣고 싶은 정보만 깔끔하게 넣지 못하는 문제야."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "학생이 아직 없는 새 학과를 등록하려는데 학생 칸까지 필요하면 곤란하지."
-                },
-                {
-                      pose: "happy",
-                      text: "학과 정보만 따로 저장할 수 없어서 생기는 문제야."
-                },
-                {
-                      pose: "idle",
-                      text: "삽입 이상 예시를 골라보자."
-                }
-          ],
-          blocks: [
-                {
-                      kind: "intro",
-                      body: "삽입 이상은 새로운 데이터를 넣을 때 불필요한 다른 데이터까지 같이 넣어야 하는 문제입니다."
-                },
-                {
-                      kind: "example",
-                      title: "학교 예시",
-                      body: "신설 학과를 등록하고 싶은데 학생 테이블과 섞여 있어서 학생 정보 없이는 학과를 넣지 못하는 경우입니다."
-                }
-          ]
+      id: "sqld-1-2-s1-insert",
+      title: "삽입 이상",
+      quizId: "sqld-1-2-cp-01-insert",
+      group: "sqld-1-2-g1-anomaly",
+      dialogue: [
+        {
+          pose: "think",
+          text: "[삽입 이상]은 넣고 싶은 정보만 따로 넣지 못하는 문제야."
+        },
+        {
+          pose: "lightbulb",
+          text: "예를 들어 신설 학과만 등록하고 싶은데, 그 학과 학생 정보까지 있어야 저장된다면 이상하지?"
+        },
+        {
+          pose: "happy",
+          text: "정보가 서로 과하게 묶여 있어서 생기는 문제야."
+        },
+        {
+          pose: "idle",
+          text: "삽입 이상 예시를 골라보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "intro",
+          body: "삽입 이상은 새 데이터를 넣을 때 원하지 않는 다른 데이터까지 함께 요구되는 문제입니다."
+        },
+        {
+          kind: "example",
+          title: "학교 예시",
+          body: "“AI데이터학과”를 새로 만들었는데 아직 학생이 없습니다. 그런데 학생 행이 없으면 학과를 저장할 수 없다면 삽입 이상입니다."
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s1-delete",
-          title: "삭제 이상",
-          quizId: "sqld-1-2-cp-01-delete",
-          group: "sqld-1-2-g1-anomaly",
-          dialogue: [
-                {
-                      pose: "think",
-                      text: "[삭제 이상]은 지우려던 것보다 더 많은 정보가 사라지는 문제야."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "학과의 마지막 학생을 삭제했더니 학과 정보까지 사라지는 상황을 떠올려봐."
-                },
-                {
-                      pose: "idle",
-                      text: "삭제 이상에 맞는 예시를 찾아보자."
-                }
-          ],
-          blocks: [
-                {
-                      kind: "intro",
-                      body: "삭제 이상은 데이터를 삭제할 때 보존해야 할 정보까지 함께 없어지는 문제입니다."
-                },
-                {
-                      kind: "example",
-                      title: "학교 예시",
-                      body: "마지막 재학생 행을 지웠더니 학과명과 학과 사무실 정보까지 사라지는 경우입니다."
-                }
-          ]
+      id: "sqld-1-2-s1-delete",
+      title: "삭제 이상",
+      quizId: "sqld-1-2-cp-01-delete",
+      group: "sqld-1-2-g1-anomaly",
+      dialogue: [
+        {
+          pose: "think",
+          text: "[삭제 이상]은 지우려던 데이터와 함께 남겨야 할 정보까지 사라지는 문제야."
+        },
+        {
+          pose: "lightbulb",
+          text: "마지막 학생 행을 지웠더니 그 학생의 학과 정보까지 같이 사라지는 장면을 떠올려봐."
+        },
+        {
+          pose: "idle",
+          text: "삭제 이상에 맞는 예시를 찾아보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "intro",
+          body: "삭제 이상은 데이터를 삭제했을 때 보존해야 할 정보가 함께 없어지는 문제입니다."
+        },
+        {
+          kind: "example",
+          title: "학교 예시",
+          body: "마지막 재학생을 지웠을 뿐인데 학과명, 학과 사무실, 학과 전화번호까지 알 수 없게 되면 삭제 이상입니다."
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s1-update",
-          title: "갱신 이상",
-          quizId: "sqld-1-2-cp-01-update",
-          group: "sqld-1-2-g1-anomaly",
-          dialogue: [
-                {
-                      pose: "think",
-                      text: "[갱신 이상]은 같은 정보를 여러 군데 고쳐야 해서 일부만 바뀌는 문제야."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "학과명이 100행에 반복되면 100행을 모두 수정해야 해."
-                },
-                {
-                      pose: "happy",
-                      text: "하나라도 놓치면 같은 학과 이름이 서로 달라지는 모순이 생겨."
-                },
-                {
-                      pose: "idle",
-                      text: "갱신 이상을 골라보자."
-                }
-          ],
-          blocks: [
-                {
-                      kind: "intro",
-                      body: "갱신 이상은 중복된 값을 일부만 수정해서 데이터가 서로 모순되는 문제입니다."
-                },
-                {
-                      kind: "example",
-                      title: "학교 예시",
-                      body: "“컴퓨터공학과”를 “AI소프트웨어학과”로 바꿨는데 일부 행만 바뀌면 같은 학과가 두 이름으로 남습니다."
-                }
-          ]
+      id: "sqld-1-2-s1-update",
+      title: "갱신 이상",
+      quizId: "sqld-1-2-cp-01-update",
+      group: "sqld-1-2-g1-anomaly",
+      dialogue: [
+        {
+          pose: "think",
+          text: "[갱신 이상]은 같은 정보를 여러 곳에서 고치다가 일부만 바뀌는 문제야."
+        },
+        {
+          pose: "lightbulb",
+          text: "학과명이 100행에 반복되어 있으면 이름을 바꿀 때 100행을 전부 고쳐야 해."
+        },
+        {
+          pose: "happy",
+          text: "한 행이라도 놓치면 같은 학과가 두 이름으로 남아 모순이 생겨."
+        },
+        {
+          pose: "idle",
+          text: "갱신 이상 상황을 골라보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "intro",
+          body: "갱신 이상은 중복된 값을 일부만 수정해서 데이터가 서로 맞지 않게 되는 문제입니다."
+        },
+        {
+          kind: "example",
+          title: "학교 예시",
+          body: "“컴퓨터공학과”를 “AI소프트웨어학과”로 바꿨는데 일부 행만 바뀌면 같은 학과가 두 이름으로 남습니다."
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s2",
-          title: "함수적 종속이란",
-          quizId: "sqld-1-2-cp-02",
-          group: "sqld-1-2-g2-fd",
-          dialogue: [
-                {
-                      pose: "wave",
-                      text: "[함수적 종속]은 A를 알면 B가 하나로 결정되는 관계야."
-                },
-                {
-                      pose: "think",
-                      text: "학번을 알면 학생 이름이 결정되는 것처럼 말이야."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "표기는 [학번 → 이름]처럼 써."
-                },
-                {
-                      pose: "idle",
-                      text: "함수적 종속의 의미를 확인해보자."
-                }
+      id: "sqld-1-2-s2",
+      title: "함수적 종속이란",
+      quizId: "sqld-1-2-cp-02",
+      group: "sqld-1-2-g2-fd",
+      dialogue: [
+        {
+          pose: "wave",
+          text: "[함수적 종속]은 A를 알면 B가 하나로 정해지는 관계야."
+        },
+        {
+          pose: "think",
+          text: "학번을 알면 학생 이름이 하나로 정해지는 것처럼 말이야."
+        },
+        {
+          pose: "lightbulb",
+          text: "표기는 [학번 → 이름]처럼 써. 왼쪽은 결정자, 오른쪽은 종속자라고 불러."
+        },
+        {
+          pose: "idle",
+          text: "함수적 종속의 의미를 확인해보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "intro",
+          body: "함수적 종속은 어떤 속성 값이 정해지면 다른 속성 값이 하나로 정해지는 관계입니다."
+        },
+        {
+          kind: "table",
+          title: "읽는 법",
+          headers: [
+            "표현",
+            "뜻"
           ],
-          blocks: [
-                {
-                      kind: "intro",
-                      body: "함수적 종속은 어떤 속성 값이 정해지면 다른 속성 값이 하나로 정해지는 관계입니다."
-                },
-                {
-                      kind: "example",
-                      title: "예시",
-                      body: "학번 20260001을 알면 그 학생의 이름이 하나로 정해집니다. 그래서 학번 → 이름이라고 표현할 수 있습니다."
-                }
+          rows: [
+            [
+              "학번 → 이름",
+              "학번을 알면 이름이 정해짐"
+            ],
+            [
+              "과목코드 → 과목명",
+              "과목코드를 알면 과목명이 정해짐"
+            ]
           ]
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s2-full",
-          title: "완전 함수 종속",
-          quizId: "sqld-1-2-cp-02-full",
-          group: "sqld-1-2-g2-fd",
-          dialogue: [
-                {
-                      pose: "think",
-                      text: "[완전 함수 종속]은 복합키 전체가 있어야 값이 결정되는 경우야."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "학번+과목코드가 있어야 성적이 결정된다면 완전 종속이야."
-                },
-                {
-                      pose: "idle",
-                      text: "완전 함수 종속 예시를 골라보자."
-                }
-          ],
-          blocks: [
-                {
-                      kind: "intro",
-                      body: "완전 함수 종속은 기본키 전체에 종속되는 상태입니다."
-                },
-                {
-                      kind: "example",
-                      title: "성적 예시",
-                      body: "학번만으로도, 과목코드만으로도 성적을 알 수 없고 둘을 함께 알아야 성적이 결정되면 완전 함수 종속입니다."
-                }
-          ]
+      id: "sqld-1-2-s2-full",
+      title: "완전 함수 종속",
+      quizId: "sqld-1-2-cp-02-full",
+      group: "sqld-1-2-g2-fd",
+      dialogue: [
+        {
+          pose: "think",
+          text: "[완전 함수 종속]은 복합키 전체가 있어야 값이 결정되는 경우야."
+        },
+        {
+          pose: "lightbulb",
+          text: "수강성적은 학번만 알아도 부족하고, 과목코드만 알아도 부족해."
+        },
+        {
+          pose: "happy",
+          text: "학번 + 과목코드를 함께 알아야 성적이 정해지면 완전 종속이야."
+        },
+        {
+          pose: "idle",
+          text: "완전 함수 종속 예시를 골라보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "intro",
+          body: "완전 함수 종속은 복합키 전체에 종속되는 상태입니다."
+        },
+        {
+          kind: "example",
+          title: "성적 예시",
+          body: "수강성적 테이블의 PK가 학번+과목코드일 때, 성적은 두 값을 모두 알아야 결정됩니다."
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s2-partial",
-          title: "부분 함수 종속",
-          quizId: "sqld-1-2-cp-02-partial",
-          group: "sqld-1-2-g2-fd",
-          dialogue: [
-                {
-                      pose: "think",
-                      text: "[부분 함수 종속]은 복합키 중 일부만으로 값이 결정되는 경우야."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "학번+과목코드가 PK인데 학생이름은 학번만 알아도 결정되지?"
-                },
-                {
-                      pose: "happy",
-                      text: "이런 부분 종속을 제거하면 2NF로 가."
-                },
-                {
-                      pose: "idle",
-                      text: "부분 함수 종속을 찾아보자."
-                }
-          ],
-          blocks: [
-                {
-                      kind: "intro",
-                      body: "부분 함수 종속은 복합키 전체가 아니라 일부 속성에만 종속되는 상태입니다."
-                },
-                {
-                      kind: "callout",
-                      tone: "tip",
-                      title: "정규화 연결",
-                      body: "부분 함수 종속을 제거하는 단계가 제2정규형(2NF)입니다."
-                }
-          ]
+      id: "sqld-1-2-s2-partial",
+      title: "부분 함수 종속",
+      quizId: "sqld-1-2-cp-02-partial",
+      group: "sqld-1-2-g2-fd",
+      dialogue: [
+        {
+          pose: "think",
+          text: "[부분 함수 종속]은 복합키 중 일부만으로 값이 결정되는 경우야."
+        },
+        {
+          pose: "lightbulb",
+          text: "PK가 학번+과목코드인데 학생이름은 학번만 알아도 정해져."
+        },
+        {
+          pose: "happy",
+          text: "이런 값은 수강 테이블에 계속 두면 중복이 늘어나. 그래서 분리해야 해."
+        },
+        {
+          pose: "idle",
+          text: "부분 함수 종속을 찾아보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "intro",
+          body: "부분 함수 종속은 복합키 전체가 아니라 일부 키에만 매달린 속성이 있는 상태입니다."
+        },
+        {
+          kind: "callout",
+          tone: "tip",
+          title: "2NF와 연결",
+          body: "부분 함수 종속을 제거하는 단계가 제2정규형(2NF)입니다."
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s2-transitive",
-          title: "이행 함수 종속",
-          quizId: "sqld-1-2-cp-02-transitive",
-          group: "sqld-1-2-g2-fd",
-          dialogue: [
-                {
-                      pose: "think",
-                      text: "[이행 함수 종속]은 A가 B를 정하고, B가 C를 정해서 A가 C까지 간접 결정하는 구조야."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "학번 → 학과코드 → 학과명 같은 흐름을 떠올리면 쉬워."
-                },
-                {
-                      pose: "happy",
-                      text: "이행 종속을 제거하면 3NF로 가."
-                },
-                {
-                      pose: "idle",
-                      text: "이행 함수 종속 예시를 골라보자."
-                }
-          ],
-          blocks: [
-                {
-                      kind: "intro",
-                      body: "이행 함수 종속은 한 번 건너서 결정되는 종속입니다."
-                },
-                {
-                      kind: "example",
-                      title: "학교 예시",
-                      body: "학번을 알면 학과코드를 알고, 학과코드를 알면 학과명을 알 수 있습니다. 학과명은 학번에 직접이 아니라 간접으로 종속됩니다."
-                }
-          ]
+      id: "sqld-1-2-s2-transitive",
+      title: "이행 함수 종속",
+      quizId: "sqld-1-2-cp-02-transitive",
+      group: "sqld-1-2-g2-fd",
+      dialogue: [
+        {
+          pose: "think",
+          text: "[이행 함수 종속]은 A가 B를 정하고, B가 C를 정해서 A가 C까지 간접으로 정해지는 구조야."
+        },
+        {
+          pose: "lightbulb",
+          text: "학번 → 학과코드 → 학과명 흐름을 떠올리면 쉬워."
+        },
+        {
+          pose: "happy",
+          text: "학과명은 학생이 아니라 학과코드 쪽에 붙어 있는 정보지."
+        },
+        {
+          pose: "idle",
+          text: "이행 함수 종속 예시를 골라보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "intro",
+          body: "이행 함수 종속은 중간 속성을 한 번 거쳐서 결정되는 종속입니다."
+        },
+        {
+          kind: "example",
+          title: "학교 예시",
+          body: "학번을 알면 학과코드를 알고, 학과코드를 알면 학과명을 알 수 있습니다. 이때 학과명은 학번에 간접으로 종속됩니다."
+        },
+        {
+          kind: "callout",
+          tone: "tip",
+          title: "3NF와 연결",
+          body: "이행 함수 종속을 제거하는 단계가 제3정규형(3NF)입니다."
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s3",
-          title: "정규형 순서",
-          quizId: "sqld-1-2-cp-03",
-          group: "sqld-1-2-g3-normal-forms",
-          dialogue: [
-                {
-                      pose: "wave",
-                      text: "[정규형]은 테이블을 더 깔끔하게 만드는 단계야."
-                },
-                {
-                      pose: "think",
-                      text: "1NF → 2NF → 3NF → BCNF 순서로 조건이 강해져."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "암기: [도·부·이·결]."
-                },
-                {
-                      pose: "idle",
-                      text: "정규형 순서를 확인해보자."
-                }
+      id: "sqld-1-2-s3",
+      title: "정규형 순서",
+      quizId: "sqld-1-2-cp-03",
+      group: "sqld-1-2-g3-normal-forms",
+      dialogue: [
+        {
+          pose: "wave",
+          text: "[정규형]은 테이블을 더 안전하고 깔끔하게 만드는 단계야."
+        },
+        {
+          pose: "think",
+          text: "1NF → 2NF → 3NF → BCNF 순서로 조건이 점점 강해져."
+        },
+        {
+          pose: "lightbulb",
+          text: "암기: [도·부·이·결]."
+        },
+        {
+          pose: "idle",
+          text: "정규형 순서를 확인해보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "table",
+          title: "정규형 흐름",
+          headers: [
+            "단계",
+            "핵심"
           ],
-          blocks: [
-                {
-                      kind: "keypoints",
-                      title: "정규형 순서",
-                      items: [
-                            "1NF — 원자값",
-                            "2NF — 부분 함수 종속 제거",
-                            "3NF — 이행 함수 종속 제거",
-                            "BCNF — 모든 결정자가 후보키"
-                      ]
-                },
-                {
-                      kind: "callout",
-                      tone: "mnemonic",
-                      title: "도·부·이·결",
-                      body: "도메인 원자값, 부분 종속 제거, 이행 종속 제거, 결정자=후보키."
-                }
+          rows: [
+            [
+              "1NF",
+              "값을 하나씩만 둠"
+            ],
+            [
+              "2NF",
+              "부분 종속 제거"
+            ],
+            [
+              "3NF",
+              "이행 종속 제거"
+            ],
+            [
+              "BCNF",
+              "결정자=후보키"
+            ]
           ]
+        },
+        {
+          kind: "callout",
+          tone: "mnemonic",
+          title: "도·부·이·결",
+          body: "도메인 원자값, 부분 종속 제거, 이행 종속 제거, 결정자=후보키."
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s3-1nf",
-          title: "1NF",
-          quizId: "sqld-1-2-cp-03-1nf",
-          group: "sqld-1-2-g3-normal-forms",
-          dialogue: [
-                {
-                      pose: "think",
-                      text: "[1NF]는 한 칸에 하나의 값만 두는 단계야."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "전화번호를 한 칸에 여러 개 넣으면 1NF 감각에 어긋나."
-                },
-                {
-                      pose: "idle",
-                      text: "1NF 위반 예시를 골라보자."
-                }
-          ],
-          blocks: [
-                {
-                      kind: "intro",
-                      body: "제1정규형은 속성 값이 원자값이어야 한다는 조건입니다."
-                },
-                {
-                      kind: "example",
-                      title: "예시",
-                      body: "전화번호 칸에 “010-1111, 010-2222”처럼 여러 값을 넣으면 나중에 검색하기 어렵습니다."
-                }
-          ]
+      id: "sqld-1-2-s3-1nf",
+      title: "1NF",
+      quizId: "sqld-1-2-cp-03-1nf",
+      group: "sqld-1-2-g3-normal-forms",
+      dialogue: [
+        {
+          pose: "think",
+          text: "[1NF]는 한 칸에 하나의 값만 두는 단계야."
+        },
+        {
+          pose: "lightbulb",
+          text: "전화번호 칸에 “010-1111, 010-2222”처럼 두 값을 같이 넣으면 1NF에 어긋나."
+        },
+        {
+          pose: "idle",
+          text: "1NF 위반 예시를 골라보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "intro",
+          body: "제1정규형은 속성 값이 원자값이어야 한다는 조건입니다."
+        },
+        {
+          kind: "example",
+          title: "나쁜 예시",
+          body: "전화번호 컬럼 하나에 집전화와 휴대폰을 함께 적으면 검색과 수정이 어려워집니다."
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s3-2nf",
-          title: "2NF",
-          quizId: "sqld-1-2-cp-03-2nf",
-          group: "sqld-1-2-g3-normal-forms",
-          dialogue: [
-                {
-                      pose: "think",
-                      text: "[2NF]는 복합키의 일부에만 매달린 값을 분리하는 단계야."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "학번+과목코드 테이블에서 학생이름은 학번만으로 정해지니까 분리 대상이야."
-                },
-                {
-                      pose: "idle",
-                      text: "2NF 조건을 확인해보자."
-                }
-          ],
-          blocks: [
-                {
-                      kind: "intro",
-                      body: "제2정규형은 부분 함수 종속을 제거한 상태입니다."
-                },
-                {
-                      kind: "callout",
-                      tone: "tip",
-                      title: "언제 등장할까",
-                      body: "복합키가 있는 테이블에서 자주 등장합니다."
-                }
-          ]
+      id: "sqld-1-2-s3-2nf",
+      title: "2NF",
+      quizId: "sqld-1-2-cp-03-2nf",
+      group: "sqld-1-2-g3-normal-forms",
+      dialogue: [
+        {
+          pose: "think",
+          text: "[2NF]는 복합키 일부에만 매달린 값을 떼어내는 단계야."
+        },
+        {
+          pose: "lightbulb",
+          text: "PK가 학번+과목코드인데 학생이름은 학번만으로 정해지면 학생 테이블로 분리하는 게 자연스러워."
+        },
+        {
+          pose: "idle",
+          text: "2NF에서 제거해야 할 것을 골라보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "intro",
+          body: "제2정규형은 부분 함수 종속을 제거한 상태입니다."
+        },
+        {
+          kind: "callout",
+          tone: "warn",
+          title: "등장 조건",
+          body: "2NF 문제는 주로 복합키가 있는 테이블에서 나옵니다. 단일키만 있으면 부분 종속을 묻기 어렵습니다."
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s3-3nf",
-          title: "3NF",
-          quizId: "sqld-1-2-cp-03-3nf",
-          group: "sqld-1-2-g3-normal-forms",
-          dialogue: [
-                {
-                      pose: "think",
-                      text: "[3NF]는 기본키가 아닌 속성끼리 이어져 생기는 간접 종속을 분리해."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "학번 → 학과코드 → 학과명이라면 학과명은 학과 테이블로 분리할 수 있어."
-                },
-                {
-                      pose: "idle",
-                      text: "3NF에 맞는 설명을 골라보자."
-                }
-          ],
-          blocks: [
-                {
-                      kind: "intro",
-                      body: "제3정규형은 이행 함수 종속을 제거한 상태입니다."
-                },
-                {
-                      kind: "example",
-                      title: "예시",
-                      body: "학생 테이블에 학과코드와 학과명이 같이 있으면 학과코드가 학과명을 결정합니다. 학과명은 학과 테이블로 분리하는 것이 좋습니다."
-                }
-          ]
+      id: "sqld-1-2-s3-3nf",
+      title: "3NF",
+      quizId: "sqld-1-2-cp-03-3nf",
+      group: "sqld-1-2-g3-normal-forms",
+      dialogue: [
+        {
+          pose: "think",
+          text: "[3NF]는 기본키가 아닌 속성끼리 이어진 간접 종속을 줄이는 단계야."
+        },
+        {
+          pose: "lightbulb",
+          text: "학생 테이블에 학과코드와 학과명이 같이 있으면 학과코드가 학과명을 정해."
+        },
+        {
+          pose: "happy",
+          text: "학과명은 학과 테이블로 보내면 중복과 갱신 이상이 줄어들어."
+        },
+        {
+          pose: "idle",
+          text: "3NF에서 제거해야 할 것을 골라보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "intro",
+          body: "제3정규형은 이행 함수 종속을 제거한 상태입니다."
+        },
+        {
+          kind: "example",
+          title: "분리 감각",
+          body: "학생(학번, 이름, 학과코드) / 학과(학과코드, 학과명)처럼 나누면 학과명이 여러 번 반복되지 않습니다."
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s3-bcnf",
-          title: "BCNF",
-          quizId: "sqld-1-2-cp-03-bcnf",
-          group: "sqld-1-2-g3-normal-forms",
-          dialogue: [
-                {
-                      pose: "think",
-                      text: "[BCNF]는 더 강한 정규형이야."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "무언가를 결정하는 속성은 모두 후보키여야 해."
-                },
-                {
-                      pose: "happy",
-                      text: "말은 어렵지만 “결정자=후보키”만 먼저 잡아도 돼."
-                },
-                {
-                      pose: "idle",
-                      text: "BCNF 조건을 확인해보자."
-                }
+      id: "sqld-1-2-s3-bcnf",
+      title: "BCNF",
+      quizId: "sqld-1-2-cp-03-bcnf",
+      group: "sqld-1-2-g3-normal-forms",
+      dialogue: [
+        {
+          pose: "think",
+          text: "[BCNF]는 3NF보다 더 엄격한 정규형이야."
+        },
+        {
+          pose: "lightbulb",
+          text: "핵심은 “무언가를 결정하는 속성은 후보키여야 한다”는 말이야."
+        },
+        {
+          pose: "happy",
+          text: "시험에서는 [모든 결정자가 후보키] 문장을 보면 BCNF를 떠올리면 돼."
+        },
+        {
+          pose: "idle",
+          text: "BCNF 조건을 확인해보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "intro",
+          body: "BCNF는 모든 결정자가 후보키인 상태입니다."
+        },
+        {
+          kind: "table",
+          title: "용어 감각",
+          headers: [
+            "용어",
+            "쉬운 뜻"
           ],
-          blocks: [
-                {
-                      kind: "intro",
-                      body: "BCNF는 모든 결정자가 후보키인 상태입니다. 3NF보다 더 엄격한 정규형으로 이해하면 됩니다."
-                },
-                {
-                      kind: "callout",
-                      tone: "tip",
-                      title: "시험 문장",
-                      body: "“모든 결정자가 후보키”가 보이면 BCNF를 떠올리세요."
-                }
+          rows: [
+            [
+              "결정자",
+              "다른 값을 정하는 속성"
+            ],
+            [
+              "후보키",
+              "행을 유일하게 구분할 수 있는 키"
+            ]
           ]
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s4",
-          title: "반정규화란",
-          quizId: "sqld-1-2-cp-04",
-          group: "sqld-1-2-g4-denormalization",
-          dialogue: [
-                {
-                      pose: "wave",
-                      text: "[반정규화]는 조회 성능을 위해 일부러 중복을 허용하는 선택이야."
-                },
-                {
-                      pose: "think",
-                      text: "정규화가 원칙이라면, 반정규화는 실제 서비스 속도를 위한 현실 보정이야."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "단, 아무 때나 하는 건 아니고 조회 병목이 확인될 때 고려해."
-                },
-                {
-                      pose: "idle",
-                      text: "반정규화를 고려할 상황을 골라보자."
-                }
-          ],
-          blocks: [
-                {
-                      kind: "intro",
-                      body: "반정규화는 정규화된 구조를 일부러 합치거나 중복시켜 조회 성능을 높이는 방법입니다."
-                },
-                {
-                      kind: "callout",
-                      tone: "warn",
-                      title: "먼저 측정",
-                      body: "반정규화는 성능 병목을 확인한 뒤 적용하는 최적화입니다. 처음부터 무작정 중복시키면 관리 부담만 커질 수 있습니다."
-                }
-          ]
+      id: "sqld-1-2-s4",
+      title: "반정규화란",
+      quizId: "sqld-1-2-cp-04",
+      group: "sqld-1-2-g4-denormalization",
+      dialogue: [
+        {
+          pose: "wave",
+          text: "[반정규화]는 조회 성능을 위해 일부러 중복을 허용하는 선택이야."
+        },
+        {
+          pose: "think",
+          text: "정규화가 원칙이라면, 반정규화는 실제 서비스 속도를 위한 현실 보정이야."
+        },
+        {
+          pose: "lightbulb",
+          text: "단, 처음부터 막 하는 게 아니라 조회 병목을 확인한 뒤 고려해."
+        },
+        {
+          pose: "idle",
+          text: "반정규화를 고려할 상황을 골라보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "intro",
+          body: "반정규화는 정규화된 테이블을 일부러 합치거나 값을 중복시켜 조회 성능을 높이는 방법입니다."
+        },
+        {
+          kind: "callout",
+          tone: "warn",
+          title: "먼저 측정",
+          body: "반정규화는 성능 문제가 확인된 뒤 적용하는 최적화입니다. 무작정 중복시키면 관리 부담만 커질 수 있습니다."
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s4-methods",
-          title: "반정규화 방법",
-          quizId: "sqld-1-2-cp-04-methods",
-          group: "sqld-1-2-g4-denormalization",
-          dialogue: [
-                {
-                      pose: "think",
-                      text: "대표 방법은 [테이블 통합], [컬럼 중복], [파생 컬럼], [요약 테이블]이야."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "자주 계산하는 총액을 미리 저장하는 것도 반정규화야."
-                },
-                {
-                      pose: "idle",
-                      text: "반정규화 방법을 골라보자."
-                }
+      id: "sqld-1-2-s4-methods",
+      title: "반정규화 방법",
+      quizId: "sqld-1-2-cp-04-methods",
+      group: "sqld-1-2-g4-denormalization",
+      dialogue: [
+        {
+          pose: "think",
+          text: "반정규화 방법은 크게 합치기, 중복하기, 미리 계산하기로 볼 수 있어."
+        },
+        {
+          pose: "lightbulb",
+          text: "매번 JOIN하는 고객명을 주문 테이블에 복사하거나, 총주문금액을 미리 저장하는 식이야."
+        },
+        {
+          pose: "idle",
+          text: "반정규화 방법을 골라보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "table",
+          title: "대표 방법",
+          headers: [
+            "방법",
+            "예시"
           ],
-          blocks: [
-                {
-                      kind: "table",
-                      title: "대표 방법",
-                      headers: [
-                            "방법",
-                            "예시"
-                      ],
-                      rows: [
-                            [
-                                  "테이블 통합",
-                                  "1:1 테이블 합치기"
-                            ],
-                            [
-                                  "컬럼 중복",
-                                  "주문에 고객명 사본 저장"
-                            ],
-                            [
-                                  "파생 컬럼",
-                                  "총주문금액 미리 저장"
-                            ],
-                            [
-                                  "요약 테이블",
-                                  "일별 매출 집계 테이블"
-                            ]
-                      ]
-                }
+          rows: [
+            [
+              "테이블 통합",
+              "자주 같이 보는 1:1 테이블 합치기"
+            ],
+            [
+              "컬럼 중복",
+              "주문에 고객명 사본 저장"
+            ],
+            [
+              "파생 컬럼",
+              "총주문금액 미리 저장"
+            ],
+            [
+              "요약 테이블",
+              "월별 매출 집계 테이블"
+            ]
           ]
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s4-tradeoff",
-          title: "반정규화의 대가",
-          quizId: "sqld-1-2-cp-04-tradeoff",
-          group: "sqld-1-2-g4-denormalization",
-          dialogue: [
-                {
-                      pose: "think",
-                      text: "반정규화는 조회를 빠르게 만들 수 있지만 공짜는 아니야."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "같은 값이 여러 곳에 있으면 수정할 때 모두 맞춰야 해."
-                },
-                {
-                      pose: "happy",
-                      text: "그래서 [갱신 부담]과 [일관성 리스크]가 대가야."
-                },
-                {
-                      pose: "idle",
-                      text: "반정규화의 단점을 확인해보자."
-                }
-          ],
-          blocks: [
-                {
-                      kind: "keypoints",
-                      title: "대가",
-                      items: [
-                            "갱신할 곳이 늘어남",
-                            "일부만 수정되면 값이 서로 달라짐",
-                            "저장 공간이 늘어남",
-                            "동기화 로직이 복잡해짐"
-                      ]
-                }
+      id: "sqld-1-2-s4-tradeoff",
+      title: "반정규화의 대가",
+      quizId: "sqld-1-2-cp-04-tradeoff",
+      group: "sqld-1-2-g4-denormalization",
+      dialogue: [
+        {
+          pose: "think",
+          text: "반정규화는 조회를 빠르게 만들 수 있지만 공짜는 아니야."
+        },
+        {
+          pose: "lightbulb",
+          text: "같은 값이 여러 곳에 있으면 수정할 때 모두 맞춰야 해."
+        },
+        {
+          pose: "happy",
+          text: "그래서 갱신 부담, 저장 공간 증가, 일관성 리스크가 대가야."
+        },
+        {
+          pose: "idle",
+          text: "반정규화의 단점을 확인해보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "keypoints",
+          title: "대가",
+          items: [
+            "수정할 곳이 늘어남",
+            "일부만 바뀌면 값이 서로 달라짐",
+            "저장 공간이 늘어남",
+            "동기화 로직이 복잡해짐"
           ]
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s5",
-          title: "특수 관계란",
-          quizId: "sqld-1-2-cp-05",
-          group: "sqld-1-2-g5-special-relations",
-          dialogue: [
-                {
-                      pose: "wave",
-                      text: "모든 관계가 단순한 1:M만 있는 건 아니야."
-                },
-                {
-                      pose: "think",
-                      text: "자기 자신을 참조하거나, 두 부모 중 하나만 선택하는 특수한 관계도 있어."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "계층형, 순환, 상호배타 관계를 구분하면 돼."
-                },
-                {
-                      pose: "idle",
-                      text: "특수 관계의 기본 의미를 확인해보자."
-                }
+      id: "sqld-1-2-s5",
+      title: "특수 관계란",
+      quizId: "sqld-1-2-cp-05",
+      group: "sqld-1-2-g5-special-relations",
+      dialogue: [
+        {
+          pose: "wave",
+          text: "모든 관계가 단순한 1:M만 있는 건 아니야."
+        },
+        {
+          pose: "think",
+          text: "같은 엔터티가 자기 자신을 참조하거나, 여러 후보 중 하나만 선택되는 관계도 있어."
+        },
+        {
+          pose: "lightbulb",
+          text: "계층형·순환 관계와 상호배타 관계를 구분하면 돼."
+        },
+        {
+          pose: "idle",
+          text: "특수 관계의 기본 예시를 확인해보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "intro",
+          body: "특수 관계는 일반적인 1:M 관계보다 구조를 한 번 더 생각해야 하는 관계 패턴입니다."
+        },
+        {
+          kind: "table",
+          title: "대표 패턴",
+          headers: [
+            "패턴",
+            "쉬운 예시"
           ],
-          blocks: [
-                {
-                      kind: "intro",
-                      body: "특수 관계는 일반적인 관계보다 구조를 한 번 더 생각해야 하는 패턴입니다."
-                },
-                {
-                      kind: "keypoints",
-                      title: "대표 패턴",
-                      items: [
-                            "계층형/순환 — 같은 엔터티를 다시 참조",
-                            "상호배타 — 여러 부모 후보 중 하나만 선택"
-                      ]
-                }
+          rows: [
+            [
+              "계층형/순환",
+              "사원과 상사처럼 같은 엔터티를 다시 참조"
+            ],
+            [
+              "상호배타",
+              "결제수단처럼 여러 후보 중 하나만 선택"
+            ]
           ]
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s5-hierarchy",
-          title: "계층형·순환 관계",
-          quizId: "sqld-1-2-cp-05-hierarchy",
-          group: "sqld-1-2-g5-special-relations",
-          dialogue: [
-                {
-                      pose: "think",
-                      text: "[계층형]은 위아래 구조를 가진 데이터야."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "사원과 상사, 카테고리와 상위 카테고리처럼 같은 테이블이 자기 자신을 참조해."
-                },
-                {
-                      pose: "happy",
-                      text: "SQL에서는 셀프 조인이나 Oracle의 CONNECT BY로 다뤄."
-                },
-                {
-                      pose: "idle",
-                      text: "계층형 관계 예시를 골라보자."
-                }
-          ],
-          blocks: [
-                {
-                      kind: "intro",
-                      body: "계층형 또는 순환 관계는 같은 엔터티 안에서 부모-자식처럼 연결되는 구조입니다."
-                },
-                {
-                      kind: "example",
-                      title: "예시",
-                      body: "사원 테이블 안에 상사사번 컬럼을 두고, 그 값이 다시 사원 테이블의 사번을 참조할 수 있습니다."
-                }
-          ]
+      id: "sqld-1-2-s5-hierarchy",
+      title: "계층형·순환 관계",
+      quizId: "sqld-1-2-cp-05-hierarchy",
+      group: "sqld-1-2-g5-special-relations",
+      dialogue: [
+        {
+          pose: "think",
+          text: "[계층형 관계]는 위아래 구조를 가진 데이터야."
+        },
+        {
+          pose: "lightbulb",
+          text: "사원과 상사, 카테고리와 상위 카테고리처럼 같은 테이블이 자기 자신을 참조해."
+        },
+        {
+          pose: "happy",
+          text: "SQL에서는 셀프 조인이나 Oracle의 CONNECT BY로 다루는 경우가 많아."
+        },
+        {
+          pose: "idle",
+          text: "계층형 관계 예시를 골라보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "intro",
+          body: "계층형 또는 순환 관계는 같은 엔터티 안에서 부모-자식처럼 연결되는 구조입니다."
+        },
+        {
+          kind: "example",
+          title: "사원 예시",
+          body: "사원 테이블에 상사사번 컬럼이 있고, 그 값이 다시 사원 테이블의 사번을 참조하면 계층형 관계입니다."
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s5-exclusive",
-          title: "상호배타 관계",
-          quizId: "sqld-1-2-cp-05-exclusive",
-          group: "sqld-1-2-g5-special-relations",
-          dialogue: [
-                {
-                      pose: "think",
-                      text: "[상호배타 관계]는 여러 후보 중 하나만 선택되는 관계야."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "결제는 카드 결제이거나 계좌이체일 수 있지만 동시에 둘 다는 아닐 수 있어."
-                },
-                {
-                      pose: "idle",
-                      text: "상호배타 관계를 골라보자."
-                }
-          ],
-          blocks: [
-                {
-                      kind: "intro",
-                      body: "상호배타 관계는 하나의 인스턴스가 여러 부모 후보 중 하나와만 연결되는 구조입니다."
-                },
-                {
-                      kind: "example",
-                      title: "결제 예시",
-                      body: "결제는 카드 결제 또는 계좌이체 중 하나로 처리됩니다. 둘 중 하나만 선택되도록 규칙을 둡니다."
-                }
-          ]
+      id: "sqld-1-2-s5-exclusive",
+      title: "상호배타 관계",
+      quizId: "sqld-1-2-cp-05-exclusive",
+      group: "sqld-1-2-g5-special-relations",
+      dialogue: [
+        {
+          pose: "think",
+          text: "[상호배타 관계]는 여러 후보 중 하나만 선택되는 관계야."
+        },
+        {
+          pose: "lightbulb",
+          text: "결제는 카드 결제이거나 계좌이체일 수 있지만, 한 결제 건이 동시에 둘 다일 수는 없게 잡을 수 있어."
+        },
+        {
+          pose: "idle",
+          text: "상호배타 관계 예시를 골라보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "intro",
+          body: "상호배타 관계는 하나의 인스턴스가 여러 부모 후보 중 하나와만 연결되는 구조입니다."
+        },
+        {
+          kind: "example",
+          title: "결제 예시",
+          body: "결제 건 하나가 카드 결제 또는 계좌이체 중 하나로만 처리되도록 모델링하는 경우입니다."
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s6",
-          title: "트랜잭션이란",
-          quizId: "sqld-1-2-cp-06",
-          group: "sqld-1-2-g6-transaction",
-          dialogue: [
-                {
-                      pose: "wave",
-                      text: "[트랜잭션]은 DB에서 하나로 묶어 처리해야 하는 작업 단위야."
-                },
-                {
-                      pose: "think",
-                      text: "계좌이체는 출금과 입금이 둘 다 성공해야 해. 하나만 성공하면 사고야."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "그래서 전부 성공하거나 전부 취소되도록 묶어."
-                },
-                {
-                      pose: "idle",
-                      text: "트랜잭션의 의미를 확인해보자."
-                }
-          ],
-          blocks: [
-                {
-                      kind: "intro",
-                      body: "트랜잭션은 여러 SQL을 하나의 논리 작업 단위로 묶어 처리하는 개념입니다."
-                },
-                {
-                      kind: "example",
-                      title: "계좌이체 예시",
-                      body: "A 계좌에서 1만원을 빼고 B 계좌에 1만원을 더하는 두 작업은 하나로 묶여야 합니다."
-                }
-          ]
+      id: "sqld-1-2-s6",
+      title: "트랜잭션이란",
+      quizId: "sqld-1-2-cp-06",
+      group: "sqld-1-2-g6-transaction",
+      dialogue: [
+        {
+          pose: "wave",
+          text: "[트랜잭션]은 DB에서 하나로 묶어 처리해야 하는 작업 단위야."
+        },
+        {
+          pose: "think",
+          text: "계좌이체는 출금과 입금이 둘 다 성공해야 해. 하나만 성공하면 사고야."
+        },
+        {
+          pose: "lightbulb",
+          text: "그래서 전부 성공하거나 전부 취소되도록 한 덩어리로 묶어."
+        },
+        {
+          pose: "idle",
+          text: "트랜잭션의 의미를 확인해보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "intro",
+          body: "트랜잭션은 여러 SQL을 하나의 논리 작업 단위로 묶어 처리하는 개념입니다."
+        },
+        {
+          kind: "example",
+          title: "계좌이체 예시",
+          body: "A 계좌에서 1만원을 빼고 B 계좌에 1만원을 더하는 두 작업은 함께 성공하거나 함께 취소되어야 합니다."
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s6-acid",
-          title: "ACID 4특성",
-          quizId: "sqld-1-2-cp-06-acid",
-          group: "sqld-1-2-g6-transaction",
-          dialogue: [
-                {
-                      pose: "think",
-                      text: "트랜잭션이 안전하려면 [ACID]가 필요해."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "[원자성]·[일관성]·[고립성]·[지속성]."
-                },
-                {
-                      pose: "happy",
-                      text: "동시에 실행돼도 서로 간섭하지 않는 성질은 고립성이야."
-                },
-                {
-                      pose: "idle",
-                      text: "ACID 특성을 맞춰보자."
-                }
+      id: "sqld-1-2-s6-acid",
+      title: "ACID 4특성",
+      quizId: "sqld-1-2-cp-06-acid",
+      group: "sqld-1-2-g6-transaction",
+      dialogue: [
+        {
+          pose: "think",
+          text: "트랜잭션이 안전하려면 [ACID]가 필요해."
+        },
+        {
+          pose: "lightbulb",
+          text: "원자성, 일관성, 고립성, 지속성 4가지를 말해."
+        },
+        {
+          pose: "happy",
+          text: "특히 전부 성공 또는 전부 취소는 원자성이야."
+        },
+        {
+          pose: "idle",
+          text: "ACID 특성을 맞춰보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "table",
+          title: "ACID",
+          headers: [
+            "특성",
+            "쉬운 뜻"
           ],
-          blocks: [
-                {
-                      kind: "table",
-                      title: "ACID",
-                      headers: [
-                            "특성",
-                            "뜻"
-                      ],
-                      rows: [
-                            [
-                                  "원자성",
-                                  "전부 성공 또는 전부 취소"
-                            ],
-                            [
-                                  "일관성",
-                                  "제약을 지킨 유효한 상태 유지"
-                            ],
-                            [
-                                  "고립성",
-                                  "동시 트랜잭션끼리 간섭 최소화"
-                            ],
-                            [
-                                  "지속성",
-                                  "커밋된 결과는 장애 후에도 유지"
-                            ]
-                      ]
-                }
+          rows: [
+            [
+              "원자성",
+              "전부 성공 또는 전부 취소"
+            ],
+            [
+              "일관성",
+              "제약을 지킨 상태 유지"
+            ],
+            [
+              "고립성",
+              "동시에 실행돼도 간섭 최소화"
+            ],
+            [
+              "지속성",
+              "커밋 결과는 장애 후에도 유지"
+            ]
           ]
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s6-isolation",
-          title: "격리수준",
-          quizId: "sqld-1-2-cp-06-isolation",
-          group: "sqld-1-2-g6-transaction",
-          dialogue: [
-                {
-                      pose: "think",
-                      text: "[격리수준]은 고립성을 얼마나 강하게 지킬지 정하는 단계야."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "Read Uncommitted < Read Committed < Repeatable Read < Serializable 순서로 강해져."
-                },
-                {
-                      pose: "happy",
-                      text: "강해질수록 일관성은 좋아지지만 성능 부담은 커질 수 있어."
-                },
-                {
-                      pose: "idle",
-                      text: "격리수준 순서를 확인해보자."
-                }
-          ],
-          blocks: [
-                {
-                      kind: "keypoints",
-                      title: "격리수준 순서",
-                      items: [
-                            "Read Uncommitted",
-                            "Read Committed",
-                            "Repeatable Read",
-                            "Serializable"
-                      ]
-                },
-                {
-                      kind: "callout",
-                      tone: "tip",
-                      title: "트레이드오프",
-                      body: "격리수준이 높을수록 안전하지만 동시에 처리하는 성능은 떨어질 수 있습니다."
-                }
+      id: "sqld-1-2-s6-isolation",
+      title: "격리수준",
+      quizId: "sqld-1-2-cp-06-isolation",
+      group: "sqld-1-2-g6-transaction",
+      dialogue: [
+        {
+          pose: "think",
+          text: "[격리수준]은 동시에 실행되는 트랜잭션을 얼마나 엄격하게 분리할지 정하는 단계야."
+        },
+        {
+          pose: "lightbulb",
+          text: "Read Uncommitted < Read Committed < Repeatable Read < Serializable 순서로 강해져."
+        },
+        {
+          pose: "happy",
+          text: "강할수록 안전하지만, 동시에 처리하는 성능 부담은 커질 수 있어."
+        },
+        {
+          pose: "idle",
+          text: "격리수준 순서를 확인해보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "keypoints",
+          title: "격리수준 순서",
+          items: [
+            "Read Uncommitted",
+            "Read Committed",
+            "Repeatable Read",
+            "Serializable"
           ]
+        },
+        {
+          kind: "callout",
+          tone: "tip",
+          title: "트레이드오프",
+          body: "격리수준이 높을수록 일관성은 좋아지지만 동시 처리 성능은 떨어질 수 있습니다."
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s7",
-          title: "NULL이란",
-          quizId: "sqld-1-2-cp-07",
-          group: "sqld-1-2-g7-null",
-          dialogue: [
-                {
-                      pose: "wave",
-                      text: "[NULL]은 0이나 빈 문자열이 아니라 “값을 모름/없음”에 가까워."
-                },
-                {
-                      pose: "think",
-                      text: "그래서 NULL = NULL도 TRUE가 아니라 UNKNOWN이야."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "NULL을 찾을 때는 = NULL이 아니라 [IS NULL]을 써야 해."
-                },
-                {
-                      pose: "idle",
-                      text: "NULL의 기본 성질을 확인해보자."
-                }
-          ],
-          blocks: [
-                {
-                      kind: "intro",
-                      body: "NULL은 아직 값이 없거나 알 수 없다는 뜻입니다. 0이나 빈 문자열과 다릅니다."
-                },
-                {
-                      kind: "callout",
-                      tone: "warn",
-                      title: "비교 함정",
-                      body: "col = NULL은 원하는 결과를 주지 않습니다. NULL 여부는 IS NULL, IS NOT NULL로 확인합니다."
-                }
-          ]
+      id: "sqld-1-2-s7",
+      title: "NULL이란",
+      quizId: "sqld-1-2-cp-07",
+      group: "sqld-1-2-g7-null",
+      dialogue: [
+        {
+          pose: "wave",
+          text: "[NULL]은 0이나 빈 문자열이 아니라 “값을 모름/없음”에 가까워."
+        },
+        {
+          pose: "think",
+          text: "0은 값이 0인 것이고, NULL은 아직 값이 없거나 알 수 없다는 뜻이야."
+        },
+        {
+          pose: "lightbulb",
+          text: "그래서 NULL 여부는 = NULL이 아니라 [IS NULL]로 확인해."
+        },
+        {
+          pose: "idle",
+          text: "NULL의 기본 성질을 확인해보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "intro",
+          body: "NULL은 아직 값이 없거나 알 수 없다는 뜻입니다. 0이나 빈 문자열과 다릅니다."
+        },
+        {
+          kind: "callout",
+          tone: "warn",
+          title: "비교 함정",
+          body: "col = NULL은 원하는 결과를 주지 않습니다. NULL 여부는 IS NULL, IS NOT NULL로 확인합니다."
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s7-compare",
-          title: "NULL 비교와 산술",
-          quizId: "sqld-1-2-cp-07-compare",
-          group: "sqld-1-2-g7-null",
-          dialogue: [
-                {
-                      pose: "think",
-                      text: "NULL과 비교하면 결과가 TRUE/FALSE가 아니라 [UNKNOWN]이 돼."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "NULL + 1도 NULL이야. 모르는 값에 1을 더해도 결과를 알 수 없으니까."
-                },
-                {
-                      pose: "idle",
-                      text: "NULL 연산 결과를 골라보자."
-                }
+      id: "sqld-1-2-s7-compare",
+      title: "NULL 비교와 산술",
+      quizId: "sqld-1-2-cp-07-compare",
+      group: "sqld-1-2-g7-null",
+      dialogue: [
+        {
+          pose: "think",
+          text: "NULL과 비교하면 결과가 TRUE/FALSE가 아니라 [UNKNOWN]이 돼."
+        },
+        {
+          pose: "lightbulb",
+          text: "NULL + 1도 NULL이야. 모르는 값에 1을 더해도 결과를 알 수 없으니까."
+        },
+        {
+          pose: "idle",
+          text: "NULL 연산 결과를 골라보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "table",
+          title: "NULL 연산 감각",
+          headers: [
+            "표현",
+            "결과"
           ],
-          blocks: [
-                {
-                      kind: "keypoints",
-                      title: "NULL 연산 감각",
-                      items: [
-                            "NULL = NULL → UNKNOWN",
-                            "NULL <> NULL → UNKNOWN",
-                            "NULL + 1 → NULL",
-                            "NULL * 0 → NULL"
-                      ]
-                }
+          rows: [
+            [
+              "NULL = NULL",
+              "UNKNOWN"
+            ],
+            [
+              "NULL <> NULL",
+              "UNKNOWN"
+            ],
+            [
+              "NULL + 1",
+              "NULL"
+            ],
+            [
+              "NULL * 0",
+              "NULL"
+            ]
           ]
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s7-aggregate",
-          title: "NULL과 집계함수",
-          quizId: "sqld-1-2-cp-07-aggregate",
-          group: "sqld-1-2-g7-null",
-          dialogue: [
-                {
-                      pose: "think",
-                      text: "집계함수는 NULL을 다루는 방식이 중요해."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "SUM, AVG, MIN, MAX, COUNT(컬럼)은 NULL을 제외해."
-                },
-                {
-                      pose: "happy",
-                      text: "하지만 [COUNT(*)]는 행 자체를 세기 때문에 NULL 행도 포함해."
-                },
-                {
-                      pose: "idle",
-                      text: "COUNT(*)와 COUNT(컬럼)을 구분해보자."
-                }
-          ],
-          blocks: [
-                {
-                      kind: "intro",
-                      body: "집계함수 대부분은 NULL을 제외하고 계산합니다. 단, COUNT(*)는 행 수를 세므로 NULL이 있어도 포함됩니다."
-                },
-                {
-                      kind: "example",
-                      title: "예시",
-                      body: "점수 90, NULL, 80이면 AVG(점수)는 (90+80)/2입니다. NULL을 0으로 바꾸면 평균이 달라집니다."
-                }
-          ]
+      id: "sqld-1-2-s7-aggregate",
+      title: "NULL과 집계함수",
+      quizId: "sqld-1-2-cp-07-aggregate",
+      group: "sqld-1-2-g7-null",
+      dialogue: [
+        {
+          pose: "think",
+          text: "집계함수는 NULL을 다루는 방식이 중요해."
+        },
+        {
+          pose: "lightbulb",
+          text: "SUM, AVG, MIN, MAX, COUNT(컬럼)은 NULL을 제외하고 계산해."
+        },
+        {
+          pose: "happy",
+          text: "하지만 [COUNT(*)]는 행 자체를 세기 때문에 NULL이 있어도 포함해."
+        },
+        {
+          pose: "idle",
+          text: "COUNT(*)와 COUNT(컬럼)을 구분해보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "intro",
+          body: "집계함수 대부분은 NULL을 제외하고 계산합니다. 단, COUNT(*)는 행 수를 세므로 NULL이 있어도 포함됩니다."
+        },
+        {
+          kind: "example",
+          title: "평균 예시",
+          body: "점수 90, NULL, 80이면 AVG(점수)는 (90+80)/2입니다. NULL을 0으로 바꾸면 평균이 달라집니다."
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s7-sort",
-          title: "NULL 정렬",
-          quizId: "sqld-1-2-cp-07-sort",
-          group: "sqld-1-2-g7-null",
-          dialogue: [
-                {
-                      pose: "think",
-                      text: "NULL 정렬 위치는 DBMS마다 다를 수 있어."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "SQLD에서는 Oracle 기준으로 ASC 때 NULL이 뒤쪽에 간다는 점을 자주 봐."
-                },
-                {
-                      pose: "happy",
-                      text: "명확하게 하려면 NULLS FIRST/LAST를 지정할 수 있어."
-                },
-                {
-                      pose: "idle",
-                      text: "Oracle NULL 정렬을 확인해보자."
-                }
+      id: "sqld-1-2-s7-sort",
+      title: "NULL 정렬",
+      quizId: "sqld-1-2-cp-07-sort",
+      group: "sqld-1-2-g7-null",
+      dialogue: [
+        {
+          pose: "think",
+          text: "NULL 정렬 위치는 DBMS마다 다를 수 있어."
+        },
+        {
+          pose: "lightbulb",
+          text: "SQLD에서는 Oracle 기준으로 ASC 때 NULL이 뒤쪽에 간다는 점을 자주 봐."
+        },
+        {
+          pose: "happy",
+          text: "명확하게 하려면 NULLS FIRST 또는 NULLS LAST를 직접 지정할 수 있어."
+        },
+        {
+          pose: "idle",
+          text: "Oracle NULL 정렬을 확인해보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "table",
+          title: "NULL 정렬 감각",
+          headers: [
+            "DBMS",
+            "ASC 기본"
           ],
-          blocks: [
-                {
-                      kind: "table",
-                      title: "NULL 정렬 감각",
-                      headers: [
-                            "DBMS",
-                            "ASC 기본"
-                      ],
-                      rows: [
-                            [
-                                  "Oracle",
-                                  "NULL이 뒤쪽"
-                            ],
-                            [
-                                  "SQL Server",
-                                  "NULL이 앞쪽"
-                            ]
-                      ]
-                },
-                {
-                      kind: "callout",
-                      tone: "tip",
-                      title: "명시하기",
-                      body: "ORDER BY col NULLS FIRST 또는 NULLS LAST로 위치를 지정할 수 있습니다."
-                }
+          rows: [
+            [
+              "Oracle",
+              "NULL이 뒤쪽"
+            ],
+            [
+              "SQL Server",
+              "NULL이 앞쪽"
+            ]
           ]
+        },
+        {
+          kind: "callout",
+          tone: "tip",
+          title: "명시하기",
+          body: "ORDER BY col NULLS FIRST 또는 NULLS LAST로 위치를 지정할 수 있습니다."
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s8",
-          title: "본질식별자 vs 인조식별자",
-          quizId: "sqld-1-2-cp-08",
-          group: "sqld-1-2-g8-key-choice",
-          dialogue: [
-                {
-                      pose: "wave",
-                      text: "[본질식별자]는 업무에 원래 있는 값, [인조식별자]는 시스템이 만든 값이야."
-                },
-                {
-                      pose: "think",
-                      text: "학번은 본질에 가깝고, 자동 증가 ID나 UUID는 인조에 가까워."
-                },
-                {
-                      pose: "idle",
-                      text: "둘의 차이를 확인해보자."
-                }
+      id: "sqld-1-2-s8",
+      title: "본질식별자 vs 인조식별자",
+      quizId: "sqld-1-2-cp-08",
+      group: "sqld-1-2-g8-key-choice",
+      dialogue: [
+        {
+          pose: "wave",
+          text: "[본질식별자]는 업무에 원래 있는 값이고, [인조식별자]는 시스템이 새로 만든 값이야."
+        },
+        {
+          pose: "think",
+          text: "학번은 업무에서 이미 쓰는 값이라 본질식별자에 가깝고, 자동 증가 id나 UUID는 인조식별자에 가까워."
+        },
+        {
+          pose: "idle",
+          text: "둘의 차이를 확인해보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "table",
+          title: "비교",
+          headers: [
+            "구분",
+            "본질식별자",
+            "인조식별자"
           ],
-          blocks: [
-                {
-                      kind: "table",
-                      title: "비교",
-                      headers: [
-                            "구분",
-                            "본질식별자",
-                            "인조식별자"
-                      ],
-                      rows: [
-                            [
-                                  "생성",
-                                  "업무에 원래 존재",
-                                  "시스템이 생성"
-                            ],
-                            [
-                                  "예시",
-                                  "학번, 사업자번호",
-                                  "id, 시퀀스, UUID"
-                            ],
-                            [
-                                  "장점",
-                                  "의미가 바로 보임",
-                                  "변경·개인정보 리스크 낮음"
-                            ]
-                      ]
-                }
+          rows: [
+            [
+              "어디서 옴",
+              "업무에 원래 있음",
+              "시스템이 생성"
+            ],
+            [
+              "예시",
+              "학번, 사업자번호",
+              "id, 시퀀스, UUID"
+            ],
+            [
+              "장점",
+              "의미가 바로 보임",
+              "변경·노출 리스크 낮음"
+            ]
           ]
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s8-surrogate",
-          title: "인조식별자를 쓰는 이유",
-          quizId: "sqld-1-2-cp-08-surrogate",
-          group: "sqld-1-2-g8-key-choice",
-          dialogue: [
-                {
-                      pose: "think",
-                      text: "실무에서는 인조식별자를 많이 써."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "업무 규칙이 바뀌어도 PK가 덜 흔들리고, 개인정보를 PK로 노출하지 않아도 되거든."
-                },
-                {
-                      pose: "happy",
-                      text: "대신 의미가 없어서 중복 데이터는 별도 UNIQUE로 막아야 해."
-                },
-                {
-                      pose: "idle",
-                      text: "인조식별자의 장점을 확인해보자."
-                }
-          ],
-          blocks: [
-                {
-                      kind: "intro",
-                      body: "인조식별자는 의미 없는 ID라서 업무 정책 변화와 개인정보 노출에 강합니다."
-                },
-                {
-                      kind: "callout",
-                      tone: "warn",
-                      title: "단점도 있음",
-                      body: "의미가 없기 때문에 같은 사람이 중복 등록되는 것을 막으려면 별도의 UNIQUE 제약이나 검증이 필요합니다."
-                }
-          ]
+      id: "sqld-1-2-s8-surrogate",
+      title: "인조식별자를 쓰는 이유",
+      quizId: "sqld-1-2-cp-08-surrogate",
+      group: "sqld-1-2-g8-key-choice",
+      dialogue: [
+        {
+          pose: "think",
+          text: "실무에서는 인조식별자를 많이 써."
+        },
+        {
+          pose: "lightbulb",
+          text: "업무 규칙이 바뀌어도 PK가 덜 흔들리고, 개인정보를 PK로 직접 노출하지 않아도 되거든."
+        },
+        {
+          pose: "happy",
+          text: "대신 의미가 없어서 학번 같은 본질 값은 별도 UNIQUE로 중복을 막아야 해."
+        },
+        {
+          pose: "idle",
+          text: "인조식별자의 장점을 확인해보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "intro",
+          body: "인조식별자는 의미 없는 내부 ID라서 업무 정책 변화와 개인정보 노출에 강합니다."
+        },
+        {
+          kind: "callout",
+          tone: "warn",
+          title: "단점도 있음",
+          body: "의미가 없기 때문에 같은 사람이 중복 등록되는 것을 막으려면 별도의 UNIQUE 제약이나 검증이 필요합니다."
+        }
+      ]
     },
     {
-          id: "sqld-1-2-s8-practice",
-          title: "실무 선택 기준",
-          quizId: "sqld-1-2-cp-08-practice",
-          group: "sqld-1-2-g8-key-choice",
-          dialogue: [
-                {
-                      pose: "think",
-                      text: "실무에서는 보통 [인조 PK + 본질 UNIQUE] 조합을 많이 써."
-                },
-                {
-                      pose: "lightbulb",
-                      text: "id는 내부 PK로 쓰고, 학번이나 사업자번호는 UNIQUE로 중복만 막는 방식이야."
-                },
-                {
-                      pose: "idle",
-                      text: "가장 안전한 선택을 골라보자."
-                }
-          ],
-          blocks: [
-                {
-                      kind: "intro",
-                      body: "PK는 인조식별자로 안정적으로 두고, 업무상 중복되면 안 되는 값은 UNIQUE로 관리하는 방식이 흔합니다."
-                },
-                {
-                      kind: "example",
-                      title: "예시",
-                      body: "학생(id PK, 학번 UNIQUE, 이름, 학과). 내부 연결은 id로 하고, 학번 중복은 UNIQUE로 막습니다."
-                }
-          ]
+      id: "sqld-1-2-s8-practice",
+      title: "실무 선택 기준",
+      quizId: "sqld-1-2-cp-08-practice",
+      group: "sqld-1-2-g8-key-choice",
+      dialogue: [
+        {
+          pose: "think",
+          text: "실무에서는 보통 [인조 PK + 본질 값 UNIQUE] 조합을 많이 써."
+        },
+        {
+          pose: "lightbulb",
+          text: "id는 내부 연결용 PK로 쓰고, 학번이나 사업자번호는 UNIQUE로 중복만 막는 방식이야."
+        },
+        {
+          pose: "idle",
+          text: "가장 안정적인 선택을 골라보자."
+        }
+      ],
+      blocks: [
+        {
+          kind: "intro",
+          body: "PK는 인조식별자로 안정적으로 두고, 업무상 중복되면 안 되는 값은 UNIQUE로 관리하는 방식이 흔합니다."
+        },
+        {
+          kind: "example",
+          title: "학생 예시",
+          body: "학생(id PK, 학번 UNIQUE, 이름, 학과). 내부 연결은 id로 하고, 학번 중복은 UNIQUE로 막습니다."
+        }
+      ]
     }
-  ],
+  ]
 };
 
 export const SQLD_CH1_LESSONS: Lesson[] = [

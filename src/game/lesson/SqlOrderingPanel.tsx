@@ -62,6 +62,7 @@ export default function SqlOrderingPanel({ question, saved, onChoose }: Props) {
   const complete = selected.every(Boolean);
   const locked = !!saved;
   const correct = saved?.correct ?? null;
+  const filledCount = selected.filter(Boolean).length;
 
   const addToken = (token: string) => {
     if (locked) return;
@@ -95,36 +96,51 @@ export default function SqlOrderingPanel({ question, saved, onChoose }: Props) {
   };
 
   return (
-    <div className="space-y-2.5 md:space-y-3">
-      <div className="rounded-[20px] border border-white/10 bg-[#07102b]/88 p-4 md:p-5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_18px_42px_-32px_rgba(103,232,249,0.5)]">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-white/[0.06] px-2.5 py-1 kr-heading text-[9.5px] uppercase tracking-[0.08em] text-cream/70">
+    <div className="space-y-3">
+      <div className="relative overflow-hidden rounded-[28px] border border-[#67e8f9]/28 bg-[linear-gradient(180deg,rgba(10,32,66,0.96),rgba(8,20,45,0.96))] p-3.5 shadow-[0_22px_48px_-34px_rgba(103,232,249,0.72),inset_0_1px_0_rgba(255,255,255,0.12)] md:p-5">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-70"
+          style={{
+            background:
+              'radial-gradient(circle at 14% 0%, rgba(103,232,249,0.16), transparent 30%), radial-gradient(circle at 92% 8%, rgba(209,248,67,0.10), transparent 28%)',
+          }}
+          aria-hidden
+        />
+        <div className="relative flex flex-wrap items-center gap-1.5">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.07] px-2.5 py-1 kr-heading text-[9.5px] uppercase tracking-[0.08em] text-cream/76">
             <Database size={12} strokeWidth={2.4} />
             SQL Lab
           </span>
-          <span className="rounded-full bg-[#c084fc]/12 px-2.5 py-1 kr-heading text-[9.5px] uppercase tracking-[0.08em] text-[#d8b4fe]">
+          <span className="rounded-full border border-[#c084fc]/18 bg-[#c084fc]/12 px-2.5 py-1 kr-heading text-[9.5px] uppercase tracking-[0.08em] text-[#d8b4fe]">
             {dialectLabel(interaction.dialect)}
           </span>
-          <span className="rounded-full bg-[#67e8f9]/10 px-2.5 py-1 kr-heading text-[9.5px] uppercase tracking-[0.08em] text-[#bff8ff]">
+          <span className="rounded-full border border-[#67e8f9]/16 bg-[#67e8f9]/10 px-2.5 py-1 kr-heading text-[9.5px] uppercase tracking-[0.08em] text-[#bff8ff]">
             순서 조립
           </span>
         </div>
 
         {interaction.instruction ? (
-          <p className="mt-2 kr-body text-[11.5px] leading-[1.45] text-cream/55">
-            {interaction.instruction}
-          </p>
+          <div className="relative mt-3 rounded-[18px] border border-white/10 bg-white/[0.055] px-3.5 py-3">
+            <p className="kr-body text-[12px] font-bold leading-[1.45] text-cream/78">
+              {interaction.instruction}
+            </p>
+          </div>
         ) : null}
 
-        <div className="mt-3 overflow-hidden rounded-[16px] border border-white/10 bg-[#030a1c]">
-          <div className="flex items-center gap-1.5 border-b border-white/8 bg-white/[0.025] px-2.5 py-1.5 text-[#67e8f9]">
-            <Code2 size={13} strokeWidth={2.4} />
-            <span className="kr-heading text-[9.5px] uppercase tracking-[0.08em]">
-              Build Query
+        <div className="relative mt-3 overflow-hidden rounded-[22px] border border-white/12 bg-[#030b20]/96 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+          <div className="flex items-center justify-between gap-3 border-b border-white/8 bg-white/[0.035] px-3 py-2 text-[#67e8f9]">
+            <div className="flex items-center gap-1.5">
+              <Code2 size={13} strokeWidth={2.4} />
+              <span className="kr-heading text-[9.5px] uppercase tracking-[0.08em]">
+                Build Query
+              </span>
+            </div>
+            <span className="kr-num text-[10px] font-black text-cream/44">
+              {filledCount}/{interaction.answer.length}
             </span>
           </div>
-          <div className="overflow-x-auto p-3 md:p-3.5">
-            <code className="block whitespace-pre-wrap font-mono text-[11.5px] md:text-[12.5px] leading-[2.05] text-cream/88">
+          <div className="overflow-x-auto p-3.5 md:p-4">
+            <code className="block whitespace-pre-wrap font-mono text-[12px] leading-[2.35] text-cream/88 md:text-[13px]">
               {interaction.answer.map((_, idx) => (
                 <span key={`${question.id}-slot-${idx}`}>
                   {interaction.template[idx] ?? ''}
@@ -134,19 +150,19 @@ export default function SqlOrderingPanel({ question, saved, onChoose }: Props) {
                     disabled={locked}
                     aria-label={`${idx + 1}번째 SQL 블록`}
                     className={cx(
-                      'mx-1 inline-flex min-h-8 min-w-[92px] items-center justify-center rounded-xl border px-3 py-1.5 align-middle font-mono text-[11.5px] transition md:min-w-[104px] md:text-[12.5px]',
+                      'mx-1.5 inline-flex min-h-9 min-w-[108px] items-center justify-center rounded-[14px] border px-3.5 py-1.5 align-middle font-mono text-[12px] font-black transition active:scale-[0.98] md:min-w-[120px] md:text-[13px]',
                       selected[idx]
-                        ? 'border-[#67e8f9]/50 bg-[#67e8f9]/15 text-[#dffbff] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_8px_18px_-16px_rgba(103,232,249,0.9)]'
-                        : 'border-white/14 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.035))] text-transparent shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]',
+                        ? 'border-[#d1f843]/46 bg-[#d1f843]/12 text-[#efffc0] shadow-[0_7px_0_rgba(10,20,38,0.72),inset_0_1px_0_rgba(255,255,255,0.2)]'
+                        : 'border-[#7f8eac]/36 bg-[linear-gradient(180deg,rgba(239,244,255,0.09),rgba(239,244,255,0.035))] text-transparent shadow-[0_6px_0_rgba(6,12,28,0.72),inset_0_1px_0_rgba(255,255,255,0.08)]',
                       !locked &&
                         selected[idx] &&
-                        'hover:border-[#67e8f9]/65 hover:bg-[#67e8f9]/18',
+                        'hover:border-[#d1f843]/62 hover:bg-[#d1f843]/16',
                     )}
                   >
                     {selected[idx] ? (
                       selected[idx]
                     ) : (
-                      <span className="h-1.5 w-10 rounded-full bg-white/18" />
+                      <span className="h-1.5 w-11 rounded-full bg-cream/20" />
                     )}
                   </button>
                 </span>
@@ -156,7 +172,7 @@ export default function SqlOrderingPanel({ question, saved, onChoose }: Props) {
           </div>
         </div>
 
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="relative mt-4 flex min-h-[92px] flex-wrap content-start items-start justify-center gap-2.5 border-t border-white/8 pt-4">
           {interaction.tokens.map((token, tokenIdx) => {
             const tokenTotal = interaction.tokens.filter((item) => item === token).length;
             const tokenUsed = usedCounts.get(token) ?? 0;
@@ -168,10 +184,10 @@ export default function SqlOrderingPanel({ question, saved, onChoose }: Props) {
                 onClick={() => addToken(token)}
                 disabled={disabled}
                 className={cx(
-                  'rounded-xl border px-3.5 py-2.5 font-mono text-[11.5px] transition active:scale-[0.98] md:px-4 md:text-[12.5px]',
+                  'min-w-[86px] rounded-[16px] border px-3.5 py-3 text-center font-mono text-[12px] font-black transition active:translate-y-1 active:shadow-none md:min-w-[96px] md:px-4 md:text-[13px]',
                   disabled
-                    ? 'border-white/8 bg-white/[0.025] text-cream/25'
-                    : 'border-[#7aa7ff]/20 bg-[linear-gradient(180deg,rgba(255,255,255,0.13),rgba(255,255,255,0.065))] text-cream shadow-[0_5px_12px_-10px_rgba(103,232,249,0.75),inset_0_1px_0_rgba(255,255,255,0.16)] hover:border-[#67e8f9]/42 hover:bg-[#67e8f9]/13',
+                    ? 'pointer-events-none border-white/6 bg-white/[0.018] text-cream/16 shadow-none'
+                    : 'border-[#7f8eac]/34 bg-[linear-gradient(180deg,rgba(239,244,255,0.16),rgba(239,244,255,0.075))] text-cream shadow-[0_7px_0_rgba(6,12,28,0.82),inset_0_1px_0_rgba(255,255,255,0.18)] hover:border-[#d1f843]/44 hover:bg-[#d1f843]/12',
                 )}
               >
                 {token}
@@ -180,12 +196,12 @@ export default function SqlOrderingPanel({ question, saved, onChoose }: Props) {
           })}
         </div>
 
-        <div className="mt-2.5 flex items-center justify-between gap-2">
+        <div className="relative mt-3 grid grid-cols-[auto_1fr] items-center gap-2.5">
           <button
             type="button"
             onClick={reset}
             disabled={locked || selected.every((item) => item === null)}
-            className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1.5 kr-heading text-[10px] uppercase tracking-[0.08em] text-cream/55 transition hover:text-cream disabled:opacity-30"
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-[16px] border border-white/10 bg-white/[0.035] px-3 kr-heading text-[10px] uppercase tracking-[0.08em] text-cream/58 transition hover:text-cream disabled:opacity-30"
           >
             <RotateCcw size={12} strokeWidth={2.4} />
             다시
@@ -194,7 +210,7 @@ export default function SqlOrderingPanel({ question, saved, onChoose }: Props) {
             type="button"
             onClick={grade}
             disabled={!complete || locked}
-            className="inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 kr-heading text-[11px] uppercase tracking-[0.08em] transition active:scale-[0.98] disabled:opacity-35"
+            className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-[16px] px-4 py-2.5 kr-heading text-[12px] uppercase tracking-[0.08em] transition active:translate-y-1 disabled:opacity-45"
             style={gradeButtonStyle(complete && !locked)}
           >
             채점
@@ -206,7 +222,7 @@ export default function SqlOrderingPanel({ question, saved, onChoose }: Props) {
       {correct !== null ? (
         <div
           className={cx(
-            'rounded-[14px] border p-3',
+            'rounded-[18px] border p-3.5',
             correct
               ? 'border-[var(--neon-35)] bg-[var(--neon-08)]'
               : 'border-red-300/35 bg-red-400/10',
@@ -229,7 +245,7 @@ export default function SqlOrderingPanel({ question, saved, onChoose }: Props) {
             {interaction.answer.map((token, idx) => (
               <span
                 key={`${question.id}-answer-${idx}`}
-                className="rounded-lg border border-white/10 bg-white/[0.06] px-2.5 py-1 font-mono text-[11px] text-cream/86"
+                className="rounded-[12px] border border-white/10 bg-white/[0.06] px-3 py-1.5 font-mono text-[11px] font-black text-cream/86"
               >
                 {token}
               </span>
@@ -250,13 +266,15 @@ function gradeButtonStyle(active: boolean): CSSProperties {
   return active
     ? {
         background:
-          'linear-gradient(180deg, #d8b4fe 0%, #a855f7 100%)',
-        color: '#070a1b',
-        boxShadow: '0 8px 22px -10px rgba(192,132,252,0.9)',
+          'linear-gradient(180deg, #d1f843 0%, #83d83f 100%)',
+        color: '#07101f',
+        boxShadow:
+          '0 7px 0 rgba(39,76,24,0.82), 0 14px 24px -18px rgba(209,248,67,0.95), inset 0 1px 0 rgba(255,255,255,0.36)',
       }
     : {
-        background: 'rgba(255,255,255,0.06)',
+        background: 'rgba(239,244,255,0.08)',
         color: 'rgba(239,244,255,0.55)',
+        boxShadow: '0 7px 0 rgba(6,12,28,0.55)',
       };
 }
 

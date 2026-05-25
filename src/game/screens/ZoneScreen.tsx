@@ -635,11 +635,11 @@ function SqldChapterGuide({
     chapter === 1 ? 'SQLD 1과목 학습 순서' : 'SQLD 2과목 학습 순서';
 
   return (
-    <section className="mt-5" aria-label={ariaLabel}>
-      <div className="kr-num mb-2.5 text-[10px] uppercase tracking-[0.18em] text-cream/45">
+    <section className="mt-3.5 md:mt-5" aria-label={ariaLabel}>
+      <div className="kr-num mb-1.5 md:mb-2.5 text-[9px] md:text-[10px] uppercase tracking-[0.18em] text-cream/42">
         {label}
       </div>
-      <div className="flex gap-2.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {lessons.map((lesson, lessonIdx) => {
           const meta = sqldPartGuide(chapter, lesson.topic, lessonIdx + 1);
           const quizSteps = lesson.steps.filter((step) => !!step.quizId);
@@ -654,7 +654,7 @@ function SqldChapterGuide({
           return (
             <article
               key={lesson.topic}
-              className="min-w-[188px] flex-1 rounded-[18px] border px-3.5 py-3.5"
+              className="min-w-[148px] flex-1 rounded-[16px] border px-3 py-2.5 md:min-w-[188px] md:rounded-[18px] md:px-3.5 md:py-3.5"
               style={{
                 background:
                   'linear-gradient(145deg, rgba(239,244,255,0.075), rgba(7,16,43,0.52))',
@@ -662,9 +662,9 @@ function SqldChapterGuide({
                 boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)',
               }}
             >
-              <div className="mb-3 flex items-center justify-between gap-3">
+              <div className="mb-2 flex items-center justify-between gap-2 md:mb-3 md:gap-3">
                 <span
-                  className="inline-flex size-8 items-center justify-center rounded-full"
+                  className="inline-flex size-6 items-center justify-center rounded-full md:size-8"
                   style={{
                     color: accent,
                     background: `${accent}17`,
@@ -673,20 +673,25 @@ function SqldChapterGuide({
                 >
                   {meta.icon}
                 </span>
-                <span className="kr-num text-[9px] uppercase tracking-[0.16em] text-cream/42">
+                <span className="kr-num text-[8px] uppercase tracking-[0.14em] text-cream/42 md:text-[9px] md:tracking-[0.16em]">
                   {meta.label}
                 </span>
               </div>
-              <h2 className="kr-heading text-[15px] leading-tight text-cream">
-                {meta.title}
-              </h2>
-              <p className="kr-body mt-1.5 text-[11px] leading-[1.45] text-cream/58">
+              <div className="flex items-end justify-between gap-2">
+                <h2 className="kr-heading text-[13px] leading-tight text-cream md:text-[15px]">
+                  {meta.title}
+                </h2>
+                <span className="kr-num shrink-0 text-[9px] text-cream/45 md:hidden">
+                  {done}/{quizSteps.length}
+                </span>
+              </div>
+              <p className="kr-body mt-1 hidden text-[11px] leading-[1.45] text-cream/58 md:block">
                 {meta.caption}
               </p>
-              <p className="kr-num mt-3 text-[9px] uppercase tracking-[0.14em] text-cream/40">
+              <p className="kr-num mt-3 hidden text-[9px] uppercase tracking-[0.14em] text-cream/40 md:block">
                 {meta.subtitle}
               </p>
-              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/8">
+              <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/8 md:mt-3 md:h-1.5">
                 <div
                   className="h-full rounded-full transition-[width]"
                   style={{
@@ -696,7 +701,7 @@ function SqldChapterGuide({
                   }}
                 />
               </div>
-              <div className="kr-num mt-2 text-[10px] text-cream/45">
+              <div className="kr-num mt-2 hidden text-[10px] text-cream/45 md:block">
                 {done}/{quizSteps.length} step
               </div>
             </article>

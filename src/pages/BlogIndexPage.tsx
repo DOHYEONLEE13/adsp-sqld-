@@ -35,7 +35,7 @@ export default function BlogIndexPage() {
     blogPost: ALL_BLOG_POSTS.map((p) => ({
       '@type': 'BlogPosting',
       headline: p.title,
-      url: `https://quest-dp.com/blog/${encodeURI(p.slug)}`,
+      url: `https://quest-dp.com/blog/${encodeURI(p.slug)}/`,
       datePublished: p.publishedAt,
       description: p.metaDescription,
     })),

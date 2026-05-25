@@ -125,7 +125,7 @@ export default function CurriculumPage({ subject }: Props) {
         for (const cs of tl.steps) {
           allLessonItems.push({
             name: cs.step.title,
-            url: `https://quest-dp.com/lesson/${cs.step.id}`,
+            url: `https://quest-dp.com/lesson/${cs.step.id}/`,
           });
         }
       }

@@ -34,7 +34,7 @@ export default function BlogPostPage({ slug }: Props) {
 
   // SEO 메타 — post 유무에 따라 분기. hook 은 항상 호출.
   const canonical = post
-    ? `https://quest-dp.com/blog/${encodeURI(post.slug)}`
+    ? `https://quest-dp.com/blog/${encodeURI(post.slug)}/`
     : undefined;
   const seoTitle = post
     ? `${post.title} — QuestDP`

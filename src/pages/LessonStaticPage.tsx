@@ -55,7 +55,7 @@ export default function LessonStaticPage({ stepId }: Props) {
     ? makeDescription(lookup.step, lookup.lesson.topic)
     : 'URL 이 잘못되었거나 콘텐츠가 이동했을 수 있어요.';
   const canonical = lookup
-    ? `https://quest-dp.com/lesson/${stepId}`
+    ? `https://quest-dp.com/lesson/${stepId}/`
     : undefined;
 
   // JSON-LD — lookup 있을 때만 emit

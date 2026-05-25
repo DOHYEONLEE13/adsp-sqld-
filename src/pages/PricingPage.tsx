@@ -26,6 +26,8 @@ import { COMPANY, BRAND } from '@/data/site';
 import { PRICING_PLANS } from '@/data/pricing';
 import { handleNavClick } from '@/lib/navigate';
 
+const PRODUCT_IMAGE = 'https://quest-dp.com/og/default.png';
+
 export default function PricingPage() {
   // ── SEO 메타 — 가격 정보 명시 ─────────────────────────────────
   useSeoMeta({
@@ -42,6 +44,7 @@ export default function PricingPage() {
         '@type': 'Product',
         name: `QuestDP — ${p.tier}`,
         description: p.description ?? '',
+        image: PRODUCT_IMAGE,
         brand: {
           '@type': 'Brand',
           name: BRAND.nameKr,

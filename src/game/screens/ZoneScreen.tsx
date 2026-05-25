@@ -139,7 +139,7 @@ export default function ZoneScreen({
   const progress = useProgress();
   const reviewCount = reviewPoolSize(subject, chapter, null);
   const accent = SUBJECT_ACCENT[subject];
-  const isSqlChapterGuide = subject === 'sqld' && chapter === 2;
+  const hasSqldChapterGuide = subject === 'sqld' && (chapter === 1 || chapter === 2);
 
   // ── Pass 시스템 통합 ───────────────────────────────────────
   const passSnap = usePassSnapshot();
@@ -313,11 +313,21 @@ export default function ZoneScreen({
             {chapterMeta?.title ?? `Chapter ${chapter}`}
           </h1>
           <p className="kr-body text-[12px] md:text-[13px] text-cream/65 mt-3 leading-[1.65] max-w-xl">
-            {isSqlChapterGuide ? (
+            {hasSqldChapterGuide ? (
               <>
-                SQL은 외우는 문법보다 절의 자리와 실행 순서가 중요해요.
-                <br />
-                기본 문법 → 쿼리 활용 → 관리 구문 순서로 진행합니다.
+                {chapter === 1 ? (
+                  <>
+                    데이터 모델링은 DB 설계의 뼈대를 잡는 과목이에요.
+                    <br />
+                    모델링 기초 → 성능을 지키는 설계 순서로 진행합니다.
+                  </>
+                ) : (
+                  <>
+                    SQL은 외우는 문법보다 절의 자리와 실행 순서가 중요해요.
+                    <br />
+                    기본 문법 → 쿼리 활용 → 관리 구문 순서로 진행합니다.
+                  </>
+                )}
               </>
             ) : (
               <>
@@ -327,8 +337,13 @@ export default function ZoneScreen({
             )}
           </p>
 
-          {isSqlChapterGuide ? (
-            <SqlChapterGuide accent={accent} lessons={lessons} progress={progress} />
+          {hasSqldChapterGuide ? (
+            <SqldChapterGuide
+              accent={accent}
+              chapter={chapter}
+              lessons={lessons}
+              progress={progress}
+            />
           ) : null}
 
           {/* ── 회독 탭 ──
@@ -377,7 +392,7 @@ export default function ZoneScreen({
         {total > 0 ? (
           <section className="mb-8 md:mb-10" aria-label="풀이 모드 빠른 진입">
             <div className="kr-num text-[10px] uppercase tracking-[0.18em] text-cream/45 mb-2.5">
-              {isSqlChapterGuide ? '연습 모드' : '빠른 진입'}
+              {hasSqldChapterGuide ? '연습 모드' : '빠른 진입'}
             </div>
             <div
               className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
@@ -518,50 +533,81 @@ export default function ZoneScreen({
 // TopicSection — 토픽 헤더 + step 노드 column
 // ================================================================
 
-type SqlChapterGuideLesson = {
+type SqldChapterGuideLesson = {
   topic: string;
   steps: { quizId?: string }[];
 };
 
-function sqlPartGuide(topic: string, index: number) {
-  switch (topic) {
-    case 'SQL 기본':
-      return {
-        icon: <Code2 size={17} strokeWidth={2.4} />,
-        label: 'PART 1',
-        title: 'SQL 기본',
-        subtitle: 'SELECT · WHERE · GROUP BY',
-        caption: '쿼리의 뼈대와 실행 순서',
-      };
-    case 'SQL 활용':
-      return {
-        icon: <GitBranch size={17} strokeWidth={2.4} />,
-        label: 'PART 2',
-        title: 'SQL 활용',
-        subtitle: 'JOIN · 서브쿼리 · 윈도우',
-        caption: '여러 테이블을 연결하는 기술',
-      };
-    case '관리 구문':
-      return {
-        icon: <Settings2 size={17} strokeWidth={2.4} />,
-        label: 'PART 3',
-        title: '관리 구문',
-        subtitle: 'DML · DDL · TCL · DCL',
-        caption: '데이터 변경과 권한 관리',
-      };
-    default:
-      return {
-        icon: <BookOpen size={17} strokeWidth={2.4} />,
-        label: `PART ${index}`,
-        title: topic,
-        subtitle: '개념 → 문제',
-        caption: '짧게 보고 바로 확인',
-      };
+function sqldPartGuide(chapter: number, topic: string, index: number) {
+  if (chapter === 1) {
+    switch (topic) {
+      case '데이터 모델링의 이해':
+        return {
+          icon: <GitBranch size={17} strokeWidth={2.4} />,
+          label: 'PART 1',
+          title: '데이터 모델링',
+          subtitle: '엔터티 · 속성 · 관계',
+          caption: 'DB 설계의 뼈대 만들기',
+        };
+      case '데이터 모델과 성능':
+        return {
+          icon: <Target size={17} strokeWidth={2.4} />,
+          label: 'PART 2',
+          title: '모델과 성능',
+          subtitle: '정규화 · 반정규화 · NULL',
+          caption: '빠르고 안전한 설계로 다듬기',
+        };
+      default:
+        break;
+    }
   }
+
+  if (chapter === 2) {
+    switch (topic) {
+      case 'SQL 기본':
+        return {
+          icon: <Code2 size={17} strokeWidth={2.4} />,
+          label: 'PART 1',
+          title: 'SQL 기본',
+          subtitle: 'SELECT · WHERE · GROUP BY',
+          caption: '쿼리의 뼈대와 실행 순서',
+        };
+      case 'SQL 활용':
+        return {
+          icon: <GitBranch size={17} strokeWidth={2.4} />,
+          label: 'PART 2',
+          title: 'SQL 활용',
+          subtitle: 'JOIN · 서브쿼리 · 윈도우',
+          caption: '여러 테이블을 연결하는 기술',
+        };
+      case '관리 구문':
+        return {
+          icon: <Settings2 size={17} strokeWidth={2.4} />,
+          label: 'PART 3',
+          title: '관리 구문',
+          subtitle: 'DML · DDL · TCL · DCL',
+          caption: '데이터 변경과 권한 관리',
+        };
+      default:
+        break;
+    }
+  }
+
+  return {
+    icon: <BookOpen size={17} strokeWidth={2.4} />,
+    label: `PART ${index}`,
+    title: topic,
+    subtitle: '개념 → 문제',
+    caption: '짧게 보고 바로 확인',
+  };
 }
 
 function topicSectionSummary(topic: string): string | null {
   switch (topic) {
+    case '데이터 모델링의 이해':
+      return '엔터티, 속성, 관계를 잡고 ERD로 DB 설계의 뼈대를 세워요.';
+    case '데이터 모델과 성능':
+      return '정규화, 반정규화, 트랜잭션, NULL로 성능과 안정성을 다져요.';
     case 'SQL 기본':
       return 'SELECT부터 GROUP BY까지, SQL 문장을 읽는 기본 순서를 잡아요.';
     case 'SQL 활용':
@@ -573,23 +619,29 @@ function topicSectionSummary(topic: string): string | null {
   }
 }
 
-function SqlChapterGuide({
+function SqldChapterGuide({
   accent,
+  chapter,
   lessons,
   progress,
 }: {
   accent: string;
-  lessons: SqlChapterGuideLesson[];
+  chapter: number;
+  lessons: SqldChapterGuideLesson[];
   progress: ProgressStore;
 }) {
+  const label = chapter === 1 ? 'MODEL ROADMAP' : 'SQL ROADMAP';
+  const ariaLabel =
+    chapter === 1 ? 'SQLD 1과목 학습 순서' : 'SQLD 2과목 학습 순서';
+
   return (
-    <section className="mt-5" aria-label="SQLD 2과목 학습 순서">
+    <section className="mt-5" aria-label={ariaLabel}>
       <div className="kr-num mb-2.5 text-[10px] uppercase tracking-[0.18em] text-cream/45">
-        SQL ROADMAP
+        {label}
       </div>
       <div className="flex gap-2.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {lessons.map((lesson, lessonIdx) => {
-          const meta = sqlPartGuide(lesson.topic, lessonIdx + 1);
+          const meta = sqldPartGuide(chapter, lesson.topic, lessonIdx + 1);
           const quizSteps = lesson.steps.filter((step) => !!step.quizId);
           const done = quizSteps.reduce((acc, step) => {
             const stat = step.quizId

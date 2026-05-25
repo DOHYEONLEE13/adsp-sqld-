@@ -15,18 +15,26 @@ const SQLD_2_1: Lesson = {
       title: 'SQL 4명령군',
       quizId: 'sqld-2-1-cp-01',
       group: 'sqld-2-1-g1-query-basics',
-      extraQuizIds: ['sqld-sql-lab-001'],
+      extraQuizIds: ['sqld-2-1-cp-01-ddl-tcard', 'sqld-sql-lab-001'],
       dialogue: [
-        { pose: 'wave', text: 'SQL 명령어들은 역할에 따라 [4가지 군]으로 분류돼! 시험 빈출!' },
-        { pose: 'think', text: '① [DDL (Data Definition Language)]: 데이터의 [구조] 정의·변경.' },
+        { pose: 'wave', text: '[SQL]은 DB에 부탁하는 말이야. 만들고, 넣고, 권한을 주고, 되돌리는 말들이 있어.' },
+        { pose: 'think', text: '이 명령어들은 역할에 따라 [4가지 군]으로 나눠. 처음엔 역할만 잡으면 돼.' },
+        { pose: 'lightbulb', text: '① [DDL (Data Definition Language)]: 테이블 같은 DB [구조]를 만들고 바꾸는 명령군.' },
         { pose: 'lightbulb', text: 'CREATE (생성), ALTER (변경), DROP (삭제), RENAME (이름 변경), TRUNCATE (행 전체 삭제)!' },
-        { pose: 'happy', text: '② [DML (Data Manipulation Language)]: [데이터] 자체를 조작.' },
+        { pose: 'happy', text: 'DDL 5개는 [TCARD(티카드)]로 외우자.\nT = TRUNCATE\nC = CREATE\nA = ALTER\nR = RENAME\nD = DROP' },
+        { pose: 'think', text: '특히 [TRUNCATE]는 행을 비우지만 DDL이야. DELETE랑 헷갈리게 자주 물어봐.' },
+        { pose: 'happy', text: '② [DML (Data Manipulation Language)]: 테이블 안의 [데이터] 자체를 넣고, 읽고, 고치는 명령군.' },
         { pose: 'think', text: 'SELECT (조회), INSERT (추가), UPDATE (수정), DELETE (삭제), MERGE (병합)!' },
-        { pose: 'lightbulb', text: '③ [DCL (Data Control Language)]: [권한] 관리.' },
+        { pose: 'happy', text: 'DML 5개는 [SIDUM(시둠)]으로 외우자.\nS = SELECT\nI = INSERT\nD = DELETE\nU = UPDATE\nM = MERGE' },
+        { pose: 'think', text: '책이나 문제에서 UPDATE와 DELETE 순서가 바뀌어 보여도, 둘 다 DML 묶음이라는 게 핵심이야.' },
+        { pose: 'lightbulb', text: '③ [DCL (Data Control Language)]: 누가 DB를 볼 수 있는지 정하는 [권한] 명령군.' },
         { pose: 'happy', text: 'GRANT (권한 부여), REVOKE (권한 회수)!' },
-        { pose: 'think', text: '④ [TCL (Transaction Control Language)]: [트랜잭션] 제어.' },
+        { pose: 'lightbulb', text: 'DCL은 [GR(지알)]만 기억해도 돼.\nG = GRANT: 권한을 준다\nR = REVOKE: 권한을 회수한다' },
+        { pose: 'think', text: '④ [TCL (Transaction Control Language)]: 작업을 확정하거나 되돌리는 [트랜잭션] 명령군.' },
         { pose: 'lightbulb', text: 'COMMIT, ROLLBACK, SAVEPOINT!' },
-        { pose: 'happy', text: '함정! [TRUNCATE]는 행을 삭제하지만 [DDL]이야! DDL이라 자동 COMMIT — ROLLBACK 불가!' },
+        { pose: 'happy', text: 'TCL은 [CRS(커롤세)]로 묶자.\nC = COMMIT\nR = ROLLBACK\nS = SAVEPOINT' },
+        { pose: 'happy', text: '먼저 쉬운 역할 매칭을 풀고, 그다음 TRUNCATE 같은 시험 함정을 볼 거야.' },
+        { pose: 'happy', text: '함정! [TRUNCATE]는 행을 삭제하지만 [DDL]이야. DDL이라 자동 COMMIT — ROLLBACK 불가!' },
         { pose: 'think', text: '"DROP 은 DML 인가?" 같은 함정 보기 자주 나와. DROP = DDL!' },
         { pose: 'lightbulb', text: '"INSERT 가 DCL?" — X. INSERT = DML!' },
         { pose: 'idle', text: '명령어와 군 매칭 — 1번 단골!' },
@@ -35,7 +43,7 @@ const SQLD_2_1: Lesson = {
         {
           kind: 'intro',
           body:
-            'SQL 의 명령어를 4가지 그룹으로 나누는 것은 시험 1번 단골 패턴입니다. 그룹별 키워드를 외우면 함정 보기를 쉽게 거를 수 있어요.',
+            'SQL은 DB에 “무엇을 해줘”라고 부탁하는 언어입니다. 먼저 명령어를 역할별로 나누어 보면 헷갈림이 줄어듭니다. 구조를 만드는 명령, 데이터를 다루는 명령, 권한을 관리하는 명령, 작업을 확정하거나 되돌리는 명령으로 나눠요.',
         },
         {
           kind: 'table',
@@ -49,10 +57,31 @@ const SQLD_2_1: Lesson = {
           ],
         },
         {
+          kind: 'callout',
+          tone: 'mnemonic',
+          title: '"TCARD(티카드)"',
+          body:
+            'DDL 대표 명령 5개는 TCARD로 묶어 기억합니다.\nT=TRUNCATE, C=CREATE, A=ALTER, R=RENAME, D=DROP.\n모두 테이블 같은 DB 구조를 만들거나 바꾸거나 지우는 쪽입니다.',
+        },
+        {
+          kind: 'callout',
+          tone: 'mnemonic',
+          title: '"SIDUM(시둠)"',
+          body:
+            'DML 대표 명령 5개는 SIDUM으로 묶어 기억합니다.\nS=SELECT, I=INSERT, D=DELETE, U=UPDATE, M=MERGE.\n테이블 안의 데이터를 조회·추가·삭제·수정·병합하는 명령입니다.',
+        },
+        {
+          kind: 'callout',
+          tone: 'mnemonic',
+          title: '"GR / CRS"',
+          body:
+            'DCL은 GRANT와 REVOKE라 GR(지알)로 기억합니다.\nTCL은 COMMIT, ROLLBACK, SAVEPOINT라 CRS(커롤세)로 기억합니다.',
+        },
+        {
           kind: 'section',
           title: 'SELECT 는 DQL 일까 DML 일까?',
           body:
-            '엄격한 분류로는 SELECT 만 따로 DQL (Data Query Language) 로 부르기도 합니다. SQLD 시험에서는 DML 에 포함시키는 분류가 일반적이며, 보기에 DQL 이 있으면 SELECT 를 DQL 로 보기도 함.',
+            '엄격한 분류로는 SELECT만 따로 DQL(Data Query Language)로 부르기도 합니다. SQLD에서는 SELECT를 DML에 포함해 설명하는 흐름도 자주 보입니다. 보기에 DQL이 있으면 SELECT는 DQL로 볼 수 있다는 정도까지 기억하면 됩니다.',
         },
         {
           kind: 'callout',
@@ -87,6 +116,7 @@ const SQLD_2_1: Lesson = {
         { pose: 'wave', text: 'SQL 은 [관계대수(Relational Algebra)] 라는 수학에서 출발했어!' },
         { pose: 'think', text: '처음엔 어렵게 느껴지지만, 일단 [릴레이션 = 테이블]이라고 생각하면 돼.' },
         { pose: 'lightbulb', text: '관계대수는 테이블에서 [행을 고르고], [열을 고르고], [테이블끼리 합치는] 규칙이야.' },
+        { pose: 'happy', text: '그래서 첫 문제는 기호 암기보다 “WHERE와 가까운 연산이 무엇인지”부터 확인할 거야.' },
         { pose: 'happy', text: 'SQL 명령들은 결국 이 관계대수 연산을 사람이 쓰기 쉽게 풀어쓴 것!' },
         { pose: 'happy', text: '[단항 연산자] 2개: [σ Selection] · [π Projection]!' },
         { pose: 'think', text: 'σ (시그마) = WHERE 와 같음. 조건 만족 [행]만 선택.' },
@@ -101,7 +131,7 @@ const SQLD_2_1: Lesson = {
         {
           kind: 'intro',
           body:
-            '관계대수는 관계형 DB가 테이블을 다루는 기본 규칙입니다. 초보자는 “테이블에서 행을 고른다, 열을 고른다, 두 테이블을 합친다” 정도로 먼저 잡으면 됩니다. 시험에는 기호와 의미를 연결하는 문제가 자주 나옵니다.',
+            '관계대수는 관계형 DB가 테이블을 다루는 기본 규칙입니다. 처음에는 기호를 전부 외우기보다 “WHERE는 행 선택, SELECT 컬럼은 열 선택, JOIN은 테이블 결합”처럼 SQL 절과 연결해서 이해하면 쉽습니다.',
         },
         {
           kind: 'table',

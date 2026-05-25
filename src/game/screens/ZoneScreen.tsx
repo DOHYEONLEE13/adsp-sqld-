@@ -16,9 +16,12 @@ import {
   BookOpen,
   Check,
   Clock,
+  Code2,
   Flame,
+  GitBranch,
   Lock,
   RefreshCcw,
+  Settings2,
   Shuffle,
   Target,
   Trophy,
@@ -136,6 +139,7 @@ export default function ZoneScreen({
   const progress = useProgress();
   const reviewCount = reviewPoolSize(subject, chapter, null);
   const accent = SUBJECT_ACCENT[subject];
+  const isSqlChapterGuide = subject === 'sqld' && chapter === 2;
 
   // ── Pass 시스템 통합 ───────────────────────────────────────
   const passSnap = usePassSnapshot();
@@ -309,9 +313,23 @@ export default function ZoneScreen({
             {chapterMeta?.title ?? `Chapter ${chapter}`}
           </h1>
           <p className="kr-body text-[12px] md:text-[13px] text-cream/65 mt-3 leading-[1.65] max-w-xl">
-            동그라미를 순서대로 눌러보세요. 짧은 개념을 보고, 바로 한 문제로
-            이해했는지 확인합니다.
+            {isSqlChapterGuide ? (
+              <>
+                SQL은 외우는 문법보다 절의 자리와 실행 순서가 중요해요.
+                <br />
+                기본 문법 → 쿼리 활용 → 관리 구문 순서로 진행합니다.
+              </>
+            ) : (
+              <>
+                동그라미를 순서대로 눌러보세요. 짧은 개념을 보고, 바로 한 문제로
+                이해했는지 확인합니다.
+              </>
+            )}
           </p>
+
+          {isSqlChapterGuide ? (
+            <SqlChapterGuide accent={accent} lessons={lessons} progress={progress} />
+          ) : null}
 
           {/* ── 회독 탭 ──
               사용자 흐름 폴리시 — 재응시생 (persona='reviewer') 한정으로 라벨 교체:
@@ -359,7 +377,7 @@ export default function ZoneScreen({
         {total > 0 ? (
           <section className="mb-8 md:mb-10" aria-label="풀이 모드 빠른 진입">
             <div className="kr-num text-[10px] uppercase tracking-[0.18em] text-cream/45 mb-2.5">
-              빠른 진입
+              {isSqlChapterGuide ? '연습 모드' : '빠른 진입'}
             </div>
             <div
               className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
@@ -500,6 +518,143 @@ export default function ZoneScreen({
 // TopicSection — 토픽 헤더 + step 노드 column
 // ================================================================
 
+type SqlChapterGuideLesson = {
+  topic: string;
+  steps: { quizId?: string }[];
+};
+
+function sqlPartGuide(topic: string, index: number) {
+  switch (topic) {
+    case 'SQL 기본':
+      return {
+        icon: <Code2 size={17} strokeWidth={2.4} />,
+        label: 'PART 1',
+        title: 'SQL 기본',
+        subtitle: 'SELECT · WHERE · GROUP BY',
+        caption: '쿼리의 뼈대와 실행 순서',
+      };
+    case 'SQL 활용':
+      return {
+        icon: <GitBranch size={17} strokeWidth={2.4} />,
+        label: 'PART 2',
+        title: 'SQL 활용',
+        subtitle: 'JOIN · 서브쿼리 · 윈도우',
+        caption: '여러 테이블을 연결하는 기술',
+      };
+    case '관리 구문':
+      return {
+        icon: <Settings2 size={17} strokeWidth={2.4} />,
+        label: 'PART 3',
+        title: '관리 구문',
+        subtitle: 'DML · DDL · TCL · DCL',
+        caption: '데이터 변경과 권한 관리',
+      };
+    default:
+      return {
+        icon: <BookOpen size={17} strokeWidth={2.4} />,
+        label: `PART ${index}`,
+        title: topic,
+        subtitle: '개념 → 문제',
+        caption: '짧게 보고 바로 확인',
+      };
+  }
+}
+
+function topicSectionSummary(topic: string): string | null {
+  switch (topic) {
+    case 'SQL 기본':
+      return 'SELECT부터 GROUP BY까지, SQL 문장을 읽는 기본 순서를 잡아요.';
+    case 'SQL 활용':
+      return 'JOIN, 서브쿼리, 윈도우 함수로 여러 테이블을 다루는 힘을 키워요.';
+    case '관리 구문':
+      return 'DML, DDL, TCL, DCL로 데이터를 바꾸고 지키는 명령을 익혀요.';
+    default:
+      return null;
+  }
+}
+
+function SqlChapterGuide({
+  accent,
+  lessons,
+  progress,
+}: {
+  accent: string;
+  lessons: SqlChapterGuideLesson[];
+  progress: ProgressStore;
+}) {
+  return (
+    <section className="mt-5" aria-label="SQLD 2과목 학습 순서">
+      <div className="kr-num mb-2.5 text-[10px] uppercase tracking-[0.18em] text-cream/45">
+        SQL ROADMAP
+      </div>
+      <div className="flex gap-2.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {lessons.map((lesson, lessonIdx) => {
+          const meta = sqlPartGuide(lesson.topic, lessonIdx + 1);
+          const quizSteps = lesson.steps.filter((step) => !!step.quizId);
+          const done = quizSteps.reduce((acc, step) => {
+            const stat = step.quizId
+              ? progress.questionStats[step.quizId]
+              : undefined;
+            return acc + (hasEverSolved(stat) ? 1 : 0);
+          }, 0);
+          const pct = quizSteps.length > 0 ? (done / quizSteps.length) * 100 : 0;
+
+          return (
+            <article
+              key={lesson.topic}
+              className="min-w-[188px] flex-1 rounded-[18px] border px-3.5 py-3.5"
+              style={{
+                background:
+                  'linear-gradient(145deg, rgba(239,244,255,0.075), rgba(7,16,43,0.52))',
+                borderColor: `${accent}2f`,
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)',
+              }}
+            >
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <span
+                  className="inline-flex size-8 items-center justify-center rounded-full"
+                  style={{
+                    color: accent,
+                    background: `${accent}17`,
+                    border: `1px solid ${accent}33`,
+                  }}
+                >
+                  {meta.icon}
+                </span>
+                <span className="kr-num text-[9px] uppercase tracking-[0.16em] text-cream/42">
+                  {meta.label}
+                </span>
+              </div>
+              <h2 className="kr-heading text-[15px] leading-tight text-cream">
+                {meta.title}
+              </h2>
+              <p className="kr-body mt-1.5 text-[11px] leading-[1.45] text-cream/58">
+                {meta.caption}
+              </p>
+              <p className="kr-num mt-3 text-[9px] uppercase tracking-[0.14em] text-cream/40">
+                {meta.subtitle}
+              </p>
+              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/8">
+                <div
+                  className="h-full rounded-full transition-[width]"
+                  style={{
+                    width: `${pct}%`,
+                    background: accent,
+                    boxShadow: `0 0 12px ${accent}66`,
+                  }}
+                />
+              </div>
+              <div className="kr-num mt-2 text-[10px] text-cream/45">
+                {done}/{quizSteps.length} step
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 interface TopicSectionProps {
   index: number;
   topic: string;
@@ -559,6 +714,7 @@ function TopicSection({
   }, 0);
   const lessonCompleted =
     visibleSteps.length > 0 && stepCompletedCount === visibleSteps.length;
+  const sectionSummary = topicSectionSummary(topic);
 
   // pulse 활성화 시: 첫 미완료(미정답) step 의 displayIdx 를 골라 펄스 표시 노드로.
   // 모두 완료된 토픽이면 첫 step 에 펄스 (= "다시 복기" 안내).
@@ -634,6 +790,11 @@ function TopicSection({
               : `${stepCompletedCount}/${visibleSteps.length} steps`}
           </span>
         </div>
+        {sectionSummary ? (
+          <p className="kr-body mt-2 max-w-[520px] text-[11.5px] leading-[1.55] text-cream/58">
+            {sectionSummary}
+          </p>
+        ) : null}
         <div
           className="h-px mt-3"
           style={{

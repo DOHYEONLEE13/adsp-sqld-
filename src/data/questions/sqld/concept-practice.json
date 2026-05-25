@@ -2,9 +2,9 @@
   "subject": "sqld",
   "meta": {
     "version": "0.2.0",
-    "updatedAt": "2026-05-25",
+    "updatedAt": "2026-05-26",
     "source": "개념 학습용 자체 제작 문항 — PDF 요약 노트 + 기출 변형",
-    "notes": "SQLD 스텝 기반 레슨 예제. LessonStep.quizId 와 extraQuizIds 매칭. 108문항."
+    "notes": "SQLD 스텝 기반 레슨 예제. LessonStep.quizId 와 extraQuizIds 매칭. 117문항."
   },
   "questions": [
     {
@@ -2900,26 +2900,61 @@
       "topic": "SQL 기본",
       "type": "multiple_choice",
       "difficulty": 1,
-      "question": "다음 중 SQL 명령어와 그룹의 짝으로 옳지 않은 것은?",
+      "question": "학교 DB에 새 `학생` 테이블을 만들려고 해. `CREATE TABLE`이 속한 SQL 명령군은?",
       "choices": [
-        "DDL — TRUNCATE",
-        "DML — DROP",
-        "DCL — REVOKE",
-        "TCL — COMMIT"
+        "DML — 테이블 안의 데이터를 넣고 고치는 명령군",
+        "TCL — 작업을 확정하거나 되돌리는 명령군",
+        "DDL — 테이블 같은 DB 구조를 만들고 바꾸는 명령군",
+        "DCL — 권한을 주고 회수하는 명령군"
       ],
-      "answerIndex": 1,
-      "explanation": "DROP 은 DDL 입니다. DML 은 SELECT/INSERT/UPDATE/DELETE/MERGE. TRUNCATE 도 DDL 이므로 자동 COMMIT 됩니다.",
+      "answerIndex": 2,
+      "explanation": "CREATE TABLE은 새 테이블 구조를 만드는 명령이므로 DDL입니다. DML은 INSERT/UPDATE/DELETE처럼 데이터 행을 조작하고, TCL은 COMMIT/ROLLBACK, DCL은 GRANT/REVOKE와 연결됩니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [],
         "changed_fields": [
-          "status"
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
         ],
-        "reason": "markdown 검수 반영",
-        "audited_at": "2026-05-05",
-        "auditor": "md_to_json (claude-code)",
+        "reason": "SQLD 2과목 첫 문제를 부정형 함정 문제에서 초보자용 역할 매칭 문제로 완화",
+        "audited_at": "2026-05-26",
+        "auditor": "codex",
         "source_md": "Q-SQLD-2-1-0001"
+      }
+    },
+    {
+      "id": "sqld-2-1-cp-01-ddl-tcard",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "`TCARD(티카드)`로 외우는 DDL 대표 명령 5개로 가장 알맞은 묶음은?",
+      "choices": [
+        "COMMIT, CREATE, ALTER, RENAME, DELETE",
+        "TRUNCATE, CREATE, ALTER, RENAME, DROP",
+        "SELECT, CREATE, ALTER, REVOKE, DROP",
+        "TRUNCATE, CHANGE, ADD, ROLLBACK, DELETE"
+      ],
+      "answerIndex": 1,
+      "explanation": "TCARD는 DDL 대표 명령 5개를 기억하기 위한 암기법입니다. T=TRUNCATE, C=CREATE, A=ALTER, R=RENAME, D=DROP입니다. TRUNCATE는 행을 비우지만 테이블 구조를 다루는 DDL로 분류되는 시험 단골 함정입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "DDL 대표 명령 나열 뒤 TCARD 암기 확인 문제 추가"
+        ],
+        "changed_fields": [
+          "new_question"
+        ],
+        "reason": "CREATE, ALTER, DROP, RENAME, TRUNCATE를 단순 나열로 끝내지 않고 암기법 직후 바로 확인하게 하기 위함",
+        "audited_at": "2026-05-26",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-2-1-0001-DDL-TCARD"
       }
     },
     {
@@ -2930,25 +2965,28 @@
       "topic": "SQL 기본",
       "type": "multiple_choice",
       "difficulty": 1,
-      "question": "관계대수 연산자 중 \"두 릴레이션에 모두 존재하는 튜플만 추출\" 하는 연산은?",
+      "question": "SQL의 `WHERE`처럼 조건에 맞는 행만 고르는 관계대수 연산은?",
       "choices": [
-        "σ (Selection)",
         "∪ (Union)",
-        "∩ (Intersect)",
-        "× (Cartesian)"
+        "π (Projection)",
+        "× (Cartesian)",
+        "σ (Selection)"
       ],
-      "answerIndex": 2,
-      "explanation": "∩ Intersect — 교집합. σ 는 조건 만족 행 선택, ∪ 는 합집합, × 는 모든 조합 (카티시안 곱).",
+      "answerIndex": 3,
+      "explanation": "σ(Selection)는 조건을 만족하는 행을 고르는 연산이라 SQL의 WHERE와 가깝습니다. π는 열 선택, ∪는 합집합, ×는 모든 가능한 조합입니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [],
         "changed_fields": [
-          "status"
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
         ],
-        "reason": "markdown 검수 반영",
-        "audited_at": "2026-05-05",
-        "auditor": "md_to_json (claude-code)",
+        "reason": "관계대수 첫 확인 문제를 튜플/릴레이션 중심 표현보다 WHERE 대응 개념으로 쉽게 전환",
+        "audited_at": "2026-05-26",
+        "auditor": "codex",
         "source_md": "Q-SQLD-2-1-0002"
       }
     },
@@ -2963,22 +3001,23 @@
       "question": "SQL 절들의 논리적 처리 순서로 올바른 것은?",
       "choices": [
         "SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY",
-        "FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY",
         "FROM → SELECT → WHERE → GROUP BY → HAVING → ORDER BY",
-        "WHERE → FROM → HAVING → GROUP BY → SELECT → ORDER BY"
+        "WHERE → FROM → HAVING → GROUP BY → SELECT → ORDER BY",
+        "FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY"
       ],
-      "answerIndex": 1,
+      "answerIndex": 3,
       "explanation": "FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY (\"프웨그하셀오\"). SELECT 가 5번째라 ALIAS 는 ORDER BY 에서만 사용 가능.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [],
         "changed_fields": [
-          "status"
+          "choices",
+          "answerIndex"
         ],
-        "reason": "markdown 검수 반영",
-        "audited_at": "2026-05-05",
-        "auditor": "md_to_json (claude-code)",
+        "reason": "SQLD 2과목 초반 정답 위치 편향을 줄이기 위해 보기 순서 조정",
+        "audited_at": "2026-05-26",
+        "auditor": "codex",
         "source_md": "Q-SQLD-2-1-0003"
       }
     },
@@ -2990,25 +3029,28 @@
       "topic": "SQL 기본",
       "type": "multiple_choice",
       "difficulty": 2,
-      "question": "ALIAS(별칭) 사용에 관한 설명으로 옳지 않은 것은?",
+      "question": "ALIAS(별칭)에 대한 설명으로 가장 적절한 것은?",
       "choices": [
-        "AS 키워드는 생략 가능하다",
-        "FROM 절의 테이블에도 별칭을 부여할 수 있다",
-        "SELECT 에서 정의한 별칭을 같은 쿼리의 WHERE 절에서 사용할 수 있다",
-        "별칭에 공백이나 특수문자를 포함하려면 큰따옴표(\"...\")로 감싼다"
+        "SELECT에서 만든 별칭은 WHERE에서 바로 사용할 수 있다",
+        "별칭은 테이블 이름에는 붙일 수 없고 컬럼에만 붙일 수 있다",
+        "별칭은 실제 테이블 구조를 영구적으로 바꾸는 명령이다",
+        "별칭은 결과 컬럼이나 테이블에 임시 이름을 붙여 SQL을 읽기 쉽게 만든다"
       ],
-      "answerIndex": 2,
-      "explanation": "WHERE 절은 SELECT 보다 먼저 실행되므로 SELECT 의 별칭을 사용할 수 없습니다. ORDER BY 에서는 가능 (실행 순서상 SELECT 뒤).",
+      "answerIndex": 3,
+      "explanation": "ALIAS는 결과 컬럼이나 테이블에 임시 이름을 붙이는 기능입니다. 실제 테이블 구조를 바꾸지는 않습니다. SELECT에서 만든 별칭은 WHERE보다 늦게 생기므로 WHERE에서는 사용할 수 없고, ORDER BY에서는 사용할 수 있습니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
         "fixed": [],
         "changed_fields": [
-          "status"
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
         ],
-        "reason": "markdown 검수 반영",
-        "audited_at": "2026-05-05",
-        "auditor": "md_to_json (claude-code)",
+        "reason": "ALIAS 첫 확인 문제를 부정형 함정에서 기능 이해형 문제로 완화",
+        "audited_at": "2026-05-26",
+        "auditor": "codex",
         "source_md": "Q-SQLD-2-1-0004"
       }
     },

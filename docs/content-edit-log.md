@@ -6,6 +6,43 @@
 
 이 문서는 개념·문제 수정 과정에서 Codex가 단순 지시 반영을 넘어서, 무엇을 어떻게 고쳤고 왜 그렇게 고쳤는지, 학습자에게 어떤 효과가 있는지 누적 기록하기 위한 파일이다.
 
+## 2026-05-26 — SQLD 2과목 초반 문제 품질 1차 개선
+
+### 사용자가 발견한 문제
+
+- SQLD 2과목 문제는 시험 포인트는 잡고 있지만, 처음 가입한 사용자가 보기에는 객관식 문제집 느낌이 아직 강하다.
+- 첫 문제부터 `옳지 않은 것은?`, `DROP`, `TRUNCATE` 같은 함정이 나와 초보자가 부담을 느낄 수 있다.
+- SQL 해석/순서 조립 문제는 좋지만 정답 위치가 앞쪽에 몰려 찍기 패턴이 생길 수 있다.
+
+### 수정한 방향
+
+- `SQL 4명령군` 첫 확인 문제를 부정형 함정에서 `CREATE TABLE은 어떤 명령군인가?` 형태의 쉬운 역할 매칭 문제로 바꿨다.
+- `관계대수` 첫 확인 문제를 `두 릴레이션에 모두 존재하는 튜플` 같은 어려운 표현보다 `WHERE와 가까운 연산`으로 바꿨다.
+- `ALIAS` 첫 확인 문제를 `옳지 않은 것은?`에서 별칭의 역할을 묻는 이해형 문제로 바꿨다.
+- SQL 해석/순서 조립 드릴 일부의 보기 순서를 바꿔 정답 위치 편향을 줄였다.
+- 레슨 대사도 “함정 암기”보다 `SQL은 DB에 부탁하는 말`, `역할별 명령군` 흐름으로 부드럽게 수정했다.
+
+### 사용자에게 주는 좋은 영향
+
+- SQLD 2과목 첫 진입자가 “처음부터 함정 문제를 맞혀야 한다”는 부담을 덜 느낀다.
+- 쉬운 역할 매칭 뒤에 해석·순서 조립·시험 함정으로 이어져 학습 난이도가 자연스럽게 올라간다.
+- 정답 위치 편향이 줄어들어 문제 풀이가 찍기보다 이해 기반으로 흐른다.
+
+### 반영 파일
+
+- `src/data/lessons/sqld/ch2-sql.ts`
+- `src/data/questions/sqld/concept-practice.json`
+- `src/data/questions/sqld/sql-interpretation-drills.json`
+- `src/data/questions/sqld/sql-interactive-drills.json`
+- `supabase/migrations/0064_update_sqld_ch2_beginner_drills.sql`
+- `docs/content-edit-log.md`
+
+### Supabase 반영 여부
+
+- 수정된 문제 ID: `sqld-2-1-cp-01`, `sqld-2-1-cp-02`, `sqld-2-1-cp-03`, `sqld-2-1-cp-04`, `sqld-sql-lab-001`, `sqld-sql-lab-002`, `sqld-sql-lab-003`, `sqld-sql-order-001`, `sqld-sql-order-002`.
+- 서버 동기화를 위해 `0064_update_sqld_ch2_beginner_drills.sql` 마이그레이션을 추가했다.
+- 라이브 Supabase `public.questions`에도 동일 ID 9개를 upsert했고, 대조 쿼리로 문항·보기·정답 인덱스 반영을 확인했다.
+
 ## 2026-05-25 — SQLD 첫 단원 데이터 모델링 CSS 그림 추가
 
 ### 사용자가 발견한 문제
@@ -1529,3 +1566,49 @@ order by expected.id;
 ### 다음 Codex가 기억해야 할 한 줄
 
 `quizId` 또는 `extraQuizIds`를 추가했다면, 로컬 JSON 수정만으로는 끝난 것이 아니다. 반드시 Supabase `public.questions`에 같은 `id`가 있어야 실제 플레이, 채점, XP 지급이 정상 작동한다.
+
+## 2026-05-26 — SQLD 2과목 SQL 4명령군 DDL 암기 보강
+
+### 사용자가 발견한 문제
+
+- `CREATE (생성), ALTER (변경), DROP (삭제), RENAME (이름 변경), TRUNCATE (행 전체 삭제)!`처럼 대표 명령을 나열만 하고 지나가고 있었다.
+- 초보 사용자는 이 목록을 어떻게 외워야 하는지 알기 어렵다.
+- 암기해야 하는 묶음 뒤에 바로 확인 문제가 붙어야 하는데, DDL 5개 묶음에는 별도 보강 문제가 없었다.
+- DDL만 암기법이 붙고 DML, DCL, TCL에는 같은 요약 흐름이 적용되지 않아 학습 리듬이 끊겼다.
+
+### 수정 방향
+
+- DDL 대표 명령 5개를 `TCARD(티카드)`로 묶었다.
+  - `T = TRUNCATE`
+  - `C = CREATE`
+  - `A = ALTER`
+  - `R = RENAME`
+  - `D = DROP`
+- DML 대표 명령 5개를 `SIDUM(시둠)`으로 묶었다.
+  - `S = SELECT`
+  - `I = INSERT`
+  - `D = DELETE`
+  - `U = UPDATE`
+  - `M = MERGE`
+- DCL은 `GR(지알)`, TCL은 `CRS(커롤세)`로 간단히 묶었다.
+- 단순히 “외우자”로 끝내지 않고, `TRUNCATE는 행을 비우지만 DDL`이라는 시험 함정을 함께 설명했다.
+- 같은 스텝의 `extraQuizIds`에 `sqld-2-1-cp-01-ddl-tcard`를 추가해 암기법 직후 바로 확인하게 했다.
+
+### 사용자에게 주는 좋은 영향
+
+- 긴 SQL 명령어 목록을 무작정 외우는 느낌이 줄어든다.
+- `TRUNCATE`를 `DELETE`와 헷갈리는 대표 함정을 초반부터 잡을 수 있다.
+- SQL 4명령군 전체가 같은 리듬으로 정리되어 사용자가 “이 부분은 외워야 하는 묶음”이라고 인식하기 쉽다.
+- “개념 나열 → 암기법 → 바로 문제” 흐름이 생겨 모바일 학습 중 이탈 가능성을 줄인다.
+
+### 반영 파일
+
+- `src/data/lessons/sqld/ch2-sql.ts`
+- `src/data/questions/sqld/concept-practice.json`
+- `src/data/gameModes.ts`
+- `supabase/migrations/0064_update_sqld_ch2_beginner_drills.sql`
+
+### Supabase 반영 상태
+
+- 새 문제 ID `sqld-2-1-cp-01-ddl-tcard`를 Supabase `public.questions`에 upsert했다.
+- 서버 대조 쿼리로 `stem`, `choices`, `answer_index=1`이 반영된 것을 확인했다.

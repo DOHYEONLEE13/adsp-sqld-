@@ -165,12 +165,12 @@
         "answer": ["SELECT", "FROM", "WHERE", "ORDER BY"]
       },
       "choices": [
-        "SELECT → FROM → WHERE → ORDER BY",
         "FROM → WHERE → SELECT → ORDER BY",
         "SELECT → WHERE → FROM → ORDER BY",
+        "SELECT → FROM → WHERE → ORDER BY",
         "WHERE → SELECT → FROM → ORDER BY"
       ],
-      "answerIndex": 0,
+      "answerIndex": 2,
       "explanation": "기본 조회문은 SELECT로 표시할 컬럼을 정하고 FROM에서 테이블을 지정한 뒤, WHERE로 행을 거르고 ORDER BY로 최종 정렬합니다.",
       "status": "guidebook-verified"
     },
@@ -205,12 +205,12 @@
         "answer": ["FROM", "GROUP BY", "HAVING"]
       },
       "choices": [
-        "FROM → GROUP BY → HAVING",
         "FROM → HAVING → GROUP BY",
         "GROUP BY → FROM → HAVING",
+        "FROM → GROUP BY → HAVING",
         "HAVING → FROM → GROUP BY"
       ],
-      "answerIndex": 0,
+      "answerIndex": 2,
       "explanation": "테이블은 FROM에서 정하고, DEPT_ID별로 GROUP BY 한 뒤, 그룹별 AVG(SAL) 조건은 HAVING에 둡니다.",
       "status": "guidebook-verified"
     },

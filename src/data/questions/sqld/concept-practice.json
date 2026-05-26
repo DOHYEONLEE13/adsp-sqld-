@@ -2,9 +2,9 @@
   "subject": "sqld",
   "meta": {
     "version": "0.2.0",
-    "updatedAt": "2026-05-26",
+    "updatedAt": "2026-05-27",
     "source": "개념 학습용 자체 제작 문항 — PDF 요약 노트 + 기출 변형",
-    "notes": "SQLD 스텝 기반 레슨 예제. LessonStep.quizId 와 extraQuizIds 매칭. 117문항."
+    "notes": "SQLD 스텝 기반 레슨 예제. LessonStep.quizId 와 extraQuizIds 매칭. 125문항."
   },
   "questions": [
     {
@@ -3892,6 +3892,286 @@
         "audited_at": "2026-05-05",
         "auditor": "md_to_json (claude-code)",
         "source_md": "Q-SQLD-2-3-0008"
+      }
+    },
+    {
+      "id": "sqld-2-1-cp-02-sql-map",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "관계대수 기호와 SQL 절의 연결로 가장 적절한 것은?",
+      "choices": [
+        "σ는 조건에 맞는 행을 고르는 연산이므로 WHERE와 가깝다",
+        "π는 여러 테이블을 합치는 연산이므로 JOIN과 같다",
+        "×는 중복을 제거하는 연산이므로 DISTINCT와 같다",
+        "∩는 모든 가능한 행 조합을 만들므로 CROSS JOIN과 같다"
+      ],
+      "answerIndex": 0,
+      "explanation": "σ(Selection)는 조건을 만족하는 행을 고르는 연산이라 WHERE와 가깝습니다. π는 열 선택, ×는 카티시안 곱, ∩는 교집합입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "SQLD 2과목 관계대수 도식 직후 확인 문제 추가"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "관계대수 기호를 암기보다 SQL 절과 연결해 이해하게 하기 위함",
+        "audited_at": "2026-05-27",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-2-1-SQL-MAP"
+      }
+    },
+    {
+      "id": "sqld-2-1-cp-10-where-flow",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 기본",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "WHERE 절에 대한 설명으로 옳은 것은?",
+      "choices": [
+        "WHERE는 GROUP BY 이후의 집계 결과를 필터링한다",
+        "WHERE에서는 SELECT에서 만든 별칭을 항상 사용할 수 있다",
+        "WHERE는 GROUP BY보다 먼저 실행되어 행 단위 조건을 걸러낸다",
+        "WHERE는 ORDER BY보다 뒤에 실행되어 정렬 결과만 필터링한다"
+      ],
+      "answerIndex": 2,
+      "explanation": "WHERE는 FROM 다음, GROUP BY보다 먼저 실행되는 행 단위 필터입니다. 집계 결과 조건은 HAVING에 둡니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "WHERE 도식 직후 행 필터 개념 확인 문제 추가"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "WHERE와 HAVING을 헷갈리는 초보자에게 실행 흐름을 고정하기 위함",
+        "audited_at": "2026-05-27",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-2-1-WHERE-FLOW"
+      }
+    },
+    {
+      "id": "sqld-2-2-cp-01-left-join",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "type": "multiple_choice",
+      "difficulty": 1,
+      "question": "LEFT OUTER JOIN의 결과로 가장 적절한 설명은?",
+      "choices": [
+        "양쪽 테이블에서 매칭되는 행만 남긴다",
+        "왼쪽 행을 모두 남기고, 매칭 없는 오른쪽 값은 NULL로 채운다",
+        "오른쪽 테이블의 행만 모두 남기고 왼쪽은 제거한다",
+        "두 테이블의 모든 가능한 조합을 만든다"
+      ],
+      "answerIndex": 1,
+      "explanation": "LEFT OUTER JOIN은 왼쪽 테이블을 기준으로 모두 보존합니다. 오른쪽에 매칭이 없으면 오른쪽 컬럼 값만 NULL이 됩니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "JOIN 4종 도식 직후 LEFT OUTER JOIN 확인 문제 추가"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "JOIN 종류를 결과 보존 방향으로 이해하게 하기 위함",
+        "audited_at": "2026-05-27",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-2-2-LEFT-JOIN"
+      }
+    },
+    {
+      "id": "sqld-2-2-cp-04-subquery-place",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "서브쿼리의 위치와 이름 연결로 가장 적절한 것은?",
+      "choices": [
+        "SELECT 절 안의 서브쿼리 — 인라인 뷰",
+        "FROM 절 안의 서브쿼리 — 스칼라 서브쿼리",
+        "WHERE 절 안의 서브쿼리 — 무조건 DDL",
+        "FROM 절 안의 서브쿼리 — 인라인 뷰"
+      ],
+      "answerIndex": 3,
+      "explanation": "FROM 절 안에서 임시 테이블처럼 쓰는 서브쿼리를 인라인 뷰라고 합니다. SELECT 절의 한 행·한 컬럼 서브쿼리는 스칼라 서브쿼리입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "서브쿼리 위치 도식 직후 확인 문제 추가"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "서브쿼리 6종을 위치와 반환 형태로 나누어 이해하게 하기 위함",
+        "audited_at": "2026-05-27",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-2-2-SUBQUERY-PLACE"
+      }
+    },
+    {
+      "id": "sqld-2-2-cp-08-rank-dense",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "SQL 활용",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "점수 내림차순이 100, 100, 90일 때 RANK와 DENSE_RANK 결과로 옳은 것은?",
+      "choices": [
+        "RANK: 1,1,3 / DENSE_RANK: 1,1,2",
+        "RANK: 1,2,3 / DENSE_RANK: 1,1,3",
+        "RANK: 1,1,2 / DENSE_RANK: 1,1,3",
+        "RANK: 1,2,2 / DENSE_RANK: 1,2,3"
+      ],
+      "answerIndex": 0,
+      "explanation": "RANK는 동점 뒤 순위를 건너뛰므로 1,1,3입니다. DENSE_RANK는 동점 뒤에도 순위를 건너뛰지 않아 1,1,2입니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "윈도우 순위 도식 직후 RANK/DENSE_RANK 확인 문제 추가"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "순위 함수 차이를 짧은 숫자 예시로 즉시 고정하기 위함",
+        "audited_at": "2026-05-27",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-2-2-RANK-DENSE"
+      }
+    },
+    {
+      "id": "sqld-2-3-cp-03-savepoint-rollback",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "관리 구문",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "SAVEPOINT와 ROLLBACK TO에 대한 설명으로 옳은 것은?",
+      "choices": [
+        "SAVEPOINT는 COMMIT과 같아서 그 지점까지 영구 저장한다",
+        "ROLLBACK TO SAVEPOINT는 테이블 구조를 삭제한다",
+        "ROLLBACK TO SAVEPOINT는 지정한 저장점 이후의 변경만 되돌릴 수 있다",
+        "COMMIT 이후에도 이전 SAVEPOINT로 언제든 돌아갈 수 있다"
+      ],
+      "answerIndex": 2,
+      "explanation": "SAVEPOINT는 트랜잭션 안의 중간 저장점입니다. ROLLBACK TO는 그 저장점 이후 변경을 되돌리지만, COMMIT 이후에는 이전 저장점으로 돌아갈 수 없습니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "TCL 도식 직후 SAVEPOINT 확인 문제 추가"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "COMMIT과 SAVEPOINT를 헷갈리지 않게 하기 위함",
+        "audited_at": "2026-05-27",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-2-3-SAVEPOINT-ROLLBACK"
+      }
+    },
+    {
+      "id": "sqld-2-3-cp-06-ddl-delete-compare",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "관리 구문",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "DELETE, TRUNCATE, DROP 비교로 가장 적절한 것은?",
+      "choices": [
+        "DELETE는 테이블 구조까지 삭제한다",
+        "TRUNCATE는 조건으로 일부 행만 삭제할 때 주로 사용한다",
+        "DROP은 행만 비우고 테이블 구조는 유지한다",
+        "DELETE는 DML, TRUNCATE와 DROP은 DDL로 분류한다"
+      ],
+      "answerIndex": 3,
+      "explanation": "DELETE는 데이터를 조작하는 DML이고 조건 삭제와 ROLLBACK이 가능합니다. TRUNCATE와 DROP은 DDL로 자동 COMMIT 함정이 있습니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "DELETE/TRUNCATE/DROP 비교 도식 직후 확인 문제 추가"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "행 삭제와 구조 삭제를 구분하게 하기 위함",
+        "audited_at": "2026-05-27",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-2-3-DDL-DELETE-COMPARE"
+      }
+    },
+    {
+      "id": "sqld-2-3-cp-07-pk-unique-null",
+      "subject": "sqld",
+      "chapter": 2,
+      "chapterTitle": "SQL 기본 및 활용",
+      "topic": "관리 구문",
+      "type": "multiple_choice",
+      "difficulty": 2,
+      "question": "PK, UNIQUE, NOT NULL의 차이로 가장 적절한 것은?",
+      "choices": [
+        "PK는 NULL을 허용하고 UNIQUE는 반드시 대표 키가 된다",
+        "NOT NULL은 중복을 막는 제약이라 PK와 완전히 같다",
+        "UNIQUE는 중복을 막지만 SQLD/Oracle 기준 NULL은 허용될 수 있다",
+        "FOREIGN KEY는 같은 테이블 안의 중복 값만 막는 제약이다"
+      ],
+      "answerIndex": 2,
+      "explanation": "PK는 대표 식별자라 UNIQUE + NOT NULL 성격을 가집니다. UNIQUE는 중복을 막지만 대표 키라는 뜻은 아니며, SQLD/Oracle 기준 NULL은 허용될 수 있습니다.",
+      "source": "개념 예제",
+      "status": "self-reviewed",
+      "_audit": {
+        "fixed": [
+          "제약조건 도식 직후 PK/UNIQUE/NOT NULL 차이 확인 문제 추가"
+        ],
+        "changed_fields": [
+          "question",
+          "choices",
+          "answerIndex",
+          "explanation"
+        ],
+        "reason": "관리 구문에서 제약조건 차이를 초보자도 구분하게 하기 위함",
+        "audited_at": "2026-05-27",
+        "auditor": "codex",
+        "source_md": "Q-SQLD-2-3-PK-UNIQUE-NULL"
       }
     }
   ]

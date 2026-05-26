@@ -1929,3 +1929,75 @@ order by expected.id;
 
 - 새 문제 ID `sqld-2-1-cp-01-ddl-tcard`를 Supabase `public.questions`에 upsert했다.
 - 서버 대조 쿼리로 `stem`, `choices`, `answer_index=1`이 반영된 것을 확인했다.
+
+## 2026-05-27 — SQLD 2과목 전체 도식 보강 및 후속 문제 추가
+
+### 사용자가 발견한 문제
+
+- SQLD 2과목 `SQL 기본 및 활용`은 SQL 문법이 많이 나오는데, 글과 표만으로 설명하면 처음 보는 사용자가 “이 SQL이 어떤 순서로 움직이는지”를 한눈에 잡기 어렵다.
+- 특히 `관계대수`, `WHERE`, `JOIN`, `서브쿼리`, `윈도우 함수`, `TCL`, `DELETE/TRUNCATE/DROP`, `제약조건`은 그림으로 먼저 보면 이해가 빠른 영역이다.
+- 기존 한 문제만으로는 도식 직후 확인이 부족한 step이 있었다.
+
+### 수정 방향
+
+- `DialogueLesson`에 SQLD 2과목 전용 도식 모드를 추가했다.
+  - SQL 기본: 명령군, 관계대수, SELECT 실행 순서, 별칭/DISTINCT, 문자·숫자·날짜·집계·NULL·CASE 함수, WHERE, GROUP BY/HAVING, ORDER BY
+  - SQL 활용: JOIN 4종, JOIN 표기, CROSS/SELF, 서브쿼리, 다중행 비교, 집합 연산자, ROLLUP/CUBE, 윈도우 함수, TOP N, 정규표현식
+  - 관리 구문: DML, MERGE, TCL, AUTOCOMMIT, CREATE TABLE, DELETE/TRUNCATE/DROP, 제약조건, DCL
+- 핵심 step 8곳에 후속 확인 문제를 추가했다.
+  - `sqld-2-1-cp-02-sql-map`
+  - `sqld-2-1-cp-10-where-flow`
+  - `sqld-2-2-cp-01-left-join`
+  - `sqld-2-2-cp-04-subquery-place`
+  - `sqld-2-2-cp-08-rank-dense`
+  - `sqld-2-3-cp-03-savepoint-rollback`
+  - `sqld-2-3-cp-06-ddl-delete-compare`
+  - `sqld-2-3-cp-07-pk-unique-null`
+- 새 문제를 각 step의 `extraQuizIds`에 연결하고, `gameModes.ts`의 SQLD 문항 수를 실제 playable 수에 맞춰 갱신했다.
+- Supabase 반영용 migration `0068_seed_sqld_ch2_visual_followup_drills.sql`을 추가했다.
+
+### 사용자에게 주는 좋은 영향
+
+- 사용자는 긴 SQL 설명을 읽기 전에 “표 → SQL → 결과” 또는 “명령 → 효과”를 그림으로 먼저 본다.
+- SQLD 2과목에서 가장 어려운 문법 파트가 책식 설명이 아니라 모바일 카드형 개념 흐름으로 바뀐다.
+- 새 문제 ID가 Supabase에 반영되도록 migration을 함께 만들었기 때문에, 로컬에서는 보이지만 실제 플레이에서 `문제를 불러오지 못했어요`가 뜨는 사고를 막을 수 있다.
+
+### 반영 파일
+
+- `src/game/lesson/DialogueLesson.tsx`
+- `src/data/lessons/sqld/ch2-sql.ts`
+- `src/data/questions/sqld/concept-practice.json`
+- `src/data/gameModes.ts`
+- `supabase/migrations/0068_seed_sqld_ch2_visual_followup_drills.sql`
+
+### Supabase 반영 상태
+
+- MCP handshaking timeout으로 이 세션에서 라이브 `public.questions` 직접 upsert는 수행하지 못했다.
+- 대신 migration에 새 문제 8개를 모두 포함했다. 배포/마이그레이션 적용 단계에서 이 SQL을 라이브 DB에 적용해야 완료로 본다.
+
+## 2026-05-27 — SQLD 2과목 말투 1과목 톤으로 정리
+
+### 사용자가 발견한 문제
+
+- SQLD 2과목 일부 문장이 SQLD 1과목에 비해 너무 압축적이었다.
+- 예: `HAVING 은 GROUP BY 후라 집계함수 사용 가능!`처럼 요약노트/시험특강 말투가 남아 있어 초보자가 부담스럽게 느낄 수 있었다.
+
+### 수정 방향
+
+- `시험 빈출`, `단골`, `함정`, `OK`, `사용 가능/불가` 같은 압축 표현을 줄였다.
+- `WHERE와 HAVING`, `SELECT 실행 순서`, `문자 함수`, `집계함수 NULL 처리`, `JOIN`, `TCL`, `DCL` 등에서 “왜 그런지”를 설명하는 1과목식 말투로 바꿨다.
+- 기계적 치환 중 `REVOKE`의 `OK`가 잘못 바뀔 수 있음을 확인하고 즉시 복구했다. 이후 SQL 키워드 내부 문자열은 기계 치환 대상에서 제외해야 한다.
+
+### 사용자에게 주는 좋은 영향
+
+- SQLD 2과목이 “문법 암기 요약”이 아니라 “처음 보는 사람도 순서대로 이해하는 설명”에 가까워진다.
+- 특히 GROUP BY/HAVING처럼 헷갈리는 구간에서 사용자가 왜 WHERE가 안 되는지 자연스럽게 이해할 수 있다.
+- ADSP/SQLD 1과목과 2과목의 말투 통일성이 좋아져 앱 전체 경험이 덜 딱딱해진다.
+
+### 반영 파일
+
+- `src/data/lessons/sqld/ch2-sql.ts`
+
+### Supabase 반영 상태
+
+- 새 문제 ID를 추가하지 않은 말투/설명 변경이므로 별도 Supabase migration은 필요하지 않다.

@@ -2,7 +2,7 @@
  * 랜딩 "도전 가능한 자격증" 컬렉션 — 실제 앱이 지원하는 과목으로 일치.
  *
  * 콘텐츠 카운트 (2026-05-01 기준, playable 기준):
- *   사용 가능: ADSP (251 step · 420 문항), SQLD (109 step · 365 문항).
+ *   사용 가능: ADSP (251 step · 420 문항), SQLD (109 step · 373 문항).
  *   준비중:    빅데이터 분석기사 — 콘텐츠 작성 트랙.
  *
  * "playable" 정의: multiple_choice 타입 + status≠restored + needsDistractors≠true.
@@ -40,7 +40,7 @@ export const SUBJECT_SHOWCASES: SubjectShowcase[] = [
       'SQL 개발자. 관계형 DB 설계부터 쿼리 최적화까지. 백엔드 · 분석 · BI 의 기본기.',
     videoUrl: VIDEO_URLS.mode2,
     metaLabel: '콘텐츠',
-    metaValue: '109 step · 365 문항',
+    metaValue: '109 step · 373 문항',
     href: '#/game',
   },
   {

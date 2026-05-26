@@ -542,6 +542,56 @@ export default function DialogueLesson({
     if (step.id === 'sqld-1-2-s8-practice') return 'practice';
     return null;
   })();
+  const sqld2BasicsDiagramMode = (() => {
+    if (phase !== 'narrate') return null;
+    const map: Record<string, Sqld2BasicsDiagramMode> = {
+      'sqld-2-1-s1': 'commands',
+      'sqld-2-1-s2': 'algebra',
+      'sqld-2-1-s3': 'execution',
+      'sqld-2-1-s4': 'aliasDistinct',
+      'sqld-2-1-s5': 'stringFunctions',
+      'sqld-2-1-s6': 'numberDateFunctions',
+      'sqld-2-1-s7': 'aggregateFunctions',
+      'sqld-2-1-s8': 'nullFunctions',
+      'sqld-2-1-s9': 'caseDecode',
+      'sqld-2-1-s10': 'where',
+      'sqld-2-1-s11': 'groupHaving',
+      'sqld-2-1-s12': 'orderBy',
+    };
+    return map[step.id] ?? null;
+  })();
+  const sqld2UsageDiagramMode = (() => {
+    if (phase !== 'narrate') return null;
+    const map: Record<string, Sqld2UsageDiagramMode> = {
+      'sqld-2-2-s1': 'joinKinds',
+      'sqld-2-2-s2': 'joinSyntax',
+      'sqld-2-2-s3': 'crossSelf',
+      'sqld-2-2-s4': 'subquery',
+      'sqld-2-2-s5': 'multirow',
+      'sqld-2-2-s6': 'setOps',
+      'sqld-2-2-s7': 'groupExtension',
+      'sqld-2-2-s8': 'windowRank',
+      'sqld-2-2-s9': 'windowAggregate',
+      'sqld-2-2-s10': 'lagLeadFrame',
+      'sqld-2-2-s11': 'topN',
+      'sqld-2-2-s12': 'regex',
+    };
+    return map[step.id] ?? null;
+  })();
+  const sqld2ManagementDiagramMode = (() => {
+    if (phase !== 'narrate') return null;
+    const map: Record<string, Sqld2ManagementDiagramMode> = {
+      'sqld-2-3-s1': 'dml',
+      'sqld-2-3-s2': 'merge',
+      'sqld-2-3-s3': 'tcl',
+      'sqld-2-3-s4': 'autocommit',
+      'sqld-2-3-s5': 'createTable',
+      'sqld-2-3-s6': 'ddlCompare',
+      'sqld-2-3-s7': 'constraints',
+      'sqld-2-3-s8': 'dcl',
+    };
+    return map[step.id] ?? null;
+  })();
 
   // step.title 에서 trail 라벨 추출 — ' — ' 와 ' (' 앞부분만.
   // 예: 'DIKW ① 데이터 (Data) — raw 값' → 'DIKW ① 데이터'
@@ -1102,7 +1152,10 @@ export default function DialogueLesson({
         !specialRelationDiagramMode &&
         !transactionDiagramMode &&
         !nullDiagramMode &&
-        !keyChoiceDiagramMode ? (
+        !keyChoiceDiagramMode &&
+        !sqld2BasicsDiagramMode &&
+        !sqld2UsageDiagramMode &&
+        !sqld2ManagementDiagramMode ? (
           <nav
             aria-label={trailLabel}
             className="mt-10 max-w-[420px] mx-auto"
@@ -1254,6 +1307,18 @@ export default function DialogueLesson({
 
         {keyChoiceDiagramMode ? (
           <KeyChoiceDiagram mode={keyChoiceDiagramMode} />
+        ) : null}
+
+        {sqld2BasicsDiagramMode ? (
+          <Sqld2BasicsDiagram mode={sqld2BasicsDiagramMode} />
+        ) : null}
+
+        {sqld2UsageDiagramMode ? (
+          <Sqld2UsageDiagram mode={sqld2UsageDiagramMode} />
+        ) : null}
+
+        {sqld2ManagementDiagramMode ? (
+          <Sqld2ManagementDiagram mode={sqld2ManagementDiagramMode} />
         ) : null}
 
         {/* question / feedback 단계 — 4지선다 또는 SQL 순서 조립 */}
@@ -3869,6 +3934,692 @@ function KeyChoiceDiagram({ mode }: { mode: KeyChoiceMode }) {
         <VisualPill label="학번" sub="본질식별자" tone="cyan" />
         <VisualPill label="id / UUID" sub="인조식별자" tone="violet" />
       </div>
+    </LearningVisualFrame>
+  );
+}
+
+type Sqld2BasicsDiagramMode =
+  | 'commands'
+  | 'algebra'
+  | 'execution'
+  | 'aliasDistinct'
+  | 'stringFunctions'
+  | 'numberDateFunctions'
+  | 'aggregateFunctions'
+  | 'nullFunctions'
+  | 'caseDecode'
+  | 'where'
+  | 'groupHaving'
+  | 'orderBy';
+
+type Sqld2UsageDiagramMode =
+  | 'joinKinds'
+  | 'joinSyntax'
+  | 'crossSelf'
+  | 'subquery'
+  | 'multirow'
+  | 'setOps'
+  | 'groupExtension'
+  | 'windowRank'
+  | 'windowAggregate'
+  | 'lagLeadFrame'
+  | 'topN'
+  | 'regex';
+
+type Sqld2ManagementDiagramMode =
+  | 'dml'
+  | 'merge'
+  | 'tcl'
+  | 'autocommit'
+  | 'createTable'
+  | 'ddlCompare'
+  | 'constraints'
+  | 'dcl';
+
+function VisualPillGrid({
+  items,
+  columns = 'grid-cols-2',
+}: {
+  items: Array<{ label: string; sub?: string; tone?: VisualTone }>;
+  columns?: string;
+}) {
+  return (
+    <div className={`grid gap-2 ${columns}`}>
+      {items.map((item) => (
+        <VisualPill
+          key={`${item.label}-${item.sub ?? ''}`}
+          label={item.label}
+          sub={item.sub}
+          tone={item.tone ?? 'cyan'}
+        />
+      ))}
+    </div>
+  );
+}
+
+function SqlPipeline({
+  steps,
+}: {
+  steps: Array<{ label: string; sub?: string; tone?: VisualTone }>;
+}) {
+  return (
+    <div className="grid gap-2 sm:grid-cols-[1fr_18px_1fr_18px_1fr] sm:items-center">
+      {steps.map((item, index) => (
+        <Fragment key={`${item.label}-${index}`}>
+          <VisualPill label={item.label} sub={item.sub} tone={item.tone ?? 'cyan'} />
+          {index < steps.length - 1 ? (
+            <div className="hidden sm:flex sm:items-center">
+              <ArrowStep />
+            </div>
+          ) : null}
+        </Fragment>
+      ))}
+    </div>
+  );
+}
+
+function Sqld2BasicsDiagram({ mode }: { mode: Sqld2BasicsDiagramMode }) {
+  if (mode === 'commands') {
+    return (
+      <LearningVisualFrame
+        eyebrow="SQL COMMANDS"
+        title="명령어는 역할로 먼저 나눈다"
+        caption="SQLD에서는 명령어 이름을 외우기 전에 구조·데이터·권한·트랜잭션 중 무엇을 다루는지부터 잡으면 덜 헷갈립니다."
+      >
+        <VisualPillGrid
+          columns="grid-cols-2"
+          items={[
+            { label: 'DDL', sub: '구조 만들기 · TCARD', tone: 'violet' },
+            { label: 'DML', sub: '데이터 다루기 · SIDUM', tone: 'cyan' },
+            { label: 'DCL', sub: '권한 주고 회수 · GR', tone: 'lime' },
+            { label: 'TCL', sub: '확정/취소 · CRS', tone: 'amber' },
+          ]}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'algebra') {
+    return (
+      <LearningVisualFrame
+        eyebrow="RELATIONAL ALGEBRA"
+        title="기호를 SQL 절로 바꿔 읽기"
+        caption="σ는 행 조건이라 WHERE, π는 열 선택이라 SELECT, ⨝는 테이블 결합이라 JOIN과 연결하면 됩니다."
+      >
+        <VisualPillGrid
+          columns="grid-cols-3"
+          items={[
+            { label: 'σ', sub: '행 선택 · WHERE', tone: 'lime' },
+            { label: 'π', sub: '열 선택 · SELECT', tone: 'cyan' },
+            { label: '⨝', sub: '테이블 결합 · JOIN', tone: 'violet' },
+          ]}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'execution') {
+    return (
+      <LearningVisualFrame
+        eyebrow="FWGHSO"
+        title="SQL은 FROM부터 처리된다"
+        caption="작성은 SELECT부터 해도 논리 처리는 FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY 순서입니다."
+      >
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {[
+            ['FROM', '대상 표', 'cyan'],
+            ['WHERE', '행 필터', 'lime'],
+            ['GROUP BY', '묶기', 'violet'],
+            ['HAVING', '그룹 필터', 'amber'],
+            ['SELECT', '열 선택', 'cyan'],
+            ['ORDER BY', '정렬', 'lime'],
+          ].map(([label, sub, tone]) => (
+            <VisualPill key={label} label={label} sub={sub} tone={tone as VisualTone} />
+          ))}
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'aliasDistinct') {
+    return (
+      <LearningVisualFrame
+        eyebrow="ALIAS · DISTINCT"
+        title="이름 붙이고, 중복 줄이기"
+        caption="ALIAS는 결과 이름을 읽기 쉽게 만들고, DISTINCT는 선택한 컬럼 조합이 같은 행을 하나로 줄입니다."
+      >
+        <div className="grid gap-3 sm:grid-cols-2">
+          <MiniDataTable
+            title="ALIAS"
+            columns={['표현식', '결과 이름']}
+            rows={[['SAL * 12', 'YEAR_SAL'], ['ENAME', '이름']]}
+            highlight={(_, column) => (column === 1 ? 'lime' : null)}
+          />
+          <MiniDataTable
+            title="DISTINCT"
+            columns={['DEPT', '결과']}
+            rows={[['10', '남김'], ['10', '중복 제거'], ['20', '남김']]}
+            highlight={(_, column, value) => (column === 1 && value.includes('제거') ? 'amber' : null)}
+          />
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'stringFunctions') {
+    return (
+      <LearningVisualFrame
+        eyebrow="STRING FUNCTIONS"
+        title="문자 함수는 글자를 자르고 찾고 바꾼다"
+        caption="Oracle 기준 SUBSTR은 1부터 위치를 세고, INSTR은 찾은 글자의 위치를 반환합니다."
+      >
+        <SqlPipeline
+          steps={[
+            { label: 'QUESTDP', sub: '입력 문자열', tone: 'cyan' },
+            { label: 'SUBSTR(2,3)', sub: '2번째부터 3글자', tone: 'violet' },
+            { label: 'UES', sub: '결과', tone: 'lime' },
+          ]}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'numberDateFunctions') {
+    return (
+      <LearningVisualFrame
+        eyebrow="NUMBER · DATE"
+        title="숫자는 반올림/버림, 날짜는 차이와 변환"
+        caption="ROUND는 반올림, TRUNC는 버림입니다. 날짜/문자 변환은 TO_CHAR, TO_DATE 같은 형식 모델을 함께 봅니다."
+      >
+        <VisualPillGrid
+          columns="grid-cols-2"
+          items={[
+            { label: 'ROUND(148.6, -1)', sub: '150', tone: 'lime' },
+            { label: 'TRUNC(148.6, -1)', sub: '140', tone: 'amber' },
+            { label: 'TO_CHAR(date)', sub: '날짜 → 문자', tone: 'cyan' },
+            { label: 'TO_DATE(text)', sub: '문자 → 날짜', tone: 'violet' },
+          ]}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'aggregateFunctions') {
+    return (
+      <LearningVisualFrame
+        eyebrow="AGGREGATE"
+        title="집계함수는 여러 행을 하나로 요약"
+        caption="COUNT(*)는 행 자체를 세고, COUNT(컬럼)·SUM·AVG는 NULL 값을 제외하고 계산합니다."
+      >
+        <MiniDataTable
+          title="점수"
+          columns={['행', '점수', 'COUNT(*)', 'COUNT(점수)']}
+          rows={[['1', '10', '포함', '포함'], ['2', 'NULL', '포함', '제외'], ['3', '20', '포함', '포함']]}
+          highlight={(_, column, value) => (value === 'NULL' || column >= 2 ? 'amber' : null)}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'nullFunctions') {
+    return (
+      <LearningVisualFrame
+        eyebrow="NULL FUNCTIONS"
+        title="NULL을 다른 값으로 바꾸거나 비교"
+        caption="NVL은 NULL일 때 대체값, COALESCE는 첫 NOT NULL, NULLIF는 두 값이 같으면 NULL을 반환합니다."
+      >
+        <VisualPillGrid
+          columns="grid-cols-2"
+          items={[
+            { label: 'NVL(NULL, 0)', sub: '0', tone: 'lime' },
+            { label: 'COALESCE(NULL, A)', sub: 'A', tone: 'cyan' },
+            { label: 'NULLIF(100,100)', sub: 'NULL', tone: 'amber' },
+            { label: 'NULLIF(100,90)', sub: '100', tone: 'violet' },
+          ]}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'caseDecode') {
+    return (
+      <LearningVisualFrame
+        eyebrow="CASE · DECODE"
+        title="조건에 따라 다른 값을 반환"
+        caption="CASE는 표준 SQL 조건 분기이고, DECODE는 Oracle에서 자주 보는 값 비교 함수입니다."
+      >
+        <SqlPipeline
+          steps={[
+            { label: 'SCORE ≥ 90', sub: '조건', tone: 'cyan' },
+            { label: 'CASE', sub: '분기', tone: 'violet' },
+            { label: 'A 등급', sub: '결과', tone: 'lime' },
+          ]}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'where') {
+    return (
+      <LearningVisualFrame
+        eyebrow="WHERE"
+        title="WHERE는 행을 먼저 걸러낸다"
+        caption="WHERE는 GROUP BY보다 먼저 실행되므로 행 단위 조건에는 좋지만, 집계 결과 조건에는 사용할 수 없습니다."
+      >
+        <MiniDataTable
+          title="EMP WHERE SAL >= 3000"
+          columns={['사원', '급여', '통과']}
+          rows={[['A', '4000', 'O'], ['B', '2500', 'X'], ['C', '3200', 'O']]}
+          highlight={(_, column, value) => (column === 2 ? (value === 'O' ? 'lime' : 'red') : null)}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'groupHaving') {
+    return (
+      <LearningVisualFrame
+        eyebrow="GROUP BY · HAVING"
+        title="묶은 뒤 조건은 HAVING"
+        caption="WHERE는 행 조건, HAVING은 그룹으로 묶은 뒤 계산된 SUM/AVG 같은 집계 조건입니다."
+      >
+        <SqlPipeline
+          steps={[
+            { label: '행', sub: 'EMP', tone: 'cyan' },
+            { label: 'GROUP BY DEPT', sub: '부서별 묶기', tone: 'violet' },
+            { label: 'HAVING AVG ≥ 5000', sub: '그룹 조건', tone: 'lime' },
+          ]}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  return (
+    <LearningVisualFrame
+      eyebrow="ORDER BY"
+      title="마지막에 정렬한다"
+      caption="ORDER BY는 SELECT 뒤에 실행되므로 별칭을 쓸 수 있습니다. Oracle ASC 기준 NULL은 뒤쪽으로 갑니다."
+    >
+      <div className="grid grid-cols-4 gap-1.5">
+        <VisualPill label="A" sub="10" tone="cyan" />
+        <VisualPill label="B" sub="20" tone="cyan" />
+        <VisualPill label="C" sub="30" tone="cyan" />
+        <VisualPill label="D" sub="NULL" tone="amber" />
+      </div>
+    </LearningVisualFrame>
+  );
+}
+
+function Sqld2UsageDiagram({ mode }: { mode: Sqld2UsageDiagramMode }) {
+  if (mode === 'joinKinds') {
+    return (
+      <LearningVisualFrame
+        eyebrow="JOIN"
+        title="JOIN은 두 표의 행을 맞춰 붙인다"
+        caption="INNER는 매칭된 행만, OUTER는 한쪽 또는 양쪽의 안 맞는 행까지 보존합니다."
+      >
+        <VisualPillGrid
+          columns="grid-cols-2"
+          items={[
+            { label: 'INNER', sub: '맞는 행만', tone: 'lime' },
+            { label: 'LEFT OUTER', sub: '왼쪽 보존', tone: 'cyan' },
+            { label: 'RIGHT OUTER', sub: '오른쪽 보존', tone: 'violet' },
+            { label: 'FULL OUTER', sub: '양쪽 보존', tone: 'amber' },
+          ]}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'joinSyntax') {
+    return (
+      <LearningVisualFrame
+        eyebrow="JOIN SYNTAX"
+        title="ON은 조건식, USING은 같은 컬럼명"
+        caption="ON A.id = B.id처럼 조건식을 쓰고, USING(id)은 양쪽 컬럼명이 같을 때만 씁니다."
+      >
+        <VisualPillGrid
+          columns="grid-cols-3"
+          items={[
+            { label: 'ON', sub: '컬럼명이 달라도 OK', tone: 'lime' },
+            { label: 'USING', sub: '같은 컬럼명', tone: 'cyan' },
+            { label: 'NATURAL', sub: '같은 이름 자동', tone: 'amber' },
+          ]}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'crossSelf') {
+    return (
+      <LearningVisualFrame
+        eyebrow="CROSS · SELF"
+        title="모든 조합 vs 자기 자신과 연결"
+        caption="CROSS JOIN은 M×N 모든 쌍, SELF JOIN은 같은 테이블을 별칭으로 나눠 자기 자신과 연결합니다."
+      >
+        <VisualPillGrid
+          columns="grid-cols-2"
+          items={[
+            { label: '3행 × 4행', sub: 'CROSS = 12행', tone: 'amber' },
+            { label: '사원 e → 상사 m', sub: 'SELF JOIN', tone: 'violet' },
+          ]}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'subquery') {
+    return (
+      <LearningVisualFrame
+        eyebrow="SUBQUERY"
+        title="쿼리 안에 들어간 작은 쿼리"
+        caption="SELECT 안은 스칼라, FROM 안은 인라인 뷰, WHERE 안은 조건 판단용 서브쿼리로 자주 나옵니다."
+      >
+        <VisualPillGrid
+          columns="grid-cols-3"
+          items={[
+            { label: 'SELECT 안', sub: '스칼라', tone: 'cyan' },
+            { label: 'FROM 안', sub: '인라인 뷰', tone: 'violet' },
+            { label: 'WHERE 안', sub: 'IN/EXISTS', tone: 'lime' },
+          ]}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'multirow') {
+    return (
+      <LearningVisualFrame
+        eyebrow="MULTI-ROW"
+        title="여러 행 결과는 IN/ANY/ALL/EXISTS"
+        caption="NOT IN은 결과에 NULL이 섞이면 위험합니다. 계약 없는 회원처럼 부정 조건은 NOT EXISTS가 안전합니다."
+      >
+        <VisualPillGrid
+          columns="grid-cols-2"
+          items={[
+            { label: 'IN', sub: '목록 중 하나', tone: 'cyan' },
+            { label: 'ANY / ALL', sub: '비교 범위', tone: 'violet' },
+            { label: 'EXISTS', sub: '행 존재 여부', tone: 'lime' },
+            { label: 'NOT IN + NULL', sub: '시험 함정', tone: 'red' },
+          ]}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'setOps') {
+    return (
+      <LearningVisualFrame
+        eyebrow="SET OPERATORS"
+        title="두 SELECT 결과를 집합처럼 계산"
+        caption="UNION은 합집합 중복 제거, UNION ALL은 중복 유지, INTERSECT는 교집합, MINUS는 차집합입니다."
+      >
+        <VisualPillGrid
+          columns="grid-cols-2"
+          items={[
+            { label: 'UNION', sub: '합집합 · 중복 제거', tone: 'cyan' },
+            { label: 'UNION ALL', sub: '합집합 · 중복 유지', tone: 'amber' },
+            { label: 'INTERSECT', sub: '교집합', tone: 'lime' },
+            { label: 'MINUS', sub: '차집합', tone: 'violet' },
+          ]}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'groupExtension') {
+    return (
+      <LearningVisualFrame
+        eyebrow="ROLLUP · CUBE"
+        title="소계와 총계를 자동으로 만든다"
+        caption="ROLLUP은 오른쪽부터 하나씩 제거하며 소계, CUBE는 가능한 모든 조합의 집계를 만듭니다."
+      >
+        <VisualPillGrid
+          columns="grid-cols-3"
+          items={[
+            { label: 'ROLLUP(A,B)', sub: '(A,B) → A → 전체', tone: 'lime' },
+            { label: 'CUBE(A,B)', sub: '모든 조합', tone: 'violet' },
+            { label: 'GROUPING', sub: '소계 행 구분', tone: 'amber' },
+          ]}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'windowRank') {
+    return (
+      <LearningVisualFrame
+        eyebrow="WINDOW RANK"
+        title="행은 유지하고 순위를 붙인다"
+        caption="RANK는 동점 뒤를 건너뛰고, DENSE_RANK는 건너뛰지 않으며, ROW_NUMBER는 모든 행에 고유 번호를 줍니다."
+      >
+        <MiniDataTable
+          title="점수 100, 100, 90"
+          columns={['점수', 'RANK', 'DENSE', 'ROW']}
+          rows={[['100', '1', '1', '1'], ['100', '1', '1', '2'], ['90', '3', '2', '3']]}
+          highlight={(_, column) => (column > 0 ? 'lime' : null)}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'windowAggregate') {
+    return (
+      <LearningVisualFrame
+        eyebrow="WINDOW AGGREGATE"
+        title="GROUP BY와 달리 행 수를 줄이지 않는다"
+        caption="SUM(...) OVER(PARTITION BY 부서)는 각 사원 행을 그대로 두고 부서 합계를 옆에 붙입니다."
+      >
+        <MiniDataTable
+          title="부서별 합계 붙이기"
+          columns={['사원', '부서', '급여', '부서합']}
+          rows={[['A', '10', '100', '300'], ['B', '10', '200', '300'], ['C', '20', '150', '150']]}
+          highlight={(_, column) => (column === 3 ? 'lime' : null)}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'lagLeadFrame') {
+    return (
+      <LearningVisualFrame
+        eyebrow="LAG · LEAD · FRAME"
+        title="이전/다음 행과 누적 범위를 본다"
+        caption="LAG는 이전 행, LEAD는 다음 행입니다. ROWS는 실제 행 수, RANGE는 정렬 값 범위 기준입니다."
+      >
+        <VisualPillGrid
+          columns="grid-cols-2"
+          items={[
+            { label: 'LAG', sub: '이전 행', tone: 'cyan' },
+            { label: 'LEAD', sub: '다음 행', tone: 'lime' },
+            { label: 'ROWS', sub: '물리적 행', tone: 'violet' },
+            { label: 'RANGE', sub: '정렬 값 범위', tone: 'amber' },
+          ]}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'topN') {
+    return (
+      <LearningVisualFrame
+        eyebrow="TOP N"
+        title="정렬 후 상위 N개를 고른다"
+        caption="Oracle ROWNUM은 ORDER BY보다 먼저 붙을 수 있어, 정렬을 인라인 뷰 안에서 먼저 처리하는 패턴이 중요합니다."
+      >
+        <SqlPipeline
+          steps={[
+            { label: 'ORDER BY', sub: '먼저 정렬', tone: 'cyan' },
+            { label: '인라인 뷰', sub: '정렬 결과 고정', tone: 'violet' },
+            { label: 'ROWNUM <= 5', sub: '상위 5개', tone: 'lime' },
+          ]}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  return (
+    <LearningVisualFrame
+      eyebrow="REGEXP"
+      title="패턴으로 문자열을 찾는다"
+      caption="정규표현식은 LIKE보다 강한 패턴 검색입니다. ^는 시작, $는 끝, *는 0회 이상, +는 1회 이상입니다."
+    >
+      <VisualPillGrid
+        columns="grid-cols-4"
+        items={[
+          { label: '^A', sub: 'A로 시작', tone: 'cyan' },
+          { label: 'Z$', sub: 'Z로 끝', tone: 'lime' },
+          { label: 'A*', sub: '0회 이상', tone: 'amber' },
+          { label: 'A+', sub: '1회 이상', tone: 'violet' },
+        ]}
+      />
+    </LearningVisualFrame>
+  );
+}
+
+function Sqld2ManagementDiagram({ mode }: { mode: Sqld2ManagementDiagramMode }) {
+  if (mode === 'dml') {
+    return (
+      <LearningVisualFrame
+        eyebrow="DML"
+        title="데이터 행을 넣고 바꾸고 지운다"
+        caption="INSERT는 새 행, UPDATE는 기존 행 수정, DELETE는 조건에 맞는 행 삭제입니다. 테이블 구조는 그대로 둡니다."
+      >
+        <VisualPillGrid
+          columns="grid-cols-3"
+          items={[
+            { label: 'INSERT', sub: '행 추가', tone: 'lime' },
+            { label: 'UPDATE', sub: '행 수정', tone: 'cyan' },
+            { label: 'DELETE', sub: '행 삭제', tone: 'amber' },
+          ]}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'merge') {
+    return (
+      <LearningVisualFrame
+        eyebrow="MERGE"
+        title="있으면 수정, 없으면 삽입"
+        caption="MERGE는 원본 데이터와 대상 테이블을 비교해 매칭되면 UPDATE, 매칭되지 않으면 INSERT를 수행합니다."
+      >
+        <SqlPipeline
+          steps={[
+            { label: 'USING 원본', sub: '새 데이터', tone: 'cyan' },
+            { label: 'ON 매칭', sub: '키 비교', tone: 'violet' },
+            { label: 'UPDATE / INSERT', sub: '분기 실행', tone: 'lime' },
+          ]}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'tcl') {
+    return (
+      <LearningVisualFrame
+        eyebrow="TCL"
+        title="COMMIT 전까지는 되돌릴 수 있다"
+        caption="SAVEPOINT는 중간 저장점입니다. COMMIT 후에는 이전 작업을 ROLLBACK으로 되돌릴 수 없습니다."
+      >
+        <SqlPipeline
+          steps={[
+            { label: 'INSERT', sub: '작업', tone: 'cyan' },
+            { label: 'SAVEPOINT', sub: '중간점', tone: 'violet' },
+            { label: 'ROLLBACK TO', sub: '중간점으로', tone: 'amber' },
+          ]}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'autocommit') {
+    return (
+      <LearningVisualFrame
+        eyebrow="AUTOCOMMIT"
+        title="DDL은 앞선 DML까지 확정시킬 수 있음"
+        caption="Oracle 기준 DDL은 자동 COMMIT 성격이 있어, 앞에서 아직 확정하지 않은 DML까지 함께 확정될 수 있습니다."
+      >
+        <SqlPipeline
+          steps={[
+            { label: 'INSERT', sub: '대기 중', tone: 'amber' },
+            { label: 'CREATE TABLE', sub: 'DDL 실행', tone: 'violet' },
+            { label: 'COMMIT됨', sub: 'ROLLBACK 불가', tone: 'red' },
+          ]}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'createTable') {
+    return (
+      <LearningVisualFrame
+        eyebrow="CREATE TABLE"
+        title="표 이름, 컬럼, 타입, 제약을 함께 선언"
+        caption="CREATE TABLE은 구조를 만드는 DDL입니다. 컬럼명, 데이터 타입, NOT NULL/PK 같은 제약조건이 같이 등장합니다."
+      >
+        <MiniDataTable
+          title="STUDENT"
+          columns={['컬럼', '타입', '제약']}
+          rows={[['ID', 'NUMBER', 'PK'], ['NAME', 'VARCHAR2', 'NOT NULL'], ['EMAIL', 'VARCHAR2', 'UNIQUE']]}
+          highlight={(_, column) => (column === 2 ? 'lime' : null)}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'ddlCompare') {
+    return (
+      <LearningVisualFrame
+        eyebrow="DELETE · TRUNCATE · DROP"
+        title="행만 지우나, 구조까지 지우나"
+        caption="DELETE는 DML이라 조건 삭제와 ROLLBACK이 가능하고, TRUNCATE/DROP은 DDL이라 자동 COMMIT 함정이 있습니다."
+      >
+        <VisualPillGrid
+          columns="grid-cols-3"
+          items={[
+            { label: 'DELETE', sub: '행 일부 가능 · DML', tone: 'cyan' },
+            { label: 'TRUNCATE', sub: '행 전체 · 구조 유지', tone: 'amber' },
+            { label: 'DROP', sub: '구조까지 삭제', tone: 'red' },
+          ]}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'constraints') {
+    return (
+      <LearningVisualFrame
+        eyebrow="CONSTRAINTS"
+        title="제약조건은 값이 망가지지 않게 막는 규칙"
+        caption="PK는 대표 식별자, FK는 다른 표 참조, UNIQUE는 중복 방지, NOT NULL은 빈 값 금지입니다."
+      >
+        <VisualPillGrid
+          columns="grid-cols-2"
+          items={[
+            { label: 'PRIMARY KEY', sub: '대표 식별자', tone: 'lime' },
+            { label: 'FOREIGN KEY', sub: '다른 표 참조', tone: 'cyan' },
+            { label: 'UNIQUE', sub: '중복 방지', tone: 'violet' },
+            { label: 'NOT NULL', sub: 'NULL 금지', tone: 'amber' },
+          ]}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  return (
+    <LearningVisualFrame
+      eyebrow="DCL"
+      title="권한을 주고 회수한다"
+      caption="GRANT는 권한 부여, REVOKE는 권한 회수입니다. 객체 권한의 재부여는 WITH GRANT OPTION을 봅니다."
+    >
+      <SqlPipeline
+        steps={[
+          { label: 'GRANT', sub: '권한 부여', tone: 'lime' },
+          { label: 'WITH OPTION', sub: '다시 줄 수 있음', tone: 'violet' },
+          { label: 'REVOKE', sub: '권한 회수', tone: 'amber' },
+        ]}
+      />
     </LearningVisualFrame>
   );
 }

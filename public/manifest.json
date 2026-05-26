@@ -1,7 +1,7 @@
 {
-  "name": "QuestDP — ADsP 게임·SQLD 게임 학습사이트",
+  "name": "QuestDP — ADsP·SQLD 자격증 학습사이트",
   "short_name": "QuestDP",
-  "description": "ADsP 게임·SQLD 게임처럼 개념 스텝, 기출 문제, 약점 점수, 망각곡선 복습을 푸는 ADSP·SQLD 학습사이트.",
+  "description": "ADsP·SQLD 자격증을 게임처럼 공부하는 학습사이트. 로드맵, 퀘스트, 문제풀이, 약점 복습으로 시험을 준비하세요.",
   "lang": "ko",
   "start_url": "/",
   "display": "standalone",

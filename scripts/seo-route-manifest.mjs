@@ -70,9 +70,9 @@ const CORE_ROUTES = [
     path: '/',
     changefreq: 'weekly',
     priority: '1.0',
-    title: 'QuestDP — ADsP 게임·SQLD 게임 학습사이트',
+    title: 'QuestDP — ADsP·SQLD 자격증 학습사이트 | 게임형 문제풀이',
     description:
-      'QuestDP는 ADsP와 SQLD를 우주 탐험 RPG처럼 배우는 한국어 학습사이트입니다. 개념 스텝, 문제 풀이, 약점 복습으로 시험 범위를 반복 학습합니다.',
+      'QuestDP는 ADsP·SQLD 자격증을 게임처럼 공부하는 학습사이트입니다. 로드맵과 퀘스트를 따라 개념을 익히고, 문제풀이와 약점 복습으로 시험을 준비하세요.',
     h1: 'QuestDP',
     eyebrow: 'ADsP · SQLD 게임형 학습',
     summary:

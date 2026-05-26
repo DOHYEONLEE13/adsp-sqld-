@@ -38,9 +38,9 @@ function useScrollToHashAnchor() {
 
 export default function Landing() {
   useSeoMeta({
-    title: 'QuestDP — ADsP 게임·SQLD 게임 학습사이트',
+    title: 'QuestDP — ADsP·SQLD 자격증 학습사이트 | 게임형 문제풀이',
     description:
-      'QuestDP는 ADsP 게임, SQLD 게임처럼 개념 스텝과 기출 문제를 푸는 ADSP·SQLD 학습사이트입니다. 약점 복습과 로드맵으로 시험을 준비하세요.',
+      'QuestDP는 ADsP·SQLD 자격증을 게임처럼 공부하는 학습사이트입니다. 로드맵과 퀘스트를 따라 개념을 익히고, 문제풀이와 약점 복습으로 시험을 준비하세요.',
     canonical: 'https://quest-dp.com/',
     ogImage: 'https://quest-dp.com/og/questdp-home.png',
     ogType: 'website',
@@ -51,8 +51,8 @@ export default function Landing() {
         name: 'QuestDP',
         alternateName: [
           '퀘스트디피',
-          'ADsP 게임',
-          'SQLD 게임',
+          'ADsP 게임형 학습',
+          'SQLD 게임형 학습',
           'ADSP 학습사이트',
           'SQLD 학습사이트',
           'ADSP SQLD 학습사이트',
@@ -60,7 +60,7 @@ export default function Landing() {
         url: 'https://quest-dp.com/',
         inLanguage: 'ko-KR',
         description:
-          'ADSP·SQLD 자격증을 게임처럼 학습하는 개념 스텝, 기출 풀이, 약점 복습 중심 학습사이트.',
+          'ADsP·SQLD 자격증을 게임처럼 공부하는 개념 스텝, 문제풀이, 약점 복습 중심 학습사이트.',
         image: 'https://quest-dp.com/og/questdp-home.png',
         publisher: {
           '@type': 'Organization',
@@ -78,7 +78,7 @@ export default function Landing() {
         url: 'https://quest-dp.com/',
         image: 'https://quest-dp.com/og/questdp-home.png',
         description:
-          'ADsP 게임·SQLD 게임 방식으로 ADSP·SQLD 자격증 개념과 기출 문제를 학습하는 온라인 학습사이트.',
+          'ADsP·SQLD 자격증을 로드맵과 퀘스트로 공부하는 게임형 온라인 학습사이트.',
         teaches: [
           'ADsP 데이터분석준전문가',
           'SQLD SQL 개발자',

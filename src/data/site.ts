@@ -12,7 +12,7 @@ export const BRAND = {
   separator: '.',
   logoLeft: '퀘스트',
   logoRight: '디피',
-  tagline: 'ADsP 게임 · SQLD 게임 학습사이트',
+  tagline: 'ADsP·SQLD 자격증 학습사이트',
 } as const;
 
 export const VIDEO_URLS = {

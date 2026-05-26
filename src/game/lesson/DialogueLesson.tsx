@@ -13,6 +13,7 @@
 
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import {
+  AlertTriangle,
   AppWindow,
   BookOpen,
   Check,
@@ -22,7 +23,10 @@ import {
   Database,
   Eye,
   Layers,
+  PencilLine,
+  Plus,
   Server,
+  Trash2,
   UserRound,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -368,6 +372,26 @@ export default function DialogueLesson({
     if (step.id === 'sqld-1-1-s9-compare') {
       if (turnIdx < 1) return null;
       return 'compare';
+    }
+    return null;
+  })();
+  const anomalyDiagramMode = (() => {
+    if (phase !== 'narrate') return null;
+    if (step.id === 'sqld-1-2-s1') {
+      if (turnIdx < 1) return null;
+      return 'overview';
+    }
+    if (step.id === 'sqld-1-2-s1-insert') {
+      if (turnIdx < 1) return null;
+      return 'insert';
+    }
+    if (step.id === 'sqld-1-2-s1-delete') {
+      if (turnIdx < 1) return null;
+      return 'delete';
+    }
+    if (step.id === 'sqld-1-2-s1-update') {
+      if (turnIdx < 1) return null;
+      return 'update';
     }
     return null;
   })();
@@ -1006,6 +1030,10 @@ export default function DialogueLesson({
 
         {identifierRelationshipDiagramMode ? (
           <IdentifierRelationshipDiagram mode={identifierRelationshipDiagramMode} />
+        ) : null}
+
+        {anomalyDiagramMode ? (
+          <AnomalyTableDiagram mode={anomalyDiagramMode} />
         ) : null}
 
         {/* question / feedback 단계 — 4지선다 또는 SQL 순서 조립 */}
@@ -2210,6 +2238,306 @@ function IdentifierRelationshipDiagram({
         식별자 관계와 비식별자 관계에서 부모 식별자가 자식 엔터티 안에 들어가는 위치를 비교합니다.
       </figcaption>
     </motion.figure>
+  );
+}
+
+type AnomalyDiagramMode = 'overview' | 'insert' | 'delete' | 'update';
+
+const anomalyRows = [
+  { student: '김민지', dept: 'AI빅데이터학과', course: '데이터 모델링' },
+  { student: '이도현', dept: 'AI빅데이터학과', course: 'SQL 기본' },
+  { student: '박서연', dept: '경영학과', course: '통계 분석' },
+];
+
+function AnomalyTableDiagram({ mode }: { mode: AnomalyDiagramMode }) {
+  const copy: Record<
+    AnomalyDiagramMode,
+    { label: string; title: string; caption: string; Icon: LucideIcon }
+  > = {
+    overview: {
+      label: 'ANOMALY',
+      title: '한 표에 너무 많이 섞임',
+      caption: '학생, 학과, 수강 정보를 한 표에 몰아넣으면 같은 값이 반복돼요.',
+      Icon: AlertTriangle,
+    },
+    insert: {
+      label: 'INSERT',
+      title: '넣고 싶은 것만 못 넣음',
+      caption: '새 학과만 저장하고 싶은데 학생 정보까지 요구되면 삽입 이상이에요.',
+      Icon: Plus,
+    },
+    delete: {
+      label: 'DELETE',
+      title: '지우면 다른 정보도 사라짐',
+      caption: '마지막 학생 행을 지웠더니 학과 정보까지 같이 사라지면 삭제 이상이에요.',
+      Icon: Trash2,
+    },
+    update: {
+      label: 'UPDATE',
+      title: '고칠 때 일부만 바뀜',
+      caption: '반복된 학과명을 일부 행만 고치면 서로 다른 값이 남아 갱신 이상이 돼요.',
+      Icon: PencilLine,
+    },
+  };
+  const meta = copy[mode];
+
+  return (
+    <motion.figure
+      className="mx-auto mt-6 w-full max-w-[560px]"
+      initial={{ opacity: 0, y: 18, scale: 0.97, filter: 'blur(4px)' }}
+      animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      transition={{ type: 'spring', stiffness: 320, damping: 30, mass: 0.82 }}
+    >
+      <div className="rounded-[24px] border border-cream/10 bg-[#06122d]/94 p-3.5 shadow-[0_18px_44px_rgba(0,0,0,0.24)]">
+        <div className="mb-3 flex items-start justify-between gap-3 px-1">
+          <div className="min-w-0">
+            <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-[#c084fc]/85">
+              {meta.label}
+            </div>
+            <div className="kr-heading mt-1 text-[19px] leading-tight text-cream">
+              {meta.title}
+            </div>
+            <div className="kr-body mt-1 text-[12px] font-bold leading-snug text-cream/58">
+              {meta.caption}
+            </div>
+          </div>
+          <div
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-[16px] border border-[#c084fc]/28 bg-[#c084fc]/12 text-[#ead7ff]"
+            aria-hidden
+          >
+            <meta.Icon size={20} strokeWidth={2.5} />
+          </div>
+        </div>
+
+        {mode === 'overview' ? <AnomalyOverviewCard /> : null}
+        {mode === 'insert' ? <InsertAnomalyCard /> : null}
+        {mode === 'delete' ? <DeleteAnomalyCard /> : null}
+        {mode === 'update' ? <UpdateAnomalyCard /> : null}
+      </div>
+      <figcaption className="sr-only">
+        이상 현상은 중복된 정보가 있는 테이블에서 삽입, 삭제, 갱신 과정에 부작용이 생기는 상황입니다.
+      </figcaption>
+    </motion.figure>
+  );
+}
+
+function AnomalyOverviewCard() {
+  return (
+    <div className="grid gap-3">
+      <MixedTableCard
+        rows={anomalyRows}
+        highlightDept
+        footer="같은 학과명이 여러 행에 반복됨"
+      />
+      <div className="grid grid-cols-3 gap-2">
+        <AnomalyMiniRisk label="넣을 때" body="필요 없는 값까지 요구" />
+        <AnomalyMiniRisk label="지울 때" body="보존할 정보도 사라짐" />
+        <AnomalyMiniRisk label="고칠 때" body="일부만 바뀌어 모순" />
+      </div>
+    </div>
+  );
+}
+
+function InsertAnomalyCard() {
+  return (
+    <div className="grid gap-3">
+      <div className="rounded-[20px] border border-cream/10 bg-white/[0.045] p-3">
+        <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-cream/38">
+          넣고 싶은 정보
+        </div>
+        <div className="mt-2 flex items-center gap-2 rounded-[16px] border border-[#d1f843]/26 bg-[#d1f843]/10 px-3 py-2.5">
+          <Plus size={16} className="shrink-0 text-[#d1f843]" strokeWidth={2.8} />
+          <div className="kr-heading text-[14px] text-cream">
+            보안학과만 먼저 저장
+          </div>
+        </div>
+      </div>
+      <div className="grid gap-2 rounded-[20px] border border-[#ff7a7a]/20 bg-[#ff7a7a]/8 p-3">
+        <div className="flex items-center gap-2">
+          <AlertTriangle size={15} className="text-[#ff9a9a]" strokeWidth={2.8} />
+          <div className="kr-heading text-[14px] text-cream">
+            그런데 한 표가 학생 칸까지 요구함
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-1.5">
+          <AnomalySlot label="학생명 ?" danger />
+          <AnomalySlot label="보안학과" active />
+          <AnomalySlot label="수강과목 ?" danger />
+        </div>
+        <div className="kr-body text-[12px] font-bold leading-snug text-cream/60">
+          학과 정보만 넣고 싶은데 학생/수강 값까지 필요하면 삽입 이상입니다.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DeleteAnomalyCard() {
+  return (
+    <div className="grid gap-3">
+      <MixedTableCard
+        rows={[
+          { student: '김민지', dept: 'AI빅데이터학과', course: '데이터 모델링' },
+        ]}
+        highlightDept
+        dimRow
+        footer="마지막 학생 행"
+      />
+      <div className="flex items-center gap-2 rounded-[20px] border border-[#ffb020]/24 bg-[#ffb020]/10 px-3 py-3">
+        <Trash2 size={17} className="shrink-0 text-[#ffcc66]" strokeWidth={2.8} />
+        <div className="min-w-0">
+          <div className="kr-heading text-[14px] text-cream">
+            행 삭제
+          </div>
+          <div className="kr-body mt-1 text-[12px] font-bold leading-snug text-cream/58">
+            학생을 지웠을 뿐인데 `AI빅데이터학과` 정보도 함께 사라짐
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function UpdateAnomalyCard() {
+  return (
+    <div className="grid gap-3">
+      <MixedTableCard
+        rows={[
+          { student: '김민지', dept: '인공지능학과', course: '데이터 모델링' },
+          { student: '이도현', dept: 'AI빅데이터학과', course: 'SQL 기본' },
+          { student: '정하늘', dept: 'AI빅데이터학과', course: '통계 분석' },
+        ]}
+        highlightDept
+        conflict
+        footer="같은 사실인데 값이 서로 달라짐"
+      />
+      <div className="rounded-[20px] border border-[#c084fc]/24 bg-[#c084fc]/10 px-3 py-3">
+        <div className="flex items-center gap-2">
+          <PencilLine size={16} className="text-[#d7b2ff]" strokeWidth={2.8} />
+          <div className="kr-heading text-[14px] text-cream">
+            일부 행만 수정됨
+          </div>
+        </div>
+        <div className="kr-body mt-1.5 text-[12px] font-bold leading-snug text-cream/60">
+          반복된 값을 전부 고치지 못하면 데이터가 서로 모순됩니다.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MixedTableCard({
+  rows,
+  highlightDept = false,
+  dimRow = false,
+  conflict = false,
+  footer,
+}: {
+  rows: Array<{ student: string; dept: string; course: string }>;
+  highlightDept?: boolean;
+  dimRow?: boolean;
+  conflict?: boolean;
+  footer: string;
+}) {
+  return (
+    <div className="overflow-hidden rounded-[20px] border border-cream/10 bg-[#081632]/88">
+      <div className="grid grid-cols-3 border-b border-cream/10 bg-white/[0.04]">
+        {['학생', '학과', '수강과목'].map((header) => (
+          <div
+            key={header}
+            className="px-2.5 py-2 kr-num text-[9px] font-black uppercase tracking-[0.12em] text-cream/42"
+          >
+            {header}
+          </div>
+        ))}
+      </div>
+      {rows.map((row, idx) => (
+        <div
+          key={`${row.student}-${idx}`}
+          className={
+            'grid grid-cols-3 border-b border-cream/8 last:border-b-0 ' +
+            (dimRow ? 'opacity-55' : '')
+          }
+        >
+          <AnomalyCell>{row.student}</AnomalyCell>
+          <AnomalyCell
+            highlight={highlightDept}
+            conflict={conflict && idx === 0}
+          >
+            {row.dept}
+          </AnomalyCell>
+          <AnomalyCell>{row.course}</AnomalyCell>
+        </div>
+      ))}
+      <div className="border-t border-cream/10 px-3 py-2 kr-body text-[11.5px] font-black leading-snug text-cream/58">
+        {footer}
+      </div>
+    </div>
+  );
+}
+
+function AnomalyCell({
+  children,
+  highlight = false,
+  conflict = false,
+}: {
+  children: string;
+  highlight?: boolean;
+  conflict?: boolean;
+}) {
+  return (
+    <div className="min-h-[42px] px-2.5 py-2 text-[11.5px] font-bold leading-snug text-cream/76">
+      <span
+        className={
+          highlight
+            ? 'inline-flex rounded-full border px-2 py-1 ' +
+              (conflict
+                ? 'border-[#c084fc]/36 bg-[#c084fc]/12 text-[#ead7ff]'
+                : 'border-[#d1f843]/28 bg-[#d1f843]/10 text-[#e8ff9d]')
+            : ''
+        }
+      >
+        {children}
+      </span>
+    </div>
+  );
+}
+
+function AnomalyMiniRisk({ label, body }: { label: string; body: string }) {
+  return (
+    <div className="rounded-[16px] border border-cream/10 bg-white/[0.045] p-2.5">
+      <div className="kr-heading text-[12px] leading-tight text-cream">
+        {label}
+      </div>
+      <div className="kr-body mt-1 text-[10.5px] font-bold leading-snug text-cream/54">
+        {body}
+      </div>
+    </div>
+  );
+}
+
+function AnomalySlot({
+  label,
+  active = false,
+  danger = false,
+}: {
+  label: string;
+  active?: boolean;
+  danger?: boolean;
+}) {
+  return (
+    <div
+      className={
+        'min-h-[42px] rounded-[14px] border px-2 py-2 text-center kr-body text-[11px] font-black leading-snug ' +
+        (active
+          ? 'border-[#d1f843]/34 bg-[#d1f843]/12 text-[#e8ff9d]'
+          : danger
+            ? 'border-[#ff7a7a]/28 bg-[#ff7a7a]/10 text-[#ffd0d0]'
+            : 'border-cream/10 bg-white/[0.045] text-cream/58')
+      }
+    >
+      {label}
+    </div>
   );
 }
 

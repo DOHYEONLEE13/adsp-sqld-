@@ -12,6 +12,7 @@
  */
 
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
+import type { ReactNode } from 'react';
 import {
   AlertTriangle,
   AppWindow,
@@ -321,6 +322,35 @@ export default function DialogueLesson({
     if (turnIdx <= 3) return 'modeling';
     return 'schema';
   })();
+  const modelFeatureDiagramMode = (() => {
+    if (phase !== 'narrate') return null;
+    if (step.id === 'sqld-1-1-s1b') {
+      if (turnIdx < 1) return null;
+      return 'overview';
+    }
+    if (step.id === 'sqld-1-1-s1c') return 'simple';
+    if (step.id === 'sqld-1-1-s1d') return 'abstract';
+    if (step.id === 'sqld-1-1-s1e') return 'clear';
+    return null;
+  })();
+  const processPerspectiveDiagramMode = (() => {
+    if (phase !== 'narrate' || step.id !== 'sqld-1-1-s1h') return null;
+    if (turnIdx < 1) return null;
+    return 'flow';
+  })();
+  const interactionPerspectiveDiagramMode = (() => {
+    if (phase !== 'narrate' || step.id !== 'sqld-1-1-s1i') return null;
+    if (turnIdx < 1) return null;
+    return 'crud';
+  })();
+  const modelingStageDiagramMode = (() => {
+    if (phase !== 'narrate') return null;
+    if (step.id === 'sqld-1-1-s2') return 'overview';
+    if (step.id === 'sqld-1-1-s2a') return 'conceptual';
+    if (step.id === 'sqld-1-1-s2b') return 'logical';
+    if (step.id === 'sqld-1-1-s2c') return 'physical';
+    return null;
+  })();
   const entityTypeDiagramMode = (() => {
     if (phase !== 'narrate' || step.id !== 'sqld-1-1-s5-kind') return null;
     if (turnIdx < 1) return null;
@@ -328,6 +358,31 @@ export default function DialogueLesson({
     if (turnIdx <= 4) return 'concept';
     if (turnIdx <= 6) return 'event';
     return 'all';
+  })();
+  const attributeDiagramMode = (() => {
+    if (phase !== 'narrate') return null;
+    if (step.id === 'sqld-1-1-s6') {
+      if (turnIdx < 1) return null;
+      return 'atom';
+    }
+    if (step.id === 'sqld-1-1-s6-origin') return 'origin';
+    if (step.id === 'sqld-1-1-s6-designed') return 'designed';
+    if (step.id === 'sqld-1-1-s6-derived') return 'derived';
+    return null;
+  })();
+  const attributeShapeDiagramMode = (() => {
+    if (phase !== 'narrate') return null;
+    if (step.id === 'sqld-1-1-s6-shape') return 'single';
+    if (step.id === 'sqld-1-1-s6-shape-composite') return 'composite';
+    if (step.id === 'sqld-1-1-s6-shape-multivalue') return 'multi';
+    return null;
+  })();
+  const attributeRoleDiagramMode = (() => {
+    if (phase !== 'narrate') return null;
+    if (step.id === 'sqld-1-1-s6-role') return 'pk';
+    if (step.id === 'sqld-1-1-s6-role-fk') return 'fk';
+    if (step.id === 'sqld-1-1-s6-role-general') return 'general';
+    return null;
   })();
   const schemaDiagramMode = (() => {
     if (phase !== 'narrate') return null;
@@ -392,6 +447,26 @@ export default function DialogueLesson({
     if (step.id === 'sqld-1-2-s1-update') {
       if (turnIdx < 1) return null;
       return 'update';
+    }
+    return null;
+  })();
+  const functionalDependencyDiagramMode = (() => {
+    if (phase !== 'narrate') return null;
+    if (step.id === 'sqld-1-2-s2') {
+      if (turnIdx < 1) return null;
+      return 'basic';
+    }
+    if (step.id === 'sqld-1-2-s2-full') {
+      if (turnIdx < 1) return null;
+      return 'full';
+    }
+    if (step.id === 'sqld-1-2-s2-partial') {
+      if (turnIdx < 1) return null;
+      return 'partial';
+    }
+    if (step.id === 'sqld-1-2-s2-transitive') {
+      if (turnIdx < 1) return null;
+      return 'transitive';
     }
     return null;
   })();
@@ -889,6 +964,34 @@ export default function DialogueLesson({
           <DataModelingIntroDiagram mode={dataModelingDiagramMode} />
         ) : null}
 
+        {modelFeatureDiagramMode ? (
+          <ModelFeatureDiagram mode={modelFeatureDiagramMode} />
+        ) : null}
+
+        {processPerspectiveDiagramMode ? (
+          <ProcessPerspectiveDiagram />
+        ) : null}
+
+        {interactionPerspectiveDiagramMode ? (
+          <InteractionPerspectiveDiagram />
+        ) : null}
+
+        {modelingStageDiagramMode ? (
+          <ModelingStageDiagram mode={modelingStageDiagramMode} />
+        ) : null}
+
+        {attributeDiagramMode ? (
+          <AttributeClassificationDiagram mode={attributeDiagramMode} />
+        ) : null}
+
+        {attributeShapeDiagramMode ? (
+          <AttributeShapeDiagram mode={attributeShapeDiagramMode} />
+        ) : null}
+
+        {attributeRoleDiagramMode ? (
+          <AttributeRoleDiagram mode={attributeRoleDiagramMode} />
+        ) : null}
+
         {/*
           Sub-step trail — 그룹 안 단계 (DIKW 5단계 등) 세로 배치.
           narrate 단계만 노출 (문제 풀 때는 선지가 우선이라 숨김).
@@ -905,10 +1008,18 @@ export default function DialogueLesson({
         {phase === 'narrate' &&
         shouldShowGroupTrail &&
         !dataModelingDiagramMode &&
+        !modelFeatureDiagramMode &&
+        !processPerspectiveDiagramMode &&
+        !interactionPerspectiveDiagramMode &&
+        !modelingStageDiagramMode &&
+        !attributeDiagramMode &&
+        !attributeShapeDiagramMode &&
+        !attributeRoleDiagramMode &&
         !schemaDiagramMode &&
         !entityTypeDiagramMode &&
         !relationshipDiagramMode &&
-        !identifierRelationshipDiagramMode ? (
+        !identifierRelationshipDiagramMode &&
+        !functionalDependencyDiagramMode ? (
           <nav
             aria-label={trailLabel}
             className="mt-10 max-w-[420px] mx-auto"
@@ -1034,6 +1145,10 @@ export default function DialogueLesson({
 
         {anomalyDiagramMode ? (
           <AnomalyTableDiagram mode={anomalyDiagramMode} />
+        ) : null}
+
+        {functionalDependencyDiagramMode ? (
+          <FunctionalDependencyDiagram mode={functionalDependencyDiagramMode} />
         ) : null}
 
         {/* question / feedback 단계 — 4지선다 또는 SQL 순서 조립 */}
@@ -1625,6 +1740,1141 @@ function DataModelingSchemaPanel({ active }: { active: boolean }) {
   );
 }
 
+type ModelFeatureMode = 'overview' | 'simple' | 'abstract' | 'clear';
+
+function ModelFeatureDiagram({ mode }: { mode: ModelFeatureMode }) {
+  const cards = [
+    {
+      key: '단',
+      title: '단순화',
+      body: '처음 본 사람도 길을 잃지 않게',
+      before: '한 화면에 전부',
+      after: '역할별로 나눔',
+      active: mode === 'overview' || mode === 'simple',
+    },
+    {
+      key: '추',
+      title: '추상화',
+      body: '지금 필요한 핵심만 남기기',
+      before: '취미·신발·점심',
+      after: '학생·과목·수강',
+      active: mode === 'overview' || mode === 'abstract',
+    },
+    {
+      key: '명',
+      title: '명확화',
+      body: '누가 봐도 같은 뜻으로 읽히게',
+      before: '날짜',
+      after: '수강신청일',
+      active: mode === 'overview' || mode === 'clear',
+    },
+  ];
+
+  return (
+    <motion.figure
+      key={`model-feature-${mode}`}
+      className="mx-auto mt-6 w-full max-w-[560px]"
+      aria-label="좋은 데이터 모델의 단순화, 추상화, 명확화 그림 설명"
+      initial={{ opacity: 0, y: 18, scale: 0.98, filter: 'blur(6px)' }}
+      animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      transition={{ type: 'spring', stiffness: 340, damping: 31, mass: 0.82 }}
+    >
+      <div className="rounded-[26px] border border-[#c084fc]/18 bg-[#06122d]/94 p-3.5 shadow-[0_18px_44px_rgba(0,0,0,0.22)]">
+        <div className="mb-3 flex items-end justify-between gap-3 px-1">
+          <div>
+            <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-[#c084fc]/82">
+              MODEL QUALITY
+            </div>
+            <div className="kr-heading mt-1 text-[20px] leading-none text-cream">
+              단추명
+            </div>
+          </div>
+          <div className="kr-body text-right text-[11px] font-bold leading-snug text-cream/52">
+            좋은 모델의
+            <br />
+            3가지 감각
+          </div>
+        </div>
+
+        <div className="grid gap-2.5">
+          {cards.map((card, index) => (
+            <motion.div
+              key={card.key}
+              className={
+                'grid grid-cols-[44px_1fr] gap-3 rounded-[19px] border p-3 transition ' +
+                (card.active
+                  ? 'border-[#c084fc]/38 bg-[#c084fc]/10'
+                  : 'border-cream/10 bg-white/[0.035] opacity-68')
+              }
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.045, duration: 0.18 }}
+            >
+              <div
+                className={
+                  'grid h-11 w-11 place-items-center rounded-[15px] border kr-heading text-[18px] ' +
+                  (card.active
+                    ? 'border-[#c084fc]/50 bg-[#c084fc]/16 text-[#ead7ff]'
+                    : 'border-cream/12 bg-white/[0.035] text-cream/46')
+                }
+              >
+                {card.key}
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="kr-heading text-[16px] leading-none text-cream">
+                    {card.title}
+                  </div>
+                  <div className="kr-body text-[11px] font-bold text-cream/54">
+                    {card.body}
+                  </div>
+                </div>
+                <div className="mt-2 grid grid-cols-[1fr_22px_1fr] items-center gap-1.5">
+                  <FeatureMiniLabel dim={!card.active}>{card.before}</FeatureMiniLabel>
+                  <ChevronRight
+                    size={16}
+                    strokeWidth={2.8}
+                    className={card.active ? 'mx-auto text-[#d1f843]' : 'mx-auto text-cream/28'}
+                    aria-hidden
+                  />
+                  <FeatureMiniLabel accent={card.active}>{card.after}</FeatureMiniLabel>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {mode === 'clear' ? (
+          <div className="mt-3 rounded-[18px] border border-cream/10 bg-[#081632]/82 p-3">
+            <div className="mb-2 kr-num text-[9px] font-black uppercase tracking-[0.16em] text-cream/44">
+              CLEAR ERD
+            </div>
+            <div className="grid grid-cols-[1fr_34px_1fr] items-center gap-2">
+              <ClearEntityCard title="수강신청" rows={['학생ID', '과목ID', '수강신청일']} />
+              <div className="flex flex-col items-center gap-1">
+                <div className="h-px w-7 bg-[#d1f843]/55" />
+                <div className="rounded-full border border-[#d1f843]/30 bg-[#d1f843]/10 px-2 py-0.5 kr-num text-[8px] font-black text-[#e8ff9d]">
+                  읽힘
+                </div>
+                <div className="h-px w-7 bg-[#d1f843]/55" />
+              </div>
+              <ClearEntityCard title="과목" rows={['과목ID', '과목명']} />
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </motion.figure>
+  );
+}
+
+function FeatureMiniLabel({
+  children,
+  accent = false,
+  dim = false,
+}: {
+  children: ReactNode;
+  accent?: boolean;
+  dim?: boolean;
+}) {
+  return (
+    <div
+      className={
+        'rounded-[12px] border px-2 py-2 text-center kr-body text-[11.5px] font-black leading-tight ' +
+        (accent
+          ? 'border-[#d1f843]/28 bg-[#d1f843]/10 text-[#e8ff9d]'
+          : dim
+            ? 'border-cream/8 bg-white/[0.025] text-cream/38'
+            : 'border-cream/10 bg-white/[0.045] text-cream/62')
+      }
+    >
+      {children}
+    </div>
+  );
+}
+
+function ClearEntityCard({ title, rows }: { title: string; rows: string[] }) {
+  return (
+    <div className="rounded-[16px] border border-[#c084fc]/28 bg-[#0b1836]/90 p-2.5">
+      <div className="border-b border-cream/10 pb-2 kr-heading text-[14px] leading-none text-cream">
+        {title}
+      </div>
+      <div className="mt-2 grid gap-1.5">
+        {rows.map((row) => (
+          <div
+            key={row}
+            className="rounded-[10px] border border-cream/10 bg-white/[0.045] px-2 py-1.5 text-center kr-body text-[10.5px] font-black leading-none text-cream/78"
+          >
+            {row}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ProcessPerspectiveDiagram() {
+  const steps = ['강의 조회', '과목 선택', '신청 확인', '완료'];
+  return (
+    <motion.figure
+      className="mx-auto mt-6 w-full max-w-[560px]"
+      aria-label="프로세스 관점 업무 흐름 그림"
+      initial={{ opacity: 0, y: 18, scale: 0.98, filter: 'blur(6px)' }}
+      animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      transition={{ type: 'spring', stiffness: 340, damping: 31, mass: 0.82 }}
+    >
+      <div className="rounded-[26px] border border-[#67e8f9]/18 bg-[#06122d]/94 p-3.5 shadow-[0_18px_44px_rgba(0,0,0,0.22)]">
+        <div className="mb-3 flex items-end justify-between gap-3 px-1">
+          <div>
+            <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-[#67e8f9]/82">
+              PROCESS VIEW
+            </div>
+            <div className="kr-heading mt-1 text-[20px] leading-none text-cream">
+              업무가 흘러가는 길
+            </div>
+          </div>
+          <div className="kr-body text-right text-[11px] font-bold leading-snug text-cream/52">
+            저장 대상보다
+            <br />
+            처리 순서
+          </div>
+        </div>
+
+        <div className="grid gap-2">
+          {steps.map((label, index) => (
+            <motion.div
+              key={label}
+              className="grid grid-cols-[34px_1fr_34px] items-center gap-2 rounded-[18px] border border-cream/10 bg-white/[0.045] px-3 py-2.5"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.045, duration: 0.18 }}
+            >
+              <div className="grid h-8 w-8 place-items-center rounded-full border border-[#67e8f9]/30 bg-[#67e8f9]/10 kr-num text-[10px] font-black text-[#dffbff]">
+                {index + 1}
+              </div>
+              <div>
+                <div className="kr-heading text-[15px] leading-none text-cream">
+                  {label}
+                </div>
+                <div className="mt-1 kr-body text-[10.5px] font-bold leading-none text-cream/46">
+                  {index === 0 ? 'Read' : index === 3 ? 'Create' : 'Process'}
+                </div>
+              </div>
+              {index < steps.length - 1 ? (
+                <ChevronRight size={18} strokeWidth={2.8} className="text-[#67e8f9]" aria-hidden />
+              ) : (
+                <Check size={18} strokeWidth={2.8} className="text-[#d1f843]" aria-hidden />
+              )}
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="mt-3 rounded-[16px] border border-cream/10 bg-white/[0.035] px-3 py-2.5">
+          <div className="kr-body text-[12px] font-bold leading-[1.5] text-cream/66">
+            프로세스 관점은 “무엇을 저장하지?”보다 “업무가 어떤 순서로 움직이지?”를 먼저 봅니다.
+          </div>
+        </div>
+      </div>
+    </motion.figure>
+  );
+}
+
+function InteractionPerspectiveDiagram() {
+  const actions = [
+    {
+      key: 'R',
+      label: '읽기',
+      title: '학생 정보 확인',
+      body: '누가 신청하는지 본다',
+      icon: Eye,
+      accent: '#67e8f9',
+    },
+    {
+      key: 'R',
+      label: '읽기',
+      title: '과목 정보 확인',
+      body: '신청할 과목을 본다',
+      icon: BookOpen,
+      accent: '#67e8f9',
+    },
+    {
+      key: 'C',
+      label: '만들기',
+      title: '수강 기록 생성',
+      body: '신청 결과를 새로 남긴다',
+      icon: Plus,
+      accent: '#d1f843',
+    },
+    {
+      key: 'U',
+      label: '고치기',
+      title: '남은 자리 변경',
+      body: '정원이 줄어든다',
+      icon: PencilLine,
+      accent: '#c084fc',
+    },
+  ];
+
+  return (
+    <motion.figure
+      className="mx-auto mt-6 w-full max-w-[560px]"
+      aria-label="상관 관점 CRUD 연결 그림"
+      initial={{ opacity: 0, y: 18, scale: 0.98, filter: 'blur(6px)' }}
+      animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      transition={{ type: 'spring', stiffness: 340, damping: 31, mass: 0.82 }}
+    >
+      <div className="rounded-[26px] border border-[#d1f843]/18 bg-[#06122d]/94 p-3.5 shadow-[0_18px_44px_rgba(0,0,0,0.22)]">
+        <div className="mb-3 flex items-end justify-between gap-3 px-1">
+          <div>
+            <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-[#d1f843]/82">
+              INTERACTION VIEW
+            </div>
+            <div className="kr-heading mt-1 text-[20px] leading-none text-cream">
+              업무와 데이터가 만나는 순간
+            </div>
+          </div>
+          <div className="kr-body text-right text-[11px] font-bold leading-snug text-cream/52">
+            버튼 하나가
+            <br />
+            데이터를 움직임
+          </div>
+        </div>
+
+        <div className="rounded-[20px] border border-cream/10 bg-white/[0.04] p-3">
+          <div className="grid grid-cols-[1fr_28px_1fr] items-center gap-2">
+            <div className="rounded-[18px] border border-[#d1f843]/28 bg-[#d1f843]/10 p-3">
+              <div className="kr-num text-[9px] font-black uppercase tracking-[0.14em] text-[#e8ff9d]/78">
+                업무
+              </div>
+              <div className="mt-1 kr-heading text-[16px] leading-tight text-cream">
+                수강신청 버튼
+              </div>
+              <div className="mt-2 kr-body text-[11.5px] font-bold leading-[1.45] text-cream/58">
+                사용자는 버튼 하나를 누르지만,
+                <br />
+                뒤에서는 여러 데이터가 움직여요.
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center gap-1">
+              <ChevronRight size={17} strokeWidth={2.8} className="text-[#d1f843]" aria-hidden />
+              <div className="h-10 w-px bg-[#d1f843]/30" />
+              <ChevronRight size={17} strokeWidth={2.8} className="text-[#d1f843]" aria-hidden />
+            </div>
+
+            <div className="rounded-[18px] border border-[#67e8f9]/22 bg-[#67e8f9]/8 p-3">
+              <div className="kr-num text-[9px] font-black uppercase tracking-[0.14em] text-[#dffbff]/70">
+                데이터
+              </div>
+              <div className="mt-1 grid gap-1.5">
+                {['학생', '과목', '수강 기록'].map((item) => (
+                  <div
+                    key={item}
+                    className="rounded-[11px] border border-cream/10 bg-white/[0.05] px-2.5 py-1.5 kr-body text-[11px] font-black leading-none text-cream/75"
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          {actions.map((action, index) => {
+            const Icon = action.icon;
+            return (
+              <motion.div
+                key={`${action.key}-${action.title}`}
+                className="rounded-[17px] border border-cream/10 bg-white/[0.04] p-3"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.045, duration: 0.18 }}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div
+                    className="grid h-8 w-8 place-items-center rounded-[12px] border"
+                    style={{
+                      borderColor: `${action.accent}55`,
+                      background: `${action.accent}18`,
+                      color: action.accent,
+                    }}
+                  >
+                    <Icon size={15} strokeWidth={2.7} aria-hidden />
+                  </div>
+                  <div
+                    className="rounded-full border px-2 py-0.5 kr-num text-[9px] font-black uppercase"
+                    style={{
+                      borderColor: `${action.accent}4d`,
+                      background: `${action.accent}12`,
+                      color: action.accent,
+                    }}
+                  >
+                    {action.key} · {action.label}
+                  </div>
+                </div>
+                <div className="mt-2 kr-heading text-[13.5px] leading-tight text-cream">
+                  {action.title}
+                </div>
+                <div className="mt-1 kr-body text-[11px] font-bold leading-[1.45] text-cream/52">
+                  {action.body}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        <div className="mt-3 rounded-[16px] border border-cream/10 bg-white/[0.035] px-3 py-2.5">
+          <div className="kr-body text-[12px] font-bold leading-[1.5] text-cream/66">
+            상관 관점은 “이 업무가 어떤 데이터를 읽고, 만들고, 고치고, 지우는가?”를 보는 관점입니다.
+          </div>
+          <div className="mt-1 kr-body text-[11px] font-bold leading-[1.45] text-cream/42">
+            취소 기능이 있다면 수강 기록을 지우는 Delete까지 함께 떠올리면 됩니다.
+          </div>
+        </div>
+      </div>
+    </motion.figure>
+  );
+}
+
+type ModelingStageMode = 'overview' | 'conceptual' | 'logical' | 'physical';
+
+function ModelingStageDiagram({ mode }: { mode: ModelingStageMode }) {
+  const stages = [
+    {
+      key: '개',
+      title: '개념적',
+      body: '업무 큰 그림',
+      detail: '학생이 과목을 신청한다',
+      active: mode === 'overview' || mode === 'conceptual',
+    },
+    {
+      key: '논',
+      title: '논리적',
+      body: '키·관계·의존성 정리',
+      detail: '학번 → 이름, 복합키 → 성적',
+      active: mode === 'overview' || mode === 'logical',
+    },
+    {
+      key: '물',
+      title: '물리적',
+      body: 'DBMS에 맞게 구현',
+      detail: '자료형·인덱스·성능',
+      active: mode === 'overview' || mode === 'physical',
+    },
+  ];
+
+  return (
+    <motion.figure
+      key={`modeling-stage-${mode}`}
+      className="mx-auto mt-6 w-full max-w-[560px]"
+      aria-label="개념적 논리적 물리적 모델링 단계 그림"
+      initial={{ opacity: 0, y: 18, scale: 0.98, filter: 'blur(6px)' }}
+      animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      transition={{ type: 'spring', stiffness: 340, damping: 31, mass: 0.82 }}
+    >
+      <div className="rounded-[26px] border border-[#c084fc]/18 bg-[#06122d]/94 p-3.5 shadow-[0_18px_44px_rgba(0,0,0,0.22)]">
+        <div className="mb-3 flex items-end justify-between gap-3 px-1">
+          <div>
+            <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-[#c084fc]/82">
+              MODELING STAGES
+            </div>
+            <div className="kr-heading mt-1 text-[20px] leading-none text-cream">
+              개논물
+            </div>
+          </div>
+          <div className="kr-body text-right text-[11px] font-bold leading-snug text-cream/52">
+            큰 그림에서
+            <br />
+            실제 구현까지
+          </div>
+        </div>
+
+        <div className="grid gap-2.5">
+          {stages.map((stage, index) => (
+            <motion.div
+              key={stage.key}
+              className={
+                'grid grid-cols-[42px_1fr] gap-3 rounded-[18px] border p-3 ' +
+                (stage.active
+                  ? 'border-[#c084fc]/40 bg-[#c084fc]/10'
+                  : 'border-cream/10 bg-white/[0.035] opacity-65')
+              }
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.045, duration: 0.18 }}
+            >
+              <div
+                className={
+                  'grid h-10 w-10 place-items-center rounded-[14px] border kr-heading text-[16px] ' +
+                  (stage.active
+                    ? 'border-[#c084fc]/50 bg-[#c084fc]/16 text-[#ead7ff]'
+                    : 'border-cream/12 bg-white/[0.035] text-cream/46')
+                }
+              >
+                {stage.key}
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="kr-heading text-[15px] leading-none text-cream">
+                    {stage.title}
+                  </div>
+                  <div className="kr-body text-[11px] font-bold text-cream/55">
+                    {stage.body}
+                  </div>
+                </div>
+                <div className="mt-2 rounded-[12px] border border-cream/10 bg-white/[0.045] px-3 py-2 kr-body text-[11.5px] font-bold leading-tight text-cream/72">
+                  {stage.detail}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="mt-3 rounded-[16px] border border-[#d1f843]/18 bg-[#d1f843]/8 px-3 py-2.5">
+          <div className="kr-body text-[12px] font-bold leading-[1.5] text-[#ecffab]">
+            함수적 종속 같은 “무엇이 무엇을 결정하나?” 문제는 주로 논리적 모델링에서 정리합니다.
+          </div>
+        </div>
+      </div>
+    </motion.figure>
+  );
+}
+
+type AttributeDiagramMode = 'atom' | 'origin' | 'designed' | 'derived';
+
+function AttributeClassificationDiagram({ mode }: { mode: AttributeDiagramMode }) {
+  const items: Array<{
+    key: string;
+    title: string;
+    body: string;
+    example: string;
+    icon: LucideIcon;
+    accent: string;
+    active: boolean;
+  }> = [
+    {
+      key: '기본',
+      title: '기본 속성',
+      body: '현실 업무에 원래 있던 값',
+      example: '이름 · 생년월일 · 주소',
+      icon: UserRound,
+      accent: '#67e8f9',
+      active: mode === 'origin',
+    },
+    {
+      key: '설계',
+      title: '설계 속성',
+      body: '관리하려고 새로 붙인 값',
+      example: '회원ID · 주문번호',
+      icon: PencilLine,
+      accent: '#c084fc',
+      active: mode === 'designed',
+    },
+    {
+      key: '파생',
+      title: '파생 속성',
+      body: '다른 값으로 계산한 값',
+      example: '나이 · 총점 · 평균',
+      icon: Layers,
+      accent: '#d1f843',
+      active: mode === 'derived',
+    },
+  ];
+
+  const isAtom = mode === 'atom';
+
+  return (
+    <motion.figure
+      key={`attribute-classification-${mode}`}
+      className="mx-auto mt-6 w-full max-w-[560px]"
+      aria-label="속성과 속성 분류 그림 설명"
+      initial={{ opacity: 0, y: 18, scale: 0.98, filter: 'blur(6px)' }}
+      animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      transition={{ type: 'spring', stiffness: 340, damping: 31, mass: 0.82 }}
+    >
+      <div className="rounded-[26px] border border-[#67e8f9]/18 bg-[#06122d]/94 p-3.5 shadow-[0_18px_44px_rgba(0,0,0,0.22)]">
+        <div className="mb-3 flex items-end justify-between gap-3 px-1">
+          <div>
+            <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-[#67e8f9]/82">
+              ATTRIBUTE
+            </div>
+            <div className="kr-heading mt-1 text-[20px] leading-none text-cream">
+              속성은 작은 정보 칸
+            </div>
+          </div>
+          <div className="kr-body text-right text-[11px] font-bold leading-snug text-cream/52">
+            엔터티를
+            <br />
+            설명하는 값
+          </div>
+        </div>
+
+        <div className="rounded-[20px] border border-cream/10 bg-white/[0.04] p-3">
+          <div className="flex items-center justify-between gap-2 border-b border-cream/10 pb-2">
+            <div className="flex items-center gap-2">
+              <div className="grid h-9 w-9 place-items-center rounded-[13px] border border-[#67e8f9]/30 bg-[#67e8f9]/10 text-[#dffbff]">
+                <UserRound size={17} strokeWidth={2.7} aria-hidden />
+              </div>
+              <div>
+                <div className="kr-heading text-[16px] leading-none text-cream">
+                  학생
+                </div>
+                <div className="mt-1 kr-body text-[10.5px] font-bold leading-none text-cream/44">
+                  엔터티
+                </div>
+              </div>
+            </div>
+            <div className="rounded-full border border-[#67e8f9]/24 bg-[#67e8f9]/8 px-2.5 py-1 kr-body text-[10.5px] font-black text-[#dffbff]/80">
+              하나씩 의미를 담는 칸
+            </div>
+          </div>
+
+          <div className="mt-3 grid grid-cols-3 gap-1.5">
+            {['학번', '이름', '학과'].map((attr, index) => (
+              <motion.div
+                key={attr}
+                className={
+                  'rounded-[13px] border px-2 py-2 text-center kr-heading text-[12px] leading-none ' +
+                  (isAtom
+                    ? 'border-[#d1f843]/32 bg-[#d1f843]/10 text-[#e8ff9d]'
+                    : 'border-cream/10 bg-white/[0.045] text-cream/72')
+                }
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.045, duration: 0.18 }}
+              >
+                {attr}
+              </motion.div>
+            ))}
+          </div>
+
+          {isAtom ? (
+            <div className="mt-3 rounded-[15px] border border-[#d1f843]/18 bg-[#d1f843]/8 px-3 py-2.5">
+              <div className="kr-body text-[12px] font-bold leading-[1.5] text-[#ecffab]">
+                속성은 더 이상 나누지 않고 하나의 의미로 쓰는 최소 데이터 단위입니다.
+              </div>
+            </div>
+          ) : null}
+        </div>
+
+        {!isAtom ? (
+          <div className="mt-3 grid gap-2">
+            {items.map((item, index) => {
+              const Icon = item.icon;
+              const active = item.active;
+              return (
+                <motion.div
+                  key={item.key}
+                  className={
+                    'grid grid-cols-[38px_1fr] gap-3 rounded-[18px] border p-3 transition ' +
+                    (active
+                      ? 'bg-white/[0.07]'
+                      : 'border-cream/10 bg-white/[0.035] opacity-68')
+                  }
+                  style={{
+                    borderColor: active ? `${item.accent}66` : undefined,
+                  }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.045, duration: 0.18 }}
+                >
+                  <div
+                    className="grid h-9 w-9 place-items-center rounded-[13px] border"
+                    style={{
+                      borderColor: `${item.accent}4d`,
+                      background: `${item.accent}${active ? '1f' : '10'}`,
+                      color: item.accent,
+                    }}
+                  >
+                    <Icon size={16} strokeWidth={2.7} aria-hidden />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="kr-heading text-[15px] leading-none text-cream">
+                        {item.title}
+                      </div>
+                      <div
+                        className="rounded-full border px-2 py-0.5 kr-num text-[9px] font-black uppercase"
+                        style={{
+                          borderColor: `${item.accent}45`,
+                          background: `${item.accent}12`,
+                          color: item.accent,
+                        }}
+                      >
+                        {item.key}
+                      </div>
+                    </div>
+                    <div className="mt-1 kr-body text-[11px] font-bold leading-[1.45] text-cream/54">
+                      {item.body}
+                    </div>
+                    <div className="mt-2 rounded-[12px] border border-cream/10 bg-white/[0.045] px-2.5 py-1.5 kr-body text-[11px] font-black leading-tight text-cream/70">
+                      {item.example}
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        ) : null}
+
+        {!isAtom ? (
+          <div className="mt-3 rounded-[16px] border border-cream/10 bg-white/[0.035] px-3 py-2.5">
+            <div className="kr-body text-[12px] font-bold leading-[1.5] text-cream/66">
+              특성에 따른 분류는 “현실에 원래 있었나, 시스템이 만들었나, 계산해서 나왔나”를 구분하는 방식입니다.
+            </div>
+          </div>
+        ) : null}
+      </div>
+    </motion.figure>
+  );
+}
+
+type AttributeShapeMode = 'single' | 'composite' | 'multi';
+
+function AttributeShapeDiagram({ mode }: { mode: AttributeShapeMode }) {
+  const items: Array<{
+    key: AttributeShapeMode;
+    title: string;
+    body: string;
+    exampleTitle: string;
+    example: ReactNode;
+    accent: string;
+  }> = [
+    {
+      key: 'single',
+      title: '단일 속성',
+      body: '하나의 의미로 끝나는 값',
+      exampleTitle: '학번',
+      example: '2026001',
+      accent: '#67e8f9',
+    },
+    {
+      key: 'composite',
+      title: '복합 속성',
+      body: '필요하면 더 작은 의미로 나눌 수 있는 값',
+      exampleTitle: '주소',
+      example: (
+        <div className="grid grid-cols-2 gap-1">
+          {['시', '구', '도로명', '상세'].map((part) => (
+            <span
+              key={part}
+              className="rounded-[9px] border border-cream/10 bg-white/[0.055] px-1.5 py-1 text-center"
+            >
+              {part}
+            </span>
+          ))}
+        </div>
+      ),
+      accent: '#c084fc',
+    },
+    {
+      key: 'multi',
+      title: '다중값 속성',
+      body: '같은 종류의 값을 여러 개 가질 수 있는 값',
+      exampleTitle: '이메일',
+      example: (
+        <div className="grid gap-1">
+          {['개인 메일', '학교 메일', '회사 메일'].map((part) => (
+            <span
+              key={part}
+              className="rounded-[9px] border border-cream/10 bg-white/[0.055] px-2 py-1 text-center"
+            >
+              {part}
+            </span>
+          ))}
+        </div>
+      ),
+      accent: '#d1f843',
+    },
+  ];
+
+  return (
+    <motion.figure
+      key={`attribute-shape-${mode}`}
+      className="mx-auto mt-6 w-full max-w-[560px]"
+      aria-label="단일 속성 복합 속성 다중값 속성 그림 설명"
+      initial={{ opacity: 0, y: 18, scale: 0.98, filter: 'blur(6px)' }}
+      animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      transition={{ type: 'spring', stiffness: 340, damping: 31, mass: 0.82 }}
+    >
+      <div className="rounded-[26px] border border-[#c084fc]/18 bg-[#06122d]/94 p-3.5 shadow-[0_18px_44px_rgba(0,0,0,0.22)]">
+        <div className="mb-3 flex items-end justify-between gap-3 px-1">
+          <div>
+            <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-[#c084fc]/82">
+              ATTRIBUTE SHAPE
+            </div>
+            <div className="kr-heading mt-1 text-[20px] leading-none text-cream">
+              값의 모양으로 보기
+            </div>
+          </div>
+          <div className="kr-body text-right text-[11px] font-bold leading-snug text-cream/52">
+            쪼갤 수 있나
+            <br />
+            여러 개인가
+          </div>
+        </div>
+
+        <div className="grid gap-2.5">
+          {items.map((item, index) => {
+            const active = item.key === mode;
+            return (
+              <motion.div
+                key={item.key}
+                className={
+                  'rounded-[19px] border p-3 transition ' +
+                  (active ? 'bg-white/[0.07]' : 'border-cream/10 bg-white/[0.035] opacity-68')
+                }
+                style={{ borderColor: active ? `${item.accent}66` : undefined }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.045, duration: 0.18 }}
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <div className="kr-heading text-[16px] leading-none text-cream">
+                      {item.title}
+                    </div>
+                    <div className="mt-1 kr-body text-[11px] font-bold leading-[1.45] text-cream/52">
+                      {item.body}
+                    </div>
+                  </div>
+                  <div
+                    className="rounded-full border px-2.5 py-1 kr-num text-[9px] font-black uppercase"
+                    style={{
+                      borderColor: `${item.accent}45`,
+                      background: `${item.accent}12`,
+                      color: item.accent,
+                    }}
+                  >
+                    {item.exampleTitle}
+                  </div>
+                </div>
+                <div
+                  className="mt-2 rounded-[14px] border px-3 py-2.5 kr-body text-[11.5px] font-black leading-tight text-cream/76"
+                  style={{
+                    borderColor: active ? `${item.accent}38` : 'rgba(239,244,255,0.10)',
+                    background: active ? `${item.accent}10` : 'rgba(255,255,255,0.035)',
+                  }}
+                >
+                  {item.example}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        <div className="mt-3 rounded-[16px] border border-cream/10 bg-white/[0.035] px-3 py-2.5">
+          <div className="kr-body text-[12px] font-bold leading-[1.5] text-cream/66">
+            이 분류는 “한 칸으로 충분한가, 더 쪼갤 수 있는가, 같은 값이 여러 번 나올 수 있는가”를 보는 기준입니다.
+          </div>
+        </div>
+      </div>
+    </motion.figure>
+  );
+}
+
+type AttributeRoleMode = 'pk' | 'fk' | 'general';
+
+function AttributeRoleDiagram({ mode }: { mode: AttributeRoleMode }) {
+  const roles = [
+    {
+      key: 'pk' as const,
+      title: 'PK 속성',
+      label: '대표 이름표',
+      body: '한 행을 딱 하나로 찾는 기준',
+      value: '학번',
+      accent: '#d1f843',
+    },
+    {
+      key: 'fk' as const,
+      title: 'FK 속성',
+      label: '연결 고리',
+      body: '다른 표의 대표값을 가리킴',
+      value: '학과ID',
+      accent: '#67e8f9',
+    },
+    {
+      key: 'general' as const,
+      title: '일반 속성',
+      label: '설명 정보',
+      body: '구분·연결보다 대상을 설명',
+      value: '이름 · 생년월일',
+      accent: '#c084fc',
+    },
+  ];
+
+  return (
+    <motion.figure
+      key={`attribute-role-${mode}`}
+      className="mx-auto mt-6 w-full max-w-[560px]"
+      aria-label="PK 속성 FK 속성 일반 속성 그림 설명"
+      initial={{ opacity: 0, y: 18, scale: 0.98, filter: 'blur(6px)' }}
+      animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      transition={{ type: 'spring', stiffness: 340, damping: 31, mass: 0.82 }}
+    >
+      <div className="rounded-[26px] border border-[#d1f843]/18 bg-[#06122d]/94 p-3.5 shadow-[0_18px_44px_rgba(0,0,0,0.22)]">
+        <div className="mb-3 flex items-end justify-between gap-3 px-1">
+          <div>
+            <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-[#d1f843]/82">
+              ATTRIBUTE ROLE
+            </div>
+            <div className="kr-heading mt-1 text-[20px] leading-none text-cream">
+              속성의 역할
+            </div>
+          </div>
+          <div className="kr-body text-right text-[11px] font-bold leading-snug text-cream/52">
+            찾기
+            <br />
+            연결하기
+            <br />
+            설명하기
+          </div>
+        </div>
+
+        <div className="rounded-[20px] border border-cream/10 bg-white/[0.04] p-3">
+          <div className="grid grid-cols-[1fr_30px_1fr] items-center gap-2">
+            <RoleMiniTable
+              title="학생"
+              rows={[
+                { label: '학번', tone: mode === 'pk' ? 'active' : 'normal' },
+                { label: '이름', tone: mode === 'general' ? 'active' : 'normal' },
+                { label: '생년월일', tone: mode === 'general' ? 'active' : 'normal' },
+                { label: '학과ID', tone: mode === 'fk' ? 'active' : 'normal' },
+              ]}
+            />
+            <div className="flex flex-col items-center gap-1">
+              <div className="h-7 w-px bg-[#67e8f9]/30" />
+              <ChevronRight size={18} strokeWidth={2.8} className="text-[#67e8f9]" aria-hidden />
+              <div className="h-7 w-px bg-[#67e8f9]/30" />
+            </div>
+            <RoleMiniTable
+              title="학과"
+              rows={[
+                { label: '학과ID', tone: mode === 'fk' ? 'active' : 'normal' },
+                { label: '학과명', tone: 'normal' },
+              ]}
+            />
+          </div>
+        </div>
+
+        <div className="mt-3 grid gap-2">
+          {roles.map((role, index) => {
+            const active = role.key === mode;
+            return (
+              <motion.div
+                key={role.key}
+                className={
+                  'grid grid-cols-[1fr_auto] items-center gap-3 rounded-[17px] border px-3 py-2.5 ' +
+                  (active ? 'bg-white/[0.07]' : 'border-cream/10 bg-white/[0.035] opacity-68')
+                }
+                style={{ borderColor: active ? `${role.accent}66` : undefined }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.045, duration: 0.18 }}
+              >
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <div className="kr-heading text-[15px] leading-none text-cream">
+                      {role.title}
+                    </div>
+                    <div
+                      className="rounded-full border px-2 py-0.5 kr-num text-[8.5px] font-black uppercase"
+                      style={{
+                        borderColor: `${role.accent}45`,
+                        background: `${role.accent}12`,
+                        color: role.accent,
+                      }}
+                    >
+                      {role.label}
+                    </div>
+                  </div>
+                  <div className="mt-1 kr-body text-[11px] font-bold leading-[1.45] text-cream/52">
+                    {role.body}
+                  </div>
+                </div>
+                <div
+                  className="rounded-[13px] border px-2.5 py-2 text-center kr-heading text-[11px] leading-tight"
+                  style={{
+                    borderColor: `${role.accent}42`,
+                    background: `${role.accent}12`,
+                    color: active ? role.accent : 'rgba(239,244,255,0.58)',
+                  }}
+                >
+                  {role.value}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        <div className="mt-3 rounded-[16px] border border-cream/10 bg-white/[0.035] px-3 py-2.5">
+          <div className="kr-body text-[12px] font-bold leading-[1.5] text-cream/66">
+            이 분류는 같은 속성이라도 테이블 안에서 맡는 일이 다르다는 걸 보는 기준입니다.
+          </div>
+        </div>
+      </div>
+    </motion.figure>
+  );
+}
+
+function RoleMiniTable({
+  title,
+  rows,
+}: {
+  title: string;
+  rows: Array<{ label: string; tone: 'active' | 'normal' }>;
+}) {
+  return (
+    <div className="rounded-[16px] border border-cream/10 bg-[#071634]/88 p-2.5">
+      <div className="border-b border-cream/10 pb-2 kr-heading text-[14px] leading-none text-cream">
+        {title}
+      </div>
+      <div className="mt-2 grid gap-1.5">
+        {rows.map((row) => (
+          <div
+            key={row.label}
+            className={
+              'rounded-[10px] border px-2 py-1.5 text-center kr-body text-[10.5px] font-black leading-none ' +
+              (row.tone === 'active'
+                ? 'border-[#d1f843]/34 bg-[#d1f843]/10 text-[#e8ff9d]'
+                : 'border-cream/10 bg-white/[0.045] text-cream/60')
+            }
+          >
+            {row.label}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+type FunctionalDependencyMode = 'basic' | 'full' | 'partial' | 'transitive';
+
+function FunctionalDependencyDiagram({ mode }: { mode: FunctionalDependencyMode }) {
+  const meta: Record<
+    FunctionalDependencyMode,
+    { label: string; title: string; caption: string }
+  > = {
+    basic: {
+      label: 'A → B',
+      title: '하나를 알면 하나가 정해짐',
+      caption: '학번을 알면 학생 이름이 하나로 정해지는 관계입니다.',
+    },
+    full: {
+      label: 'FULL',
+      title: '키 전체가 필요함',
+      caption: '학번과 과목코드를 함께 알아야 성적이 정해집니다.',
+    },
+    partial: {
+      label: 'PARTIAL',
+      title: '키 일부만으로 정해짐',
+      caption: '복합키 중 학번만으로 이름이 정해지면 부분 종속입니다.',
+    },
+    transitive: {
+      label: 'TRANSITIVE',
+      title: '중간을 거쳐 정해짐',
+      caption: '학번이 학과코드를 정하고, 학과코드가 학과명을 정합니다.',
+    },
+  };
+  const data = meta[mode];
+
+  return (
+    <motion.figure
+      key={`fd-${mode}`}
+      className="mx-auto mt-6 w-full max-w-[560px]"
+      aria-label="함수적 종속 그림 설명"
+      initial={{ opacity: 0, y: 18, scale: 0.98, filter: 'blur(6px)' }}
+      animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      transition={{ type: 'spring', stiffness: 340, damping: 31, mass: 0.82 }}
+    >
+      <div className="rounded-[26px] border border-[#67e8f9]/18 bg-[#06122d]/94 p-3.5 shadow-[0_18px_44px_rgba(0,0,0,0.22)]">
+        <div className="mb-3 flex items-end justify-between gap-3 px-1">
+          <div>
+            <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-[#67e8f9]/82">
+              DEPENDENCY
+            </div>
+            <div className="kr-heading mt-1 text-[19px] leading-tight text-cream">
+              {data.title}
+            </div>
+          </div>
+          <div className="rounded-full border border-[#67e8f9]/28 bg-[#67e8f9]/10 px-3 py-1 kr-num text-[10px] font-black text-[#dffbff]">
+            {data.label}
+          </div>
+        </div>
+
+        {mode === 'transitive' ? (
+          <div className="grid grid-cols-[1fr_22px_1fr_22px_1fr] items-center gap-1.5">
+            <DependencyNode label="학번" />
+            <ChevronRight size={16} strokeWidth={2.8} className="mx-auto text-[#67e8f9]" />
+            <DependencyNode label="학과코드" />
+            <ChevronRight size={16} strokeWidth={2.8} className="mx-auto text-[#67e8f9]" />
+            <DependencyNode label="학과명" accent />
+          </div>
+        ) : mode === 'full' ? (
+          <div className="grid grid-cols-[1fr_22px_1fr] items-center gap-2">
+            <div className="grid gap-1.5">
+              <DependencyNode label="학번" />
+              <DependencyNode label="과목코드" />
+            </div>
+            <ChevronRight size={18} strokeWidth={2.8} className="mx-auto text-[#67e8f9]" />
+            <DependencyNode label="성적" accent />
+          </div>
+        ) : mode === 'partial' ? (
+          <div className="grid grid-cols-[1fr_22px_1fr] items-center gap-2">
+            <div className="grid gap-1.5">
+              <DependencyNode label="학번" />
+              <DependencyNode label="과목코드" dim />
+            </div>
+            <ChevronRight size={18} strokeWidth={2.8} className="mx-auto text-[#ffb020]" />
+            <DependencyNode label="이름" warn />
+          </div>
+        ) : (
+          <div className="grid grid-cols-[1fr_22px_1fr] items-center gap-2">
+            <DependencyNode label="학번" />
+            <ChevronRight size={18} strokeWidth={2.8} className="mx-auto text-[#67e8f9]" />
+            <DependencyNode label="이름" accent />
+          </div>
+        )}
+
+        <div className="mt-3 rounded-[16px] border border-cream/10 bg-white/[0.035] px-3 py-2.5">
+          <div className="kr-body text-[12px] font-bold leading-[1.5] text-cream/66">
+            {data.caption}
+          </div>
+        </div>
+      </div>
+    </motion.figure>
+  );
+}
+
+function DependencyNode({
+  label,
+  accent = false,
+  warn = false,
+  dim = false,
+}: {
+  label: string;
+  accent?: boolean;
+  warn?: boolean;
+  dim?: boolean;
+}) {
+  return (
+    <div
+      className={
+        'rounded-[16px] border px-2.5 py-3 text-center kr-heading text-[13px] leading-tight ' +
+        (accent
+          ? 'border-[#d1f843]/30 bg-[#d1f843]/10 text-[#e8ff9d]'
+          : warn
+            ? 'border-[#ffb020]/34 bg-[#ffb020]/10 text-[#ffe3a3]'
+            : dim
+              ? 'border-cream/8 bg-white/[0.025] text-cream/34'
+              : 'border-[#67e8f9]/24 bg-[#67e8f9]/8 text-[#dffbff]')
+      }
+    >
+      {label}
+    </div>
+  );
+}
+
 type EntityDiagramMode = 'type' | 'concept' | 'event' | 'all';
 
 function EntityTypeErdDiagram({ mode }: { mode: EntityDiagramMode }) {
@@ -1976,6 +3226,8 @@ function ErdOrderSheet() {
         ))}
       </div>
 
+      <ErdPlacementGrid />
+
       <div className="rounded-[20px] border border-cream/10 bg-[#081632]/82 p-2">
         {rows.map((row, index) => (
           <motion.div
@@ -2019,6 +3271,61 @@ function ErdOrderSheet() {
         <div className="kr-body text-[11.5px] font-bold leading-[1.45] text-cream/64">
           배치는 가독성 문제입니다. 핵심 엔터티를 먼저 보이는 위치에 두면 관계선이 덜 꼬입니다.
         </div>
+      </div>
+    </div>
+  );
+}
+
+function ErdPlacementGrid() {
+  const cells = [
+    { label: '핵심 엔터티', sub: '왼쪽 상단', active: true },
+    { label: '주요 관계', sub: '오른쪽으로', active: false },
+    { label: '참조 엔터티', sub: '상단 라인', active: false },
+    { label: '세부 엔터티', sub: '아래로 확장', active: false },
+    { label: '교차 엔터티', sub: '관계 사이', active: false },
+    { label: '보조 정보', sub: '하단 배치', active: false },
+  ];
+
+  return (
+    <div className="mb-2.5 rounded-[18px] border border-cream/10 bg-[#081632]/82 p-2.5">
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <div className="kr-heading text-[12.5px] leading-none text-cream">
+          배치 감각
+        </div>
+        <div className="kr-body text-[10.5px] font-bold text-cream/46">
+          엑셀 표처럼 먼저 보이는 자리
+        </div>
+      </div>
+      <div className="grid grid-cols-3 gap-1.5">
+        {cells.map((cell, index) => (
+          <motion.div
+            key={cell.label}
+            className={
+              'min-h-[54px] rounded-[13px] border px-2 py-2 ' +
+              (cell.active
+                ? 'border-[#d1f843]/34 bg-[#d1f843]/10'
+                : 'border-cream/10 bg-white/[0.035]')
+            }
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.16, delay: index * 0.035 }}
+          >
+            <div
+              className={
+                'kr-heading text-[11.5px] leading-tight ' +
+                (cell.active ? 'text-[#e8ff9d]' : 'text-cream/72')
+              }
+            >
+              {cell.label}
+            </div>
+            <div className="mt-1 kr-body text-[9.5px] font-bold leading-tight text-cream/42">
+              {cell.sub}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+      <div className="mt-2 kr-body text-[10.5px] font-bold leading-[1.45] text-cream/52">
+        시험 포인트: 중요한 엔터티를 왼쪽 상단에 두면 사람이 흐름을 먼저 읽고, 관계선도 덜 꼬입니다.
       </div>
     </div>
   );

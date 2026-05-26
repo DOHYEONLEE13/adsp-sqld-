@@ -26,6 +26,9 @@ import {
 import {
   redeemCode,
   redeemReasonMessage,
+  revokeMyRedemptionGrant,
+  revokeMyRedemptionMessage,
+  type RevokeMyRedemptionReason,
   type RedeemReason,
 } from '@/data/redemption';
 import { refreshEnergy } from '@/game/energy';
@@ -56,7 +59,13 @@ export default function RedeemPage({ onBack }: Props) {
     reason: RedeemReason | null;
     message: string;
   } | null>(null);
+  const [revokeResult, setRevokeResult] = useState<{
+    ok: boolean;
+    reason: RevokeMyRedemptionReason | null;
+    message: string;
+  } | null>(null);
   const [grants, setGrants] = useState<GrantRow[]>([]);
+  const [revokingGrantId, setRevokingGrantId] = useState<string | null>(null);
 
   // ── auth state 구독 ───────────────────────────────────────────
   useEffect(() => {
@@ -100,6 +109,31 @@ export default function RedeemPage({ onBack }: Props) {
     setSubmitting(false);
     if (r.ok) {
       setCode('');
+      await Promise.all([
+        reloadGrants(),
+        refreshEnergy(),
+        refreshStepUnlocks(),
+      ]);
+    }
+  };
+
+  const handleRevokeGrant = async (grant: GrantRow) => {
+    if (revokingGrantId) return;
+    const confirmed = window.confirm(
+      '이 프로모션 코드를 해지할까요?\n\n이 코드로 받은 프리미엄 권한이 꺼질 수 있고, 해지한 1회용 코드는 자동으로 다시 사용할 수 없습니다.',
+    );
+    if (!confirmed) return;
+
+    setRevokingGrantId(grant.id);
+    const r = await revokeMyRedemptionGrant(grant.id);
+    setRevokeResult({
+      ok: r.ok,
+      reason: r.reason,
+      message: revokeMyRedemptionMessage(r.reason, r.ok, r.premiumStillActive),
+    });
+    setRevokingGrantId(null);
+
+    if (r.ok) {
       await Promise.all([
         reloadGrants(),
         refreshEnergy(),
@@ -255,9 +289,34 @@ export default function RedeemPage({ onBack }: Props) {
                 <h2 className="kr-heading uppercase text-[11px] tracking-widest text-cream/55 mb-3">
                   내 premium 활성화 이력
                 </h2>
+                {revokeResult ? (
+                  <div
+                    role="status"
+                    className="mb-4 px-4 py-3 rounded-xl flex items-start gap-2.5 kr-body text-[13px] leading-[1.6]"
+                    style={{
+                      background: revokeResult.ok
+                        ? 'var(--neon-10)'
+                        : 'rgba(248,113,113,0.10)',
+                      border: revokeResult.ok
+                        ? '1px solid var(--neon-40)'
+                        : '1px solid rgba(248,113,113,0.4)',
+                      color: revokeResult.ok
+                        ? 'rgba(196,255,128,0.95)'
+                        : 'rgba(252,165,165,0.95)',
+                    }}
+                  >
+                    {revokeResult.ok ? (
+                      <Check size={14} className="mt-0.5 shrink-0" />
+                    ) : (
+                      <X size={14} className="mt-0.5 shrink-0" />
+                    )}
+                    <span>{revokeResult.message}</span>
+                  </div>
+                ) : null}
                 <ul className="space-y-2.5">
                   {grants.map((g) => {
                     const active = !g.revoked_at && (!g.expires_at || new Date(g.expires_at) > new Date());
+                    const canSelfRevoke = active && g.source === 'redemption_code';
                     return (
                       <li
                         key={g.id}
@@ -295,6 +354,16 @@ export default function RedeemPage({ onBack }: Props) {
                             ) : null}
                           </div>
                         </div>
+                        {canSelfRevoke ? (
+                          <button
+                            type="button"
+                            onClick={() => void handleRevokeGrant(g)}
+                            disabled={revokingGrantId === g.id}
+                            className="shrink-0 rounded-full border border-red-300/26 bg-red-400/10 px-3 py-1.5 kr-heading text-[10.5px] text-red-100/85 transition hover:bg-red-400/16 disabled:opacity-45"
+                          >
+                            {revokingGrantId === g.id ? '해지 중' : '해지'}
+                          </button>
+                        ) : null}
                       </li>
                     );
                   })}

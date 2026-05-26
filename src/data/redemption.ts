@@ -26,6 +26,21 @@ export interface RedeemResult {
   grantedTier: 'lifetime' | null;
 }
 
+export type RevokeMyRedemptionReason =
+  | 'unauthenticated'
+  | 'not_found'
+  | 'not_redemption_code'
+  | 'already_revoked'
+  | 'rpc_error'
+  | 'env_missing';
+
+export interface RevokeMyRedemptionResult {
+  ok: boolean;
+  reason: RevokeMyRedemptionReason | null;
+  grantRevoked: boolean;
+  premiumStillActive: boolean;
+}
+
 /**
  * 초대 코드를 사용해 premium 을 활성화.
  *
@@ -59,6 +74,59 @@ export async function redeemCode(rawCode: string): Promise<RedeemResult> {
   };
 }
 
+/** 본인이 사용한 프로모션 코드 grant 를 직접 해지. */
+export async function revokeMyRedemptionGrant(
+  grantId: string,
+): Promise<RevokeMyRedemptionResult> {
+  if (!grantId) {
+    return {
+      ok: false,
+      reason: 'not_found',
+      grantRevoked: false,
+      premiumStillActive: false,
+    };
+  }
+
+  const sb = getSupabase();
+  if (!sb) {
+    return {
+      ok: false,
+      reason: 'env_missing',
+      grantRevoked: false,
+      premiumStillActive: false,
+    };
+  }
+
+  const { data, error } = await sb.rpc('revoke_my_redemption_grant', {
+    p_grant_id: grantId,
+  });
+  if (error) {
+    return {
+      ok: false,
+      reason: 'rpc_error',
+      grantRevoked: false,
+      premiumStillActive: false,
+    };
+  }
+
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row) {
+    return {
+      ok: false,
+      reason: 'rpc_error',
+      grantRevoked: false,
+      premiumStillActive: false,
+    };
+  }
+
+  return {
+    ok: row.ok === true,
+    reason: (row.reason as RevokeMyRedemptionReason | null) ?? null,
+    grantRevoked: row.grant_revoked === true,
+    premiumStillActive: row.premium_still_active === true,
+  };
+}
+
 /** UI 메시지 매핑 — reason → 한국어 안내. */
 export function redeemReasonMessage(reason: RedeemReason | null, ok: boolean): string {
   if (ok && reason === 'already_redeemed') {
@@ -79,5 +147,33 @@ export function redeemReasonMessage(reason: RedeemReason | null, ok: boolean): s
   case 'rpc_error':
   default:
     return '일시적 오류로 코드를 사용할 수 없습니다. 잠시 후 재시도해 주세요.';
+  }
+}
+
+export function revokeMyRedemptionMessage(
+  reason: RevokeMyRedemptionReason | null,
+  ok: boolean,
+  premiumStillActive: boolean,
+): string {
+  if (ok && reason === 'already_revoked') {
+    return '이미 해지된 프로모션 코드입니다.';
+  }
+  if (ok) {
+    return premiumStillActive
+      ? '프로모션 코드가 해지됐습니다. 다른 활성 권한은 그대로 유지됩니다.'
+      : '프로모션 코드가 해지됐습니다. 이제 무료 플랜 기준으로 이용됩니다.';
+  }
+  switch (reason) {
+  case 'unauthenticated':
+    return 'Google 로그인 후 다시 시도해 주세요.';
+  case 'env_missing':
+    return '로그인 환경이 아직 설정되지 않은 모드입니다. 환경 설정 후 다시 시도하세요.';
+  case 'not_found':
+    return '해지할 프로모션 이력을 찾지 못했습니다.';
+  case 'not_redemption_code':
+    return '결제 또는 관리자 부여 권한은 여기서 해지할 수 없습니다.';
+  case 'rpc_error':
+  default:
+    return '일시적 오류로 프로모션 코드를 해지할 수 없습니다. 잠시 후 재시도해 주세요.';
   }
 }

@@ -16,6 +16,7 @@ import type { ReactNode } from 'react';
 import {
   AlertTriangle,
   AppWindow,
+  BadgeCheck,
   BookOpen,
   Check,
   ChevronLeft,
@@ -23,10 +24,14 @@ import {
   ClipboardList,
   Database,
   Eye,
+  Fingerprint,
+  KeyRound,
   Layers,
+  Link2,
   PencilLine,
   Plus,
   Server,
+  ShieldCheck,
   Trash2,
   UserRound,
 } from 'lucide-react';
@@ -296,6 +301,9 @@ export default function DialogueLesson({
     if (key.includes('set-group')) return '집합·그룹 진행';
     if (key.includes('window-apps')) return '윈도우 진행';
     if (key.includes('regex')) return '정규식 진행';
+    if (key.includes('g1-anomaly')) return '정규화 흐름';
+    if (key.includes('g2-fd')) return '함수 종속 진행';
+    if (key.includes('g3-normal-forms')) return '정규형 진행';
     if (key.includes('g1-dml')) return 'DML 진행';
     if (key.includes('transaction')) return '트랜잭션 진행';
     if (key.includes('ddl-constraints')) return 'DDL 진행';
@@ -430,6 +438,22 @@ export default function DialogueLesson({
     }
     return null;
   })();
+  const keyIntegrityDiagramMode = (() => {
+    if (phase !== 'narrate') return null;
+    if (step.id === 'sqld-1-1-s10') {
+      if (turnIdx < 1) return null;
+      return 'keys';
+    }
+    if (step.id === 'sqld-1-1-s10-integrity') {
+      if (turnIdx < 1) return null;
+      return 'integrity';
+    }
+    if (step.id === 'sqld-1-1-s10-pk-unique') {
+      if (turnIdx < 1) return null;
+      return 'pkUnique';
+    }
+    return null;
+  })();
   const anomalyDiagramMode = (() => {
     if (phase !== 'narrate') return null;
     if (step.id === 'sqld-1-2-s1') {
@@ -468,6 +492,54 @@ export default function DialogueLesson({
       if (turnIdx < 1) return null;
       return 'transitive';
     }
+    return null;
+  })();
+  const normalFormDiagramMode = (() => {
+    if (phase !== 'narrate') return null;
+    if (step.id === 'sqld-1-2-s3') {
+      if (turnIdx < 1) return null;
+      return 'roadmap';
+    }
+    if (step.id === 'sqld-1-2-s3-1nf') return 'oneNf';
+    if (step.id === 'sqld-1-2-s3-2nf') return 'twoNf';
+    if (step.id === 'sqld-1-2-s3-3nf') return 'threeNf';
+    if (step.id === 'sqld-1-2-s3-bcnf') return 'bcnf';
+    return null;
+  })();
+  const denormalizationDiagramMode = (() => {
+    if (phase !== 'narrate') return null;
+    if (step.id === 'sqld-1-2-s4') return 'overview';
+    if (step.id === 'sqld-1-2-s4-methods') return 'methods';
+    if (step.id === 'sqld-1-2-s4-tradeoff') return 'tradeoff';
+    return null;
+  })();
+  const specialRelationDiagramMode = (() => {
+    if (phase !== 'narrate') return null;
+    if (step.id === 'sqld-1-2-s5') return 'overview';
+    if (step.id === 'sqld-1-2-s5-hierarchy') return 'hierarchy';
+    if (step.id === 'sqld-1-2-s5-exclusive') return 'exclusive';
+    return null;
+  })();
+  const transactionDiagramMode = (() => {
+    if (phase !== 'narrate') return null;
+    if (step.id === 'sqld-1-2-s6') return 'transfer';
+    if (step.id === 'sqld-1-2-s6-acid') return 'acid';
+    if (step.id === 'sqld-1-2-s6-isolation') return 'isolation';
+    return null;
+  })();
+  const nullDiagramMode = (() => {
+    if (phase !== 'narrate') return null;
+    if (step.id === 'sqld-1-2-s7') return 'meaning';
+    if (step.id === 'sqld-1-2-s7-compare') return 'operation';
+    if (step.id === 'sqld-1-2-s7-aggregate') return 'aggregate';
+    if (step.id === 'sqld-1-2-s7-sort') return 'sort';
+    return null;
+  })();
+  const keyChoiceDiagramMode = (() => {
+    if (phase !== 'narrate') return null;
+    if (step.id === 'sqld-1-2-s8') return 'compare';
+    if (step.id === 'sqld-1-2-s8-surrogate') return 'surrogate';
+    if (step.id === 'sqld-1-2-s8-practice') return 'practice';
     return null;
   })();
 
@@ -992,6 +1064,10 @@ export default function DialogueLesson({
           <AttributeRoleDiagram mode={attributeRoleDiagramMode} />
         ) : null}
 
+        {keyIntegrityDiagramMode ? (
+          <KeyIntegrityDiagram mode={keyIntegrityDiagramMode} />
+        ) : null}
+
         {/*
           Sub-step trail — 그룹 안 단계 (DIKW 5단계 등) 세로 배치.
           narrate 단계만 노출 (문제 풀 때는 선지가 우선이라 숨김).
@@ -1019,7 +1095,14 @@ export default function DialogueLesson({
         !entityTypeDiagramMode &&
         !relationshipDiagramMode &&
         !identifierRelationshipDiagramMode &&
-        !functionalDependencyDiagramMode ? (
+        !keyIntegrityDiagramMode &&
+        !functionalDependencyDiagramMode &&
+        !normalFormDiagramMode &&
+        !denormalizationDiagramMode &&
+        !specialRelationDiagramMode &&
+        !transactionDiagramMode &&
+        !nullDiagramMode &&
+        !keyChoiceDiagramMode ? (
           <nav
             aria-label={trailLabel}
             className="mt-10 max-w-[420px] mx-auto"
@@ -1149,6 +1232,28 @@ export default function DialogueLesson({
 
         {functionalDependencyDiagramMode ? (
           <FunctionalDependencyDiagram mode={functionalDependencyDiagramMode} />
+        ) : null}
+
+        {normalFormDiagramMode ? (
+          <NormalFormDiagram mode={normalFormDiagramMode} />
+        ) : null}
+
+        {denormalizationDiagramMode ? (
+          <DenormalizationDiagram mode={denormalizationDiagramMode} />
+        ) : null}
+
+        {specialRelationDiagramMode ? (
+          <SpecialRelationDiagram mode={specialRelationDiagramMode} />
+        ) : null}
+
+        {transactionDiagramMode ? (
+          <TransactionDiagram mode={transactionDiagramMode} />
+        ) : null}
+
+        {nullDiagramMode ? <NullBehaviorDiagram mode={nullDiagramMode} /> : null}
+
+        {keyChoiceDiagramMode ? (
+          <KeyChoiceDiagram mode={keyChoiceDiagramMode} />
         ) : null}
 
         {/* question / feedback 단계 — 4지선다 또는 SQL 순서 조립 */}
@@ -2748,6 +2853,349 @@ function RoleMiniTable({
   );
 }
 
+type KeyIntegrityDiagramMode = 'keys' | 'integrity' | 'pkUnique';
+
+function KeyIntegrityDiagram({ mode }: { mode: KeyIntegrityDiagramMode }) {
+  return (
+    <motion.figure
+      key={`key-integrity-${mode}`}
+      className="mx-auto mt-6 w-full max-w-[560px]"
+      aria-label="키 무결성 PK UNIQUE 그림 설명"
+      initial={{ opacity: 0, y: 18, scale: 0.98, filter: 'blur(6px)' }}
+      animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      transition={{ type: 'spring', stiffness: 340, damping: 31, mass: 0.82 }}
+    >
+      <div className="rounded-[26px] border border-[#d1f843]/16 bg-[#06122d]/94 p-3.5 shadow-[0_18px_44px_rgba(0,0,0,0.22)]">
+        {mode === 'keys' ? <KeysFiveDiagram /> : null}
+        {mode === 'integrity' ? <IntegrityThreeDiagram /> : null}
+        {mode === 'pkUnique' ? <PkUniqueDiagram /> : null}
+      </div>
+    </motion.figure>
+  );
+}
+
+function KeysFiveDiagram() {
+  const cards = [
+    {
+      icon: Fingerprint,
+      title: '슈퍼키',
+      badge: '넓음',
+      body: '한 행을 찾을 수만 있으면 됨',
+      example: '학번 + 이름',
+      accent: '#94a3b8',
+    },
+    {
+      icon: BadgeCheck,
+      title: '후보키',
+      badge: '최소',
+      body: '불필요한 속성을 뺀 대표 후보',
+      example: '학번 / 이메일',
+      accent: '#67e8f9',
+    },
+    {
+      icon: KeyRound,
+      title: '기본키',
+      badge: '대표',
+      body: '후보키 중 실제 대표로 선택',
+      example: '학번',
+      accent: '#d1f843',
+    },
+    {
+      icon: Check,
+      title: '대체키',
+      badge: '후보',
+      body: '대표로 선택되지 않은 후보키',
+      example: '이메일',
+      accent: '#c084fc',
+    },
+    {
+      icon: Link2,
+      title: '외래키',
+      badge: '연결',
+      body: '다른 표의 키를 가져와 연결',
+      example: '수강.학번',
+      accent: '#ffcc66',
+    },
+  ];
+
+  return (
+    <div>
+      <div className="mb-3 flex items-end justify-between gap-3 px-1">
+        <div>
+          <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-[#d1f843]/82">
+            KEY MAP
+          </div>
+          <div className="kr-heading mt-1 text-[20px] leading-tight text-cream">
+            키 5종은 역할로 구분
+          </div>
+        </div>
+        <div className="kr-body text-right text-[11px] font-bold leading-snug text-cream/52">
+          찾기
+          <br />
+          대표 선택
+          <br />
+          연결하기
+        </div>
+      </div>
+
+      <div className="grid gap-2">
+        {cards.map((card, index) => {
+          const Icon = card.icon;
+          return (
+            <motion.div
+              key={card.title}
+              className="grid grid-cols-[42px_1fr_auto] items-center gap-3 rounded-[18px] border bg-white/[0.04] px-3 py-2.5"
+              style={{ borderColor: `${card.accent}36` }}
+              initial={{ opacity: 0, x: -12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.045, duration: 0.18 }}
+            >
+              <div
+                className="grid h-10 w-10 place-items-center rounded-[14px] border"
+                style={{
+                  borderColor: `${card.accent}40`,
+                  background: `${card.accent}10`,
+                  color: card.accent,
+                }}
+                aria-hidden
+              >
+                <Icon size={18} strokeWidth={2.6} />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <div className="kr-heading text-[15px] leading-none text-cream">
+                    {card.title}
+                  </div>
+                  <span
+                    className="rounded-full border px-2 py-0.5 kr-num text-[8.5px] font-black uppercase"
+                    style={{
+                      borderColor: `${card.accent}45`,
+                      background: `${card.accent}12`,
+                      color: card.accent,
+                    }}
+                  >
+                    {card.badge}
+                  </span>
+                </div>
+                <div className="mt-1 kr-body text-[11.5px] font-bold leading-snug text-cream/56">
+                  {card.body}
+                </div>
+              </div>
+              <div
+                className="rounded-[12px] border px-2.5 py-2 text-center kr-heading text-[11px] leading-tight"
+                style={{
+                  borderColor: `${card.accent}34`,
+                  background: `${card.accent}0d`,
+                  color: card.accent,
+                }}
+              >
+                {card.example}
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      <div className="mt-3 rounded-[16px] border border-cream/10 bg-white/[0.035] px-3 py-2.5">
+        <div className="kr-body text-[12px] font-bold leading-[1.5] text-cream/66">
+          후보키 중 대표로 고른 것이 기본키, 대표가 되지 못한 후보가 대체키입니다.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function IntegrityThreeDiagram() {
+  const items = [
+    {
+      icon: KeyRound,
+      title: '개체 무결성',
+      rule: 'PK는 비면 안 되고 겹치면 안 됨',
+      example: '학번 NULL / 중복 금지',
+      accent: '#d1f843',
+    },
+    {
+      icon: Link2,
+      title: '참조 무결성',
+      rule: 'FK는 실제 부모 행을 가리켜야 함',
+      example: '없는 학번 수강 금지',
+      accent: '#67e8f9',
+    },
+    {
+      icon: ShieldCheck,
+      title: '도메인 무결성',
+      rule: '값은 정해진 범위와 형식 안',
+      example: '점수 0~100',
+      accent: '#c084fc',
+    },
+  ];
+
+  return (
+    <div>
+      <div className="mb-3 px-1">
+        <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-[#67e8f9]/82">
+          INTEGRITY RULES
+        </div>
+        <div className="kr-heading mt-1 text-[20px] leading-tight text-cream">
+          DB가 지키는 3가지 약속
+        </div>
+      </div>
+
+      <div className="grid gap-2.5">
+        {items.map((item, index) => {
+          const Icon = item.icon;
+          return (
+            <motion.div
+              key={item.title}
+              className="rounded-[19px] border bg-white/[0.04] p-3"
+              style={{ borderColor: `${item.accent}36` }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.055, duration: 0.18 }}
+            >
+              <div className="flex items-start gap-3">
+                <div
+                  className="grid h-10 w-10 shrink-0 place-items-center rounded-[14px] border"
+                  style={{
+                    borderColor: `${item.accent}40`,
+                    background: `${item.accent}10`,
+                    color: item.accent,
+                  }}
+                  aria-hidden
+                >
+                  <Icon size={18} strokeWidth={2.7} />
+                </div>
+                <div className="min-w-0">
+                  <div className="kr-heading text-[15px] leading-none text-cream">
+                    {item.title}
+                  </div>
+                  <div className="mt-1 kr-body text-[12px] font-bold leading-[1.45] text-cream/62">
+                    {item.rule}
+                  </div>
+                  <div
+                    className="mt-2 inline-flex rounded-full border px-2.5 py-1 kr-num text-[9px] font-black uppercase"
+                    style={{
+                      borderColor: `${item.accent}40`,
+                      background: `${item.accent}10`,
+                      color: item.accent,
+                    }}
+                  >
+                    {item.example}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function PkUniqueDiagram() {
+  return (
+    <div>
+      <div className="mb-3 px-1">
+        <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-[#d1f843]/82">
+          PK VS UNIQUE
+        </div>
+        <div className="kr-heading mt-1 text-[20px] leading-tight text-cream">
+          대표 이름표 vs 중복 방지
+        </div>
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-2">
+        <ConstraintCard
+          title="PK"
+          badge="대표"
+          accent="#d1f843"
+          rows={[
+            ['역할', '테이블 대표 식별자'],
+            ['중복', '불가'],
+            ['NULL', '불가'],
+            ['개수', '테이블당 PK 제약 1개'],
+          ]}
+          example="id PK"
+        />
+        <ConstraintCard
+          title="UNIQUE"
+          badge="보조"
+          accent="#67e8f9"
+          rows={[
+            ['역할', '중복 방지 제약'],
+            ['중복', '불가'],
+            ['NULL', 'SQLD/Oracle 기준 허용 가능'],
+            ['개수', '여러 UNIQUE 제약 가능'],
+          ]}
+          example="email UNIQUE"
+        />
+      </div>
+
+      <div className="mt-3 rounded-[16px] border border-[#d1f843]/18 bg-[#d1f843]/8 px-3 py-2.5">
+        <div className="kr-body text-[12px] font-bold leading-[1.55] text-[#ecffab]">
+          시험 기준: PK는 UNIQUE + NOT NULL + 대표 키. UNIQUE는 대표가 아니라 중복 방지 규칙입니다.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ConstraintCard({
+  title,
+  badge,
+  accent,
+  rows,
+  example,
+}: {
+  title: string;
+  badge: string;
+  accent: string;
+  rows: string[][];
+  example: string;
+}) {
+  return (
+    <div className="rounded-[20px] border bg-white/[0.04] p-3" style={{ borderColor: `${accent}38` }}>
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <div className="kr-heading text-[20px] leading-none text-cream">
+          {title}
+        </div>
+        <span
+          className="rounded-full border px-2.5 py-1 kr-num text-[9px] font-black uppercase"
+          style={{
+            borderColor: `${accent}45`,
+            background: `${accent}12`,
+            color: accent,
+          }}
+        >
+          {badge}
+        </span>
+      </div>
+      <div className="grid gap-1.5">
+        {rows.map(([label, value]) => (
+          <div key={label} className="grid grid-cols-[58px_1fr] items-center gap-2 rounded-[12px] border border-cream/10 bg-[#071634]/76 px-2.5 py-2">
+            <div className="kr-num text-[8.5px] font-black uppercase tracking-[0.12em] text-cream/36">
+              {label}
+            </div>
+            <div className="kr-body text-[11.5px] font-black leading-tight text-cream/78">
+              {value}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div
+        className="mt-2.5 rounded-[13px] border px-3 py-2 text-center kr-heading text-[12px]"
+        style={{
+          borderColor: `${accent}40`,
+          background: `${accent}10`,
+          color: accent,
+        }}
+      >
+        {example}
+      </div>
+    </div>
+  );
+}
+
 type FunctionalDependencyMode = 'basic' | 'full' | 'partial' | 'transitive';
 
 function FunctionalDependencyDiagram({ mode }: { mode: FunctionalDependencyMode }) {
@@ -2761,17 +3209,17 @@ function FunctionalDependencyDiagram({ mode }: { mode: FunctionalDependencyMode 
       caption: '학번을 알면 학생 이름이 하나로 정해지는 관계입니다.',
     },
     full: {
-      label: 'FULL',
+      label: '전체 필요',
       title: '키 전체가 필요함',
       caption: '학번과 과목코드를 함께 알아야 성적이 정해집니다.',
     },
     partial: {
-      label: 'PARTIAL',
+      label: '일부만',
       title: '키 일부만으로 정해짐',
       caption: '복합키 중 학번만으로 이름이 정해지면 부분 종속입니다.',
     },
     transitive: {
-      label: 'TRANSITIVE',
+      label: '중간 경유',
       title: '중간을 거쳐 정해짐',
       caption: '학번이 학과코드를 정하고, 학과코드가 학과명을 정합니다.',
     },
@@ -2872,6 +3320,556 @@ function DependencyNode({
     >
       {label}
     </div>
+  );
+}
+
+type VisualTone = 'cyan' | 'lime' | 'violet' | 'amber' | 'red' | 'muted';
+
+const visualToneClass = (tone: VisualTone): string => {
+  switch (tone) {
+    case 'lime':
+      return 'border-[#d1f843]/30 bg-[#d1f843]/10 text-[#e8ff9d]';
+    case 'violet':
+      return 'border-[#c084fc]/30 bg-[#c084fc]/10 text-[#eadcff]';
+    case 'amber':
+      return 'border-[#ffb020]/34 bg-[#ffb020]/10 text-[#ffe2a3]';
+    case 'red':
+      return 'border-[#ff6b6b]/35 bg-[#ff6b6b]/10 text-[#ffd1d1]';
+    case 'muted':
+      return 'border-cream/10 bg-white/[0.035] text-cream/55';
+    case 'cyan':
+    default:
+      return 'border-[#67e8f9]/25 bg-[#67e8f9]/9 text-[#dffbff]';
+  }
+};
+
+function LearningVisualFrame({
+  eyebrow,
+  title,
+  caption,
+  children,
+}: {
+  eyebrow: string;
+  title: string;
+  caption: string;
+  children: ReactNode;
+}) {
+  return (
+    <motion.figure
+      className="mx-auto mt-6 w-full max-w-[560px]"
+      initial={{ opacity: 0, y: 18, scale: 0.98, filter: 'blur(6px)' }}
+      animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+      transition={{ type: 'spring', stiffness: 340, damping: 31, mass: 0.82 }}
+    >
+      <div className="rounded-[26px] border border-[#67e8f9]/16 bg-[#06122d]/94 p-3.5 shadow-[0_18px_44px_rgba(0,0,0,0.22)]">
+        <div className="mb-3 flex items-end justify-between gap-3 px-1">
+          <div>
+            <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-[#67e8f9]/82">
+              {eyebrow}
+            </div>
+            <div className="kr-heading mt-1 text-[19px] leading-tight text-cream">
+              {title}
+            </div>
+          </div>
+        </div>
+        {children}
+        <div className="mt-3 rounded-[16px] border border-cream/10 bg-white/[0.035] px-3 py-2.5">
+          <div className="kr-body text-[12px] font-bold leading-[1.5] text-cream/66">
+            {caption}
+          </div>
+        </div>
+      </div>
+    </motion.figure>
+  );
+}
+
+function VisualPill({
+  label,
+  sub,
+  tone = 'cyan',
+}: {
+  label: string;
+  sub?: string;
+  tone?: VisualTone;
+}) {
+  return (
+    <div className={`rounded-[16px] border px-3 py-2.5 ${visualToneClass(tone)}`}>
+      <div className="kr-heading text-[13px] leading-tight">{label}</div>
+      {sub ? (
+        <div className="kr-body mt-1 text-[10.5px] font-bold leading-snug opacity-70">
+          {sub}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function ArrowStep() {
+  return <ChevronRight size={17} strokeWidth={2.8} className="mx-auto text-[#67e8f9]/80" />;
+}
+
+function MiniDataTable({
+  title,
+  columns,
+  rows,
+  highlight,
+}: {
+  title: string;
+  columns: string[];
+  rows: string[][];
+  highlight?: (rowIndex: number, columnIndex: number, value: string) => VisualTone | null;
+}) {
+  return (
+    <div className="overflow-hidden rounded-[18px] border border-cream/10 bg-[#020b24]/70">
+      <div className="border-b border-cream/10 px-3 py-2 kr-heading text-[12px] text-cream/78">
+        {title}
+      </div>
+      <div
+        className="grid border-b border-cream/10 bg-white/[0.035]"
+        style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(0, 1fr))` }}
+      >
+        {columns.map((column) => (
+          <div key={column} className="px-2 py-2 text-center kr-num text-[9px] font-black text-cream/45">
+            {column}
+          </div>
+        ))}
+      </div>
+      {rows.map((row, rowIndex) => (
+        <div
+          key={`${title}-${rowIndex}`}
+          className="grid border-b border-cream/8 last:border-b-0"
+          style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(0, 1fr))` }}
+        >
+          {row.map((value, columnIndex) => {
+            const tone = highlight?.(rowIndex, columnIndex, value);
+            return (
+              <div
+                key={`${title}-${rowIndex}-${columnIndex}`}
+                className={
+                  'm-1 rounded-[10px] px-1.5 py-1.5 text-center kr-body text-[10.5px] font-black leading-tight ' +
+                  (tone ? visualToneClass(tone) : 'text-cream/72')
+                }
+              >
+                {value}
+              </div>
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+type NormalFormMode = 'roadmap' | 'oneNf' | 'twoNf' | 'threeNf' | 'bcnf';
+
+function NormalFormDiagram({ mode }: { mode: NormalFormMode }) {
+  if (mode === 'roadmap') {
+    const steps = [
+      ['1NF', '한 칸 하나', 'cyan'],
+      ['2NF', '부분 종속 제거', 'lime'],
+      ['3NF', '이행 종속 제거', 'violet'],
+      ['BCNF', '결정자=후보키', 'amber'],
+    ] as const;
+    return (
+      <LearningVisualFrame
+        eyebrow="NORMAL FORM"
+        title="정규형은 단계별 안전장치"
+        caption="1NF부터 BCNF까지 조건이 하나씩 강해집니다. 도·부·이·결 흐름으로 보세요."
+      >
+        <div className="grid grid-cols-[1fr_18px_1fr] gap-2 sm:grid-cols-[1fr_18px_1fr_18px_1fr_18px_1fr]">
+          {steps.map(([label, sub, tone], index) => (
+            <Fragment key={label}>
+              <VisualPill label={label} sub={sub} tone={tone} />
+              {index < steps.length - 1 ? (
+                <div className="hidden items-center sm:flex"><ArrowStep /></div>
+              ) : null}
+            </Fragment>
+          ))}
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'oneNf') {
+    return (
+      <LearningVisualFrame
+        eyebrow="1NF"
+        title="한 칸에는 값 하나"
+        caption="한 칸에 전화번호가 두 개 있으면 검색·수정이 어려워요. 1NF는 값을 원자값으로 나눕니다."
+      >
+        <div className="grid gap-3 sm:grid-cols-[1fr_24px_1fr] sm:items-center">
+          <MiniDataTable
+            title="나쁜 표"
+            columns={['학생', '전화번호']}
+            rows={[['도현', '010-1111, 010-2222']]}
+            highlight={(_, column) => (column === 1 ? 'red' : null)}
+          />
+          <div className="hidden sm:block"><ArrowStep /></div>
+          <MiniDataTable
+            title="1NF"
+            columns={['학생', '전화번호']}
+            rows={[
+              ['도현', '010-1111'],
+              ['도현', '010-2222'],
+            ]}
+            highlight={(_, column) => (column === 1 ? 'lime' : null)}
+          />
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'twoNf') {
+    return (
+      <LearningVisualFrame
+        eyebrow="2NF"
+        title="복합키 일부에만 붙은 값 분리"
+        caption="성적은 학번+과목코드가 모두 필요하지만, 이름은 학번만으로 정해집니다. 그래서 학생 정보는 따로 빼야 해요."
+      >
+        <div className="grid gap-3">
+          <div className="grid grid-cols-[1fr_22px_1fr] items-center gap-2">
+            <div className="grid gap-1.5">
+              <VisualPill label="학번 + 과목코드" sub="복합키" tone="cyan" />
+            </div>
+            <ArrowStep />
+            <VisualPill label="성적" sub="전체가 필요" tone="lime" />
+          </div>
+          <div className="grid grid-cols-[1fr_22px_1fr] items-center gap-2">
+            <VisualPill label="학번" sub="키 일부" tone="amber" />
+            <ArrowStep />
+            <VisualPill label="이름" sub="부분 종속" tone="red" />
+          </div>
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'threeNf') {
+    return (
+      <LearningVisualFrame
+        eyebrow="3NF"
+        title="중간을 거치는 값 분리"
+        caption="학과명은 학생이 직접 정하는 값이 아니라 학과코드가 정합니다. 학과 테이블로 빼면 중복이 줄어요."
+      >
+        <div className="grid grid-cols-[1fr_18px_1fr_18px_1fr] items-center gap-1.5">
+          <VisualPill label="학번" tone="cyan" />
+          <ArrowStep />
+          <VisualPill label="학과코드" tone="amber" />
+          <ArrowStep />
+          <VisualPill label="학과명" tone="violet" />
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  return (
+    <LearningVisualFrame
+      eyebrow="BCNF"
+      title="결정자는 후보키여야 함"
+      caption="다른 값을 정하는 속성이 있다면, 그 속성 자체가 행을 구분할 수 있는 후보키여야 BCNF입니다."
+    >
+      <div className="grid grid-cols-[1fr_22px_1fr] items-center gap-2">
+        <VisualPill label="결정자" sub="다른 값을 정함" tone="amber" />
+        <ArrowStep />
+        <VisualPill label="후보키" sub="행을 유일하게 구분" tone="lime" />
+      </div>
+    </LearningVisualFrame>
+  );
+}
+
+type DenormalizationMode = 'overview' | 'methods' | 'tradeoff';
+
+function DenormalizationDiagram({ mode }: { mode: DenormalizationMode }) {
+  if (mode === 'methods') {
+    return (
+      <LearningVisualFrame
+        eyebrow="DENORMALIZATION"
+        title="합치기 · 복사하기 · 미리 계산"
+        caption="반정규화는 조회가 느린 지점을 확인한 뒤, 필요한 곳에만 쓰는 성능 보정입니다."
+      >
+        <div className="grid grid-cols-3 gap-2">
+          <VisualPill label="합치기" sub="테이블 통합" tone="cyan" />
+          <VisualPill label="복사" sub="컬럼 중복" tone="violet" />
+          <VisualPill label="계산" sub="요약/파생" tone="lime" />
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'tradeoff') {
+    return (
+      <LearningVisualFrame
+        eyebrow="TRADEOFF"
+        title="빨라지는 대신 맞춰야 할 값이 늘어남"
+        caption="같은 고객명이 여러 곳에 있으면 한쪽만 바뀌는 순간 데이터가 서로 달라집니다."
+      >
+        <MiniDataTable
+          title="주문 테이블에 고객명 복사"
+          columns={['주문ID', '고객ID', '고객명']}
+          rows={[
+            ['O-1', 'C-7', '토리'],
+            ['O-2', 'C-7', '토리님'],
+          ]}
+          highlight={(row, column) => (column === 2 ? (row === 0 ? 'amber' : 'red') : null)}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  return (
+    <LearningVisualFrame
+      eyebrow="NORMALIZE ↔ DENORMALIZE"
+      title="안전하게 나누기 vs 빠르게 읽기"
+      caption="정규화는 중복을 줄이고, 반정규화는 조회 속도를 위해 일부러 중복을 허용합니다."
+    >
+      <div className="grid grid-cols-[1fr_22px_1fr] items-center gap-2">
+        <VisualPill label="정규화" sub="학생 / 수강 / 과목" tone="cyan" />
+        <ArrowStep />
+        <VisualPill label="반정규화" sub="자주 보는 값 복사" tone="amber" />
+      </div>
+    </LearningVisualFrame>
+  );
+}
+
+type SpecialRelationMode = 'overview' | 'hierarchy' | 'exclusive';
+
+function SpecialRelationDiagram({ mode }: { mode: SpecialRelationMode }) {
+  if (mode === 'hierarchy') {
+    return (
+      <LearningVisualFrame
+        eyebrow="SELF REFERENCE"
+        title="같은 테이블이 자기 자신을 참조"
+        caption="사원 테이블 안의 상사사번이 다시 사원 테이블의 사번을 가리키면 계층형 관계입니다."
+      >
+        <div className="grid grid-cols-[1fr_22px_1fr_22px_1fr] items-center gap-1.5">
+          <VisualPill label="사원" sub="나" tone="cyan" />
+          <ArrowStep />
+          <VisualPill label="상사사번" sub="FK" tone="amber" />
+          <ArrowStep />
+          <VisualPill label="사원" sub="상사" tone="violet" />
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'exclusive') {
+    return (
+      <LearningVisualFrame
+        eyebrow="EXCLUSIVE ARC"
+        title="여러 후보 중 하나만 선택"
+        caption="결제 한 건은 카드 결제이거나 계좌이체일 수 있지만, 동시에 둘 다로 잡지는 않습니다."
+      >
+        <div className="grid gap-2">
+          <VisualPill label="결제" sub="하나의 거래" tone="cyan" />
+          <div className="grid grid-cols-2 gap-2">
+            <VisualPill label="카드" sub="선택 A" tone="lime" />
+            <VisualPill label="계좌이체" sub="선택 B" tone="muted" />
+          </div>
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  return (
+    <LearningVisualFrame
+      eyebrow="SPECIAL RELATION"
+      title="모델 구조에서 자주 나오는 특수 패턴"
+      caption="성능 이야기를 잠깐 내려놓고, 이제 관계 구조 자체가 특이한 경우를 구분합니다."
+    >
+      <div className="grid grid-cols-2 gap-2">
+        <VisualPill label="계층형·순환" sub="자기 자신 참조" tone="cyan" />
+        <VisualPill label="상호배타" sub="후보 중 하나" tone="violet" />
+      </div>
+    </LearningVisualFrame>
+  );
+}
+
+type TransactionMode = 'transfer' | 'acid' | 'isolation';
+
+function TransactionDiagram({ mode }: { mode: TransactionMode }) {
+  if (mode === 'acid') {
+    return (
+      <LearningVisualFrame
+        eyebrow="ACID"
+        title="안전한 거래의 4가지 약속"
+        caption="원자성은 전부 성공/취소, 일관성은 규칙 유지, 고립성은 간섭 최소화, 지속성은 커밋 결과 보존입니다."
+      >
+        <div className="grid grid-cols-2 gap-2">
+          <VisualPill label="원자성" sub="전부 성공/취소" tone="lime" />
+          <VisualPill label="일관성" sub="규칙 유지" tone="cyan" />
+          <VisualPill label="고립성" sub="동시 실행 분리" tone="violet" />
+          <VisualPill label="지속성" sub="커밋 결과 보존" tone="amber" />
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'isolation') {
+    const levels = [
+      ['RU', '가장 약함'],
+      ['RC', '커밋된 값'],
+      ['RR', '반복 읽기'],
+      ['Serializable', '가장 강함'],
+    ] as const;
+    return (
+      <LearningVisualFrame
+        eyebrow="ISOLATION"
+        title="강할수록 안전하지만 느릴 수 있음"
+        caption="격리수준은 동시에 실행되는 트랜잭션을 얼마나 엄격하게 분리할지 정하는 단계입니다."
+      >
+        <div className="grid grid-cols-4 gap-1.5">
+          {levels.map(([label, sub], index) => (
+            <VisualPill key={label} label={label} sub={sub} tone={index === 3 ? 'lime' : 'cyan'} />
+          ))}
+        </div>
+        <div className="mt-2 flex items-center justify-between px-1 kr-num text-[10px] font-black text-cream/45">
+          <span>동시성 ↑</span>
+          <span>안전성 ↑</span>
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  return (
+    <LearningVisualFrame
+      eyebrow="TRANSACTION"
+      title="출금과 입금은 한 덩어리"
+      caption="계좌이체는 출금만 성공하거나 입금만 성공하면 안 됩니다. 함께 성공하거나 함께 취소되어야 해요."
+    >
+      <div className="grid grid-cols-[1fr_22px_1fr_22px_1fr] items-center gap-1.5">
+        <VisualPill label="출금" sub="A - 10,000" tone="amber" />
+        <ArrowStep />
+        <VisualPill label="입금" sub="B + 10,000" tone="cyan" />
+        <ArrowStep />
+        <VisualPill label="COMMIT" sub="둘 다 성공" tone="lime" />
+      </div>
+    </LearningVisualFrame>
+  );
+}
+
+type NullMode = 'meaning' | 'operation' | 'aggregate' | 'sort';
+
+function NullBehaviorDiagram({ mode }: { mode: NullMode }) {
+  if (mode === 'operation') {
+    return (
+      <LearningVisualFrame
+        eyebrow="NULL OPERATION"
+        title="비교는 UNKNOWN, 산술은 NULL"
+        caption="NULL은 모르는 값이라 = NULL로 찾지 않습니다. 계산해도 결과를 알 수 없어 NULL이 됩니다."
+      >
+        <div className="grid grid-cols-2 gap-2">
+          <VisualPill label="col IS NULL" sub="NULL 찾기" tone="lime" />
+          <VisualPill label="col = NULL" sub="UNKNOWN" tone="red" />
+          <VisualPill label="NULL + 1" sub="NULL" tone="amber" />
+          <VisualPill label="NULL * 0" sub="NULL" tone="amber" />
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'aggregate') {
+    return (
+      <LearningVisualFrame
+        eyebrow="COUNT"
+        title="행을 세나, 값을 세나"
+        caption="COUNT(*)는 행 자체를 세고, COUNT(점수)는 NULL이 아닌 점수 값만 셉니다."
+      >
+        <MiniDataTable
+          title="점수"
+          columns={['행', '점수', 'COUNT']}
+          rows={[
+            ['1', '90', '포함'],
+            ['2', 'NULL', '컬럼 제외'],
+            ['3', '80', '포함'],
+          ]}
+          highlight={(_, column, value) => (value === 'NULL' || column === 2 ? 'amber' : null)}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'sort') {
+    return (
+      <LearningVisualFrame
+        eyebrow="ORACLE ORDER"
+        title="Oracle ASC에서는 NULL이 뒤쪽"
+        caption="DBMS마다 다를 수 있으니 시험에서는 Oracle 기준과 NULLS FIRST/LAST 지정법을 함께 기억하세요."
+      >
+        <div className="grid grid-cols-4 gap-1.5">
+          <VisualPill label="10" tone="cyan" />
+          <VisualPill label="20" tone="cyan" />
+          <VisualPill label="30" tone="cyan" />
+          <VisualPill label="NULL" tone="amber" />
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  return (
+    <LearningVisualFrame
+      eyebrow="NULL"
+      title="0도 아니고 빈칸도 아님"
+      caption="0은 숫자 값, 빈 문자열은 빈 글자 값, NULL은 값이 없거나 알 수 없다는 표시입니다."
+    >
+      <div className="grid grid-cols-3 gap-2">
+        <VisualPill label="0" sub="숫자 값" tone="cyan" />
+        <VisualPill label="''" sub="빈 문자열" tone="violet" />
+        <VisualPill label="NULL" sub="모름/없음" tone="amber" />
+      </div>
+    </LearningVisualFrame>
+  );
+}
+
+type KeyChoiceMode = 'compare' | 'surrogate' | 'practice';
+
+function KeyChoiceDiagram({ mode }: { mode: KeyChoiceMode }) {
+  if (mode === 'surrogate') {
+    return (
+      <LearningVisualFrame
+        eyebrow="SURROGATE KEY"
+        title="업무 값이 바뀌어도 PK는 덜 흔들리게"
+        caption="자동 id는 의미가 없어서 노출 위험이 낮고, 학번 같은 업무 값은 UNIQUE로 중복만 막을 수 있습니다."
+      >
+        <MiniDataTable
+          title="학생"
+          columns={['id', '학번', '이름']}
+          rows={[
+            ['1', 'S-100', '토리'],
+            ['2', 'S-101', '도현'],
+          ]}
+          highlight={(_, column) => (column === 0 ? 'lime' : column === 1 ? 'amber' : null)}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'practice') {
+    return (
+      <LearningVisualFrame
+        eyebrow="PK + UNIQUE"
+        title="연결은 id, 중복 방지는 학번"
+        caption="실무에서는 인조 PK로 관계를 안정화하고, 업무상 중복되면 안 되는 값은 UNIQUE로 관리하는 조합을 자주 씁니다."
+      >
+        <div className="grid grid-cols-[1fr_22px_1fr] items-center gap-2">
+          <VisualPill label="id" sub="PK · 내부 연결" tone="lime" />
+          <ArrowStep />
+          <VisualPill label="학번" sub="UNIQUE · 중복 방지" tone="amber" />
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  return (
+    <LearningVisualFrame
+      eyebrow="NATURAL vs SURROGATE"
+      title="업무에 원래 있나, 시스템이 만들었나"
+      caption="학번처럼 현실 업무에 이미 있는 값은 본질식별자, 자동 id처럼 시스템이 새로 만든 값은 인조식별자입니다."
+    >
+      <div className="grid grid-cols-2 gap-2">
+        <VisualPill label="학번" sub="본질식별자" tone="cyan" />
+        <VisualPill label="id / UUID" sub="인조식별자" tone="violet" />
+      </div>
+    </LearningVisualFrame>
   );
 }
 
@@ -3550,39 +4548,33 @@ function IdentifierRelationshipDiagram({
 
 type AnomalyDiagramMode = 'overview' | 'insert' | 'delete' | 'update';
 
-const anomalyRows = [
-  { student: '김민지', dept: 'AI빅데이터학과', course: '데이터 모델링' },
-  { student: '이도현', dept: 'AI빅데이터학과', course: 'SQL 기본' },
-  { student: '박서연', dept: '경영학과', course: '통계 분석' },
-];
-
 function AnomalyTableDiagram({ mode }: { mode: AnomalyDiagramMode }) {
   const copy: Record<
     AnomalyDiagramMode,
     { label: string; title: string; caption: string; Icon: LucideIcon }
   > = {
     overview: {
-      label: 'ANOMALY',
-      title: '한 표에 너무 많이 섞임',
-      caption: '학생, 학과, 수강 정보를 한 표에 몰아넣으면 같은 값이 반복돼요.',
+      label: 'NORMALIZATION',
+      title: '정규화가 필요한 이유',
+      caption: '한 표에 섞인 정보를 나누면 중복과 이상 현상을 줄일 수 있어요.',
       Icon: AlertTriangle,
     },
     insert: {
       label: 'INSERT',
-      title: '넣고 싶은 것만 못 넣음',
-      caption: '새 학과만 저장하고 싶은데 학생 정보까지 요구되면 삽입 이상이에요.',
+      title: '의도하지 않은 값도 삽입됨',
+      caption: '휴학생만 넣고 싶은데 과목명·교수명 NULL까지 함께 들어오면 삽입 이상이에요.',
       Icon: Plus,
     },
     delete: {
       label: 'DELETE',
-      title: '지우면 다른 정보도 사라짐',
-      caption: '마지막 학생 행을 지웠더니 학과 정보까지 같이 사라지면 삭제 이상이에요.',
+      title: '의도하지 않은 정보도 삭제됨',
+      caption: '학생 행을 지웠더니 과목·교수 정보도 함께 사라지면 삭제 이상이에요.',
       Icon: Trash2,
     },
     update: {
       label: 'UPDATE',
-      title: '고칠 때 일부만 바뀜',
-      caption: '반복된 학과명을 일부 행만 고치면 서로 다른 값이 남아 갱신 이상이 돼요.',
+      title: '일부만 갱신되어 모순 발생',
+      caption: '반복된 교수명 중 일부만 바뀌면 같은 과목에 다른 교수명이 남아요.',
       Icon: PencilLine,
     },
   };
@@ -3632,14 +4624,81 @@ function AnomalyOverviewCard() {
   return (
     <div className="grid gap-3">
       <MixedTableCard
-        rows={anomalyRows}
-        highlightDept
-        footer="같은 학과명이 여러 행에 반복됨"
+        rows={[
+          { no: '101', name: '홍길동', course: '수학', professor: '김OO' },
+          { no: '102', name: '이순신', course: '수학', professor: '김OO' },
+          { no: '103', name: '임꺽정', course: '컴퓨터', professor: '오OO' },
+          { no: '104', name: '장보고', course: '경제', professor: '박OO' },
+        ]}
+        highlightCourseProfessor
+        footer="학생, 과목, 교수 정보가 한 표에 섞여 반복됨"
       />
+      <div className="flex items-center justify-center gap-2">
+        <div className="h-px flex-1 bg-cream/10" />
+        <div className="inline-flex items-center gap-1.5 rounded-full border border-[#d1f843]/24 bg-[#d1f843]/10 px-3 py-1.5">
+          <ChevronRight size={15} strokeWidth={2.8} className="text-[#d1f843]" aria-hidden />
+          <span className="kr-heading text-[11px] leading-none text-[#ecffab]">
+            정규화
+          </span>
+        </div>
+        <div className="h-px flex-1 bg-cream/10" />
+      </div>
+      <div className="grid gap-2 sm:grid-cols-3">
+        <NormalizedTableCard
+          title="학생"
+          accent="#67e8f9"
+          rows={['학번', '이름']}
+        />
+        <NormalizedTableCard
+          title="수강"
+          accent="#d1f843"
+          rows={['학번', '과목명']}
+        />
+        <NormalizedTableCard
+          title="과목"
+          accent="#c084fc"
+          rows={['과목명', '교수명']}
+        />
+      </div>
       <div className="grid grid-cols-3 gap-2">
-        <AnomalyMiniRisk label="넣을 때" body="필요 없는 값까지 요구" />
-        <AnomalyMiniRisk label="지울 때" body="보존할 정보도 사라짐" />
-        <AnomalyMiniRisk label="고칠 때" body="일부만 바뀌어 모순" />
+        <AnomalyMiniRisk label="삽입" body="필요 없는 값 요구" />
+        <AnomalyMiniRisk label="삭제" body="보존할 정보 사라짐" />
+        <AnomalyMiniRisk label="갱신" body="일부만 바뀌어 모순" />
+      </div>
+    </div>
+  );
+}
+
+function NormalizedTableCard({
+  title,
+  rows,
+  accent,
+}: {
+  title: string;
+  rows: string[];
+  accent: string;
+}) {
+  return (
+    <div className="rounded-[17px] border bg-white/[0.04] p-2.5" style={{ borderColor: `${accent}34` }}>
+      <div className="flex items-center justify-between border-b border-cream/10 pb-2">
+        <div className="kr-heading text-[14px] leading-none text-cream">
+          {title}
+        </div>
+        <div
+          className="h-2 w-2 rounded-full"
+          style={{ background: accent, boxShadow: `0 0 10px ${accent}66` }}
+          aria-hidden
+        />
+      </div>
+      <div className="mt-2 grid gap-1.5">
+        {rows.map((row) => (
+          <div
+            key={`${title}-${row}`}
+            className="rounded-[10px] border border-cream/10 bg-[#071634]/80 px-2 py-1.5 text-center kr-body text-[10.5px] font-black leading-none text-cream/70"
+          >
+            {row}
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -3655,24 +4714,20 @@ function InsertAnomalyCard() {
         <div className="mt-2 flex items-center gap-2 rounded-[16px] border border-[#d1f843]/26 bg-[#d1f843]/10 px-3 py-2.5">
           <Plus size={16} className="shrink-0 text-[#d1f843]" strokeWidth={2.8} />
           <div className="kr-heading text-[14px] text-cream">
-            보안학과만 먼저 저장
+            105번 휴학생만 등록
           </div>
         </div>
       </div>
-      <div className="grid gap-2 rounded-[20px] border border-[#ff7a7a]/20 bg-[#ff7a7a]/8 p-3">
-        <div className="flex items-center gap-2">
-          <AlertTriangle size={15} className="text-[#ff9a9a]" strokeWidth={2.8} />
-          <div className="kr-heading text-[14px] text-cream">
-            그런데 한 표가 학생 칸까지 요구함
-          </div>
-        </div>
-        <div className="grid grid-cols-3 gap-1.5">
-          <AnomalySlot label="학생명 ?" danger />
-          <AnomalySlot label="보안학과" active />
-          <AnomalySlot label="수강과목 ?" danger />
-        </div>
-        <div className="kr-body text-[12px] font-bold leading-snug text-cream/60">
-          학과 정보만 넣고 싶은데 학생/수강 값까지 필요하면 삽입 이상입니다.
+      <MixedTableCard
+        rows={[
+          { no: '105', name: '휴학생', course: 'NULL', professor: 'NULL' },
+        ]}
+        highlightNull
+        footer="원하지 않은 과목명·교수명 NULL까지 함께 삽입됨"
+      />
+      <div className="rounded-[18px] border border-[#ff7a7a]/18 bg-[#ff7a7a]/8 px-3 py-2.5">
+        <div className="kr-body text-[12px] font-bold leading-snug text-cream/62">
+          데이터 삽입 시 의도하지 않은 값까지 함께 들어오면 삽입 이상입니다.
         </div>
       </div>
     </div>
@@ -3684,11 +4739,11 @@ function DeleteAnomalyCard() {
     <div className="grid gap-3">
       <MixedTableCard
         rows={[
-          { student: '김민지', dept: 'AI빅데이터학과', course: '데이터 모델링' },
+          { no: '104', name: '장보고', course: '경제', professor: '박OO' },
         ]}
-        highlightDept
+        highlightCourseProfessor
         dimRow
-        footer="마지막 학생 행"
+        footer="이 행이 사라지면 경제 과목·박OO 교수 정보도 함께 사라짐"
       />
       <div className="flex items-center gap-2 rounded-[20px] border border-[#ffb020]/24 bg-[#ffb020]/10 px-3 py-3">
         <Trash2 size={17} className="shrink-0 text-[#ffcc66]" strokeWidth={2.8} />
@@ -3697,7 +4752,7 @@ function DeleteAnomalyCard() {
             행 삭제
           </div>
           <div className="kr-body mt-1 text-[12px] font-bold leading-snug text-cream/58">
-            학생을 지웠을 뿐인데 `AI빅데이터학과` 정보도 함께 사라짐
+            학생을 지웠을 뿐인데 보존해야 할 과목·교수 정보도 함께 사라짐
           </div>
         </div>
       </div>
@@ -3710,13 +4765,13 @@ function UpdateAnomalyCard() {
     <div className="grid gap-3">
       <MixedTableCard
         rows={[
-          { student: '김민지', dept: '인공지능학과', course: '데이터 모델링' },
-          { student: '이도현', dept: 'AI빅데이터학과', course: 'SQL 기본' },
-          { student: '정하늘', dept: 'AI빅데이터학과', course: '통계 분석' },
+          { no: '101', name: '홍길동', course: '수학', professor: '한OO' },
+          { no: '102', name: '이순신', course: '수학', professor: '김OO' },
+          { no: '103', name: '임꺽정', course: '컴퓨터', professor: '오OO' },
         ]}
-        highlightDept
-        conflict
-        footer="같은 사실인데 값이 서로 달라짐"
+        highlightCourseProfessor
+        conflictProfessor
+        footer="같은 수학 과목인데 교수명이 서로 달라짐"
       />
       <div className="rounded-[20px] border border-[#c084fc]/24 bg-[#c084fc]/10 px-3 py-3">
         <div className="flex items-center gap-2">
@@ -3726,7 +4781,7 @@ function UpdateAnomalyCard() {
           </div>
         </div>
         <div className="kr-body mt-1.5 text-[12px] font-bold leading-snug text-cream/60">
-          반복된 값을 전부 고치지 못하면 데이터가 서로 모순됩니다.
+          일부 데이터만 갱신되면 같은 사실이 서로 다르게 남아 모순이 발생합니다.
         </div>
       </div>
     </div>
@@ -3735,24 +4790,26 @@ function UpdateAnomalyCard() {
 
 function MixedTableCard({
   rows,
-  highlightDept = false,
+  highlightCourseProfessor = false,
+  highlightNull = false,
   dimRow = false,
-  conflict = false,
+  conflictProfessor = false,
   footer,
 }: {
-  rows: Array<{ student: string; dept: string; course: string }>;
-  highlightDept?: boolean;
+  rows: Array<{ no: string; name: string; course: string; professor: string }>;
+  highlightCourseProfessor?: boolean;
+  highlightNull?: boolean;
   dimRow?: boolean;
-  conflict?: boolean;
+  conflictProfessor?: boolean;
   footer: string;
 }) {
   return (
     <div className="overflow-hidden rounded-[20px] border border-cream/10 bg-[#081632]/88">
-      <div className="grid grid-cols-3 border-b border-cream/10 bg-white/[0.04]">
-        {['학생', '학과', '수강과목'].map((header) => (
+      <div className="grid grid-cols-4 border-b border-cream/10 bg-white/[0.04]">
+        {['학번', '이름', '과목명', '교수명'].map((header) => (
           <div
             key={header}
-            className="px-2.5 py-2 kr-num text-[9px] font-black uppercase tracking-[0.12em] text-cream/42"
+            className="px-2 py-2 kr-num text-[8.5px] font-black uppercase tracking-[0.11em] text-cream/42"
           >
             {header}
           </div>
@@ -3760,20 +4817,24 @@ function MixedTableCard({
       </div>
       {rows.map((row, idx) => (
         <div
-          key={`${row.student}-${idx}`}
+          key={`${row.no}-${idx}`}
           className={
-            'grid grid-cols-3 border-b border-cream/8 last:border-b-0 ' +
+            'grid grid-cols-4 border-b border-cream/8 last:border-b-0 ' +
             (dimRow ? 'opacity-55' : '')
           }
         >
-          <AnomalyCell>{row.student}</AnomalyCell>
-          <AnomalyCell
-            highlight={highlightDept}
-            conflict={conflict && idx === 0}
-          >
-            {row.dept}
+          <AnomalyCell>{row.no}</AnomalyCell>
+          <AnomalyCell>{row.name}</AnomalyCell>
+          <AnomalyCell highlight={highlightCourseProfessor} danger={highlightNull && row.course === 'NULL'}>
+            {row.course}
           </AnomalyCell>
-          <AnomalyCell>{row.course}</AnomalyCell>
+          <AnomalyCell
+            highlight={highlightCourseProfessor}
+            danger={highlightNull && row.professor === 'NULL'}
+            conflict={conflictProfessor && row.course === '수학'}
+          >
+            {row.professor}
+          </AnomalyCell>
         </div>
       ))}
       <div className="border-t border-cream/10 px-3 py-2 kr-body text-[11.5px] font-black leading-snug text-cream/58">
@@ -3786,17 +4847,21 @@ function MixedTableCard({
 function AnomalyCell({
   children,
   highlight = false,
+  danger = false,
   conflict = false,
 }: {
   children: string;
   highlight?: boolean;
+  danger?: boolean;
   conflict?: boolean;
 }) {
   return (
-    <div className="min-h-[42px] px-2.5 py-2 text-[11.5px] font-bold leading-snug text-cream/76">
+    <div className="min-h-[42px] px-2 py-2 text-[11px] font-bold leading-snug text-cream/76">
       <span
         className={
-          highlight
+          danger
+            ? 'inline-flex rounded-full border border-[#ff7a7a]/35 bg-[#ff7a7a]/12 px-2 py-1 text-[#ffd0d0]'
+            : highlight
             ? 'inline-flex rounded-full border px-2 py-1 ' +
               (conflict
                 ? 'border-[#c084fc]/36 bg-[#c084fc]/12 text-[#ead7ff]'
@@ -3819,31 +4884,6 @@ function AnomalyMiniRisk({ label, body }: { label: string; body: string }) {
       <div className="kr-body mt-1 text-[10.5px] font-bold leading-snug text-cream/54">
         {body}
       </div>
-    </div>
-  );
-}
-
-function AnomalySlot({
-  label,
-  active = false,
-  danger = false,
-}: {
-  label: string;
-  active?: boolean;
-  danger?: boolean;
-}) {
-  return (
-    <div
-      className={
-        'min-h-[42px] rounded-[14px] border px-2 py-2 text-center kr-body text-[11px] font-black leading-snug ' +
-        (active
-          ? 'border-[#d1f843]/34 bg-[#d1f843]/12 text-[#e8ff9d]'
-          : danger
-            ? 'border-[#ff7a7a]/28 bg-[#ff7a7a]/10 text-[#ffd0d0]'
-            : 'border-cream/10 bg-white/[0.045] text-cream/58')
-      }
-    >
-      {label}
     </div>
   );
 }
@@ -3964,67 +5004,164 @@ function IdentifierCompareCard() {
     <div className="rounded-[24px] border border-cream/10 bg-[#06122d]/94 p-3.5 shadow-[0_18px_44px_rgba(0,0,0,0.24)]">
       <div className="mb-3 px-1">
         <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-cream/42">
-          PK POSITION
+          PK POSITION CHECK
         </div>
-        <div className="kr-heading mt-1 text-[19px] leading-none text-cream">
-          기준은 자식 PK 안쪽/바깥쪽
+        <div className="kr-heading mt-1 text-[19px] leading-tight text-cream">
+          자식의 대표 이름표 안에 들어갔나?
         </div>
       </div>
 
-      <div className="grid gap-2.5">
-        <IdentifierRuleRow
+      <div className="grid gap-3">
+        <IdentifierCompareExample
           title="식별자 관계"
-          badge="PK 안"
-          body="부모 PK가 자식 PK의 일부가 됩니다."
-          accent
+          subtitle="부모 키가 자식 PK 안으로 들어감"
+          parentLabel="학생 PK"
+          childLabel="수강신청 PK"
+          pkRows={['학번', '과목코드']}
+          attrRows={['수강일', '성적']}
+          result="학번+과목코드가 없으면 수강신청 한 건을 구분할 수 없어요."
+          accent="#c084fc"
+          solid
         />
-        <IdentifierRuleRow
+        <IdentifierCompareExample
           title="비식별자 관계"
-          badge="PK 밖"
-          body="부모 키는 자식의 FK 또는 일반 속성으로만 남습니다."
+          subtitle="부모 키가 자식 PK 밖에 FK로만 남음"
+          parentLabel="고객 PK"
+          childLabel="주문 PK"
+          pkRows={['주문ID']}
+          attrRows={['고객ID(FK)', '주문일']}
+          result="주문은 주문ID만으로 구분되고, 고객ID는 연결용으로만 남아요."
+          accent="#67e8f9"
         />
+      </div>
+
+      <div className="mt-3 rounded-[16px] border border-[#d1f843]/18 bg-[#d1f843]/8 px-3 py-2.5">
+        <div className="kr-body text-[12px] font-bold leading-[1.55] text-[#ecffab]">
+          한 줄 기준: 부모 키가 자식 PK 안에 있으면 식별자, PK 밖에서 FK로만 있으면 비식별자.
+        </div>
       </div>
     </div>
   );
 }
 
-function IdentifierRuleRow({
+function IdentifierCompareExample({
   title,
-  badge,
-  body,
-  accent = false,
+  subtitle,
+  parentLabel,
+  childLabel,
+  pkRows,
+  attrRows,
+  result,
+  accent,
+  solid = false,
 }: {
   title: string;
-  badge: string;
-  body: string;
-  accent?: boolean;
+  subtitle: string;
+  parentLabel: string;
+  childLabel: string;
+  pkRows: string[];
+  attrRows: string[];
+  result: string;
+  accent: string;
+  solid?: boolean;
 }) {
   return (
     <div
-      className={
-        'flex items-center gap-3 rounded-[18px] border px-3 py-3 ' +
-        (accent
-          ? 'border-[#c084fc]/32 bg-[#c084fc]/10'
-          : 'border-cream/10 bg-white/[0.045]')
-      }
+      className="rounded-[19px] border bg-white/[0.04] p-3"
+      style={{ borderColor: `${accent}42` }}
     >
-      <div
-        className={
-          'grid h-12 w-12 shrink-0 place-items-center rounded-[16px] border kr-heading text-[12px] ' +
-          (accent
-            ? 'border-[#c084fc]/45 bg-[#c084fc]/12 text-[#ead7ff]'
-            : 'border-cream/12 bg-white/[0.045] text-cream/58')
-        }
-      >
-        {badge}
+      <div className="mb-2 flex items-start justify-between gap-3">
+        <div>
+          <div className="kr-heading text-[15px] leading-none text-cream">
+            {title}
+          </div>
+          <div className="mt-1 kr-body text-[11px] font-bold leading-[1.4] text-cream/52">
+            {subtitle}
+          </div>
+        </div>
+        <div
+          className="rounded-full border px-2.5 py-1 kr-num text-[9px] font-black uppercase"
+          style={{
+            borderColor: `${accent}45`,
+            background: `${accent}12`,
+            color: accent,
+          }}
+        >
+          {solid ? '실선 감각' : '점선 감각'}
+        </div>
       </div>
-      <div className="min-w-0">
-        <div className="kr-heading text-[14px] leading-snug text-cream">
-          {title}
+
+      <div className="grid grid-cols-[1fr_26px_1fr] items-center gap-2">
+        <div className="rounded-[15px] border border-cream/10 bg-[#071634]/82 p-2">
+          <div className="kr-num text-[8px] font-black uppercase tracking-[0.14em] text-cream/38">
+            부모
+          </div>
+          <div className="mt-1 rounded-[10px] border border-cream/10 bg-white/[0.045] px-2 py-1.5 text-center kr-heading text-[11px] leading-none text-cream/72">
+            {parentLabel}
+          </div>
         </div>
-        <div className="mt-1 kr-body text-[11.5px] font-bold leading-snug text-cream/62">
-          {body}
+
+        <div className="flex flex-col items-center gap-1">
+          <div
+            className={solid ? 'h-px w-6' : 'h-px w-6 border-t'}
+            style={{
+              background: solid ? accent : undefined,
+              borderColor: solid ? undefined : `${accent}80`,
+              borderStyle: solid ? undefined : 'dashed',
+            }}
+          />
+          <ChevronRight size={16} strokeWidth={2.8} style={{ color: accent }} aria-hidden />
+          <div
+            className={solid ? 'h-px w-6' : 'h-px w-6 border-t'}
+            style={{
+              background: solid ? accent : undefined,
+              borderColor: solid ? undefined : `${accent}80`,
+              borderStyle: solid ? undefined : 'dashed',
+            }}
+          />
         </div>
+
+        <div className="rounded-[15px] border border-cream/10 bg-[#071634]/82 p-2">
+          <div className="kr-num text-[8px] font-black uppercase tracking-[0.14em] text-cream/38">
+            자식
+          </div>
+          <div className="mt-1 rounded-[10px] border px-2 py-1.5 text-center kr-heading text-[11px] leading-none"
+            style={{
+              borderColor: `${accent}42`,
+              background: `${accent}10`,
+              color: accent,
+            }}
+          >
+            {childLabel}
+          </div>
+          <div className="mt-1.5 grid gap-1">
+            {pkRows.map((row) => (
+              <div
+                key={row}
+                className="rounded-[9px] border px-2 py-1 text-center kr-body text-[10px] font-black leading-none"
+                style={{
+                  borderColor: `${accent}36`,
+                  background: `${accent}0d`,
+                  color: solid ? '#ead7ff' : '#dffbff',
+                }}
+              >
+                {row}
+              </div>
+            ))}
+            {attrRows.map((row) => (
+              <div
+                key={row}
+                className="rounded-[9px] border border-cream/10 bg-white/[0.04] px-2 py-1 text-center kr-body text-[10px] font-black leading-none text-cream/58"
+              >
+                {row}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-2 rounded-[13px] border border-cream/10 bg-white/[0.035] px-3 py-2 kr-body text-[11.3px] font-bold leading-[1.45] text-cream/62">
+        {result}
       </div>
     </div>
   );

@@ -27,6 +27,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import type { MultipleChoiceQuestion, Subject } from '@/types/question';
+import { openWebOrAppPremiumEntry } from '@/lib/appMode';
 import { SUBJECT_SCHEMAS } from '@/data/subjects';
 import {
   getChapterSteps,
@@ -402,7 +403,7 @@ export default function LessonScreen({
           }}
           onUpgrade={() => {
             // 랜딩의 #pricing 섹션으로 이동 → SPA 가 hashchange 로 landing 전환
-            window.location.href = '/#pricing';
+            openWebOrAppPremiumEntry();
             // mount 이후 anchor scroll 명시 (브라우저 자동 scroll 누락 보장)
             window.setTimeout(() => {
               document

@@ -20,6 +20,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { X, Zap, Check, AlertTriangle, Play, Crown, Sparkles } from 'lucide-react';
+import { openWebOrAppPremiumEntry } from '@/lib/appMode';
 import {
   useEnergy,
   ENERGY_CAP,
@@ -410,9 +411,7 @@ export default function EnergyShopModal({ onClose }: Props) {
           <button
             type="button"
             onClick={() => {
-              if (typeof window !== 'undefined') {
-                window.location.href = '/#pricing';
-              }
+              openWebOrAppPremiumEntry();
             }}
             className="relative w-full overflow-hidden rounded-2xl px-4 py-3.5 transition active:scale-[0.98] text-left"
             style={{

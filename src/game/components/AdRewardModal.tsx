@@ -21,6 +21,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { X, Zap, Check, Clock, AlertTriangle, PlayCircle, Crown } from 'lucide-react';
+import { openWebOrAppPremiumEntry } from '@/lib/appMode';
 import Ques from '@/components/mascot/Ques';
 import {
   characterForSubject,
@@ -70,9 +71,7 @@ export default function AdRewardModal({ subject, onClose, onUpgrade }: Props) {
       return;
     }
     // 기본 동작 — 메인의 #pricing 섹션으로 점프
-    if (typeof window !== 'undefined') {
-      window.location.href = '/#pricing';
-    }
+    openWebOrAppPremiumEntry();
   };
   // 이미 cap 도달 → "이미 가득" 안내, 그 외에는 idle (사용자가 "광고 보기" 클릭 대기).
   const [phase, setPhase] = useState<Phase>(() =>

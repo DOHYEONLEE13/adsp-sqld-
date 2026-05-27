@@ -1,6 +1,6 @@
 # QuestDP Google Play / TWA App Plan
 
-Last updated: 2026-05-26
+Last updated: 2026-05-28
 
 ## Summary
 
@@ -62,6 +62,19 @@ Android app icon tap
 -> replace to /#/game or onboarding
 -> back button exits app or follows in-game back behavior
 ```
+
+Implementation status:
+
+- `/app` route is now implemented in `src/App.tsx`.
+- `/app` opens the game-first flow instead of the public landing page.
+- If onboarding is required, `/app` transitions to `#/onboarding`.
+- If a protected route is opened in app mode, auth guard can still send the user to `#/login`.
+- Separate app manifest is available at `/app.webmanifest`.
+- Android TWA project has been generated at `apps/android/twa`.
+- Debug APK build succeeded at `apps/android/twa/app/build/outputs/apk/debug/app-debug.apk`.
+- Debug AAB build succeeded at `apps/android/twa/app/build/outputs/bundle/debug/app-debug.aab`.
+- No emulator or physical Android device was connected during setup, so install/run verification is still pending.
+- Release `.aab`, Play signing, Digital Asset Links, and Google Play Billing are still pending.
 
 ## Update Model
 
@@ -379,4 +392,3 @@ npm run build
 - Google Play preview assets: https://support.google.com/googleplay/android-developer/answer/1078870
 - Google Play payments policy: https://support.google.com/googleplay/android-developer/answer/9858738
 - Google Play Billing for TWA: https://developer.chrome.com/docs/android/trusted-web-activity/receive-payments-play-billing
-

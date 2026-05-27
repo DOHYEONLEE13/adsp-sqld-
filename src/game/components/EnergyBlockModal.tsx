@@ -10,6 +10,7 @@
 import { useState } from 'react';
 import { Zap, X, Crown, PlayCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { openWebOrAppPremiumEntry } from '@/lib/appMode';
 import Ques from '@/components/mascot/Ques';
 import {
   characterForSubject,
@@ -46,9 +47,7 @@ export default function EnergyBlockModal({
       return;
     }
     // 기본 동작 — 메인의 #pricing 섹션으로 점프
-    if (typeof window !== 'undefined') {
-      window.location.href = '/#pricing';
-    }
+    openWebOrAppPremiumEntry();
   };
 
   return (

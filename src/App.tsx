@@ -17,6 +17,7 @@ import GlobalAmbientBg from './game/components/GlobalAmbientBg';
 import { onAuthStateChange } from './lib/supabase';
 import { consumePendingAuthRedirect } from './lib/authGuard';
 import TierUpgradeToast from './components/passes/TierUpgradeToast';
+import AppBillingNotice from './components/AppBillingNotice';
 import OfflineBanner from './components/sync/OfflineBanner';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ToastProvider } from './components/ui/Toast';
@@ -26,6 +27,7 @@ import AuthGuard from './components/auth/AuthGuard';
 import { trackPageview } from './lib/analytics';
 import { needsOnboarding } from './game/onboarding/onboardingStorage';
 import { initAuthSessionSync } from './lib/auth/sessionStore';
+import { isAppEntryPath, markAppModeFromLocation } from './lib/appMode';
 
 // ── lazy 라우트 — 첫 페이지 (Landing) 만 즉시 로드, 나머지는 진입 시 다운로드.
 //   결과: 게스트가 랜딩만 보면 GamePage·StatsPage·법적 페이지·관리자 페이지의
@@ -135,6 +137,10 @@ function getRoute(): RouteState {
 
   // 1. Path-based 라우트 우선 (legal pages + Tier 2 lesson — SEO indexable)
   const pathname = window.location.pathname;
+  const initialHash = window.location.hash.replace(/^#/, '');
+  if (isAppEntryPath(pathname) && !initialHash) {
+    return { route: 'game' };
+  }
   if (pathname === '/about' || pathname === '/about/')
     return { route: 'legal', legalSlug: 'about' };
   if (pathname === '/privacy' || pathname === '/privacy/')
@@ -283,6 +289,10 @@ export default function App() {
   // (Suspense fallback null 과 함께 작동: chunk 가 mount 되기 전엔 이전
   //  페이지가 보이고, mount 끝나면 즉시 교체.)
   const [, startTransition] = useTransition();
+
+  useEffect(() => {
+    markAppModeFromLocation();
+  }, []);
 
   // Legacy hash redirect — `#/about` 등 옛 북마크가 들어오면 path 로 한 번 교체.
   // App mount 시 한 번만 실행.
@@ -638,6 +648,7 @@ export default function App() {
       <ErrorBoundary label="route">
         <Suspense fallback={ROUTE_FALLBACK}>{renderRoute()}</Suspense>
       </ErrorBoundary>
+      <AppBillingNotice />
       <TierUpgradeToast />
       <GuestDiscardToast />
     </ToastProvider>

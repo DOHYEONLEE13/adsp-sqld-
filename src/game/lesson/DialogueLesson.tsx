@@ -13,6 +13,7 @@
 
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
+import { openWebOrAppPremiumEntry } from '@/lib/appMode';
 import {
   AlertTriangle,
   AppWindow,
@@ -1011,7 +1012,7 @@ export default function DialogueLesson({
           }}
           onUpgrade={() => {
             // 랜딩의 #pricing 섹션으로 이동 → SPA 가 hashchange 로 landing 전환
-            window.location.href = '/#pricing';
+            openWebOrAppPremiumEntry();
             window.setTimeout(() => {
               document
                 .getElementById('pricing')

@@ -1647,6 +1647,16 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://quest-dp.com/lesson/sqld-2-1-s1-ddl/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://quest-dp.com/lesson/sqld-2-1-s1-dml-dcl-tcl/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://quest-dp.com/lesson/sqld-2-1-s10/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -1717,6 +1727,21 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://quest-dp.com/lesson/sqld-2-2-s11-hierarchy/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://quest-dp.com/lesson/sqld-2-2-s11-pivot/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://quest-dp.com/lesson/sqld-2-2-s11-ratio/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://quest-dp.com/lesson/sqld-2-2-s12/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -1733,6 +1758,11 @@
   </url>
   <url>
     <loc>https://quest-dp.com/lesson/sqld-2-2-s4/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://quest-dp.com/lesson/sqld-2-2-s4-place/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -1763,6 +1793,16 @@
   </url>
   <url>
     <loc>https://quest-dp.com/lesson/sqld-2-3-s1/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://quest-dp.com/lesson/sqld-2-3-s1-insert/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://quest-dp.com/lesson/sqld-2-3-s1-update-delete/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

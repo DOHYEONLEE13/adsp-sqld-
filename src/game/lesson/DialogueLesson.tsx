@@ -28,6 +28,7 @@ import {
   KeyRound,
   Layers,
   Link2,
+  Music2,
   PencilLine,
   Plus,
   Server,
@@ -592,6 +593,81 @@ export default function DialogueLesson({
     };
     return map[step.id] ?? null;
   })();
+  const adsp1DiagramMode: Adsp1DiagramMode | null = (() => {
+    if (phase !== 'narrate') return null;
+    if (step.id === 'adsp-1-1-s1') return 'dikw';
+    if (step.id === 'adsp-1-1-s2') return 'dataClassification';
+    if (step.id === 'adsp-1-1-s3') return 'tacitExplicit';
+    if (step.id === 'adsp-1-1-s3-seci') return 'seci';
+    if (step.id === 'adsp-1-1-s3-S') return 'seciSocialization';
+    if (step.id === 'adsp-1-1-s4') return 'dbFeatures';
+    if (step.id === 'adsp-1-1-s4-dw') return 'dwOverview';
+    if (
+      step.id === 'adsp-1-1-s4-dm' ||
+      step.id === 'adsp-1-1-s4-dm-purpose' ||
+      step.id === 'adsp-1-1-s4-dm-features'
+    ) return 'dataMart';
+    if (
+      step.id === 'adsp-1-1-s4-lake' ||
+      step.id === 'adsp-1-1-s4-lake-purpose' ||
+      step.id === 'adsp-1-1-s4-lake-features'
+    ) return 'dataLake';
+    if (step.id === 'adsp-1-1-s4-olap') return 'olapOverview';
+    if (step.id === 'adsp-1-1-s4-oltp') return 'oltpOverview';
+    if (step.id === 'adsp-1-1-s4-oltp-features') return 'oltpOlap';
+    if (step.id.startsWith('adsp-1-1-s5')) return 'enterpriseSystems';
+    if (step.id === 'adsp-1-2-s0') return 'bigDataBackground';
+    if (
+      step.id === 'adsp-1-2-s1-3v' ||
+      step.id === 'adsp-1-2-s1-volume' ||
+      step.id === 'adsp-1-2-s1-variety' ||
+      step.id === 'adsp-1-2-s1-velocity'
+    ) return 'bigData3v';
+    if (step.id === 'adsp-1-2-s2') return 'bigDataChange';
+    if (step.id === 'adsp-1-3-s1') return 'dataScienceAxes';
+    if (step.id === 'adsp-1-3-s2') return 'hardSoftSkills';
+    if (step.id.startsWith('adsp-1-3-s3')) return 'digitalCamera';
+    if (step.id.startsWith('adsp-2-1-s1')) return 'analysisTypes';
+    if (step.id.startsWith('adsp-2-1-s2')) return 'analysisProcess';
+    if (step.id.startsWith('adsp-2-1-s3')) return 'topDownApproach';
+    if (step.id.startsWith('adsp-2-1-s4')) return 'analysisMethodology';
+    if (step.id.startsWith('adsp-2-2-s1')) return 'priorityMatrix';
+    if (step.id.startsWith('adsp-2-2-s2')) return 'analyticsGovernance';
+    if (step.id.startsWith('adsp-2-2-s3')) return 'maturityStages';
+    if (step.id.startsWith('adsp-2-2-s4')) return 'dataGovernance';
+    if (step.id.startsWith('adsp-2-3-s1')) return 'analysisFeasibility';
+    if (step.id === 'adsp-2-3-s2' || step.id === 'adsp-2-3-s3') return 'analysisApproachMix';
+    if (step.id === 'adsp-2-3-s4') return 'projectDefinition';
+    if (step.id.startsWith('adsp-2-3-s5')) return 'readinessAreas';
+    if (step.id === 'adsp-3-1-s1') return 'adsp3SummaryDerived';
+    if (step.id.startsWith('adsp-3-1-s2')) return 'adsp3Eda4r';
+    if (step.id.startsWith('adsp-3-1-s3')) return 'adsp3Missing';
+    if (step.id.startsWith('adsp-3-1-s4')) return 'adsp3Outlier';
+    if (step.id.startsWith('adsp-3-1-s5')) return 'adsp3RStructures';
+    if (step.id.startsWith('adsp-3-2-s1')) return 'adsp3Scales';
+    if (step.id.startsWith('adsp-3-2-s2')) return 'adsp3Distribution';
+    if (step.id.startsWith('adsp-3-2-s3')) return 'adsp3Estimator';
+    if (step.id === 'adsp-3-2-s4') return 'adsp3Clt';
+    if (step.id === 'adsp-3-2-s5') return 'adsp3Pca';
+    if (step.id === 'adsp-3-2-s6') return 'adsp3Mds';
+    if (step.id.startsWith('adsp-3-3-s1')) return 'adsp3Hypothesis';
+    if (step.id.startsWith('adsp-3-3-s2')) return 'adsp3Ttest';
+    if (step.id.startsWith('adsp-3-3-s3')) return 'adsp3Regression';
+    if (step.id === 'adsp-3-3-s4') return 'adsp3Multicollinearity';
+    if (step.id.startsWith('adsp-3-3-s5')) return 'adsp3TimeSeries';
+    if (step.id === 'adsp-3-4-s1') return 'adsp3Overfit';
+    if (step.id.startsWith('adsp-3-4-s2')) return 'adsp3Ensemble';
+    if (step.id.startsWith('adsp-3-4-s3')) return 'adsp3Association';
+    if (step.id.startsWith('adsp-3-4-s4')) return 'adsp3Clustering';
+    if (step.id.startsWith('adsp-3-4-s5')) return 'adsp3Metrics';
+    if (step.id === 'adsp-3-4-s6') return 'adsp3Logistic';
+    if (step.id === 'adsp-3-4-s7') return 'adsp3Tree';
+    if (step.id === 'adsp-3-4-s8') return 'adsp3Knn';
+    if (step.id === 'adsp-3-4-s9') return 'adsp3NaiveBayes';
+    if (step.id === 'adsp-3-4-s10') return 'adsp3Svm';
+    if (step.id === 'adsp-3-4-s11') return 'adsp3Neural';
+    return null;
+  })();
 
   // step.title 에서 trail 라벨 추출 — ' — ' 와 ' (' 앞부분만.
   // 예: 'DIKW ① 데이터 (Data) — raw 값' → 'DIKW ① 데이터'
@@ -1118,6 +1194,10 @@ export default function DialogueLesson({
           <KeyIntegrityDiagram mode={keyIntegrityDiagramMode} />
         ) : null}
 
+        {adsp1DiagramMode ? (
+          <Adsp1ConceptDiagram mode={adsp1DiagramMode} stepId={step.id} turnIdx={turnIdx} />
+        ) : null}
+
         {/*
           Sub-step trail — 그룹 안 단계 (DIKW 5단계 등) 세로 배치.
           narrate 단계만 노출 (문제 풀 때는 선지가 우선이라 숨김).
@@ -1155,7 +1235,8 @@ export default function DialogueLesson({
         !keyChoiceDiagramMode &&
         !sqld2BasicsDiagramMode &&
         !sqld2UsageDiagramMode &&
-        !sqld2ManagementDiagramMode ? (
+        !sqld2ManagementDiagramMode &&
+        !adsp1DiagramMode ? (
           <nav
             aria-label={trailLabel}
             className="mt-10 max-w-[420px] mx-auto"
@@ -3936,6 +4017,2479 @@ function KeyChoiceDiagram({ mode }: { mode: KeyChoiceMode }) {
       </div>
     </LearningVisualFrame>
   );
+}
+
+type Adsp3DiagramMode =
+  | 'adsp3SummaryDerived'
+  | 'adsp3Eda4r'
+  | 'adsp3Missing'
+  | 'adsp3Outlier'
+  | 'adsp3RStructures'
+  | 'adsp3Scales'
+  | 'adsp3Distribution'
+  | 'adsp3Estimator'
+  | 'adsp3Clt'
+  | 'adsp3Pca'
+  | 'adsp3Mds'
+  | 'adsp3Hypothesis'
+  | 'adsp3Ttest'
+  | 'adsp3Regression'
+  | 'adsp3Multicollinearity'
+  | 'adsp3TimeSeries'
+  | 'adsp3Overfit'
+  | 'adsp3Ensemble'
+  | 'adsp3Association'
+  | 'adsp3Clustering'
+  | 'adsp3Metrics'
+  | 'adsp3Logistic'
+  | 'adsp3Tree'
+  | 'adsp3Knn'
+  | 'adsp3NaiveBayes'
+  | 'adsp3Svm'
+  | 'adsp3Neural';
+
+type Adsp1DiagramMode =
+  | 'dikw'
+  | 'dataClassification'
+  | 'tacitExplicit'
+  | 'seci'
+  | 'seciSocialization'
+  | 'dbFeatures'
+  | 'dwOverview'
+  | 'dataMart'
+  | 'dataLake'
+  | 'warehouseLake'
+  | 'olapOverview'
+  | 'oltpOverview'
+  | 'oltpOlap'
+  | 'enterpriseSystems'
+  | 'bigDataBackground'
+  | 'bigData3v'
+  | 'bigDataChange'
+  | 'dataScienceAxes'
+  | 'hardSoftSkills'
+  | 'digitalCamera'
+  | 'analysisTypes'
+  | 'analysisProcess'
+  | 'topDownApproach'
+  | 'analysisMethodology'
+  | 'priorityMatrix'
+  | 'analyticsGovernance'
+  | 'maturityStages'
+  | 'dataGovernance'
+  | 'analysisFeasibility'
+  | 'analysisApproachMix'
+  | 'projectDefinition'
+  | 'readinessAreas'
+  | Adsp3DiagramMode;
+
+function Adsp1ConceptDiagram({
+  mode,
+  stepId,
+  turnIdx = 0,
+}: {
+  mode: Adsp1DiagramMode;
+  stepId?: string;
+  turnIdx?: number;
+}) {
+  if (mode.startsWith('adsp3')) {
+    return <Adsp3ConceptDiagram mode={mode as Adsp3DiagramMode} stepId={stepId} />;
+  }
+
+  if (mode === 'dikw') {
+    const rows = [
+      {
+        label: '지혜',
+        sub: '상황에 맞게 적용',
+        example: '다른 음료도 B마트가 유리할 수 있음',
+        tone: 'lime',
+        width: 'w-[46%]',
+      },
+      {
+        label: '지식',
+        sub: '반복해서 쓰는 판단 기준',
+        example: '콜라는 B마트가 보통 더 싸다',
+        tone: 'violet',
+        width: 'w-[62%]',
+      },
+      {
+        label: '정보',
+        sub: '비교해서 의미가 생긴 값',
+        example: 'B마트가 300원 더 싸다',
+        tone: 'cyan',
+        width: 'w-[78%]',
+      },
+      {
+        label: '데이터',
+        sub: '가공 전 단순 값',
+        example: 'B마트 콜라 1,500원',
+        tone: 'amber',
+        width: 'w-[94%]',
+      },
+    ] as const;
+
+    return (
+      <LearningVisualFrame
+        eyebrow="DIKW PYRAMID"
+        title="아래로 갈수록 많고, 위로 갈수록 가치가 높다"
+        caption="DIKW는 데이터가 의사결정에 쓰이기까지 올라가는 4단계입니다. 순서는 데이터 → 정보 → 지식 → 지혜로 고정해서 보세요."
+      >
+        <div className="grid grid-cols-[44px_1fr_44px] items-stretch gap-2">
+          <div className="flex flex-col items-center justify-between py-2">
+            <span className="kr-body text-center text-[10px] font-black leading-tight text-[#d1f843]/70">
+              가치<br />높음
+            </span>
+            <div className="my-2 w-px flex-1 rounded-full bg-gradient-to-b from-[#d1f843]/55 via-[#67e8f9]/24 to-[#ffb020]/18" />
+            <span className="kr-body text-center text-[10px] font-black leading-tight text-cream/38">
+              가치<br />낮음
+            </span>
+          </div>
+
+          <div className="space-y-2.5">
+            {rows.map((row, index) => (
+              <motion.div
+                key={row.label}
+                className={`${row.width} mx-auto rounded-[18px] border px-3 py-2.5 text-center ${visualToneClass(row.tone as VisualTone)}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.18, delay: index * 0.04 }}
+              >
+                <div className="kr-heading text-[14px] leading-tight">{row.label}</div>
+                <div className="kr-body mt-1 text-[10.5px] font-black leading-snug opacity-72">
+                  {row.sub}
+                </div>
+                <div className="mt-2 rounded-[12px] border border-cream/10 bg-[#020b24]/42 px-2 py-1.5 kr-body text-[10.5px] font-bold leading-snug text-cream/64">
+                  {row.example}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="flex flex-col items-center justify-between py-2">
+            <span className="kr-body text-center text-[10px] font-black leading-tight text-cream/42">
+              양<br />적음
+            </span>
+            <div className="my-2 w-px flex-1 rounded-full bg-gradient-to-b from-[#67e8f9]/18 via-[#67e8f9]/26 to-[#67e8f9]/55" />
+            <span className="kr-body text-center text-[10px] font-black leading-tight text-[#67e8f9]/70">
+              양<br />많음
+            </span>
+          </div>
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'dataClassification') {
+    return (
+      <LearningVisualFrame
+        eyebrow="DATA LENSES"
+        title="하나의 데이터도 3가지 기준으로 다시 본다"
+        caption="분류 문제는 먼저 어떤 기준을 묻는지 잡는 게 핵심입니다. 형태, 표현 방식, 분석 목적은 서로 다른 렌즈예요."
+      >
+        <div className="rounded-[20px] border border-[#67e8f9]/20 bg-[#67e8f9]/8 px-4 py-3 text-center">
+          <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-[#67e8f9]/75">
+            SAME DATA
+          </div>
+          <div className="kr-heading mt-1 text-[18px] text-cream">고객 리뷰 텍스트</div>
+        </div>
+        <div className="mt-3 grid gap-2 sm:grid-cols-3">
+          <VisualPill label="형태" sub="비정형 데이터" tone="cyan" />
+          <VisualPill label="표현 방식" sub="정성 데이터" tone="violet" />
+          <VisualPill label="분석 목적" sub="범주형으로 변환 가능" tone="lime" />
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'tacitExplicit') {
+    return (
+      <LearningVisualFrame
+        eyebrow="TACIT vs EXPLICIT"
+        title="몸 안에 있으면 암묵지, 밖에 적히면 형식지"
+        caption="암묵지는 말로 다 옮기기 어려운 감각이고, 형식지는 글·그림·매뉴얼처럼 다른 사람이 바로 읽을 수 있는 지식입니다."
+      >
+        <div className="grid gap-3 sm:grid-cols-[1fr_26px_1fr] sm:items-stretch">
+          <div className="rounded-[20px] border border-[#67e8f9]/24 bg-[#67e8f9]/8 p-3">
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <span className="kr-heading text-[16px] text-[#dffbff]">암묵지</span>
+              <span className="kr-num rounded-full border border-[#67e8f9]/20 bg-[#67e8f9]/10 px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-[#dffbff]/72">
+                몸 안
+              </span>
+            </div>
+            <div className="grid h-20 place-items-center rounded-[16px] border border-cream/10 bg-[#020b24]/46">
+              <div className="text-center">
+                <div className="text-[26px]" aria-hidden>
+                  ?
+                </div>
+                <div className="kr-body mt-1 text-[11px] font-black text-cream/64">
+                  자전거 타는 감각
+                </div>
+              </div>
+            </div>
+            <div className="mt-2 kr-body text-[11.5px] font-bold leading-[1.45] text-cream/62">
+              직접 보고 따라해야 전해지는 노하우
+            </div>
+          </div>
+
+          <div className="hidden sm:flex sm:items-center sm:justify-center">
+            <ArrowStep />
+          </div>
+
+          <div className="rounded-[20px] border border-[#d1f843]/26 bg-[#d1f843]/9 p-3">
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <span className="kr-heading text-[16px] text-[#e8ff9d]">형식지</span>
+              <span className="kr-num rounded-full border border-[#d1f843]/22 bg-[#d1f843]/10 px-2 py-1 text-[9px] font-black uppercase tracking-[0.12em] text-[#e8ff9d]/72">
+                밖으로
+              </span>
+            </div>
+            <div className="grid h-20 place-items-center rounded-[16px] border border-cream/10 bg-[#020b24]/46">
+              <div className="text-center">
+                <BookOpen size={26} strokeWidth={2.4} className="mx-auto text-[#e8ff9d]" />
+                <div className="kr-body mt-1 text-[11px] font-black text-cream/64">
+                  자전거 매뉴얼
+                </div>
+              </div>
+            </div>
+            <div className="mt-2 kr-body text-[11.5px] font-bold leading-[1.45] text-cream/62">
+              글·표·그림으로 읽을 수 있게 정리된 지식
+            </div>
+          </div>
+        </div>
+        <div className="mt-3 rounded-[16px] border border-[#ffb020]/20 bg-[#ffb020]/8 px-3 py-2">
+          <div className="kr-body text-[11.5px] font-bold leading-[1.45] text-cream/66">
+            핵심 질문: “이 지식이 사람 안에 있나, 문서로 밖에 나와 있나?”
+          </div>
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'seci') {
+    const steps = [
+      { label: '공동화', sub: '암묵 → 암묵', tone: 'cyan' },
+      { label: '표출화', sub: '암묵 → 형식', tone: 'amber' },
+      { label: '연결화', sub: '형식 → 형식', tone: 'violet' },
+      { label: '내면화', sub: '형식 → 암묵', tone: 'lime' },
+    ] as const;
+    return (
+      <LearningVisualFrame
+        eyebrow="SECI CYCLE"
+        title="지식은 암묵지와 형식지를 오가며 자란다"
+        caption="시험에서는 사례가 어느 방향인지 묻습니다. 특히 표출화는 사람 안의 노하우를 매뉴얼로 꺼내는 단계라 자주 나와요."
+      >
+        <div className="grid grid-cols-[1fr_24px_1fr] items-center gap-2">
+          <VisualPill label={steps[0].label} sub={steps[0].sub} tone={steps[0].tone as VisualTone} />
+          <ArrowStep />
+          <VisualPill label={steps[1].label} sub={steps[1].sub} tone={steps[1].tone as VisualTone} />
+          <div className="col-span-3 grid grid-cols-[1fr_24px_1fr] items-center gap-2">
+            <div className="h-px rounded-full bg-[#67e8f9]/18" />
+            <div className="grid h-8 w-8 place-items-center rounded-full border border-cream/10 bg-white/[0.04] kr-num text-[10px] font-black text-cream/48">
+              SECI
+            </div>
+            <div className="h-px rounded-full bg-[#67e8f9]/18" />
+          </div>
+          <VisualPill label={steps[3].label} sub={steps[3].sub} tone={steps[3].tone as VisualTone} />
+          <ArrowStep />
+          <VisualPill label={steps[2].label} sub={steps[2].sub} tone={steps[2].tone as VisualTone} />
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'seciSocialization') {
+    return (
+      <LearningVisualFrame
+        eyebrow="SOCIALIZATION"
+        title="공동화는 옆에서 보고 따라 배우는 암묵지 전달"
+        caption="핵심은 문서가 아니라 함께 있는 경험입니다. 선배의 몸에 있던 감각이 후배의 몸으로 옮겨가면 암묵지 → 암묵지, 즉 공동화예요."
+      >
+        <div className="grid gap-3">
+          <div className="grid grid-cols-[1fr_42px_1fr] items-stretch gap-2">
+            <div className="rounded-[20px] border border-[#67e8f9]/24 bg-[#67e8f9]/8 p-3">
+              <div className="flex items-center gap-2">
+                <div className="grid h-10 w-10 place-items-center rounded-2xl border border-[#67e8f9]/25 bg-[#67e8f9]/10 text-[#dffbff]">
+                  <UserRound size={20} strokeWidth={2.4} />
+                </div>
+                <div>
+                  <div className="kr-heading text-[16px] text-[#dffbff]">선배</div>
+                  <div className="kr-body text-[10.5px] font-black text-cream/48">암묵지 보유</div>
+                </div>
+              </div>
+              <div className="mt-3 rounded-[16px] border border-cream/10 bg-[#020b24]/44 px-3 py-2">
+                <div className="flex items-center gap-2">
+                  <Music2 size={17} strokeWidth={2.4} className="text-[#67e8f9]" />
+                  <span className="kr-body text-[11.5px] font-black text-cream/66">
+                    악기 연주 감각
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-center justify-center gap-2">
+              <div className="h-10 w-px bg-gradient-to-b from-transparent via-[#67e8f9]/42 to-transparent sm:hidden" />
+              <div className="grid h-10 w-10 place-items-center rounded-full border border-[#d1f843]/24 bg-[#d1f843]/10 kr-num text-[10px] font-black text-[#e8ff9d]">
+                보기
+              </div>
+              <div className="h-10 w-px bg-gradient-to-b from-transparent via-[#67e8f9]/42 to-transparent sm:hidden" />
+            </div>
+
+            <div className="rounded-[20px] border border-[#d1f843]/24 bg-[#d1f843]/8 p-3">
+              <div className="flex items-center gap-2">
+                <div className="grid h-10 w-10 place-items-center rounded-2xl border border-[#d1f843]/25 bg-[#d1f843]/10 text-[#e8ff9d]">
+                  <UserRound size={20} strokeWidth={2.4} />
+                </div>
+                <div>
+                  <div className="kr-heading text-[16px] text-[#e8ff9d]">후배</div>
+                  <div className="kr-body text-[10.5px] font-black text-cream/48">따라 하며 습득</div>
+                </div>
+              </div>
+              <div className="mt-3 rounded-[16px] border border-cream/10 bg-[#020b24]/44 px-3 py-2">
+                <div className="flex items-center gap-2">
+                  <Music2 size={17} strokeWidth={2.4} className="text-[#d1f843]" />
+                  <span className="kr-body text-[11.5px] font-black text-cream/66">
+                    몸으로 익힌 감각
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-2 sm:grid-cols-3">
+            <VisualPill label="암묵지" sub="선배 몸 안" tone="cyan" />
+            <VisualPill label="문서 없음" sub="매뉴얼로 적지 않음" tone="muted" />
+            <VisualPill label="암묵지" sub="후배 몸 안" tone="lime" />
+          </div>
+          <div className="rounded-[16px] border border-[#ffb020]/18 bg-[#ffb020]/8 px-3 py-2">
+            <div className="kr-body text-[11.5px] font-bold leading-[1.45] text-cream/66">
+              시험 포인트: 매뉴얼로 정리하면 표출화, 옆에서 직접 보여주며 익히면 공동화입니다.
+            </div>
+          </div>
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'dbFeatures') {
+    return (
+      <LearningVisualFrame
+        eyebrow="DATABASE"
+        title="DB는 공통저변으로 기억한다"
+        caption="공용, 통합, 저장, 변화는 DB의 본질 특징입니다. 보기에서 낯선 단어가 나오면 이 4가지에 들어가는지 먼저 확인하세요."
+      >
+        <div className="relative rounded-[22px] border border-cream/10 bg-[#020b24]/62 p-3">
+          <div className="mx-auto mb-3 flex h-24 w-24 flex-col items-center justify-center rounded-full border border-[#67e8f9]/30 bg-[#67e8f9]/10">
+            <Database size={25} strokeWidth={2.4} className="text-[#dffbff]" />
+            <span className="kr-heading mt-1 text-[14px] text-[#dffbff]">DB</span>
+          </div>
+          <VisualPillGrid
+            columns="grid-cols-2"
+            items={[
+              { label: '공용', sub: '여러 사용자가 함께', tone: 'cyan' },
+              { label: '통합', sub: '중복 없이 한곳에', tone: 'lime' },
+              { label: '저장', sub: '저장매체에 보관', tone: 'violet' },
+              { label: '변화', sub: '추가·수정에도 정확', tone: 'amber' },
+            ]}
+          />
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'dwOverview') {
+    return (
+      <LearningVisualFrame
+        eyebrow="DATA WAREHOUSE"
+        title="DW는 흩어진 데이터를 모아 둔 분석 창고"
+        caption="처음에는 이것만 잡으면 됩니다. 여러 시스템에 흩어진 데이터를 한곳에 정리해, 보고서와 의사결정에 쓰기 쉽게 만든 저장소가 DW예요."
+      >
+        <div className="space-y-3">
+          <div className="grid grid-cols-3 gap-2">
+            <VisualPill label="POS" sub="매출" tone="muted" />
+            <VisualPill label="ERP" sub="자원" tone="muted" />
+            <VisualPill label="CRM" sub="고객" tone="muted" />
+          </div>
+
+          <div className="mx-auto flex max-w-[260px] items-center justify-center gap-2">
+            <div className="h-px flex-1 rounded-full bg-gradient-to-r from-transparent to-[#67e8f9]/32" />
+            <div className="rounded-full border border-[#67e8f9]/24 bg-[#67e8f9]/10 px-3 py-1 kr-num text-[10px] font-black uppercase tracking-[0.12em] text-[#dffbff]/74">
+              모아서 정리
+            </div>
+            <div className="h-px flex-1 rounded-full bg-gradient-to-l from-transparent to-[#67e8f9]/32" />
+          </div>
+
+          <div className="rounded-[24px] border border-[#67e8f9]/24 bg-[#67e8f9]/8 p-4 text-center">
+            <div className="mx-auto grid h-20 w-20 place-items-center rounded-[22px] border border-[#67e8f9]/30 bg-[#020b24]/48">
+              <Database size={30} strokeWidth={2.4} className="text-[#dffbff]" />
+            </div>
+            <div className="kr-heading mt-3 text-[20px] text-[#dffbff]">DW</div>
+            <div className="kr-body mt-1 text-[12px] font-black leading-snug text-cream/58">
+              분석용으로 정돈된 큰 데이터 창고
+            </div>
+          </div>
+
+          <div className="grid gap-2 sm:grid-cols-2">
+            <VisualPill label="보고서" sub="한 화면에서 보기" tone="cyan" />
+            <VisualPill label="의사결정" sub="매출·고객·재고 판단" tone="lime" />
+          </div>
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'dataMart') {
+    const focusByStep: Record<string, string> = {
+      'adsp-1-1-s4-dm': 'concept',
+      'adsp-1-1-s4-dm-purpose': 'purpose',
+      'adsp-1-1-s4-dm-features': 'type',
+    };
+    const focus = stepId ? focusByStep[stepId] : 'concept';
+    const isPurpose = focus === 'purpose';
+    const isType = focus === 'type';
+
+    return (
+      <LearningVisualFrame
+        eyebrow="DATA MART"
+        title={
+          isPurpose
+            ? 'DM은 부서가 자기 데이터만 빠르게 보는 작은 창고'
+            : isType
+              ? 'DM은 DW에서 떼어오거나, 독립적으로 만들 수 있다'
+              : 'DM은 DW에서 필요한 부분만 떼어낸 작은 분석 마트'
+        }
+        caption={
+          isType
+            ? '종속형 DM은 DW에서 필요한 데이터를 가져오고, 독립형 DM은 부서가 별도로 만든 작은 저장소입니다. 시험에서는 출처를 보고 구분하세요.'
+            : 'DW가 회사 전체 분석 창고라면, DM은 마케팅·재무·인사처럼 특정 부서나 주제만 빠르게 보는 작은 창고입니다.'
+        }
+      >
+        <div className="space-y-3">
+          <div className="rounded-[22px] border border-[#67e8f9]/22 bg-[#67e8f9]/8 p-4 text-center">
+            <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-[#67e8f9]/72">
+              DW
+            </div>
+            <div className="kr-heading mt-1 text-[18px] text-[#dffbff]">회사 전체 데이터 창고</div>
+            <div className="kr-body mt-1 text-[11px] font-bold text-cream/52">
+              매출 · 고객 · 인사 · 재고를 통합
+            </div>
+          </div>
+
+          <div className="mx-auto flex max-w-[260px] items-center justify-center gap-2">
+            <div className="h-px flex-1 rounded-full bg-gradient-to-r from-transparent to-[#d1f843]/34" />
+            <div className="rounded-full border border-[#d1f843]/22 bg-[#d1f843]/9 px-3 py-1 kr-num text-[10px] font-black uppercase tracking-[0.12em] text-[#e8ff9d]/74">
+              필요한 부분만
+            </div>
+            <div className="h-px flex-1 rounded-full bg-gradient-to-l from-transparent to-[#d1f843]/34" />
+          </div>
+
+          <div className="grid gap-2 sm:grid-cols-3">
+            {[
+              { label: '마케팅 DM', sub: '고객·캠페인', tone: 'lime' as VisualTone },
+              { label: '재무 DM', sub: '매출·비용', tone: 'amber' as VisualTone },
+              { label: '인사 DM', sub: '직원·급여', tone: 'violet' as VisualTone },
+            ].map((mart, index) => (
+              <motion.div
+                key={mart.label}
+                className={
+                  'rounded-[18px] border px-3 py-3 ' +
+                  (isPurpose || (!isType && index === 0)
+                    ? `${visualToneClass(mart.tone)} shadow-[0_0_0_1px_rgba(209,248,67,0.16)]`
+                    : `${visualToneClass(mart.tone)} opacity-86`)
+                }
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.16, delay: index * 0.035 }}
+              >
+                <div className="kr-heading text-[14px] leading-tight">{mart.label}</div>
+                <div className="kr-body mt-1 text-[10.5px] font-black leading-snug opacity-72">
+                  {mart.sub}
+                </div>
+                <div className="mt-3 rounded-[12px] border border-current/10 bg-[#020b24]/30 px-2.5 py-2 kr-body text-[10.5px] font-bold leading-snug opacity-74">
+                  부서가 바로 쓰는 작은 분석 창고
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {isType ? (
+            <div className="grid gap-2 sm:grid-cols-2">
+              <VisualPill label="종속형 DM" sub="DW에서 가져옴" tone="cyan" />
+              <VisualPill label="독립형 DM" sub="부서가 별도로 구축" tone="violet" />
+            </div>
+          ) : (
+            <div className="rounded-[16px] border border-cream/10 bg-white/[0.035] px-3 py-2.5">
+              <div className="kr-body text-[11.5px] font-bold leading-[1.5] text-cream/66">
+                기억 포인트: DW는 전사 통합, DM은 부서·주제 특화입니다.
+              </div>
+            </div>
+          )}
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'dataLake') {
+    const focusByStep: Record<string, 'concept' | 'purpose' | 'features'> = {
+      'adsp-1-1-s4-lake': 'concept',
+      'adsp-1-1-s4-lake-purpose': 'purpose',
+      'adsp-1-1-s4-lake-features': 'features',
+    };
+    const focus = stepId ? focusByStep[stepId] : 'concept';
+    const isPurpose = focus === 'purpose';
+    const isFeatures = focus === 'features';
+    const rawItems: Array<{ label: string; sub: string; tone: VisualTone }> = [
+      { label: '표 데이터', sub: '정형', tone: 'cyan' },
+      { label: '로그', sub: '반정형', tone: 'violet' },
+      { label: '사진·영상', sub: '비정형', tone: 'lime' },
+      { label: 'SNS 글', sub: '텍스트 원본', tone: 'amber' },
+    ];
+
+    return (
+      <LearningVisualFrame
+        eyebrow="DATA LAKE"
+        title={
+          isPurpose
+            ? 'Data Lake는 일단 담아두고, 나중에 여러 분석에 꺼내 쓴다'
+            : isFeatures
+              ? 'Data Lake는 원본 그대로 담지만, 관리가 약하면 늪이 된다'
+              : 'Data Lake는 정제 전 원시 데이터를 넓게 담아두는 호수'
+        }
+        caption={
+          isFeatures
+            ? '핵심은 Schema-on-Read, 모든 형태 원시 저장, 대규모 분산 저장, 그리고 Data Swamp 위험입니다.'
+            : 'DW가 정리된 분석 창고라면, Data Lake는 사진·영상·로그·SNS 글까지 원본 상태로 먼저 받아두는 큰 저장소입니다.'
+        }
+      >
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-2">
+            {rawItems.map((item, index) => (
+              <motion.div
+                key={item.label}
+                className={`rounded-[16px] border px-3 py-2.5 ${visualToneClass(item.tone)}`}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.16, delay: index * 0.035 }}
+              >
+                <div className="kr-heading text-[13px] leading-tight">{item.label}</div>
+                <div className="kr-body mt-1 text-[10.5px] font-black leading-snug opacity-68">
+                  {item.sub}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="mx-auto flex max-w-[270px] items-center justify-center gap-2">
+            <div className="h-px flex-1 rounded-full bg-gradient-to-r from-transparent to-[#67e8f9]/34" />
+            <div className="rounded-full border border-[#67e8f9]/22 bg-[#67e8f9]/9 px-3 py-1 kr-num text-[10px] font-black uppercase tracking-[0.12em] text-[#dffbff]/74">
+              원본 그대로 먼저 저장
+            </div>
+            <div className="h-px flex-1 rounded-full bg-gradient-to-l from-transparent to-[#67e8f9]/34" />
+          </div>
+
+          <div className="relative overflow-hidden rounded-[28px] border border-[#67e8f9]/26 bg-[#061a36]/72 p-4">
+            <div className="absolute inset-x-6 bottom-3 h-16 rounded-[999px] bg-[#67e8f9]/12 blur-2xl" />
+            <div className="relative">
+              <div className="mx-auto flex h-28 max-w-[320px] items-end justify-center rounded-b-[999px] rounded-t-[70px] border border-[#67e8f9]/34 bg-gradient-to-b from-[#0b254d] to-[#0b3b62] px-5 pb-5 shadow-[inset_0_10px_26px_rgba(103,232,249,0.12)]">
+                <div className="text-center">
+                  <div className="kr-num text-[9px] font-black uppercase tracking-[0.18em] text-[#67e8f9]/72">
+                    RAW DATA LAKE
+                  </div>
+                  <div className="kr-heading mt-1 text-[20px] text-[#dffbff]">원시 데이터 호수</div>
+                  <div className="kr-body mt-1 text-[11px] font-bold text-cream/58">
+                    아직 요리하지 않은 재료를 넓게 보관
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {isPurpose ? (
+            <div className="grid gap-2 sm:grid-cols-3">
+              <VisualPill label="ML 학습" sub="나중에 가공" tone="lime" />
+              <VisualPill label="로그 탐색" sub="문제 추적" tone="cyan" />
+              <VisualPill label="SNS 분석" sub="트렌드 확인" tone="violet" />
+            </div>
+          ) : isFeatures ? (
+            <div className="grid gap-2 sm:grid-cols-2">
+              <VisualPill label="Schema-on-Read" sub="읽을 때 구조 적용" tone="cyan" />
+              <VisualPill label="모든 형태 원시" sub="정형·반정형·비정형" tone="lime" />
+              <VisualPill label="대규모 분산 저장" sub="HDFS·S3 같은 저장" tone="violet" />
+              <VisualPill label="Data Swamp 주의" sub="관리 없으면 늪" tone="amber" />
+            </div>
+          ) : (
+            <div className="rounded-[16px] border border-cream/10 bg-white/[0.035] px-3 py-2.5">
+              <div className="kr-body text-[11.5px] font-bold leading-[1.5] text-cream/66">
+                기억 포인트: DW는 정리해서 저장, Data Lake는 원본을 먼저 담고 나중에 해석합니다.
+              </div>
+            </div>
+          )}
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'warehouseLake') {
+    return (
+      <LearningVisualFrame
+        eyebrow="DW vs DATA LAKE"
+        title="창고는 정리해서, 호수는 원본 그대로"
+        caption="DW는 분석 목적에 맞게 정제된 데이터 창고, Data Lake는 정형·반정형·비정형 원천 데이터를 넓게 담아두는 저장소입니다."
+      >
+        <div className="grid gap-2 sm:grid-cols-[1fr_24px_1fr] sm:items-center">
+          <div className="space-y-2">
+            <VisualPill label="POS · ERP · CRM" sub="운영 시스템" tone="muted" />
+            <VisualPill label="ETL" sub="가져와서 다듬고 적재" tone="amber" />
+            <VisualPill label="DW" sub="정제된 분석 창고" tone="cyan" />
+          </div>
+          <div className="hidden sm:block">
+            <ArrowStep />
+          </div>
+          <div className="space-y-2">
+            <VisualPill label="로그 · 이미지 · 센서" sub="형태가 제각각" tone="muted" />
+            <VisualPill label="원본 저장" sub="먼저 담고 나중에 해석" tone="violet" />
+            <VisualPill label="Data Lake" sub="원천 데이터 호수" tone="lime" />
+          </div>
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'olapOverview') {
+    return (
+      <LearningVisualFrame
+        eyebrow="OLAP"
+        title="OLAP은 쌓인 데이터를 여러 각도로 보는 분석 도구"
+        caption="OLAP은 주문을 처리하는 시스템이 아니라, 이미 모인 데이터를 지역·시기·상품 같은 축으로 잘라 보며 의사결정을 돕는 분석 방식입니다."
+      >
+        <div className="space-y-3">
+          <div className="rounded-[24px] border border-[#d1f843]/20 bg-[#d1f843]/8 p-4">
+            <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-[#e8ff9d]/70">
+              SALES CUBE
+            </div>
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              <VisualPill label="지역" sub="서울·대구" tone="cyan" />
+              <VisualPill label="시기" sub="월·분기" tone="violet" />
+              <VisualPill label="상품" sub="커피·빵" tone="lime" />
+            </div>
+            <div className="mt-3 rounded-[18px] border border-cream/10 bg-[#020b24]/46 p-3 text-center">
+              <div className="kr-heading text-[18px] text-cream">월별 매출을 요약</div>
+              <div className="kr-body mt-1 text-[11.5px] font-bold text-cream/54">
+                여러 축을 바꿔가며 빠르게 조회
+              </div>
+            </div>
+          </div>
+          <VisualPillGrid
+            columns="grid-cols-2"
+            items={[
+              { label: '요약', sub: '합계·평균 집계', tone: 'lime' },
+              { label: '분석', sub: '추세와 비교 확인', tone: 'cyan' },
+            ]}
+          />
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'oltpOverview') {
+    return (
+      <LearningVisualFrame
+        eyebrow="OLTP"
+        title="OLTP는 지금 일어난 거래를 바로 처리한다"
+        caption="카페 주문, 쇼핑몰 결제, 은행 출금처럼 짧은 거래를 빠르게 기록하고 정확히 반영하는 운영 시스템입니다."
+      >
+        <div className="space-y-3">
+          <div className="grid grid-cols-[1fr_24px_1fr_24px_1fr] items-center gap-2">
+            <VisualPill label="주문" sub="손님 요청" tone="cyan" />
+            <ArrowStep />
+            <VisualPill label="결제" sub="즉시 승인" tone="lime" />
+            <ArrowStep />
+            <VisualPill label="재고" sub="바로 반영" tone="violet" />
+          </div>
+          <div className="rounded-[24px] border border-[#67e8f9]/20 bg-[#67e8f9]/8 p-4 text-center">
+            <div className="kr-heading text-[18px] text-[#dffbff]">짧은 트랜잭션</div>
+            <div className="kr-body mt-1 text-[11.5px] font-bold text-cream/58">
+              insert · update · delete를 빠르고 정확하게 처리
+            </div>
+            <div className="mt-3 grid grid-cols-3 gap-2">
+              <VisualPill label="빠름" sub="ms 응답" tone="cyan" />
+              <VisualPill label="정확" sub="일관성 유지" tone="lime" />
+              <VisualPill label="운영" sub="실시간 업무" tone="amber" />
+            </div>
+          </div>
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'oltpOlap') {
+    return (
+      <LearningVisualFrame
+        eyebrow="OLTP vs OLAP"
+        title="OLTP까지 배운 뒤 둘을 비교하면 선명하다"
+        caption="OLTP는 운영 현장에서 거래를 즉시 처리하고, OLAP은 쌓인 데이터를 여러 각도로 분석합니다. 시험에서는 목적과 쿼리 성격을 나눠 묻습니다."
+      >
+        <div className="grid gap-2 sm:grid-cols-2">
+          <MiniDataTable
+            title="OLTP"
+            columns={['상황', '목표']}
+            rows={[
+              ['결제', '즉시 기록'],
+              ['주문', '정확한 처리'],
+              ['재고', '실시간 반영'],
+            ]}
+            highlight={(_, column) => (column === 1 ? 'cyan' : null)}
+          />
+          <MiniDataTable
+            title="OLAP"
+            columns={['상황', '목표']}
+            rows={[
+              ['월별 매출', '요약'],
+              ['지역 비교', '분석'],
+              ['상품 추세', '의사결정'],
+            ]}
+            highlight={(_, column) => (column === 1 ? 'lime' : null)}
+          />
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'enterpriseSystems') {
+    const activeByStep: Record<string, string> = {
+      'adsp-1-1-s5-dbms': 'DBMS',
+      'adsp-1-1-s5-erp': 'ERP',
+      'adsp-1-1-s5-crm': 'CRM',
+      'adsp-1-1-s5-scm': 'SCM',
+      'adsp-1-1-s5-kms': 'KMS',
+      'adsp-1-1-s5-bi': 'BI',
+      'adsp-1-1-s5-ba': 'BA',
+    };
+    const activeKey = stepId ? activeByStep[stepId] : undefined;
+    const systems: Array<{
+      key: string;
+      label: string;
+      sub: string;
+      work: string;
+      tone: VisualTone;
+    }> = [
+      { key: 'DBMS', label: 'DBMS', sub: '데이터 저장 기반', work: '모든 시스템의 바닥', tone: 'muted' },
+      { key: 'ERP', label: 'ERP', sub: '내부 자원 통합', work: '인사·회계·생산을 한곳에', tone: 'cyan' },
+      { key: 'CRM', label: 'CRM', sub: '고객 관계 관리', work: '구매·상담·마케팅 기록', tone: 'lime' },
+      { key: 'SCM', label: 'SCM', sub: '공급망 흐름 관리', work: '조달·재고·물류 연결', tone: 'amber' },
+      { key: 'KMS', label: 'KMS', sub: '조직 지식 관리', work: '문서·노하우를 남김', tone: 'violet' },
+      { key: 'BI', label: 'BI', sub: '보고서·대시보드', work: '지금/과거를 한눈에', tone: 'cyan' },
+      { key: 'BA', label: 'BA', sub: '고급 분석·예측', work: '왜/앞으로를 분석', tone: 'lime' },
+    ];
+
+    return (
+      <LearningVisualFrame
+        eyebrow="ENTERPRISE DATA"
+        title={activeKey ? `${activeKey}가 맡은 일을 켜서 본다` : '회사 데이터 시스템은 맡은 일이 다르다'}
+        caption={
+          activeKey
+            ? `전체 지도는 그대로 두고, 지금 배우는 ${activeKey}만 밝게 표시했습니다. 약어보다 맡은 일을 먼저 보면 훨씬 덜 헷갈립니다.`
+            : '전체 지도를 먼저 보고, 다음 단계부터 DBMS, ERP, CRM처럼 하나씩 불이 켜지는 방식으로 익힙니다.'
+        }
+      >
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {systems.map((system, index) => {
+            const active = activeKey === system.key;
+            const dim = activeKey && !active;
+            return (
+              <motion.div
+                key={system.key}
+                className={
+                  'relative overflow-hidden rounded-[18px] border px-3 py-3 transition-colors ' +
+                  (active
+                    ? `${visualToneClass(system.tone)} shadow-[0_0_0_1px_rgba(209,248,67,0.26),0_10px_30px_rgba(209,248,67,0.08)]`
+                    : dim
+                      ? 'border-cream/8 bg-white/[0.025] text-cream/34'
+                      : `${visualToneClass(system.tone)} opacity-90`)
+                }
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.16, delay: index * 0.025 }}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="kr-heading text-[15px] leading-tight">{system.label}</div>
+                    <div className="kr-body mt-1 text-[10.5px] font-black leading-snug opacity-72">
+                      {system.sub}
+                    </div>
+                  </div>
+                  <div
+                    className={
+                      'mt-0.5 h-2.5 w-2.5 rounded-full border ' +
+                      (active
+                        ? 'border-[#d1f843]/70 bg-[#d1f843]'
+                        : 'border-cream/12 bg-white/[0.045]')
+                    }
+                    aria-hidden="true"
+                  />
+                </div>
+                <div className="mt-3 rounded-[12px] border border-current/10 bg-[#020b24]/30 px-2.5 py-2 kr-body text-[10.5px] font-bold leading-snug opacity-74">
+                  {system.work}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'bigDataBackground') {
+    const activeIndex = turnIdx >= 1 && turnIdx <= 5 ? turnIdx - 1 : -1;
+    const factors: Array<{
+      label: string;
+      sub: string;
+      example: string;
+      tone: VisualTone;
+    }> = [
+      { label: '저장', sub: '싸게 많이 보관', example: 'HDD · SSD', tone: 'cyan' },
+      { label: '병렬', sub: '나눠서 빠르게 처리', example: 'Hadoop · Spark', tone: 'violet' },
+      { label: '인터넷', sub: '대용량 빠른 전송', example: '5G · 광케이블', tone: 'lime' },
+      { label: '클라우드', sub: '서버를 빌려 씀', example: 'AWS · GCP', tone: 'amber' },
+      { label: 'IoT·모바일', sub: '기기가 데이터 생산', example: '폰 · 센서 · 자동차', tone: 'cyan' },
+    ];
+
+    return (
+      <LearningVisualFrame
+        eyebrow="BIG DATA BACKGROUND"
+        title="5가지 조건이 모여 빅데이터 시대가 됐다"
+        caption="처음에는 저장·병렬·인터넷·클라우드·IoT/모바일이 동시에 커졌다고 잡으면 됩니다. 대화를 넘길 때마다 지금 보는 조건만 켜집니다."
+      >
+        <div className="space-y-3">
+          <div className="grid gap-2">
+            {factors.map((factor, index) => {
+              const active = index === activeIndex;
+              const dim = activeIndex >= 0 && !active;
+              return (
+                <motion.div
+                  key={factor.label}
+                  className={
+                    'grid grid-cols-[34px_1fr] items-center gap-2 rounded-[17px] border px-3 py-2.5 transition-colors ' +
+                    (active
+                      ? `${visualToneClass(factor.tone)} shadow-[0_0_0_1px_rgba(209,248,67,0.18)]`
+                      : dim
+                        ? 'border-cream/8 bg-white/[0.025] text-cream/34'
+                        : 'border-cream/10 bg-white/[0.035] text-cream/62')
+                  }
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.16, delay: index * 0.03 }}
+                >
+                  <div
+                    className={
+                      'grid h-8 w-8 place-items-center rounded-full border kr-num text-[11px] font-black ' +
+                      (active
+                        ? 'border-[#d1f843]/60 bg-[#d1f843]/16 text-[#e8ff9d]'
+                        : 'border-cream/12 bg-[#020b24]/36 text-cream/45')
+                    }
+                  >
+                    {index + 1}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <div className="kr-heading text-[13.5px] leading-tight">{factor.label}</div>
+                      <div className="kr-num text-[9px] font-black uppercase tracking-[0.1em] opacity-50">
+                        {factor.example}
+                      </div>
+                    </div>
+                    <div className="kr-body mt-1 text-[10.5px] font-bold leading-snug opacity-72">
+                      {factor.sub}
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          <div className="mx-auto flex max-w-[270px] items-center justify-center gap-2">
+            <div className="h-px flex-1 rounded-full bg-gradient-to-r from-transparent to-[#67e8f9]/30" />
+            <div className="rounded-full border border-[#67e8f9]/22 bg-[#67e8f9]/9 px-3 py-1 kr-num text-[10px] font-black uppercase tracking-[0.12em] text-[#dffbff]/72">
+              동시에 커짐
+            </div>
+            <div className="h-px flex-1 rounded-full bg-gradient-to-l from-transparent to-[#67e8f9]/30" />
+          </div>
+
+          <div className="rounded-[20px] border border-[#d1f843]/18 bg-[#d1f843]/8 px-4 py-3 text-center">
+            <div className="kr-heading text-[18px] text-[#e8ff9d]">빅데이터 등장</div>
+            <div className="kr-body mt-1 text-[11.5px] font-bold text-cream/58">
+              많이 만들고, 싸게 저장하고, 빠르게 처리할 수 있게 됨
+            </div>
+          </div>
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'bigData3v') {
+    const activeByStep: Record<string, string> = {
+      'adsp-1-2-s1-volume': 'Volume',
+      'adsp-1-2-s1-variety': 'Variety',
+      'adsp-1-2-s1-velocity': 'Velocity',
+    };
+    const activeKey = stepId
+      ? activeByStep[stepId] ?? (stepId === 'adsp-1-2-s1-3v' && turnIdx === 1 ? 'Volume' : undefined)
+      : undefined;
+    const vItems: Array<{
+      key: string;
+      label: string;
+      sub: string;
+      example: string;
+      tone: VisualTone;
+    }> = [
+      { key: 'Volume', label: 'Volume', sub: '양 · 규모', example: 'PB급 로그', tone: 'cyan' },
+      { key: 'Variety', label: 'Variety', sub: '형태 다양성', example: '정형+이미지+센서', tone: 'violet' },
+      { key: 'Velocity', label: 'Velocity', sub: '생성·처리 속도', example: '실시간 스트리밍', tone: 'lime' },
+    ];
+
+    return (
+      <LearningVisualFrame
+        eyebrow="BIG DATA 3V"
+        title={activeKey ? `${activeKey}만 켜서 본다` : '빅데이터는 양·형태·속도가 동시에 커진다'}
+        caption={
+          activeKey
+            ? `전체 3V 지도는 그대로 두고, 지금 배우는 ${activeKey}만 밝게 표시했습니다. 보기에서 무엇을 강조하는지 먼저 잡으세요.`
+            : '3V는 Volume, Variety, Velocity입니다. 다음 단계부터 양, 형태, 속도가 하나씩 켜지며 구분됩니다.'
+        }
+      >
+        <div className="grid gap-2 sm:grid-cols-3">
+          {vItems.map((item, index) => {
+            const active = activeKey === item.key;
+            const dim = activeKey && !active;
+            return (
+              <motion.div
+                key={item.key}
+                className={
+                  'relative overflow-hidden rounded-[18px] border px-3 py-3 transition-colors ' +
+                  (active
+                    ? `${visualToneClass(item.tone)} shadow-[0_0_0_1px_rgba(209,248,67,0.24),0_10px_28px_rgba(209,248,67,0.07)]`
+                    : dim
+                      ? 'border-cream/8 bg-white/[0.025] text-cream/34'
+                      : `${visualToneClass(item.tone)} opacity-90`)
+                }
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.16, delay: index * 0.035 }}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <div className="kr-heading text-[15px] leading-tight">{item.label}</div>
+                    <div className="kr-body mt-1 text-[10.5px] font-black leading-snug opacity-72">
+                      {item.sub}
+                    </div>
+                  </div>
+                  <div
+                    className={
+                      'mt-0.5 h-2.5 w-2.5 rounded-full border ' +
+                      (active
+                        ? 'border-[#d1f843]/70 bg-[#d1f843]'
+                        : 'border-cream/12 bg-white/[0.045]')
+                    }
+                    aria-hidden="true"
+                  />
+                </div>
+                <div className="mt-3 rounded-[12px] border border-current/10 bg-[#020b24]/30 px-2.5 py-2 kr-body text-[10.5px] font-bold leading-snug opacity-74">
+                  {item.example}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <VisualPill label="+ Value" sub="가치" tone="amber" />
+          <VisualPill label="+ Veracity" sub="진실성" tone="amber" />
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'dataScienceAxes') {
+    return (
+      <LearningVisualFrame
+        eyebrow="DATA SCIENCE"
+        title="데이터 사이언스는 분석·기술·비즈니스가 만나는 지점"
+        caption="통계학만으로 끝나는 게 아니라, 데이터를 다루는 기술과 실제 문제를 가치로 바꾸는 비즈니스 감각까지 함께 필요합니다."
+      >
+        <div className="space-y-3">
+          <div className="grid grid-cols-3 gap-2">
+            <VisualPill label="Analytics" sub="데이터로 답 찾기" tone="cyan" />
+            <VisualPill label="IT" sub="데이터를 다루는 기술" tone="violet" />
+            <VisualPill label="Business" sub="문제와 의사결정" tone="lime" />
+          </div>
+          <div className="relative mx-auto h-[180px] max-w-[340px]">
+            <div className="absolute left-1/2 top-2 h-[118px] w-[118px] -translate-x-1/2 rounded-full border border-[#67e8f9]/28 bg-[#67e8f9]/10" />
+            <div className="absolute left-[20%] bottom-3 h-[118px] w-[118px] rounded-full border border-[#c084fc]/28 bg-[#c084fc]/10" />
+            <div className="absolute right-[20%] bottom-3 h-[118px] w-[118px] rounded-full border border-[#d1f843]/28 bg-[#d1f843]/10" />
+            <div className="absolute inset-x-0 top-[70px] mx-auto flex h-[70px] w-[170px] items-center justify-center rounded-[26px] border border-cream/18 bg-[#020b24]/78 px-4 text-center shadow-[0_14px_32px_rgba(0,0,0,0.24)]">
+              <div>
+                <div className="kr-num text-[9px] font-black uppercase tracking-[0.18em] text-[#d1f843]/78">
+                  INTERSECTION
+                </div>
+                <div className="kr-heading mt-1 text-[19px] leading-tight text-cream">
+                  데이터 사이언스
+                </div>
+              </div>
+            </div>
+            <div className="absolute left-1/2 top-7 -translate-x-1/2 kr-heading text-[12px] text-[#dffbff]">
+              분석
+            </div>
+            <div className="absolute bottom-10 left-[25%] kr-heading text-[12px] text-[#eadcff]">
+              기술
+            </div>
+            <div className="absolute bottom-10 right-[19%] kr-heading text-[12px] text-[#e8ff9d]">
+              비즈니스
+            </div>
+          </div>
+          <VisualPill label="AI 비" sub="Analytics · IT · Business" tone="amber" />
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'hardSoftSkills') {
+    return (
+      <LearningVisualFrame
+        eyebrow="HARD / SOFT"
+        title="Hard Skill은 도구를 다루는 힘, Soft Skill은 가치를 전하는 힘"
+        caption="SQL과 머신러닝을 잘해도 방향을 못 잡으면 가치가 작고, 통찰이 좋아도 구현할 기술이 없으면 결과로 이어지기 어렵습니다."
+      >
+        <div className="grid gap-3 sm:grid-cols-2">
+          <motion.div
+            className={`rounded-[22px] border p-4 ${visualToneClass('cyan')}`}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.16 }}
+          >
+            <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] opacity-70">
+              HARD SKILL
+            </div>
+            <div className="kr-heading mt-1 text-[19px] leading-tight">배워서 익히는 기술</div>
+            <div className="mt-3 grid gap-2">
+              <VisualPill label="SQL" sub="데이터 조회" tone="cyan" />
+              <VisualPill label="ML" sub="모델 만들기" tone="cyan" />
+              <VisualPill label="Programming" sub="코드 구현" tone="cyan" />
+            </div>
+          </motion.div>
+          <motion.div
+            className={`rounded-[22px] border p-4 ${visualToneClass('lime')}`}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.16, delay: 0.05 }}
+          >
+            <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] opacity-70">
+              SOFT SKILL
+            </div>
+            <div className="kr-heading mt-1 text-[19px] leading-tight">방향을 잡고 설득하는 힘</div>
+            <div className="mt-3 grid gap-2">
+              <VisualPill label="통찰" sub="무엇이 중요한지" tone="lime" />
+              <VisualPill label="스토리텔링" sub="쉽게 전달" tone="lime" />
+              <VisualPill label="협력" sub="팀과 의사결정" tone="lime" />
+            </div>
+          </motion.div>
+        </div>
+        <div className="mt-3 rounded-[18px] border border-cream/10 bg-white/[0.035] px-3 py-2.5 text-center">
+          <div className="kr-body text-[11.5px] font-bold leading-[1.5] text-cream/66">
+            기억 포인트: Hard는 기술, Soft는 태도·관점·소통입니다.
+          </div>
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'digitalCamera') {
+    const activeByStep: Record<string, string> = {
+      'adsp-1-3-s3-c': 'Communication',
+      'adsp-1-3-s3-a': 'Analytics',
+      'adsp-1-3-s3-m': 'Math',
+      'adsp-1-3-s3-e': 'Engineering',
+      'adsp-1-3-s3-r': 'Research',
+      'adsp-1-3-s3-art': 'Art',
+    };
+    const activeKey =
+      stepId && stepId !== 'adsp-1-3-s3-review'
+        ? activeByStep[stepId]
+        : undefined;
+    const reviewMode = stepId === 'adsp-1-3-s3-review';
+    const skills: Array<{
+      key: string;
+      letter: string;
+      label: string;
+      sub: string;
+      tone: VisualTone;
+    }> = [
+      { key: 'Communication', letter: 'C', label: 'Communication', sub: '전달·스토리텔링', tone: 'cyan' },
+      { key: 'Analytics', letter: 'A', label: 'Analytics', sub: '문제·기법 선택', tone: 'lime' },
+      { key: 'Math', letter: 'M', label: 'Math', sub: '확률·통계 기반', tone: 'violet' },
+      { key: 'Engineering', letter: 'E', label: 'Engineering', sub: 'DB·코드·파이프라인', tone: 'amber' },
+      { key: 'Research', letter: 'R', label: 'Research', sub: '새 가설·실험', tone: 'cyan' },
+      { key: 'Art', letter: 'A', label: 'Art', sub: '창의·디자인 감각', tone: 'lime' },
+    ];
+
+    return (
+      <LearningVisualFrame
+        eyebrow="DIGITAL CAMERA"
+        title={
+          activeKey
+            ? `${activeKey} 역량만 켜서 본다`
+            : reviewMode
+              ? 'Digital CAMERA 6역량을 한 번에 복습한다'
+              : 'Digital CAMERA는 데이터 사이언티스트의 6역량'
+        }
+        caption={
+          activeKey
+            ? '전체 CAMERA 지도를 그대로 두고 지금 배우는 역량만 밝게 표시했습니다. Management는 6역량에 들어가지 않습니다.'
+            : 'C·A·M·E·R·A는 Communication, Analytics, Math, Engineering, Research, Art입니다. Management는 시험 함정입니다.'
+        }
+      >
+        <div className="space-y-3">
+          <div className="relative mx-auto flex h-[104px] max-w-[330px] items-center justify-center rounded-[30px] border border-cream/12 bg-[#020b24]/72 px-5">
+            <div className="absolute left-5 top-1/2 h-12 w-12 -translate-y-1/2 rounded-[18px] border border-[#67e8f9]/24 bg-[#67e8f9]/9" />
+            <div className="absolute right-5 top-1/2 h-12 w-12 -translate-y-1/2 rounded-full border border-[#d1f843]/28 bg-[#d1f843]/9" />
+            <div className="relative flex h-16 w-16 items-center justify-center rounded-full border border-[#c084fc]/30 bg-[#c084fc]/12">
+              <div className="h-8 w-8 rounded-full border border-cream/18 bg-[#020b24]/72" />
+            </div>
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 kr-num text-[10px] font-black uppercase tracking-[0.18em] text-cream/48">
+              CAMERA
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {skills.map((skill, index) => {
+              const active = reviewMode || activeKey === skill.key || (!activeKey && !reviewMode);
+              const dim = activeKey && activeKey !== skill.key;
+              return (
+                <motion.div
+                  key={skill.key}
+                  className={
+                    'rounded-[18px] border px-3 py-3 transition-colors ' +
+                    (active && !dim
+                      ? `${visualToneClass(skill.tone)} shadow-[0_0_0_1px_rgba(209,248,67,0.16)]`
+                      : 'border-cream/8 bg-white/[0.025] text-cream/34')
+                  }
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.16, delay: index * 0.03 }}
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-current/20 bg-[#020b24]/34 kr-heading text-[14px]">
+                      {skill.letter}
+                    </div>
+                    <div className="min-w-0">
+                      <div className="kr-heading text-[12.5px] leading-tight">{skill.label}</div>
+                      <div className="kr-body mt-0.5 text-[10px] font-black leading-tight opacity-70">
+                        {skill.sub}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+          <VisualPill label="Management" sub="CAMERA에 없음 · 시험 함정" tone="red" />
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'analysisTypes') {
+    const activeByStep: Record<string, string> = {
+      'adsp-2-1-s1-opt': 'optimization',
+      'adsp-2-1-s1-sol': 'solution',
+      'adsp-2-1-s1-ins': 'insight',
+      'adsp-2-1-s1-dis': 'discovery',
+    };
+    const activeKey = stepId ? activeByStep[stepId] : undefined;
+    const cards = [
+      {
+        key: 'optimization',
+        title: 'Optimization',
+        sub: '문제도 방법도 안다',
+        what: 'What O',
+        how: 'How O',
+        tone: 'lime',
+      },
+      {
+        key: 'solution',
+        title: 'Solution',
+        sub: '문제는 알고 방법을 찾는다',
+        what: 'What O',
+        how: 'How ?',
+        tone: 'cyan',
+      },
+      {
+        key: 'insight',
+        title: 'Insight',
+        sub: '방법은 있고 문제를 발견한다',
+        what: 'What ?',
+        how: 'How O',
+        tone: 'violet',
+      },
+      {
+        key: 'discovery',
+        title: 'Discovery',
+        sub: '문제도 방법도 탐색한다',
+        what: 'What ?',
+        how: 'How ?',
+        tone: 'amber',
+      },
+    ] as const;
+
+    return (
+      <LearningVisualFrame
+        eyebrow="WHAT x HOW"
+        title={activeKey ? '지금 보는 칸만 밝게 켠다' : '분석 유형은 2x2 사분면으로 나뉜다'}
+        caption="풀 것이 무엇인지 아는지, 푸는 방법을 아는지 두 축으로 먼저 보면 4유형이 바로 갈립니다."
+      >
+        <div className="rounded-[24px] border border-cream/12 bg-[#020b24]/44 p-2.5">
+          <div className="mb-2 grid grid-cols-[78px_1fr_1fr] gap-1.5">
+            <div />
+            {['방법을 안다', '방법을 모른다'].map((label) => (
+              <div
+                key={label}
+                className="rounded-[14px] border border-cream/10 bg-white/[0.04] px-2 py-2 text-center kr-heading text-[10.5px] leading-tight text-cream/76"
+              >
+                {label}
+                <div className="mt-0.5 kr-num text-[8px] font-black uppercase tracking-[0.12em] text-cream/38">How</div>
+              </div>
+            ))}
+          </div>
+          <div className="grid grid-cols-[78px_1fr_1fr] gap-1.5">
+            {[
+              { row: '풀 것이 무엇인지 안다', rowMark: 'What O', cells: [cards[0], cards[1]] },
+              { row: '풀 것이 무엇인지 모른다', rowMark: 'What ?', cells: [cards[2], cards[3]] },
+            ].map((row, rowIndex) => (
+              <Fragment key={row.row}>
+                <div className="flex min-h-[98px] flex-col justify-center rounded-[16px] border border-cream/10 bg-white/[0.035] px-2 py-2">
+                  <div className="kr-heading text-[10.5px] leading-snug text-cream/78">{row.row}</div>
+                  <div className="mt-1 kr-num text-[8px] font-black uppercase tracking-[0.12em] text-cream/38">
+                    {row.rowMark}
+                  </div>
+                </div>
+                {row.cells.map((card, colIndex) => {
+                  const index = rowIndex * 2 + colIndex;
+                  const active = !activeKey || activeKey === card.key || stepId === 'adsp-2-1-s1-review';
+                  return (
+                    <motion.div
+                      key={card.key}
+                      className={
+                        'min-h-[98px] rounded-[18px] border p-3 transition-colors ' +
+                        (active
+                          ? visualToneClass(card.tone as VisualTone)
+                          : 'border-cream/8 bg-white/[0.025] text-cream/34')
+                      }
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.16, delay: index * 0.035 }}
+                    >
+                      <div className="flex h-full flex-col justify-between gap-2">
+                        <div>
+                          <div className="kr-heading text-[13.5px] leading-tight">{card.title}</div>
+                          <div className="kr-body mt-1 text-[10px] font-black leading-tight opacity-72">
+                            {card.sub}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 kr-num text-[8px] font-black uppercase tracking-[0.1em] opacity-64">
+                          <span>{card.what}</span>
+                          <span className="opacity-40">/</span>
+                          <span>{card.how}</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </Fragment>
+            ))}
+          </div>
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'analysisProcess') {
+    const isKdd = stepId === 'adsp-2-1-s2-kdd';
+    const isCrisp = stepId === 'adsp-2-1-s2-crisp';
+    return (
+      <LearningVisualFrame
+        eyebrow="KDD / CRISP-DM"
+        title={isKdd ? 'KDD는 데이터에서 지식을 찾는 5단계' : isCrisp ? 'CRISP-DM은 업무 이해부터 전개까지 본다' : '분석 프로세스는 흐름을 먼저 잡는다'}
+        caption="KDD는 데이터 처리 흐름, CRISP-DM은 비즈니스 문제 해결 흐름에 가깝습니다. 시험에서는 단계 순서를 자주 묻습니다."
+      >
+        <div className="grid gap-3">
+          <div className={`rounded-[20px] border p-3 ${isCrisp ? 'border-cream/8 bg-white/[0.025] text-cream/38' : visualToneClass('cyan')}`}>
+            <div className="kr-heading mb-2 text-[15px]">KDD 5단계</div>
+            <div className="grid grid-cols-5 gap-1.5">
+              {['선택', '전처리', '변환', '마이닝', '해석'].map((label, index) => (
+                <div key={label} className="rounded-[12px] border border-current/12 bg-[#020b24]/34 px-1.5 py-2 text-center">
+                  <div className="kr-num text-[9px] font-black opacity-55">{index + 1}</div>
+                  <div className="kr-heading mt-1 text-[10.5px] leading-tight">{label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className={`rounded-[20px] border p-3 ${isKdd ? 'border-cream/8 bg-white/[0.025] text-cream/38' : visualToneClass('lime')}`}>
+            <div className="kr-heading mb-2 text-[15px]">CRISP-DM 6단계</div>
+            <div className="grid grid-cols-3 gap-1.5">
+              {['업무', '데이터 이해', '준비', '모델링', '평가', '전개'].map((label, index) => (
+                <div key={label} className="rounded-[12px] border border-current/12 bg-[#020b24]/34 px-1.5 py-2 text-center">
+                  <div className="kr-num text-[9px] font-black opacity-55">{index + 1}</div>
+                  <div className="kr-heading mt-1 text-[10.5px] leading-tight">{label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'topDownApproach') {
+    const activeByStep: Record<string, string> = {
+      'adsp-2-1-s3-explore': '탐색',
+      'adsp-2-1-s3-define': '정의',
+      'adsp-2-1-s3-solve': '해결방안',
+      'adsp-2-1-s3-feas': '타당성',
+    };
+    const activeLabel = stepId ? activeByStep[stepId] : undefined;
+    const steps = [
+      { label: '탐색', sub: '문제 후보 찾기', tone: 'cyan' },
+      { label: '정의', sub: '분석 문제로 좁히기', tone: 'lime' },
+      { label: '해결방안', sub: '기법 후보 비교', tone: 'violet' },
+      { label: '타당성', sub: '비용·기술·운영 점검', tone: 'amber' },
+    ] as const;
+
+    return (
+      <LearningVisualFrame
+        eyebrow="TOP-DOWN"
+        title="하향식은 탐정해타 순서로 좁혀간다"
+        caption="큰 비즈니스 문제를 바로 모델로 풀지 않고, 후보를 찾고 정의한 뒤 해결방안과 타당성을 차례로 봅니다."
+      >
+        <div className="grid gap-2">
+          {steps.map((item, index) => {
+            const active = !activeLabel || activeLabel === item.label || stepId === 'adsp-2-1-s3-review';
+            return (
+              <motion.div
+                key={item.label}
+                className={
+                  'grid grid-cols-[34px_1fr] items-center gap-2 rounded-[18px] border p-2.5 ' +
+                  (active ? visualToneClass(item.tone as VisualTone) : 'border-cream/8 bg-white/[0.025] text-cream/35')
+                }
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.16, delay: index * 0.035 }}
+              >
+                <div className="grid h-8 w-8 place-items-center rounded-full border border-current/20 bg-[#020b24]/34 kr-num text-[11px] font-black">
+                  {index + 1}
+                </div>
+                <div>
+                  <div className="kr-heading text-[14px] leading-tight">{item.label}</div>
+                  <div className="kr-body mt-1 text-[10.5px] font-black leading-tight opacity-70">{item.sub}</div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'analysisMethodology') {
+    const activeByStep: Record<string, string> = {
+      'adsp-2-1-s4-waterfall': 'Waterfall',
+      'adsp-2-1-s4-prototype': 'Prototype',
+      'adsp-2-1-s4-spiral': 'Spiral',
+      'adsp-2-1-s4-agile': 'Agile',
+      'adsp-2-1-s4-rad': 'RAD',
+    };
+    const activeKey = stepId ? activeByStep[stepId] : undefined;
+    const items = [
+      { label: 'Waterfall', sub: '순차 진행', tone: 'cyan' },
+      { label: 'Prototype', sub: '시제품 피드백', tone: 'lime' },
+      { label: 'Spiral', sub: '반복 + 위험관리', tone: 'amber' },
+      { label: 'Agile', sub: '짧은 스프린트', tone: 'violet' },
+      { label: 'RAD', sub: '빠른 조립 개발', tone: 'cyan' },
+    ] as const;
+
+    return (
+      <LearningVisualFrame
+        eyebrow="METHODOLOGY"
+        title="방법론은 프로젝트 상황에 맞춰 고른다"
+        caption="변경이 적으면 Waterfall, 피드백이 중요하면 Prototype/Agile, 위험이 크면 Spiral, 빠른 납기가 중요하면 RAD로 연결하세요."
+      >
+        <div className="grid gap-2 sm:grid-cols-2">
+          {items.map((item, index) => {
+            const active = !activeKey || activeKey === item.label || stepId === 'adsp-2-1-s4-review';
+            return (
+              <motion.div
+                key={item.label}
+                className={
+                  'rounded-[18px] border px-3 py-3 ' +
+                  (active ? visualToneClass(item.tone as VisualTone) : 'border-cream/8 bg-white/[0.025] text-cream/34')
+                }
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.16, delay: index * 0.03 }}
+              >
+                <div className="kr-heading text-[14px] leading-tight">{item.label}</div>
+                <div className="kr-body mt-1 text-[10.5px] font-black leading-tight opacity-70">{item.sub}</div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'priorityMatrix') {
+    const activeByStep: Record<string, string> = {
+      'adsp-2-2-s1-now-easy': 'nowEasy',
+      'adsp-2-2-s1-now-hard': 'nowHard',
+      'adsp-2-2-s1-fut-easy': 'futureEasy',
+      'adsp-2-2-s1-fut-hard': 'futureHard',
+    };
+    const activeKey = stepId ? activeByStep[stepId] : undefined;
+    const cells = [
+      { key: 'nowEasy', label: '지금 + 쉬움', sub: '바로 실행', tone: 'lime' },
+      { key: 'nowHard', label: '지금 + 어려움', sub: '투자 계획', tone: 'amber' },
+      { key: 'futureEasy', label: '나중 + 쉬움', sub: '여유 때', tone: 'cyan' },
+      { key: 'futureHard', label: '나중 + 어려움', sub: '중장기 R&D', tone: 'violet' },
+    ] as const;
+
+    return (
+      <LearningVisualFrame
+        eyebrow="PRIORITY MATRIX"
+        title="시급성과 난이도로 과제 순서를 정한다"
+        caption="시급하고 쉬운 과제는 빠른 성과, 시급하지만 어려운 과제는 투자·로드맵이 필요합니다."
+      >
+        <div className="grid grid-cols-[42px_1fr_1fr] gap-2">
+          <div />
+          <div className="kr-num text-center text-[10px] font-black uppercase tracking-[0.12em] text-[#d1f843]/70">쉬움</div>
+          <div className="kr-num text-center text-[10px] font-black uppercase tracking-[0.12em] text-[#ffb020]/75">어려움</div>
+          <div className="grid place-items-center kr-heading text-[11px] text-cream/55 [writing-mode:vertical-rl]">지금</div>
+          {cells.slice(0, 2).map((cell) => (
+            <div
+              key={cell.key}
+              className={
+                'rounded-[18px] border px-3 py-3 text-center ' +
+                (!activeKey || activeKey === cell.key || stepId === 'adsp-2-2-s1-review'
+                  ? visualToneClass(cell.tone as VisualTone)
+                  : 'border-cream/8 bg-white/[0.025] text-cream/34')
+              }
+            >
+              <div className="kr-heading text-[13px] leading-tight">{cell.label}</div>
+              <div className="kr-body mt-1 text-[10.5px] font-black opacity-70">{cell.sub}</div>
+            </div>
+          ))}
+          <div className="grid place-items-center kr-heading text-[11px] text-cream/55 [writing-mode:vertical-rl]">나중</div>
+          {cells.slice(2).map((cell) => (
+            <div
+              key={cell.key}
+              className={
+                'rounded-[18px] border px-3 py-3 text-center ' +
+                (!activeKey || activeKey === cell.key || stepId === 'adsp-2-2-s1-review'
+                  ? visualToneClass(cell.tone as VisualTone)
+                  : 'border-cream/8 bg-white/[0.025] text-cream/34')
+              }
+            >
+              <div className="kr-heading text-[13px] leading-tight">{cell.label}</div>
+              <div className="kr-body mt-1 text-[10.5px] font-black opacity-70">{cell.sub}</div>
+            </div>
+          ))}
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'analyticsGovernance') {
+    const activeByStep: Record<string, string> = {
+      'adsp-2-2-s2-system': '시스템',
+      'adsp-2-2-s2-org': '조직',
+      'adsp-2-2-s2-process': '프로세스',
+      'adsp-2-2-s2-resource': '인력',
+      'adsp-2-2-s2-data': '데이터',
+    };
+    const activeLabel = stepId ? activeByStep[stepId] : undefined;
+    const items = [
+      { label: '시스템', sub: '플랫폼·도구', tone: 'cyan' },
+      { label: '조직', sub: '전담 조직', tone: 'lime' },
+      { label: '프로세스', sub: '절차·관리', tone: 'violet' },
+      { label: '인력', sub: '역량·역할', tone: 'amber' },
+      { label: '데이터', sub: '품질·표준', tone: 'cyan' },
+    ] as const;
+
+    return (
+      <LearningVisualFrame
+        eyebrow="ANALYTICS GOVERNANCE"
+        title="분석 거버넌스는 분석이 계속 굴러가게 하는 장치"
+        caption="시스템만 있어도 부족하고, 조직·프로세스·인력·데이터가 함께 있어야 분석이 회사 안에 자리 잡습니다."
+      >
+        <div className="grid gap-2 sm:grid-cols-5">
+          {items.map((item, index) => {
+            const active = !activeLabel || activeLabel === item.label || stepId === 'adsp-2-2-s2-review';
+            return (
+              <motion.div
+                key={item.label}
+                className={
+                  'rounded-[18px] border px-2.5 py-3 text-center ' +
+                  (active ? visualToneClass(item.tone as VisualTone) : 'border-cream/8 bg-white/[0.025] text-cream/34')
+                }
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.15, delay: index * 0.03 }}
+              >
+                <div className="kr-num text-[9px] font-black opacity-55">{index + 1}</div>
+                <div className="kr-heading mt-1 text-[13px] leading-tight">{item.label}</div>
+                <div className="kr-body mt-1 text-[10px] font-black leading-tight opacity-70">{item.sub}</div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'maturityStages') {
+    const activeByStep: Record<string, string> = {
+      'adsp-2-2-s3-intro': '도입',
+      'adsp-2-2-s3-adopt': '활용',
+      'adsp-2-2-s3-diffuse': '확산',
+      'adsp-2-2-s3-optimize': '최적화',
+    };
+    const activeLabel = stepId ? activeByStep[stepId] : undefined;
+    const stages = [
+      { label: '도입', sub: '개인·비공식', tone: 'muted' },
+      { label: '활용', sub: '부서별 사용', tone: 'cyan' },
+      { label: '확산', sub: '전사 표준', tone: 'violet' },
+      { label: '최적화', sub: '내재화·고도화', tone: 'lime' },
+    ] as const;
+
+    return (
+      <LearningVisualFrame
+        eyebrow="MATURITY"
+        title="분석 성숙도는 도활확최로 올라간다"
+        caption="개인 수준에서 시작해 부서 활용, 전사 확산, 최적화 단계로 갈수록 분석이 조직의 기본 운영 방식이 됩니다."
+      >
+        <div className="grid gap-2">
+          {stages.map((stage, index) => {
+            const active = !activeLabel || activeLabel === stage.label || stepId === 'adsp-2-2-s3-review';
+            return (
+              <div
+                key={stage.label}
+                className="rounded-[18px] border px-3 py-2.5"
+                style={{ marginLeft: index * 10 }}
+              >
+                <div
+                  className={
+                    'rounded-[14px] border px-3 py-2 ' +
+                    (active ? visualToneClass(stage.tone as VisualTone) : 'border-cream/8 bg-white/[0.025] text-cream/34')
+                  }
+                >
+                  <div className="kr-heading text-[14px] leading-tight">{stage.label}</div>
+                  <div className="kr-body mt-1 text-[10.5px] font-black leading-tight opacity-70">{stage.sub}</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'dataGovernance') {
+    const activeByStep: Record<string, string> = {
+      'adsp-2-2-s4-principle': '원칙',
+      'adsp-2-2-s4-org': '조직',
+      'adsp-2-2-s4-process': '프로세스',
+    };
+    const activeLabel = stepId ? activeByStep[stepId] : undefined;
+    const items = [
+      { label: '원칙', sub: '표준·정책', tone: 'lime' },
+      { label: '조직', sub: '책임자·역할', tone: 'cyan' },
+      { label: '프로세스', sub: '품질·메타·백업', tone: 'violet' },
+    ] as const;
+
+    return (
+      <LearningVisualFrame
+        eyebrow="DATA GOVERNANCE"
+        title="데이터 거버넌스는 데이터 관리의 원조프"
+        caption="분석 거버넌스가 분석 활동 전체라면, 데이터 거버넌스는 데이터 자체를 믿고 쓸 수 있게 관리하는 체계입니다."
+      >
+        <div className="grid gap-2 sm:grid-cols-[1fr_22px_1fr_22px_1fr] sm:items-center">
+          {items.map((item, index) => {
+            const active = !activeLabel || activeLabel === item.label || stepId === 'adsp-2-2-s4-review';
+            return (
+              <Fragment key={item.label}>
+                <div
+                  className={
+                    'rounded-[18px] border px-3 py-3 text-center ' +
+                    (active ? visualToneClass(item.tone as VisualTone) : 'border-cream/8 bg-white/[0.025] text-cream/34')
+                  }
+                >
+                  <div className="kr-heading text-[14px] leading-tight">{item.label}</div>
+                  <div className="kr-body mt-1 text-[10.5px] font-black leading-tight opacity-70">{item.sub}</div>
+                </div>
+                {index < items.length - 1 ? <div className="hidden sm:block"><ArrowStep /></div> : null}
+              </Fragment>
+            );
+          })}
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'analysisFeasibility') {
+    const activeByStep: Record<string, string> = {
+      'adsp-2-3-s1-econ': '경제적',
+      'adsp-2-3-s1-tech': '기술적',
+      'adsp-2-3-s1-ops': '운영적',
+    };
+    const activeLabel = stepId ? activeByStep[stepId] : undefined;
+    const items = [
+      { label: '경제적', sub: '비용 대비 효과', tone: 'lime' },
+      { label: '기술적', sub: '데이터·기술 가능', tone: 'cyan' },
+      { label: '운영적', sub: '현장에서 쓸 수 있음', tone: 'violet' },
+    ] as const;
+
+    return (
+      <LearningVisualFrame
+        eyebrow="FEASIBILITY"
+        title="좋은 과제는 돈·기술·현장을 함께 통과한다"
+        caption="경제적, 기술적, 운영적 타당성은 분석 과제를 실제로 실행할 수 있는지 보는 3개 필터입니다."
+      >
+        <div className="grid gap-2 sm:grid-cols-3">
+          {items.map((item, index) => {
+            const active = !activeLabel || activeLabel === item.label || stepId === 'adsp-2-3-s1-review';
+            return (
+              <motion.div
+                key={item.label}
+                className={
+                  'rounded-[20px] border p-3 text-center ' +
+                  (active ? visualToneClass(item.tone as VisualTone) : 'border-cream/8 bg-white/[0.025] text-cream/34')
+                }
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.16, delay: index * 0.035 }}
+              >
+                <div className="kr-heading text-[15px] leading-tight">{item.label}</div>
+                <div className="kr-body mt-1 text-[10.5px] font-black leading-tight opacity-70">{item.sub}</div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'analysisApproachMix') {
+    return (
+      <LearningVisualFrame
+        eyebrow="APPROACH MIX"
+        title={stepId === 'adsp-2-3-s2' ? '상향식은 데이터에서 단서를 먼저 찾는다' : '디자인 씽킹은 하향식과 상향식을 왕복한다'}
+        caption="하향식은 문제에서 출발하고, 상향식은 데이터에서 단서를 찾습니다. 디자인 씽킹은 사용자의 문제와 데이터 단서를 오가며 과제를 다듬습니다."
+      >
+        <div className="grid gap-3">
+          <div className="grid grid-cols-[1fr_28px_1fr] items-center gap-2">
+            <VisualPill label="비즈니스 문제" sub="하향식 출발점" tone={stepId === 'adsp-2-3-s3' ? 'lime' : 'muted'} />
+            <ArrowStep />
+            <VisualPill label="분석 과제" sub="정의된 문제" tone="cyan" />
+          </div>
+          <div className="grid grid-cols-[1fr_28px_1fr] items-center gap-2">
+            <VisualPill label="데이터 패턴" sub="상향식 출발점" tone={stepId === 'adsp-2-3-s2' ? 'lime' : 'violet'} />
+            <ArrowStep />
+            <VisualPill label="새로운 가설" sub="발견한 단서" tone="amber" />
+          </div>
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'projectDefinition') {
+    return (
+      <LearningVisualFrame
+        eyebrow="PROJECT BRIEF"
+        title="분석 과제 정의서는 실행 전 약속 문서"
+        caption="무엇을 왜 분석하는지, 어떤 데이터와 기준으로 성공을 판단할지 적어두어야 팀이 같은 목표를 보고 움직입니다."
+      >
+        <div className="rounded-[20px] border border-cream/10 bg-[#020b24]/62 p-3">
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              ['배경', '왜 필요한가', 'cyan'],
+              ['목표', '무엇을 바꿀까', 'lime'],
+              ['범위', '어디까지 할까', 'violet'],
+              ['데이터', '무엇을 쓸까', 'amber'],
+              ['성과기준', '성공 판단', 'cyan'],
+              ['위험', '막힐 수 있는 점', 'red'],
+            ].map(([label, sub, tone]) => (
+              <VisualPill key={label} label={label} sub={sub} tone={tone as VisualTone} />
+            ))}
+          </div>
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'readinessAreas') {
+    const activeByStep: Record<string, string> = {
+      'adsp-2-3-s5-biz': '분석 업무',
+      'adsp-2-3-s5-org': '인력·조직',
+      'adsp-2-3-s5-method': '분석 기법',
+      'adsp-2-3-s5-data': '분석 데이터',
+      'adsp-2-3-s5-culture': '분석 문화',
+      'adsp-2-3-s5-it': 'IT 인프라',
+    };
+    const activeLabel = stepId ? activeByStep[stepId] : undefined;
+    const items = [
+      { label: '분석 업무', sub: '분석할 일이 있나', tone: 'cyan' },
+      { label: '인력·조직', sub: '담당할 사람이 있나', tone: 'lime' },
+      { label: '분석 기법', sub: '방법을 알고 있나', tone: 'violet' },
+      { label: '분석 데이터', sub: '쓸 데이터가 있나', tone: 'amber' },
+      { label: '분석 문화', sub: '데이터로 말하나', tone: 'cyan' },
+      { label: 'IT 인프라', sub: '도구와 환경이 있나', tone: 'lime' },
+    ] as const;
+
+    return (
+      <LearningVisualFrame
+        eyebrow="READINESS"
+        title="분석 준비도는 업조기데문아이티로 확인한다"
+        caption="분석할 업무, 사람과 조직, 기법, 데이터, 문화, IT 인프라가 준비되어야 과제가 실제 실행으로 이어집니다."
+      >
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {items.map((item, index) => {
+            const active = !activeLabel || activeLabel === item.label || stepId === 'adsp-2-3-s5-review';
+            return (
+              <motion.div
+                key={item.label}
+                className={
+                  'rounded-[18px] border px-3 py-3 ' +
+                  (active ? visualToneClass(item.tone as VisualTone) : 'border-cream/8 bg-white/[0.025] text-cream/34')
+                }
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.15, delay: index * 0.025 }}
+              >
+                <div className="kr-heading text-[13.5px] leading-tight">{item.label}</div>
+                <div className="kr-body mt-1 text-[10.5px] font-black leading-tight opacity-70">{item.sub}</div>
+              </motion.div>
+            );
+          })}
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  return (
+    <LearningVisualFrame
+      eyebrow="BIG DATA SHIFT"
+      title="빅데이터 이후 분석의 기본값이 바뀐다"
+      caption="변화 후 상태만 모으면 전수조사, 사후처리, 양, 상관관계입니다. 그래서 전후양상으로 외우면 매칭 문제가 쉬워집니다."
+    >
+      <div className="space-y-2">
+        {[
+          ['표본조사', '전수조사', '규모'],
+          ['사전처리', '사후처리', '처리'],
+          ['질', '양', '품질'],
+          ['인과관계', '상관관계', '관점'],
+        ].map(([before, after, axis], index) => (
+          <motion.div
+            key={axis}
+            className="grid grid-cols-[1fr_24px_1fr_48px] items-center gap-2 rounded-[16px] border border-cream/10 bg-white/[0.035] p-2"
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.18, delay: index * 0.035 }}
+          >
+            <VisualPill label={before} tone="muted" />
+            <ArrowStep />
+            <VisualPill label={after} tone={index % 2 === 0 ? 'cyan' : 'lime'} />
+            <div className="kr-num text-center text-[9px] font-black uppercase tracking-[0.12em] text-cream/42">
+              {axis}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </LearningVisualFrame>
+  );
+}
+
+function Adsp3ConceptDiagram({
+  mode,
+  stepId,
+}: {
+  mode: Adsp3DiagramMode;
+  stepId?: string;
+}) {
+  type DiagramCard = {
+    key: string;
+    label: string;
+    sub?: string;
+    detail?: string;
+    tone?: VisualTone;
+  };
+
+  const renderCards = (
+    items: DiagramCard[],
+    activeKey?: string,
+    columns = 'grid-cols-2',
+  ) => (
+    <div className={`grid gap-2 ${columns}`}>
+      {items.map((item, index) => {
+        const active = !activeKey || item.key === activeKey || stepId?.endsWith('-review');
+        return (
+          <motion.div
+            key={item.key}
+            className={
+              'rounded-[18px] border px-3 py-3 ' +
+              (active
+                ? visualToneClass(item.tone ?? 'cyan')
+                : 'border-cream/8 bg-white/[0.025] text-cream/34')
+            }
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.16, delay: index * 0.025 }}
+          >
+            <div className="kr-heading text-[13.5px] leading-tight">{item.label}</div>
+            {item.sub ? (
+              <div className="kr-body mt-1 text-[10.5px] font-black leading-snug opacity-72">
+                {item.sub}
+              </div>
+            ) : null}
+            {item.detail ? (
+              <div className="mt-2 rounded-[12px] border border-cream/10 bg-[#020b24]/42 px-2 py-1.5 kr-body text-[10.5px] font-bold leading-snug text-cream/62">
+                {item.detail}
+              </div>
+            ) : null}
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+
+  if (mode === 'adsp3SummaryDerived') {
+    return (
+      <LearningVisualFrame
+        eyebrow="VARIABLES"
+        title="요약변수는 모아 보고, 파생변수는 계산해서 만든다"
+        caption="요약변수는 여러 기록을 합쳐 만든 값이고, 파생변수는 기존 변수로 새 의미를 계산한 값입니다. 둘 다 원본을 그대로 보는 것이 아니라 분석에 쓰기 좋게 가공한 값이에요."
+      >
+        <div className="grid gap-3 sm:grid-cols-[1fr_28px_1fr] sm:items-stretch">
+          <div className="rounded-[20px] border border-[#67e8f9]/24 bg-[#67e8f9]/8 p-3">
+            <div className="kr-num text-[9px] font-black uppercase tracking-[0.14em] text-[#67e8f9]/72">
+              SUMMARY
+            </div>
+            <div className="kr-heading mt-1 text-[17px] text-[#dffbff]">요약변수</div>
+            <div className="mt-3 grid gap-1.5">
+              {['1월 구매', '2월 구매', '3월 구매'].map((label) => (
+                <div key={label} className="rounded-[12px] border border-cream/10 bg-[#020b24]/42 px-3 py-2 kr-body text-[11px] font-black text-cream/62">
+                  {label}
+                </div>
+              ))}
+            </div>
+            <div className="mt-2 rounded-[14px] border border-[#67e8f9]/22 bg-[#67e8f9]/10 px-3 py-2 kr-heading text-[13px] text-[#dffbff]">
+              3개월 총 구매액
+            </div>
+          </div>
+          <div className="hidden sm:grid sm:place-items-center">
+            <ArrowStep />
+          </div>
+          <div className="rounded-[20px] border border-[#d1f843]/24 bg-[#d1f843]/8 p-3">
+            <div className="kr-num text-[9px] font-black uppercase tracking-[0.14em] text-[#d1f843]/72">
+              DERIVED
+            </div>
+            <div className="kr-heading mt-1 text-[17px] text-[#e8ff9d]">파생변수</div>
+            <div className="mt-3 grid grid-cols-[1fr_26px_1fr] items-center gap-2">
+              <VisualPill label="생년" sub="1999" tone="muted" />
+              <ArrowStep />
+              <VisualPill label="나이" sub="올해-생년" tone="lime" />
+            </div>
+            <div className="mt-2 kr-body text-[11px] font-bold leading-snug text-cream/58">
+              기존 값으로 새 의미를 계산합니다.
+            </div>
+          </div>
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'adsp3Eda4r') {
+    const activeByStep: Record<string, string> = {
+      'adsp-3-1-s2-resistance': 'resistance',
+      'adsp-3-1-s2-residual': 'residual',
+      'adsp-3-1-s2-reexpression': 'reexpression',
+      'adsp-3-1-s2-revelation': 'revelation',
+    };
+    return (
+      <LearningVisualFrame
+        eyebrow="EDA 4R"
+        title="EDA는 데이터를 먼저 관찰해 이상한 신호를 찾는다"
+        caption="저항성은 이상값에 흔들리지 않는 기준, 잔차해석은 남은 오차 보기, 재표현은 변환해서 보기, 현시성은 그림으로 드러내기입니다."
+      >
+        {renderCards(
+          [
+            { key: 'resistance', label: '저항성', sub: '이상값에 덜 흔들림', detail: '중앙값, IQR', tone: 'cyan' },
+            { key: 'residual', label: '잔차해석', sub: '예측 후 남은 차이', detail: '모델이 놓친 패턴', tone: 'violet' },
+            { key: 'reexpression', label: '재표현', sub: '로그·제곱근 변환', detail: '분포를 보기 좋게', tone: 'amber' },
+            { key: 'revelation', label: '현시성', sub: '그림으로 드러냄', detail: '산점도·박스플롯', tone: 'lime' },
+          ],
+          activeByStep[stepId ?? ''],
+        )}
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'adsp3Missing') {
+    const activeByStep: Record<string, string> = {
+      'adsp-3-1-s3-deletion': 'deletion',
+      'adsp-3-1-s3-simple': 'simple',
+      'adsp-3-1-s3-multiple': 'multiple',
+      'adsp-3-1-s3-model': 'model',
+    };
+    return (
+      <LearningVisualFrame
+        eyebrow="MISSING VALUES"
+        title="결측값은 버리거나, 채우거나, 모델로 예측한다"
+        caption="결측 처리 문제는 완전 제거, 단순 대치, 다중 대치, 모델 기반 중 어느 방식인지 구분하는 것이 핵심입니다."
+      >
+        <div className="rounded-[18px] border border-cream/10 bg-[#020b24]/52 p-3">
+          <MiniDataTable
+            title="고객 데이터"
+            columns={['고객', '나이', '소득']}
+            rows={[
+              ['A', '23', '300'],
+              ['B', 'NULL', '420'],
+              ['C', '35', 'NULL'],
+            ]}
+            highlight={(_, __, value) => (value === 'NULL' ? 'amber' : null)}
+          />
+        </div>
+        <div className="mt-3">
+          {renderCards(
+            [
+              { key: 'deletion', label: '완전 제거', sub: '결측 행을 삭제', tone: 'red' },
+              { key: 'simple', label: '단순 대치', sub: '평균·최빈값으로 채움', tone: 'cyan' },
+              { key: 'multiple', label: '다중 대치', sub: '여러 번 채워 불확실성 반영', tone: 'violet' },
+              { key: 'model', label: '모델 기반', sub: '다른 변수로 예측해 채움', tone: 'lime' },
+            ],
+            activeByStep[stepId ?? ''],
+          )}
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'adsp3Outlier') {
+    const activeByStep: Record<string, string> = {
+      'adsp-3-1-s4-esd': 'esd',
+      'adsp-3-1-s4-iqr': 'iqr',
+      'adsp-3-1-s4-z': 'z',
+      'adsp-3-1-s4-dbscan': 'dbscan',
+    };
+    return (
+      <LearningVisualFrame
+        eyebrow="OUTLIER"
+        title="이상값은 튀는 값이지만 무조건 삭제 대상은 아니다"
+        caption="시험에서는 이상값 탐지 기준을 자주 묻습니다. 정규분포 가정이면 ESD/Z-Score, 사분위수 기준이면 IQR, 밀도 기준이면 DBSCAN을 떠올리면 좋아요."
+      >
+        <div className="mb-3 rounded-[18px] border border-cream/10 bg-[#020b24]/52 px-3 py-4">
+          <div className="flex items-end gap-2">
+            {[28, 40, 52, 46, 58, 42, 92].map((height, index) => (
+              <div key={index} className="flex-1 rounded-t-[10px] border border-[#67e8f9]/20 bg-[#67e8f9]/12" style={{ height }} />
+            ))}
+          </div>
+          <div className="mt-2 kr-body text-center text-[11px] font-bold text-cream/48">
+            오른쪽처럼 혼자 크게 튀는 값이 이상값 후보입니다.
+          </div>
+        </div>
+        {renderCards(
+          [
+            { key: 'esd', label: 'ESD', sub: '정규성 가정 + 여러 이상값', tone: 'cyan' },
+            { key: 'iqr', label: 'IQR', sub: 'Q1·Q3와 1.5배 IQR', tone: 'lime' },
+            { key: 'z', label: 'Z-Score', sub: '평균에서 표준편차 몇 배?', tone: 'violet' },
+            { key: 'dbscan', label: 'DBSCAN', sub: '밀도 낮은 점을 noise로', tone: 'amber' },
+          ],
+          activeByStep[stepId ?? ''],
+        )}
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'adsp3RStructures') {
+    const activeByStep: Record<string, string> = {
+      'adsp-3-1-s5-vector': 'vector',
+      'adsp-3-1-s5-list': 'list',
+      'adsp-3-1-s5-matrix': 'matrix',
+      'adsp-3-1-s5-df': 'df',
+    };
+    return (
+      <LearningVisualFrame
+        eyebrow="R DATA STRUCTURES"
+        title="R 자료구조는 담는 모양이 다르다"
+        caption="벡터는 한 줄, 리스트는 서로 다른 묶음, 매트릭스는 같은 타입의 표, 데이터프레임은 열마다 타입이 다른 표입니다."
+      >
+        {renderCards(
+          [
+            { key: 'vector', label: 'vector', sub: '같은 타입 한 줄', detail: 'c(1, 2, 3)', tone: 'cyan' },
+            { key: 'list', label: 'list', sub: '서로 다른 묶음', detail: '숫자 + 문자 + 표', tone: 'violet' },
+            { key: 'matrix', label: 'matrix', sub: '같은 타입 2차원', detail: '숫자만 있는 표', tone: 'amber' },
+            { key: 'df', label: 'data.frame', sub: '열마다 타입 가능', detail: '실무 데이터 표', tone: 'lime' },
+          ],
+          activeByStep[stepId ?? ''],
+        )}
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'adsp3Scales') {
+    const activeByStep: Record<string, string> = {
+      'adsp-3-2-s1-nominal': 'nominal',
+      'adsp-3-2-s1-ordinal': 'ordinal',
+      'adsp-3-2-s1-interval': 'interval',
+      'adsp-3-2-s1-ratio': 'ratio',
+    };
+    return (
+      <LearningVisualFrame
+        eyebrow="MEASUREMENT SCALE"
+        title="척도는 숫자로 무엇까지 말할 수 있는지의 단계다"
+        caption="명목은 구분만, 서열은 순서까지, 등간은 간격까지, 비율은 진짜 0과 배수 비교까지 가능합니다."
+      >
+        {renderCards(
+          [
+            { key: 'nominal', label: '명목', sub: '구분만 가능', detail: '성별, 혈액형', tone: 'muted' },
+            { key: 'ordinal', label: '서열', sub: '순서 가능', detail: '1등, 2등, 3등', tone: 'cyan' },
+            { key: 'interval', label: '등간', sub: '간격 가능', detail: '섭씨 온도', tone: 'violet' },
+            { key: 'ratio', label: '비율', sub: '진짜 0 + 배수', detail: '키, 몸무게, 매출', tone: 'lime' },
+          ],
+          activeByStep[stepId ?? ''],
+        )}
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'adsp3Distribution') {
+    const activeByStep: Record<string, string> = {
+      'adsp-3-2-s2-discrete': 'discrete',
+      'adsp-3-2-s2-continuous': 'continuous',
+    };
+    return (
+      <LearningVisualFrame
+        eyebrow="DISTRIBUTION"
+        title="확률분포는 값이 나올 가능성을 그린 지도다"
+        caption="셀 수 있는 값은 이산형, 끊기지 않고 이어지는 값은 연속형입니다. 문제에서 주사위·불량품 개수는 이산, 키·시간·무게는 연속을 먼저 의심하세요."
+      >
+        {renderCards(
+          [
+            { key: 'discrete', label: '이산형', sub: '하나, 둘 셀 수 있음', detail: '주사위 눈, 고객 수', tone: 'cyan' },
+            { key: 'continuous', label: '연속형', sub: '끊기지 않는 값', detail: '키, 시간, 무게', tone: 'lime' },
+          ],
+          activeByStep[stepId ?? ''],
+          'grid-cols-2',
+        )}
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'adsp3Estimator') {
+    const activeByStep: Record<string, string> = {
+      'adsp-3-2-s3-unbiased': 'unbiased',
+      'adsp-3-2-s3-efficient': 'efficient',
+      'adsp-3-2-s3-consistent': 'consistent',
+      'adsp-3-2-s3-sufficient': 'sufficient',
+    };
+    return (
+      <LearningVisualFrame
+        eyebrow="GOOD ESTIMATOR"
+        title="좋은 추정량은 정확하고, 흔들림이 작고, 정보 손실이 적다"
+        caption="불편성은 평균적으로 맞는 것, 효율성은 흔들림이 작은 것, 일치성은 표본이 커질수록 가까워지는 것, 충분성은 필요한 정보를 잘 담는 것입니다."
+      >
+        {renderCards(
+          [
+            { key: 'unbiased', label: '불편성', sub: '평균적으로 모수에 맞음', tone: 'cyan' },
+            { key: 'efficient', label: '효율성', sub: '분산·MSE가 작음', tone: 'lime' },
+            { key: 'consistent', label: '일치성', sub: 'n이 커질수록 수렴', tone: 'violet' },
+            { key: 'sufficient', label: '충분성', sub: '정보를 충분히 담음', tone: 'amber' },
+          ],
+          activeByStep[stepId ?? ''],
+        )}
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'adsp3Clt') {
+    return (
+      <LearningVisualFrame
+        eyebrow="CENTRAL LIMIT THEOREM"
+        title="표본평균을 많이 모으면 종 모양에 가까워진다"
+        caption="원자료 분포가 완벽한 정규분포가 아니어도, 표본 크기가 충분히 크면 표본평균의 분포가 정규분포에 가까워진다는 아이디어입니다."
+      >
+        <div className="grid gap-2 sm:grid-cols-[1fr_22px_1fr_22px_1fr] sm:items-center">
+          <VisualPill label="원자료" sub="들쭉날쭉" tone="muted" />
+          <ArrowStep />
+          <VisualPill label="표본평균" sub="여러 번 계산" tone="cyan" />
+          <ArrowStep />
+          <VisualPill label="정규분포" sub="종 모양에 가까움" tone="lime" />
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'adsp3Pca' || mode === 'adsp3Mds') {
+    return (
+      <LearningVisualFrame
+        eyebrow={mode === 'adsp3Pca' ? 'PCA' : 'MDS'}
+        title={mode === 'adsp3Pca' ? 'PCA는 정보가 큰 방향으로 축을 줄인다' : 'MDS는 거리 관계를 지도로 펼친다'}
+        caption={
+          mode === 'adsp3Pca'
+            ? 'PCA는 여러 변수를 분산이 큰 축으로 압축합니다. 변수 자체보다 정보 손실을 줄이며 차원을 낮추는 장면을 떠올리면 좋아요.'
+            : 'MDS는 대상들 사이의 거리를 최대한 보존하면서 2차원이나 3차원 지도 위에 배치하는 방법입니다.'
+        }
+      >
+        <div className="grid gap-3 sm:grid-cols-[1fr_28px_1fr] sm:items-center">
+          <VisualPill
+            label={mode === 'adsp3Pca' ? '많은 변수' : '거리표'}
+            sub={mode === 'adsp3Pca' ? 'x1, x2, x3, x4' : 'A-B 거리, B-C 거리'}
+            tone="cyan"
+          />
+          <ArrowStep />
+          <VisualPill
+            label={mode === 'adsp3Pca' ? '적은 축' : '지도 배치'}
+            sub={mode === 'adsp3Pca' ? 'PC1, PC2' : '가까운 것은 가깝게'}
+            tone="lime"
+          />
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'adsp3Hypothesis') {
+    const activeByStep: Record<string, string> = {
+      'adsp-3-3-s1-h0': 'h0',
+      'adsp-3-3-s1-h1': 'h1',
+      'adsp-3-3-s1-alpha': 'alpha',
+      'adsp-3-3-s1-pvalue': 'pvalue',
+      'adsp-3-3-s1-error': 'error',
+    };
+    return (
+      <LearningVisualFrame
+        eyebrow="HYPOTHESIS TEST"
+        title="가설검정은 기존 주장(H0)을 버릴지 판단하는 절차다"
+        caption="p-value가 유의수준보다 작으면 H0를 기각합니다. 단, p-value는 H0가 참일 확률이 아니라 관측 결과가 얼마나 드문지를 보는 값입니다."
+      >
+        {renderCards(
+          [
+            { key: 'h0', label: '귀무가설 H0', sub: '기존 주장', tone: 'muted' },
+            { key: 'h1', label: '대립가설 H1', sub: '보이고 싶은 주장', tone: 'cyan' },
+            { key: 'alpha', label: '유의수준 α', sub: '기각 기준선', tone: 'amber' },
+            { key: 'pvalue', label: 'p-value', sub: '관측 결과의 드묾', tone: 'lime' },
+            { key: 'error', label: '1종/2종 오류', sub: '틀린 판단의 종류', tone: 'red' },
+          ],
+          activeByStep[stepId ?? ''],
+          'grid-cols-2 sm:grid-cols-3',
+        )}
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'adsp3Ttest') {
+    const activeByStep: Record<string, string> = {
+      'adsp-3-3-s2-one': 'one',
+      'adsp-3-3-s2-paired': 'paired',
+      'adsp-3-3-s2-indep': 'indep',
+    };
+    return (
+      <LearningVisualFrame
+        eyebrow="T-TEST"
+        title="t검정은 평균 차이를 어떤 비교 구조로 보는지가 핵심이다"
+        caption="집단 하나를 기준값과 비교하면 일표본, 같은 사람의 전후 비교는 대응표본, 서로 다른 두 집단 비교는 독립표본입니다."
+      >
+        {renderCards(
+          [
+            { key: 'one', label: '일표본', sub: '한 집단 vs 기준값', detail: '우리 반 평균 = 70?', tone: 'cyan' },
+            { key: 'paired', label: '대응표본', sub: '같은 대상 전후', detail: '수업 전 vs 후', tone: 'lime' },
+            { key: 'indep', label: '독립표본', sub: '다른 두 집단', detail: 'A반 vs B반', tone: 'violet' },
+          ],
+          activeByStep[stepId ?? ''],
+          'grid-cols-1 sm:grid-cols-3',
+        )}
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'adsp3Regression') {
+    const activeByStep: Record<string, string> = {
+      'adsp-3-3-s3-linear': 'linear',
+      'adsp-3-3-s3-homo': 'homo',
+      'adsp-3-3-s3-normal': 'normal',
+      'adsp-3-3-s3-indep': 'indep',
+    };
+    return (
+      <LearningVisualFrame
+        eyebrow="REGRESSION ASSUMPTIONS"
+        title="회귀는 선·분·정·독이 무너지면 해석이 위험해진다"
+        caption="선형성, 등분산성, 정규성, 독립성은 회귀 결과를 믿어도 되는지 확인하는 기본 점검표입니다."
+      >
+        {renderCards(
+          [
+            { key: 'linear', label: '선형성', sub: '관계가 직선에 가까운가', tone: 'cyan' },
+            { key: 'homo', label: '등분산성', sub: '잔차 폭이 일정한가', tone: 'lime' },
+            { key: 'normal', label: '정규성', sub: '잔차가 종 모양인가', tone: 'violet' },
+            { key: 'indep', label: '독립성', sub: '잔차끼리 독립인가', tone: 'amber' },
+          ],
+          activeByStep[stepId ?? ''],
+        )}
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'adsp3Multicollinearity') {
+    return (
+      <LearningVisualFrame
+        eyebrow="MULTICOLLINEARITY"
+        title="설명변수끼리 너무 비슷하면 회귀가 흔들린다"
+        caption="다중공선성은 설명변수끼리 강하게 관련되어 계수 해석이 불안정해지는 문제입니다. VIF가 크면 의심합니다."
+      >
+        <div className="grid gap-3 sm:grid-cols-[1fr_28px_1fr] sm:items-center">
+          <VisualPill label="키" sub="몸무게와 강한 관련" tone="cyan" />
+          <ArrowStep />
+          <VisualPill label="몸무게" sub="서로 비슷한 설명" tone="amber" />
+        </div>
+        <div className="mt-3 rounded-[16px] border border-[#ffb020]/20 bg-[#ffb020]/8 px-3 py-2 kr-body text-[11.5px] font-bold text-cream/66">
+          둘 다 넣으면 모델이 “누구 덕분인지” 헷갈릴 수 있습니다.
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'adsp3TimeSeries') {
+    const activeByStep: Record<string, string> = {
+      'adsp-3-3-s5-trend': 'trend',
+      'adsp-3-3-s5-season': 'season',
+      'adsp-3-3-s5-cycle': 'cycle',
+      'adsp-3-3-s5-irregular': 'irregular',
+    };
+    return (
+      <LearningVisualFrame
+        eyebrow="TIME SERIES"
+        title="시계열은 추·계·순·불 네 성분으로 나눠 본다"
+        caption="추세는 장기 방향, 계절성은 고정 주기 반복, 순환은 주기가 일정하지 않은 등락, 불규칙은 설명하기 어려운 흔들림입니다."
+      >
+        {renderCards(
+          [
+            { key: 'trend', label: '추세', sub: '장기적으로 올라가거나 내려감', tone: 'cyan' },
+            { key: 'season', label: '계절성', sub: '고정 주기로 반복', tone: 'lime' },
+            { key: 'cycle', label: '순환', sub: '주기가 일정하지 않은 등락', tone: 'violet' },
+            { key: 'irregular', label: '불규칙', sub: '우연한 흔들림', tone: 'amber' },
+          ],
+          activeByStep[stepId ?? ''],
+        )}
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'adsp3Overfit') {
+    return (
+      <LearningVisualFrame
+        eyebrow="OVERFITTING"
+        title="과적합은 연습문제만 외우고 새 문제를 못 푸는 상태다"
+        caption="훈련 데이터에는 너무 잘 맞지만 테스트 데이터에서 성능이 떨어지면 과적합을 의심합니다. 데이터 분할과 검증은 이 문제를 찾기 위한 장치예요."
+      >
+        <div className="grid gap-2 sm:grid-cols-3">
+          <VisualPill label="Train" sub="공부한 문제" tone="cyan" />
+          <VisualPill label="Validation" sub="중간 점검" tone="violet" />
+          <VisualPill label="Test" sub="처음 보는 문제" tone="lime" />
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'adsp3Ensemble') {
+    const activeByStep: Record<string, string> = {
+      'adsp-3-4-s2-voting': 'voting',
+      'adsp-3-4-s2-bagging': 'bagging',
+      'adsp-3-4-s2-boosting': 'boosting',
+      'adsp-3-4-s2-stacking': 'stacking',
+    };
+    return (
+      <LearningVisualFrame
+        eyebrow="ENSEMBLE"
+        title="앙상블은 여러 모델의 판단을 모아 더 안정적으로 예측한다"
+        caption="Voting은 여러 모델 투표, Bagging은 병렬 학습, Boosting은 순차 보완, Stacking은 예측 결과를 다시 모델에 넣는 방식입니다."
+      >
+        {renderCards(
+          [
+            { key: 'voting', label: 'Voting', sub: '서로 다른 모델 투표', tone: 'cyan' },
+            { key: 'bagging', label: 'Bagging', sub: '병렬 + 부트스트랩', tone: 'lime' },
+            { key: 'boosting', label: 'Boosting', sub: '틀린 것을 순차 보완', tone: 'amber' },
+            { key: 'stacking', label: 'Stacking', sub: '예측을 모아 메타 모델', tone: 'violet' },
+          ],
+          activeByStep[stepId ?? ''],
+        )}
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'adsp3Association') {
+    const activeByStep: Record<string, string> = {
+      'adsp-3-4-s3-support': 'support',
+      'adsp-3-4-s3-confidence': 'confidence',
+      'adsp-3-4-s3-lift': 'lift',
+    };
+    return (
+      <LearningVisualFrame
+        eyebrow="ASSOCIATION RULE"
+        title="연관분석은 함께 나타나는 규칙을 찾는다"
+        caption="지지도는 같이 나온 비율, 신뢰도는 A가 있을 때 B도 있는 비율, 향상도는 우연보다 얼마나 강한지를 봅니다."
+      >
+        {renderCards(
+          [
+            { key: 'support', label: '지지도', sub: 'A와 B가 함께 나온 비율', tone: 'cyan' },
+            { key: 'confidence', label: '신뢰도', sub: 'A가 있을 때 B도 있는 비율', tone: 'lime' },
+            { key: 'lift', label: '향상도', sub: '우연 대비 얼마나 강한가', tone: 'violet' },
+          ],
+          activeByStep[stepId ?? ''],
+          'grid-cols-1 sm:grid-cols-3',
+        )}
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'adsp3Clustering') {
+    const activeByStep: Record<string, string> = {
+      'adsp-3-4-s4-hier': 'hier',
+      'adsp-3-4-s4-kmeans': 'kmeans',
+      'adsp-3-4-s4-dbscan': 'dbscan',
+      'adsp-3-4-s4-em-som': 'em',
+    };
+    return (
+      <LearningVisualFrame
+        eyebrow="CLUSTERING"
+        title="군집은 정답 라벨 없이 비슷한 대상끼리 묶는다"
+        caption="계층적 군집은 트리, K-means는 중심점, DBSCAN은 밀도, EM/SOM은 확률이나 격자 관점으로 묶는다고 보면 됩니다."
+      >
+        {renderCards(
+          [
+            { key: 'hier', label: '계층적', sub: '트리처럼 묶음', tone: 'cyan' },
+            { key: 'kmeans', label: 'K-means', sub: '중심점 K개', tone: 'lime' },
+            { key: 'dbscan', label: 'DBSCAN', sub: '밀도 기반 + noise', tone: 'amber' },
+            { key: 'em', label: 'EM · SOM', sub: '확률 · 격자 관점', tone: 'violet' },
+          ],
+          activeByStep[stepId ?? ''],
+        )}
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'adsp3Metrics') {
+    const activeByStep: Record<string, string> = {
+      'adsp-3-4-s5-acc': 'acc',
+      'adsp-3-4-s5-prec': 'prec',
+      'adsp-3-4-s5-recall': 'recall',
+      'adsp-3-4-s5-f1': 'f1',
+    };
+    return (
+      <LearningVisualFrame
+        eyebrow="MODEL METRICS"
+        title="평가지표는 무엇을 더 중요하게 볼지 정하는 언어다"
+        caption="정확도는 전체 정답률, 정밀도는 맞다고 한 것의 신뢰도, 재현율은 놓치지 않는 능력, F1은 정밀도와 재현율의 균형입니다."
+      >
+        {renderCards(
+          [
+            { key: 'acc', label: '정확도', sub: '전체 중 맞춘 비율', tone: 'cyan' },
+            { key: 'prec', label: '정밀도', sub: '양성 예측의 신뢰도', tone: 'lime' },
+            { key: 'recall', label: '재현율', sub: '실제 양성을 놓치지 않음', tone: 'amber' },
+            { key: 'f1', label: 'F1', sub: '정밀도와 재현율 균형', tone: 'violet' },
+          ],
+          activeByStep[stepId ?? ''],
+        )}
+      </LearningVisualFrame>
+    );
+  }
+
+  const modelCards: Partial<Record<Adsp3DiagramMode, { eyebrow: string; title: string; caption: string; cards: DiagramCard[] }>> = {
+    adsp3Logistic: {
+      eyebrow: 'LOGISTIC REGRESSION',
+      title: '로지스틱 회귀는 확률을 S자 곡선으로 만든다',
+      caption: '결과가 합격/불합격처럼 두 범주일 때 확률을 예측합니다. odds, log-odds, sigmoid를 연결해서 보면 됩니다.',
+      cards: [
+        { key: 'x', label: '입력 변수', sub: '공부시간, 출석률', tone: 'cyan' },
+        { key: 'sigmoid', label: 'Sigmoid', sub: '0~1 확률로 변환', tone: 'lime' },
+        { key: 'y', label: '분류', sub: '합격 가능성', tone: 'violet' },
+      ],
+    },
+    adsp3Tree: {
+      eyebrow: 'DECISION TREE',
+      title: '의사결정나무는 질문을 타고 내려가며 분류한다',
+      caption: '불순도가 줄어드는 질문을 골라 가지를 나눕니다. 너무 깊어지면 과적합이라 가지치기가 필요합니다.',
+      cards: [
+        { key: 'q1', label: '질문 1', sub: '공부시간 > 5?', tone: 'cyan' },
+        { key: 'q2', label: '질문 2', sub: '기출 3회 이상?', tone: 'lime' },
+        { key: 'leaf', label: '잎 노드', sub: '예측 결과', tone: 'amber' },
+      ],
+    },
+    adsp3Knn: {
+      eyebrow: 'K-NN',
+      title: 'K-NN은 가까운 이웃 K개를 보고 판단한다',
+      caption: '거리 기반 모델이라 변수 스케일이 다르면 가까움 판단이 왜곡됩니다. 그래서 표준화가 중요합니다.',
+      cards: [
+        { key: 'new', label: '새 점', sub: '분류할 대상', tone: 'cyan' },
+        { key: 'near', label: '가까운 K개', sub: '거리 계산', tone: 'lime' },
+        { key: 'vote', label: '다수결', sub: '가장 많은 라벨', tone: 'violet' },
+      ],
+    },
+    adsp3NaiveBayes: {
+      eyebrow: 'NAIVE BAYES',
+      title: '나이브베이즈는 조건들이 독립이라고 단순화해 계산한다',
+      caption: '실제로 완전히 독립이 아니어도 빠르고 강력합니다. 텍스트 분류처럼 단어 출현 기반 문제에서 자주 등장합니다.',
+      cards: [
+        { key: 'prior', label: '사전확률', sub: '원래 가능성', tone: 'cyan' },
+        { key: 'likelihood', label: '우도', sub: '증거가 나올 가능성', tone: 'lime' },
+        { key: 'posterior', label: '사후확률', sub: '증거 반영 후', tone: 'amber' },
+      ],
+    },
+    adsp3Svm: {
+      eyebrow: 'SVM',
+      title: 'SVM은 두 집단 사이의 가장 넓은 길을 찾는다',
+      caption: '마진을 최대화하는 경계선을 찾고, 선형으로 어렵다면 커널 트릭으로 더 높은 공간에서 나눕니다.',
+      cards: [
+        { key: 'margin', label: 'Margin', sub: '경계와 점 사이 거리', tone: 'cyan' },
+        { key: 'support', label: 'Support Vector', sub: '경계를 정하는 점', tone: 'lime' },
+        { key: 'kernel', label: 'Kernel', sub: '올려서 나누기', tone: 'violet' },
+      ],
+    },
+    adsp3Neural: {
+      eyebrow: 'NEURAL NETWORK',
+      title: '신경망은 층을 지나며 특징을 조합한다',
+      caption: '입력층, 은닉층, 출력층을 지나며 가중치를 학습합니다. CNN, RNN, AutoEncoder 같은 구조는 어디에 강한지 구분하면 됩니다.',
+      cards: [
+        { key: 'input', label: '입력층', sub: '데이터 입력', tone: 'cyan' },
+        { key: 'hidden', label: '은닉층', sub: '특징 조합', tone: 'lime' },
+        { key: 'output', label: '출력층', sub: '예측 결과', tone: 'violet' },
+      ],
+    },
+  };
+
+  const model = modelCards[mode];
+  if (model) {
+    return (
+      <LearningVisualFrame
+        eyebrow={model.eyebrow}
+        title={model.title}
+        caption={model.caption}
+      >
+        <div className="grid gap-2 sm:grid-cols-[1fr_22px_1fr_22px_1fr] sm:items-center">
+          {model.cards.map((card, index) => (
+            <Fragment key={card.key}>
+              <VisualPill label={card.label} sub={card.sub} tone={card.tone} />
+              {index < model.cards.length - 1 ? (
+                <div className="hidden sm:block">
+                  <ArrowStep />
+                </div>
+              ) : null}
+            </Fragment>
+          ))}
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  return null;
 }
 
 type Sqld2BasicsDiagramMode =

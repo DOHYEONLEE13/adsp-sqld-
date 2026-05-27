@@ -29,7 +29,7 @@ const ADSP_2_1: Lesson = {
           pose: 'happy',
           text: '시험 단골 — 사례 → 유형 매칭!\n각 유형의 What/How 구분이 핵심.',
         },
-        { pose: 'idle', text: '4유형 매칭 문제!' },
+        { pose: 'idle', text: 'What과 How 조합을 확인해보자!' },
       ],
       blocks: [
         {
@@ -234,7 +234,7 @@ const ADSP_2_1: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[분석 4유형 — What × How] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],
@@ -313,7 +313,7 @@ const ADSP_2_1: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"5단계", "선택·전처리·변환·마이닝·해석". 6단계+업무이해 시작이면 CRISP-DM.',
         },
@@ -362,7 +362,7 @@ const ADSP_2_1: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[분석 프로세스 — KDD vs CRISP-DM] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],
@@ -584,7 +584,7 @@ const ADSP_2_1: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[하향식 접근] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],
@@ -617,7 +617,7 @@ const ADSP_2_1: Lesson = {
           pose: 'happy',
           text: '비유: 시험 공부 전략 같아!\n계획적(Waterfall) / 시제품(Prototype) /\n위험 점검(Spiral) /\n짧은 스프린트(Agile) / 단기(RAD)',
         },
-        { pose: 'idle', text: '방법론 매칭 문제!' },
+        { pose: 'idle', text: '상황에 맞는 방법론을 골라보자!' },
       ],
       blocks: [
         {
@@ -847,7 +847,7 @@ const ADSP_2_1: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[분석 방법론 5종 —] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],
@@ -884,7 +884,7 @@ const ADSP_2_2: Lesson = {
         { pose: 'think', text: '두 축으로 나누면 4사분면:\n· [시급성] = 지금? 미래?\n· [난이도] = 쉬움? 어려움?' },
         { pose: 'lightbulb', text: '왜 4사분면? — 자원이 한정되니까\n뭐부터 할지 [순서] 를 정해야 해.' },
         { pose: 'happy', text: '비유: 시험 D-day 과제 우선순위 같아!\n오늘 시험인 단어 vs 한 달 후 미적분.\n뭘 먼저 할지 떠오르지?' },
-        { pose: 'idle', text: '4사분면 매칭 문제!' },
+        { pose: 'idle', text: '시급성과 난이도를 같이 판단해보자!' },
       ],
       blocks: [
         {
@@ -1040,7 +1040,7 @@ const ADSP_2_2: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[과제 우선순위 — 시급성 × 난이도] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],
@@ -1064,7 +1064,7 @@ const ADSP_2_2: Lesson = {
         { pose: 'think', text: '[시조프인데] 5가지:\n· [시]스템 · [조]직 · [프]로세스\n· [인]력 · [데]이터' },
         { pose: 'lightbulb', text: '줄여서 [시조프인데] 로 외우자!\n"시조 폼인데" — 한 번 들으면\n안 잊혀.\n주의 — "마케팅" 은 [없음] (함정).' },
         { pose: 'happy', text: '비유: 동아리·스터디 굴리려면\n5가지 다 있어야 함 —\n도구·사람 묶음·절차·멤버·콘텐츠.' },
-        { pose: 'idle', text: '시조프인데 5축 매칭 문제!' },
+        { pose: 'idle', text: '분석을 굴리는 5가지 축을 구분해보자!' },
       ],
       blocks: [
         {
@@ -1102,7 +1102,7 @@ const ADSP_2_2: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"분석 플랫폼", "BI·DB·인프라". 사람·R&R 이면 조직, 작업 흐름이면 프로세스.',
         },
@@ -1127,7 +1127,7 @@ const ADSP_2_2: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"R&R", "CoE", "보고 체계". 인프라면 시스템, 직원 역량이면 인력.',
         },
@@ -1152,7 +1152,7 @@ const ADSP_2_2: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"표준 절차", "작업 흐름", "단계별 산출물". 사람·역할이면 조직, 기술 기반이면 시스템.',
         },
@@ -1177,7 +1177,7 @@ const ADSP_2_2: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"역량 교육", "채용·육성". R&R 구조면 조직, 데이터 자체 관리면 데이터.',
         },
@@ -1202,7 +1202,7 @@ const ADSP_2_2: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"데이터 품질·표준화·메타", "데이터 자체". 인프라·도구면 시스템, 사람 역량이면 인력.',
         },
@@ -1216,7 +1216,7 @@ const ADSP_2_2: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[분석 거버넌스] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],
@@ -1395,7 +1395,7 @@ const ADSP_2_2: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[분석 성숙도] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],
@@ -1544,7 +1544,7 @@ const ADSP_2_2: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[데이터 거버넌스] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],
@@ -1581,7 +1581,7 @@ const ADSP_2_3: Lesson = {
         { pose: 'think', text: '[경제적·기술적·운영적] 3가지로\n분석 과제를 점검.' },
         { pose: 'lightbulb', text: '왜? — 한 축이라도 빨간불이면\n실행해도 망함.\n주의 — "사회적 타당성" 은 [없음] (함정).' },
         { pose: 'happy', text: '비유: 학원 등록 전 3축 체크 —\n학원비·강의 수준·부모님 허락\n셋 다 OK 여야 등록 결정!' },
-        { pose: 'idle', text: '타당성 3축 매칭 문제!' },
+        { pose: 'idle', text: '돈·기술·운영 중 어디를 보는지 확인해보자!' },
       ],
       blocks: [
         {
@@ -1612,7 +1612,7 @@ const ADSP_2_3: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"비용 vs 편익", "ROI". 데이터·시스템 가용성이면 기술적, 사람·프로세스 수용성이면 운영적.',
         },
@@ -1637,7 +1637,7 @@ const ADSP_2_3: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"데이터·알고리즘 가능성", "시스템 인프라". 비용·편익은 경제적, 인력·조직 수용성은 운영적.',
         },
@@ -1662,7 +1662,7 @@ const ADSP_2_3: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"조직 수용성", "인력·프로세스 준비도". ROI 면 경제적, 시스템·데이터면 기술적.',
         },
@@ -1676,7 +1676,7 @@ const ADSP_2_3: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[타당성 3요소 —] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],
@@ -1798,7 +1798,7 @@ const ADSP_2_3: Lesson = {
         { pose: 'think', text: '조직이 분석을 시작할 [준비] 됐나\n점검 6항목:\n· [업·조·기·데·문·아이티]' },
         { pose: 'lightbulb', text: '줄여서 [업조기데문아이]!\n주의 — "비용·예산" 은 [없음] (함정).\n준비도 vs 성숙도 매트릭스 → 4 유형\n(확산형·도입형·정착형·준비형).' },
         { pose: 'happy', text: '비유: 동아리 창단 체크리스트 —\n주제·부원·방법·자료·분위기·장비\n6가지 다 점검!' },
-        { pose: 'idle', text: '준비도 6영역 매칭 문제!' },
+        { pose: 'idle', text: '조직이 무엇을 준비해야 하는지 확인해보자!' },
       ],
       blocks: [
         {
@@ -1851,7 +1851,7 @@ const ADSP_2_3: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"분석 과제 발굴", "비즈니스 문제 정의", "주제 도출". 사람·R&R 이면 조직, 알고리즘이면 기법.',
         },
@@ -1876,7 +1876,7 @@ const ADSP_2_3: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"분석 인력 보유", "CDO·CoE", "R&R 명확성". 과제 발굴이면 업무, 알고리즘 활용이면 기법.',
         },
@@ -1889,7 +1889,7 @@ const ADSP_2_3: Lesson = {
       dialogue: [
         { pose: 'wave', text: '③ [기법] — 어떤 방법으로?' },
         { pose: 'think', text: '[Method] —\n분석 기법·알고리즘 활용 수준.' },
-        { pose: 'lightbulb', text: '왜? — 통계·ML·DL 중\n어디까지 쓸 수 있나 점검.\n기법 부족하면 데이터 있어도 못 풉.' },
+        { pose: 'lightbulb', text: '왜? — 통계·ML·DL 중\n어디까지 쓸 수 있나 점검.\n기법이 부족하면 데이터가 있어도 못 풀어.' },
         { pose: 'happy', text: '비유: 동아리 — 어떤 방법으로 활동?\n실무 예: 회귀·분류·딥러닝 활용 가능 수준.' },
         { pose: 'idle', text: '기법 영역 문제!' },
       ],
@@ -1901,7 +1901,7 @@ const ADSP_2_3: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"기법 활용", "알고리즘 적용", "통계·ML 수준". 사람이면 조직, 데이터 자체면 데이터.',
         },
@@ -1926,7 +1926,7 @@ const ADSP_2_3: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"데이터 확보·품질·표준". 알고리즘이면 기법, 플랫폼이면 IT 인프라.',
         },
@@ -1951,7 +1951,7 @@ const ADSP_2_3: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"데이터 기반 의사결정 문화", "분석 활용도". 인력이면 조직, 분위기 X 사람 수면 조직.',
         },
@@ -1976,7 +1976,7 @@ const ADSP_2_3: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"플랫폼·서버·BI·DW". 데이터 자체면 데이터, 알고리즘이면 기법.',
         },
@@ -1990,7 +1990,7 @@ const ADSP_2_3: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[분석 준비도] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],

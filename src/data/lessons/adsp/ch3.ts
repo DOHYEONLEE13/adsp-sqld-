@@ -19,7 +19,7 @@ const ADSP_3_1: Lesson = {
         { pose: 'think', text: '[요약변수] = 있는 것을 [집계]\n[파생변수] = 새 [의미 부여]' },
         { pose: 'lightbulb', text: '왜 구분? — 분석 목적에 따라\n다른 변환 필요. 시험 단골 매칭.\n데이터 마트 (DW의 부서별 코너) 에 쌓아둠.' },
         { pose: 'happy', text: '비유: 학교 성적표 —\n[요약] 점수 합계·평균·최고점\n[파생] 합격 여부 (점수 ≥ 60)·등급(상중하).' },
-        { pose: 'idle', text: '요약 vs 파생 매칭 문제!' },
+        { pose: 'idle', text: '요약변수와 파생변수를 구분해보자!' },
       ],
       blocks: [
         {
@@ -54,7 +54,7 @@ const ADSP_3_1: Lesson = {
         { pose: 'think', text: '튜키 4원칙:\n· [저]항성 · [잔]차\n· [재]표현 · [현]시성' },
         { pose: 'lightbulb', text: '줄여서 [저잔재현]!\n탐색적 데이터 분석 (Exploratory Data\nAnalysis) 의 4 기둥.' },
         { pose: 'happy', text: '비유: 모의고사 점수 첫인상 점검 —\n이상값 영향 (저)·예측 차이 (잔)\n·단위 바꾸기 (재)·시각화 (현).' },
-        { pose: 'idle', text: '저잔재현 매칭 문제!' },
+        { pose: 'idle', text: 'EDA 원칙이 어떤 상황에 쓰이는지 확인해보자!' },
       ],
       blocks: [
         {
@@ -207,7 +207,7 @@ const ADSP_3_1: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[EDA] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],
@@ -231,9 +231,14 @@ const ADSP_3_1: Lesson = {
         { pose: 'think', text: '4 방식:\n· [완]전제거 · [단]순대치\n· [다]중대치 · [모]델 기반' },
         { pose: 'lightbulb', text: '줄여서 [완단다모]!\n결측 메커니즘 (MCAR/MAR/MNAR)\n에 따라 선택.' },
         { pose: 'happy', text: '비유: 출석부 결석 처리 —\n행 삭제 / 반 평균 채움\n/ 5번 추정 / 비슷한 학생 점수.' },
-        { pose: 'idle', text: '완단다모 매칭 문제!' },
+        { pose: 'idle', text: '빈칸을 어떻게 다룰지 확인해보자!' },
       ],
       blocks: [
+        {
+          kind: 'intro',
+          body:
+            '결측값은 데이터 표 안의 "빈칸" 입니다. 그냥 비어 있다고 바로 지우면 안 되고, 왜 비었는지와 얼마나 중요한 값인지 먼저 판단해야 합니다. 그래서 결측 처리는 지우기, 단순히 채우기, 여러 번 추정하기, 모델로 예측하기의 4가지 흐름으로 나뉩니다.',
+        },
         {
           kind: 'callout',
           tone: 'mnemonic',
@@ -279,7 +284,7 @@ const ADSP_3_1: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"행 제거", "Listwise/Pairwise", "정보 손실". 평균/중앙값으로 채우면 단순 대치, 모델로 예측이면 모델 기반.',
         },
@@ -304,7 +309,7 @@ const ADSP_3_1: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"평균·중앙값·최빈값", "분산 과소평가". 여러 번 대치 후 통합이면 다중 대치, 회귀·KNN 면 모델 기반.',
         },
@@ -329,7 +334,7 @@ const ADSP_3_1: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"여러 번 대치 → 통합", "불확실성 반영". 단일 통계로 채우면 단순 대치, 단일 모델 예측이면 모델 기반.',
         },
@@ -354,7 +359,7 @@ const ADSP_3_1: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"회귀·KNN 예측", "변수 간 관계 활용". 단일 통계는 단순, 다회 대치는 다중, 행 제거는 완전 제거.',
         },
@@ -368,7 +373,7 @@ const ADSP_3_1: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[결측값 처리] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],
@@ -391,7 +396,7 @@ const ADSP_3_1: Lesson = {
         { pose: 'think', text: '4 방법:\n· [ESD] · [IQR]\n· [Z-Score] · [DBScan]' },
         { pose: 'lightbulb', text: '왜? — 모든 이상값을 [무조건 제거] X.\n진짜 오류인지, 의미있는 극단값인지\n구분이 핵심.' },
         { pose: 'happy', text: '비유: 시험에서 너무 튀는 점수 —\n채점 오류일 수도, 진짜 천재일 수도.\n무작정 빼면 위험!' },
-        { pose: 'idle', text: '이상값 탐지 매칭 문제!' },
+        { pose: 'idle', text: '튀는 값을 어떻게 볼지 확인해보자!' },
       ],
       blocks: [
         {
@@ -412,7 +417,7 @@ const ADSP_3_1: Lesson = {
         { pose: 'think', text: '[Extreme Studentized Deviate] —\n평균 ± [표준편차의 3배] 이상\n떨어진 점을 이상값으로.' },
         { pose: 'lightbulb', text: '왜? — 정규분포에서 99.7% 가\n[평균 ±3σ 안]. 밖으로 나가면 0.3% 미만.\n빠르고 단순.' },
         { pose: 'happy', text: '비유: 학생 시험점수 평균 70, σ=10\n→ 100점 이상 / 40점 이하가\n±3σ 밖 → 이상값 후보!' },
-        { pose: 'idle', text: 'ESD 정의 문제!' },
+        { pose: 'idle', text: '평균에서 얼마나 멀리 떨어졌는지 확인해보자!' },
       ],
       blocks: [
         {
@@ -444,7 +449,7 @@ const ADSP_3_1: Lesson = {
         { pose: 'think', text: '[Interquartile Range] —\n[Q1 − 1.5·IQR / Q3 + 1.5·IQR] 밖이면 이상.' },
         { pose: 'lightbulb', text: '왜? — 분포 모양에 [가정 없음] → 안전.\n비대칭 long-tail 데이터에 강함.' },
         { pose: 'happy', text: '비유: 학원 수강 시간처럼\n한쪽 꼬리 긴 데이터 →\n정규 가정 깨져도 IQR 잘 작동!' },
-        { pose: 'idle', text: 'IQR 정의 문제!' },
+        { pose: 'idle', text: '박스플롯 기준을 확인해보자!' },
       ],
       blocks: [
         {
@@ -476,7 +481,7 @@ const ADSP_3_1: Lesson = {
         { pose: 'think', text: '[Z-Score] —\n값을 [(값 − 평균)/σ] 표준화한 뒤\n임계값 비교.' },
         { pose: 'lightbulb', text: '왜? — |z| > 2 면 의심,\n> 3 이면 강한 이상값.\nESD 와 비슷하지만 [임계값 조절] 가능.' },
         { pose: 'happy', text: '비유: 모의고사 점수 평균 70, σ=10\n→ 한 학생이 100점이면 z = 3 →\n강한 이상값. 95점이면 z = 2.5 → 의심.' },
-        { pose: 'idle', text: 'Z-Score 정의 문제!' },
+        { pose: 'idle', text: '표준화 점수 기준을 확인해보자!' },
       ],
       blocks: [
         {
@@ -545,7 +550,7 @@ const ADSP_3_1: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[이상값 탐지 —] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],
@@ -569,9 +574,14 @@ const ADSP_3_1: Lesson = {
         { pose: 'think', text: '4 종:\n· [벡]터 · [리]스트\n· [매]트릭스 · [데]이터프레임' },
         { pose: 'lightbulb', text: '줄여서 [벡리매데]!\n타입 (같음/다름) × 차원 (1/2)\n조합으로 4분. 할당은 \`<-\`.' },
         { pose: 'happy', text: '비유: 학용품 정리 —\n같은 펜 통 (벡) / 필통 (리)\n/ 펜 격자 (매) / 시간표 (데).' },
-        { pose: 'idle', text: '벡리매데 매칭 문제!' },
+        { pose: 'idle', text: '데이터를 담는 그릇을 구분해보자!' },
       ],
       blocks: [
+        {
+          kind: 'intro',
+          body:
+            'R 자료구조는 데이터를 담는 그릇입니다. 같은 종류를 한 줄로 담는지, 서로 다른 종류를 섞는지, 표처럼 행과 열이 있는지에 따라 쓰는 그릇이 달라집니다. 처음에는 "타입이 같은가?" 와 "1차원인가 2차원인가?" 두 질문만 기억하면 됩니다.',
+        },
         {
           kind: 'callout',
           tone: 'mnemonic',
@@ -618,7 +628,7 @@ const ADSP_3_1: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"같은 타입 1차원", "c() 함수". 다른 타입 혼합이면 list, 표 형태면 data.frame.',
         },
@@ -643,7 +653,7 @@ const ADSP_3_1: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"이질적 타입 혼합", "list()". 단일 타입 1차원이면 vector, 단일 타입 2차원이면 matrix.',
         },
@@ -668,7 +678,7 @@ const ADSP_3_1: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"같은 타입 2차원", "행·열". 열마다 타입 달라도 되면 data.frame, 1차원이면 vector.',
         },
@@ -693,7 +703,7 @@ const ADSP_3_1: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"열마다 타입 다른 표", "iris·mtcars", "행=관측치 열=변수". 모든 열 같은 타입이면 matrix.',
         },
@@ -707,7 +717,7 @@ const ADSP_3_1: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[R 자료구조] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],
@@ -894,7 +904,7 @@ const ADSP_3_2: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[측정 척도] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],
@@ -916,15 +926,31 @@ const ADSP_3_2: Lesson = {
       dialogue: [
         { pose: 'wave', text: '확률분포 — 이산 vs 연속 두 갈래.' },
         { pose: 'think', text: '이산: 셀 수 있는 결과. 연속: 실수 구간.' },
-        { pose: 'idle', text: '먼저 두 갈래 + 대표 분포.' },
+        { pose: 'idle', text: '두 갈래를 본 뒤 대표 분포를 확인해보자.' },
       ],
       blocks: [
+        {
+          kind: 'intro',
+          body:
+            '확률분포는 "어떤 값이 얼마나 자주 나올지"를 그려놓은 지도입니다. 먼저 결과가 0개, 1개, 2개처럼 셀 수 있는지, 아니면 키·시간·무게처럼 끊기지 않는 값인지부터 나누면 훨씬 쉬워집니다.',
+        },
         {
           kind: 'callout',
           tone: 'tip',
           title: '구분 기준',
           body:
             '결과를 셀 수 있으면 이산 (베르누이·이항·포아송…), 실수 구간이면 연속 (정규·t·카이제곱·F·지수).',
+        },
+        {
+          kind: 'table',
+          title: '처음 보는 사람 기준 예시',
+          headers: ['질문', '분포 쪽'],
+          rows: [
+            ['오늘 결석자가 몇 명?', '이산 — 정수로 셈'],
+            ['고객 응답 시간이 몇 초?', '연속 — 구간 위의 값'],
+            ['10번 중 성공 몇 번?', '이산 — 이항'],
+            ['평균이 기준과 다른가?', '연속 — 정규/t'],
+          ],
         },
       ],
     },
@@ -946,7 +972,7 @@ const ADSP_3_2: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"셀 수 있음", "성공/실패", "단위시간 사건". 키·시간 같은 실수면 연속.',
         },
@@ -990,7 +1016,7 @@ const ADSP_3_2: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[확률분포 — 이산 vs 연속] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],
@@ -1032,7 +1058,7 @@ const ADSP_3_2: Lesson = {
         { pose: 'wave', text: '첫째 [불]편성 — 추정한 값을 [무한 번 평균] 내면 진짜 모수.' },
         { pose: 'think', text: '한 번만 추정하면 빗나갈 수 있어도 [기댓값] 으로 보면 정확.' },
         { pose: 'happy', text: '예: 표본평균이 모평균의 불편추정량 — 통계학의 출발점.' },
-        { pose: 'idle', text: '불편성 정의를 골라봐.' },
+        { pose: 'idle', text: '평균적으로 참값에 맞는다는 뜻을 확인해보자.' },
       ],
       blocks: [
         {
@@ -1094,7 +1120,7 @@ const ADSP_3_2: Lesson = {
         { pose: 'wave', text: '셋째 [일]치성 — [표본 크기 n] 이 커질수록 추정량이 [모수에 점점 다가감].' },
         { pose: 'think', text: '소수에선 빗나갈 수 있어도 표본을 100배 늘리면 거의 정답.' },
         { pose: 'happy', text: '예: 동전 앞면 확률 추정 — 10번 던지면 7/10=0.7 같이 흔들리지만 100만 번이면 0.5에 매우 가까움.' },
-        { pose: 'idle', text: '일치성 정의를 골라봐.' },
+        { pose: 'idle', text: '표본이 커질수록 정답에 가까워지는지 확인해보자.' },
       ],
       blocks: [
         {
@@ -1156,7 +1182,7 @@ const ADSP_3_2: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[좋은 추정량] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],
@@ -1304,11 +1330,28 @@ const ADSP_3_3: Lesson = {
       title: '가설검정 5용어 개요',
       quizId: 'adsp-3-3-cp-01',
       dialogue: [
-        { pose: 'wave', text: '가설검정 5용어 — 헷갈리면 시험에서 뚫림.' },
+        { pose: 'wave', text: '가설검정은 "주장이 맞는지" 데이터를 보고 판단하는 과정이야.' },
         { pose: 'think', text: '[H₀] · [H₁] · [α] · [p-value] · [1·2종 오류].' },
-        { pose: 'idle', text: '먼저 5용어 매핑.' },
+        { pose: 'idle', text: '먼저 5용어의 역할부터 잡아보자.' },
       ],
       blocks: [
+        {
+          kind: 'intro',
+          body:
+            '예를 들어 "새 공부법이 점수를 올린다"는 주장이 있다고 해봅시다. 가설검정은 일단 "차이가 없다"를 기본값으로 두고, 데이터가 그 기본값을 뒤집을 만큼 강한지 확인합니다.',
+        },
+        {
+          kind: 'table',
+          title: '가설검정 5용어 지도',
+          headers: ['용어', '처음 보는 사람 기준 의미'],
+          rows: [
+            ['H₀', '차이 없음 · 효과 없음이라는 기본값'],
+            ['H₁', '차이 있음 · 효과 있음이라는 주장'],
+            ['α', '잘못 기각해도 감수할 최대 위험'],
+            ['p-value', 'H₀가 맞다고 볼 때 이런 결과가 우연히 나올 확률'],
+            ['1종/2종 오류', '잘못 기각하거나, 틀린 H₀를 못 버리는 실수'],
+          ],
+        },
         {
           kind: 'callout',
           tone: 'warn',
@@ -1325,7 +1368,7 @@ const ADSP_3_3: Lesson = {
       dialogue: [
         { pose: 'wave', text: '첫째 [H₀] — "차이 없다 · 효과 없다".' },
         { pose: 'think', text: '기각의 대상. 우리가 부정하고 싶은 가설.' },
-        { pose: 'idle', text: '귀무가설의 정의를 골라봐.' },
+        { pose: 'idle', text: '기본값으로 두는 가설이 무엇인지 확인해보자.' },
       ],
       blocks: [
         {
@@ -1335,7 +1378,7 @@ const ADSP_3_3: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"차이 없다", "효과 없다", "현 상태". 새로 주장할 것은 H₁(대립).',
         },
@@ -1348,7 +1391,7 @@ const ADSP_3_3: Lesson = {
       dialogue: [
         { pose: 'wave', text: '둘째 [H₁] — "차이 있다 · 효과 있다".' },
         { pose: 'think', text: 'H₀ 를 기각하면 채택되는 가설. 우리가 증명하고 싶은 것.' },
-        { pose: 'idle', text: '대립가설의 정의를 골라봐.' },
+        { pose: 'idle', text: '우리가 주장하고 싶은 가설을 확인해보자.' },
       ],
       blocks: [
         {
@@ -1358,7 +1401,7 @@ const ADSP_3_3: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"차이 있다", "효과 있다", "주장하고 싶은 것". 부정·기각 대상은 H₀.',
         },
@@ -1381,7 +1424,7 @@ const ADSP_3_3: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"1종 오류 허용 한도", "보통 0.05". H₀ 가 거짓일 때 기각 못 할 위험은 β (2종 오류).',
         },
@@ -1394,7 +1437,7 @@ const ADSP_3_3: Lesson = {
       dialogue: [
         { pose: 'wave', text: '넷째 [p-value] — H₀ 참일 때 극단값 확률.' },
         { pose: 'think', text: 'H₀ 가정 + 현재 결과 이상의 극단값이 우연으로 나올 확률.' },
-        { pose: 'idle', text: 'p-value 의 정의를 골라봐.' },
+        { pose: 'idle', text: 'p-value를 흔한 오해 없이 확인해보자.' },
       ],
       blocks: [
         {
@@ -1418,7 +1461,7 @@ const ADSP_3_3: Lesson = {
       dialogue: [
         { pose: 'wave', text: '다섯째 [오류 2종] — 1종(α) · 2종(β).' },
         { pose: 'think', text: '1종: H₀ 맞는데 기각 (거짓 양성). 2종: H₀ 틀렸는데 채택 (놓침).' },
-        { pose: 'idle', text: '오류 매칭을 골라봐.' },
+        { pose: 'idle', text: '1종 오류와 2종 오류를 구분해보자.' },
       ],
       blocks: [
         {
@@ -1428,7 +1471,7 @@ const ADSP_3_3: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"1종 = H₀ 맞는데 기각 = α", "2종 = H₀ 틀렸는데 채택 = β". 검정력 = 1−β.',
         },
@@ -1442,7 +1485,7 @@ const ADSP_3_3: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[가설검정 5용어 —] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],
@@ -1586,7 +1629,7 @@ const ADSP_3_3: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[t검정 3종 —] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],
@@ -1608,9 +1651,25 @@ const ADSP_3_3: Lesson = {
       dialogue: [
         { pose: 'wave', text: '선형회귀가 의미 있으려면 [4가정] 충족.' },
         { pose: 'think', text: '"[선분정독]" — 선형성 · 등분산 · 정규성 · 독립성.' },
-        { pose: 'idle', text: '먼저 SST = SSE + SSR + 4가정 개요.' },
+        { pose: 'idle', text: '회귀선을 믿어도 되는 조건을 먼저 보자.' },
       ],
       blocks: [
+        {
+          kind: 'intro',
+          body:
+            '회귀선은 데이터 위에 그은 "설명선"입니다. 그런데 데이터 모양이 직선과 너무 다르거나, 오차가 한쪽으로 몰리거나, 시간 순서대로 서로 영향을 주면 회귀선의 p-value와 해석을 믿기 어려워집니다. 그래서 4가정을 먼저 확인합니다.',
+        },
+        {
+          kind: 'table',
+          title: '회귀 4가정 한눈에 보기',
+          headers: ['가정', '무슨 뜻?', '깨졌을 때 신호'],
+          rows: [
+            ['선형성', '관계가 직선에 가깝다', '잔차에 곡선 패턴'],
+            ['등분산성', '오차 흩어짐이 비슷하다', '잔차가 부채꼴'],
+            ['정규성', '잔차가 종 모양이다', 'QQ플롯이 크게 휘어짐'],
+            ['독립성', '잔차끼리 영향이 없다', '시계열 자기상관'],
+          ],
+        },
         {
           kind: 'section',
           title: 'SST = SSE + SSR',
@@ -1758,7 +1817,7 @@ const ADSP_3_3: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[회귀 4가정] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],
@@ -1939,7 +1998,7 @@ const ADSP_3_3: Lesson = {
         { pose: 'wave', text: '넷째 [불]규칙 — 추세·계절·순환을 [다 빼고 남는] 무작위 변동.' },
         { pose: 'think', text: '예: 코로나 첫 락다운 한 달 — 일회성·예측 불가의 큰 변동.' },
         { pose: 'happy', text: '특징 — [예측 불가능]. 모델이 다음 값을 정확히 맞히지 못하는 부분.' },
-        { pose: 'idle', text: '불규칙 성분 정의를 골라봐.' },
+        { pose: 'idle', text: '어떤 변동이 불규칙 성분인지 확인해보자.' },
       ],
       blocks: [
         {
@@ -1970,7 +2029,7 @@ const ADSP_3_3: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[시계열 4성분] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],
@@ -2043,7 +2102,7 @@ const ADSP_3_4: Lesson = {
         { pose: 'think', text: '4 종:\n· [V]oting · [B]agging\n· [B]oosting · [S]tacking' },
         { pose: 'lightbulb', text: '줄여서 [다병순메]!\n다수결 · 병렬 · 순차 · 메타.\n여러 모델을 합쳐 [더 강한 모델].' },
         { pose: 'happy', text: '비유: 조별 시험 답안 —\n친구들 답 모아 다수결 / 같은 문제집 N번 평균\n/ 틀린 문제 가중 / 친구 답 → 선생님 종합.' },
-        { pose: 'idle', text: '다병순메 매칭 문제!' },
+        { pose: 'idle', text: '앙상블이 모델을 합치는 방식을 구분해보자!' },
       ],
       blocks: [
         {
@@ -2071,7 +2130,7 @@ const ADSP_3_4: Lesson = {
         { pose: 'think', text: '[Voting] —\n서로 다른 모델이 각자 답하고\n[다수결 / 확률 평균].' },
         { pose: 'lightbulb', text: '왜? — 이질적 모델의 [장점 결합].\nhard voting (다수결)\n/ soft voting (확률 평균).' },
         { pose: 'happy', text: '비유: 친구 5명에게 같은 문제 풀게 함\n→ 3명 이상 같은 답이면 그 답 채택.\n실무: 로지스틱 + RF + XGB 다수결.' },
-        { pose: 'idle', text: 'Voting 정의 문제!' },
+        { pose: 'idle', text: '여러 모델의 투표 방식인지 확인해보자!' },
       ],
       blocks: [
         {
@@ -2198,7 +2257,7 @@ const ADSP_3_4: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[앙상블] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],
@@ -2222,7 +2281,7 @@ const ADSP_3_4: Lesson = {
         { pose: 'think', text: '3 지표:\n· [지]지도 · [신]뢰도 · [향]상도' },
         { pose: 'lightbulb', text: '줄여서 [지신향]!\n알고리즘: Apriori (후보-검증 반복)\n· FP-Growth (FP-Tree 빠른 탐색).' },
         { pose: 'happy', text: '비유: 학교 매점 — "빵 산 학생이 우유도?"\n장바구니 규칙. 슈퍼 "맥주+기저귀" 와 동일!' },
-        { pose: 'idle', text: '지신향 매칭 문제!' },
+        { pose: 'idle', text: '장바구니 규칙의 3가지 지표를 구분해보자!' },
       ],
       blocks: [
         {
@@ -2251,7 +2310,7 @@ const ADSP_3_4: Lesson = {
         { pose: 'think', text: '[Support] —\n[전체 거래 중] A 와 B 가\n[같이 등장] 하는 비율.' },
         { pose: 'lightbulb', text: '왜? — "이 규칙이 [얼마나 자주]\n나타나는가" 첫 필터.\n너무 낮으면 우연 가능성 ↑.' },
         { pose: 'happy', text: '비유: 학교 매점 100 거래 중\n[빵+우유] 12 거래 → Support = 12%.\n슈퍼 [맥주+기저귀] 동일 패턴.' },
-        { pose: 'idle', text: '지지도 정의 문제!' },
+        { pose: 'idle', text: '두 상품이 함께 나온 비율을 확인해보자!' },
       ],
       blocks: [
         {
@@ -2283,7 +2342,7 @@ const ADSP_3_4: Lesson = {
         { pose: 'think', text: '[Confidence] —\nP(B|A) = "A 를 골랐을 때\nB 도 따라올 [조건부 확률]".' },
         { pose: 'lightbulb', text: '왜? — 추천·번들링·진열 결정에 직결.\n주의: Confidence 만 보면 함정 (Lift 와 함께).' },
         { pose: 'happy', text: '비유: 매점에서 [빵 산 학생 50명] 중\n30명이 우유도 샀다 → Confidence = 60%.\n슈퍼: 맥주 산 50명 중 30명이 기저귀.' },
-        { pose: 'idle', text: '신뢰도 정의 문제!' },
+        { pose: 'idle', text: 'A가 있을 때 B도 나오는 비율을 확인해보자!' },
       ],
       blocks: [
         {
@@ -2346,7 +2405,7 @@ const ADSP_3_4: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[연관분석] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],
@@ -2370,9 +2429,14 @@ const ADSP_3_4: Lesson = {
         { pose: 'think', text: '4 알고리즘:\n· [계]층적 · [K-means]\n· [DBSCAN] · [EM·SOM]' },
         { pose: 'lightbulb', text: '줄여서 [계중밀확]!\n계층·중심·밀도·확률 4 분류 기준.\n레이블 없이 [유사한 것끼리] 묶기.' },
         { pose: 'happy', text: '비유: 학급 친구 그룹 —\n조직도 / "3개 그룹 만들어줘" / 친구 밀도\n/ 확률·격자 배치.' },
-        { pose: 'idle', text: '계중밀확 매칭 문제!' },
+        { pose: 'idle', text: '어떤 기준으로 묶는지 확인해보자!' },
       ],
       blocks: [
+        {
+          kind: 'intro',
+          body:
+            '군집은 정답 라벨이 없는 데이터를 비슷한 것끼리 묶는 방법입니다. "이 학생이 A반인지 B반인지"를 미리 알려주지 않고, 데이터의 거리·밀도·확률 구조를 보고 자연스러운 그룹을 찾습니다.',
+        },
         {
           kind: 'callout',
           tone: 'mnemonic',
@@ -2418,7 +2482,7 @@ const ADSP_3_4: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"덴드로그램", "합병형/분할형", "K 불필요". 중심점 K개 반복이면 K-means, 밀도 기반이면 DBSCAN, 확률 할당이면 EM.',
         },
@@ -2450,7 +2514,7 @@ const ADSP_3_4: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"K 사전 지정", "중심점 반복", "유클리드 거리". 트리 구조면 계층적, 밀도면 DBSCAN, 확률이면 EM.',
         },
@@ -2482,7 +2546,7 @@ const ADSP_3_4: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"밀도 기반", "ε 반경 + minPts", "K 불필요", "noise 자동 식별", "비구형 OK". K 미리 지정이면 K-means, 트리면 계층적.',
         },
@@ -2504,7 +2568,7 @@ const ADSP_3_4: Lesson = {
         { pose: 'think', text: '[EM] = 가우시안 혼합 [확률] 할당.\n[SOM] = 신경망 [2D 격자] 투영.' },
         { pose: 'lightbulb', text: '왜? — 단순 거리 기반 한계 보완.\nEM: "이 점 A그룹 70%, B그룹 30%" 확률\nSOM: 고차원 → 2D 시각화.' },
         { pose: 'happy', text: '비유: EM = 학생을 [확률] 로 그룹 배정\n(A 70% / B 30%).\nSOM = [격자] 좌석 배치.' },
-        { pose: 'idle', text: 'EM·SOM 정의 문제!' },
+        { pose: 'idle', text: '확률 할당과 격자 배치를 구분해보자!' },
       ],
       blocks: [
         {
@@ -2514,7 +2578,7 @@ const ADSP_3_4: Lesson = {
         },
         {
           kind: 'section',
-          title: '시험 키워드',
+          title: '구분 팁',
           body:
             '"EM = 확률 할당, 가우시안 혼합", "SOM = 신경망 격자 2D 투영". 단순 거리·중심점이면 K-means, 트리면 계층적, 밀도면 DBSCAN.',
         },
@@ -2535,7 +2599,7 @@ const ADSP_3_4: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[군집] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],
@@ -2559,7 +2623,7 @@ const ADSP_3_4: Lesson = {
         { pose: 'think', text: '[오분류표] (Confusion Matrix) —\nTP / FP / FN / TN 의 2×2 표.' },
         { pose: 'lightbulb', text: '왜? — 모든 지표 (정확도·정밀도·재현율·F1·ROC)\n가 이 4 칸에서 파생.\n실제 vs 예측 분류 결과.' },
         { pose: 'happy', text: '비유: 시험 채점 표 —\n맞게 양성·놓침·오경보·정상기각.\n어떤 시나리오에 어떤 지표 쓸지가 핵심.' },
-        { pose: 'idle', text: '오분류표 정의 문제!' },
+        { pose: 'idle', text: '실제값과 예측값의 네 칸을 확인해보자!' },
       ],
       blocks: [
         {
@@ -2714,7 +2778,7 @@ const ADSP_3_4: Lesson = {
       dialogue: [
         { pose: 'wave', text: '[평가지표 ① 오분류표] 복습 시간이야!' },
         { pose: 'think', text: '방금 배운 핵심을\n다시 한 번 정리해보자.' },
-        { pose: 'lightbulb', text: '시험 함정도 같이 떠올려봐 —\n자주 헷갈리는 포인트가 있을 거야.' },
+        { pose: 'lightbulb', text: '헷갈렸던 구분을 같이 떠올려봐 —\n문제에서 자주 묻는 포인트가 있을 거야.' },
         { pose: 'happy', text: '비유로 다시 떠올리면\n오래 기억에 남아!' },
         { pose: 'idle', text: '잘 정리됐어! 다음 스텝으로!' },
       ],

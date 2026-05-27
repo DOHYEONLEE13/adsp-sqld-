@@ -5,7 +5,7 @@ QuestDP Android should start as a Trusted Web Activity.
 The production start URL is:
 
 ```txt
-https://quest-dp.com/app
+https://quest-dp.com/app/
 ```
 
 This route keeps the public website landing page intact while making the Android app open directly into the game, login, or onboarding flow.
@@ -45,7 +45,7 @@ $env:Path="$env:JAVA_HOME\bin;$env:ANDROID_HOME\platform-tools;$env:Path"
 Use Bubblewrap/TWA:
 
 ```txt
-web app: https://quest-dp.com/app
+web app: https://quest-dp.com/app/
 manifest: https://quest-dp.com/app.webmanifest
 package name: com.questdp.app
 ```

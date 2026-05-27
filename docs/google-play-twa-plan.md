@@ -9,7 +9,7 @@ QuestDP Android app should start as a **Trusted Web Activity (TWA)** app.
 The web app remains the main product:
 
 - Web users enter through `https://quest-dp.com/`
-- Android app users enter through an app-only route such as `https://quest-dp.com/app`
+- Android app users enter through an app-only route such as `https://quest-dp.com/app/`
 - Most content, UI, SQLD lesson fixes, and screenshots update through the normal flow:
   `GitHub push -> Cloudflare deploy -> app reflects the new web build`
 - Native app metadata changes still require a new Google Play upload.
@@ -24,7 +24,7 @@ Use this split:
 quest-dp.com/
   Web landing page, SEO pages, blog, pricing, Toss web payment
 
-quest-dp.com/app
+quest-dp.com/app/
   Android app entry
   immediately opens onboarding/login/game
   no landing page
@@ -39,10 +39,10 @@ The app should not remove the landing page from the website. It should only skip
 Recommended app start URL:
 
 ```txt
-https://quest-dp.com/app
+https://quest-dp.com/app/
 ```
 
-`/app` should:
+`/app/` should:
 
 1. Mark the session as app mode.
 2. Replace the current browser history entry with the game/onboarding route.
@@ -58,15 +58,15 @@ Expected behavior:
 
 ```txt
 Android app icon tap
--> /app
+-> /app/
 -> replace to /#/game or onboarding
 -> back button exits app or follows in-game back behavior
 ```
 
 Implementation status:
 
-- `/app` route is now implemented in `src/App.tsx`.
-- `/app` opens the game-first flow instead of the public landing page.
+- `/app` and `/app/` route handling is now implemented in `src/App.tsx`.
+- `/app/` opens the game-first flow instead of the public landing page.
 - If onboarding is required, `/app` transitions to `#/onboarding`.
 - If a protected route is opened in app mode, auth guard can still send the user to `#/login`.
 - Separate app manifest is available at `/app.webmanifest`.

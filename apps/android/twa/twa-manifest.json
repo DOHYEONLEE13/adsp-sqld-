@@ -12,7 +12,7 @@
   "navigationDividerColorDark": "#010828",
   "backgroundColor": "#010828",
   "enableNotifications": false,
-  "startUrl": "/app",
+  "startUrl": "/app/",
   "iconUrl": "https://quest-dp.com/logo/questdp-mark.png",
   "maskableIconUrl": "https://quest-dp.com/logo/questdp-mark.png",
   "splashScreenFadeOutDuration": 300,
@@ -26,14 +26,14 @@
     {
       "name": "학습 시작",
       "shortName": "학습",
-      "url": "https://quest-dp.com/app#/game",
+      "url": "https://quest-dp.com/app/#/game",
       "chosenIconUrl": "https://quest-dp.com/logo/questdp-mark.png",
       "chosenMaskableIconUrl": "https://quest-dp.com/logo/questdp-mark.png"
     },
     {
       "name": "오늘의 퀘스트",
       "shortName": "퀘스트",
-      "url": "https://quest-dp.com/app#/quests",
+      "url": "https://quest-dp.com/app/#/quests",
       "chosenIconUrl": "https://quest-dp.com/logo/questdp-mark.png",
       "chosenMaskableIconUrl": "https://quest-dp.com/logo/questdp-mark.png"
     }

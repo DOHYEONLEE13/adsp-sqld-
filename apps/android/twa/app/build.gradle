@@ -23,7 +23,7 @@ plugins {
 def twaManifest = [
     applicationId: 'com.questdp.app',
     hostName: 'quest-dp.com', // The domain being opened in the TWA.
-    launchUrl: '/app', // The start path for the TWA. Must be relative to the domain.
+    launchUrl: '/app/', // The start path for the TWA. Must be relative to the domain.
     name: 'QuestDP', // The application name.
     launcherName: 'QuestDP', // The name shown on the Android Launcher.
     themeColor: '#010828', // The color used for the status bar.
@@ -39,7 +39,7 @@ def twaManifest = [
     // - short_name: Shorter string used if |name| is too long.
     // - url: Absolute path of the URL to launch the app with (e.g '/create').
     // - icon: Name of the resource in the drawable folder to use as an icon.
-    shortcuts: [[name:'학습 시작', short_name:'학습', url:'https://quest-dp.com/app#/game', icon:'shortcut_0'],[name:'오늘의 퀘스트', short_name:'퀘스트', url:'https://quest-dp.com/app#/quests', icon:'shortcut_1']],
+    shortcuts: [[name:'학습 시작', short_name:'학습', url:'https://quest-dp.com/app/#/game', icon:'shortcut_0'],[name:'오늘의 퀘스트', short_name:'퀘스트', url:'https://quest-dp.com/app/#/quests', icon:'shortcut_1']],
     // The duration of fade out animation in milliseconds to be played when removing splash screen.
     splashScreenFadeOutDuration: 300,
     generatorApp: 'unknown', // Application that generated the Android Project

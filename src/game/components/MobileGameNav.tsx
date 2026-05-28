@@ -115,7 +115,7 @@ export function MobileTopBar({ subject }: TopProps) {
     >
       <div
         className={`flex items-center justify-between max-w-[1200px] mx-auto py-2 ${
-          appMode ? 'gap-1.5 px-3' : 'gap-2 px-4 md:px-6 lg:px-10'
+          appMode ? 'gap-2 px-4' : 'gap-2 px-4 md:px-6 lg:px-10'
         }`}
       >
         {/*
@@ -123,7 +123,7 @@ export function MobileTopBar({ subject }: TopProps) {
           마스코트/닉네임 button 안에 또 다른 button 을 넣으면 nested button 에러가
           발생하므로 SubjectBadge 는 별도 형제로 둠.
         */}
-        <div className={`flex items-center min-w-0 ${appMode ? 'gap-1.5' : 'gap-2'}`}>
+        <div className="flex items-center min-w-0 gap-2">
         <button
           type="button"
           onClick={() => {
@@ -134,13 +134,13 @@ export function MobileTopBar({ subject }: TopProps) {
         >
           <span
             className={`shrink-0 inline-flex items-center justify-center ${
-              appMode ? 'w-8 h-8' : 'w-10 h-10'
+              appMode ? 'w-9 h-9' : 'w-10 h-10'
             }`}
           >
             <Ques
               pose={profile.avatarPose}
               character={profile.avatarCharacter}
-              size={appMode ? 32 : 40}
+              size={appMode ? 36 : 40}
               animated={false}
             />
           </span>
@@ -163,8 +163,8 @@ export function MobileTopBar({ subject }: TopProps) {
                 <span
                   className="kr-num truncate max-w-[110px] text-left"
                   style={{
-                    maxWidth: appMode ? 54 : 110,
-                    fontSize: appMode ? 12 : 13,
+                    maxWidth: appMode ? 62 : 110,
+                    fontSize: 13,
                     lineHeight: 1.08,
                     color: isUnset
                       ? 'var(--neon-85)'
@@ -195,14 +195,14 @@ export function MobileTopBar({ subject }: TopProps) {
         ) : null}
         {appMode ? <AppPlanPill plan={energy.isPremium || energy.isAdmin ? 'MAX' : 'FREE'} /> : null}
         </div>
-        <div className={`flex items-center ${appMode ? 'gap-1.5' : 'gap-3 md:gap-4'}`}>
+        <div className={`flex items-center ${appMode ? 'gap-2' : 'gap-3 md:gap-4'}`}>
           {/* 순서: XP · 에너지 · 설정 (가장 오른쪽 끝). PlanTag 는 사용자 결정으로 제거. */}
           <button
             type="button"
             onClick={handleShare}
             aria-label="XP 공유하기"
             className={`inline-flex items-center px-0 py-1 transition active:scale-95 ${
-              appMode ? 'gap-0.5' : 'gap-1.5'
+              appMode ? 'gap-1' : 'gap-1.5'
             }`}
             style={{
               background: 'transparent',
@@ -213,7 +213,7 @@ export function MobileTopBar({ subject }: TopProps) {
               className="kr-num text-[10px] tracking-wider"
               style={{
                 color: '#FFB020',
-                fontSize: appMode ? 9 : 10,
+                fontSize: 10,
                 lineHeight: 1,
               }}
             >
@@ -223,7 +223,7 @@ export function MobileTopBar({ subject }: TopProps) {
               className="kr-num"
               style={{
                 color: '#FFB020',
-                fontSize: appMode ? 12 : 13,
+                fontSize: 13,
                 lineHeight: 1,
               }}
             >
@@ -236,14 +236,14 @@ export function MobileTopBar({ subject }: TopProps) {
               type="button"
               onClick={refreshAppSurface}
               aria-label="앱 새로고침"
-              className="inline-flex items-center justify-center w-7 h-7 rounded-full transition active:scale-95 hover:opacity-80"
+              className="inline-flex items-center justify-center w-8 h-8 rounded-full transition active:scale-95 hover:opacity-80"
               style={{
-                background: 'rgba(239,244,255,0.045)',
-                border: '1px solid rgba(239,244,255,0.14)',
-                color: 'rgba(239,244,255,0.78)',
+                background: 'rgba(239,244,255,0.06)',
+                border: '1px solid rgba(239,244,255,0.18)',
+                color: 'rgba(239,244,255,0.85)',
               }}
             >
-              <RefreshCw size={14} strokeWidth={2.2} />
+              <RefreshCw size={15} strokeWidth={2.2} />
             </button>
           ) : null}
           <button
@@ -254,16 +254,14 @@ export function MobileTopBar({ subject }: TopProps) {
               }
             }}
             aria-label="설정 열기"
-            className={`inline-flex items-center justify-center rounded-full transition active:scale-95 hover:opacity-80 ${
-              appMode ? 'w-7 h-7' : 'w-8 h-8'
-            }`}
+            className="inline-flex items-center justify-center rounded-full transition active:scale-95 hover:opacity-80 w-8 h-8"
             style={{
               background: 'rgba(239,244,255,0.06)',
               border: '1px solid rgba(239,244,255,0.18)',
             }}
           >
               <SettingsIcon
-              size={appMode ? 14 : 16}
+              size={16}
               strokeWidth={2.2}
               style={{ color: 'rgba(239,244,255,0.85)' }}
             />

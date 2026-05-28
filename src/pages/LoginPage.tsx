@@ -11,6 +11,7 @@ import {
   getPendingAuthRedirect,
 } from '@/lib/authGuard';
 import { useAuthSession } from '@/lib/auth/sessionStore';
+import { isAppMode } from '@/lib/appMode';
 
 interface Props {
   onBack?: () => void;
@@ -18,6 +19,7 @@ interface Props {
 
 export default function LoginPage({ onBack }: Props) {
   const auth = useAuthSession();
+  const appMode = isAppMode();
   const [redirectReason, setRedirectReason] = useState<'protected' | null>(null);
   const pendingTarget = getPendingAuthRedirect();
 
@@ -56,28 +58,34 @@ export default function LoginPage({ onBack }: Props) {
       </div>
 
       <div className="relative z-10 max-w-[560px] mx-auto px-5 md:px-8 lg:px-10 pt-8 pb-16">
-        <button
-          type="button"
-          onClick={() => {
-            clearPendingAuthRedirect();
-            if (onBack) onBack();
-            else window.location.hash = '';
-          }}
-          aria-label="뒤로가기"
-          className="inline-flex items-center gap-2 kr-heading uppercase text-[11px] tracking-widest text-cream/75 hover:text-neon transition mb-6"
-        >
-          <ArrowLeft size={14} strokeWidth={2.4} />
-          뒤로
-        </button>
+        {!appMode ? (
+          <button
+            type="button"
+            onClick={() => {
+              clearPendingAuthRedirect();
+              if (onBack) onBack();
+              else window.location.hash = '';
+            }}
+            aria-label="뒤로가기"
+            className="inline-flex items-center gap-2 kr-heading uppercase text-[11px] tracking-widest text-cream/75 hover:text-neon transition mb-6"
+          >
+            <ArrowLeft size={14} strokeWidth={2.4} />
+            뒤로
+          </button>
+        ) : null}
 
-        <header className="flex flex-col items-center text-center mb-8 pb-6 border-b border-cream/15">
+        <header
+          className={`flex flex-col items-center text-center mb-8 pb-6 border-b border-cream/15 ${
+            appMode ? 'pt-4' : ''
+          }`}
+        >
           <Ques pose="wave" size={140} />
           <h1 className="kr-heading text-[26px] md:text-[32px] leading-[1.2] mt-5">
-            먼저 로그인해주세요!
+            먼저 로그인해주세요
           </h1>
           <p className="kr-body text-[13.5px] md:text-[14.5px] text-cream/70 leading-[1.65] mt-3 max-w-[420px]">
-            Google 계정으로 5초만에 시작할 수 있어요. 진도, 친구 비교, 통계가
-            기기 사이에 동기화돼요.
+            Google 계정으로 5초만에 시작할 수 있어요. 진도, 친구 비교,
+            통계가 기기 사이에 동기화돼요.
             {redirectReason === 'protected' && pendingTarget ? (
               <>
                 <br />
@@ -101,4 +109,3 @@ export default function LoginPage({ onBack }: Props) {
     </section>
   );
 }
-

@@ -39,7 +39,7 @@ export default function GlobalAmbientBg() {
   return (
     <div
       aria-hidden
-      className="fixed inset-0 -z-10 pointer-events-none overflow-hidden"
+      className="questdp-global-ambient-bg fixed inset-0 -z-10 pointer-events-none overflow-hidden"
       style={{
         // 모든 페이지에 노출 — opacity 항상 1.
         opacity: 1,

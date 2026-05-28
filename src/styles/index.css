@@ -143,6 +143,7 @@ body {
 
 html.questdp-app-mode {
   background: var(--bg);
+  color-scheme: dark;
   overscroll-behavior-y: none;
   overscroll-behavior-x: none;
 }
@@ -150,8 +151,22 @@ html.questdp-app-mode {
 html.questdp-app-mode body,
 html.questdp-app-mode #root {
   min-height: 100dvh;
-  background: transparent;
+  background: var(--bg);
   overscroll-behavior: none;
+}
+
+html.questdp-app-mode .questdp-global-ambient-bg {
+  z-index: 0;
+}
+
+html.questdp-app-mode .questdp-route-layer {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+}
+
+html.questdp-app-mode .game-back-button {
+  display: none !important;
 }
 
 a {

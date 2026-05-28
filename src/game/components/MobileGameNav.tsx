@@ -161,9 +161,11 @@ export function MobileTopBar({ subject }: TopProps) {
             return (
               <div className="flex flex-col items-start min-w-0">
                 <span
-                  className="kr-num text-[13px] truncate max-w-[110px] text-left"
+                  className="kr-num truncate max-w-[110px] text-left"
                   style={{
                     maxWidth: appMode ? 54 : 110,
+                    fontSize: appMode ? 12 : 13,
+                    lineHeight: 1.08,
                     color: isUnset
                       ? 'var(--neon-85)'
                       : 'var(--cream)',
@@ -215,7 +217,11 @@ export function MobileTopBar({ subject }: TopProps) {
             </span>
             <span
               className="kr-num"
-              style={{ color: '#FFB020' }}
+              style={{
+                color: '#FFB020',
+                fontSize: appMode ? 12 : 13,
+                lineHeight: 1,
+              }}
             >
               {stats.totalXp}
             </span>

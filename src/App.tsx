@@ -660,9 +660,11 @@ export default function App() {
         배경·토스트 시스템이 살아있도록.
         Suspense 는 lazy 라우트 chunk 로딩 fallback.
       */}
-      <ErrorBoundary label="route">
-        <Suspense fallback={ROUTE_FALLBACK}>{renderRoute()}</Suspense>
-      </ErrorBoundary>
+      <div className="questdp-route-layer">
+        <ErrorBoundary label="route">
+          <Suspense fallback={ROUTE_FALLBACK}>{renderRoute()}</Suspense>
+        </ErrorBoundary>
+      </div>
       <AppBillingNotice />
       <AppScrollTopButton />
       <TierUpgradeToast />

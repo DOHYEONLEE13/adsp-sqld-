@@ -47,15 +47,15 @@ export default function EnergyBadge({
   if (isUnlimited(energy)) {
     return (
       <span
-        className="inline-flex items-center gap-1"
+        className={`inline-flex items-center ${compact ? 'gap-0.5' : 'gap-1'}`}
         title={energy.isAdmin ? '어드민 — ⚡ 무제한' : energy.isPremium ? '프리미엄 — ⚡ 무제한' : '게스트 — ⚡ 무제한'}
       >
         <InfinityIcon
-          size={size === 'sm' ? 20 : 24}
+          size={compact ? 17 : size === 'sm' ? 20 : 24}
           style={{ color }}
           strokeWidth={2.4}
         />
-        <Zap size={size === 'sm' ? 16 : 18} fill={color} strokeWidth={0} />
+        <Zap size={compact ? 13 : size === 'sm' ? 16 : 18} fill={color} strokeWidth={0} />
       </span>
     );
   }

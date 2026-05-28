@@ -40,7 +40,8 @@ import SpeechBubble from '@/game/lesson/SpeechBubble';
 import type { QuesPose } from '@/components/mascot/types';
 import type { ProgressStore } from '../storage';
 import VideoBg from '@/components/ui/VideoBg';
-import { VIDEO_URLS } from '@/data/site';
+import { VIDEO_POSTERS, VIDEO_URLS } from '@/data/site';
+import { isAppMode } from '@/lib/appMode';
 import { useMyProfile } from '@/data/profile';
 import NicknameOnboarding from './NicknameOnboarding';
 import StudyPlanBanner from '../studyPlan/StudyPlanBanner';
@@ -110,6 +111,7 @@ export default function GalaxyScreen({
   const progress = useProgress();
   const bookmarks = useBookmarks();
   const profile = useMyProfile();
+  const appMode = isAppMode();
   const bookmarkCount = bookmarks.ids.size;
   const playerStats = computePlayerStats(progress);
   const defaultMissionSubject: Subject =
@@ -197,7 +199,11 @@ export default function GalaxyScreen({
     >
       {/* === Background: Mux HLS ambient + 흰글씨 가독성용 어두운 그라디언트 === */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        <VideoBg src={VIDEO_URLS.pageAmbient} fit="cover" />
+        <VideoBg
+          src={VIDEO_URLS.pageAmbient}
+          poster={VIDEO_POSTERS.pageAmbient}
+          fit="cover"
+        />
         {/* dark scrim — 배경 영상 위에 깔아 흰 텍스트 가독성 확보 */}
         <div
           className="absolute inset-0"
@@ -213,9 +219,13 @@ export default function GalaxyScreen({
       <div className="relative z-10 w-full max-w-[840px] lg:max-w-[1080px] xl:max-w-[1240px] mx-auto min-h-screen px-5 md:px-10 lg:px-16 xl:px-20 pt-5 md:pt-7 lg:pt-10 pb-10 flex flex-col">
         {/* TOP BAR */}
         <div className="flex items-center justify-between gap-3 mb-12 md:mb-20">
-          <IconBox label="돌아가기" onClick={onExit}>
-            <ArrowLeft size={16} strokeWidth={2} />
-          </IconBox>
+          {appMode ? (
+            <div className="w-9 h-9 md:w-10 md:h-10" aria-hidden />
+          ) : (
+            <IconBox label="돌아가기" onClick={onExit}>
+              <ArrowLeft size={16} strokeWidth={2} />
+            </IconBox>
+          )}
 
           <div className="flex gap-2">
             <IconBox

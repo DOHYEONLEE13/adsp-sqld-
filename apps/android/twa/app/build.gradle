@@ -26,13 +26,13 @@ def twaManifest = [
     launchUrl: '/app/', // The start path for the TWA. Must be relative to the domain.
     name: 'QuestDP', // The application name.
     launcherName: 'QuestDP', // The name shown on the Android Launcher.
-    themeColor: '#010828', // The color used for the status bar.
-    themeColorDark: '#010828', // The color used for the dark status bar.
-    navigationColor: '#010828', // The color used for the navigation bar.
-    navigationColorDark: '#010828', // The color used for the dark navbar.
-    navigationDividerColor: '#010828', // The navbar divider color.
-    navigationDividerColorDark: '#010828', // The dark navbar divider color.
-    backgroundColor: '#010828', // The color used for the splash screen background.
+    themeColor: '#050D34', // The color used for the status bar.
+    themeColorDark: '#050D34', // The color used for the dark status bar.
+    navigationColor: '#050D34', // The color used for the navigation bar.
+    navigationColorDark: '#050D34', // The color used for the dark navbar.
+    navigationDividerColor: '#050D34', // The navbar divider color.
+    navigationDividerColorDark: '#050D34', // The dark navbar divider color.
+    backgroundColor: '#050D34', // The color used for the splash screen background.
     enableNotifications: false, // Set to true to enable notification delegation.
     // Every shortcut must include the following fields:
     // - name: String that will show up in the shortcut.

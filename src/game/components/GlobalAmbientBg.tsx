@@ -31,6 +31,14 @@ export default function GlobalAmbientBg() {
   useEffect(() => subscribeAmbientBg(setState), []);
   const theme = useTheme();
   const blurClass = state.blur ? ' blur-md scale-110' : '';
+  const isCssStars = theme.kind === 'css';
+  const overlayBackground = isCssStars
+    ? state.blur
+      ? 'linear-gradient(180deg, rgba(1,8,40,0.28) 0%, rgba(1,8,40,0.42) 52%, rgba(1,8,40,0.58) 100%)'
+      : 'linear-gradient(180deg, rgba(1,8,40,0.16) 0%, rgba(1,8,40,0.26) 52%, rgba(1,8,40,0.38) 100%)'
+    : state.blur
+      ? 'linear-gradient(180deg, rgba(1,8,40,0.45) 0%, rgba(1,8,40,0.58) 50%, rgba(1,8,40,0.72) 100%)'
+      : 'linear-gradient(180deg, rgba(1,8,40,0.28) 0%, rgba(1,8,40,0.38) 50%, rgba(1,8,40,0.50) 100%)';
 
   if (!state.active) {
     return null;
@@ -74,6 +82,7 @@ export default function GlobalAmbientBg() {
             backgroundSize: theme.backgroundSize,
             backgroundRepeat: theme.backgroundRepeat,
             backgroundPosition: theme.backgroundPosition,
+            filter: isCssStars ? 'brightness(1.14) saturate(1.08)' : undefined,
           }}
         />
       )}
@@ -81,9 +90,7 @@ export default function GlobalAmbientBg() {
       <div
         className="absolute inset-0"
         style={{
-          background: state.blur
-            ? 'linear-gradient(180deg, rgba(1,8,40,0.45) 0%, rgba(1,8,40,0.58) 50%, rgba(1,8,40,0.72) 100%)'
-            : 'linear-gradient(180deg, rgba(1,8,40,0.28) 0%, rgba(1,8,40,0.38) 50%, rgba(1,8,40,0.50) 100%)',
+          background: overlayBackground,
           transition: 'background 360ms ease',
         }}
       />

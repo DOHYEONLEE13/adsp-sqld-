@@ -142,7 +142,7 @@ body {
 }
 
 html.questdp-app-mode {
-  background: var(--bg);
+  background: #050D34;
   color-scheme: dark;
   overscroll-behavior-y: none;
   overscroll-behavior-x: none;
@@ -151,8 +151,14 @@ html.questdp-app-mode {
 html.questdp-app-mode body,
 html.questdp-app-mode #root {
   min-height: 100dvh;
-  background: var(--bg);
+  background: #050D34;
   overscroll-behavior: none;
+}
+
+html.questdp-app-mode button[aria-label*="맨 위"],
+html.questdp-app-mode button[aria-label*="위로 가기"],
+html.questdp-app-mode [data-scroll-top-button='true'] {
+  display: none !important;
 }
 
 html.questdp-app-mode .questdp-global-ambient-bg {

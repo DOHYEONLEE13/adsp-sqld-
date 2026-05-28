@@ -379,15 +379,9 @@ export default function App() {
     const onChange = () => {
       const nextRoute = getRoute();
       const nextKey = routeScrollKey(nextRoute);
-      const previousKey = routeScrollKeyRef.current;
       routeScrollKeyRef.current = nextKey;
-      if (
-        previousKey !== null &&
-        previousKey !== nextKey &&
-        shouldResetScrollForRoute(nextRoute)
-      ) {
-        resetWindowScroll();
-      }
+      // Resetting before the new route commits makes the previous tab jump to
+      // the top for a frame. useLayoutEffect below handles the new screen.
       startTransition(() => setRouteState(nextRoute));
       trackPageview(window.location.pathname + window.location.hash);
     };

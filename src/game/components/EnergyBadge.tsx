@@ -32,9 +32,15 @@ interface Props {
   color?: string;
   /** 크기 — 'sm' (Mobile nav) 또는 'md' (settings 등). */
   size?: 'sm' | 'md';
+  /** 좁은 앱 상단바용 — 타이머/보조 텍스트 없이 핵심 숫자만 표시. */
+  compact?: boolean;
 }
 
-export default function EnergyBadge({ color = '#A78BFA', size = 'sm' }: Props) {
+export default function EnergyBadge({
+  color = '#A78BFA',
+  size = 'sm',
+  compact = false,
+}: Props) {
   const energy = useEnergy();
 
   // 무제한 (게스트 / 프리미엄 / 어드민) — 단일 ∞ 표식
@@ -55,19 +61,21 @@ export default function EnergyBadge({ color = '#A78BFA', size = 'sm' }: Props) {
   }
 
   // 무료 인증 — 카운트 + (충전 중이면) 타이머
-  return <CountedBadge state={energy} color={color} size={size} />;
+  return <CountedBadge state={energy} color={color} size={size} compact={compact} />;
 }
 
 function CountedBadge({
   state,
   color,
   size,
+  compact,
 }: {
   state: EnergyState;
   color: string;
   size: 'sm' | 'md';
+  compact: boolean;
 }) {
-  const showTimer = state.energy < CAP;
+  const showTimer = !compact && state.energy < CAP;
   const [now, setNow] = useState<number>(() => Date.now());
   // 충전 상점 모달 — XP 구매 + 광고 시청 통합 진입점.
   const [shopOpen, setShopOpen] = useState(false);
@@ -113,7 +121,7 @@ function CountedBadge({
           className="kr-num tabular-nums"
           style={{
             color,
-            fontSize: size === 'sm' ? 13 : 15,
+            fontSize: compact ? 12 : size === 'sm' ? 13 : 15,
             lineHeight: 1,
           }}
         >

@@ -141,16 +141,16 @@ body {
   background: transparent;
 }
 
-html.questdp-app-mode,
-html.questdp-app-mode body {
+html.questdp-app-mode {
   background: var(--bg);
   overscroll-behavior-y: none;
   overscroll-behavior-x: none;
 }
 
+html.questdp-app-mode body,
 html.questdp-app-mode #root {
   min-height: 100dvh;
-  background: var(--bg);
+  background: transparent;
   overscroll-behavior: none;
 }
 

@@ -113,13 +113,17 @@ export function MobileTopBar({ subject }: TopProps) {
         borderBottom: '1px solid rgba(239,244,255,0.06)',
       }}
     >
-      <div className="flex items-center justify-between gap-2 px-4 py-2 max-w-[1200px] mx-auto md:px-6 lg:px-10">
+      <div
+        className={`flex items-center justify-between max-w-[1200px] mx-auto py-2 ${
+          appMode ? 'gap-1.5 px-3' : 'gap-2 px-4 md:px-6 lg:px-10'
+        }`}
+      >
         {/*
           좌측 영역: 마스코트 + 닉네임 (#/stats) + 과목 배지 (SubjectSwitcher).
           마스코트/닉네임 button 안에 또 다른 button 을 넣으면 nested button 에러가
           발생하므로 SubjectBadge 는 별도 형제로 둠.
         */}
-        <div className="flex items-center gap-2 min-w-0">
+        <div className={`flex items-center min-w-0 ${appMode ? 'gap-1.5' : 'gap-2'}`}>
         <button
           type="button"
           onClick={() => {
@@ -128,11 +132,15 @@ export function MobileTopBar({ subject }: TopProps) {
           className="inline-flex items-center gap-2 min-w-0 transition active:scale-[0.97] hover:opacity-90"
           aria-label={badgeLabel}
         >
-          <span className="shrink-0 inline-flex items-center justify-center w-10 h-10">
+          <span
+            className={`shrink-0 inline-flex items-center justify-center ${
+              appMode ? 'w-8 h-8' : 'w-10 h-10'
+            }`}
+          >
             <Ques
               pose={profile.avatarPose}
               character={profile.avatarCharacter}
-              size={40}
+              size={appMode ? 32 : 40}
               animated={false}
             />
           </span>
@@ -142,7 +150,7 @@ export function MobileTopBar({ subject }: TopProps) {
               return (
                 <div className="flex flex-col items-start min-w-0">
                   <ProfileSyncSkeleton
-                    width="w-20"
+                    width={appMode ? 'w-12' : 'w-20'}
                     failed={profile.syncStatus === 'failed'}
                   />
                 </div>
@@ -155,6 +163,7 @@ export function MobileTopBar({ subject }: TopProps) {
                 <span
                   className="kr-num text-[13px] truncate max-w-[110px] text-left"
                   style={{
+                    maxWidth: appMode ? 54 : 110,
                     color: isUnset
                       ? 'var(--neon-85)'
                       : 'var(--cream)',
@@ -163,7 +172,7 @@ export function MobileTopBar({ subject }: TopProps) {
                 >
                   {isUnset ? '닉네임 설정' : profile.displayName}
                 </span>
-                {!isUnset && passSnap.authed ? (
+                {!appMode && !isUnset && passSnap.authed ? (
                   <PassTierBadge
                     tier={passSnap.tier}
                     size="xs"
@@ -182,15 +191,17 @@ export function MobileTopBar({ subject }: TopProps) {
             onClick={() => setSwitcherOpen(true)}
           />
         ) : null}
-        {appMode ? <AppPlanPill active={energy.isPremium || energy.isAdmin ? 'MAX' : 'FREE'} /> : null}
+        {appMode ? <AppPlanPill plan={energy.isPremium || energy.isAdmin ? 'MAX' : 'FREE'} /> : null}
         </div>
-        <div className="flex items-center gap-3 md:gap-4">
+        <div className={`flex items-center ${appMode ? 'gap-1.5' : 'gap-3 md:gap-4'}`}>
           {/* 순서: XP · 에너지 · 설정 (가장 오른쪽 끝). PlanTag 는 사용자 결정으로 제거. */}
           <button
             type="button"
             onClick={handleShare}
             aria-label="XP 공유하기"
-            className="inline-flex items-center gap-1.5 px-0 py-1 transition active:scale-95"
+            className={`inline-flex items-center px-0 py-1 transition active:scale-95 ${
+              appMode ? 'gap-0.5' : 'gap-1.5'
+            }`}
             style={{
               background: 'transparent',
               border: '0',
@@ -198,31 +209,31 @@ export function MobileTopBar({ subject }: TopProps) {
           >
             <span
               className="kr-num text-[10px] tracking-wider"
-              style={{ color: '#FFB020' }}
+              style={{ color: '#FFB020', display: appMode ? 'none' : undefined }}
             >
               XP
             </span>
             <span
-              className="kr-num text-[13px]"
+              className="kr-num"
               style={{ color: '#FFB020' }}
             >
               {stats.totalXp}
             </span>
           </button>
-          <EnergyBadge size="sm" />
+          <EnergyBadge size="sm" compact={appMode} />
           {appMode ? (
             <button
               type="button"
               onClick={refreshAppSurface}
               aria-label="앱 새로고침"
-              className="inline-flex items-center justify-center w-8 h-8 rounded-full transition active:scale-95 hover:opacity-80"
+              className="inline-flex items-center justify-center w-7 h-7 rounded-full transition active:scale-95 hover:opacity-80"
               style={{
                 background: 'rgba(239,244,255,0.045)',
                 border: '1px solid rgba(239,244,255,0.14)',
                 color: 'rgba(239,244,255,0.78)',
               }}
             >
-              <RefreshCw size={15} strokeWidth={2.2} />
+              <RefreshCw size={14} strokeWidth={2.2} />
             </button>
           ) : null}
           <button
@@ -233,14 +244,16 @@ export function MobileTopBar({ subject }: TopProps) {
               }
             }}
             aria-label="설정 열기"
-            className="inline-flex items-center justify-center w-8 h-8 rounded-full transition active:scale-95 hover:opacity-80"
+            className={`inline-flex items-center justify-center rounded-full transition active:scale-95 hover:opacity-80 ${
+              appMode ? 'w-7 h-7' : 'w-8 h-8'
+            }`}
             style={{
               background: 'rgba(239,244,255,0.06)',
               border: '1px solid rgba(239,244,255,0.18)',
             }}
           >
-            <SettingsIcon
-              size={16}
+              <SettingsIcon
+              size={appMode ? 14 : 16}
               strokeWidth={2.2}
               style={{ color: 'rgba(239,244,255,0.85)' }}
             />
@@ -284,37 +297,27 @@ export function MobileTopBar({ subject }: TopProps) {
   );
 }
 
-function AppPlanPill({ active }: { active: 'FREE' | 'PRO' | 'MAX' }) {
-  const labels = ['FREE', 'PRO', 'MAX'] as const;
+function AppPlanPill({ plan }: { plan: 'FREE' | 'PRO' | 'MAX' }) {
+  const isPaid = plan !== 'FREE';
   return (
     <button
       type="button"
       onClick={openWebOrAppPremiumEntry}
-      aria-label={`현재 요금제 ${active}. 요금제 안내 열기`}
-      className="shrink-0 inline-flex items-center gap-0.5 rounded-full px-1.5 py-1 transition active:scale-95"
+      aria-label={`현재 요금제 ${plan}. 요금제 안내 열기`}
+      className="kr-num shrink-0 inline-flex items-center rounded-full px-2 py-1 text-[9px] font-bold leading-none transition active:scale-95"
       style={{
-        background: 'rgba(239,244,255,0.055)',
-        border: '1px solid rgba(239,244,255,0.12)',
+        color: isPaid ? '#010828' : 'rgba(239,244,255,0.72)',
+        background: isPaid
+          ? 'linear-gradient(180deg, var(--neon), var(--cta-primary-dark))'
+          : 'rgba(239,244,255,0.055)',
+        border: isPaid
+          ? '1px solid var(--neon-55)'
+          : '1px solid rgba(239,244,255,0.13)',
+        boxShadow: isPaid ? '0 0 10px rgb(var(--neon-rgb) / 0.28)' : 'none',
+        letterSpacing: '0.08em',
       }}
     >
-      {labels.map((label) => {
-        const selected = label === active;
-        return (
-          <span
-            key={label}
-            className="kr-num rounded-full px-1.5 py-0.5 text-[8.5px] font-bold leading-none tracking-[0.08em]"
-            style={{
-              color: selected ? '#010828' : 'rgba(239,244,255,0.52)',
-              background: selected
-                ? 'linear-gradient(180deg, var(--neon), var(--cta-primary-dark))'
-                : 'transparent',
-              boxShadow: selected ? '0 0 10px rgb(var(--neon-rgb) / 0.28)' : 'none',
-            }}
-          >
-            {label}
-          </span>
-        );
-      })}
+      {plan}
     </button>
   );
 }

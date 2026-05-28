@@ -79,7 +79,25 @@ export function installAppModeChrome(): () => void {
 
 export function refreshAppSurface(): void {
   if (typeof window === 'undefined') return;
-  window.location.reload();
+
+  const target = new URL(window.location.href);
+  target.searchParams.set('app', '1');
+  target.searchParams.set('v', String(Date.now()));
+
+  const navigate = () => {
+    window.location.replace(target.toString());
+  };
+
+  if ('caches' in window) {
+    window.caches
+      .keys()
+      .then((keys) => Promise.all(keys.map((key) => window.caches.delete(key))))
+      .catch(() => undefined)
+      .finally(navigate);
+    return;
+  }
+
+  navigate();
 }
 
 export function openWebOrAppPremiumEntry(): void {

@@ -316,14 +316,16 @@ function AppPlanPill({ plan }: { plan: 'FREE' | 'PRO' | 'MAX' }) {
       aria-label={`현재 요금제 ${plan}. 요금제 안내 열기`}
       className="kr-num shrink-0 inline-flex items-center rounded-full px-2 py-1 text-[9px] font-bold leading-none transition active:scale-95"
       style={{
-        color: isPaid ? '#010828' : 'rgba(239,244,255,0.72)',
+        color: isPaid ? 'rgba(239,244,255,0.92)' : 'rgba(239,244,255,0.72)',
         background: isPaid
-          ? 'linear-gradient(180deg, var(--neon), var(--cta-primary-dark))'
+          ? 'linear-gradient(180deg, rgba(39,54,35,0.96), rgba(22,34,28,0.96))'
           : 'rgba(239,244,255,0.055)',
         border: isPaid
-          ? '1px solid var(--neon-55)'
+          ? '1px solid rgba(209,248,67,0.42)'
           : '1px solid rgba(239,244,255,0.13)',
-        boxShadow: isPaid ? '0 0 10px rgb(var(--neon-rgb) / 0.28)' : 'none',
+        boxShadow: isPaid
+          ? 'inset 0 1px 0 rgba(255,255,255,0.10), 0 4px 12px rgba(0,0,0,0.22)'
+          : 'none',
         letterSpacing: '0.08em',
       }}
     >

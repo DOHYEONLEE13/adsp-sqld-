@@ -66,10 +66,10 @@ export default function PlanTag({ size = 'sm', className }: Props) {
         border: '1px solid var(--neon-40)',
       },
       MAX: {
-        bg: 'linear-gradient(180deg, var(--neon) 0%, var(--cta-primary-dark) 100%)',
-        color: '#010828',
-        border: '1px solid var(--neon-55)',
-        shadow: '0 4px 12px -3px var(--neon-55)',
+        bg: 'linear-gradient(180deg, rgba(39,54,35,0.96), rgba(22,34,28,0.96))',
+        color: 'rgba(239,244,255,0.92)',
+        border: '1px solid rgba(209,248,67,0.42)',
+        shadow: 'inset 0 1px 0 rgba(255,255,255,0.10), 0 4px 12px rgba(0,0,0,0.22)',
       },
     };
 

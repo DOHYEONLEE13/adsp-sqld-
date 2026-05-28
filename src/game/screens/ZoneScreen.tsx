@@ -970,31 +970,31 @@ function StepNode({
             // 잠금 step 도 어두운 별 사진 배경 위에서 보이도록 살짝 어두운 backdrop
             // 추가 (transparent → rgba(1,8,40,0.45)). 활성 step 은 그대로 transparent.
             background: completed
-              ? accent
+              ? `linear-gradient(180deg, ${accent} 0%, ${accent}dc 100%)`
               : locked
-                ? 'rgba(12,22,54,0.68)'
+                ? 'rgba(22,34,70,0.78)'
                 : attempted
-                  ? `linear-gradient(180deg, ${accent}2f, rgba(239,244,255,0.06))`
-                  : 'linear-gradient(180deg, rgba(239,244,255,0.09), rgba(239,244,255,0.035))',
+                  ? `linear-gradient(180deg, ${accent}3d, rgba(239,244,255,0.10))`
+                  : 'linear-gradient(180deg, rgba(239,244,255,0.16), rgba(239,244,255,0.07))',
             border: completed
               ? `2px solid ${accent}`
               : attempted
                 ? `2px solid ${accent}cc`
                 : locked
-                  ? '1.5px solid rgba(239,244,255,0.30)'
-                  : `1.5px solid rgba(239,244,255,0.34)`,
+                  ? '1.5px solid rgba(239,244,255,0.36)'
+                  : `1.5px solid rgba(239,244,255,0.48)`,
             color: completed
               ? '#010828'
               : locked
-                ? 'rgba(239,244,255,0.74)'
-                : 'rgba(239,244,255,0.92)',
+                ? 'rgba(239,244,255,0.82)'
+                : 'rgba(239,244,255,0.96)',
             // 0.55 → 0.7 — 잠금 표현 유지하되 가독성 ↑
             opacity: locked && !completed ? 0.84 : 1,
             boxShadow: completed
-              ? `0 0 0 4px ${accent}1f, 0 10px 28px -16px ${accent}`
+              ? `0 0 0 4px ${accent}26, 0 10px 28px -14px ${accent}, inset 0 1px 0 rgba(255,255,255,0.22)`
               : attempted
-                ? `0 0 0 3px ${accent}14, inset 0 1px 0 rgba(255,255,255,0.10)`
-                : 'inset 0 1px 0 rgba(255,255,255,0.10), 0 8px 18px -18px rgba(239,244,255,0.35)',
+                ? `0 0 0 3px ${accent}1f, inset 0 1px 0 rgba(255,255,255,0.14)`
+                : 'inset 0 1px 0 rgba(255,255,255,0.14), 0 8px 18px -16px rgba(239,244,255,0.42)',
             // 별 사진 배경의 밝은 영역에서도 동그라미 안 글자/Lock 아이콘이 묻히지 않게
             textShadow:
               completed
@@ -1017,8 +1017,8 @@ function StepNode({
             className="w-px flex-1 my-1"
             style={{
               background: completed
-                ? `linear-gradient(180deg, ${accent}88, ${accent}33)`
-                : 'rgba(239,244,255,0.22)',
+                ? `linear-gradient(180deg, ${accent}99, ${accent}40)`
+                : 'rgba(239,244,255,0.30)',
               minHeight: 28,
             }}
             aria-hidden

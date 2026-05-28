@@ -573,6 +573,10 @@ function Leaderboard({
     <section
       className="liquid-glass rounded-[24px] p-5 md:p-6"
       aria-label="친구 리더보드"
+      style={{
+        background: 'rgba(10,18,48,0.78)',
+        border: '1px solid rgba(239,244,255,0.16)',
+      }}
     >
       <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
         <h2 className="kr-heading text-[13px] uppercase tracking-widest text-cream/70 inline-flex items-center gap-2">
@@ -582,8 +586,8 @@ function Leaderboard({
         <div
           className="inline-flex items-center gap-0.5 p-1 rounded-full"
           style={{
-            background: 'rgba(239,244,255,0.04)',
-            border: '1px solid rgba(239,244,255,0.08)',
+            background: 'rgba(239,244,255,0.075)',
+            border: '1px solid rgba(239,244,255,0.13)',
           }}
           role="tablist"
           aria-label="정렬 기준"
@@ -602,7 +606,7 @@ function Leaderboard({
                 className="kr-num text-[10.5px] uppercase tracking-widest inline-flex items-center gap-1 px-2 py-1.5 rounded-full transition active:scale-[0.97]"
                 style={{
                   background: active ? 'var(--neon-18)' : 'transparent',
-                  color: active ? 'var(--neon)' : 'rgba(239,244,255,0.5)',
+                  color: active ? 'var(--neon)' : 'rgba(239,244,255,0.66)',
                 }}
               >
                 <Icon
@@ -624,11 +628,14 @@ function Leaderboard({
             className="rounded-[14px] px-4 py-3 flex items-center gap-3 relative overflow-hidden"
             style={{
               background: row.isMe
-                ? 'var(--neon-08)'
-                : 'rgba(239,244,255,0.04)',
+                ? 'linear-gradient(180deg, rgba(209,248,67,0.115), rgba(239,244,255,0.055))'
+                : 'linear-gradient(180deg, rgba(239,244,255,0.075), rgba(239,244,255,0.035))',
               border: row.isMe
-                ? '1px solid var(--neon-35)'
-                : '1px solid rgba(239,244,255,0.06)',
+                ? '1px solid rgba(209,248,67,0.42)'
+                : '1px solid rgba(239,244,255,0.13)',
+              boxShadow: row.isMe
+                ? 'inset 0 1px 0 rgba(255,255,255,0.10), 0 8px 20px rgba(0,0,0,0.20)'
+                : 'inset 0 1px 0 rgba(255,255,255,0.07)',
             }}
           >
             {/* Tier vertical accent — 좌측 4px 띠 */}
@@ -647,12 +654,12 @@ function Leaderboard({
               style={{
                 background:
                   idx === 0
-                    ? '#FFB020'
+                    ? 'linear-gradient(180deg, #FFD66B, #FFB020)'
                     : idx === 1
-                      ? 'rgba(239,244,255,0.85)'
+                      ? 'linear-gradient(180deg, rgba(255,255,255,0.96), rgba(203,213,225,0.88))'
                       : idx === 2
-                        ? '#cd7f32'
-                        : 'rgba(239,244,255,0.12)',
+                        ? 'linear-gradient(180deg, #D79B62, #A8642E)'
+                        : 'rgba(239,244,255,0.18)',
                 color:
                   idx <= 2 ? '#010828' : 'rgba(239,244,255,0.7)',
               }}
@@ -665,11 +672,11 @@ function Leaderboard({
               className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full overflow-hidden"
               style={{
                 background: row.isMe
-                  ? 'var(--neon-14)'
-                  : 'rgba(253,128,46,0.14)',
+                  ? 'rgba(209,248,67,0.16)'
+                  : 'rgba(239,244,255,0.10)',
                 border: row.isMe
-                  ? '1.5px solid var(--neon-45)'
-                  : '1.5px solid rgba(253,128,46,0.4)',
+                  ? '1.5px solid rgba(209,248,67,0.50)'
+                  : '1.5px solid rgba(239,244,255,0.20)',
               }}
             >
               <Ques

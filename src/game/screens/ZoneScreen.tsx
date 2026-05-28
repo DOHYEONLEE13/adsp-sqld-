@@ -972,22 +972,29 @@ function StepNode({
             background: completed
               ? accent
               : locked
-                ? 'rgba(1,8,40,0.45)'
-                : 'transparent',
+                ? 'rgba(12,22,54,0.68)'
+                : attempted
+                  ? `linear-gradient(180deg, ${accent}2f, rgba(239,244,255,0.06))`
+                  : 'linear-gradient(180deg, rgba(239,244,255,0.09), rgba(239,244,255,0.035))',
             border: completed
               ? `2px solid ${accent}`
               : attempted
-                ? `2px solid ${accent}aa`
+                ? `2px solid ${accent}cc`
                 : locked
-                  ? '1.5px solid rgba(239,244,255,0.18)'
-                  : `1.5px solid rgba(239,244,255,0.22)`,
+                  ? '1.5px solid rgba(239,244,255,0.30)'
+                  : `1.5px solid rgba(239,244,255,0.34)`,
             color: completed
               ? '#010828'
               : locked
-                ? 'rgba(239,244,255,0.6)'
-                : 'rgba(239,244,255,0.85)',
+                ? 'rgba(239,244,255,0.74)'
+                : 'rgba(239,244,255,0.92)',
             // 0.55 → 0.7 — 잠금 표현 유지하되 가독성 ↑
-            opacity: locked && !completed ? 0.7 : 1,
+            opacity: locked && !completed ? 0.84 : 1,
+            boxShadow: completed
+              ? `0 0 0 4px ${accent}1f, 0 10px 28px -16px ${accent}`
+              : attempted
+                ? `0 0 0 3px ${accent}14, inset 0 1px 0 rgba(255,255,255,0.10)`
+                : 'inset 0 1px 0 rgba(255,255,255,0.10), 0 8px 18px -18px rgba(239,244,255,0.35)',
             // 별 사진 배경의 밝은 영역에서도 동그라미 안 글자/Lock 아이콘이 묻히지 않게
             textShadow:
               completed
@@ -1011,7 +1018,7 @@ function StepNode({
             style={{
               background: completed
                 ? `linear-gradient(180deg, ${accent}88, ${accent}33)`
-                : 'rgba(239,244,255,0.12)',
+                : 'rgba(239,244,255,0.22)',
               minHeight: 28,
             }}
             aria-hidden
@@ -1026,7 +1033,7 @@ function StepNode({
         aria-disabled={locked}
         className="flex-1 text-left pb-6 md:pb-7 group"
         // 0.55 → 0.7 — 잠금이라도 텍스트 읽힘. 디자인은 그대로 무딘 톤 유지.
-        style={{ opacity: locked && !completed ? 0.7 : 1 }}
+        style={{ opacity: locked && !completed ? 0.84 : 1 }}
       >
         <h4
           className="kr-body font-medium text-[13px] md:text-[14px] tracking-[-0.005em] leading-[1.4] group-hover:text-neon transition"

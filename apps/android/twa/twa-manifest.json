@@ -50,7 +50,11 @@
   "fullScopeUrl": "https://quest-dp.com/",
   "minSdkVersion": 21,
   "orientation": "portrait",
-  "fingerprints": [],
+  "fingerprints": [
+    {
+      "value": "8D:0E:83:4E:DA:0F:F7:32:1D:B4:9A:4B:2F:E3:58:BB:5B:2D:83:04:C4:B0:04:76:98:3D:63:E4:8B:42:32:10"
+    }
+  ],
   "additionalTrustedOrigins": [],
   "retainedBundles": [],
   "protocolHandlers": [],

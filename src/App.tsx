@@ -41,6 +41,7 @@ import {
   isAppMode,
   markAppModeFromLocation,
 } from './lib/appMode';
+import { scrollPageTo } from './lib/pageScroll';
 
 // ── lazy 라우트 — 첫 페이지 (Landing) 만 즉시 로드, 나머지는 진입 시 다운로드.
 //   결과: 게스트가 랜딩만 보면 GamePage·StatsPage·법적 페이지·관리자 페이지의
@@ -148,12 +149,12 @@ function shouldResetScrollForRoute(state: RouteState): boolean {
 
 function resetWindowScroll(): void {
   if (typeof window === 'undefined') return;
-  window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  scrollPageTo({ top: 0, left: 0, behavior: 'auto' });
   window.requestAnimationFrame(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    scrollPageTo({ top: 0, left: 0, behavior: 'auto' });
   });
   window.setTimeout(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    scrollPageTo({ top: 0, left: 0, behavior: 'auto' });
   }, 80);
 }
 

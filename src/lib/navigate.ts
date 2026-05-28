@@ -1,3 +1,5 @@
+import { scrollPageTo } from './pageScroll';
+
 /**
  * navigate.ts — SPA 네비게이션 헬퍼.
  *
@@ -76,7 +78,7 @@ export function navigate(path: string): void {
 
 function scrollToTopAfterRouteChange(): void {
   window.requestAnimationFrame(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    scrollPageTo({ top: 0, left: 0, behavior: 'auto' });
   });
 }
 

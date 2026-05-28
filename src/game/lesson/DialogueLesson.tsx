@@ -14,6 +14,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { openWebOrAppPremiumEntry } from '@/lib/appMode';
+import { scrollPageTo } from '@/lib/pageScroll';
 import {
   AlertTriangle,
   AppWindow,
@@ -833,7 +834,7 @@ export default function DialogueLesson({
     setSimilarOpen(false);
     startedAtRef.current = Date.now();
     setPhase('question');
-    window.scrollTo({ top: 0, behavior: 'auto' });
+    scrollPageTo({ top: 0, behavior: 'auto' });
   };
 
   const handleNextStep = () => {
@@ -842,7 +843,7 @@ export default function DialogueLesson({
       // 잠금은 prevSolved 로만 결정 — 별도 unlock 호출 X.
       // 다음 step mount useEffect 가 ⚡ 차감 + visit 기록 처리.
       setStepIdx(nextIdx);
-      window.scrollTo({ top: 0, behavior: 'auto' });
+      scrollPageTo({ top: 0, behavior: 'auto' });
     } else {
       // 마지막 step — single-step 모드는 Zone 복귀, legacy 는 실전 세트.
       if (isSingleStep) {

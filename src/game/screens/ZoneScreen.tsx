@@ -47,6 +47,7 @@ import { isFinaleStep, isFinaleStepLocked } from '../finale';
 import { useDevUnlockFlags } from '../useDevUnlockFlags';
 import { usePassSnapshot } from '../passSync';
 import { hasEverSolved } from '../progressPredicates';
+import { scrollElementIntoPageView } from '@/lib/pageScroll';
 import {
   chapterPassProgress,
   currentPassFor,
@@ -264,10 +265,8 @@ export default function ZoneScreen({
               `[data-step-idx="${activeHighlight.stepIdx}"]`,
             ) ?? section
           : section;
-      const rect = target.getBoundingClientRect();
       const TOP_BAR_OFFSET = 88; // MobileTopBar 높이 + 여유
-      const targetY = rect.top + window.scrollY - TOP_BAR_OFFSET;
-      window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
+      scrollElementIntoPageView(target, TOP_BAR_OFFSET, 'smooth');
     });
     return () => window.cancelAnimationFrame(r);
   }, [activeHighlight]);

@@ -1,6 +1,6 @@
 const APP_MODE_SESSION_KEY = 'questdp.appMode';
 const APP_MODE_CLASS = 'questdp-app-mode';
-const APP_MODE_THEME_COLOR = '#050D34';
+const APP_MODE_THEME_COLOR = '#14202E';
 
 function canUseSessionStorage(): boolean {
   return typeof window !== 'undefined' && typeof window.sessionStorage !== 'undefined';
@@ -53,7 +53,9 @@ export function installAppModeChrome(): () => void {
   };
   const onTouchMove = (event: TouchEvent) => {
     const currentY = event.touches[0]?.clientY ?? 0;
-    const pullingDownAtTop = window.scrollY <= 0 && currentY - touchStartY > 8;
+    const appScrollSurface = document.querySelector<HTMLElement>('.questdp-route-layer');
+    const scrollTop = appScrollSurface?.scrollTop ?? window.scrollY;
+    const pullingDownAtTop = scrollTop <= 0 && currentY - touchStartY > 8;
     if (pullingDownAtTop) {
       event.preventDefault();
     }

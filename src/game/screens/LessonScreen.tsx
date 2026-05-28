@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import type { MultipleChoiceQuestion, Subject } from '@/types/question';
 import { openWebOrAppPremiumEntry } from '@/lib/appMode';
+import { scrollPageTo } from '@/lib/pageScroll';
 import { SUBJECT_SCHEMAS } from '@/data/subjects';
 import {
   getChapterSteps,
@@ -337,7 +338,7 @@ export default function LessonScreen({
     setQuizIdx(nextQuizIdx);
     startedAtRef.current = Date.now();
     setView('quiz');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollPageTo({ top: 0, behavior: 'smooth' });
   };
 
   const goNextStep = () => {
@@ -353,7 +354,7 @@ export default function LessonScreen({
       setStepIdx(nextIdx);
       setQuizIdx(0);
       setView('concept');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollPageTo({ top: 0, behavior: 'smooth' });
     } else {
       // 레슨 마지막 스텝 이후 → 실전 세트
       onFinishGoToPractice();
@@ -378,7 +379,7 @@ export default function LessonScreen({
       setQuizIdx(0);
       setView('quiz');
     }
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollPageTo({ top: 0, behavior: 'smooth' });
   };
 
   /** 직전 화면에서 어디로 돌아가는지 사용자에게 힌트로. */

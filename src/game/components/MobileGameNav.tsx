@@ -107,12 +107,10 @@ export function MobileTopBar({ subject }: TopProps) {
     <div
       className="fixed top-0 left-0 right-0 z-30"
       style={{
-        background: appMode ? 'rgba(5,13,52,0.96)' : 'rgba(20,32,46,0.92)',
+        background: 'rgba(20,32,46,0.92)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
-        borderBottom: appMode
-          ? '1px solid rgba(209,248,67,0.10)'
-          : '1px solid rgba(239,244,255,0.06)',
+        borderBottom: '1px solid rgba(239,244,255,0.06)',
       }}
     >
       <div
@@ -357,12 +355,11 @@ export function MobileBottomNav({
   onQuests,
   accent = SUBJECT_ACCENT.adsp,
 }: BottomProps) {
-  const appMode = isAppMode();
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 z-30"
       style={{
-        background: appMode ? 'rgba(5,13,52,0.96)' : 'rgba(1,8,40,0.96)',
+        background: 'rgba(1,8,40,0.96)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
         borderTop: '1px solid rgba(209,248,67,0.09)',

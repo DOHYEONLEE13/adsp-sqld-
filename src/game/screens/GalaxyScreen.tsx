@@ -11,7 +11,6 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import {
-  ArrowLeft,
   ArrowRight,
   BarChart3,
   ChevronRight,
@@ -41,7 +40,6 @@ import type { QuesPose } from '@/components/mascot/types';
 import type { ProgressStore } from '../storage';
 import VideoBg from '@/components/ui/VideoBg';
 import { VIDEO_POSTERS, VIDEO_URLS } from '@/data/site';
-import { isAppMode } from '@/lib/appMode';
 import { useMyProfile } from '@/data/profile';
 import NicknameOnboarding from './NicknameOnboarding';
 import StudyPlanBanner from '../studyPlan/StudyPlanBanner';
@@ -54,7 +52,6 @@ interface Props {
   onStartDailyMission: (subject: Subject) => void;
   onStartMockExam: (subject: Subject) => void;
   onOpenReview: () => void;
-  onExit: () => void;
 }
 
 /** 워프 완료 후 실제 Subject 전환까지 대기할 시간 (ms). */
@@ -106,12 +103,10 @@ export default function GalaxyScreen({
   onStartDailyMission,
   onStartMockExam,
   onOpenReview,
-  onExit,
 }: Props) {
   const progress = useProgress();
   const bookmarks = useBookmarks();
   const profile = useMyProfile();
-  const appMode = isAppMode();
   const bookmarkCount = bookmarks.ids.size;
   const playerStats = computePlayerStats(progress);
   const defaultMissionSubject: Subject =
@@ -219,13 +214,7 @@ export default function GalaxyScreen({
       <div className="relative z-10 w-full max-w-[840px] lg:max-w-[1080px] xl:max-w-[1240px] mx-auto min-h-screen px-5 md:px-10 lg:px-16 xl:px-20 pt-5 md:pt-7 lg:pt-10 pb-10 flex flex-col">
         {/* TOP BAR */}
         <div className="flex items-center justify-between gap-3 mb-12 md:mb-20">
-          {appMode ? (
-            <div className="w-9 h-9 md:w-10 md:h-10" aria-hidden />
-          ) : (
-            <IconBox label="돌아가기" onClick={onExit}>
-              <ArrowLeft size={16} strokeWidth={2} />
-            </IconBox>
-          )}
+          <div className="w-9 h-9 md:w-10 md:h-10" aria-hidden />
 
           <div className="flex gap-2">
             <IconBox

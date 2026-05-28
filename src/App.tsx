@@ -1,4 +1,12 @@
-import { lazy, Suspense, useEffect, useRef, useState, useTransition } from 'react';
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  useTransition,
+} from 'react';
 import Landing from './pages/Landing';
 import type { Subject } from './types/question';
 import { getSnapshot } from './game/storage';
@@ -134,6 +142,17 @@ function routeScrollKey(state: RouteState): string {
 
 function shouldResetScrollForRoute(state: RouteState): boolean {
   return TOP_RESET_ROUTES.has(state.route);
+}
+
+function resetWindowScroll(): void {
+  if (typeof window === 'undefined') return;
+  window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  window.requestAnimationFrame(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  });
+  window.setTimeout(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, 80);
 }
 
 /**
@@ -323,6 +342,20 @@ export default function App() {
     return installAppModeChrome();
   }, []);
 
+  useEffect(() => {
+    if (
+      typeof window === 'undefined' ||
+      !('scrollRestoration' in window.history)
+    ) {
+      return;
+    }
+    const previous = window.history.scrollRestoration;
+    window.history.scrollRestoration = 'manual';
+    return () => {
+      window.history.scrollRestoration = previous;
+    };
+  }, []);
+
   // Legacy hash redirect — `#/about` 등 옛 북마크가 들어오면 path 로 한 번 교체.
   // App mount 시 한 번만 실행.
   useEffect(() => {
@@ -353,9 +386,7 @@ export default function App() {
         previousKey !== nextKey &&
         shouldResetScrollForRoute(nextRoute)
       ) {
-        window.requestAnimationFrame(() => {
-          window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-        });
+        resetWindowScroll();
       }
       startTransition(() => setRouteState(nextRoute));
       trackPageview(window.location.pathname + window.location.hash);
@@ -367,6 +398,12 @@ export default function App() {
       window.removeEventListener('popstate', onChange);
     };
   }, []);
+
+  useLayoutEffect(() => {
+    if (shouldResetScrollForRoute({ route, initialSubject })) {
+      resetWindowScroll();
+    }
+  }, [route, initialSubject]);
 
   // 프로필·친구·세션·북마크·시험일 ↔ Supabase 자동 sync + 일회 마이그.
   // env 미설정이면 모두 no-op (게스트 모드 = localStorage only).

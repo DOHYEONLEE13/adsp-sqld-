@@ -608,7 +608,6 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
           onStartDailyMission={startDailyMission}
           onStartMockExam={startMockExam}
           onOpenReview={() => setScreen({ kind: 'review' })}
-          onExit={onExitToLanding}
         />
       );
 

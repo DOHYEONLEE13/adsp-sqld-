@@ -126,7 +126,6 @@ interface RouteState {
 }
 
 const TOP_RESET_ROUTES = new Set<Route>([
-  'game',
   'quests',
   'weakness',
   'friends',
@@ -141,6 +140,9 @@ function routeScrollKey(state: RouteState): string {
 }
 
 function shouldResetScrollForRoute(state: RouteState): boolean {
+  if (state.route === 'game') {
+    return !state.initialSubject;
+  }
   return TOP_RESET_ROUTES.has(state.route);
 }
 

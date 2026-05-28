@@ -153,11 +153,21 @@ html.questdp-app-mode #root {
   min-height: 100dvh;
   background: #050D34;
   overscroll-behavior: none;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 html.questdp-app-mode button[aria-label*="맨 위"],
 html.questdp-app-mode button[aria-label*="위로 가기"],
 html.questdp-app-mode [data-scroll-top-button='true'] {
+  display: none !important;
+}
+
+html.questdp-app-mode::-webkit-scrollbar,
+html.questdp-app-mode body::-webkit-scrollbar,
+html.questdp-app-mode #root::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
   display: none !important;
 }
 

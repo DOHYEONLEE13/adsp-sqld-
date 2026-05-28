@@ -9,8 +9,9 @@
  * StatsPage 의 "북마크한 개념" 섹션에서 다시 열람 가능.
  */
 
-import { X } from 'lucide-react';
+import { RefreshCw, X } from 'lucide-react';
 import ConceptBookmarkButton from '../components/ConceptBookmarkButton';
+import { isAppMode, refreshAppSurface } from '@/lib/appMode';
 
 interface Props {
   /** 챕터 전체 진행률 0~1. */
@@ -36,6 +37,7 @@ export default function TopBar({
     stepProgress === undefined ? null : Math.max(0, Math.min(1, stepProgress));
   const chapterPct = Math.round(chapter * 100);
   const stepPct = step === null ? null : Math.round(step * 100);
+  const appMode = isAppMode();
 
   return (
     <div className="sticky top-0 z-30 bg-base/85 backdrop-blur-md">
@@ -127,6 +129,21 @@ export default function TopBar({
         </div>
 
         {/* 북마크 토글 — 우측 끝. questionId 없으면 (review step) 자동 숨김. */}
+        {appMode ? (
+          <button
+            type="button"
+            onClick={refreshAppSurface}
+            aria-label="앱 새로고침"
+            className="shrink-0 w-9 h-9 rounded-full inline-flex items-center justify-center text-cream/65 hover:text-cream hover:bg-white/10 transition"
+            style={{
+              border: '1px solid rgba(239,244,255,0.12)',
+              background: 'rgba(239,244,255,0.035)',
+            }}
+          >
+            <RefreshCw size={17} strokeWidth={2.3} />
+          </button>
+        ) : null}
+
         <ConceptBookmarkButton
           questionId={questionId}
           accent={accent}

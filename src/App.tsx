@@ -18,6 +18,7 @@ import { onAuthStateChange } from './lib/supabase';
 import { consumePendingAuthRedirect } from './lib/authGuard';
 import TierUpgradeToast from './components/passes/TierUpgradeToast';
 import AppBillingNotice from './components/AppBillingNotice';
+import AppScrollTopButton from './components/ui/AppScrollTopButton';
 import OfflineBanner from './components/sync/OfflineBanner';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ToastProvider } from './components/ui/Toast';
@@ -27,7 +28,12 @@ import AuthGuard from './components/auth/AuthGuard';
 import { trackPageview } from './lib/analytics';
 import { needsOnboarding } from './game/onboarding/onboardingStorage';
 import { initAuthSessionSync } from './lib/auth/sessionStore';
-import { isAppEntryPath, markAppModeFromLocation } from './lib/appMode';
+import {
+  installAppModeChrome,
+  isAppEntryPath,
+  isAppMode,
+  markAppModeFromLocation,
+} from './lib/appMode';
 
 // ── lazy 라우트 — 첫 페이지 (Landing) 만 즉시 로드, 나머지는 진입 시 다운로드.
 //   결과: 게스트가 랜딩만 보면 GamePage·StatsPage·법적 페이지·관리자 페이지의
@@ -251,6 +257,9 @@ function getRoute(): RouteState {
     }
     return { route: 'game' };
   }
+  if (isAppMode()) {
+    return { route: 'game' };
+  }
   return { route: 'landing' };
 }
 
@@ -292,6 +301,7 @@ export default function App() {
 
   useEffect(() => {
     markAppModeFromLocation();
+    return installAppModeChrome();
   }, []);
 
   // Legacy hash redirect — `#/about` 등 옛 북마크가 들어오면 path 로 한 번 교체.
@@ -459,6 +469,11 @@ export default function App() {
           key={initialSubject ?? 'chooser'}
           initialSubject={initialSubject}
           onExitToLanding={() => {
+            if (isAppMode()) {
+              window.history.replaceState({}, '', '/app/#/game');
+              startTransition(() => setRouteState(getRoute()));
+              return;
+            }
             window.location.hash = '';
           }}
           />
@@ -649,6 +664,7 @@ export default function App() {
         <Suspense fallback={ROUTE_FALLBACK}>{renderRoute()}</Suspense>
       </ErrorBoundary>
       <AppBillingNotice />
+      <AppScrollTopButton />
       <TierUpgradeToast />
       <GuestDiscardToast />
     </ToastProvider>

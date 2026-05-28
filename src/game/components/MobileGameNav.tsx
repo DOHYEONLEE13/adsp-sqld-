@@ -12,7 +12,7 @@
  * - ⚡ level — 현재 레벨
  */
 
-import { Settings as SettingsIcon } from 'lucide-react';
+import { RefreshCw, Settings as SettingsIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState, type ComponentType } from 'react';
 import {
@@ -26,6 +26,7 @@ import {
 import type { Subject } from '@/types/question';
 import { useProgress } from '../useProgress';
 import { computePlayerStats } from '../rpg';
+import { useEnergy } from '../energy';
 import EnergyBadge from './EnergyBadge';
 import Ques from '@/components/mascot/Ques';
 import { useMyProfile } from '@/data/profile';
@@ -36,6 +37,11 @@ import SubjectBadge from './SubjectBadge';
 import SubjectSwitcher from './SubjectSwitcher';
 import SubjectSwitchToast from './SubjectSwitchToast';
 import { loadOnboardingResult } from '../onboarding/onboardingStorage';
+import {
+  isAppMode,
+  openWebOrAppPremiumEntry,
+  refreshAppSurface,
+} from '@/lib/appMode';
 
 const SUBJECT_ACCENT: Record<Subject, string> = {
   adsp: '#67e8f9',
@@ -54,6 +60,8 @@ export function MobileTopBar({ subject }: TopProps) {
   const progress = useProgress();
   const stats = computePlayerStats(progress);
   const [shareOpen, setShareOpen] = useState(false);
+  const appMode = isAppMode();
+  const energy = useEnergy();
   // 방안 S (2026-05-07) — useMyProfile (useSyncExternalStore) 로 race condition 해소.
   // 이전 useState + subscribeProfile 패턴은 first render 와 listener 부착 race 로 stale stuck.
   const profile = useMyProfile();
@@ -174,6 +182,7 @@ export function MobileTopBar({ subject }: TopProps) {
             onClick={() => setSwitcherOpen(true)}
           />
         ) : null}
+        {appMode ? <AppPlanPill active={energy.isPremium || energy.isAdmin ? 'MAX' : 'FREE'} /> : null}
         </div>
         <div className="flex items-center gap-3 md:gap-4">
           {/* 순서: XP · 에너지 · 설정 (가장 오른쪽 끝). PlanTag 는 사용자 결정으로 제거. */}
@@ -201,6 +210,21 @@ export function MobileTopBar({ subject }: TopProps) {
             </span>
           </button>
           <EnergyBadge size="sm" />
+          {appMode ? (
+            <button
+              type="button"
+              onClick={refreshAppSurface}
+              aria-label="앱 새로고침"
+              className="inline-flex items-center justify-center w-8 h-8 rounded-full transition active:scale-95 hover:opacity-80"
+              style={{
+                background: 'rgba(239,244,255,0.045)',
+                border: '1px solid rgba(239,244,255,0.14)',
+                color: 'rgba(239,244,255,0.78)',
+              }}
+            >
+              <RefreshCw size={15} strokeWidth={2.2} />
+            </button>
+          ) : null}
           <button
             type="button"
             onClick={() => {
@@ -257,6 +281,41 @@ export function MobileTopBar({ subject }: TopProps) {
         />
       ) : null}
     </div>
+  );
+}
+
+function AppPlanPill({ active }: { active: 'FREE' | 'PRO' | 'MAX' }) {
+  const labels = ['FREE', 'PRO', 'MAX'] as const;
+  return (
+    <button
+      type="button"
+      onClick={openWebOrAppPremiumEntry}
+      aria-label={`현재 요금제 ${active}. 요금제 안내 열기`}
+      className="shrink-0 inline-flex items-center gap-0.5 rounded-full px-1.5 py-1 transition active:scale-95"
+      style={{
+        background: 'rgba(239,244,255,0.055)',
+        border: '1px solid rgba(239,244,255,0.12)',
+      }}
+    >
+      {labels.map((label) => {
+        const selected = label === active;
+        return (
+          <span
+            key={label}
+            className="kr-num rounded-full px-1.5 py-0.5 text-[8.5px] font-bold leading-none tracking-[0.08em]"
+            style={{
+              color: selected ? '#010828' : 'rgba(239,244,255,0.52)',
+              background: selected
+                ? 'linear-gradient(180deg, var(--neon), var(--cta-primary-dark))'
+                : 'transparent',
+              boxShadow: selected ? '0 0 10px rgb(var(--neon-rgb) / 0.28)' : 'none',
+            }}
+          >
+            {label}
+          </span>
+        );
+      })}
+    </button>
   );
 }
 

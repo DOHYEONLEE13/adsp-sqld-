@@ -252,7 +252,9 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
   useEffect(() => {
     if (!subjectForMascotPreload) return;
     preloadMascotPoses(characterForSubject(subjectForMascotPreload), [
+      'idle',
       'wave',
+      'happy',
       'lightbulb',
       'think',
       'celebrate',

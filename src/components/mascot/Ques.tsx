@@ -25,10 +25,6 @@ const PREFIX_BY_CHARACTER: Record<MascotCharacter, string> = {
 const FAST_WIDTHS = [160, 320, 480] as const;
 const PRELOADED = new Set<string>();
 
-function poseSrc(character: MascotCharacter, pose: QuesPose): string {
-  return `/mascot/${PREFIX_BY_CHARACTER[character]}-${pose}.png`;
-}
-
 function fastPoseSrc(
   character: MascotCharacter,
   pose: QuesPose,
@@ -50,13 +46,16 @@ export function preloadMascotPoses(
   if (typeof window === 'undefined') return;
 
   for (const pose of poses) {
-    for (const width of [320, 480] as const) {
+    for (const width of FAST_WIDTHS) {
       const src = fastPoseSrc(character, pose, width);
       if (PRELOADED.has(src)) continue;
       PRELOADED.add(src);
       const image = new Image();
       image.decoding = 'async';
       image.src = src;
+      if (typeof image.decode === 'function') {
+        void image.decode().catch(() => {});
+      }
     }
   }
 }
@@ -88,7 +87,7 @@ export default function Ques({
   priority = false,
   className,
 }: Props) {
-  const src = poseSrc(character, pose);
+  const src = fastPoseSrc(character, pose, size !== undefined && size <= 180 ? 160 : 320);
   const displaySize = size !== undefined ? `${size}px` : '(max-width: 640px) 96px, 140px';
 
   return (

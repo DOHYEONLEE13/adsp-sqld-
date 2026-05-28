@@ -1,4 +1,6 @@
 const APP_MODE_SESSION_KEY = 'questdp.appMode';
+const APP_MODE_CLASS = 'questdp-app-mode';
+const APP_MODE_THEME_COLOR = '#010828';
 
 function canUseSessionStorage(): boolean {
   return typeof window !== 'undefined' && typeof window.sessionStorage !== 'undefined';
@@ -22,6 +24,60 @@ export function isAppMode(): boolean {
   if (isAppEntryPath(window.location.pathname)) return true;
   if (!canUseSessionStorage()) return false;
   return window.sessionStorage.getItem(APP_MODE_SESSION_KEY) === '1';
+}
+
+export function installAppModeChrome(): () => void {
+  if (typeof window === 'undefined' || typeof document === 'undefined') {
+    return () => {};
+  }
+  if (!isAppMode()) return () => {};
+
+  const root = document.documentElement;
+  root.classList.add(APP_MODE_CLASS);
+
+  const themeMeta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+  const previousThemeColor = themeMeta?.getAttribute('content') ?? null;
+  if (themeMeta) {
+    themeMeta.setAttribute('content', APP_MODE_THEME_COLOR);
+  }
+
+  const manifestLink = document.querySelector<HTMLLinkElement>('link[rel="manifest"]');
+  const previousManifestHref = manifestLink?.getAttribute('href') ?? null;
+  if (manifestLink) {
+    manifestLink.setAttribute('href', '/app.webmanifest');
+  }
+
+  let touchStartY = 0;
+  const onTouchStart = (event: TouchEvent) => {
+    touchStartY = event.touches[0]?.clientY ?? 0;
+  };
+  const onTouchMove = (event: TouchEvent) => {
+    const currentY = event.touches[0]?.clientY ?? 0;
+    const pullingDownAtTop = window.scrollY <= 0 && currentY - touchStartY > 8;
+    if (pullingDownAtTop) {
+      event.preventDefault();
+    }
+  };
+
+  window.addEventListener('touchstart', onTouchStart, { passive: true });
+  window.addEventListener('touchmove', onTouchMove, { passive: false });
+
+  return () => {
+    root.classList.remove(APP_MODE_CLASS);
+    if (themeMeta && previousThemeColor) {
+      themeMeta.setAttribute('content', previousThemeColor);
+    }
+    if (manifestLink && previousManifestHref) {
+      manifestLink.setAttribute('href', previousManifestHref);
+    }
+    window.removeEventListener('touchstart', onTouchStart);
+    window.removeEventListener('touchmove', onTouchMove);
+  };
+}
+
+export function refreshAppSurface(): void {
+  if (typeof window === 'undefined') return;
+  window.location.reload();
 }
 
 export function openWebOrAppPremiumEntry(): void {

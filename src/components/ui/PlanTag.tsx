@@ -19,7 +19,7 @@
 
 import { useMyProfile } from '@/data/profile';
 import type { MyProfile } from '@/data/profile';
-import { openWebOrAppPremiumEntry } from '@/lib/appMode';
+import { isAppMode, openWebOrAppPremiumEntry } from '@/lib/appMode';
 
 export type PlanTagSize = 'sm' | 'md';
 
@@ -80,7 +80,7 @@ export default function PlanTag({ size = 'sm', className }: Props) {
       href="#pricing"
       onClick={(e) => {
         // 같은 페이지의 #pricing 으로 점프 (홈에서만 의미). 다른 페이지면 홈 진입.
-        if (window.location.pathname === '/app' || window.location.pathname === '/app/') {
+        if (isAppMode()) {
           e.preventDefault();
           openWebOrAppPremiumEntry();
           return;

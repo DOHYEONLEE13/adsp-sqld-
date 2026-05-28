@@ -165,10 +165,6 @@ html.questdp-app-mode .questdp-route-layer {
   min-height: 100dvh;
 }
 
-html.questdp-app-mode .game-back-button {
-  display: none !important;
-}
-
 a {
   color: inherit;
   text-decoration: none;

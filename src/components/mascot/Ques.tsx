@@ -116,7 +116,7 @@ export default function Ques({
             {...(size !== undefined ? { width: size, height: size } : {})}
             decoding="async"
             loading={priority ? 'eager' : undefined}
-            fetchPriority={priority ? 'high' : 'auto'}
+            {...(priority ? ({ fetchpriority: 'high' } as Record<string, string>) : {})}
             draggable={false}
             className={[
               'w-full h-full object-contain',

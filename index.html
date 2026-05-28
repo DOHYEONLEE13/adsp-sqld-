@@ -4,6 +4,20 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#010828" />
+    <script>
+      (function () {
+        try {
+          var isAppPath = location.pathname === '/app' || location.pathname === '/app/';
+          var isAppQuery = new URLSearchParams(location.search).get('app') === '1';
+          var isAppSession = sessionStorage.getItem('questdp.appMode') === '1';
+          if (isAppPath || isAppQuery || isAppSession) {
+            document.documentElement.classList.add('questdp-app-mode');
+            var theme = document.querySelector('meta[name="theme-color"]');
+            if (theme) theme.setAttribute('content', '#010828');
+          }
+        } catch (e) {}
+      })();
+    </script>
     <title>QuestDP — ADsP·SQLD 자격증 학습사이트 | 게임형 문제풀이</title>
     <meta
       name="description"

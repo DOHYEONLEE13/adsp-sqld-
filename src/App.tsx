@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState, useTransition } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState, useTransition } from 'react';
 import Landing from './pages/Landing';
 import type { Subject } from './types/question';
 import { getSnapshot } from './game/storage';
@@ -18,7 +18,6 @@ import { onAuthStateChange } from './lib/supabase';
 import { consumePendingAuthRedirect } from './lib/authGuard';
 import TierUpgradeToast from './components/passes/TierUpgradeToast';
 import AppBillingNotice from './components/AppBillingNotice';
-import AppScrollTopButton from './components/ui/AppScrollTopButton';
 import OfflineBanner from './components/sync/OfflineBanner';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ToastProvider } from './components/ui/Toast';
@@ -116,6 +115,25 @@ interface RouteState {
   faqSubject?: Subject;
   /** `/blog/:slug` — Tier 2 SEO 블로그 포스트. */
   blogSlug?: string;
+}
+
+const TOP_RESET_ROUTES = new Set<Route>([
+  'game',
+  'quests',
+  'weakness',
+  'friends',
+  'stats',
+  'settings',
+  'bookmarks',
+]);
+
+function routeScrollKey(state: RouteState): string {
+  if (state.route === 'game') return `game:${state.initialSubject ?? ''}`;
+  return state.route;
+}
+
+function shouldResetScrollForRoute(state: RouteState): boolean {
+  return TOP_RESET_ROUTES.has(state.route);
 }
 
 /**
@@ -290,6 +308,7 @@ export default function App() {
     },
     setRouteState,
   ] = useState<RouteState>(() => getRoute());
+  const routeScrollKeyRef = useRef<string | null>(null);
 
   // ── useTransition 으로 끊김 완화 ────────────────────────────────────
   // 첫 탭 클릭 시 lazy chunk + 페이지 mount 비용이 합쳐져 1프레임 정지처럼
@@ -322,9 +341,23 @@ export default function App() {
   // GA4 trackPageview 도 같은 hook 에서 발사 (SPA 수동 page_view).
   useEffect(() => {
     // 첫 mount 의 page_view 도 명시 발사 (GA4 send_page_view: false 라 자동 발사 X).
+    routeScrollKeyRef.current = routeScrollKey(getRoute());
     trackPageview(window.location.pathname + window.location.hash);
     const onChange = () => {
-      startTransition(() => setRouteState(getRoute()));
+      const nextRoute = getRoute();
+      const nextKey = routeScrollKey(nextRoute);
+      const previousKey = routeScrollKeyRef.current;
+      routeScrollKeyRef.current = nextKey;
+      if (
+        previousKey !== null &&
+        previousKey !== nextKey &&
+        shouldResetScrollForRoute(nextRoute)
+      ) {
+        window.requestAnimationFrame(() => {
+          window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+        });
+      }
+      startTransition(() => setRouteState(nextRoute));
       trackPageview(window.location.pathname + window.location.hash);
     };
     window.addEventListener('hashchange', onChange);
@@ -666,7 +699,6 @@ export default function App() {
         </ErrorBoundary>
       </div>
       <AppBillingNotice />
-      <AppScrollTopButton />
       <TierUpgradeToast />
       <GuestDiscardToast />
     </ToastProvider>

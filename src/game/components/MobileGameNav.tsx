@@ -107,10 +107,12 @@ export function MobileTopBar({ subject }: TopProps) {
     <div
       className="fixed top-0 left-0 right-0 z-30"
       style={{
-        background: 'rgba(20,32,46,0.92)',
+        background: appMode ? 'rgba(1,8,40,0.96)' : 'rgba(20,32,46,0.92)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
-        borderBottom: '1px solid rgba(239,244,255,0.06)',
+        borderBottom: appMode
+          ? '1px solid rgba(209,248,67,0.10)'
+          : '1px solid rgba(239,244,255,0.06)',
       }}
     >
       <div
@@ -211,7 +213,11 @@ export function MobileTopBar({ subject }: TopProps) {
           >
             <span
               className="kr-num text-[10px] tracking-wider"
-              style={{ color: '#FFB020', display: appMode ? 'none' : undefined }}
+              style={{
+                color: '#FFB020',
+                fontSize: appMode ? 9 : 10,
+                lineHeight: 1,
+              }}
             >
               XP
             </span>
@@ -355,10 +361,10 @@ export function MobileBottomNav({
     <nav
       className="fixed bottom-0 left-0 right-0 z-30"
       style={{
-        background: 'rgba(20,32,46,0.95)',
+        background: 'rgba(1,8,40,0.96)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
-        borderTop: '1px solid rgba(239,244,255,0.08)',
+        borderTop: '1px solid rgba(209,248,67,0.09)',
       }}
     >
       {/*

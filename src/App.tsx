@@ -9,6 +9,10 @@ import {
 } from 'react';
 import Landing from './pages/Landing';
 import type { Subject } from './types/question';
+import {
+  isExpansionSubjectId,
+  type ExpansionSubjectId,
+} from './game/expansionSubjects';
 import { getSnapshot } from './game/storage';
 import { initProfileSync } from './data/profile';
 import { initFriendsSync } from './data/friends';
@@ -112,8 +116,8 @@ interface RouteState {
   route: Route;
   /** `#/game/adsp` · `#/game/sqld` 처럼 deep-link 진입 시 시작 과목. */
   initialSubject?: Subject;
-  /** `#/game/comhwal` — 컴퓨터활용능력 필기 1급/2급 선택 패널로 진입. */
-  initialComhwal?: boolean;
+  /** `#/game/comhwal` 처럼 아직 정식 Subject 가 아닌 확장 과목 선택 패널로 진입. */
+  initialExpansionSubject?: ExpansionSubjectId;
   /** legal 페이지 진입 시 어느 문서. */
   legalSlug?: LegalDoc['slug'];
   /** `/lesson/:stepId` — Tier 2 SEO 진입점. */
@@ -138,14 +142,16 @@ const TOP_RESET_ROUTES = new Set<Route>([
 ]);
 
 function routeScrollKey(state: RouteState): string {
-  if (state.route === 'game' && state.initialComhwal) return 'game:comhwal';
+  if (state.route === 'game' && state.initialExpansionSubject) {
+    return `game:${state.initialExpansionSubject}`;
+  }
   if (state.route === 'game') return `game:${state.initialSubject ?? ''}`;
   return state.route;
 }
 
 function shouldResetScrollForRoute(state: RouteState): boolean {
   if (state.route === 'game') {
-    return !state.initialSubject || !!state.initialComhwal;
+    return !state.initialSubject || !!state.initialExpansionSubject;
   }
   return TOP_RESET_ROUTES.has(state.route);
 }
@@ -274,8 +280,8 @@ function getRoute(): RouteState {
     if (sub === 'adsp' || sub === 'sqld') {
       return { route: 'game', initialSubject: sub };
     }
-    if (sub === 'comhwal') {
-      return { route: 'game', initialComhwal: true };
+    if (isExpansionSubjectId(sub)) {
+      return { route: 'game', initialExpansionSubject: sub };
     }
     // /game (no subject) — fallback 우선순위:
     //  1) progressStore.activeSubject (사용자 명시 선택)
@@ -327,7 +333,7 @@ export default function App() {
     {
       route,
       initialSubject,
-      initialComhwal,
+      initialExpansionSubject,
       legalSlug,
       lessonStepId,
       quizQuestionId,
@@ -404,10 +410,16 @@ export default function App() {
   }, []);
 
   useLayoutEffect(() => {
-    if (shouldResetScrollForRoute({ route, initialSubject, initialComhwal })) {
+    if (
+      shouldResetScrollForRoute({
+        route,
+        initialSubject,
+        initialExpansionSubject,
+      })
+    ) {
       resetWindowScroll();
     }
-  }, [route, initialSubject, initialComhwal]);
+  }, [route, initialSubject, initialExpansionSubject]);
 
   // 프로필·친구·세션·북마크·시험일 ↔ Supabase 자동 sync + 일회 마이그.
   // env 미설정이면 모두 no-op (게스트 모드 = localStorage only).
@@ -540,7 +552,7 @@ export default function App() {
           <GamePage
           // key 로 deep-link 진입 변화 시 GamePage 재마운트.
           // ex) /game (chooser) ↔ /game/adsp 사이 이동 시 초기 화면이 갱신됨.
-          key={initialComhwal ? 'comhwal' : initialSubject ?? 'chooser'}
+          key={initialExpansionSubject ?? initialSubject ?? 'chooser'}
           initialSubject={initialSubject}
           onExitToLanding={() => {
             if (isAppMode()) {

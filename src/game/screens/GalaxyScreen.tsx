@@ -15,11 +15,8 @@ import {
   ArrowRight,
   BarChart3,
   ChevronRight,
-  Database,
-  FileSpreadsheet,
   Info,
   ListTodo,
-  Monitor,
   RotateCcw,
   Star,
   X,
@@ -52,6 +49,14 @@ import { loadStudyPlan } from '../studyPlan/studyPlanStorage';
 import { recommendNextStep } from '../studyPlan/nextStep';
 import PageAmbientBg from '../components/PageAmbientBg';
 import { MobileBottomNav, MobileTopBar } from '../components/MobileGameNav';
+import {
+  EXPANSION_SUBJECTS,
+  type ExpansionPlanet,
+  type ExpansionSubjectConfig,
+  type ExpansionSubjectId,
+  type ExpansionVariant,
+  type ExpansionVariantId,
+} from '../expansionSubjects';
 
 interface Props {
   onSelectSubject: (subject: Subject) => void;
@@ -103,42 +108,11 @@ type View =
   | { kind: 'overview' }
   | { kind: 'detail'; subject: Subject }
   | { kind: 'launching'; subject: Subject }
-  | { kind: 'comhwalPlanets'; grade: ComhwalGrade };
-
-type ComhwalGrade = 1 | 2;
-
-const COMHWAL_ACCENT = '#A7E96A';
-const COMHWAL_ACCENT_RGB = '167, 233, 106';
-
-const COMHWAL_PLANETS: Array<{
-  key: string;
-  title: string;
-  description: string;
-  grade: ComhwalGrade[];
-  icon: typeof Monitor;
-}> = [
-  {
-    key: 'computer-general',
-    title: '컴퓨터 일반',
-    description: '운영체제, 하드웨어, 네트워크, 정보보안을 다루는 공통 과목이에요.',
-    grade: [1, 2],
-    icon: Monitor,
-  },
-  {
-    key: 'spreadsheet-general',
-    title: '스프레드시트 일반',
-    description: '엑셀 기능, 함수, 차트, 데이터 관리 개념을 다루는 공통 과목이에요.',
-    grade: [1, 2],
-    icon: FileSpreadsheet,
-  },
-  {
-    key: 'database-general',
-    title: '데이터베이스 일반',
-    description: '1급 필기에만 들어가는 과목이에요. DB 개념과 Access 흐름을 다뤄요.',
-    grade: [1],
-    icon: Database,
-  },
-];
+  | {
+      kind: 'expansionPlanets';
+      subjectId: ExpansionSubjectId;
+      variantId: ExpansionVariantId;
+    };
 
 export default function GalaxyScreen({
   onSelectSubject,
@@ -229,10 +203,15 @@ export default function GalaxyScreen({
     );
   }
 
-  if (view.kind === 'comhwalPlanets') {
+  if (view.kind === 'expansionPlanets') {
+    const expansionSubject = EXPANSION_SUBJECTS[view.subjectId];
+    const variant =
+      expansionSubject.variants.find((item) => item.id === view.variantId) ??
+      expansionSubject.variants[0];
     return (
-      <ComhwalPlanetScreen
-        grade={view.grade}
+      <ExpansionPlanetScreen
+        subject={expansionSubject}
+        variant={variant}
         onBack={() => setView({ kind: 'overview' })}
       />
     );
@@ -341,20 +320,22 @@ export default function GalaxyScreen({
             total={sqldTotal}
             onSelect={() => handlePlanetClick('sqld')}
           />
-          <ComhwalGradeChoice
-            grade={1}
-            title="컴활 1급"
-            subtitle="컴퓨터활용능력 필기"
-            meta="3과목"
-            onSelect={() => setView({ kind: 'comhwalPlanets', grade: 1 })}
-          />
-          <ComhwalGradeChoice
-            grade={2}
-            title="컴활 2급"
-            subtitle="컴퓨터활용능력 필기"
-            meta="2과목"
-            onSelect={() => setView({ kind: 'comhwalPlanets', grade: 2 })}
-          />
+          {Object.values(EXPANSION_SUBJECTS).flatMap((expansionSubject) =>
+            expansionSubject.variants.map((variant) => (
+              <ExpansionVariantChoice
+                key={`${expansionSubject.id}:${variant.id}`}
+                subject={expansionSubject}
+                variant={variant}
+                onSelect={() =>
+                  setView({
+                    kind: 'expansionPlanets',
+                    subjectId: expansionSubject.id,
+                    variantId: variant.id,
+                  })
+                }
+              />
+            )),
+          )}
         </div>
 
         {/* DAILY MISSION BANNER — 1줄 */}
@@ -624,59 +605,46 @@ function SubjectChoice({
   );
 }
 
-function ComhwalGradeChoice({
-  grade,
-  title,
-  subtitle,
-  meta,
+function ExpansionVariantChoice({
+  subject,
+  variant,
   onSelect,
 }: {
-  grade: ComhwalGrade;
-  title: string;
-  subtitle: string;
-  meta: string;
+  subject: ExpansionSubjectConfig;
+  variant: ExpansionVariant;
   onSelect: () => void;
 }) {
   return (
     <button
       type="button"
       onClick={onSelect}
-      aria-label={`${title} 선택`}
+      aria-label={`${variant.title} 선택`}
       className="liquid-glass rounded-[18px] group flex flex-col text-left transition duration-200 focus:outline-none focus-visible:bg-[rgba(255,255,255,0.06)] hover:bg-[rgba(255,255,255,0.05)]"
       style={{
         color: FG,
         padding: '20px 16px',
         minHeight: 200,
-        borderColor: `rgba(${COMHWAL_ACCENT_RGB}, 0.28)`,
+        borderColor: `rgba(${subject.accentRgb}, 0.28)`,
       }}
     >
       <span
         aria-hidden
         className="block h-[7px] w-[7px] transition group-hover:scale-110"
-        style={{ background: COMHWAL_ACCENT }}
+        style={{ background: subject.accent }}
       />
 
       <div
         className="kr-heading mt-5 text-[30px] leading-none md:text-[38px]"
         style={{ letterSpacing: '0.005em', color: FG }}
       >
-        {title}
+        {variant.title}
       </div>
 
       <p
         className="kr-heading mt-2.5 text-[10px] uppercase leading-snug md:text-[11px]"
         style={{ letterSpacing: '0.16em', color: FG_SOFT }}
       >
-        {subtitle}
-      </p>
-
-      <p
-        className="kr-body mt-3 text-[12.5px] leading-[1.65]"
-        style={{ color: FG_SOFT }}
-      >
-        {grade === 1
-          ? '데이터베이스 일반까지 함께 보는 필기 트랙이에요.'
-          : '공통 과목 중심으로 먼저 시작하는 필기 트랙이에요.'}
+        {variant.subtitle}
       </p>
 
       <div
@@ -687,28 +655,30 @@ function ComhwalGradeChoice({
           className="kr-heading text-[10px] uppercase tabular-nums"
           style={{ letterSpacing: '0.13em', color: FG_SOFT }}
         >
-          {meta}
+          {variant.meta}
         </span>
         <ArrowRight
           size={14}
           strokeWidth={2.4}
           className="shrink-0 transition group-hover:translate-x-0.5"
-          style={{ color: COMHWAL_ACCENT }}
+          style={{ color: subject.accent }}
         />
       </div>
     </button>
   );
 }
 
-function ComhwalPlanetScreen({
-  grade,
+function ExpansionPlanetScreen({
+  subject,
+  variant,
   onBack,
 }: {
-  grade: ComhwalGrade;
+  subject: ExpansionSubjectConfig;
+  variant: ExpansionVariant;
   onBack: () => void;
 }) {
-  const planets = COMHWAL_PLANETS.filter((planet) =>
-    planet.grade.includes(grade),
+  const planets = subject.planets.filter((planet) =>
+    planet.variantIds.includes(variant.id),
   );
 
   return (
@@ -718,20 +688,21 @@ function ComhwalPlanetScreen({
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
-          background: `radial-gradient(ellipse at 50% 0%, ${COMHWAL_ACCENT}1f 0%, rgba(1,8,40,0) 55%)`,
+          background: `radial-gradient(ellipse at 50% 0%, ${subject.accent}1f 0%, rgba(1,8,40,0) 55%)`,
         }}
       />
       <MobileTopBar
         customSubject={{
-          label: `컴활 ${grade}급`,
-          accent: COMHWAL_ACCENT,
+          label: variant.shortLabel,
+          accent: subject.accent,
+          onClick: onBack,
         }}
       />
       <MobileBottomNav
         active="learn"
-        accent={COMHWAL_ACCENT}
+        accent={subject.accent}
         onLearn={() => {
-          window.location.hash = '/game/comhwal';
+          window.location.hash = `/game/${subject.id}`;
         }}
       />
 
@@ -750,12 +721,12 @@ function ComhwalPlanetScreen({
           <div className="mb-3 flex items-center gap-2 kr-num text-[10px] uppercase tracking-widest text-cream/55">
             <span>Galaxy</span>
             <span className="text-cream/30">›</span>
-            <span style={{ color: COMHWAL_ACCENT }}>
-              COMHWAL {grade}급 Planet
+            <span style={{ color: subject.accent }}>
+              {subject.routeLabel} Planet
             </span>
           </div>
           <h1 className="kr-heading text-[26px] uppercase leading-[1.15] tracking-[0.01em] drop-shadow-[0_2px_20px_rgba(0,0,0,0.75)] md:text-[36px] lg:text-[44px]">
-            컴활 {grade}급 필기
+            {variant.title} 필기
           </h1>
           <p className="kr-body mt-4 max-w-xl text-[13px] leading-[1.7] text-cream/80 md:text-[14px]">
             탐사할 과목 행성을 선택하세요. 지금은 개념 노드 없이 과목명만 먼저 열어뒀어요.
@@ -763,17 +734,19 @@ function ComhwalPlanetScreen({
         </header>
 
         <div className="flex justify-center lg:justify-end lg:pr-4 xl:pr-10">
-          <ComhwalChapterPath planets={planets} />
+          <ExpansionChapterPath planets={planets} accent={subject.accent} />
         </div>
       </div>
     </section>
   );
 }
 
-function ComhwalChapterPath({
+function ExpansionChapterPath({
   planets,
+  accent,
 }: {
-  planets: typeof COMHWAL_PLANETS;
+  planets: ExpansionPlanet[];
+  accent: string;
 }) {
   const W = 420;
   const NODE = 78;
@@ -815,21 +788,23 @@ function ComhwalChapterPath({
         <path
           d={d}
           fill="none"
-          stroke={`${COMHWAL_ACCENT}88`}
+          stroke={`${accent}88`}
           strokeWidth={2.5}
           strokeDasharray="2 7"
           strokeLinecap="round"
-          style={{ filter: `drop-shadow(0 0 8px ${COMHWAL_ACCENT}66)` }}
+          style={{ filter: `drop-shadow(0 0 8px ${accent}66)` }}
         />
       </svg>
 
       {nodes.map((node) => (
-        <ComhwalChapterNode
+        <ExpansionChapterNode
           key={node.planet.key}
           cx={node.cx}
           cy={node.cy}
           chapter={node.idx + 1}
           title={node.planet.title}
+          subtitle={node.planet.subtitle}
+          accent={accent}
           NODE={NODE}
           TITLE_GAP={TITLE_GAP}
           containerW={W}
@@ -839,11 +814,13 @@ function ComhwalChapterPath({
   );
 }
 
-function ComhwalChapterNode({
+function ExpansionChapterNode({
   cx,
   cy,
   chapter,
   title,
+  subtitle,
+  accent,
   NODE,
   TITLE_GAP,
   containerW,
@@ -852,6 +829,8 @@ function ComhwalChapterNode({
   cy: number;
   chapter: number;
   title: string;
+  subtitle: string;
+  accent: string;
   NODE: number;
   TITLE_GAP: number;
   containerW: number;
@@ -892,8 +871,8 @@ function ComhwalChapterNode({
           className="absolute rounded-full inline-flex items-center justify-center transition-transform duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-neon"
           style={{
             inset: 6,
-            background: `radial-gradient(circle at 32% 24%, ${COMHWAL_ACCENT} 0%, ${COMHWAL_ACCENT}d8 38%, ${COMHWAL_ACCENT}99 78%, ${COMHWAL_ACCENT}66 100%)`,
-            boxShadow: `0 4px 0 -1px rgba(0,0,0,0.42), 0 12px 28px -10px ${COMHWAL_ACCENT}aa`,
+            background: `radial-gradient(circle at 32% 24%, ${accent} 0%, ${accent}d8 38%, ${accent}99 78%, ${accent}66 100%)`,
+            boxShadow: `0 4px 0 -1px rgba(0,0,0,0.42), 0 12px 28px -10px ${accent}aa`,
           }}
         >
           <span
@@ -941,7 +920,7 @@ function ComhwalChapterNode({
           className="kr-num text-[11px] text-cream/65 mt-1.5 inline-flex items-center gap-2"
           style={{ textShadow: '0 1px 6px rgba(0,0,0,0.7)' }}
         >
-          <span>필기 과목</span>
+          <span>{subtitle}</span>
         </div>
       </div>
     </>

@@ -72,8 +72,10 @@ describe('SUBJECT_SHOWCASES — landing 카피 vs 실제 카운트 sync', () => 
     },
   );
 
-  it('빅분기 (bdat) 는 comingSoon 이라 metaValue 자유', () => {
-    const bdat = SUBJECT_SHOWCASES.find((s) => s.id === 'bdat');
-    expect(bdat?.comingSoon).toBe(true);
+  it('컴활 필기(comhwal)는 행성 세션으로 진입할 수 있다', () => {
+    const comhwal = SUBJECT_SHOWCASES.find((s) => s.id === 'comhwal');
+    expect(comhwal).toBeDefined();
+    expect(comhwal?.comingSoon).not.toBe(true);
+    expect(comhwal?.href).toBe('#/game/comhwal');
   });
 });

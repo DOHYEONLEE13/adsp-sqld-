@@ -54,9 +54,14 @@ const SUBJECT_ACCENT: Record<Subject, string> = {
 interface TopProps {
   /** 현재 화면의 과목. 좌측 뱃지 색·글자 결정. 미지정 시 프로필 모드. */
   subject?: Subject;
+  customSubject?: {
+    label: string;
+    accent: string;
+    onClick?: () => void;
+  };
 }
 
-export function MobileTopBar({ subject }: TopProps) {
+export function MobileTopBar({ subject, customSubject }: TopProps) {
   const progress = useProgress();
   const stats = computePlayerStats(progress);
   const [shareOpen, setShareOpen] = useState(false);
@@ -79,7 +84,7 @@ export function MobileTopBar({ subject }: TopProps) {
   const [toastSubject, setToastSubject] = useState<Subject | null>(null);
 
   const handleShare = async () => {
-    const subj = subject ? subject.toUpperCase() : 'QuestDP';
+    const subj = customSubject?.label ?? (subject ? subject.toUpperCase() : 'QuestDP');
     const text = `QuestDP — ${subj} 진도\n레벨 ${stats.level} · XP ${stats.totalXp}\n나도 도전해봐!`;
     const shareData = { title: 'QuestDP 진도', text, url: window.location.href };
     try {
@@ -187,7 +192,22 @@ export function MobileTopBar({ subject }: TopProps) {
           })()}
         </button>
         {/* 과목 배지 — 클릭 시 SubjectSwitcher. 활성 과목 없으면 미노출. */}
-        {activeSubject ? (
+        {customSubject ? (
+          <button
+            type="button"
+            onClick={customSubject.onClick}
+            className="kr-num shrink-0 inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold leading-none transition active:scale-95"
+            style={{
+              color: customSubject.accent,
+              background: `${customSubject.accent}1c`,
+              border: `1px solid ${customSubject.accent}66`,
+              boxShadow: `0 0 12px ${customSubject.accent}22, inset 0 1px 0 rgba(255,255,255,0.12)`,
+              letterSpacing: '0.08em',
+            }}
+          >
+            {customSubject.label}
+          </button>
+        ) : activeSubject ? (
           <SubjectBadge
             subject={activeSubject}
             onClick={() => setSwitcherOpen(true)}

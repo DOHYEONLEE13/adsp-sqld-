@@ -3,7 +3,7 @@
  *
  * 콘텐츠 카운트 (2026-05-01 기준, playable 기준):
  *   사용 가능: ADSP (251 step · 420 문항), SQLD (121 step · 373 문항).
- *   준비중:    빅데이터 분석기사 — 콘텐츠 작성 트랙.
+ *   확장 준비: 컴퓨터활용능력 필기 — 1급/2급 행성 세션.
  *
  * "playable" 정의: multiple_choice 타입 + status≠restored + needsDistractors≠true.
  * raw 문항 수와 다를 수 있음 (e.g. restored/deprecated 문항은 playable 에서 제외).
@@ -44,14 +44,14 @@ export const SUBJECT_SHOWCASES: SubjectShowcase[] = [
     href: '#/game',
   },
   {
-    id: 'bdat',
-    title: '빅데이터 분석기사',
+    id: 'comhwal',
+    title: '컴퓨터활용능력 필기',
     description:
-      '통계 · 분석 · 머신러닝 실기. 데이터 직무 중급 트랙. 콘텐츠 작성 중.',
+      '컴퓨터 일반과 스프레드시트 일반부터 시작해요. 1급은 데이터베이스 일반까지 함께 열립니다.',
     videoUrl: VIDEO_URLS.mode3,
-    metaLabel: '출시 예정',
-    metaValue: '준비중...',
-    comingSoon: true,
+    metaLabel: '새 과목',
+    metaValue: '1급 · 2급 행성 오픈',
+    href: '#/game/comhwal',
   },
 ];
 

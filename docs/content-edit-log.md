@@ -1,5 +1,503 @@
 # QuestDP Content Edit Log
 
+## 2026-05-31 — ADSP 세부 개념 도식 추가 보강
+
+### 사용자가 발견한 문제
+
+- ADSP에 큰 단원 그림은 들어갔지만, 세부 스텝으로 들어가면 다시 문장 설명만 보이는 구간이 남아 있었다.
+- 특히 데이터 분류 상세 스텝과 DB 4특징 상세 스텝은 초보자가 “지금 어떤 기준을 보고 있는지”를 놓치기 쉬웠다.
+
+### 수정 방향
+
+- 새 문제 ID를 만들지 않고, 기존 레슨 흐름에 CSS 도식만 추가했다.
+- `데이터 분류` 상세 스텝은 형태 / 표현 방식 / 분석 목적 렌즈를 한 화면에 보여주고, 현재 배우는 카드만 밝게 켜지도록 했다.
+- `DB 4특징` 상세 스텝은 공용 / 통합 / 저장 / 변화가 DB 중심으로 연결되는 구조를 보여주고, 현재 특징과 쉬운 예시를 강조했다.
+
+### 사용자에게 주는 좋은 영향
+
+- 사용자는 “지금 외우는 단어가 어느 분류 기준에 속하는지”를 시각적으로 구분할 수 있다.
+- 정형·반정형·비정형, 정량·정성, 수치형·범주형처럼 헷갈리기 쉬운 개념을 한 화면에서 비교할 수 있다.
+- DB 4특징은 암기어 `공통저변`만 남는 것이 아니라 각각의 의미와 실제 상황을 같이 떠올릴 수 있다.
+
+### 반영 파일
+
+- `src/game/lesson/DialogueLesson.tsx`
+- `docs/content-edit-log.md`
+
+### Supabase 반영 여부
+
+- 새 `quizId`나 `extraQuizIds`를 추가하지 않았다.
+- 문제 문항과 정답을 바꾸지 않았으므로 Supabase `public.questions` 반영은 필요 없다.
+
+## 2026-05-31 — ADSP 데이터 사이언티스트 6역량 문제 문장 보정
+
+### 사용자가 발견한 문제
+
+- `다음 중 DS 6역량 (Digital CAMERA)에 속하지 않는 것은?`이라는 문제 문장은 Digital CAMERA를 실제 개념명처럼 보이게 만든다.
+- Digital CAMERA는 개념 자체가 아니라 `Communication · Analytics · Math · Engineering · Research · Art`를 기억하기 위한 암기 도구다.
+
+### 수정 방향
+
+- 문제 stem을 `데이터 사이언티스트에게 필요한 6가지 역량`을 묻는 방식으로 바꿨다.
+- 선택지는 유지해 기존 정답 구조를 흔들지 않았다.
+- 해설에서만 Digital CAMERA를 암기 도구로 설명하고, Management가 포함되지 않는다는 시험 함정을 풀어썼다.
+
+### 사용자에게 주는 좋은 영향
+
+- 사용자가 암기어와 실제 개념을 혼동하지 않는다.
+- 문제를 풀 때 “Digital CAMERA라는 명칭을 외웠는가”가 아니라 “데이터 사이언티스트 역량의 구성 요소를 이해했는가”를 확인하게 된다.
+
+### 반영 파일
+
+- `src/data/questions/adsp/concept-practice.json`
+- `supabase/migrations/0071_update_adsp_data_scientist_competency_drill.sql`
+- `docs/content-edit-log.md`
+
+### Supabase 반영 여부
+
+- 기존 문제 `adsp-1-3-cp-03`의 stem/explanation을 변경했다.
+- 라이브 `public.questions` 반영용 migration SQL을 추가했다.
+
+## 2026-05-31 — ADSP 데이터 사이언스 3축 도식 가독성 개선
+
+### 사용자가 발견한 문제
+
+- `데이터 사이언스는 분석·기술·비즈니스가 만나는 지점` 도식이 벤다이어그램 형태라 모바일에서 원과 글자가 겹쳐 보기 어려웠다.
+- 사용자는 `Analytics`, `IT`, `Business` 각각이 무슨 역할인지보다 원의 교차 영역을 읽느라 부담을 느낄 수 있었다.
+
+### 수정 방향
+
+- 겹치는 원 도식을 제거하고, `Analytics → IT → Business` 3개의 역할 카드가 아래의 `데이터 사이언스` 카드로 모이는 구조로 바꿨다.
+- 각 축은 번호, 영문명, 쉬운 한국어 역할, 예시 범위를 한 줄씩 분리해 모바일에서 읽기 쉽게 했다.
+- `AI 비` 암기어는 별도 작은 배지로 남기되, 핵심 메시지는 “세 축이 함께 있어야 실제 가치가 된다”로 정리했다.
+
+### 사용자에게 주는 좋은 영향
+
+- 처음 보는 학습자가 데이터 사이언스를 원 교집합 그림이 아니라 세 가지 필요한 역량의 조합으로 이해할 수 있다.
+- 작은 모바일 화면에서도 각 축의 역할이 분리되어 보여 눈의 부담이 줄어든다.
+- 새 문제 ID를 추가하지 않아 Supabase 문제 누락 위험이 없다.
+
+### 반영 파일
+
+- `src/game/lesson/DialogueLesson.tsx`
+- `docs/content-edit-log.md`
+
+### Supabase 반영 여부
+
+- 새 `quizId` 또는 `extraQuizIds`를 추가하지 않았다.
+- 문제 JSON과 Supabase `public.questions`는 변경하지 않았으므로 migration은 필요 없다.
+
+## 2026-05-31 — SQLD JOIN 도입부 난이도 완화
+
+### 사용자가 발견한 문제
+
+- `JOIN 4종` 단계가 JOIN의 목적, INNER/LEFT/RIGHT/FULL, 행 수 계산 패턴까지 한 번에 보여줘서 처음 보는 사용자가 따라가기 어렵다.
+- 설명 말투는 친근하지만 진행 흐름이 빠르기 때문에, 사용자가 “왜 갑자기 네 종류를 외워야 하지?”라고 느낄 수 있다.
+- 하단 도식도 `같은 값끼리 붙인다`는 핵심보다 JOIN 종류 요약으로 빨리 넘어가 부담이 생겼다.
+
+### 수정 방향
+
+- 새 `quizId`를 만들지 않고 기존 JOIN 레슨의 설명 흐름만 낮췄다.
+- `JOIN은 표 두 개를 같은 값 기준으로 붙이는 것` → `ON 조건의 의미` → `어느 쪽 행을 남길지` → `INNER/LEFT/RIGHT/FULL` 순서로 다시 배치했다.
+- 첫 JOIN 레슨에서 어려운 행 수 합계 패턴 설명을 제거하고, 문제 푸는 순서만 남겼다.
+- `sqld-sql-lab-015`처럼 같은 키가 여러 번 있을 때 행 수를 계산하는 고난도 드릴은 첫 JOIN 레슨의 `extraQuizIds`에서 제외했다.
+- `DialogueLesson.tsx`에 `joinKey` 도식을 추가해 `ON E.부서ID = D.부서ID`가 실제로 무엇을 의미하는지 표와 SQL 예시로 보이게 했다.
+- `JOIN 조건 표기` 단계의 말투도 `ON/USING/NATURAL`을 처음 보는 사용자 기준으로 풀어썼다.
+
+### 사용자에게 주는 좋은 영향
+
+- JOIN을 종류 암기가 아니라 “같은 키로 붙이고, 어떤 행을 남길지 정하는 것”으로 먼저 이해할 수 있다.
+- SQLD 2과목에서 이탈하기 쉬운 JOIN 파트의 첫 진입 부담을 낮춘다.
+- 새 문제 ID를 추가하지 않아 Supabase 문제 누락 오류 위험이 없다.
+
+### 반영 파일
+
+- `src/data/lessons/sqld/ch2-sql.ts`
+- `src/game/lesson/DialogueLesson.tsx`
+- `docs/content-edit-log.md`
+
+### Supabase 반영 여부
+
+- 새 `quizId` 또는 새 `extraQuizIds`를 추가하지 않았다.
+- 오히려 첫 JOIN 레슨에서 고난도 기존 extra 문제 하나를 제외했으므로 Supabase migration은 필요 없다.
+
+## 2026-05-31 — SQLD PIVOT/UNPIVOT 도식 추가
+
+### 사용자가 발견한 문제
+
+- `PIVOT은 행으로 길게 쌓인 값을 열로 펼치는 기능이야`라는 문장만으로는 실제로 표 모양이 어떻게 바뀌는지 상상하기 어렵다.
+- 특히 PIVOT과 UNPIVOT은 이름이 비슷해서, 초보자는 `행 -> 열`, `열 -> 행` 방향을 헷갈릴 수 있다.
+
+### 수정 방향
+
+- `sqld-2-2-s11-pivot` 단계에 전용 CSS 도식을 추가했다.
+- 긴 표(`월, 과목, 점수`)가 PIVOT을 거쳐 넓은 표(`월, SQL, 모델링`)로 바뀌는 모습을 한 화면에서 보여준다.
+- Oracle 기준 PIVOT SQL 예시를 함께 넣어 `SUM(점수)` 집계 함수와 `FOR 과목 IN (...)` 구조를 연결했다.
+- UNPIVOT은 반대 방향이라는 점을 별도 카드와 파이프라인으로 보여줬다.
+
+### 사용자에게 주는 좋은 영향
+
+- PIVOT/UNPIVOT을 말뜻 암기가 아니라 표의 모양 변화로 먼저 이해할 수 있다.
+- SQLD에서 자주 나오는 “PIVOT은 집계 함수가 필요하다”는 포인트를 자연스럽게 기억할 수 있다.
+- 새 문제 ID를 추가하지 않아 Supabase 문제 누락 오류 위험이 없다.
+
+### 반영 파일
+
+- `src/game/lesson/DialogueLesson.tsx`
+- `docs/content-edit-log.md`
+
+### Supabase 반영 여부
+
+- 새 `quizId` 또는 `extraQuizIds`를 추가하지 않았다.
+- 문제 JSON과 Supabase `public.questions`는 변경하지 않았으므로 migration은 필요 없다.
+
+## 2026-05-31 — ADSP/SQLD 레슨 말투 전체 점검
+
+### 사용자 발견 문제
+
+- ADSP/SQLD 전체 설명의 종결 어미가 `~합니다`, `~됩니다`, `~세요`, `~해요`처럼 섞이면 1과목에서 잡아온 친근한 튜터 톤이 깨진다.
+- SQLD 2과목처럼 어려운 파트는 말투가 조금만 딱딱해져도 사용자가 “교재 요약표”처럼 느끼기 쉽다.
+
+### 수정 방향
+
+- ADSP/SQLD lesson copy, 하단 CSS 도식 문구, 2회독 reminder, 레슨 공통 안내 문구를 스캔했다.
+- 사용자에게 직접 설명하는 문장은 `~야`, `~어`, `~해`, `~지` 중심으로 통일했다.
+- 기계 치환 중 생길 수 있는 `쓰야`, `보야`, `모야`, `"설명선"야` 같은 어색한 표현을 별도로 스캔해 자연스러운 문장으로 고쳤다.
+- 시험형 문제 문항의 `옳은 것은?` 같은 형식은 문제 스타일로 남겼고, 이번 작업은 개념 설명과 학습 안내 톤에 집중했다.
+
+### 사용자에게 주는 좋은 영향
+
+- ADSP와 SQLD를 오가도 같은 선생님이 옆에서 설명해 주는 느낌이 유지된다.
+- 어려운 SQLD 2과목에서도 압축 요약이 아니라 친근한 학습 흐름으로 받아들일 가능성이 커진다.
+- 새 문제 ID를 추가하지 않았으므로 Supabase 문제은행 누락 위험은 없다.
+
+### 반영 파일
+
+- `src/data/lessons/adsp/ch1.ts`
+- `src/data/lessons/adsp/ch2.ts`
+- `src/data/lessons/adsp/ch3.ts`
+- `src/data/lessons/sqld/ch1-modeling.ts`
+- `src/data/lessons/sqld/ch2-sql.ts`
+- `src/data/reminders.ts`
+- `src/game/lesson/DialogueLesson.tsx`
+- `src/game/screens/ZoneScreen.tsx`
+- `docs/content-edit-log.md`
+
+### Supabase 반영 여부
+
+- 새 `quizId` 또는 `extraQuizIds`를 추가하지 않았다.
+- 문제 JSON과 Supabase `public.questions`는 변경하지 않았으므로 migration은 필요 없다.
+
+## 2026-05-31 — SQLD ROLLUP/CUBE/GROUPING 말투 완화
+
+### 사용자 발견 문제
+
+- `ROLLUP(a, b): 컬럼 순서대로 점진적으로 그룹을 줄여 소계+총계`처럼 요약식 문장이 먼저 보이면 초보자가 시험 암기표를 보는 느낌을 받는다.
+- SQLD 2과목은 난도가 높아서 “기능 이름 → 정의”보다 “매출표에서 어떤 합계가 궁금한 상황인지 → 어떤 SQL 기능을 쓰는지” 순서가 더 안전하다.
+
+### 수정 방향
+
+- ROLLUP은 `지역+상품별 상세 매출 → 지역별 매출 합계 → 전체 매출 합계` 흐름으로 설명했다.
+- CUBE는 `지역별도 보고, 상품별도 보는 넓은 합계`로 풀어 설명했다.
+- GROUPING SETS/GROUPING은 `필요한 묶음만 고르기`, `NULL처럼 보이는 소계 자리를 구분하기`로 표현을 부드럽게 바꿨다.
+- 하단 도식 제목도 `오른쪽 기준부터 접어서` 같은 압축 표현 대신 `상세 매출 아래에 소계와 총계를 붙인다`처럼 결과표 관점으로 바꿨다.
+- 2회독 reminder도 `ROLLUP(a,b)` 표기 중심에서 “상세 → 소계 → 총계” 중심으로 바꿨다.
+
+### 사용자에게 주는 좋은 영향
+
+- 사용자가 ROLLUP/CUBE/GROUPING을 기호 암기보다 실제 결과표 변화로 먼저 이해한다.
+- 어려운 집계 확장 파트에서도 1과목처럼 부드러운 말투가 유지된다.
+- 새 문제 ID를 추가하지 않았으므로 Supabase 동기화 위험은 없다.
+
+### 반영 파일
+
+- `src/data/lessons/sqld/ch2-sql.ts`
+- `src/game/lesson/DialogueLesson.tsx`
+- `src/data/reminders.ts`
+- `docs/content-edit-log.md`
+
+### Supabase 반영 여부
+
+- 새 `quizId` 또는 `extraQuizIds`를 추가하지 않았다.
+- 기존 문제 연결만 유지했으므로 Supabase migration은 필요 없다.
+
+## 2026-05-31 — SQLD ROLLUP/CUBE/GROUPING 단계 분리
+
+### 사용자가 발견한 문제
+
+- `ROLLUP · CUBE` 도식이 ROLLUP, CUBE, GROUPING을 한 장에 압축해서 보여줬다.
+- 사용자는 “아 이런 것이 있구나” 정도만 알 수 있고, SQL 문으로 어떻게 쓰이며 결과 표가 어떻게 달라지는지 한눈에 이해하기 어려웠다.
+- 특히 ROLLUP, CUBE, GROUPING은 SQLD 2과목 집계 확장 파트에서 헷갈리기 쉬우므로 각각 독립된 그림과 SQL 예시가 필요했다.
+
+### 수정한 방향
+
+- 기존 `그룹 함수` 한 step을 다음 3개 step으로 분리했다.
+  - `ROLLUP`: `GROUP BY ROLLUP(지역, 상품)` SQL 예시와 상세 → 지역 소계 → 전체 총계 결과표
+  - `CUBE`: `GROUP BY CUBE(지역, 상품)` SQL 예시와 지역별 소계, 상품별 소계, 전체 총계 조합
+  - `GROUPING`: `GROUPING(컬럼)=0/1`의 의미와 `CASE WHEN GROUPING(...)` SQL 예시
+- 기존 문제 `sqld-2-2-cp-07`과 SQL LAB `sqld-sql-lab-019`는 마지막 `GROUPING` step에 유지했다.
+- 새 문제 ID는 만들지 않았다. 따라서 로컬 JSON과 Supabase 문제은행을 새로 동기화할 필요가 없도록 했다.
+- step 수가 2개 늘었으므로 `gameModes` 표시와 lesson integration test의 총 step 수를 함께 갱신했다.
+- 로드맵은 `quizId`가 있는 대표 노드만 보여주므로, 대표 노드를 눌렀을 때 같은 그룹의 첫 설명 step부터 시작하도록 진입 로직을 보정했다. 이렇게 해야 사용자가 `GROUPING` 문제 노드를 눌러도 `ROLLUP → CUBE → GROUPING` 순서로 학습한다.
+- `집합 연산자`와 ROLLUP/CUBE/GROUPING이 같은 group 키에 묶이지 않도록 `sqld-2-2-g3-rollup-cube` 전용 그룹을 만들었다.
+
+### 사용자에게 주는 좋은 영향
+
+- ROLLUP은 “오른쪽 기준부터 접어 소계 생성”, CUBE는 “모든 조합 생성”, GROUPING은 “소계/총계 행 구분”으로 역할이 분리되어 기억된다.
+- SQL 문과 결과표를 같이 보므로 시험 문제에서 생성 그룹을 묻는 경우 더 빠르게 판단할 수 있다.
+- 어려운 집계 확장 개념을 한 번에 던지지 않고, 모바일 화면에서 하나씩 따라가며 이해할 수 있다.
+
+### 반영 파일
+
+- `src/data/lessons/sqld/ch2-sql.ts`
+- `src/game/GamePage.tsx`
+- `src/game/lesson/DialogueLesson.tsx`
+- `src/data/gameModes.ts`
+- `src/data/lessons/lessons.integration.test.ts`
+- `docs/content-edit-log.md`
+
+### Supabase 반영 여부
+
+- 새 `quizId` 또는 `extraQuizIds`를 추가하지 않았다.
+- 기존 문제 ID를 재배치만 했으므로 Supabase migration은 필요 없다.
+
+## 2026-05-31 — SQLD SELECT 실행 순서 단계형 도식 재구성
+
+### 사용자가 발견한 문제
+
+- `SELECT 실행 순서`에서 FWGHSO 전체를 한 번에 설명하고 도식도 한 화면에 모두 보여줘 초보자가 부담을 느낄 수 있었다.
+- `FROM`, `WHERE`, `GROUP BY`, `HAVING`, `SELECT`, `ORDER BY`가 각각 정확히 무엇을 의미하는지 충분히 익히기 전에 전체 순서와 규칙이 한꺼번에 나왔다.
+
+### 수정한 방향
+
+- 실제 step 개수는 늘리지 않고, 한 노드 안의 대사와 그림을 여러 장으로 쪼갰다.
+- 하나의 SQL 예시를 계속 확장하는 방식으로 변경했다.
+  - `FROM EMP`: EMP 직원 테이블에서 시작
+  - `WHERE JOIN_YEAR >= 2020`: 2020년 이후 입사 행만 남김
+  - `GROUP BY DEPT`: 남은 행을 부서별로 묶음
+  - `HAVING AVG(SAL) >= 5000`: 평균 급여 5000 이상 그룹만 남김
+  - `SELECT DEPT, AVG(SAL) AS AVG_SAL`: 보여줄 열과 별칭 생성
+  - `ORDER BY AVG_SAL DESC`: 평균 급여 높은 순 정렬
+- 각 대사 턴에 맞춰 도식이 `개요 → FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → 요약`으로 바뀌도록 했다.
+- `FROM`, `SELECT`, `GROUP BY`, `HAVING`, `ORDER BY` 클릭 설명도 추가해 낯선 SQL 절을 바로 확인할 수 있게 했다.
+
+### 사용자에게 주는 좋은 영향
+
+- FWGHSO를 단순 암기어로 보는 것이 아니라, 실제 SQL 문장이 처리되는 흐름으로 이해할 수 있다.
+- 각 절을 배운 직후 같은 예시에서 결과가 어떻게 바뀌는지 보므로 개념 간 연결이 자연스럽다.
+- 이후 ALIAS, 집계함수, WHERE/HAVING 차이 문제를 풀 때 “지금 이 시점에 무엇이 만들어졌는가”를 판단하기 쉬워진다.
+
+### 반영 파일
+
+- `src/data/lessons/sqld/ch2-sql.ts`
+- `src/game/lesson/DialogueLesson.tsx`
+- `src/game/lesson/GlossaryKeyword.tsx`
+- `docs/content-edit-log.md`
+
+### Supabase 반영 여부
+
+- 문제 ID, 문항, 선택지, 정답, 해설을 변경하지 않았다.
+- 레슨 대사, 시각 도식, 클릭 용어 설명만 수정했으므로 Supabase migration은 필요 없다.
+
+## 2026-05-31 — SQLD ALIAS/DISTINCT 구간 말투와 NULL 설명 보정
+
+### 사용자가 발견한 문제
+
+- `ALIAS와 DISTINCT` 스텝 중반부터 `NULL 도 한 값으로 취급`, `문자열 연결`, `ALIAS 쓸 수 없는 절은?`처럼 요약노트식 문장이 이어졌다.
+- 앞뒤의 쉬운 말투와 달리 갑자기 딱딱해져서, 처음 보는 사용자가 의미를 따라가기 어려웠다.
+
+### 수정한 방향
+
+- ALIAS를 “SQL 결과에 잠깐 붙이는 별명”으로 풀어 설명했다.
+- `급여 * 12 AS 연봉` 예시를 통해 왜 별칭이 필요한지 먼저 보여줬다.
+- 별칭 제한은 `숫자로 시작`, `예약어`, `특수문자`, `공백 별칭은 큰따옴표`처럼 문장으로 나눴다.
+- `WHERE/GROUP BY/HAVING`에서 별칭을 못 쓰는 이유를 실행 순서와 연결해 설명했다.
+- DISTINCT는 “똑같이 반복되는 결과 줄을 하나만 남기는 기능”으로 풀고, 여러 컬럼일 때는 모든 컬럼이 같아야 중복이라고 설명했다.
+- `SELECT DISTINCT`에서 NULL 줄이 하나로 남을 수 있다는 설명과 `COUNT(DISTINCT col)`은 일반적으로 NULL을 세지 않는다는 점을 구분했다.
+- ALIAS, DISTINCT를 클릭 설명 용어로 추가했다.
+
+### 사용자에게 주는 좋은 영향
+
+- SQL 용어를 암기 문장으로 받는 것이 아니라, 실제 결과표를 읽는 흐름으로 이해할 수 있다.
+- NULL과 DISTINCT의 차이를 더 정확하게 구분해 시험 함정에 덜 흔들린다.
+- 이후 ALIAS 위치 오류 문제를 풀 때 “왜 WHERE에서 별칭을 모르는지”를 실행 순서로 설명할 수 있다.
+
+### 반영 파일
+
+- `src/data/lessons/sqld/ch2-sql.ts`
+- `src/game/lesson/GlossaryKeyword.tsx`
+- `docs/content-edit-log.md`
+
+### Supabase 반영 여부
+
+- 문제 ID, 문항, 선택지, 정답, 해설을 변경하지 않았다.
+- 레슨 대사와 보조 설명만 수정했으므로 Supabase migration은 필요 없다.
+
+## 2026-05-31 — SQLD 관계대수 WHERE 선행 용어 부담 완화
+
+### 사용자가 발견한 문제
+
+- `관계대수` 초반에서 아직 `WHERE 절`을 배우기 전에 “WHERE와 가까운 연산”을 확인하겠다는 말이 나와 초보자가 거부감을 느낄 수 있었다.
+- 문제 자체는 관계대수의 `행 선택`을 확인하는 좋은 방향이지만, WHERE가 무엇인지 모르는 사용자에게는 낯선 용어가 먼저 튀어나오는 흐름이었다.
+
+### 수정한 방향
+
+- 관계대수 대사에 `[WHERE]` 클릭 설명을 추가했다.
+- WHERE를 “조건에 맞는 행만 남기는 부분”이라고 아주 짧게 설명하고, 바로 뒤에서 WHERE 절을 따로 배운다고 안내했다.
+- 첫 문제 안내 문구는 `WHERE와 가까운 연산` 대신 `조건에 맞는 행을 고르는 연산`으로 바꿔, 문제의 핵심을 먼저 이해하게 했다.
+
+### 사용자에게 주는 좋은 영향
+
+- SQL을 처음 보는 사용자도 WHERE라는 낯선 단어 때문에 멈칫하지 않고 넘어갈 수 있다.
+- 관계대수의 `σ = 행 선택` 의미가 먼저 남고, 이후 WHERE 절 학습과 자연스럽게 연결된다.
+- “뒤에서 다시 배운다”는 안내가 있어 지금 완벽히 몰라도 된다는 안정감을 준다.
+
+### 반영 파일
+
+- `src/data/lessons/sqld/ch2-sql.ts`
+- `src/game/lesson/GlossaryKeyword.tsx`
+- `docs/content-edit-log.md`
+
+### Supabase 반영 여부
+
+- 문제 ID, 문항, 선택지, 정답, 해설을 변경하지 않았다.
+- 레슨 대사와 클릭 용어 설명만 수정했으므로 Supabase migration은 필요 없다.
+
+## 2026-05-31 — SQLD FWGHSO 도식 순서 인지 보강
+
+### 사용자가 발견한 문제
+
+- `SELECT 실행 순서` 도식이 2열 카드 목록처럼 보여서 `FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY` 순서가 한눈에 들어오지 않았다.
+- 그림을 보고 “이런 절들이 있구나” 정도만 느껴지고, 실제 암기어 `FWGHSO`의 흐름을 잡기 어려웠다.
+
+### 수정한 방향
+
+- 기존 2열 카드 나열을 세로 타임라인으로 변경했다.
+- 각 절에 `1`부터 `6`까지 번호를 붙이고, `F/W/G/H/S/O` 글자를 함께 표시했다.
+- 하단에는 `F > W > G > H > S > O` 요약 줄을 추가해 암기 순서를 다시 확인하게 했다.
+- 설명 문구도 `위에서 아래로 1→6 순서`와 `SELECT 별칭은 ORDER BY에서 사용 가능`으로 바꿨다.
+
+### 사용자에게 주는 좋은 영향
+
+- 모바일에서 순서를 위에서 아래로 따라 읽을 수 있어 SQL 논리 처리 순서가 더 쉽게 남는다.
+- `FWGHSO`가 단순 약어가 아니라 실제 처리 흐름으로 연결된다.
+- 이후 WHERE, GROUP BY, HAVING, ORDER BY 문제를 풀 때 “지금 이 절에서 무엇을 알고 있는가”를 판단하기 쉬워진다.
+
+### 반영 파일
+
+- `src/game/lesson/DialogueLesson.tsx`
+- `docs/content-edit-log.md`
+
+### Supabase 반영 여부
+
+- 문제 ID, 문항, 선택지, 정답, 해설을 변경하지 않았다.
+- 시각 도식만 수정했으므로 Supabase migration은 필요 없다.
+
+## 2026-05-31 — SQLD 2과목 Part 3 DDL/TCL/DCL 문제 타이밍 점검
+
+### 사용자가 발견한 문제
+
+- DML 첫 문제처럼, 관리 구문 큰 묶음에서 아직 배우지 않은 개념이 문제에 먼저 섞일 위험이 있었다.
+- `DDL`, `TCL`, `DCL`도 같은 기준으로 점검이 필요했다.
+
+### 수정한 방향
+
+- `DDL` 첫 문제는 DDL 정의와 `TCARD(티카드)` 설명 직후 같은 범위만 묻고 있어 유지했다.
+- `TCL` 첫 문제 `sqld-2-3-cp-03`은 SAVEPOINT/COMMIT 시나리오가 너무 복잡해, 먼저 `TCL이 무엇인지`를 묻는 기본 확인 문제로 낮췄다.
+- SAVEPOINT 응용 문제는 기존 후속 드릴(`sqld-2-3-cp-03-savepoint-rollback`, `sqld-sql-lab-031`)로 남겨 단계가 오른 뒤 확인하게 했다.
+- `DCL` 첫 문제 `sqld-2-3-cp-08`은 `WITH GRANT OPTION`과 `WITH ADMIN OPTION` 차이부터 묻고 있어, 먼저 `DCL이 권한을 주고 회수하는 명령군`임을 확인하는 기본 문제로 낮췄다.
+- 옵션 차이 문제는 기존 후속 드릴 `sqld-sql-lab-035`로 옮겨 고급 확인 문제 역할을 하게 했다.
+
+### 사용자에게 주는 좋은 영향
+
+- 큰 묶음 개념을 처음 배운 직후에는 정의와 역할만 확인하므로 진입 장벽이 낮아진다.
+- `SAVEPOINT`, `WITH GRANT/ADMIN OPTION` 같은 어려운 함정은 설명을 충분히 본 뒤 후속 문제로 만나게 된다.
+- 관리 구문 전체가 `큰 묶음 이해 → 구성 명령 이해 → 함정 문제` 순서로 더 자연스럽게 정리된다.
+
+### 반영 파일
+
+- `src/data/questions/sqld/concept-practice.json`
+- `src/data/questions/sqld/sql-interpretation-drills.json`
+- `supabase/migrations/0070_update_sqld_management_intro_drills.sql`
+- `docs/content-edit-log.md`
+
+### Supabase 반영 여부
+
+- 새 문제 ID는 만들지 않았다.
+- 기존 문제 ID `sqld-2-3-cp-03`, `sqld-2-3-cp-08`, `sqld-sql-lab-035`의 문항·선택지·정답·해설을 갱신했다.
+- 서버 반영을 위해 migration `0070_update_sqld_management_intro_drills.sql`을 추가했다.
+
+## 2026-05-31 — SQLD 2과목 Part 3 DML 첫 개념 노드 보강
+
+### 사용자가 발견한 문제
+
+- `DML 진행` trail에는 `DML이란` 항목이 보이지만, 실제 학습 흐름에서는 사용자가 DML 정의를 충분히 학습했다고 느끼기 어려웠다.
+- 첫 노드가 `관리 구문 큰 묶음` 설명으로 시작해서 DML 자체보다 DDL/TCL/DCL까지 한꺼번에 들어왔고, 다음 화면이 바로 `INSERT`로 넘어가면서 “DML이란 개념 노드가 비어 있다”는 인상을 줬다.
+
+### 수정한 방향
+
+- `sqld-2-3-s1`을 `DML이란` 개념 노드로 명확히 재정리했다.
+- 첫 문장을 관리 구문 전체가 아니라 `DML은 Data Manipulation Language, 데이터 조작어`라는 정의에서 시작하게 바꿨다.
+- DML의 하위 흐름을 `INSERT`, `UPDATE`, `DELETE`, `MERGE`로 먼저 보여주고, DDL/TCL/DCL은 비교용으로 뒤에 짧게 배치했다.
+- `INSERT` 스텝 첫 문장에는 “방금 DML이 테이블 안의 행 데이터를 다루는 묶음이라고 봤지?”라는 연결 문장을 추가해 흐름이 끊기지 않게 했다.
+- DML 첫 확인 문제 `sqld-sql-lab-001`은 DDL/TCL/DCL까지 묻는 선행 학습 문제였으므로, 방금 배운 DML 정의만 확인하는 문제로 재작성했다.
+
+### 사용자에게 주는 좋은 영향
+
+- 초보자가 `DML`이라는 큰 범주를 이해하지 못한 채 `INSERT`로 넘어가는 느낌이 줄어든다.
+- Part 3 로드맵의 큰 제목과 lesson 내부 진행표가 실제 개념 설명과 일치한다.
+- 아직 배우지 않은 `COMMIT/ROLLBACK`, `GRANT/REVOKE`, `DDL` 범위가 DML 첫 문제에 섞여 나오지 않아 문제 타이밍이 자연스러워진다.
+- 앞으로 큰 그룹 노드를 만들 때는 “그룹명만 있는 노드”가 아니라 첫 개념 자체를 충분히 설명해야 한다는 기준이 생겼다.
+
+### 반영 파일
+
+- `src/data/lessons/sqld/ch2-sql.ts`
+- `docs/content-edit-log.md`
+
+### Supabase 반영 여부
+
+- 새 `quizId`나 `extraQuizIds`를 만들지 않았다.
+- 기존 문제 ID `sqld-sql-lab-001`의 문항, 선택지, 정답, 해설을 DML 첫 개념 확인 문제로 재작성했다.
+- 서버 반영을 위해 기존 migration `0069_move_sql_command_group_drills_to_management.sql`에 `sqld-sql-lab-001` upsert를 추가했다.
+
+## 2026-05-31 — SQLD 2과목 Part 1/Part 3 범위 재배치
+
+### 사용자가 발견한 문제
+
+- SQLD 2과목 `SQL 기본` Part 1 첫 노드에 `DDL`, `DML·DCL·TCL`이 먼저 나오고 있었다.
+- 하지만 `DDL/DML/DCL/TCL`은 SQL 기본의 SELECT 읽기 흐름보다 `관리 구문` 범위에 가까워, Part 1에서 먼저 설명하면 시험 범위 흐름이 어긋난다.
+
+### 수정한 방향
+
+- `sqld-2-1` Part 1의 첫 스텝을 `SQL 기본 흐름`으로 바꾸고, SQL 기본은 관계대수·SELECT 실행 순서·WHERE·GROUP BY/HAVING·ORDER BY를 읽는 흐름부터 시작하게 했다.
+- Part 1에서 `DDL`, `DML·DCL·TCL` 스텝을 제거했다.
+- `TCARD(DDL 대표 명령)` 확인 문제는 Part 3 `ALTER · DROP · TRUNCATE` 스텝의 추가 문제로 옮겼다.
+- `sqld-sql-lab-001` 명령군 분류 문제는 처음에는 Part 3 관리 구문으로 옮겼고, 이후 위 기록처럼 DML 첫 개념 확인 문제로 재작성했다.
+- `sqld-2-1-cp-01`은 SQL 명령군 문제가 아니라 SQL 기본 흐름 확인 문제로 재작성했다.
+- 추가 검토 후 Part 3 로드맵 자체도 `DML → INSERT/UPDATE/DELETE/MERGE`, `TCL → AUTOCOMMIT`, `DDL → CREATE/ALTER/DROP/TRUNCATE/제약조건`, `DCL` 순서가 보이도록 조정했다.
+- `DML`과 `DDL`이 숨은 설명 카드로만 남지 않게 각각 보이는 노드로 만들었다. DML 노드는 기존 `sqld-sql-lab-001`, DDL 노드는 기존 `sqld-2-1-cp-01-ddl-tcard`를 연결해 새 서버 문제 ID 없이 구조를 바로잡았다.
+
+### 사용자에게 주는 좋은 영향
+
+- 초보자가 SQLD 2과목을 시작할 때 관리 구문 암기부터 맞닥뜨리지 않고, 먼저 SELECT 문장을 읽는 감각을 잡을 수 있다.
+- DDL/DML/DCL/TCL은 Part 3에서 실제 관리 구문을 배운 뒤 확인하게 되어 문제 타이밍이 자연스러워진다.
+- 로드맵의 Part 구분이 시험 범위와 더 잘 맞아 사용자가 “왜 지금 이걸 배우지?”라는 혼란을 덜 느낀다.
+- Part 3에서도 큰 묶음 제목이 먼저 보이고, 그 아래 구성 명령이 이어져 “이 명령이 어느 군에 속하는지”를 로드맵 자체로 이해할 수 있다.
+
+### 반영 파일
+
+- `src/data/lessons/sqld/ch2-sql.ts`
+- `src/data/questions/sqld/concept-practice.json`
+- `src/data/questions/sqld/sql-interpretation-drills.json`
+- `supabase/migrations/0069_move_sql_command_group_drills_to_management.sql`
+- `docs/content-edit-log.md`
+
+### Supabase 반영 여부
+
+- 서버 동기화를 위해 migration `0069_move_sql_command_group_drills_to_management.sql`을 추가했다.
+- `sqld-2-1-cp-01`은 서버에서도 SQL 기본 흐름 문제로 upsert된다.
+- `sqld-2-1-cp-01-ddl-tcard`, `sqld-sql-lab-001`은 서버에서도 `관리 구문` topic으로 이동한다.
+
 ## 2026-05-27 — ADSP 2·3과목 CSS 도식 보강
 
 ### 사용자가 발견한 문제
@@ -2232,3 +2730,100 @@ order by expected.id;
 ### Supabase 반영 상태
 
 - 새 문제 ID를 추가하지 않은 말투/설명 변경이므로 별도 Supabase migration은 필요하지 않다.
+
+## 2026-05-31 — SQLD SELECT 실행 순서 이후 학습 순서 재배치
+
+### 사용자가 발견한 문제
+
+- `SELECT 실행 순서`에서 FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY 흐름을 배운 뒤, 실제 로드맵은 ALIAS, 함수, NULL, CASE로 빠졌다.
+- 사용자는 SQL 처리 순서를 막 배운 직후라 `WHERE 절`, `GROUP BY · HAVING`, `ORDER BY`를 바로 이어서 배우는 편이 더 자연스럽다고 지적했다.
+
+### 수정 방향
+
+- `SQL 기본` 레슨 배열에서 기존 `WHERE 절`, `GROUP BY · HAVING`, `ORDER BY` step을 `SELECT 실행 순서` 바로 뒤로 이동했다.
+- 기존 `step id`, `quizId`, `extraQuizIds`, 문제 내용은 그대로 유지했다.
+- 이후 흐름은 `ALIAS와 DISTINCT` → `문자 함수` → `숫자·날짜 함수` → `집계 함수` → `NULL 처리 함수` → `CASE와 DECODE`로 이어지게 했다.
+
+### 사용자에게 주는 좋은 영향
+
+- 사용자는 실행 순서를 배운 직후 WHERE, GROUP BY/HAVING, ORDER BY를 실제 절 단위로 확장해서 배운다.
+- SQL 문장을 한 번에 외우는 느낌보다 “처리 순서 → 각 절의 역할”로 자연스럽게 연결된다.
+- 함수와 별칭은 기본 절 흐름을 잡은 뒤 배우므로, 초보자가 SQL 문법 덩어리에 압도될 가능성이 줄어든다.
+
+### 반영 파일
+
+- `src/data/lessons/sqld/ch2-sql.ts`
+
+### Supabase 반영 상태
+
+- 새 문제 ID를 추가하지 않고 레슨 노출 순서만 바꾼 작업이므로 별도 Supabase migration은 필요하지 않다.
+
+## 2026-05-31 — SQLD NULL 처리 함수 단계 분리
+
+### 사용자가 발견한 문제
+
+- `NULL 처리 함수` step의 시각 자료가 `NVL`, `COALESCE`, `NULLIF`를 한 번에 보여줘 처음 보는 사용자가 이해하기 어렵다.
+- 이름이 비슷한 함수들이 한 카드에 몰려 있어 “각 함수가 언제 쓰이는지”보다 “표를 통째로 외워야 한다”는 느낌을 준다.
+
+### 수정 방향
+
+- 기존 `NULL 처리 함수` step을 `NVL`, `NVL2`, `NULLIF`, `COALESCE` 4단계로 분리했다.
+- 각 단계마다 SQL 예시 그림을 따로 보여주도록 `DialogueLesson`에 NULL 함수 전용 SQL 도식을 추가했다.
+  - `NVL`: 전화번호가 NULL이면 `미등록`
+  - `NVL2`: 보너스가 있으면 `있음`, 없으면 `없음`
+  - `NULLIF`: 시도횟수 0을 NULL로 바꿔 0 나누기 오류 회피
+  - `COALESCE`: 휴대폰 → 집전화 → 이메일 순서로 첫 NOT NULL 선택
+- 기존 서버에 이미 있는 문제 ID만 재배치했다.
+  - `sqld-sql-lab-009`는 COALESCE/NULLIF 확인 문제로 연결
+  - `sqld-2-1-cp-08`은 CASE/DECODE NULL 비교 문제로 이동
+  - `sqld-2-1-cp-09`는 CASE/DECODE 후속 문제로 유지
+
+### 사용자에게 주는 좋은 영향
+
+- 사용자는 NULL 함수 네 개를 한 번에 외우지 않고, 한 함수씩 SQL 문장과 결과표를 보며 이해할 수 있다.
+- `Oracle 전용` 함수와 `표준 SQL` 함수의 차이를 단계별로 익히므로 실전 SQL 해석 부담이 줄어든다.
+- 기존 서버 문제 ID를 재사용해 “로컬에서는 보이지만 실제 앱에서는 문제를 못 불러오는” 사고를 피한다.
+
+### 반영 파일
+
+- `src/data/lessons/sqld/ch2-sql.ts`
+- `src/game/lesson/DialogueLesson.tsx`
+- `src/data/gameModes.ts`
+- `src/data/lessons/lessons.integration.test.ts`
+
+### Supabase 반영 상태
+
+- 새 문제 ID를 추가하지 않았고, 이미 Supabase에 존재하는 문제 ID를 재배치한 작업이므로 별도 migration은 필요하지 않다.
+
+## 2026-05-31 — SQLD JOIN 도입부 말투와 도식 흐름 개선
+
+### 사용자가 발견한 문제
+
+- `JOIN 4종` 도입부가 `JOIN은 여러 테이블을 한 결과로 묶는 도구`, `JOIN 종류 4가지`처럼 요약노트 말투로 보였다.
+- SQLD 1과목의 단계적 설명 톤과 달라져, SQL 활용 파트에 들어오자 갑자기 차갑고 압축적인 느낌이 났다.
+
+### 수정 방향
+
+- JOIN을 “서로 떨어져 있는 표를 연결해 사람이 읽기 좋은 결과표로 만드는 방법”으로 풀어 설명했다.
+- `사원` 표와 `부서` 표를 `부서ID`로 붙이는 상황을 먼저 보여주고, 그다음 `INNER`, `LEFT OUTER`, `RIGHT/FULL OUTER`, 정리 순서로 진행되게 했다.
+- `DialogueLesson`의 JOIN 도식을 고정 4종 카드에서 진행형 도식으로 바꿨다.
+  - 입문: 사원 표 + 부서 표 + 같은 값끼리 연결
+  - INNER: 양쪽에 맞는 행만 남김
+  - LEFT: 왼쪽 표를 모두 지키고 없는 오른쪽 값은 NULL
+  - RIGHT/FULL: 오른쪽 또는 양쪽 보존
+  - 요약: 문제에서는 “어느 쪽 행을 남길지” 먼저 보기
+
+### 사용자에게 주는 좋은 영향
+
+- 사용자는 JOIN을 종류 이름부터 외우지 않고, 왜 테이블을 붙이는지부터 이해한다.
+- OUTER JOIN을 “보존해야 하는 쪽”으로 판단하게 되어 행 수 문제와 실전 SQL 해석이 쉬워진다.
+- SQLD 2과목도 1과목과 같은 친절한 말투를 유지하게 된다.
+
+### 반영 파일
+
+- `src/data/lessons/sqld/ch2-sql.ts`
+- `src/game/lesson/DialogueLesson.tsx`
+
+### Supabase 반영 상태
+
+- 새 문제 ID를 추가하지 않은 설명/도식 변경이므로 별도 Supabase migration은 필요하지 않다.

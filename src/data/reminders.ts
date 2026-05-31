@@ -2240,7 +2240,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
 
   'sqld-1-1-s1': {
     headline: '데이터 모델링의 뜻, 기억나?',
-    summary: '데이터 모델링은 현실 세계의 정보를 약속된 표기법으로 DB 구조에 표현하는 과정입니다. SQL을 짜기 전에 무엇을 어떤 관계로 저장할지 먼저 정리합니다.',
+    summary: '데이터 모델링은 현실 세계의 정보를 약속된 표기법으로 DB 구조에 표현하는 과정이야. SQL을 짜기 전에 무엇을 어떤 관계로 저장할지 먼저 정리해.',
     keyPoints: [
       '현실 세계 정보 → 약속된 표기법 → DB 구조',
       '수강신청 예시: 학생은 과목을 신청한다',
@@ -2249,7 +2249,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   'sqld-1-1-s1b': {
     headline: '좋은 모델의 3특징, 기억나?',
-    summary: '좋은 데이터 모델은 단순화·추상화·명확화를 갖춰야 합니다. 줄여서 단추명입니다.',
+    summary: '좋은 데이터 모델은 단순화·추상화·명확화를 갖춰야 해. 줄여서 단추명이야.',
     keyPoints: [
       '단순화: 구조를 쉽게 이해하게 만든다',
       '추상화: 핵심만 남김',
@@ -2259,7 +2259,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   'sqld-1-1-s1c': {
     headline: '단순화, 기억나?',
-    summary: '단순화는 개발자·기획자·처음 보는 사람도 모델 구조를 쉽게 이해할 수 있게 정리하는 특징입니다.',
+    summary: '단순화는 개발자·기획자·처음 보는 사람도 모델 구조를 쉽게 이해할 수 있게 정리하는 특징이야.',
     keyPoints: [
       '처음 보는 사람도 구조를 따라올 수 있어야 함',
       '나쁜 예: 모든 정보를 한 표에 뒤섞기',
@@ -2268,7 +2268,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   'sqld-1-1-s1d': {
     headline: '추상화, 기억나?',
-    summary: '추상화는 현실의 모든 세부사항을 다 넣지 않고, 지금 업무에 필요한 핵심만 남기는 특징입니다.',
+    summary: '추상화는 현실의 모든 세부사항을 다 넣지 않고, 지금 업무에 필요한 핵심만 남기는 특징이야.',
     keyPoints: [
       '현실 전체를 복사하지 않음',
       '현재 DB에 필요한 핵심만 남김',
@@ -2277,7 +2277,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   'sqld-1-1-s1e': {
     headline: '명확화, 기억나?',
-    summary: '명확화는 같은 모델을 본 사람들이 같은 의미로 이해하도록 이름과 관계를 분명하게 표현하는 특징입니다.',
+    summary: '명확화는 같은 모델을 본 사람들이 같은 의미로 이해하도록 이름과 관계를 분명하게 표현하는 특징이야.',
     keyPoints: [
       '누가 봐도 같은 뜻으로 읽혀야 함',
       '애매한 이름은 피함',
@@ -2286,7 +2286,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   'sqld-1-1-s1f': {
     headline: '모델링 3관점, 기억나?',
-    summary: '모델링은 데이터 관점, 프로세스 관점, 상관 관점으로 봅니다. 줄여서 데프상입니다.',
+    summary: '모델링은 데이터 관점, 프로세스 관점, 상관 관점으로 봐. 줄여서 데프상이야.',
     keyPoints: [
       '데이터 관점: 무엇을 저장하나',
       '프로세스 관점: 업무가 어떻게 흐르나',
@@ -2296,7 +2296,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   'sqld-1-1-s1g': {
     headline: '데이터 관점, 기억나?',
-    summary: '데이터 관점은 업무에서 어떤 데이터를 저장해야 하는지 보는 관점입니다.',
+    summary: '데이터 관점은 업무에서 어떤 데이터를 저장해야 하는지 보는 관점이야.',
     keyPoints: [
       '무엇을 저장할지 봄',
       '저장할 대상과 그 대상의 정보를 찾는 출발점',
@@ -2306,7 +2306,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   'sqld-1-1-s1h': {
     headline: '프로세스 관점, 기억나?',
-    summary: '프로세스 관점은 업무가 어떤 순서와 절차로 흘러가는지 보는 관점입니다.',
+    summary: '프로세스 관점은 업무가 어떤 순서와 절차로 흘러가는지 보는 관점이야.',
     keyPoints: [
       '업무 흐름과 순서를 봄',
       '저장 대상보다 절차에 초점',
@@ -2315,7 +2315,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   'sqld-1-1-s1i': {
     headline: '상관 관점, 기억나?',
-    summary: '상관 관점은 업무와 데이터가 만나는 지점을 보고, 업무가 데이터를 어떻게 만들고, 읽고, 고치고, 지우는지 확인하는 관점입니다.',
+    summary: '상관 관점은 업무와 데이터가 만나는 지점을 보고, 업무가 데이터를 어떻게 만들고, 읽고, 고치고, 지우는지 확인하는 관점이야.',
     keyPoints: [
       '업무와 데이터의 연결을 봄',
       'CRUD = 만들기·읽기·고치기·지우기',
@@ -2324,7 +2324,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   'sqld-1-1-s2': {
     headline: '모델링 단계 "개논물", 기억나?',
-    summary: '데이터 모델링은 개념적 → 논리적 → 물리적 순서로 진행합니다. 줄여서 개논물입니다.',
+    summary: '데이터 모델링은 개념적 → 논리적 → 물리적 순서로 진행해. 줄여서 개논물이야.',
     keyPoints: [
       '개념적: 업무의 큰 그림',
       '논리적: DB 구조 정리',
@@ -2334,7 +2334,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   'sqld-1-1-s2a': {
     headline: '개념적 모델링, 기억나?',
-    summary: '개념적 모델링은 업무의 큰 그림을 잡는 단계입니다. 핵심 대상과 관계를 먼저 봅니다.',
+    summary: '개념적 모델링은 업무의 큰 그림을 잡는 단계야. 핵심 대상과 관계를 먼저 봐.',
     keyPoints: [
       '큰 그림을 잡는 단계',
       '세부 DB 설정은 아직 아님',
@@ -2343,7 +2343,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   'sqld-1-1-s2b': {
     headline: '논리적 모델링, 기억나?',
-    summary: '논리적 모델링은 개념적 모델을 더 정밀한 DB 구조로 정리하는 단계입니다.',
+    summary: '논리적 모델링은 개념적 모델을 더 정밀한 DB 구조로 정리하는 단계야.',
     keyPoints: [
       '키·관계·정규화 같은 구조 판단',
       'DBMS가 바뀌어도 비교적 재사용 가능',
@@ -2352,7 +2352,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   'sqld-1-1-s2c': {
     headline: '물리적 모델링, 기억나?',
-    summary: '물리적 모델링은 실제 DBMS에 맞춰 자료형, 인덱스, 저장 방식, 성능을 결정하는 단계입니다.',
+    summary: '물리적 모델링은 실제 DBMS에 맞춰 자료형, 인덱스, 저장 방식, 성능을 결정하는 단계야.',
     keyPoints: [
       '실제 구현 단계',
       '자료형·인덱스·저장 공간·성능',
@@ -2361,7 +2361,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   'sqld-1-1-s3': {
     headline: 'ANSI/SPARC 3계층 + 독립성, 기억나?',
-    summary: 'ANSI/SPARC 3-스키마는 외부 스키마, 개념 스키마, 내부 스키마로 나누어 DB를 봅니다.',
+    summary: 'ANSI/SPARC 3-스키마는 외부 스키마, 개념 스키마, 내부 스키마로 나누어 DB를 봐.',
     keyPoints: [
       '외부: 사용자별 화면',
       '개념: 조직 전체 통합',
@@ -2371,7 +2371,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   'sqld-1-1-s3a': {
     headline: '외부 스키마, 기억나?',
-    summary: '외부 스키마는 사용자나 응용 프로그램별로 보이는 DB의 모습입니다.',
+    summary: '외부 스키마는 사용자나 응용 프로그램별로 보이는 DB의 모습이야.',
     keyPoints: [
       '사용자별 화면 또는 뷰',
       '여러 개 존재 가능',
@@ -2380,7 +2380,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   'sqld-1-1-s3b': {
     headline: '개념 스키마, 기억나?',
-    summary: '개념 스키마는 조직 전체 DB 구조를 통합해서 표현한 것입니다.',
+    summary: '개념 스키마는 조직 전체 DB 구조를 통합해서 표현한 거야.',
     keyPoints: [
       '조직 전체 관점',
       '통합적 표현',
@@ -2389,7 +2389,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   'sqld-1-1-s3c': {
     headline: '내부 스키마, 기억나?',
-    summary: '내부 스키마는 데이터가 실제 저장장치에 어떻게 저장되는지 다루는 구조입니다.',
+    summary: '내부 스키마는 데이터가 실제 저장장치에 어떻게 저장되는지 다루는 구조야.',
     keyPoints: [
       '물리 저장 구조',
       '파일 구조·인덱스·저장 위치',
@@ -2398,7 +2398,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   'sqld-1-1-s3d': {
     headline: '데이터 독립성, 기억나?',
-    summary: '데이터 독립성은 한 계층의 변경이 다른 계층에 미치는 영향을 줄이는 성질입니다.',
+    summary: '데이터 독립성은 한 계층의 변경이 다른 계층에 미치는 영향을 줄이는 성질이야.',
     keyPoints: [
       '논리적 독립성: 개념 변경 → 외부 영향 최소',
       '물리적 독립성: 내부 변경 → 개념·외부 영향 최소',
@@ -2407,7 +2407,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s4": {
     "headline": "엔터티란 무엇인가, 기억나?",
-    "summary": "엔터티는 업무에서 관리해야 하는 대상입니다. 사람, 물건, 장소뿐 아니라 주문·수강신청처럼 발생한 사건도 엔터티가 될 수 있어요.",
+    "summary": "엔터티는 업무에서 관리해야 하는 대상이야. 사람, 물건, 장소뿐 아니라 주문·수강신청처럼 발생한 사건도 엔터티가 될 수 있어.",
     "keyPoints": [
       "엔터티란 무엇인가",
       "엔터티(Entity)는 DB에 저장하고 싶은 대상이야.",
@@ -2417,7 +2417,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s4-req": {
     "headline": "엔터티 5요건, 기억나?",
-    "summary": "엔터티는 업무에 필요하고, 각각을 구분할 수 있어야 하며, 여러 행과 여러 속성을 가질 수 있어야 합니다.",
+    "summary": "엔터티는 업무에 필요하고, 각각을 구분할 수 있어야 하며, 여러 행과 여러 속성을 가질 수 있어야 해.",
     "keyPoints": [
       "엔터티 5요건",
       "아무 대상이나 엔터티가 되는 건 아니야. 5요건을 봐야 해.",
@@ -2427,7 +2427,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s4-name": {
     "headline": "엔터티 이름 짓기, 기억나?",
-    "summary": "좋은 엔터티 이름은 현업에서 쓰는 말과 가까워야 합니다. 줄임말이나 애매한 이름은 나중에 모델을 읽는 사람을 헷갈리게 해요.",
+    "summary": "좋은 엔터티 이름은 현업에서 쓰는 말과 가까워야 해. 줄임말이나 애매한 이름은 나중에 모델을 읽는 사람을 헷갈리게 해.",
     "keyPoints": [
       "엔터티 이름 짓기",
       "엔터티 이름도 규칙이 있어. 협업자가 봐도 바로 알아야 하거든.",
@@ -2437,7 +2437,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s5-kind": {
     "headline": "엔터티 분류 — 유형·개념·사건, 기억나?",
-    "summary": "유무형 분류는 엔터티가 어떤 성격의 대상인지 보는 기준입니다.",
+    "summary": "유무형 분류는 엔터티가 어떤 성격의 대상인지 보는 기준이야.",
     "keyPoints": [
       "엔터티 분류 — 유형·개념·사건",
       "엔터티는 먼저 유무형으로 나눌 수 있어.",
@@ -2448,7 +2448,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s5-time": {
     "headline": "엔터티 분류 — 기본·중심·행위, 기억나?",
-    "summary": "발생 시점 분류는 엔터티가 업무 흐름에서 어떤 순서와 역할로 생기는지 보는 기준입니다.",
+    "summary": "발생 시점 분류는 엔터티가 업무 흐름에서 어떤 순서와 역할로 생기는지 보는 기준이야.",
     "keyPoints": [
       "엔터티 분류 — 기본·중심·행위",
       "두 번째 기준은 발생 시점이야.",
@@ -2458,7 +2458,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s5-check": {
     "headline": "엔터티 분류 기준 구분, 기억나?",
-    "summary": "엔터티 분류 문제는 기준을 섞어 내는 경우가 많습니다. 보기 자체보다 “유무형을 묻는지, 발생 시점을 묻는지”를 먼저 확인하세요.",
+    "summary": "엔터티 분류 문제는 기준을 섞어 내는 경우가 많아. 보기 자체보다 “유무형을 묻는지, 발생 시점을 묻는지”를 먼저 확인해.",
     "keyPoints": [
       "엔터티 분류 기준 구분",
       "같은 엔터티도 기준에 따라 다르게 분류될 수 있어.",
@@ -2468,7 +2468,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s6": {
     "headline": "속성이란 무엇인가, 기억나?",
-    "summary": "속성은 엔터티를 설명하는 최소 데이터 단위입니다. 한 속성에는 하나의 의미만 담는 원자성이 중요합니다.",
+    "summary": "속성은 엔터티를 설명하는 최소 데이터 단위야. 한 속성에는 하나의 의미만 담는 원자성이 중요해.",
     "keyPoints": [
       "속성이란 무엇인가",
       "속성(Attribute)은 엔터티가 가진 세부 정보야.",
@@ -2479,7 +2479,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s6-origin": {
     "headline": "기본 속성, 기억나?",
-    "summary": "기본 속성은 업무에 원래 존재하는 속성입니다. 이름, 생년월일, 주소처럼 현실 업무에서 자연스럽게 필요한 값입니다.",
+    "summary": "기본 속성은 업무에 원래 존재하는 속성이야. 이름, 생년월일, 주소처럼 현실 업무에서 자연스럽게 필요한 값이야.",
     "keyPoints": [
       "기본 속성",
       "속성은 만들어진 방식으로 기본 속성, 설계 속성, 파생 속성으로 나눠.",
@@ -2489,7 +2489,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s6-designed": {
     "headline": "설계 속성, 기억나?",
-    "summary": "설계 속성은 시스템을 만들면서 필요해서 붙인 속성입니다. 주문번호, 회원ID, 일련번호처럼 관리와 구분을 위해 새로 만든 값입니다.",
+    "summary": "설계 속성은 시스템을 만들면서 필요해서 붙인 속성이야. 주문번호, 회원ID, 일련번호처럼 관리와 구분을 위해 새로 만든 값이야.",
     "keyPoints": [
       "설계 속성",
       "업무에 원래 있던 값이 아니라, 시스템을 만들면서 필요해서 붙인 속성이야.",
@@ -2499,7 +2499,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s6-derived": {
     "headline": "파생 속성, 기억나?",
-    "summary": "파생 속성은 다른 속성에서 계산하거나 가공해서 만든 속성입니다. 원본 값이 바뀌면 함께 다시 맞춰야 하므로 중요한 개념입니다.",
+    "summary": "파생 속성은 다른 속성에서 계산하거나 가공해서 만든 속성이야. 원본 값이 바뀌면 함께 다시 맞춰야 하므로 중요한 개념이야.",
     "keyPoints": [
       "파생 속성",
       "다른 속성에서 계산하거나 가공해서 만든 속성이야.",
@@ -2509,7 +2509,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s6-shape": {
     "headline": "단일 속성, 기억나?",
-    "summary": "단일 속성은 더 나누지 않고 하나의 의미로 쓰는 속성입니다. 학번, 이름처럼 한 칸에 하나의 의미가 담긴 값을 떠올리면 됩니다.",
+    "summary": "단일 속성은 더 나누지 않고 하나의 의미로 쓰는 속성이야. 학번, 이름처럼 한 칸에 하나의 의미가 담긴 값을 떠올리면 돼.",
     "keyPoints": [
       "단일 속성",
       "더 나누지 않고 하나로 쓰는 속성이야.",
@@ -2519,7 +2519,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s6-shape-composite": {
     "headline": "복합 속성, 기억나?",
-    "summary": "복합 속성은 필요하면 여러 하위 속성으로 나눌 수 있는 속성입니다. 주소를 시, 구, 상세주소로 나눠 볼 수 있는 식입니다.",
+    "summary": "복합 속성은 필요하면 여러 하위 속성으로 나눌 수 있는 속성이야. 주소를 시, 구, 상세주소로 나눠 볼 수 있는 식이야.",
     "keyPoints": [
       "복합 속성",
       "하나처럼 보이지만 내부를 여러 의미로 나눌 수 있는 속성이야.",
@@ -2529,7 +2529,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s6-shape-multivalue": {
     "headline": "다중값 속성, 기억나?",
-    "summary": "다중값 속성은 한 인스턴스가 같은 종류의 값을 여러 개 가질 수 있는 속성입니다. 이메일 여러 개, 전화번호 여러 개가 대표 예시입니다.",
+    "summary": "다중값 속성은 한 인스턴스가 같은 종류의 값을 여러 개 가질 수 있는 속성이야. 이메일 여러 개, 전화번호 여러 개가 대표 예시야.",
     "keyPoints": [
       "다중값 속성",
       "한 인스턴스가 같은 종류의 값을 여러 개 가질 수 있는 경우야.",
@@ -2539,7 +2539,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s6-role": {
     "headline": "PK 속성, 기억나?",
-    "summary": "PK 속성은 테이블에서 한 행을 유일하게 구분하는 대표 속성입니다. 학생 표의 학번처럼 중복되면 안 되는 기준값을 떠올리면 됩니다.",
+    "summary": "PK 속성은 테이블에서 한 행을 유일하게 구분하는 대표 속성이야. 학생 표의 학번처럼 중복되면 안 되는 기준값을 떠올리면 돼.",
     "keyPoints": [
       "PK 속성",
       "한 행을 딱 하나로 구분하는 대표 속성이야.",
@@ -2549,7 +2549,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s6-role-fk": {
     "headline": "FK 속성, 기억나?",
-    "summary": "FK 속성은 다른 테이블의 대표값을 참조해 두 테이블을 연결하는 속성입니다. 학생의 학과ID가 학과 테이블을 가리키는 식입니다.",
+    "summary": "FK 속성은 다른 테이블의 대표값을 참조해 두 테이블을 연결하는 속성이야. 학생의 학과ID가 학과 테이블을 가리키는 식이야.",
     "keyPoints": [
       "FK 속성",
       "다른 테이블의 PK를 가져와 연결하는 속성이야.",
@@ -2559,7 +2559,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s6-role-general": {
     "headline": "일반 속성, 기억나?",
-    "summary": "일반 속성은 PK도 FK도 아니지만 인스턴스를 설명해 주는 속성입니다. 이름, 생년월일, 연락처처럼 필요한 설명 정보입니다.",
+    "summary": "일반 속성은 PK도 FK도 아니지만 인스턴스를 설명해 주는 속성이야. 이름, 생년월일, 연락처처럼 필요한 설명 정보야.",
     "keyPoints": [
       "일반 속성",
       "PK도 FK도 아니지만 인스턴스를 설명해 주는 속성이야.",
@@ -2569,7 +2569,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s7": {
     "headline": "관계란 무엇인가, 기억나?",
-    "summary": "관계는 둘 이상의 엔터티가 업무적으로 어떻게 연결되는지를 표현합니다.",
+    "summary": "관계는 둘 이상의 엔터티가 업무적으로 어떻게 연결되는지를 표현해.",
     "keyPoints": [
       "관계란 무엇인가",
       "관계(Relationship)는 엔터티 사이의 연결이야.",
@@ -2589,7 +2589,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s7-cardinality": {
     "headline": "차수와 선택사양, 기억나?",
-    "summary": "차수는 카디널리티(Cardinality)라고도 부릅니다. 1:1 — 한쪽 하나가 반대쪽 하나와 연결 · 1:M — 한쪽 하나가 반대쪽 여러 개와 연결 · M:N — 양쪽 모두 여러 개와 연결",
+    "summary": "차수는 카디널리티(Cardinality)라고도 불러. 1:1 — 한쪽 하나가 반대쪽 하나와 연결 · 1:M — 한쪽 하나가 반대쪽 여러 개와 연결 · M:N — 양쪽 모두 여러 개와 연결",
     "keyPoints": [
       "차수와 선택사양",
       "차수는 양쪽이 몇 개씩 연결되는지 보는 거야. 시험에서는 카디널리티(Cardinality)라고도 나와.",
@@ -2599,7 +2599,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s7-erd-order": {
     "headline": "ERD 작성 순서, 기억나?",
-    "summary": "ERD 작성 순서는 엔터티 도출 → 엔터티 배치 → 관계 설정 → 관계명 기술 → 관계 차수 설정 → 필수/선택사양 기술입니다.",
+    "summary": "ERD 작성 순서는 엔터티 도출 → 엔터티 배치 → 관계 설정 → 관계명 기술 → 관계 차수 설정 → 필수/선택사양 기술이야.",
     "keyPoints": [
       "ERD 작성 순서",
       "엔터티 도출 → 엔터티 배치 → 관계 설정 → 관계명 기술 → 관계 차수 설정 → 필수/선택사양 기술",
@@ -2609,7 +2609,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s7-bridge": {
     "headline": "M:N과 교차 엔터티, 기억나?",
-    "summary": "M:N 관계는 중간에 교차 엔터티를 넣어 두 개의 1:M 관계로 바꿉니다.",
+    "summary": "M:N 관계는 중간에 교차 엔터티를 넣어 두 개의 1:M 관계로 바꿔.",
     "keyPoints": [
       "M:N과 교차 엔터티",
       "관계형 DB는 M:N을 그대로 두기 어렵기 때문에 중간 엔터티를 넣어 풀어.",
@@ -2619,7 +2619,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s8": {
     "headline": "식별자란 무엇인가, 기억나?",
-    "summary": "식별자는 엔터티 안의 각 인스턴스를 서로 구분할 수 있게 해주는 속성 또는 속성 묶음입니다.",
+    "summary": "식별자는 엔터티 안의 각 인스턴스를 서로 구분할 수 있게 해주는 속성 또는 속성 묶음이야.",
     "keyPoints": [
       "식별자란 무엇인가",
       "식별자는 인스턴스를 구분하는 값이야.",
@@ -2649,7 +2649,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s9": {
     "headline": "식별자 관계, 기억나?",
-    "summary": "식별자 관계에서는 부모 엔터티의 주식별자가 자식 엔터티의 주식별자에 포함됩니다. 예를 들어 수강신청 PK가 (학번, 과목코드)라면 부모 키가 자식 PK 안에 들어간 것입니다.",
+    "summary": "식별자 관계에서는 부모 엔터티의 주식별자가 자식 엔터티의 주식별자에 포함돼. 예를 들어 수강신청 PK가 (학번, 과목코드)라면 부모 키가 자식 PK 안에 들어간 거야.",
     "keyPoints": [
       "식별자 관계",
       "식별자 관계는 부모 엔터티의 식별자가 자식 엔터티의 PK 안으로 들어가는 관계야.",
@@ -2659,7 +2659,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s9-nonident": {
     "headline": "비식별자 관계, 기억나?",
-    "summary": "비식별자 관계에서는 부모의 식별자가 자식의 주식별자에 포함되지 않고, 일반 속성 또는 외래키로만 존재합니다. 자식은 자기 PK를 따로 가집니다.",
+    "summary": "비식별자 관계에서는 부모의 식별자가 자식의 주식별자에 포함되지 않고, 일반 속성 또는 외래키로만 존재해. 자식은 자기 PK를 따로 가져.",
     "keyPoints": [
       "비식별자 관계",
       "비식별자 관계에서는 부모의 식별자가 자식의 일반 속성 또는 FK로만 들어가.",
@@ -2690,7 +2690,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-1-s10-integrity": {
     "headline": "무결성 3종, 기억나?",
-    "summary": "무결성은 데이터가 정확하고 일관된 상태를 유지하도록 DB가 지키는 규칙입니다. PK는 개체, FK는 참조, 값 범위는 도메인 무결성과 연결됩니다.",
+    "summary": "무결성은 데이터가 정확하고 일관된 상태를 유지하도록 DB가 지키는 규칙이야. PK는 개체, FK는 참조, 값 범위는 도메인 무결성과 연결돼.",
     "keyPoints": [
       "무결성 3종",
       "무결성은 DB 안의 데이터가 약속한 규칙을 계속 지키는 상태야.",
@@ -2713,7 +2713,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   // ── SQLD Topic 1-2 — 데이터 모델과 성능 ─────────────────
   "sqld-1-2-s1": {
     "headline": "정규화가 필요한 이유, 기억나?",
-    "summary": "정규화는 한 테이블에 섞인 정보를 여러 테이블로 나누어 중복을 줄이고 이상 현상을 예방하는 과정입니다.",
+    "summary": "정규화는 한 테이블에 섞인 정보를 여러 테이블로 나누어 중복을 줄이고 이상 현상을 예방하는 과정이야.",
     "keyPoints": [
       "정규화가 필요한 이유",
       "정규화는 한 표에 섞인 정보를 성격별로 나누어 중복을 줄이는 과정이야.",
@@ -2723,7 +2723,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-2-s1-insert": {
     "headline": "삽입 이상, 기억나?",
-    "summary": "삽입 이상은 새 데이터를 넣을 때 원하지 않는 다른 데이터까지 함께 요구되는 문제입니다.",
+    "summary": "삽입 이상은 새 데이터를 넣을 때 원하지 않는 다른 데이터까지 함께 요구되는 문제야.",
     "keyPoints": [
       "삽입 이상",
       "삽입 이상은 넣고 싶은 정보만 따로 넣지 못하는 문제야.",
@@ -2733,7 +2733,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-2-s1-delete": {
     "headline": "삭제 이상, 기억나?",
-    "summary": "삭제 이상은 데이터를 삭제했을 때 보존해야 할 정보가 함께 없어지는 문제입니다.",
+    "summary": "삭제 이상은 데이터를 삭제했을 때 보존해야 할 정보가 함께 없어지는 문제야.",
     "keyPoints": [
       "삭제 이상",
       "삭제 이상은 지우려던 데이터와 함께 남겨야 할 정보까지 사라지는 문제야.",
@@ -2743,7 +2743,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-2-s1-update": {
     "headline": "갱신 이상, 기억나?",
-    "summary": "갱신 이상은 중복된 값을 일부만 수정해서 데이터가 서로 맞지 않게 되는 문제입니다.",
+    "summary": "갱신 이상은 중복된 값을 일부만 수정해서 데이터가 서로 맞지 않게 되는 문제야.",
     "keyPoints": [
       "갱신 이상",
       "갱신 이상은 같은 정보를 여러 곳에서 고치다가 일부만 바뀌는 문제야.",
@@ -2753,7 +2753,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-2-s2": {
     "headline": "함수적 종속이란, 기억나?",
-    "summary": "함수적 종속은 어떤 속성 값이 정해지면 다른 속성 값이 하나로 정해지는 관계입니다.",
+    "summary": "함수적 종속은 어떤 속성 값이 정해지면 다른 속성 값이 하나로 정해지는 관계야.",
     "keyPoints": [
       "함수적 종속이란",
       "함수적 종속은 A를 알면 B가 하나로 정해지는 관계야.",
@@ -2764,7 +2764,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-2-s2-full": {
     "headline": "완전 함수 종속, 기억나?",
-    "summary": "완전 함수 종속은 복합키 전체에 종속되는 상태입니다.",
+    "summary": "완전 함수 종속은 복합키 전체에 종속되는 상태야.",
     "keyPoints": [
       "완전 함수 종속",
       "완전 함수 종속은 복합키 전체가 있어야 값이 결정되는 경우야.",
@@ -2774,7 +2774,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-2-s2-partial": {
     "headline": "부분 함수 종속, 기억나?",
-    "summary": "부분 함수 종속은 복합키 전체가 아니라 일부 키에만 매달린 속성이 있는 상태입니다.",
+    "summary": "부분 함수 종속은 복합키 전체가 아니라 일부 키에만 매달린 속성이 있는 상태야.",
     "keyPoints": [
       "부분 함수 종속",
       "부분 함수 종속은 복합키 중 일부만으로 값이 결정되는 경우야.",
@@ -2784,7 +2784,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-2-s2-transitive": {
     "headline": "이행 함수 종속, 기억나?",
-    "summary": "이행 함수 종속은 중간 속성을 한 번 거쳐서 결정되는 종속입니다.",
+    "summary": "이행 함수 종속은 중간 속성을 한 번 거쳐서 결정되는 종속이야.",
     "keyPoints": [
       "이행 함수 종속",
       "이행 함수 종속은 A가 B를 정하고, B가 C를 정해서 A가 C까지 간접으로 정해지는 구조야.",
@@ -2805,7 +2805,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-2-s3-1nf": {
     "headline": "1NF, 기억나?",
-    "summary": "제1정규형은 속성 값이 원자값이어야 한다는 조건입니다.",
+    "summary": "제1정규형은 속성 값이 원자값이어야 한다는 조건이야.",
     "keyPoints": [
       "1NF",
       "1NF는 한 칸에 하나의 값만 두는 단계야.",
@@ -2815,7 +2815,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-2-s3-2nf": {
     "headline": "2NF, 기억나?",
-    "summary": "제2정규형은 부분 함수 종속을 제거한 상태입니다.",
+    "summary": "제2정규형은 부분 함수 종속을 제거한 상태야.",
     "keyPoints": [
       "2NF",
       "2NF는 복합키 일부에만 매달린 값을 떼어내는 단계야.",
@@ -2825,7 +2825,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-2-s3-3nf": {
     "headline": "3NF, 기억나?",
-    "summary": "제3정규형은 이행 함수 종속을 제거한 상태입니다.",
+    "summary": "제3정규형은 이행 함수 종속을 제거한 상태야.",
     "keyPoints": [
       "3NF",
       "3NF는 기본키가 아닌 속성끼리 이어진 간접 종속을 줄이는 단계야.",
@@ -2835,7 +2835,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-2-s3-bcnf": {
     "headline": "BCNF, 기억나?",
-    "summary": "BCNF는 모든 결정자가 후보키인 상태입니다.",
+    "summary": "BCNF는 모든 결정자가 후보키인 상태야.",
     "keyPoints": [
       "BCNF",
       "BCNF는 3NF보다 더 엄격한 정규형이야.",
@@ -2845,7 +2845,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-2-s4": {
     "headline": "반정규화란, 기억나?",
-    "summary": "반정규화는 정규화된 테이블을 일부러 합치거나 값을 중복시켜 조회 성능을 높이는 방법입니다.",
+    "summary": "반정규화는 정규화된 테이블을 일부러 합치거나 값을 중복시켜 조회 성능을 높이는 방법이야.",
     "keyPoints": [
       "반정규화란",
       "반정규화는 조회 성능을 위해 일부러 중복을 허용하는 선택이야.",
@@ -2875,7 +2875,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-2-s5": {
     "headline": "특수 관계란, 기억나?",
-    "summary": "특수 관계는 일반적인 1:M 관계보다 구조를 한 번 더 생각해야 하는 관계 패턴입니다.",
+    "summary": "특수 관계는 일반적인 1:M 관계보다 구조를 한 번 더 생각해야 하는 관계 패턴이야.",
     "keyPoints": [
       "특수 관계란",
       "성능 이야기를 잠깐 내려놓고, 모델 구조에서 자주 나오는 특수한 관계를 보는 구간이야.",
@@ -2885,7 +2885,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-2-s5-hierarchy": {
     "headline": "계층형·순환 관계, 기억나?",
-    "summary": "계층형 또는 순환 관계는 같은 엔터티 안에서 부모-자식처럼 연결되는 구조입니다.",
+    "summary": "계층형 또는 순환 관계는 같은 엔터티 안에서 부모-자식처럼 연결되는 구조야.",
     "keyPoints": [
       "계층형·순환 관계",
       "계층형 관계는 위아래 구조를 가진 데이터야.",
@@ -2895,7 +2895,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-2-s5-exclusive": {
     "headline": "상호배타 관계, 기억나?",
-    "summary": "상호배타 관계는 하나의 인스턴스가 여러 부모 후보 중 하나와만 연결되는 구조입니다.",
+    "summary": "상호배타 관계는 하나의 인스턴스가 여러 부모 후보 중 하나와만 연결되는 구조야.",
     "keyPoints": [
       "상호배타 관계",
       "상호배타 관계는 여러 후보 중 하나만 선택되는 관계야.",
@@ -2905,7 +2905,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-2-s6": {
     "headline": "트랜잭션이란, 기억나?",
-    "summary": "트랜잭션은 여러 SQL을 하나의 논리 작업 단위로 묶어 처리하는 개념입니다.",
+    "summary": "트랜잭션은 여러 SQL을 하나의 논리 작업 단위로 묶어 처리하는 개념이야.",
     "keyPoints": [
       "트랜잭션이란",
       "트랜잭션은 DB에서 하나로 묶어 처리해야 하는 작업 단위야.",
@@ -2935,7 +2935,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-2-s7": {
     "headline": "NULL이란, 기억나?",
-    "summary": "NULL은 아직 값이 없거나 알 수 없다는 뜻입니다. 0이나 빈 문자열과 다릅니다.",
+    "summary": "NULL은 아직 값이 없거나 알 수 없다는 뜻이야. 0이나 빈 문자열과 달라.",
     "keyPoints": [
       "NULL이란",
       "NULL은 0이나 빈 문자열이 아니라 “값을 모름/없음”에 가까워.",
@@ -2955,7 +2955,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-2-s7-aggregate": {
     "headline": "NULL과 집계함수, 기억나?",
-    "summary": "집계함수 대부분은 NULL을 제외하고 계산합니다. 단, COUNT(*)는 행 수를 세므로 NULL이 있어도 포함됩니다.",
+    "summary": "집계함수 대부분은 NULL을 제외하고 계산해. 단, COUNT(*)는 행 수를 세므로 NULL이 있어도 포함돼.",
     "keyPoints": [
       "NULL과 집계함수",
       "집계함수는 NULL을 다루는 방식이 중요해.",
@@ -2985,7 +2985,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-2-s8-surrogate": {
     "headline": "인조식별자를 쓰는 이유, 기억나?",
-    "summary": "인조식별자는 의미 없는 내부 ID라서 업무 정책 변화와 개인정보 노출에 강합니다.",
+    "summary": "인조식별자는 의미 없는 내부 ID라서 업무 정책 변화와 개인정보 노출에 강해.",
     "keyPoints": [
       "인조식별자를 쓰는 이유",
       "실무에서는 인조식별자를 많이 써.",
@@ -2995,7 +2995,7 @@ export const REMINDERS: Record<string, ConceptReminder> = {
   },
   "sqld-1-2-s8-practice": {
     "headline": "실무 선택 기준, 기억나?",
-    "summary": "PK는 인조식별자로 안정적으로 두고, 업무상 중복되면 안 되는 값은 UNIQUE로 관리하는 방식이 흔합니다.",
+    "summary": "PK는 인조식별자로 안정적으로 두고, 업무상 중복되면 안 되는 값은 UNIQUE로 관리하는 방식이 흔해.",
     "keyPoints": [
       "실무 선택 기준",
       "실무에서는 보통 인조 PK + 본질 값 UNIQUE 조합을 많이 써.",
@@ -3194,13 +3194,13 @@ export const REMINDERS: Record<string, ConceptReminder> = {
     ],
   },
   'sqld-2-2-s7': {
-    headline: '그룹 함수 ROLLUP/CUBE/GROUPING SETS, 기억나?',
-    summary: 'ROLLUP(a,b): (a,b),(a),() 소계+총계. CUBE: 모든 부분집합. GROUPING SETS: 원하는 조합 명시.',
+    headline: 'ROLLUP/CUBE/GROUPING, 차이 기억나?',
+    summary: 'ROLLUP은 한 방향으로 접어 소계와 총계를 붙이고, CUBE는 가능한 소계를 모두 만들고, GROUPING은 소계 행인지 구분해.',
     keyPoints: [
-      'ROLLUP(a,b): (a,b)·(a)·() — 순서 의존',
-      'CUBE(a,b): (a,b)·(a)·(b)·() — 순서 무관',
-      'GROUPING SETS: 직접 명시',
-      'ROLLUP 컬럼 순서 ≠ 결과 순서',
+      'ROLLUP: 상세 → 소계 → 총계',
+      'CUBE: 지역별도, 상품별도 모두 보기',
+      'GROUPING SETS: 필요한 합계 모양만 직접 고르기',
+      'GROUPING: 0은 실제 값, 1은 소계/총계 자리',
     ],
   },
   'sqld-2-2-s8': {

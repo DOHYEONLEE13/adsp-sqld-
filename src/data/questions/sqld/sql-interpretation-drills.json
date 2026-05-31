@@ -12,22 +12,22 @@
       "subject": "sqld",
       "chapter": 2,
       "chapterTitle": "SQL 기본 및 활용",
-      "topic": "SQL 기본",
-      "subtopic": "SQL 명령군",
+      "topic": "관리 구문",
+      "subtopic": "DML",
       "type": "multiple_choice",
       "difficulty": 1,
       "source": "SQLD PDF 범위 기반 오리지널 드릴",
-      "tags": ["sql-command-group", "ddl", "dml", "dcl", "tcl"],
-      "question": "다음 명령어 묶음 중 역할 분류가 가장 자연스러운 것은?",
+      "tags": ["sql-command-group", "dml"],
+      "question": "방금 배운 DML 설명으로 가장 적절한 것은?",
       "choices": [
-        "COMMIT, ROLLBACK은 권한을 다루므로 DCL이다.",
-        "GRANT, REVOKE는 트랜잭션 저장 여부를 다루므로 TCL이다.",
-        "CREATE, ALTER, DROP은 테이블 구조를 다루므로 DDL이다.",
-        "INSERT, UPDATE, DELETE는 테이블 구조를 바꾸므로 DDL이다."
+        "테이블 안의 행 데이터를 추가·수정·삭제·병합하는 명령군이다.",
+        "사용자에게 로그인 권한을 주는 화면 디자인 규칙이다.",
+        "SQL 문장을 예쁘게 줄바꿈하는 작성 규칙이다.",
+        "시험 결과를 자동으로 채점하는 프로그램 이름이다."
       ],
-      "answerIndex": 2,
-      "explanation": "DDL은 객체 구조 정의·변경·삭제 계열입니다. COMMIT/ROLLBACK은 TCL, GRANT/REVOKE는 DCL, INSERT/UPDATE/DELETE는 DML입니다.",
-      "status": "guidebook-verified"
+      "answerIndex": 0,
+      "explanation": "DML은 Data Manipulation Language, 즉 데이터 조작어입니다. 테이블 안의 행 데이터를 추가하는 INSERT, 수정하는 UPDATE, 삭제하는 DELETE, 병합하는 MERGE 흐름으로 이해하면 됩니다.",
+      "status": "self-reviewed"
     },
     {
       "id": "sqld-sql-lab-002",
@@ -1024,15 +1024,15 @@
       "difficulty": 3,
       "source": "SQLD PDF 범위 기반 오리지널 드릴",
       "tags": ["grant", "revoke", "with-grant-option", "with-admin-option"],
-      "question": "WITH GRANT OPTION에 대한 설명으로 가장 적절한 것은?",
+      "question": "WITH GRANT OPTION과 WITH ADMIN OPTION의 차이로 옳지 않은 것은?",
       "choices": [
-        "객체 권한을 받은 사용자가 그 권한을 다른 사용자에게 다시 부여할 수 있게 한다.",
-        "시스템 권한을 받은 사용자가 테이블 구조를 자동으로 백업하게 한다.",
-        "권한 회수 시 이미 전달된 권한이 절대 영향을 받지 않게 한다.",
-        "COMMIT 없이도 DML을 영구 저장하게 만드는 TCL 옵션이다."
+        "WITH GRANT OPTION은 객체 권한을 다시 부여할 수 있게 한다.",
+        "WITH ADMIN OPTION은 시스템 권한을 다시 부여할 수 있게 한다.",
+        "WITH GRANT OPTION으로 전달된 권한은 회수 시 연쇄 회수될 수 있다.",
+        "WITH ADMIN OPTION으로 전달된 권한도 회수 시 항상 연쇄 회수된다."
       ],
-      "answerIndex": 0,
-      "explanation": "WITH GRANT OPTION은 객체 권한을 다른 사용자에게 다시 부여할 수 있게 하는 옵션입니다. 시스템 권한 재부여는 WITH ADMIN OPTION과 구분합니다.",
+      "answerIndex": 3,
+      "explanation": "WITH GRANT OPTION은 객체 권한에 쓰이고 연쇄 회수될 수 있습니다. WITH ADMIN OPTION은 시스템 권한에 쓰이며, 권한을 준 사용자의 권한을 회수해도 그 사용자가 다시 부여한 권한은 보통 유지됩니다.",
       "status": "guidebook-verified"
     },
     {

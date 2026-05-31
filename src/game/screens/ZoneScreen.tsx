@@ -291,7 +291,7 @@ export default function ZoneScreen({
 
       <div className="relative mx-auto w-full max-w-[760px] lg:max-w-[1000px] xl:max-w-[1180px] px-5 md:px-8 lg:px-12 xl:px-16 pt-20 pb-28 min-h-screen">
         {/* ============ Header ============ */}
-        <header className="mb-10 md:mb-12">
+        <header className={hasSqldChapterGuide ? 'mb-5 md:mb-7' : 'mb-10 md:mb-12'}>
           <button
             type="button"
             onClick={onBack}
@@ -308,30 +308,42 @@ export default function ZoneScreen({
             <span className="text-cream/70">Chapter {chapter}</span>
           </div>
 
-          <h1 className="kr-heading uppercase text-[26px] md:text-[34px] leading-[1.1] tracking-[0.01em]">
+          <h1
+            className={
+              hasSqldChapterGuide
+                ? 'kr-heading uppercase text-[25px] md:text-[32px] leading-[1.08] tracking-[0.01em]'
+                : 'kr-heading uppercase text-[26px] md:text-[34px] leading-[1.1] tracking-[0.01em]'
+            }
+          >
             {chapterMeta?.title ?? `Chapter ${chapter}`}
           </h1>
-          <p className="kr-body text-[12px] md:text-[13px] text-cream/65 mt-3 leading-[1.65] max-w-xl">
+          <p
+            className={
+              hasSqldChapterGuide
+                ? 'kr-body text-[11.5px] md:text-[13px] text-cream/60 mt-2 leading-[1.55] max-w-xl'
+                : 'kr-body text-[12px] md:text-[13px] text-cream/65 mt-3 leading-[1.65] max-w-xl'
+            }
+          >
             {hasSqldChapterGuide ? (
               <>
                 {chapter === 1 ? (
                   <>
-                    데이터 모델링은 DB 설계의 뼈대를 잡는 과목이에요.
+                    데이터 모델링은 DB 설계의 뼈대를 잡는 과목이야.
                     <br />
-                    모델링 기초 → 성능을 지키는 설계 순서로 진행합니다.
+                    모델링 기초 → 성능을 지키는 설계 순서로 진행해.
                   </>
                 ) : (
                   <>
-                    SQL은 외우는 문법보다 절의 자리와 실행 순서가 중요해요.
+                    SQL은 외우는 문법보다 절의 자리와 실행 순서가 중요해.
                     <br />
-                    기본 문법 → 쿼리 활용 → 관리 구문 순서로 진행합니다.
+                    기본 문법 → 쿼리 활용 → 관리 구문 순서로 진행해.
                   </>
                 )}
               </>
             ) : (
               <>
-                동그라미를 순서대로 눌러보세요. 짧은 개념을 보고, 바로 한 문제로
-                이해했는지 확인합니다.
+                동그라미를 순서대로 눌러봐. 짧은 개념을 보고, 바로 한 문제로
+                이해했는지 확인해.
               </>
             )}
           </p>
@@ -350,7 +362,7 @@ export default function ZoneScreen({
                 1회독 → '약점 학습' (약점 chapter 우선 정렬된 1회독 풀이)
                 2회독 → '복습' (reminder 카드 + 변형 문제)
               입문자 (persona='beginner') 는 기존 1·2·3회독 라벨 유지. */}
-          <div className="mt-5">
+          <div className={hasSqldChapterGuide ? 'mt-3' : 'mt-5'}>
             <PassTabs
               tabs={passTabs}
               currentPass={selectedPass}
@@ -364,7 +376,7 @@ export default function ZoneScreen({
                 setLockToast(
                   p === 2
                     ? '1회독 정답률 75% 도달 후 2회독이 열려요.'
-                    : '직전 회독을 먼저 마쳐주세요.',
+                    : '직전 회독을 먼저 마쳐줘.',
                 );
                 window.setTimeout(() => setLockToast(null), 2400);
               }}
@@ -389,12 +401,25 @@ export default function ZoneScreen({
 
         {/* ============ 빠른 진입 chip row (모드 5종, 상단) ============ */}
         {total > 0 ? (
-          <section className="mb-8 md:mb-10" aria-label="풀이 모드 빠른 진입">
-            <div className="kr-num text-[10px] uppercase tracking-[0.18em] text-cream/45 mb-2.5">
+          <section
+            className={hasSqldChapterGuide ? 'mb-5 md:mb-7' : 'mb-8 md:mb-10'}
+            aria-label="풀이 모드 빠른 진입"
+          >
+            <div
+              className={
+                hasSqldChapterGuide
+                  ? 'kr-num text-[9px] uppercase tracking-[0.16em] text-cream/38 mb-2'
+                  : 'kr-num text-[10px] uppercase tracking-[0.18em] text-cream/45 mb-2.5'
+              }
+            >
               {hasSqldChapterGuide ? '연습 모드' : '빠른 진입'}
             </div>
             <div
-              className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className={
+                hasSqldChapterGuide
+                  ? 'flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
+                  : 'flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
+              }
               style={{
                 scrollSnapType: 'x proximity',
                 // 첫·마지막 chip 이 컨테이너 가장자리에서 잘리지 않도록 양쪽 4px 여유.
@@ -409,6 +434,7 @@ export default function ZoneScreen({
                   onStartWithPass({ topic: null, sampling: 'random', flow: 'play' })
                 }
                 accent="purple"
+                compact={hasSqldChapterGuide}
               />
               <ModeChip
                 icon={<Flame size={14} strokeWidth={2.4} />}
@@ -417,6 +443,7 @@ export default function ZoneScreen({
                   onStartWithPass({ topic: null, sampling: 'weakness', flow: 'play' })
                 }
                 accent="red"
+                compact={hasSqldChapterGuide}
               />
               <ModeChip
                 icon={<RefreshCcw size={14} strokeWidth={2.4} />}
@@ -429,6 +456,7 @@ export default function ZoneScreen({
                 }
                 disabled={reviewCount === 0}
                 accent="neon"
+                compact={hasSqldChapterGuide}
               />
               <ModeChip
                 icon={<BookOpen size={14} strokeWidth={2.4} />}
@@ -437,6 +465,7 @@ export default function ZoneScreen({
                   onStartWithPass({ topic: null, sampling: 'random', flow: 'learn' })
                 }
                 accent="cyan"
+                compact={hasSqldChapterGuide}
               />
               <ModeChip
                 icon={<Clock size={14} strokeWidth={2.4} />}
@@ -445,6 +474,7 @@ export default function ZoneScreen({
                   onStartWithPass({ topic: null, sampling: 'random', flow: 'test' })
                 }
                 accent="amber"
+                compact={hasSqldChapterGuide}
               />
             </div>
           </section>
@@ -453,10 +483,16 @@ export default function ZoneScreen({
         {/* ============ 토픽 섹션별 step path ============ */}
         {lessons.length === 0 ? (
           <div className="liquid-glass rounded-[20px] p-8 text-center kr-body text-cream/70">
-            아직 이 챕터에 플레이 가능한 콘텐츠가 없습니다.
+            아직 이 챕터에 플레이 가능한 콘텐츠가 없어.
           </div>
         ) : (
-          <div className="flex flex-col gap-12 md:gap-14 mb-12">
+          <div
+            className={
+              hasSqldChapterGuide
+                ? 'flex flex-col gap-9 md:gap-12 mb-12'
+                : 'flex flex-col gap-12 md:gap-14 mb-12'
+            }
+          >
             {lessons.map((lesson, lessonIdx) => (
               <TopicSection
                 key={lesson.id}
@@ -489,7 +525,7 @@ export default function ZoneScreen({
                   onSelectStep(lesson.topic, stepIdx, selectedPass);
                 }}
                 onLockedClick={() => {
-                  setLockToast('이전 단계를 먼저 끝내야 해요');
+                  setLockToast('이전 단계를 먼저 끝내야 해');
                   window.setTimeout(() => setLockToast(null), 2400);
                 }}
               />
@@ -612,7 +648,7 @@ function topicSectionSummary(topic: string): string | null {
     case 'SQL 활용':
       return 'JOIN, 서브쿼리, 윈도우 함수로 여러 테이블을 다루는 힘을 키워요.';
     case '관리 구문':
-      return 'DML, DDL, TCL, DCL로 데이터를 바꾸고 지키는 명령을 익혀요.';
+      return 'DML, TCL, DDL, DCL 큰 묶음 아래 실제 명령을 하나씩 익혀요.';
     default:
       return null;
   }
@@ -634,11 +670,16 @@ function SqldChapterGuide({
     chapter === 1 ? 'SQLD 1과목 학습 순서' : 'SQLD 2과목 학습 순서';
 
   return (
-    <section className="mt-3.5 md:mt-5" aria-label={ariaLabel}>
-      <div className="kr-num mb-1.5 md:mb-2.5 text-[9px] md:text-[10px] uppercase tracking-[0.18em] text-cream/42">
-        {label}
+    <section className="mt-2 md:mt-3" aria-label={ariaLabel}>
+      <div className="mb-1 flex items-center justify-between gap-3">
+        <span className="kr-num text-[8.5px] uppercase tracking-[0.16em] text-cream/35">
+          {label}
+        </span>
+        <span className="kr-num text-[8.5px] uppercase tracking-[0.14em] text-cream/30">
+          part guide
+        </span>
       </div>
-      <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {lessons.map((lesson, lessonIdx) => {
           const meta = sqldPartGuide(chapter, lesson.topic, lessonIdx + 1);
           const quizSteps = lesson.steps.filter((step) => !!step.quizId);
@@ -653,55 +694,44 @@ function SqldChapterGuide({
           return (
             <article
               key={lesson.topic}
-              className="min-w-[148px] flex-1 rounded-[16px] border px-3 py-2.5 md:min-w-[188px] md:rounded-[18px] md:px-3.5 md:py-3.5"
+              className="min-w-[132px] flex-1 rounded-[12px] border px-2.5 py-2 md:min-w-[160px] md:px-3"
               style={{
-                background:
-                  'linear-gradient(145deg, rgba(239,244,255,0.075), rgba(7,16,43,0.52))',
-                borderColor: `${accent}2f`,
-                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)',
+                background: 'rgba(239,244,255,0.035)',
+                borderColor: 'rgba(239,244,255,0.10)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.045)',
               }}
             >
-              <div className="mb-2 flex items-center justify-between gap-2 md:mb-3 md:gap-3">
+              <div className="flex items-center gap-2">
                 <span
-                  className="inline-flex size-6 items-center justify-center rounded-full md:size-8"
+                  className="inline-flex size-6 shrink-0 items-center justify-center rounded-full"
                   style={{
                     color: accent,
-                    background: `${accent}17`,
-                    border: `1px solid ${accent}33`,
+                    background: `${accent}12`,
+                    border: `1px solid ${accent}24`,
                   }}
                 >
                   {meta.icon}
                 </span>
-                <span className="kr-num text-[8px] uppercase tracking-[0.14em] text-cream/42 md:text-[9px] md:tracking-[0.16em]">
-                  {meta.label}
-                </span>
-              </div>
-              <div className="flex items-end justify-between gap-2">
-                <h2 className="kr-heading text-[13px] leading-tight text-cream md:text-[15px]">
-                  {meta.title}
-                </h2>
-                <span className="kr-num shrink-0 text-[9px] text-cream/45 md:hidden">
-                  {done}/{quizSteps.length}
-                </span>
-              </div>
-              <p className="kr-body mt-1 hidden text-[11px] leading-[1.45] text-cream/58 md:block">
-                {meta.caption}
-              </p>
-              <p className="kr-num mt-3 hidden text-[9px] uppercase tracking-[0.14em] text-cream/40 md:block">
-                {meta.subtitle}
-              </p>
-              <div className="mt-2 h-1 overflow-hidden rounded-full bg-white/8 md:mt-3 md:h-1.5">
-                <div
-                  className="h-full rounded-full transition-[width]"
-                  style={{
-                    width: `${pct}%`,
-                    background: accent,
-                    boxShadow: `0 0 12px ${accent}66`,
-                  }}
-                />
-              </div>
-              <div className="kr-num mt-2 hidden text-[10px] text-cream/45 md:block">
-                {done}/{quizSteps.length} step
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <h2 className="kr-heading truncate text-[12.5px] leading-none text-cream/90 md:text-[13.5px]">
+                      {meta.title}
+                    </h2>
+                    <span className="kr-num shrink-0 text-[8.5px] text-cream/42">
+                      {done}/{quizSteps.length}
+                    </span>
+                  </div>
+                  <div className="mt-1.5 h-[3px] overflow-hidden rounded-full bg-white/8">
+                    <div
+                      className="h-full rounded-full transition-[width]"
+                      style={{
+                        width: `${pct}%`,
+                        background: accent,
+                        boxShadow: `0 0 8px ${accent}55`,
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
             </article>
           );
@@ -1155,7 +1185,7 @@ function ChapterMockExamPath({
           챕터 모의고사
         </h3>
         <p className="kr-body text-[12px] md:text-[12.5px] text-cream/65 mt-1.5 leading-[1.55]">
-          실제 시험처럼 끝까지 풀어봐요. 제출 후 틀린 문제만 바로 다시 연습할 수 있어요.
+          실제 시험처럼 끝까지 풀어봐. 제출 후 틀린 문제만 바로 다시 연습할 수 있어.
         </p>
       </div>
 
@@ -1265,7 +1295,7 @@ function MockExamSlotCard({
             </div>
           ) : (
             <p className="kr-body text-[11px] text-cream/55 mt-0.5">
-              아직 시도 전. 시험 모드로 진행돼요.
+              아직 시도 전. 시험 모드로 진행돼.
             </p>
           )}
         </div>
@@ -1342,9 +1372,17 @@ interface ModeChipProps {
   onClick: () => void;
   disabled?: boolean;
   accent: 'purple' | 'red' | 'neon' | 'cyan' | 'amber';
+  compact?: boolean;
 }
 
-function ModeChip({ icon, title, onClick, disabled, accent }: ModeChipProps) {
+function ModeChip({
+  icon,
+  title,
+  onClick,
+  disabled,
+  accent,
+  compact = false,
+}: ModeChipProps) {
   const fg = {
     purple: '#a78bfa',
     red: '#f87171',
@@ -1358,7 +1396,11 @@ function ModeChip({ icon, title, onClick, disabled, accent }: ModeChipProps) {
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="liquid-glass kr-heading inline-flex items-center gap-2 whitespace-nowrap shrink-0 text-[11px] md:text-[12px] uppercase tracking-widest px-3.5 py-2.5 rounded-full hover:bg-white/10 transition disabled:opacity-40 disabled:cursor-not-allowed"
+      className={`liquid-glass kr-heading inline-flex items-center whitespace-nowrap shrink-0 uppercase transition disabled:opacity-40 disabled:cursor-not-allowed ${
+        compact
+          ? 'gap-1.5 text-[10px] tracking-[0.12em] px-2.5 py-2 rounded-full hover:bg-white/[0.07]'
+          : 'gap-2 text-[11px] md:text-[12px] tracking-widest px-3.5 py-2.5 rounded-full hover:bg-white/10'
+      }`}
     >
       <span style={{ color: fg }} className="inline-flex">
         {icon}

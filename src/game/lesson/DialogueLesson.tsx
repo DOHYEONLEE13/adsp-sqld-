@@ -297,10 +297,12 @@ export default function DialogueLesson({
     if (key.includes('g3-attr-rel')) return '속성·관계 진행';
     if (key.includes('g4-identifier')) return '식별자 진행';
     if (key.includes('query-basics')) return 'SQL 기초 진행';
+    if (key.includes('null-functions')) return 'NULL 함수 진행';
     if (key.includes('functions')) return '함수 진행';
     if (key.includes('filter-sort')) return '조건·정렬 진행';
     if (key.includes('joins')) return 'JOIN 진행';
     if (key.includes('subqueries')) return '서브쿼리 진행';
+    if (key.includes('rollup-cube')) return '집계 확장 진행';
     if (key.includes('set-group')) return '집합·그룹 진행';
     if (key.includes('window-apps')) return '윈도우 진행';
     if (key.includes('regex')) return '정규식 진행';
@@ -547,15 +549,39 @@ export default function DialogueLesson({
   })();
   const sqld2BasicsDiagramMode = (() => {
     if (phase !== 'narrate') return null;
+    if (step.id === 'sqld-2-1-s3') {
+      const executionModes: Sqld2BasicsDiagramMode[] = [
+        'executionOverview',
+        'executionOverview',
+        'executionOverview',
+        'executionFrom',
+        'executionFrom',
+        'executionWhere',
+        'executionWhere',
+        'executionGroupBy',
+        'executionGroupBy',
+        'executionHaving',
+        'executionHaving',
+        'executionSelect',
+        'executionSelect',
+        'executionOrderBy',
+        'executionOrderBy',
+        'executionSummary',
+        'executionSummary',
+      ];
+      return executionModes[Math.min(turnIdx, executionModes.length - 1)];
+    }
     const map: Record<string, Sqld2BasicsDiagramMode> = {
       'sqld-2-1-s1': 'commands',
       'sqld-2-1-s2': 'algebra',
-      'sqld-2-1-s3': 'execution',
       'sqld-2-1-s4': 'aliasDistinct',
       'sqld-2-1-s5': 'stringFunctions',
       'sqld-2-1-s6': 'numberDateFunctions',
       'sqld-2-1-s7': 'aggregateFunctions',
-      'sqld-2-1-s8': 'nullFunctions',
+      'sqld-2-1-s8': 'nullNvl',
+      'sqld-2-1-s8-nvl2': 'nullNvl2',
+      'sqld-2-1-s8-nullif': 'nullNullif',
+      'sqld-2-1-s8-coalesce': 'nullCoalesce',
       'sqld-2-1-s9': 'caseDecode',
       'sqld-2-1-s10': 'where',
       'sqld-2-1-s11': 'groupHaving',
@@ -565,18 +591,38 @@ export default function DialogueLesson({
   })();
   const sqld2UsageDiagramMode = (() => {
     if (phase !== 'narrate') return null;
+    if (step.id === 'sqld-2-2-s1') {
+      const joinModes: Sqld2UsageDiagramMode[] = [
+        'joinIntro',
+        'joinIntro',
+        'joinKey',
+        'joinKey',
+        'joinKey',
+        'joinSummary',
+        'joinInner',
+        'joinInner',
+        'joinLeft',
+        'joinLeft',
+        'joinOuter',
+        'joinOuter',
+        'joinSummary',
+      ];
+      return joinModes[Math.min(turnIdx, joinModes.length - 1)];
+    }
     const map: Record<string, Sqld2UsageDiagramMode> = {
-      'sqld-2-2-s1': 'joinKinds',
       'sqld-2-2-s2': 'joinSyntax',
       'sqld-2-2-s3': 'crossSelf',
       'sqld-2-2-s4': 'subquery',
       'sqld-2-2-s5': 'multirow',
       'sqld-2-2-s6': 'setOps',
-      'sqld-2-2-s7': 'groupExtension',
+      'sqld-2-2-s7': 'rollup',
+      'sqld-2-2-s7-cube': 'cube',
+      'sqld-2-2-s7-grouping': 'grouping',
       'sqld-2-2-s8': 'windowRank',
       'sqld-2-2-s9': 'windowAggregate',
       'sqld-2-2-s10': 'lagLeadFrame',
       'sqld-2-2-s11': 'topN',
+      'sqld-2-2-s11-pivot': 'pivotUnpivot',
       'sqld-2-2-s12': 'regex',
     };
     return map[step.id] ?? null;
@@ -599,10 +645,17 @@ export default function DialogueLesson({
     if (phase !== 'narrate') return null;
     if (step.id === 'adsp-1-1-s1') return 'dikw';
     if (step.id === 'adsp-1-1-s2') return 'dataClassification';
+    if (step.id.startsWith('adsp-1-1-s2')) return 'dataTypeLens';
     if (step.id === 'adsp-1-1-s3') return 'tacitExplicit';
     if (step.id === 'adsp-1-1-s3-seci') return 'seci';
     if (step.id === 'adsp-1-1-s3-S') return 'seciSocialization';
     if (step.id === 'adsp-1-1-s4') return 'dbFeatures';
+    if (
+      step.id === 'adsp-1-1-s4-share' ||
+      step.id === 'adsp-1-1-s4-int' ||
+      step.id === 'adsp-1-1-s4-stored' ||
+      step.id === 'adsp-1-1-s4-change'
+    ) return 'dbFeatureDetail';
     if (step.id === 'adsp-1-1-s4-dw') return 'dwOverview';
     if (
       step.id === 'adsp-1-1-s4-dm' ||
@@ -708,8 +761,8 @@ export default function DialogueLesson({
     if (!reservation.ok) {
       const message =
         reservation.reason === 'quota_exceeded'
-          ? `오늘 새 문제는 ${reservation.remainingQuota ?? 0}개 남았어요.`
-          : '문제를 불러오지 못했어요. 잠시 뒤 다시 시도해 주세요.';
+          ? `오늘 새 문제는 ${reservation.remainingQuota ?? 0}개 남았어.`
+          : '문제를 불러오지 못했어. 잠시 뒤 다시 시도해 줘.';
       setQuotaBlock(message);
       window.setTimeout(() => setQuotaBlock(null), 3200);
       return false;
@@ -1613,7 +1666,7 @@ function AnsiSparcSchemaDiagram({ mode }: { mode: SchemaDiagramMode }) {
       </div>
       <figcaption className="sr-only">
         응용 프로그램은 외부 스키마인 View를 통해 DBMS에 접근하고, 개념 스키마는 전체
-        데이터베이스 구조를, 내부 스키마는 실제 저장 방식을 나타냅니다.
+        데이터베이스 구조를, 내부 스키마는 실제 저장 방식을 나타내.
       </figcaption>
     </motion.figure>
   );
@@ -1817,7 +1870,7 @@ function DataModelingIntroDiagram({ mode }: { mode: DataModelingDiagramMode }) {
         </div>
       </div>
       <figcaption className="sr-only">
-        학생, 과목, 교수, 시간표 같은 현실 정보가 데이터 모델링을 통해 학생, 수강, 과목 같은 데이터베이스 구조로 정리됩니다.
+        학생, 과목, 교수, 시간표 같은 현실 정보가 데이터 모델링을 통해 학생, 수강, 과목 같은 데이터베이스 구조로 정리돼.
       </figcaption>
     </motion.figure>
   );
@@ -2223,7 +2276,7 @@ function ProcessPerspectiveDiagram() {
 
         <div className="mt-3 rounded-[16px] border border-cream/10 bg-white/[0.035] px-3 py-2.5">
           <div className="kr-body text-[12px] font-bold leading-[1.5] text-cream/66">
-            프로세스 관점은 “무엇을 저장하지?”보다 “업무가 어떤 순서로 움직이지?”를 먼저 봅니다.
+            프로세스 관점은 “무엇을 저장하지?”보다 “업무가 어떤 순서로 움직이지?”를 먼저 봐.
           </div>
         </div>
       </div>
@@ -2378,10 +2431,10 @@ function InteractionPerspectiveDiagram() {
 
         <div className="mt-3 rounded-[16px] border border-cream/10 bg-white/[0.035] px-3 py-2.5">
           <div className="kr-body text-[12px] font-bold leading-[1.5] text-cream/66">
-            상관 관점은 “이 업무가 어떤 데이터를 읽고, 만들고, 고치고, 지우는가?”를 보는 관점입니다.
+            상관 관점은 “이 업무가 어떤 데이터를 읽고, 만들고, 고치고, 지우는가?”를 보는 관점이야.
           </div>
           <div className="mt-1 kr-body text-[11px] font-bold leading-[1.45] text-cream/42">
-            취소 기능이 있다면 수강 기록을 지우는 Delete까지 함께 떠올리면 됩니다.
+            취소 기능이 있다면 수강 기록을 지우는 Delete까지 함께 떠올리면 돼.
           </div>
         </div>
       </div>
@@ -2485,7 +2538,7 @@ function ModelingStageDiagram({ mode }: { mode: ModelingStageMode }) {
 
         <div className="mt-3 rounded-[16px] border border-[#d1f843]/18 bg-[#d1f843]/8 px-3 py-2.5">
           <div className="kr-body text-[12px] font-bold leading-[1.5] text-[#ecffab]">
-            함수적 종속 같은 “무엇이 무엇을 결정하나?” 문제는 주로 논리적 모델링에서 정리합니다.
+            함수적 종속 같은 “무엇이 무엇을 결정하나?” 문제는 주로 논리적 모델링에서 정리해.
           </div>
         </div>
       </div>
@@ -2604,7 +2657,7 @@ function AttributeClassificationDiagram({ mode }: { mode: AttributeDiagramMode }
           {isAtom ? (
             <div className="mt-3 rounded-[15px] border border-[#d1f843]/18 bg-[#d1f843]/8 px-3 py-2.5">
               <div className="kr-body text-[12px] font-bold leading-[1.5] text-[#ecffab]">
-                속성은 더 이상 나누지 않고 하나의 의미로 쓰는 최소 데이터 단위입니다.
+                속성은 더 이상 나누지 않고 하나의 의미로 쓰는 최소 데이터 단위야.
               </div>
             </div>
           ) : null}
@@ -2673,7 +2726,7 @@ function AttributeClassificationDiagram({ mode }: { mode: AttributeDiagramMode }
         {!isAtom ? (
           <div className="mt-3 rounded-[16px] border border-cream/10 bg-white/[0.035] px-3 py-2.5">
             <div className="kr-body text-[12px] font-bold leading-[1.5] text-cream/66">
-              특성에 따른 분류는 “현실에 원래 있었나, 시스템이 만들었나, 계산해서 나왔나”를 구분하는 방식입니다.
+              특성에 따른 분류는 “현실에 원래 있었나, 시스템이 만들었나, 계산해서 나왔나”를 구분하는 방식이야.
             </div>
           </div>
         ) : null}
@@ -2818,7 +2871,7 @@ function AttributeShapeDiagram({ mode }: { mode: AttributeShapeMode }) {
 
         <div className="mt-3 rounded-[16px] border border-cream/10 bg-white/[0.035] px-3 py-2.5">
           <div className="kr-body text-[12px] font-bold leading-[1.5] text-cream/66">
-            이 분류는 “한 칸으로 충분한가, 더 쪼갤 수 있는가, 같은 값이 여러 번 나올 수 있는가”를 보는 기준입니다.
+            이 분류는 “한 칸으로 충분한가, 더 쪼갤 수 있는가, 같은 값이 여러 번 나올 수 있는가”를 보는 기준이야.
           </div>
         </div>
       </div>
@@ -2962,7 +3015,7 @@ function AttributeRoleDiagram({ mode }: { mode: AttributeRoleMode }) {
 
         <div className="mt-3 rounded-[16px] border border-cream/10 bg-white/[0.035] px-3 py-2.5">
           <div className="kr-body text-[12px] font-bold leading-[1.5] text-cream/66">
-            이 분류는 같은 속성이라도 테이블 안에서 맡는 일이 다르다는 걸 보는 기준입니다.
+            이 분류는 같은 속성이라도 테이블 안에서 맡는 일이 다르다는 걸 보는 기준이야.
           </div>
         </div>
       </div>
@@ -3146,7 +3199,7 @@ function KeysFiveDiagram() {
 
       <div className="mt-3 rounded-[16px] border border-cream/10 bg-white/[0.035] px-3 py-2.5">
         <div className="kr-body text-[12px] font-bold leading-[1.5] text-cream/66">
-          후보키 중 대표로 고른 것이 기본키, 대표가 되지 못한 후보가 대체키입니다.
+          후보키 중 대표로 고른 것이 기본키, 대표가 되지 못한 후보가 대체키야.
         </div>
       </div>
     </div>
@@ -3281,7 +3334,7 @@ function PkUniqueDiagram() {
 
       <div className="mt-3 rounded-[16px] border border-[#d1f843]/18 bg-[#d1f843]/8 px-3 py-2.5">
         <div className="kr-body text-[12px] font-bold leading-[1.55] text-[#ecffab]">
-          시험 기준: PK는 UNIQUE + NOT NULL + 대표 키. UNIQUE는 대표가 아니라 중복 방지 규칙입니다.
+          시험 기준: PK는 UNIQUE + NOT NULL + 대표 키. UNIQUE는 대표가 아니라 중복 방지 규칙이야.
         </div>
       </div>
     </div>
@@ -3354,22 +3407,22 @@ function FunctionalDependencyDiagram({ mode }: { mode: FunctionalDependencyMode 
     basic: {
       label: 'A → B',
       title: '하나를 알면 하나가 정해짐',
-      caption: '학번을 알면 학생 이름이 하나로 정해지는 관계입니다.',
+      caption: '학번을 알면 학생 이름이 하나로 정해지는 관계야.',
     },
     full: {
       label: '전체 필요',
       title: '키 전체가 필요함',
-      caption: '학번과 과목코드를 함께 알아야 성적이 정해집니다.',
+      caption: '학번과 과목코드를 함께 알아야 성적이 정해져.',
     },
     partial: {
       label: '일부만',
       title: '키 일부만으로 정해짐',
-      caption: '복합키 중 학번만으로 이름이 정해지면 부분 종속입니다.',
+      caption: '복합키 중 학번만으로 이름이 정해지면 부분 종속이야.',
     },
     transitive: {
       label: '중간 경유',
       title: '중간을 거쳐 정해짐',
-      caption: '학번이 학과코드를 정하고, 학과코드가 학과명을 정합니다.',
+      caption: '학번이 학과코드를 정하고, 학과코드가 학과명을 정해.',
     },
   };
   const data = meta[mode];
@@ -3622,7 +3675,7 @@ function NormalFormDiagram({ mode }: { mode: NormalFormMode }) {
       <LearningVisualFrame
         eyebrow="NORMAL FORM"
         title="정규형은 단계별 안전장치"
-        caption="1NF부터 BCNF까지 조건이 하나씩 강해집니다. 도·부·이·결 흐름으로 보세요."
+        caption="1NF부터 BCNF까지 조건이 하나씩 강해져. 도·부·이·결 흐름으로 봐."
       >
         <div className="grid grid-cols-[1fr_18px_1fr] gap-2 sm:grid-cols-[1fr_18px_1fr_18px_1fr_18px_1fr]">
           {steps.map(([label, sub, tone], index) => (
@@ -3643,7 +3696,7 @@ function NormalFormDiagram({ mode }: { mode: NormalFormMode }) {
       <LearningVisualFrame
         eyebrow="1NF"
         title="한 칸에는 값 하나"
-        caption="한 칸에 전화번호가 두 개 있으면 검색·수정이 어려워요. 1NF는 값을 원자값으로 나눕니다."
+        caption="한 칸에 전화번호가 두 개 있으면 검색·수정이 어려워요. 1NF는 값을 원자값으로 나눠."
       >
         <div className="grid gap-3 sm:grid-cols-[1fr_24px_1fr] sm:items-center">
           <MiniDataTable
@@ -3672,7 +3725,7 @@ function NormalFormDiagram({ mode }: { mode: NormalFormMode }) {
       <LearningVisualFrame
         eyebrow="2NF"
         title="복합키 일부에만 붙은 값 분리"
-        caption="성적은 학번+과목코드가 모두 필요하지만, 이름은 학번만으로 정해집니다. 그래서 학생 정보는 따로 빼야 해요."
+        caption="성적은 학번+과목코드가 모두 필요하지만, 이름은 학번만으로 정해져. 그래서 학생 정보는 따로 빼야 해."
       >
         <div className="grid gap-3">
           <div className="grid grid-cols-[1fr_22px_1fr] items-center gap-2">
@@ -3697,7 +3750,7 @@ function NormalFormDiagram({ mode }: { mode: NormalFormMode }) {
       <LearningVisualFrame
         eyebrow="3NF"
         title="중간을 거치는 값 분리"
-        caption="학과명은 학생이 직접 정하는 값이 아니라 학과코드가 정합니다. 학과 테이블로 빼면 중복이 줄어요."
+        caption="학과명은 학생이 직접 정하는 값이 아니라 학과코드가 정해. 학과 테이블로 빼면 중복이 줄어."
       >
         <div className="grid grid-cols-[1fr_18px_1fr_18px_1fr] items-center gap-1.5">
           <VisualPill label="학번" tone="cyan" />
@@ -3714,7 +3767,7 @@ function NormalFormDiagram({ mode }: { mode: NormalFormMode }) {
     <LearningVisualFrame
       eyebrow="BCNF"
       title="결정자는 후보키여야 함"
-      caption="다른 값을 정하는 속성이 있다면, 그 속성 자체가 행을 구분할 수 있는 후보키여야 BCNF입니다."
+      caption="다른 값을 정하는 속성이 있다면, 그 속성 자체가 행을 구분할 수 있는 후보키여야 BCNF야."
     >
       <div className="grid grid-cols-[1fr_22px_1fr] items-center gap-2">
         <VisualPill label="결정자" sub="다른 값을 정함" tone="amber" />
@@ -3733,7 +3786,7 @@ function DenormalizationDiagram({ mode }: { mode: DenormalizationMode }) {
       <LearningVisualFrame
         eyebrow="DENORMALIZATION"
         title="합치기 · 복사하기 · 미리 계산"
-        caption="반정규화는 조회가 느린 지점을 확인한 뒤, 필요한 곳에만 쓰는 성능 보정입니다."
+        caption="반정규화는 조회가 느린 지점을 확인한 뒤, 필요한 곳에만 쓰는 성능 보정이야."
       >
         <div className="grid grid-cols-3 gap-2">
           <VisualPill label="합치기" sub="테이블 통합" tone="cyan" />
@@ -3749,7 +3802,7 @@ function DenormalizationDiagram({ mode }: { mode: DenormalizationMode }) {
       <LearningVisualFrame
         eyebrow="TRADEOFF"
         title="빨라지는 대신 맞춰야 할 값이 늘어남"
-        caption="같은 고객명이 여러 곳에 있으면 한쪽만 바뀌는 순간 데이터가 서로 달라집니다."
+        caption="같은 고객명이 여러 곳에 있으면 한쪽만 바뀌는 순간 데이터가 서로 달라져."
       >
         <MiniDataTable
           title="주문 테이블에 고객명 복사"
@@ -3768,7 +3821,7 @@ function DenormalizationDiagram({ mode }: { mode: DenormalizationMode }) {
     <LearningVisualFrame
       eyebrow="NORMALIZE ↔ DENORMALIZE"
       title="안전하게 나누기 vs 빠르게 읽기"
-      caption="정규화는 중복을 줄이고, 반정규화는 조회 속도를 위해 일부러 중복을 허용합니다."
+      caption="정규화는 중복을 줄이고, 반정규화는 조회 속도를 위해 일부러 중복을 허용해."
     >
       <div className="grid grid-cols-[1fr_22px_1fr] items-center gap-2">
         <VisualPill label="정규화" sub="학생 / 수강 / 과목" tone="cyan" />
@@ -3787,7 +3840,7 @@ function SpecialRelationDiagram({ mode }: { mode: SpecialRelationMode }) {
       <LearningVisualFrame
         eyebrow="SELF REFERENCE"
         title="같은 테이블이 자기 자신을 참조"
-        caption="사원 테이블 안의 상사사번이 다시 사원 테이블의 사번을 가리키면 계층형 관계입니다."
+        caption="사원 테이블 안의 상사사번이 다시 사원 테이블의 사번을 가리키면 계층형 관계야."
       >
         <div className="grid grid-cols-[1fr_22px_1fr_22px_1fr] items-center gap-1.5">
           <VisualPill label="사원" sub="나" tone="cyan" />
@@ -3805,7 +3858,7 @@ function SpecialRelationDiagram({ mode }: { mode: SpecialRelationMode }) {
       <LearningVisualFrame
         eyebrow="EXCLUSIVE ARC"
         title="여러 후보 중 하나만 선택"
-        caption="결제 한 건은 카드 결제이거나 계좌이체일 수 있지만, 동시에 둘 다로 잡지는 않습니다."
+        caption="결제 한 건은 카드 결제이거나 계좌이체일 수 있지만, 동시에 둘 다로 잡지는 않아."
       >
         <div className="grid gap-2">
           <VisualPill label="결제" sub="하나의 거래" tone="cyan" />
@@ -3822,7 +3875,7 @@ function SpecialRelationDiagram({ mode }: { mode: SpecialRelationMode }) {
     <LearningVisualFrame
       eyebrow="SPECIAL RELATION"
       title="모델 구조에서 자주 나오는 특수 패턴"
-      caption="성능 이야기를 잠깐 내려놓고, 이제 관계 구조 자체가 특이한 경우를 구분합니다."
+      caption="성능 이야기를 잠깐 내려놓고, 이제 관계 구조 자체가 특이한 경우를 구분해."
     >
       <div className="grid grid-cols-2 gap-2">
         <VisualPill label="계층형·순환" sub="자기 자신 참조" tone="cyan" />
@@ -3840,7 +3893,7 @@ function TransactionDiagram({ mode }: { mode: TransactionMode }) {
       <LearningVisualFrame
         eyebrow="ACID"
         title="안전한 거래의 4가지 약속"
-        caption="원자성은 전부 성공/취소, 일관성은 규칙 유지, 고립성은 간섭 최소화, 지속성은 커밋 결과 보존입니다."
+        caption="원자성은 전부 성공/취소, 일관성은 규칙 유지, 고립성은 간섭 최소화, 지속성은 커밋 결과 보존이야."
       >
         <div className="grid grid-cols-2 gap-2">
           <VisualPill label="원자성" sub="전부 성공/취소" tone="lime" />
@@ -3863,7 +3916,7 @@ function TransactionDiagram({ mode }: { mode: TransactionMode }) {
       <LearningVisualFrame
         eyebrow="ISOLATION"
         title="강할수록 안전하지만 느릴 수 있음"
-        caption="격리수준은 동시에 실행되는 트랜잭션을 얼마나 엄격하게 분리할지 정하는 단계입니다."
+        caption="격리수준은 동시에 실행되는 트랜잭션을 얼마나 엄격하게 분리할지 정하는 단계야."
       >
         <div className="grid grid-cols-4 gap-1.5">
           {levels.map(([label, sub], index) => (
@@ -3882,7 +3935,7 @@ function TransactionDiagram({ mode }: { mode: TransactionMode }) {
     <LearningVisualFrame
       eyebrow="TRANSACTION"
       title="출금과 입금은 한 덩어리"
-      caption="계좌이체는 출금만 성공하거나 입금만 성공하면 안 됩니다. 함께 성공하거나 함께 취소되어야 해요."
+      caption="계좌이체는 출금만 성공하거나 입금만 성공하면 안 돼. 함께 성공하거나 함께 취소되어야 해."
     >
       <div className="grid grid-cols-[1fr_22px_1fr_22px_1fr] items-center gap-1.5">
         <VisualPill label="출금" sub="A - 10,000" tone="amber" />
@@ -3903,7 +3956,7 @@ function NullBehaviorDiagram({ mode }: { mode: NullMode }) {
       <LearningVisualFrame
         eyebrow="NULL OPERATION"
         title="비교는 UNKNOWN, 산술은 NULL"
-        caption="NULL은 모르는 값이라 = NULL로 찾지 않습니다. 계산해도 결과를 알 수 없어 NULL이 됩니다."
+        caption="NULL은 모르는 값이라 = NULL로 찾지 않아. 계산해도 결과를 알 수 없어 NULL이 돼."
       >
         <div className="grid grid-cols-2 gap-2">
           <VisualPill label="col IS NULL" sub="NULL 찾기" tone="lime" />
@@ -3920,7 +3973,7 @@ function NullBehaviorDiagram({ mode }: { mode: NullMode }) {
       <LearningVisualFrame
         eyebrow="COUNT"
         title="행을 세나, 값을 세나"
-        caption="COUNT(*)는 행 자체를 세고, COUNT(점수)는 NULL이 아닌 점수 값만 셉니다."
+        caption="COUNT(*)는 행 자체를 세고, COUNT(점수)는 NULL이 아닌 점수 값만 세."
       >
         <MiniDataTable
           title="점수"
@@ -3941,7 +3994,7 @@ function NullBehaviorDiagram({ mode }: { mode: NullMode }) {
       <LearningVisualFrame
         eyebrow="ORACLE ORDER"
         title="Oracle ASC에서는 NULL이 뒤쪽"
-        caption="DBMS마다 다를 수 있으니 시험에서는 Oracle 기준과 NULLS FIRST/LAST 지정법을 함께 기억하세요."
+        caption="DBMS마다 다를 수 있으니 시험에서는 Oracle 기준과 NULLS FIRST/LAST 지정법을 함께 기억해."
       >
         <div className="grid grid-cols-4 gap-1.5">
           <VisualPill label="10" tone="cyan" />
@@ -3957,7 +4010,7 @@ function NullBehaviorDiagram({ mode }: { mode: NullMode }) {
     <LearningVisualFrame
       eyebrow="NULL"
       title="0도 아니고 빈칸도 아님"
-      caption="0은 숫자 값, 빈 문자열은 빈 글자 값, NULL은 값이 없거나 알 수 없다는 표시입니다."
+      caption="0은 숫자 값, 빈 문자열은 빈 글자 값, NULL은 값이 없거나 알 수 없다는 표시야."
     >
       <div className="grid grid-cols-3 gap-2">
         <VisualPill label="0" sub="숫자 값" tone="cyan" />
@@ -3976,7 +4029,7 @@ function KeyChoiceDiagram({ mode }: { mode: KeyChoiceMode }) {
       <LearningVisualFrame
         eyebrow="SURROGATE KEY"
         title="업무 값이 바뀌어도 PK는 덜 흔들리게"
-        caption="자동 id는 의미가 없어서 노출 위험이 낮고, 학번 같은 업무 값은 UNIQUE로 중복만 막을 수 있습니다."
+        caption="자동 id는 의미가 없어서 노출 위험이 낮고, 학번 같은 업무 값은 UNIQUE로 중복만 막을 수 있어."
       >
         <MiniDataTable
           title="학생"
@@ -3996,7 +4049,7 @@ function KeyChoiceDiagram({ mode }: { mode: KeyChoiceMode }) {
       <LearningVisualFrame
         eyebrow="PK + UNIQUE"
         title="연결은 id, 중복 방지는 학번"
-        caption="실무에서는 인조 PK로 관계를 안정화하고, 업무상 중복되면 안 되는 값은 UNIQUE로 관리하는 조합을 자주 씁니다."
+        caption="실무에서는 인조 PK로 관계를 안정화하고, 업무상 중복되면 안 되는 값은 UNIQUE로 관리하는 조합을 자주 써."
       >
         <div className="grid grid-cols-[1fr_22px_1fr] items-center gap-2">
           <VisualPill label="id" sub="PK · 내부 연결" tone="lime" />
@@ -4011,7 +4064,7 @@ function KeyChoiceDiagram({ mode }: { mode: KeyChoiceMode }) {
     <LearningVisualFrame
       eyebrow="NATURAL vs SURROGATE"
       title="업무에 원래 있나, 시스템이 만들었나"
-      caption="학번처럼 현실 업무에 이미 있는 값은 본질식별자, 자동 id처럼 시스템이 새로 만든 값은 인조식별자입니다."
+      caption="학번처럼 현실 업무에 이미 있는 값은 본질식별자, 자동 id처럼 시스템이 새로 만든 값은 인조식별자야."
     >
       <div className="grid grid-cols-2 gap-2">
         <VisualPill label="학번" sub="본질식별자" tone="cyan" />
@@ -4053,10 +4106,12 @@ type Adsp3DiagramMode =
 type Adsp1DiagramMode =
   | 'dikw'
   | 'dataClassification'
+  | 'dataTypeLens'
   | 'tacitExplicit'
   | 'seci'
   | 'seciSocialization'
   | 'dbFeatures'
+  | 'dbFeatureDetail'
   | 'dwOverview'
   | 'dataMart'
   | 'dataLake'
@@ -4134,7 +4189,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="DIKW PYRAMID"
         title="아래로 갈수록 많고, 위로 갈수록 가치가 높다"
-        caption="DIKW는 데이터가 의사결정에 쓰이기까지 올라가는 4단계입니다. 순서는 데이터 → 정보 → 지식 → 지혜로 고정해서 보세요."
+        caption="DIKW는 데이터가 의사결정에 쓰이기까지 올라가는 4단계야. 순서는 데이터 → 정보 → 지식 → 지혜로 고정해서 봐."
       >
         <div className="grid grid-cols-[44px_1fr_44px] items-stretch gap-2">
           <div className="flex flex-col items-center justify-between py-2">
@@ -4181,12 +4236,109 @@ function Adsp1ConceptDiagram({
     );
   }
 
+  if (mode === 'dataTypeLens') {
+    const activeByStep: Record<string, string> = {
+      'adsp-1-1-s2-jeong': 'structured',
+      'adsp-1-1-s2-ban': 'semi',
+      'adsp-1-1-s2-bi': 'unstructured',
+      'adsp-1-1-s2-quan': 'quantitative',
+      'adsp-1-1-s2-qual': 'qualitative',
+      'adsp-1-1-s2-num': 'numerical',
+      'adsp-1-1-s2-cat': 'categorical',
+    };
+    const activeKey = stepId ? activeByStep[stepId] : undefined;
+    const groups = [
+      {
+        title: '형태로 보기',
+        note: '데이터가 어떤 모양으로 저장됐는지 보는 기준이야.',
+        items: [
+          { key: 'structured', label: '정형', sub: '행과 열이 딱 정해진 표', tone: 'cyan' },
+          { key: 'semi', label: '반정형', sub: '태그나 키가 붙어 있는 자유형', tone: 'violet' },
+          { key: 'unstructured', label: '비정형', sub: '정해진 구조가 거의 없는 글·이미지', tone: 'amber' },
+        ],
+      },
+      {
+        title: '표현 방식으로 보기',
+        note: '숫자로 말하는지, 말과 의미로 말하는지 보는 기준이야.',
+        items: [
+          { key: 'quantitative', label: '정량적', sub: '숫자로 측정할 수 있어', tone: 'lime' },
+          { key: 'qualitative', label: '정성적', sub: '말·감정·서술로 표현돼', tone: 'cyan' },
+        ],
+      },
+      {
+        title: '분석 목적으론 이렇게 봐',
+        note: '분석할 때 값이 크기인지, 라벨인지 구분하는 기준이야.',
+        items: [
+          { key: 'numerical', label: '수치형', sub: '평균·합계 계산이 자연스러워', tone: 'lime' },
+          { key: 'categorical', label: '범주형', sub: '서울·부산처럼 라벨로 나뉘어', tone: 'violet' },
+        ],
+      },
+    ] as const;
+
+    return (
+      <LearningVisualFrame
+        eyebrow="DATA LENSES"
+        title="데이터 분류는 한 번에 한 렌즈씩 보면 쉬워"
+        caption="같은 데이터도 형태, 표현 방식, 분석 목적에 따라 답이 달라져. 지금 배우는 카드만 밝게 보고, 나머지는 다른 기준이라고 생각하면 돼."
+      >
+        <div className="rounded-[20px] border border-[#67e8f9]/18 bg-[#67e8f9]/8 px-4 py-3">
+          <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-[#67e8f9]/72">
+            EXAMPLE DATA
+          </div>
+          <div className="kr-heading mt-1 text-[17px] leading-tight text-cream">
+            고객 리뷰: “배송이 빠르고 친절해요”
+          </div>
+          <div className="kr-body mt-1 text-[11px] font-bold leading-snug text-cream/58">
+            이 문장 하나도 어떤 기준으로 보느냐에 따라 분류 이름이 달라져.
+          </div>
+        </div>
+
+        <div className="mt-3 grid gap-3">
+          {groups.map((group) => (
+            <div key={group.title} className="rounded-[20px] border border-cream/10 bg-[#020b24]/45 p-3">
+              <div className="mb-2 flex items-start justify-between gap-3">
+                <div className="kr-heading text-[14px] leading-tight text-cream">{group.title}</div>
+                <div className="kr-body max-w-[180px] text-right text-[10.5px] font-bold leading-snug text-cream/46">
+                  {group.note}
+                </div>
+              </div>
+              <div className="grid gap-2 sm:grid-cols-3">
+                {group.items.map((item, index) => {
+                  const active = !activeKey || activeKey === item.key || stepId === 'adsp-1-1-s2-review';
+                  return (
+                    <motion.div
+                      key={item.key}
+                      className={
+                        'rounded-[16px] border px-3 py-2.5 transition-colors ' +
+                        (active
+                          ? visualToneClass(item.tone as VisualTone)
+                          : 'border-cream/8 bg-white/[0.025] text-cream/35')
+                      }
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.16, delay: index * 0.025 }}
+                    >
+                      <div className="kr-heading text-[13.5px] leading-tight">{item.label}</div>
+                      <div className="kr-body mt-1 text-[10.5px] font-black leading-snug opacity-70">
+                        {item.sub}
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
   if (mode === 'dataClassification') {
     return (
       <LearningVisualFrame
         eyebrow="DATA LENSES"
         title="하나의 데이터도 3가지 기준으로 다시 본다"
-        caption="분류 문제는 먼저 어떤 기준을 묻는지 잡는 게 핵심입니다. 형태, 표현 방식, 분석 목적은 서로 다른 렌즈예요."
+        caption="분류 문제는 먼저 어떤 기준을 묻는지 잡는 게 핵심이야. 형태, 표현 방식, 분석 목적은 서로 다른 렌즈야."
       >
         <div className="rounded-[20px] border border-[#67e8f9]/20 bg-[#67e8f9]/8 px-4 py-3 text-center">
           <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] text-[#67e8f9]/75">
@@ -4208,7 +4360,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="TACIT vs EXPLICIT"
         title="몸 안에 있으면 암묵지, 밖에 적히면 형식지"
-        caption="암묵지는 말로 다 옮기기 어려운 감각이고, 형식지는 글·그림·매뉴얼처럼 다른 사람이 바로 읽을 수 있는 지식입니다."
+        caption="암묵지는 말로 다 옮기기 어려운 감각이고, 형식지는 글·그림·매뉴얼처럼 다른 사람이 바로 읽을 수 있는 지식이야."
       >
         <div className="grid gap-3 sm:grid-cols-[1fr_26px_1fr] sm:items-stretch">
           <div className="rounded-[20px] border border-[#67e8f9]/24 bg-[#67e8f9]/8 p-3">
@@ -4277,7 +4429,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="SECI CYCLE"
         title="지식은 암묵지와 형식지를 오가며 자란다"
-        caption="시험에서는 사례가 어느 방향인지 묻습니다. 특히 표출화는 사람 안의 노하우를 매뉴얼로 꺼내는 단계라 자주 나와요."
+        caption="시험에서는 사례가 어느 방향인지 물어. 특히 표출화는 사람 안의 노하우를 매뉴얼로 꺼내는 단계라 자주 나와요."
       >
         <div className="grid grid-cols-[1fr_24px_1fr] items-center gap-2">
           <VisualPill label={steps[0].label} sub={steps[0].sub} tone={steps[0].tone as VisualTone} />
@@ -4303,7 +4455,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="SOCIALIZATION"
         title="공동화는 옆에서 보고 따라 배우는 암묵지 전달"
-        caption="핵심은 문서가 아니라 함께 있는 경험입니다. 선배의 몸에 있던 감각이 후배의 몸으로 옮겨가면 암묵지 → 암묵지, 즉 공동화예요."
+        caption="핵심은 문서가 아니라 함께 있는 경험이야. 선배의 몸에 있던 감각이 후배의 몸으로 옮겨가면 암묵지 → 암묵지, 즉 공동화야."
       >
         <div className="grid gap-3">
           <div className="grid grid-cols-[1fr_42px_1fr] items-stretch gap-2">
@@ -4363,8 +4515,118 @@ function Adsp1ConceptDiagram({
           </div>
           <div className="rounded-[16px] border border-[#ffb020]/18 bg-[#ffb020]/8 px-3 py-2">
             <div className="kr-body text-[11.5px] font-bold leading-[1.45] text-cream/66">
-              시험 포인트: 매뉴얼로 정리하면 표출화, 옆에서 직접 보여주며 익히면 공동화입니다.
+              시험 포인트: 매뉴얼로 정리하면 표출화, 옆에서 직접 보여주며 익히면 공동화야.
             </div>
+          </div>
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'dbFeatureDetail') {
+    const activeByStep: Record<string, string> = {
+      'adsp-1-1-s4-share': 'shared',
+      'adsp-1-1-s4-int': 'integrated',
+      'adsp-1-1-s4-stored': 'stored',
+      'adsp-1-1-s4-change': 'changing',
+    };
+    const activeKey = stepId ? activeByStep[stepId] : undefined;
+    const items = [
+      {
+        key: 'shared',
+        label: '공용',
+        sub: '여러 사람이 함께 써',
+        example: '학생·교수·행정팀이 같은 학사 DB를 보는 상황',
+        tone: 'cyan',
+      },
+      {
+        key: 'integrated',
+        label: '통합',
+        sub: '중복을 줄이고 하나로 맞춰',
+        example: '고객 이름을 영업팀 표와 상담팀 표에 따로 흩어두지 않는 것',
+        tone: 'lime',
+      },
+      {
+        key: 'stored',
+        label: '저장',
+        sub: '컴퓨터가 다시 꺼내 쓸 수 있게 보관해',
+        example: '메모리에 잠깐 있는 값이 아니라 디스크에 남는 데이터',
+        tone: 'violet',
+      },
+      {
+        key: 'changing',
+        label: '변화',
+        sub: '현실이 바뀌면 데이터도 바뀌어',
+        example: '주소 변경, 주문 취소, 성적 정정처럼 계속 갱신되는 상태',
+        tone: 'amber',
+      },
+    ] as const;
+
+    return (
+      <LearningVisualFrame
+        eyebrow="DB FEATURES"
+        title="DB 4특징은 공통저변으로 외우고, 뜻은 하나씩 봐"
+        caption="공용·통합·저장·변화는 DB가 단순 파일 모음이 아니라 조직이 함께 쓰는 데이터 저장소라는 걸 보여주는 특징이야."
+      >
+        <div className="grid gap-3 sm:grid-cols-[1fr_112px_1fr] sm:items-center">
+          <div className="grid gap-2">
+            {items.slice(0, 2).map((item, index) => {
+              const active = !activeKey || activeKey === item.key || stepId === 'adsp-1-1-s4-review';
+              return (
+                <motion.div
+                  key={item.key}
+                  className={
+                    'rounded-[18px] border p-3 ' +
+                    (active
+                      ? visualToneClass(item.tone as VisualTone)
+                      : 'border-cream/8 bg-white/[0.025] text-cream/35')
+                  }
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.16, delay: index * 0.035 }}
+                >
+                  <div className="kr-heading text-[15px] leading-tight">{item.label}</div>
+                  <div className="kr-body mt-1 text-[10.5px] font-black leading-snug opacity-72">{item.sub}</div>
+                  <div className="mt-2 rounded-[12px] border border-cream/10 bg-[#020b24]/38 px-2 py-1.5 kr-body text-[10.5px] font-bold leading-snug text-cream/62">
+                    {item.example}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          <div className="grid place-items-center rounded-[28px] border border-[#67e8f9]/20 bg-[#67e8f9]/8 px-3 py-4">
+            <Database size={32} strokeWidth={2.2} className="text-[#dffbff]" />
+            <div className="kr-heading mt-2 text-[18px] leading-none text-cream">DB</div>
+            <div className="kr-body mt-1 text-center text-[10.5px] font-bold leading-snug text-cream/50">
+              함께 쓰는<br />저장소
+            </div>
+          </div>
+
+          <div className="grid gap-2">
+            {items.slice(2).map((item, index) => {
+              const active = !activeKey || activeKey === item.key || stepId === 'adsp-1-1-s4-review';
+              return (
+                <motion.div
+                  key={item.key}
+                  className={
+                    'rounded-[18px] border p-3 ' +
+                    (active
+                      ? visualToneClass(item.tone as VisualTone)
+                      : 'border-cream/8 bg-white/[0.025] text-cream/35')
+                  }
+                  initial={{ opacity: 0, x: 8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.16, delay: index * 0.035 }}
+                >
+                  <div className="kr-heading text-[15px] leading-tight">{item.label}</div>
+                  <div className="kr-body mt-1 text-[10.5px] font-black leading-snug opacity-72">{item.sub}</div>
+                  <div className="mt-2 rounded-[12px] border border-cream/10 bg-[#020b24]/38 px-2 py-1.5 kr-body text-[10.5px] font-bold leading-snug text-cream/62">
+                    {item.example}
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </LearningVisualFrame>
@@ -4376,7 +4638,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="DATABASE"
         title="DB는 공통저변으로 기억한다"
-        caption="공용, 통합, 저장, 변화는 DB의 본질 특징입니다. 보기에서 낯선 단어가 나오면 이 4가지에 들어가는지 먼저 확인하세요."
+        caption="공용, 통합, 저장, 변화는 DB의 본질 특징이야. 보기에서 낯선 단어가 나오면 이 4가지에 들어가는지 먼저 확인해."
       >
         <div className="relative rounded-[22px] border border-cream/10 bg-[#020b24]/62 p-3">
           <div className="mx-auto mb-3 flex h-24 w-24 flex-col items-center justify-center rounded-full border border-[#67e8f9]/30 bg-[#67e8f9]/10">
@@ -4402,7 +4664,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="DATA WAREHOUSE"
         title="DW는 흩어진 데이터를 모아 둔 분석 창고"
-        caption="처음에는 이것만 잡으면 됩니다. 여러 시스템에 흩어진 데이터를 한곳에 정리해, 보고서와 의사결정에 쓰기 쉽게 만든 저장소가 DW예요."
+        caption="처음에는 이것만 잡으면 돼. 여러 시스템에 흩어진 데이터를 한곳에 정리해, 보고서와 의사결정에 쓰기 쉽게 만든 저장소가 DW야."
       >
         <div className="space-y-3">
           <div className="grid grid-cols-3 gap-2">
@@ -4460,8 +4722,8 @@ function Adsp1ConceptDiagram({
         }
         caption={
           isType
-            ? '종속형 DM은 DW에서 필요한 데이터를 가져오고, 독립형 DM은 부서가 별도로 만든 작은 저장소입니다. 시험에서는 출처를 보고 구분하세요.'
-            : 'DW가 회사 전체 분석 창고라면, DM은 마케팅·재무·인사처럼 특정 부서나 주제만 빠르게 보는 작은 창고입니다.'
+            ? '종속형 DM은 DW에서 필요한 데이터를 가져오고, 독립형 DM은 부서가 별도로 만든 작은 저장소야. 시험에서는 출처를 보고 구분해.'
+            : 'DW가 회사 전체 분석 창고라면, DM은 마케팅·재무·인사처럼 특정 부서나 주제만 빠르게 보는 작은 창고야.'
         }
       >
         <div className="space-y-3">
@@ -4520,7 +4782,7 @@ function Adsp1ConceptDiagram({
           ) : (
             <div className="rounded-[16px] border border-cream/10 bg-white/[0.035] px-3 py-2.5">
               <div className="kr-body text-[11.5px] font-bold leading-[1.5] text-cream/66">
-                기억 포인트: DW는 전사 통합, DM은 부서·주제 특화입니다.
+                기억 포인트: DW는 전사 통합, DM은 부서·주제 특화야.
               </div>
             </div>
           )}
@@ -4557,8 +4819,8 @@ function Adsp1ConceptDiagram({
         }
         caption={
           isFeatures
-            ? '핵심은 Schema-on-Read, 모든 형태 원시 저장, 대규모 분산 저장, 그리고 Data Swamp 위험입니다.'
-            : 'DW가 정리된 분석 창고라면, Data Lake는 사진·영상·로그·SNS 글까지 원본 상태로 먼저 받아두는 큰 저장소입니다.'
+            ? '핵심은 Schema-on-Read, 모든 형태 원시 저장, 대규모 분산 저장, 그리고 Data Swamp 위험이야.'
+            : 'DW가 정리된 분석 창고라면, Data Lake는 사진·영상·로그·SNS 글까지 원본 상태로 먼저 받아두는 큰 저장소야.'
         }
       >
         <div className="space-y-3">
@@ -4620,7 +4882,7 @@ function Adsp1ConceptDiagram({
           ) : (
             <div className="rounded-[16px] border border-cream/10 bg-white/[0.035] px-3 py-2.5">
               <div className="kr-body text-[11.5px] font-bold leading-[1.5] text-cream/66">
-                기억 포인트: DW는 정리해서 저장, Data Lake는 원본을 먼저 담고 나중에 해석합니다.
+                기억 포인트: DW는 정리해서 저장, Data Lake는 원본을 먼저 담고 나중에 해석해.
               </div>
             </div>
           )}
@@ -4634,7 +4896,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="DW vs DATA LAKE"
         title="창고는 정리해서, 호수는 원본 그대로"
-        caption="DW는 분석 목적에 맞게 정제된 데이터 창고, Data Lake는 정형·반정형·비정형 원천 데이터를 넓게 담아두는 저장소입니다."
+        caption="DW는 분석 목적에 맞게 정제된 데이터 창고, Data Lake는 정형·반정형·비정형 원천 데이터를 넓게 담아두는 저장소야."
       >
         <div className="grid gap-2 sm:grid-cols-[1fr_24px_1fr] sm:items-center">
           <div className="space-y-2">
@@ -4660,7 +4922,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="OLAP"
         title="OLAP은 쌓인 데이터를 여러 각도로 보는 분석 도구"
-        caption="OLAP은 주문을 처리하는 시스템이 아니라, 이미 모인 데이터를 지역·시기·상품 같은 축으로 잘라 보며 의사결정을 돕는 분석 방식입니다."
+        caption="OLAP은 주문을 처리하는 시스템이 아니라, 이미 모인 데이터를 지역·시기·상품 같은 축으로 잘라 보며 의사결정을 돕는 분석 방식이야."
       >
         <div className="space-y-3">
           <div className="rounded-[24px] border border-[#d1f843]/20 bg-[#d1f843]/8 p-4">
@@ -4696,7 +4958,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="OLTP"
         title="OLTP는 지금 일어난 거래를 바로 처리한다"
-        caption="카페 주문, 쇼핑몰 결제, 은행 출금처럼 짧은 거래를 빠르게 기록하고 정확히 반영하는 운영 시스템입니다."
+        caption="카페 주문, 쇼핑몰 결제, 은행 출금처럼 짧은 거래를 빠르게 기록하고 정확히 반영하는 운영 시스템이야."
       >
         <div className="space-y-3">
           <div className="grid grid-cols-[1fr_24px_1fr_24px_1fr] items-center gap-2">
@@ -4727,7 +4989,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="OLTP vs OLAP"
         title="OLTP까지 배운 뒤 둘을 비교하면 선명하다"
-        caption="OLTP는 운영 현장에서 거래를 즉시 처리하고, OLAP은 쌓인 데이터를 여러 각도로 분석합니다. 시험에서는 목적과 쿼리 성격을 나눠 묻습니다."
+        caption="OLTP는 운영 현장에서 거래를 즉시 처리하고, OLAP은 쌓인 데이터를 여러 각도로 분석해. 시험에서는 목적과 쿼리 성격을 나눠 물어."
       >
         <div className="grid gap-2 sm:grid-cols-2">
           <MiniDataTable
@@ -4788,8 +5050,8 @@ function Adsp1ConceptDiagram({
         title={activeKey ? `${activeKey}가 맡은 일을 켜서 본다` : '회사 데이터 시스템은 맡은 일이 다르다'}
         caption={
           activeKey
-            ? `전체 지도는 그대로 두고, 지금 배우는 ${activeKey}만 밝게 표시했습니다. 약어보다 맡은 일을 먼저 보면 훨씬 덜 헷갈립니다.`
-            : '전체 지도를 먼저 보고, 다음 단계부터 DBMS, ERP, CRM처럼 하나씩 불이 켜지는 방식으로 익힙니다.'
+            ? `전체 지도는 그대로 두고, 지금 배우는 ${activeKey}만 밝게 표시했어. 약어보다 맡은 일을 먼저 보면 훨씬 덜 헷갈려.`
+            : '전체 지도를 먼저 보고, 다음 단계부터 DBMS, ERP, CRM처럼 하나씩 불이 켜지는 방식으로 익혀.'
         }
       >
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -4858,7 +5120,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="BIG DATA BACKGROUND"
         title="5가지 조건이 모여 빅데이터 시대가 됐다"
-        caption="처음에는 저장·병렬·인터넷·클라우드·IoT/모바일이 동시에 커졌다고 잡으면 됩니다. 대화를 넘길 때마다 지금 보는 조건만 켜집니다."
+        caption="처음에는 저장·병렬·인터넷·클라우드·IoT/모바일이 동시에 커졌다고 잡으면 돼. 대화를 넘길 때마다 지금 보는 조건만 켜져."
       >
         <div className="space-y-3">
           <div className="grid gap-2">
@@ -4952,8 +5214,8 @@ function Adsp1ConceptDiagram({
         title={activeKey ? `${activeKey}만 켜서 본다` : '빅데이터는 양·형태·속도가 동시에 커진다'}
         caption={
           activeKey
-            ? `전체 3V 지도는 그대로 두고, 지금 배우는 ${activeKey}만 밝게 표시했습니다. 보기에서 무엇을 강조하는지 먼저 잡으세요.`
-            : '3V는 Volume, Variety, Velocity입니다. 다음 단계부터 양, 형태, 속도가 하나씩 켜지며 구분됩니다.'
+            ? `전체 3V 지도는 그대로 두고, 지금 배우는 ${activeKey}만 밝게 표시했어. 보기에서 무엇을 강조하는지 먼저 잡아.`
+            : '3V는 Volume, Variety, Velocity야. 다음 단계부터 양, 형태, 속도가 하나씩 켜지며 구분돼.'
         }
       >
         <div className="grid gap-2 sm:grid-cols-3">
@@ -5012,39 +5274,71 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="DATA SCIENCE"
         title="데이터 사이언스는 분석·기술·비즈니스가 만나는 지점"
-        caption="통계학만으로 끝나는 게 아니라, 데이터를 다루는 기술과 실제 문제를 가치로 바꾸는 비즈니스 감각까지 함께 필요합니다."
+        caption="통계학만으로 끝나는 게 아니라, 데이터를 다루는 기술과 실제 문제를 가치로 바꾸는 비즈니스 감각까지 함께 필요해."
       >
         <div className="space-y-3">
-          <div className="grid grid-cols-3 gap-2">
-            <VisualPill label="Analytics" sub="데이터로 답 찾기" tone="cyan" />
-            <VisualPill label="IT" sub="데이터를 다루는 기술" tone="violet" />
-            <VisualPill label="Business" sub="문제와 의사결정" tone="lime" />
-          </div>
-          <div className="relative mx-auto h-[180px] max-w-[340px]">
-            <div className="absolute left-1/2 top-2 h-[118px] w-[118px] -translate-x-1/2 rounded-full border border-[#67e8f9]/28 bg-[#67e8f9]/10" />
-            <div className="absolute left-[20%] bottom-3 h-[118px] w-[118px] rounded-full border border-[#c084fc]/28 bg-[#c084fc]/10" />
-            <div className="absolute right-[20%] bottom-3 h-[118px] w-[118px] rounded-full border border-[#d1f843]/28 bg-[#d1f843]/10" />
-            <div className="absolute inset-x-0 top-[70px] mx-auto flex h-[70px] w-[170px] items-center justify-center rounded-[26px] border border-cream/18 bg-[#020b24]/78 px-4 text-center shadow-[0_14px_32px_rgba(0,0,0,0.24)]">
-              <div>
-                <div className="kr-num text-[9px] font-black uppercase tracking-[0.18em] text-[#d1f843]/78">
-                  INTERSECTION
+          <div className="grid gap-2">
+            {[
+              {
+                no: '1',
+                label: 'Analytics',
+                title: '데이터로 답을 찾는 힘',
+                sub: '통계 · 모델링 · 분석 기법',
+                tone: 'cyan' as VisualTone,
+              },
+              {
+                no: '2',
+                label: 'IT',
+                title: '데이터를 다루는 기술',
+                sub: '저장 · 처리 · 구현 · 시스템',
+                tone: 'violet' as VisualTone,
+              },
+              {
+                no: '3',
+                label: 'Business',
+                title: '문제와 의사결정 연결',
+                sub: '목표 설정 · 가치 판단 · 전달',
+                tone: 'lime' as VisualTone,
+              },
+            ].map((axis, index) => (
+              <motion.div
+                key={axis.label}
+                className={`rounded-[18px] border px-3 py-2.5 ${visualToneClass(axis.tone)}`}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.16, delay: index * 0.04 }}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-current/25 bg-black/18 kr-num text-[12px] font-black">
+                    {axis.no}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="kr-num text-[9px] font-black uppercase tracking-[0.16em] opacity-70">
+                      {axis.label}
+                    </div>
+                    <div className="kr-heading mt-0.5 text-[14px] leading-snug text-cream">
+                      {axis.title}
+                    </div>
+                    <div className="kr-body mt-1 text-[11px] font-bold leading-snug opacity-75">
+                      {axis.sub}
+                    </div>
+                  </div>
                 </div>
-                <div className="kr-heading mt-1 text-[19px] leading-tight text-cream">
-                  데이터 사이언스
-                </div>
-              </div>
+              </motion.div>
+            ))}
+          </div>
+          <div className="relative overflow-hidden rounded-[22px] border border-cream/14 bg-[#020b24]/72 p-4 text-center">
+            <div className="mx-auto mb-2 flex w-fit items-center gap-1.5 rounded-full border border-[#d1f843]/25 bg-[#d1f843]/10 px-3 py-1 kr-num text-[9px] font-black uppercase tracking-[0.14em] text-[#e8ff9d]">
+              AI 비
             </div>
-            <div className="absolute left-1/2 top-7 -translate-x-1/2 kr-heading text-[12px] text-[#dffbff]">
-              분석
+            <div className="kr-heading text-[20px] leading-tight text-cream">
+              데이터 사이언스
             </div>
-            <div className="absolute bottom-10 left-[25%] kr-heading text-[12px] text-[#eadcff]">
-              기술
-            </div>
-            <div className="absolute bottom-10 right-[19%] kr-heading text-[12px] text-[#e8ff9d]">
-              비즈니스
+            <div className="mx-auto mt-2 max-w-[280px] kr-body text-[12px] font-bold leading-relaxed text-cream/72">
+              분석만 잘해도 부족하고, 기술만 잘해도 부족해.
+              실제 문제를 가치로 바꿀 때 세 축이 만나는 거야.
             </div>
           </div>
-          <VisualPill label="AI 비" sub="Analytics · IT · Business" tone="amber" />
         </div>
       </LearningVisualFrame>
     );
@@ -5055,7 +5349,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="HARD / SOFT"
         title="Hard Skill은 도구를 다루는 힘, Soft Skill은 가치를 전하는 힘"
-        caption="SQL과 머신러닝을 잘해도 방향을 못 잡으면 가치가 작고, 통찰이 좋아도 구현할 기술이 없으면 결과로 이어지기 어렵습니다."
+        caption="SQL과 머신러닝을 잘해도 방향을 못 잡으면 가치가 작고, 통찰이 좋아도 구현할 기술이 없으면 결과로 이어지기 어려워."
       >
         <div className="grid gap-3 sm:grid-cols-2">
           <motion.div
@@ -5093,7 +5387,7 @@ function Adsp1ConceptDiagram({
         </div>
         <div className="mt-3 rounded-[18px] border border-cream/10 bg-white/[0.035] px-3 py-2.5 text-center">
           <div className="kr-body text-[11.5px] font-bold leading-[1.5] text-cream/66">
-            기억 포인트: Hard는 기술, Soft는 태도·관점·소통입니다.
+            기억 포인트: Hard는 기술, Soft는 태도·관점·소통이야.
           </div>
         </div>
       </LearningVisualFrame>
@@ -5141,8 +5435,8 @@ function Adsp1ConceptDiagram({
         }
         caption={
           activeKey
-            ? '전체 CAMERA 지도를 그대로 두고 지금 배우는 역량만 밝게 표시했습니다. Management는 6역량에 들어가지 않습니다.'
-            : 'C·A·M·E·R·A는 Communication, Analytics, Math, Engineering, Research, Art입니다. Management는 시험 함정입니다.'
+            ? '전체 CAMERA 지도를 그대로 두고 지금 배우는 역량만 밝게 표시했어. Management는 6역량에 들어가지 않아.'
+            : 'C·A·M·E·R·A는 Communication, Analytics, Math, Engineering, Research, Art야. Management는 시험 함정이야.'
         }
       >
         <div className="space-y-3">
@@ -5241,7 +5535,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="WHAT x HOW"
         title={activeKey ? '지금 보는 칸만 밝게 켠다' : '분석 유형은 2x2 사분면으로 나뉜다'}
-        caption="풀 것이 무엇인지 아는지, 푸는 방법을 아는지 두 축으로 먼저 보면 4유형이 바로 갈립니다."
+        caption="풀 것이 무엇인지 아는지, 푸는 방법을 아는지 두 축으로 먼저 보면 4유형이 바로 갈려."
       >
         <div className="rounded-[24px] border border-cream/12 bg-[#020b24]/44 p-2.5">
           <div className="mb-2 grid grid-cols-[78px_1fr_1fr] gap-1.5">
@@ -5315,7 +5609,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="KDD / CRISP-DM"
         title={isKdd ? 'KDD는 데이터에서 지식을 찾는 5단계' : isCrisp ? 'CRISP-DM은 업무 이해부터 전개까지 본다' : '분석 프로세스는 흐름을 먼저 잡는다'}
-        caption="KDD는 데이터 처리 흐름, CRISP-DM은 비즈니스 문제 해결 흐름에 가깝습니다. 시험에서는 단계 순서를 자주 묻습니다."
+        caption="KDD는 데이터 처리 흐름, CRISP-DM은 비즈니스 문제 해결 흐름에 가까워. 시험에서는 단계 순서를 자주 물어."
       >
         <div className="grid gap-3">
           <div className={`rounded-[20px] border p-3 ${isCrisp ? 'border-cream/8 bg-white/[0.025] text-cream/38' : visualToneClass('cyan')}`}>
@@ -5364,7 +5658,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="TOP-DOWN"
         title="하향식은 탐정해타 순서로 좁혀간다"
-        caption="큰 비즈니스 문제를 바로 모델로 풀지 않고, 후보를 찾고 정의한 뒤 해결방안과 타당성을 차례로 봅니다."
+        caption="큰 비즈니스 문제를 바로 모델로 풀지 않고, 후보를 찾고 정의한 뒤 해결방안과 타당성을 차례로 봐."
       >
         <div className="grid gap-2">
           {steps.map((item, index) => {
@@ -5416,7 +5710,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="METHODOLOGY"
         title="방법론은 프로젝트 상황에 맞춰 고른다"
-        caption="변경이 적으면 Waterfall, 피드백이 중요하면 Prototype/Agile, 위험이 크면 Spiral, 빠른 납기가 중요하면 RAD로 연결하세요."
+        caption="변경이 적으면 Waterfall, 피드백이 중요하면 Prototype/Agile, 위험이 크면 Spiral, 빠른 납기가 중요하면 RAD로 연결해."
       >
         <div className="grid gap-2 sm:grid-cols-2">
           {items.map((item, index) => {
@@ -5461,7 +5755,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="PRIORITY MATRIX"
         title="시급성과 난이도로 과제 순서를 정한다"
-        caption="시급하고 쉬운 과제는 빠른 성과, 시급하지만 어려운 과제는 투자·로드맵이 필요합니다."
+        caption="시급하고 쉬운 과제는 빠른 성과, 시급하지만 어려운 과제는 투자·로드맵이 필요해."
       >
         <div className="grid grid-cols-[42px_1fr_1fr] gap-2">
           <div />
@@ -5523,7 +5817,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="ANALYTICS GOVERNANCE"
         title="분석 거버넌스는 분석이 계속 굴러가게 하는 장치"
-        caption="시스템만 있어도 부족하고, 조직·프로세스·인력·데이터가 함께 있어야 분석이 회사 안에 자리 잡습니다."
+        caption="시스템만 있어도 부족하고, 조직·프로세스·인력·데이터가 함께 있어야 분석이 회사 안에 자리 잡아."
       >
         <div className="grid gap-2 sm:grid-cols-5">
           {items.map((item, index) => {
@@ -5569,7 +5863,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="MATURITY"
         title="분석 성숙도는 도활확최로 올라간다"
-        caption="개인 수준에서 시작해 부서 활용, 전사 확산, 최적화 단계로 갈수록 분석이 조직의 기본 운영 방식이 됩니다."
+        caption="개인 수준에서 시작해 부서 활용, 전사 확산, 최적화 단계로 갈수록 분석이 조직의 기본 운영 방식이 돼."
       >
         <div className="grid gap-2">
           {stages.map((stage, index) => {
@@ -5614,7 +5908,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="DATA GOVERNANCE"
         title="데이터 거버넌스는 데이터 관리의 원조프"
-        caption="분석 거버넌스가 분석 활동 전체라면, 데이터 거버넌스는 데이터 자체를 믿고 쓸 수 있게 관리하는 체계입니다."
+        caption="분석 거버넌스가 분석 활동 전체라면, 데이터 거버넌스는 데이터 자체를 믿고 쓸 수 있게 관리하는 체계야."
       >
         <div className="grid gap-2 sm:grid-cols-[1fr_22px_1fr_22px_1fr] sm:items-center">
           {items.map((item, index) => {
@@ -5656,7 +5950,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="FEASIBILITY"
         title="좋은 과제는 돈·기술·현장을 함께 통과한다"
-        caption="경제적, 기술적, 운영적 타당성은 분석 과제를 실제로 실행할 수 있는지 보는 3개 필터입니다."
+        caption="경제적, 기술적, 운영적 타당성은 분석 과제를 실제로 실행할 수 있는지 보는 3개 필터야."
       >
         <div className="grid gap-2 sm:grid-cols-3">
           {items.map((item, index) => {
@@ -5687,7 +5981,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="APPROACH MIX"
         title={stepId === 'adsp-2-3-s2' ? '상향식은 데이터에서 단서를 먼저 찾는다' : '디자인 씽킹은 하향식과 상향식을 왕복한다'}
-        caption="하향식은 문제에서 출발하고, 상향식은 데이터에서 단서를 찾습니다. 디자인 씽킹은 사용자의 문제와 데이터 단서를 오가며 과제를 다듬습니다."
+        caption="하향식은 문제에서 출발하고, 상향식은 데이터에서 단서를 찾아. 디자인 씽킹은 사용자의 문제와 데이터 단서를 오가며 과제를 다듬어."
       >
         <div className="grid gap-3">
           <div className="grid grid-cols-[1fr_28px_1fr] items-center gap-2">
@@ -5710,7 +6004,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="PROJECT BRIEF"
         title="분석 과제 정의서는 실행 전 약속 문서"
-        caption="무엇을 왜 분석하는지, 어떤 데이터와 기준으로 성공을 판단할지 적어두어야 팀이 같은 목표를 보고 움직입니다."
+        caption="무엇을 왜 분석하는지, 어떤 데이터와 기준으로 성공을 판단할지 적어두어야 팀이 같은 목표를 보고 움직이야."
       >
         <div className="rounded-[20px] border border-cream/10 bg-[#020b24]/62 p-3">
           <div className="grid grid-cols-2 gap-2">
@@ -5753,7 +6047,7 @@ function Adsp1ConceptDiagram({
       <LearningVisualFrame
         eyebrow="READINESS"
         title="분석 준비도는 업조기데문아이티로 확인한다"
-        caption="분석할 업무, 사람과 조직, 기법, 데이터, 문화, IT 인프라가 준비되어야 과제가 실제 실행으로 이어집니다."
+        caption="분석할 업무, 사람과 조직, 기법, 데이터, 문화, IT 인프라가 준비되어야 과제가 실제 실행으로 이어져."
       >
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {items.map((item, index) => {
@@ -5783,7 +6077,7 @@ function Adsp1ConceptDiagram({
     <LearningVisualFrame
       eyebrow="BIG DATA SHIFT"
       title="빅데이터 이후 분석의 기본값이 바뀐다"
-      caption="변화 후 상태만 모으면 전수조사, 사후처리, 양, 상관관계입니다. 그래서 전후양상으로 외우면 매칭 문제가 쉬워집니다."
+      caption="변화 후 상태만 모으면 전수조사, 사후처리, 양, 상관관계야. 그래서 전후양상으로 외우면 매칭 문제가 쉬워져."
     >
       <div className="space-y-2">
         {[
@@ -5870,7 +6164,7 @@ function Adsp3ConceptDiagram({
       <LearningVisualFrame
         eyebrow="VARIABLES"
         title="요약변수는 모아 보고, 파생변수는 계산해서 만든다"
-        caption="요약변수는 여러 기록을 합쳐 만든 값이고, 파생변수는 기존 변수로 새 의미를 계산한 값입니다. 둘 다 원본을 그대로 보는 것이 아니라 분석에 쓰기 좋게 가공한 값이에요."
+        caption="요약변수는 여러 기록을 합쳐 만든 값이고, 파생변수는 기존 변수로 새 의미를 계산한 값이야. 둘 다 원본을 그대로 보는 것이 아니라 분석에 쓰기 좋게 가공한 값이야."
       >
         <div className="grid gap-3 sm:grid-cols-[1fr_28px_1fr] sm:items-stretch">
           <div className="rounded-[20px] border border-[#67e8f9]/24 bg-[#67e8f9]/8 p-3">
@@ -5903,7 +6197,7 @@ function Adsp3ConceptDiagram({
               <VisualPill label="나이" sub="올해-생년" tone="lime" />
             </div>
             <div className="mt-2 kr-body text-[11px] font-bold leading-snug text-cream/58">
-              기존 값으로 새 의미를 계산합니다.
+              기존 값으로 새 의미를 계산해.
             </div>
           </div>
         </div>
@@ -5922,7 +6216,7 @@ function Adsp3ConceptDiagram({
       <LearningVisualFrame
         eyebrow="EDA 4R"
         title="EDA는 데이터를 먼저 관찰해 이상한 신호를 찾는다"
-        caption="저항성은 이상값에 흔들리지 않는 기준, 잔차해석은 남은 오차 보기, 재표현은 변환해서 보기, 현시성은 그림으로 드러내기입니다."
+        caption="저항성은 이상값에 흔들리지 않는 기준, 잔차해석은 남은 오차 보기, 재표현은 변환해서 보기, 현시성은 그림으로 드러내기야."
       >
         {renderCards(
           [
@@ -5948,7 +6242,7 @@ function Adsp3ConceptDiagram({
       <LearningVisualFrame
         eyebrow="MISSING VALUES"
         title="결측값은 버리거나, 채우거나, 모델로 예측한다"
-        caption="결측 처리 문제는 완전 제거, 단순 대치, 다중 대치, 모델 기반 중 어느 방식인지 구분하는 것이 핵심입니다."
+        caption="결측 처리 문제는 완전 제거, 단순 대치, 다중 대치, 모델 기반 중 어느 방식인지 구분하는 것이 핵심이야."
       >
         <div className="rounded-[18px] border border-cream/10 bg-[#020b24]/52 p-3">
           <MiniDataTable
@@ -5987,8 +6281,8 @@ function Adsp3ConceptDiagram({
     return (
       <LearningVisualFrame
         eyebrow="OUTLIER"
-        title="이상값은 튀는 값이지만 무조건 삭제 대상은 아니다"
-        caption="시험에서는 이상값 탐지 기준을 자주 묻습니다. 정규분포 가정이면 ESD/Z-Score, 사분위수 기준이면 IQR, 밀도 기준이면 DBSCAN을 떠올리면 좋아요."
+        title="이상값은 튀는 값이지만 무조건 삭제 대상은 아니야"
+        caption="시험에서는 이상값 탐지 기준을 자주 물어. 정규분포 가정이면 ESD/Z-Score, 사분위수 기준이면 IQR, 밀도 기준이면 DBSCAN을 떠올리면 좋아요."
       >
         <div className="mb-3 rounded-[18px] border border-cream/10 bg-[#020b24]/52 px-3 py-4">
           <div className="flex items-end gap-2">
@@ -5997,7 +6291,7 @@ function Adsp3ConceptDiagram({
             ))}
           </div>
           <div className="mt-2 kr-body text-center text-[11px] font-bold text-cream/48">
-            오른쪽처럼 혼자 크게 튀는 값이 이상값 후보입니다.
+            오른쪽처럼 혼자 크게 튀는 값이 이상값 후보야.
           </div>
         </div>
         {renderCards(
@@ -6024,7 +6318,7 @@ function Adsp3ConceptDiagram({
       <LearningVisualFrame
         eyebrow="R DATA STRUCTURES"
         title="R 자료구조는 담는 모양이 다르다"
-        caption="벡터는 한 줄, 리스트는 서로 다른 묶음, 매트릭스는 같은 타입의 표, 데이터프레임은 열마다 타입이 다른 표입니다."
+        caption="벡터는 한 줄, 리스트는 서로 다른 묶음, 매트릭스는 같은 타입의 표, 데이터프레임은 열마다 타입이 다른 표야."
       >
         {renderCards(
           [
@@ -6050,7 +6344,7 @@ function Adsp3ConceptDiagram({
       <LearningVisualFrame
         eyebrow="MEASUREMENT SCALE"
         title="척도는 숫자로 무엇까지 말할 수 있는지의 단계다"
-        caption="명목은 구분만, 서열은 순서까지, 등간은 간격까지, 비율은 진짜 0과 배수 비교까지 가능합니다."
+        caption="명목은 구분만, 서열은 순서까지, 등간은 간격까지, 비율은 진짜 0과 배수 비교까지 가능해."
       >
         {renderCards(
           [
@@ -6074,7 +6368,7 @@ function Adsp3ConceptDiagram({
       <LearningVisualFrame
         eyebrow="DISTRIBUTION"
         title="확률분포는 값이 나올 가능성을 그린 지도다"
-        caption="셀 수 있는 값은 이산형, 끊기지 않고 이어지는 값은 연속형입니다. 문제에서 주사위·불량품 개수는 이산, 키·시간·무게는 연속을 먼저 의심하세요."
+        caption="셀 수 있는 값은 이산형, 끊기지 않고 이어지는 값은 연속형이야. 문제에서 주사위·불량품 개수는 이산, 키·시간·무게는 연속을 먼저 의심해."
       >
         {renderCards(
           [
@@ -6099,7 +6393,7 @@ function Adsp3ConceptDiagram({
       <LearningVisualFrame
         eyebrow="GOOD ESTIMATOR"
         title="좋은 추정량은 정확하고, 흔들림이 작고, 정보 손실이 적다"
-        caption="불편성은 평균적으로 맞는 것, 효율성은 흔들림이 작은 것, 일치성은 표본이 커질수록 가까워지는 것, 충분성은 필요한 정보를 잘 담는 것입니다."
+        caption="불편성은 평균적으로 맞는 것, 효율성은 흔들림이 작은 것, 일치성은 표본이 커질수록 가까워지는 것, 충분성은 필요한 정보를 잘 담는 거야."
       >
         {renderCards(
           [
@@ -6119,7 +6413,7 @@ function Adsp3ConceptDiagram({
       <LearningVisualFrame
         eyebrow="CENTRAL LIMIT THEOREM"
         title="표본평균을 많이 모으면 종 모양에 가까워진다"
-        caption="원자료 분포가 완벽한 정규분포가 아니어도, 표본 크기가 충분히 크면 표본평균의 분포가 정규분포에 가까워진다는 아이디어입니다."
+        caption="원자료 분포가 완벽한 정규분포가 아니어도, 표본 크기가 충분히 크면 표본평균의 분포가 정규분포에 가까워진다는 아이디어야."
       >
         <div className="grid gap-2 sm:grid-cols-[1fr_22px_1fr_22px_1fr] sm:items-center">
           <VisualPill label="원자료" sub="들쭉날쭉" tone="muted" />
@@ -6139,8 +6433,8 @@ function Adsp3ConceptDiagram({
         title={mode === 'adsp3Pca' ? 'PCA는 정보가 큰 방향으로 축을 줄인다' : 'MDS는 거리 관계를 지도로 펼친다'}
         caption={
           mode === 'adsp3Pca'
-            ? 'PCA는 여러 변수를 분산이 큰 축으로 압축합니다. 변수 자체보다 정보 손실을 줄이며 차원을 낮추는 장면을 떠올리면 좋아요.'
-            : 'MDS는 대상들 사이의 거리를 최대한 보존하면서 2차원이나 3차원 지도 위에 배치하는 방법입니다.'
+            ? 'PCA는 여러 변수를 분산이 큰 축으로 압축해. 변수 자체보다 정보 손실을 줄이며 차원을 낮추는 장면을 떠올리면 좋아요.'
+            : 'MDS는 대상들 사이의 거리를 최대한 보존하면서 2차원이나 3차원 지도 위에 배치하는 방법이야.'
         }
       >
         <div className="grid gap-3 sm:grid-cols-[1fr_28px_1fr] sm:items-center">
@@ -6172,7 +6466,7 @@ function Adsp3ConceptDiagram({
       <LearningVisualFrame
         eyebrow="HYPOTHESIS TEST"
         title="가설검정은 기존 주장(H0)을 버릴지 판단하는 절차다"
-        caption="p-value가 유의수준보다 작으면 H0를 기각합니다. 단, p-value는 H0가 참일 확률이 아니라 관측 결과가 얼마나 드문지를 보는 값입니다."
+        caption="p-value가 유의수준보다 작으면 H0를 기각해. 단, p-value는 H0가 참일 확률이 아니라 관측 결과가 얼마나 드문지를 보는 값이야."
       >
         {renderCards(
           [
@@ -6199,7 +6493,7 @@ function Adsp3ConceptDiagram({
       <LearningVisualFrame
         eyebrow="T-TEST"
         title="t검정은 평균 차이를 어떤 비교 구조로 보는지가 핵심이다"
-        caption="집단 하나를 기준값과 비교하면 일표본, 같은 사람의 전후 비교는 대응표본, 서로 다른 두 집단 비교는 독립표본입니다."
+        caption="집단 하나를 기준값과 비교하면 일표본, 같은 사람의 전후 비교는 대응표본, 서로 다른 두 집단 비교는 독립표본이야."
       >
         {renderCards(
           [
@@ -6225,7 +6519,7 @@ function Adsp3ConceptDiagram({
       <LearningVisualFrame
         eyebrow="REGRESSION ASSUMPTIONS"
         title="회귀는 선·분·정·독이 무너지면 해석이 위험해진다"
-        caption="선형성, 등분산성, 정규성, 독립성은 회귀 결과를 믿어도 되는지 확인하는 기본 점검표입니다."
+        caption="선형성, 등분산성, 정규성, 독립성은 회귀 결과를 믿어도 되는지 확인하는 기본 점검표야."
       >
         {renderCards(
           [
@@ -6245,7 +6539,7 @@ function Adsp3ConceptDiagram({
       <LearningVisualFrame
         eyebrow="MULTICOLLINEARITY"
         title="설명변수끼리 너무 비슷하면 회귀가 흔들린다"
-        caption="다중공선성은 설명변수끼리 강하게 관련되어 계수 해석이 불안정해지는 문제입니다. VIF가 크면 의심합니다."
+        caption="다중공선성은 설명변수끼리 강하게 관련되어 계수 해석이 불안정해지는 문제야. VIF가 크면 의심해."
       >
         <div className="grid gap-3 sm:grid-cols-[1fr_28px_1fr] sm:items-center">
           <VisualPill label="키" sub="몸무게와 강한 관련" tone="cyan" />
@@ -6253,7 +6547,7 @@ function Adsp3ConceptDiagram({
           <VisualPill label="몸무게" sub="서로 비슷한 설명" tone="amber" />
         </div>
         <div className="mt-3 rounded-[16px] border border-[#ffb020]/20 bg-[#ffb020]/8 px-3 py-2 kr-body text-[11.5px] font-bold text-cream/66">
-          둘 다 넣으면 모델이 “누구 덕분인지” 헷갈릴 수 있습니다.
+          둘 다 넣으면 모델이 “누구 덕분인지” 헷갈릴 수 있어.
         </div>
       </LearningVisualFrame>
     );
@@ -6270,7 +6564,7 @@ function Adsp3ConceptDiagram({
       <LearningVisualFrame
         eyebrow="TIME SERIES"
         title="시계열은 추·계·순·불 네 성분으로 나눠 본다"
-        caption="추세는 장기 방향, 계절성은 고정 주기 반복, 순환은 주기가 일정하지 않은 등락, 불규칙은 설명하기 어려운 흔들림입니다."
+        caption="추세는 장기 방향, 계절성은 고정 주기 반복, 순환은 주기가 일정하지 않은 등락, 불규칙은 설명하기 어려운 흔들림이야."
       >
         {renderCards(
           [
@@ -6290,7 +6584,7 @@ function Adsp3ConceptDiagram({
       <LearningVisualFrame
         eyebrow="OVERFITTING"
         title="과적합은 연습문제만 외우고 새 문제를 못 푸는 상태다"
-        caption="훈련 데이터에는 너무 잘 맞지만 테스트 데이터에서 성능이 떨어지면 과적합을 의심합니다. 데이터 분할과 검증은 이 문제를 찾기 위한 장치예요."
+        caption="훈련 데이터에는 너무 잘 맞지만 테스트 데이터에서 성능이 떨어지면 과적합을 의심해. 데이터 분할과 검증은 이 문제를 찾기 위한 장치야."
       >
         <div className="grid gap-2 sm:grid-cols-3">
           <VisualPill label="Train" sub="공부한 문제" tone="cyan" />
@@ -6312,7 +6606,7 @@ function Adsp3ConceptDiagram({
       <LearningVisualFrame
         eyebrow="ENSEMBLE"
         title="앙상블은 여러 모델의 판단을 모아 더 안정적으로 예측한다"
-        caption="Voting은 여러 모델 투표, Bagging은 병렬 학습, Boosting은 순차 보완, Stacking은 예측 결과를 다시 모델에 넣는 방식입니다."
+        caption="Voting은 여러 모델 투표, Bagging은 병렬 학습, Boosting은 순차 보완, Stacking은 예측 결과를 다시 모델에 넣는 방식이야."
       >
         {renderCards(
           [
@@ -6337,7 +6631,7 @@ function Adsp3ConceptDiagram({
       <LearningVisualFrame
         eyebrow="ASSOCIATION RULE"
         title="연관분석은 함께 나타나는 규칙을 찾는다"
-        caption="지지도는 같이 나온 비율, 신뢰도는 A가 있을 때 B도 있는 비율, 향상도는 우연보다 얼마나 강한지를 봅니다."
+        caption="지지도는 같이 나온 비율, 신뢰도는 A가 있을 때 B도 있는 비율, 향상도는 우연보다 얼마나 강한지를 봐."
       >
         {renderCards(
           [
@@ -6363,7 +6657,7 @@ function Adsp3ConceptDiagram({
       <LearningVisualFrame
         eyebrow="CLUSTERING"
         title="군집은 정답 라벨 없이 비슷한 대상끼리 묶는다"
-        caption="계층적 군집은 트리, K-means는 중심점, DBSCAN은 밀도, EM/SOM은 확률이나 격자 관점으로 묶는다고 보면 됩니다."
+        caption="계층적 군집은 트리, K-means는 중심점, DBSCAN은 밀도, EM/SOM은 확률이나 격자 관점으로 묶는다고 보면 돼."
       >
         {renderCards(
           [
@@ -6389,7 +6683,7 @@ function Adsp3ConceptDiagram({
       <LearningVisualFrame
         eyebrow="MODEL METRICS"
         title="평가지표는 무엇을 더 중요하게 볼지 정하는 언어다"
-        caption="정확도는 전체 정답률, 정밀도는 맞다고 한 것의 신뢰도, 재현율은 놓치지 않는 능력, F1은 정밀도와 재현율의 균형입니다."
+        caption="정확도는 전체 정답률, 정밀도는 맞다고 한 것의 신뢰도, 재현율은 놓치지 않는 능력, F1은 정밀도와 재현율의 균형이야."
       >
         {renderCards(
           [
@@ -6408,7 +6702,7 @@ function Adsp3ConceptDiagram({
     adsp3Logistic: {
       eyebrow: 'LOGISTIC REGRESSION',
       title: '로지스틱 회귀는 확률을 S자 곡선으로 만든다',
-      caption: '결과가 합격/불합격처럼 두 범주일 때 확률을 예측합니다. odds, log-odds, sigmoid를 연결해서 보면 됩니다.',
+      caption: '결과가 합격/불합격처럼 두 범주일 때 확률을 예측해. odds, log-odds, sigmoid를 연결해서 보면 돼.',
       cards: [
         { key: 'x', label: '입력 변수', sub: '공부시간, 출석률', tone: 'cyan' },
         { key: 'sigmoid', label: 'Sigmoid', sub: '0~1 확률로 변환', tone: 'lime' },
@@ -6418,7 +6712,7 @@ function Adsp3ConceptDiagram({
     adsp3Tree: {
       eyebrow: 'DECISION TREE',
       title: '의사결정나무는 질문을 타고 내려가며 분류한다',
-      caption: '불순도가 줄어드는 질문을 골라 가지를 나눕니다. 너무 깊어지면 과적합이라 가지치기가 필요합니다.',
+      caption: '불순도가 줄어드는 질문을 골라 가지를 나눠. 너무 깊어지면 과적합이라 가지치기가 필요해.',
       cards: [
         { key: 'q1', label: '질문 1', sub: '공부시간 > 5?', tone: 'cyan' },
         { key: 'q2', label: '질문 2', sub: '기출 3회 이상?', tone: 'lime' },
@@ -6428,7 +6722,7 @@ function Adsp3ConceptDiagram({
     adsp3Knn: {
       eyebrow: 'K-NN',
       title: 'K-NN은 가까운 이웃 K개를 보고 판단한다',
-      caption: '거리 기반 모델이라 변수 스케일이 다르면 가까움 판단이 왜곡됩니다. 그래서 표준화가 중요합니다.',
+      caption: '거리 기반 모델이라 변수 스케일이 다르면 가까움 판단이 왜곡돼. 그래서 표준화가 중요해.',
       cards: [
         { key: 'new', label: '새 점', sub: '분류할 대상', tone: 'cyan' },
         { key: 'near', label: '가까운 K개', sub: '거리 계산', tone: 'lime' },
@@ -6438,7 +6732,7 @@ function Adsp3ConceptDiagram({
     adsp3NaiveBayes: {
       eyebrow: 'NAIVE BAYES',
       title: '나이브베이즈는 조건들이 독립이라고 단순화해 계산한다',
-      caption: '실제로 완전히 독립이 아니어도 빠르고 강력합니다. 텍스트 분류처럼 단어 출현 기반 문제에서 자주 등장합니다.',
+      caption: '실제로 완전히 독립이 아니어도 빠르고 강력해. 텍스트 분류처럼 단어 출현 기반 문제에서 자주 등장해.',
       cards: [
         { key: 'prior', label: '사전확률', sub: '원래 가능성', tone: 'cyan' },
         { key: 'likelihood', label: '우도', sub: '증거가 나올 가능성', tone: 'lime' },
@@ -6448,7 +6742,7 @@ function Adsp3ConceptDiagram({
     adsp3Svm: {
       eyebrow: 'SVM',
       title: 'SVM은 두 집단 사이의 가장 넓은 길을 찾는다',
-      caption: '마진을 최대화하는 경계선을 찾고, 선형으로 어렵다면 커널 트릭으로 더 높은 공간에서 나눕니다.',
+      caption: '마진을 최대화하는 경계선을 찾고, 선형으로 어렵다면 커널 트릭으로 더 높은 공간에서 나눠.',
       cards: [
         { key: 'margin', label: 'Margin', sub: '경계와 점 사이 거리', tone: 'cyan' },
         { key: 'support', label: 'Support Vector', sub: '경계를 정하는 점', tone: 'lime' },
@@ -6458,7 +6752,7 @@ function Adsp3ConceptDiagram({
     adsp3Neural: {
       eyebrow: 'NEURAL NETWORK',
       title: '신경망은 층을 지나며 특징을 조합한다',
-      caption: '입력층, 은닉층, 출력층을 지나며 가중치를 학습합니다. CNN, RNN, AutoEncoder 같은 구조는 어디에 강한지 구분하면 됩니다.',
+      caption: '입력층, 은닉층, 출력층을 지나며 가중치를 학습해. CNN, RNN, AutoEncoder 같은 구조는 어디에 강한지 구분하면 돼.',
       cards: [
         { key: 'input', label: '입력층', sub: '데이터 입력', tone: 'cyan' },
         { key: 'hidden', label: '은닉층', sub: '특징 조합', tone: 'lime' },
@@ -6497,29 +6791,64 @@ function Adsp3ConceptDiagram({
 type Sqld2BasicsDiagramMode =
   | 'commands'
   | 'algebra'
-  | 'execution'
+  | 'executionOverview'
+  | 'executionFrom'
+  | 'executionWhere'
+  | 'executionGroupBy'
+  | 'executionHaving'
+  | 'executionSelect'
+  | 'executionOrderBy'
+  | 'executionSummary'
   | 'aliasDistinct'
   | 'stringFunctions'
   | 'numberDateFunctions'
   | 'aggregateFunctions'
-  | 'nullFunctions'
+  | 'nullNvl'
+  | 'nullNvl2'
+  | 'nullNullif'
+  | 'nullCoalesce'
   | 'caseDecode'
   | 'where'
   | 'groupHaving'
   | 'orderBy';
 
+type SqlExecutionDiagramMode = Extract<
+  Sqld2BasicsDiagramMode,
+  | 'executionOverview'
+  | 'executionFrom'
+  | 'executionWhere'
+  | 'executionGroupBy'
+  | 'executionHaving'
+  | 'executionSelect'
+  | 'executionOrderBy'
+  | 'executionSummary'
+>;
+
+type NullFunctionDiagramMode = Extract<
+  Sqld2BasicsDiagramMode,
+  'nullNvl' | 'nullNvl2' | 'nullNullif' | 'nullCoalesce'
+>;
+
 type Sqld2UsageDiagramMode =
-  | 'joinKinds'
+  | 'joinIntro'
+  | 'joinKey'
+  | 'joinInner'
+  | 'joinLeft'
+  | 'joinOuter'
+  | 'joinSummary'
   | 'joinSyntax'
   | 'crossSelf'
   | 'subquery'
   | 'multirow'
   | 'setOps'
-  | 'groupExtension'
+  | 'rollup'
+  | 'cube'
+  | 'grouping'
   | 'windowRank'
   | 'windowAggregate'
   | 'lagLeadFrame'
   | 'topN'
+  | 'pivotUnpivot'
   | 'regex';
 
 type Sqld2ManagementDiagramMode =
@@ -6574,13 +6903,395 @@ function SqlPipeline({
   );
 }
 
+function SqlExecutionOrderDiagram({ mode }: { mode: SqlExecutionDiagramMode }) {
+  const clauses: Array<{
+    key: 'FROM' | 'WHERE' | 'GROUP BY' | 'HAVING' | 'SELECT' | 'ORDER BY';
+    no: string;
+    letter: string;
+    label: string;
+    sub: string;
+    tone: VisualTone;
+  }> = [
+    { key: 'FROM', no: '1', letter: 'F', label: 'FROM', sub: '대상 테이블', tone: 'cyan' },
+    { key: 'WHERE', no: '2', letter: 'W', label: 'WHERE', sub: '행 필터', tone: 'lime' },
+    { key: 'GROUP BY', no: '3', letter: 'G', label: 'GROUP BY', sub: '부서별 묶기', tone: 'violet' },
+    { key: 'HAVING', no: '4', letter: 'H', label: 'HAVING', sub: '그룹 조건', tone: 'amber' },
+    { key: 'SELECT', no: '5', letter: 'S', label: 'SELECT', sub: '결과 열 만들기', tone: 'cyan' },
+    { key: 'ORDER BY', no: '6', letter: 'O', label: 'ORDER BY', sub: '마지막 정렬', tone: 'lime' },
+  ];
+  const activeByMode: Partial<Record<SqlExecutionDiagramMode, (typeof clauses)[number]['key']>> = {
+    executionFrom: 'FROM',
+    executionWhere: 'WHERE',
+    executionGroupBy: 'GROUP BY',
+    executionHaving: 'HAVING',
+    executionSelect: 'SELECT',
+    executionOrderBy: 'ORDER BY',
+  };
+  const active = activeByMode[mode] ?? null;
+  const isOverview = mode === 'executionOverview';
+  const isSummary = mode === 'executionSummary';
+  const title =
+    active === 'FROM'
+      ? '1. FROM — 어느 테이블에서 시작할까?'
+      : active === 'WHERE'
+        ? '2. WHERE — 어떤 행만 남길까?'
+        : active === 'GROUP BY'
+          ? '3. GROUP BY — 무엇별로 묶을까?'
+          : active === 'HAVING'
+            ? '4. HAVING — 어떤 그룹만 남길까?'
+            : active === 'SELECT'
+              ? '5. SELECT — 무엇을 보여줄까?'
+              : active === 'ORDER BY'
+                ? '6. ORDER BY — 어떤 순서로 보여줄까?'
+                : '프웨그하셀오를 먼저 잡자';
+  const caption =
+    active === 'FROM'
+      ? 'FROM EMP는 EMP 직원 테이블을 대상으로 SQL을 시작한다는 뜻이야.'
+      : active === 'WHERE'
+        ? 'WHERE는 행 단위 조건이야. 여기서는 2020년 이후 입사한 직원 행만 남겨.'
+        : active === 'GROUP BY'
+          ? 'GROUP BY DEPT는 남은 직원 행을 부서별 묶음으로 바꿔.'
+          : active === 'HAVING'
+            ? 'HAVING은 묶인 그룹 조건이야. 평균 급여가 5000 이상인 부서만 남겨.'
+            : active === 'SELECT'
+              ? 'SELECT는 최종 결과에 보여줄 컬럼과 계산값을 만들어. 별칭 AVG_SAL도 여기서 생길어.'
+              : active === 'ORDER BY'
+                ? 'ORDER BY는 마지막 정렬이야. SELECT에서 만든 AVG_SAL 별칭을 사용할 수 있어.'
+                : '작성은 SELECT부터 보이지만, 논리 처리 흐름은 FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY야.';
+  const sqlLines: Array<{ key: (typeof clauses)[number]['key']; text: string }> = [
+    { key: 'SELECT', text: 'SELECT DEPT, AVG(SAL) AS AVG_SAL' },
+    { key: 'FROM', text: 'FROM EMP' },
+    { key: 'WHERE', text: 'WHERE JOIN_YEAR >= 2020' },
+    { key: 'GROUP BY', text: 'GROUP BY DEPT' },
+    { key: 'HAVING', text: 'HAVING AVG(SAL) >= 5000' },
+    { key: 'ORDER BY', text: 'ORDER BY AVG_SAL DESC;' },
+  ];
+
+  const renderOrderRail = () => (
+    <div className="relative">
+      <span
+        aria-hidden
+        className="absolute left-[18px] top-5 bottom-5 w-px bg-gradient-to-b from-[#67e8f9]/20 via-[#c084fc]/25 to-[#d1f843]/18"
+      />
+      <div className="flex flex-col gap-2">
+        {clauses.map((clause) => {
+          const isActive = active === clause.key || isOverview || isSummary;
+          return (
+            <div key={clause.key} className="relative grid grid-cols-[40px_minmax(0,1fr)] gap-2.5">
+              <div
+                className={
+                  'relative z-10 flex h-9 w-9 items-center justify-center rounded-full border shadow-[0_0_0_3px_#02091f] ' +
+                  (isActive
+                    ? 'border-[#67e8f9]/30 bg-[#0b244b]'
+                    : 'border-cream/10 bg-[#06122d]')
+                }
+              >
+                <span className="kr-num text-[12px] font-black text-cream">
+                  {clause.no}
+                </span>
+              </div>
+              <div
+                className={
+                  'rounded-[16px] border px-3 py-2 ' +
+                  (isActive ? visualToneClass(clause.tone) : visualToneClass('muted'))
+                }
+              >
+                <div className="flex items-center gap-2">
+                  <span className="kr-num inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-current/20 bg-black/18 text-[11px] font-black">
+                    {clause.letter}
+                  </span>
+                  <div className="min-w-0">
+                    <div className="kr-heading text-[13px] leading-tight">
+                      {clause.label}
+                    </div>
+                    <div className="kr-body mt-0.5 text-[10.5px] font-bold leading-snug opacity-74">
+                      {clause.sub}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  const renderSqlCode = () => (
+    <div className="rounded-[18px] border border-cream/10 bg-[#02091f]/82 p-2.5">
+      <div className="mb-2 kr-num text-[9px] font-black uppercase tracking-[0.14em] text-cream/38">
+        작성한 SQL
+      </div>
+      <div className="grid gap-1.5">
+        {sqlLines.map((line, index) => {
+          const isActive = active === line.key;
+          return (
+            <div
+              key={line.key}
+              className={
+                'rounded-[11px] border px-2.5 py-1.5 font-mono text-[10.5px] font-bold leading-snug transition ' +
+                (isActive
+                  ? 'border-[#d1f843]/38 bg-[#d1f843]/12 text-[#edffac]'
+                  : 'border-white/6 bg-white/[0.025] text-cream/44')
+              }
+            >
+              <span className="mr-2 text-cream/30">{index + 1}</span>
+              {line.text}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  const renderStepBody = () => {
+    if (isOverview) return renderOrderRail();
+    if (isSummary) {
+      return (
+        <div className="grid gap-3">
+          {renderOrderRail()}
+          <MiniDataTable
+            title="최종 결과"
+            columns={['DEPT', 'AVG_SAL']}
+            rows={[
+              ['개발', '6200'],
+              ['영업', '5400'],
+            ]}
+            highlight={(_, column) => (column === 1 ? 'lime' : null)}
+          />
+        </div>
+      );
+    }
+
+    return (
+      <div className="grid gap-3">
+        {renderSqlCode()}
+        {active === 'FROM' ? (
+          <MiniDataTable
+            title="EMP 테이블"
+            columns={['DEPT', 'SAL', 'JOIN_YEAR']}
+            rows={[
+              ['개발', '6200', '2022'],
+              ['영업', '5400', '2021'],
+              ['디자인', '4800', '2022'],
+              ['지원', '4300', '2019'],
+            ]}
+            highlight={() => 'cyan'}
+          />
+        ) : null}
+        {active === 'WHERE' ? (
+          <MiniDataTable
+            title="WHERE JOIN_YEAR >= 2020"
+            columns={['DEPT', 'JOIN_YEAR', '결과']}
+            rows={[
+              ['개발', '2022', '남김'],
+              ['영업', '2021', '남김'],
+              ['디자인', '2022', '남김'],
+              ['지원', '2019', '제외'],
+            ]}
+            highlight={(_, column, value) =>
+              column === 2 ? (value === '제외' ? 'red' : 'lime') : null
+            }
+          />
+        ) : null}
+        {active === 'GROUP BY' ? (
+          <MiniDataTable
+            title="GROUP BY DEPT"
+            columns={['묶음', '계산 준비']}
+            rows={[
+              ['개발', 'AVG(SAL)'],
+              ['영업', 'AVG(SAL)'],
+              ['디자인', 'AVG(SAL)'],
+            ]}
+            highlight={(_, column) => (column === 0 ? 'violet' : 'cyan')}
+          />
+        ) : null}
+        {active === 'HAVING' ? (
+          <MiniDataTable
+            title="HAVING AVG(SAL) >= 5000"
+            columns={['DEPT', 'AVG(SAL)', '결과']}
+            rows={[
+              ['개발', '6200', '남김'],
+              ['영업', '5400', '남김'],
+              ['디자인', '4800', '제외'],
+            ]}
+            highlight={(_, column, value) =>
+              column === 2 ? (value === '제외' ? 'red' : 'lime') : column === 1 ? 'amber' : null
+            }
+          />
+        ) : null}
+        {active === 'SELECT' ? (
+          <MiniDataTable
+            title="SELECT DEPT, AVG(SAL) AS AVG_SAL"
+            columns={['표현식', '결과 이름']}
+            rows={[
+              ['DEPT', 'DEPT'],
+              ['AVG(SAL)', 'AVG_SAL'],
+            ]}
+            highlight={(_, column) => (column === 1 ? 'lime' : null)}
+          />
+        ) : null}
+        {active === 'ORDER BY' ? (
+          <MiniDataTable
+            title="ORDER BY AVG_SAL DESC"
+            columns={['순서', 'DEPT', 'AVG_SAL']}
+            rows={[
+              ['1', '개발', '6200'],
+              ['2', '영업', '5400'],
+            ]}
+            highlight={(_, column) => (column === 2 ? 'lime' : column === 0 ? 'cyan' : null)}
+          />
+        ) : null}
+      </div>
+    );
+  };
+
+  return (
+    <LearningVisualFrame eyebrow="FWGHSO" title={title} caption={caption}>
+      <div className="rounded-[20px] border border-cream/10 bg-[#02091f]/70 p-3">
+        {renderStepBody()}
+      </div>
+    </LearningVisualFrame>
+  );
+}
+
+function NullFunctionSqlDiagram({ mode }: { mode: NullFunctionDiagramMode }) {
+  const configs: Record<
+    NullFunctionDiagramMode,
+    {
+      title: string;
+      caption: string;
+      sqlTitle: string;
+      sql: string[];
+      tableTitle: string;
+      columns: string[];
+      rows: string[][];
+      note: string;
+      highlight: (rowIndex: number, columnIndex: number, value: string) => VisualTone | null;
+    }
+  > = {
+    nullNvl: {
+      title: 'NVL — NULL이면 대신 보여준다',
+      caption:
+        'Oracle 기준 NVL(컬럼, 대체값)은 컬럼이 NULL일 때만 대체값을 보여주고, 값이 있으면 원래 값을 그대로 보여줘.',
+      sqlTitle: 'Oracle SQL',
+      sql: [
+        "SELECT 이름,",
+        "       NVL(전화번호, '미등록') AS 연락처",
+        'FROM 학생;',
+      ],
+      tableTitle: '결과 읽기',
+      columns: ['이름', '전화번호', '연락처'],
+      rows: [
+        ['민지', '010-1111', '010-1111'],
+        ['준호', 'NULL', '미등록'],
+      ],
+      note: '준호의 전화번호가 NULL이라 NVL이 대체값인 “미등록”을 보여줘.',
+      highlight: (_, column, value) => (value === 'NULL' ? 'amber' : column === 2 ? 'lime' : null),
+    },
+    nullNvl2: {
+      title: 'NVL2 — 있으면 A, 없으면 B',
+      caption:
+        'Oracle 기준 NVL2(컬럼, 값이 있을 때, NULL일 때)는 NULL 여부에 따라 결과를 둘로 나눠.',
+      sqlTitle: 'Oracle SQL',
+      sql: [
+        'SELECT 이름,',
+        "       NVL2(보너스, '있음', '없음') AS 보너스여부",
+        'FROM 사원;',
+      ],
+      tableTitle: '결과 읽기',
+      columns: ['이름', '보너스', '보너스여부'],
+      rows: [
+        ['도현', '300', '있음'],
+        ['토리', 'NULL', '없음'],
+      ],
+      note: '보너스 값이 있으면 “있음”, NULL이면 “없음”으로 갈라져.',
+      highlight: (_, column, value) =>
+        value === 'NULL' ? 'amber' : column === 2 ? (value === '있음' ? 'lime' : 'cyan') : null,
+    },
+    nullNullif: {
+      title: 'NULLIF — 같으면 NULL',
+      caption:
+        '표준 SQL 기준 NULLIF(a, b)는 a와 b가 같으면 NULL, 다르면 첫 번째 값 a를 반환해.',
+      sqlTitle: 'Standard SQL',
+      sql: [
+        'SELECT 이름,',
+        '       점수 / NULLIF(시도횟수, 0) AS 평균점수',
+        'FROM 풀이기록;',
+      ],
+      tableTitle: '결과 읽기',
+      columns: ['이름', '시도횟수', 'NULLIF', '평균점수'],
+      rows: [
+        ['민지', '5', '5', '20'],
+        ['준호', '0', 'NULL', 'NULL'],
+      ],
+      note: '시도횟수가 0이면 NULLIF(0, 0)이 NULL이 되어 0으로 나누는 오류를 피해.',
+      highlight: (_, column, value) =>
+        value === 'NULL' ? 'amber' : column >= 2 ? 'lime' : null,
+    },
+    nullCoalesce: {
+      title: 'COALESCE — 첫 번째 NOT NULL',
+      caption:
+        '표준 SQL 기준 COALESCE(a, b, c, ...)는 왼쪽부터 보면서 처음으로 NULL이 아닌 값을 반환해.',
+      sqlTitle: 'Standard SQL',
+      sql: [
+        'SELECT 이름,',
+        "       COALESCE(휴대폰, 집전화, 이메일, '연락처 없음') AS 대표연락처",
+        'FROM 회원;',
+      ],
+      tableTitle: '결과 읽기',
+      columns: ['이름', '휴대폰', '집전화', '이메일', '대표연락처'],
+      rows: [
+        ['민지', '010', '02', 'min@example.com', '010'],
+        ['준호', 'NULL', '02', 'jun@example.com', '02'],
+        ['토리', 'NULL', 'NULL', 'tori@example.com', 'tori@example.com'],
+      ],
+      note: '앞쪽 값이 NULL이면 다음 후보로 넘어가고, 처음 만난 NOT NULL 값을 보여줘.',
+      highlight: (_, column, value) =>
+        value === 'NULL' ? 'amber' : column === 4 ? 'lime' : null,
+    },
+  };
+  const config = configs[mode];
+
+  return (
+    <LearningVisualFrame eyebrow="NULL FUNCTIONS" title={config.title} caption={config.caption}>
+      <div className="grid gap-3">
+        <div className="rounded-[18px] border border-cream/10 bg-[#02091f]/82 p-3">
+          <div className="mb-2 kr-num text-[9px] font-black uppercase tracking-[0.14em] text-cream/38">
+            {config.sqlTitle}
+          </div>
+          <div className="grid gap-1.5">
+            {config.sql.map((line, index) => (
+              <div
+                key={`${mode}-${index}`}
+                className="rounded-[11px] border border-white/6 bg-white/[0.025] px-2.5 py-1.5 font-mono text-[10.5px] font-bold leading-snug text-cream/74"
+              >
+                {line}
+              </div>
+            ))}
+          </div>
+        </div>
+        <MiniDataTable
+          title={config.tableTitle}
+          columns={config.columns}
+          rows={config.rows}
+          highlight={config.highlight}
+        />
+        <div className="rounded-[16px] border border-cream/10 bg-white/[0.035] px-3 py-2.5 kr-body text-[12px] font-bold leading-relaxed text-cream/78">
+          {config.note}
+        </div>
+      </div>
+    </LearningVisualFrame>
+  );
+}
+
 function Sqld2BasicsDiagram({ mode }: { mode: Sqld2BasicsDiagramMode }) {
   if (mode === 'commands') {
     return (
       <LearningVisualFrame
         eyebrow="SQL COMMANDS"
         title="명령어는 역할로 먼저 나눈다"
-        caption="SQLD에서는 명령어 이름을 외우기 전에 구조·데이터·권한·트랜잭션 중 무엇을 다루는지부터 잡으면 덜 헷갈립니다."
+        caption="SQLD에서는 명령어 이름을 외우기 전에 구조·데이터·권한·트랜잭션 중 무엇을 다루는지부터 잡으면 덜 헷갈려."
       >
         <VisualPillGrid
           columns="grid-cols-2"
@@ -6600,7 +7311,7 @@ function Sqld2BasicsDiagram({ mode }: { mode: Sqld2BasicsDiagramMode }) {
       <LearningVisualFrame
         eyebrow="RELATIONAL ALGEBRA"
         title="기호를 SQL 절로 바꿔 읽기"
-        caption="σ는 행 조건이라 WHERE, π는 열 선택이라 SELECT, ⨝는 테이블 결합이라 JOIN과 연결하면 됩니다."
+        caption="σ는 행 조건이라 WHERE, π는 열 선택이라 SELECT, ⨝는 테이블 결합이라 JOIN과 연결하면 돼."
       >
         <VisualPillGrid
           columns="grid-cols-3"
@@ -6614,27 +7325,8 @@ function Sqld2BasicsDiagram({ mode }: { mode: Sqld2BasicsDiagramMode }) {
     );
   }
 
-  if (mode === 'execution') {
-    return (
-      <LearningVisualFrame
-        eyebrow="FWGHSO"
-        title="SQL은 FROM부터 처리된다"
-        caption="작성은 SELECT부터 해도 논리 처리는 FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY 순서입니다."
-      >
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-          {[
-            ['FROM', '대상 표', 'cyan'],
-            ['WHERE', '행 필터', 'lime'],
-            ['GROUP BY', '묶기', 'violet'],
-            ['HAVING', '그룹 필터', 'amber'],
-            ['SELECT', '열 선택', 'cyan'],
-            ['ORDER BY', '정렬', 'lime'],
-          ].map(([label, sub, tone]) => (
-            <VisualPill key={label} label={label} sub={sub} tone={tone as VisualTone} />
-          ))}
-        </div>
-      </LearningVisualFrame>
-    );
+  if (mode.startsWith('execution')) {
+    return <SqlExecutionOrderDiagram mode={mode as SqlExecutionDiagramMode} />;
   }
 
   if (mode === 'aliasDistinct') {
@@ -6642,7 +7334,7 @@ function Sqld2BasicsDiagram({ mode }: { mode: Sqld2BasicsDiagramMode }) {
       <LearningVisualFrame
         eyebrow="ALIAS · DISTINCT"
         title="이름 붙이고, 중복 줄이기"
-        caption="ALIAS는 결과 이름을 읽기 쉽게 만들고, DISTINCT는 선택한 컬럼 조합이 같은 행을 하나로 줄입니다."
+        caption="ALIAS는 결과 이름을 읽기 쉽게 만들고, DISTINCT는 선택한 컬럼 조합이 같은 행을 하나로 줄이야."
       >
         <div className="grid gap-3 sm:grid-cols-2">
           <MiniDataTable
@@ -6667,7 +7359,7 @@ function Sqld2BasicsDiagram({ mode }: { mode: Sqld2BasicsDiagramMode }) {
       <LearningVisualFrame
         eyebrow="STRING FUNCTIONS"
         title="문자 함수는 글자를 자르고 찾고 바꾼다"
-        caption="Oracle 기준 SUBSTR은 1부터 위치를 세고, INSTR은 찾은 글자의 위치를 반환합니다."
+        caption="Oracle 기준 SUBSTR은 1부터 위치를 세고, INSTR은 찾은 글자의 위치를 반환해."
       >
         <SqlPipeline
           steps={[
@@ -6685,7 +7377,7 @@ function Sqld2BasicsDiagram({ mode }: { mode: Sqld2BasicsDiagramMode }) {
       <LearningVisualFrame
         eyebrow="NUMBER · DATE"
         title="숫자는 반올림/버림, 날짜는 차이와 변환"
-        caption="ROUND는 반올림, TRUNC는 버림입니다. 날짜/문자 변환은 TO_CHAR, TO_DATE 같은 형식 모델을 함께 봅니다."
+        caption="ROUND는 반올림, TRUNC는 버림이야. 날짜/문자 변환은 TO_CHAR, TO_DATE 같은 형식 모델을 함께 봐."
       >
         <VisualPillGrid
           columns="grid-cols-2"
@@ -6705,7 +7397,7 @@ function Sqld2BasicsDiagram({ mode }: { mode: Sqld2BasicsDiagramMode }) {
       <LearningVisualFrame
         eyebrow="AGGREGATE"
         title="집계함수는 여러 행을 하나로 요약"
-        caption="COUNT(*)는 행 자체를 세고, COUNT(컬럼)·SUM·AVG는 NULL 값을 제외하고 계산합니다."
+        caption="COUNT(*)는 행 자체를 세고, COUNT(컬럼)·SUM·AVG는 NULL 값을 제외하고 계산해."
       >
         <MiniDataTable
           title="점수"
@@ -6717,24 +7409,13 @@ function Sqld2BasicsDiagram({ mode }: { mode: Sqld2BasicsDiagramMode }) {
     );
   }
 
-  if (mode === 'nullFunctions') {
-    return (
-      <LearningVisualFrame
-        eyebrow="NULL FUNCTIONS"
-        title="NULL을 다른 값으로 바꾸거나 비교"
-        caption="NVL은 NULL일 때 대체값, COALESCE는 첫 NOT NULL, NULLIF는 두 값이 같으면 NULL을 반환합니다."
-      >
-        <VisualPillGrid
-          columns="grid-cols-2"
-          items={[
-            { label: 'NVL(NULL, 0)', sub: '0', tone: 'lime' },
-            { label: 'COALESCE(NULL, A)', sub: 'A', tone: 'cyan' },
-            { label: 'NULLIF(100,100)', sub: 'NULL', tone: 'amber' },
-            { label: 'NULLIF(100,90)', sub: '100', tone: 'violet' },
-          ]}
-        />
-      </LearningVisualFrame>
-    );
+  if (
+    mode === 'nullNvl' ||
+    mode === 'nullNvl2' ||
+    mode === 'nullNullif' ||
+    mode === 'nullCoalesce'
+  ) {
+    return <NullFunctionSqlDiagram mode={mode} />;
   }
 
   if (mode === 'caseDecode') {
@@ -6742,7 +7423,7 @@ function Sqld2BasicsDiagram({ mode }: { mode: Sqld2BasicsDiagramMode }) {
       <LearningVisualFrame
         eyebrow="CASE · DECODE"
         title="조건에 따라 다른 값을 반환"
-        caption="CASE는 표준 SQL 조건 분기이고, DECODE는 Oracle에서 자주 보는 값 비교 함수입니다."
+        caption="CASE는 표준 SQL 조건 분기이고, DECODE는 Oracle에서 자주 보는 값 비교 함수야."
       >
         <SqlPipeline
           steps={[
@@ -6760,7 +7441,7 @@ function Sqld2BasicsDiagram({ mode }: { mode: Sqld2BasicsDiagramMode }) {
       <LearningVisualFrame
         eyebrow="WHERE"
         title="WHERE는 행을 먼저 걸러낸다"
-        caption="WHERE는 GROUP BY보다 먼저 실행되므로 행 단위 조건에는 좋지만, 집계 결과 조건에는 사용할 수 없습니다."
+        caption="WHERE는 GROUP BY보다 먼저 실행되므로 행 단위 조건에는 좋지만, 집계 결과 조건에는 사용할 수 없어."
       >
         <MiniDataTable
           title="EMP WHERE SAL >= 3000"
@@ -6777,7 +7458,7 @@ function Sqld2BasicsDiagram({ mode }: { mode: Sqld2BasicsDiagramMode }) {
       <LearningVisualFrame
         eyebrow="GROUP BY · HAVING"
         title="묶은 뒤 조건은 HAVING"
-        caption="WHERE는 행 조건, HAVING은 그룹으로 묶은 뒤 계산된 SUM/AVG 같은 집계 조건입니다."
+        caption="WHERE는 행 조건, HAVING은 그룹으로 묶은 뒤 계산된 SUM/AVG 같은 집계 조건이야."
       >
         <SqlPipeline
           steps={[
@@ -6794,7 +7475,7 @@ function Sqld2BasicsDiagram({ mode }: { mode: Sqld2BasicsDiagramMode }) {
     <LearningVisualFrame
       eyebrow="ORDER BY"
       title="마지막에 정렬한다"
-      caption="ORDER BY는 SELECT 뒤에 실행되므로 별칭을 쓸 수 있습니다. Oracle ASC 기준 NULL은 뒤쪽으로 갑니다."
+      caption="ORDER BY는 SELECT 뒤에 실행되므로 별칭을 쓸 수 있어. Oracle ASC 기준 NULL은 뒤쪽으로 가."
     >
       <div className="grid grid-cols-4 gap-1.5">
         <VisualPill label="A" sub="10" tone="cyan" />
@@ -6807,20 +7488,175 @@ function Sqld2BasicsDiagram({ mode }: { mode: Sqld2BasicsDiagramMode }) {
 }
 
 function Sqld2UsageDiagram({ mode }: { mode: Sqld2UsageDiagramMode }) {
-  if (mode === 'joinKinds') {
+  if (mode === 'joinIntro') {
     return (
       <LearningVisualFrame
         eyebrow="JOIN"
-        title="JOIN은 두 표의 행을 맞춰 붙인다"
-        caption="INNER는 매칭된 행만, OUTER는 한쪽 또는 양쪽의 안 맞는 행까지 보존합니다."
+        title="흩어진 정보를 한 결과표로 붙인다"
+        caption="사원 표에는 부서ID만 있고, 부서 표에는 부서명이 따로 있을 수 있어. JOIN은 같은 부서ID를 기준으로 두 표를 붙여."
+      >
+        <div className="grid gap-3">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <MiniDataTable
+              title="사원"
+              columns={['이름', '부서ID']}
+              rows={[
+                ['민지', '10'],
+                ['준호', '20'],
+              ]}
+              highlight={(_, column) => (column === 1 ? 'cyan' : null)}
+            />
+            <MiniDataTable
+              title="부서"
+              columns={['부서ID', '부서명']}
+              rows={[
+                ['10', '개발팀'],
+                ['20', '영업팀'],
+              ]}
+              highlight={(_, column) => (column === 0 ? 'cyan' : 'lime')}
+            />
+          </div>
+          <SqlPipeline
+            steps={[
+              { label: '사원.부서ID', sub: '10, 20', tone: 'cyan' },
+              { label: '같은 값끼리 연결', sub: 'JOIN 조건', tone: 'violet' },
+              { label: '이름 + 부서명', sub: '결과표', tone: 'lime' },
+            ]}
+          />
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'joinKey') {
+    return (
+      <LearningVisualFrame
+        eyebrow="JOIN KEY"
+        title="같은 값끼리 붙이는 약속이야"
+        caption="ON E.부서ID = D.부서ID는 사원 표와 부서 표에서 부서ID가 같은 행끼리 붙이라는 뜻이야."
+      >
+        <div className="grid gap-3">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <MiniDataTable
+              title="사원 E"
+              columns={['이름', '부서ID']}
+              rows={[
+                ['민지', '10'],
+                ['토리', '99'],
+              ]}
+              highlight={(_, column, value) =>
+                column === 1 ? (value === '10' ? 'cyan' : 'amber') : null
+              }
+            />
+            <MiniDataTable
+              title="부서 D"
+              columns={['부서ID', '부서명']}
+              rows={[
+                ['10', '개발팀'],
+                ['20', '영업팀'],
+              ]}
+              highlight={(_, column, value) =>
+                column === 0 ? (value === '10' ? 'cyan' : 'violet') : column === 1 ? 'lime' : null
+              }
+            />
+          </div>
+          <SqlPipeline
+            steps={[
+              { label: 'E.부서ID', sub: '사원 표의 값', tone: 'cyan' },
+              { label: '=', sub: '같으면 붙이기', tone: 'lime' },
+              { label: 'D.부서ID', sub: '부서 표의 값', tone: 'cyan' },
+            ]}
+          />
+          <div className="rounded-2xl border border-white/10 bg-slate-950/70 px-3 py-2 text-[12px] font-bold leading-relaxed text-slate-100">
+            SELECT E.이름, D.부서명<br />
+            FROM 사원 E JOIN 부서 D<br />
+            ON E.부서ID = D.부서ID;
+          </div>
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'joinInner') {
+    return (
+      <LearningVisualFrame
+        eyebrow="INNER JOIN"
+        title="양쪽에 맞는 행만 남긴다"
+        caption="INNER JOIN은 조건이 양쪽 표에서 모두 맞는 행만 남겨. 매칭되는 부서가 없는 사원은 결과에서 빠져."
+      >
+        <MiniDataTable
+          title="사원 INNER JOIN 부서"
+          columns={['사원', '부서ID', '부서명', '결과']}
+          rows={[
+            ['민지', '10', '개발팀', '남김'],
+            ['준호', '20', '영업팀', '남김'],
+            ['토리', '99', '없음', '제외'],
+          ]}
+          highlight={(_, column, value) =>
+            column === 3 ? (value === '남김' ? 'lime' : 'red') : value === '없음' ? 'amber' : null
+          }
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'joinLeft') {
+    return (
+      <LearningVisualFrame
+        eyebrow="LEFT OUTER JOIN"
+        title="왼쪽 표는 먼저 모두 지킨다"
+        caption="LEFT OUTER JOIN은 왼쪽에 둔 표의 행을 먼저 모두 남겨. 오른쪽에서 맞는 행이 없으면 오른쪽 컬럼은 NULL로 채워져."
+      >
+        <MiniDataTable
+          title="부서 LEFT JOIN 사원"
+          columns={['부서', '사원', '결과']}
+          rows={[
+            ['개발팀', '민지', '남김'],
+            ['영업팀', '준호', '남김'],
+            ['마케팅팀', 'NULL', '부서만 남김'],
+          ]}
+          highlight={(_, column, value) =>
+            value === 'NULL' ? 'amber' : column === 2 ? 'lime' : null
+          }
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'joinOuter') {
+    return (
+      <LearningVisualFrame
+        eyebrow="RIGHT · FULL OUTER"
+        title="오른쪽 또는 양쪽까지 지킬 수 있다"
+        caption="RIGHT OUTER는 오른쪽 표를 모두 남겨. FULL OUTER는 양쪽 표의 행을 모두 남기고, 매칭되지 않는 쪽은 NULL이야."
       >
         <VisualPillGrid
           columns="grid-cols-2"
           items={[
-            { label: 'INNER', sub: '맞는 행만', tone: 'lime' },
-            { label: 'LEFT OUTER', sub: '왼쪽 보존', tone: 'cyan' },
-            { label: 'RIGHT OUTER', sub: '오른쪽 보존', tone: 'violet' },
-            { label: 'FULL OUTER', sub: '양쪽 보존', tone: 'amber' },
+            { label: 'RIGHT OUTER', sub: '오른쪽 표를 모두 남김', tone: 'violet' },
+            { label: 'FULL OUTER', sub: '양쪽 표를 모두 남김', tone: 'amber' },
+            { label: '없는 값', sub: 'NULL로 채움', tone: 'cyan' },
+            { label: '핵심 질문', sub: '어느 쪽을 지킬까?', tone: 'lime' },
+          ]}
+        />
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'joinSummary') {
+    return (
+      <LearningVisualFrame
+        eyebrow="JOIN SUMMARY"
+        title="어느 쪽 행을 남길지 먼저 본다"
+        caption="JOIN 문제는 이름부터 외우기보다 결과에 반드시 남겨야 하는 표가 어느 쪽인지 먼저 찾으면 쉬워져."
+      >
+        <VisualPillGrid
+          columns="grid-cols-2"
+          items={[
+            { label: 'INNER', sub: '양쪽에 맞는 행만', tone: 'lime' },
+            { label: 'LEFT OUTER', sub: '왼쪽 전부', tone: 'cyan' },
+            { label: 'RIGHT OUTER', sub: '오른쪽 전부', tone: 'violet' },
+            { label: 'FULL OUTER', sub: '양쪽 전부', tone: 'amber' },
           ]}
         />
       </LearningVisualFrame>
@@ -6832,7 +7668,7 @@ function Sqld2UsageDiagram({ mode }: { mode: Sqld2UsageDiagramMode }) {
       <LearningVisualFrame
         eyebrow="JOIN SYNTAX"
         title="ON은 조건식, USING은 같은 컬럼명"
-        caption="ON A.id = B.id처럼 조건식을 쓰고, USING(id)은 양쪽 컬럼명이 같을 때만 씁니다."
+        caption="ON A.id = B.id처럼 조건식을 쓰고, USING(id)은 양쪽 컬럼명이 같을 때만 써."
       >
         <VisualPillGrid
           columns="grid-cols-3"
@@ -6851,7 +7687,7 @@ function Sqld2UsageDiagram({ mode }: { mode: Sqld2UsageDiagramMode }) {
       <LearningVisualFrame
         eyebrow="CROSS · SELF"
         title="모든 조합 vs 자기 자신과 연결"
-        caption="CROSS JOIN은 M×N 모든 쌍, SELF JOIN은 같은 테이블을 별칭으로 나눠 자기 자신과 연결합니다."
+        caption="CROSS JOIN은 M×N 모든 쌍, SELF JOIN은 같은 테이블을 별칭으로 나눠 자기 자신과 연결해."
       >
         <VisualPillGrid
           columns="grid-cols-2"
@@ -6869,7 +7705,7 @@ function Sqld2UsageDiagram({ mode }: { mode: Sqld2UsageDiagramMode }) {
       <LearningVisualFrame
         eyebrow="SUBQUERY"
         title="쿼리 안에 들어간 작은 쿼리"
-        caption="SELECT 안은 스칼라, FROM 안은 인라인 뷰, WHERE 안은 조건 판단용 서브쿼리로 자주 나옵니다."
+        caption="SELECT 안은 스칼라, FROM 안은 인라인 뷰, WHERE 안은 조건 판단용 서브쿼리로 자주 나와."
       >
         <VisualPillGrid
           columns="grid-cols-3"
@@ -6888,7 +7724,7 @@ function Sqld2UsageDiagram({ mode }: { mode: Sqld2UsageDiagramMode }) {
       <LearningVisualFrame
         eyebrow="MULTI-ROW"
         title="여러 행 결과는 IN/ANY/ALL/EXISTS"
-        caption="NOT IN은 결과에 NULL이 섞이면 위험합니다. 계약 없는 회원처럼 부정 조건은 NOT EXISTS가 안전합니다."
+        caption="NOT IN은 결과에 NULL이 섞이면 위험해. 계약 없는 회원처럼 부정 조건은 NOT EXISTS가 안전해."
       >
         <VisualPillGrid
           columns="grid-cols-2"
@@ -6908,7 +7744,7 @@ function Sqld2UsageDiagram({ mode }: { mode: Sqld2UsageDiagramMode }) {
       <LearningVisualFrame
         eyebrow="SET OPERATORS"
         title="두 SELECT 결과를 집합처럼 계산"
-        caption="UNION은 합집합 중복 제거, UNION ALL은 중복 유지, INTERSECT는 교집합, MINUS는 차집합입니다."
+        caption="UNION은 합집합 중복 제거, UNION ALL은 중복 유지, INTERSECT는 교집합, MINUS는 차집합이야."
       >
         <VisualPillGrid
           columns="grid-cols-2"
@@ -6923,21 +7759,139 @@ function Sqld2UsageDiagram({ mode }: { mode: Sqld2UsageDiagramMode }) {
     );
   }
 
-  if (mode === 'groupExtension') {
+  if (mode === 'rollup') {
     return (
       <LearningVisualFrame
-        eyebrow="ROLLUP · CUBE"
-        title="소계와 총계를 자동으로 만든다"
-        caption="ROLLUP은 오른쪽부터 하나씩 제거하며 소계, CUBE는 가능한 모든 조합의 집계를 만듭니다."
+        eyebrow="ROLLUP"
+        title="상세 매출 아래에 소계와 총계를 붙인다"
+        caption="ROLLUP(지역, 상품)은 지역+상품 상세 매출을 먼저 보여주고, 그 아래에 지역별 합계와 전체 합계를 차례로 붙여. 컬럼 순서가 바뀌면 어떤 합계를 먼저 보여줄지도 달라져."
       >
-        <VisualPillGrid
-          columns="grid-cols-3"
-          items={[
-            { label: 'ROLLUP(A,B)', sub: '(A,B) → A → 전체', tone: 'lime' },
-            { label: 'CUBE(A,B)', sub: '모든 조합', tone: 'violet' },
-            { label: 'GROUPING', sub: '소계 행 구분', tone: 'amber' },
-          ]}
-        />
+        <div className="grid gap-3">
+          <div className="overflow-x-auto rounded-[18px] border border-cream/10 bg-[#02091f]/82 p-3">
+            <pre className="font-mono text-[10px] font-bold leading-[1.65] text-cream/76">
+{`SELECT 지역, 상품, SUM(매출) AS 매출합계
+FROM 판매
+GROUP BY ROLLUP(지역, 상품);`}
+            </pre>
+          </div>
+          <SqlPipeline
+            steps={[
+              { label: '(지역, 상품)', sub: '상세 집계', tone: 'cyan' },
+              { label: '(지역)', sub: '상품을 접은 소계', tone: 'lime' },
+              { label: '()', sub: '전체 총계', tone: 'amber' },
+            ]}
+          />
+          <MiniDataTable
+            title="ROLLUP 결과 예시"
+            columns={['지역', '상품', '매출합계', '의미']}
+            rows={[
+              ['서울', '노트북', '100', '상세'],
+              ['서울', '마우스', '40', '상세'],
+              ['서울', 'NULL', '140', '지역 소계'],
+              ['부산', '노트북', '80', '상세'],
+              ['부산', 'NULL', '80', '지역 소계'],
+              ['NULL', 'NULL', '220', '전체 총계'],
+            ]}
+            highlight={(row, column) => {
+              if (column === 3 && row >= 2) return row === 5 ? 'amber' : 'lime';
+              if (column <= 1 && row >= 2) return 'muted';
+              return null;
+            }}
+          />
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'cube') {
+    return (
+      <LearningVisualFrame
+        eyebrow="CUBE"
+        title="지역별도, 상품별도 모두 보고 싶을 때"
+        caption="CUBE(지역, 상품)은 지역별 합계와 상품별 합계를 모두 만들어 줘. ROLLUP이 한 방향으로 접는 느낌이라면, CUBE는 여러 방향의 합계를 한 번에 펼쳐 보는 느낌이야."
+      >
+        <div className="grid gap-3">
+          <div className="overflow-x-auto rounded-[18px] border border-cream/10 bg-[#02091f]/82 p-3">
+            <pre className="font-mono text-[10px] font-bold leading-[1.65] text-cream/76">
+{`SELECT 지역, 상품, SUM(매출) AS 매출합계
+FROM 판매
+GROUP BY CUBE(지역, 상품);`}
+            </pre>
+          </div>
+          <VisualPillGrid
+            columns="grid-cols-2"
+            items={[
+              { label: '(지역, 상품)', sub: '상세 집계', tone: 'cyan' },
+              { label: '(지역)', sub: '지역별 소계', tone: 'lime' },
+              { label: '(상품)', sub: '상품별 소계', tone: 'violet' },
+              { label: '()', sub: '전체 총계', tone: 'amber' },
+            ]}
+          />
+          <MiniDataTable
+            title="CUBE가 추가로 만드는 행"
+            columns={['지역', '상품', '매출합계', '의미']}
+            rows={[
+              ['서울', 'NULL', '140', '지역 소계'],
+              ['부산', 'NULL', '80', '지역 소계'],
+              ['NULL', '노트북', '180', '상품 소계'],
+              ['NULL', '마우스', '40', '상품 소계'],
+              ['NULL', 'NULL', '220', '전체 총계'],
+            ]}
+            highlight={(_, column, value) => {
+              if (value === '상품 소계') return 'violet';
+              if (value === '지역 소계') return 'lime';
+              if (value === '전체 총계') return 'amber';
+              if (column <= 1 && value === 'NULL') return 'muted';
+              return null;
+            }}
+          />
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
+  if (mode === 'grouping') {
+    return (
+      <LearningVisualFrame
+        eyebrow="GROUPING"
+        title="이 NULL이 진짜 값인지 합계 자리인지 구분한다"
+        caption="GROUPING(컬럼)=0이면 실제 값, 1이면 소계나 총계를 만들려고 비워진 자리야. 결과표에서 NULL처럼 보이는 칸이 헷갈릴 때 쓰는 신호라고 보면 돼."
+      >
+        <div className="grid gap-3">
+          <div className="overflow-x-auto rounded-[18px] border border-cream/10 bg-[#02091f]/82 p-3">
+            <pre className="font-mono text-[10px] font-bold leading-[1.65] text-cream/76">
+{`SELECT
+  CASE WHEN GROUPING(지역)=1 THEN '전체' ELSE 지역 END AS 지역,
+  CASE WHEN GROUPING(상품)=1 THEN '소계' ELSE 상품 END AS 상품,
+  SUM(매출) AS 매출합계
+FROM 판매
+GROUP BY ROLLUP(지역, 상품);`}
+            </pre>
+          </div>
+          <MiniDataTable
+            title="GROUPING 값 읽기"
+            columns={['행 모양', 'GROUPING(지역)', 'GROUPING(상품)', '의미']}
+            rows={[
+              ['서울/노트북', '0', '0', '상세 행'],
+              ['서울/NULL', '0', '1', '지역 소계'],
+              ['NULL/NULL', '1', '1', '전체 총계'],
+            ]}
+            highlight={(_, column, value) => {
+              if (value === '1') return 'amber';
+              if (value === '0') return 'lime';
+              if (column === 3) return 'cyan';
+              return null;
+            }}
+          />
+          <VisualPillGrid
+            columns="grid-cols-1 sm:grid-cols-3"
+            items={[
+              { label: 'ROLLUP', sub: '상세 → 소계 → 총계', tone: 'lime' },
+              { label: 'CUBE', sub: '가능한 소계 모두 보기', tone: 'violet' },
+              { label: 'GROUPING SETS', sub: '필요한 묶음만 고르기', tone: 'amber' },
+            ]}
+          />
+        </div>
       </LearningVisualFrame>
     );
   }
@@ -6947,7 +7901,7 @@ function Sqld2UsageDiagram({ mode }: { mode: Sqld2UsageDiagramMode }) {
       <LearningVisualFrame
         eyebrow="WINDOW RANK"
         title="행은 유지하고 순위를 붙인다"
-        caption="RANK는 동점 뒤를 건너뛰고, DENSE_RANK는 건너뛰지 않으며, ROW_NUMBER는 모든 행에 고유 번호를 줍니다."
+        caption="RANK는 동점 뒤를 건너뛰고, DENSE_RANK는 건너뛰지 않으며, ROW_NUMBER는 모든 행에 고유 번호를 줘."
       >
         <MiniDataTable
           title="점수 100, 100, 90"
@@ -6964,7 +7918,7 @@ function Sqld2UsageDiagram({ mode }: { mode: Sqld2UsageDiagramMode }) {
       <LearningVisualFrame
         eyebrow="WINDOW AGGREGATE"
         title="GROUP BY와 달리 행 수를 줄이지 않는다"
-        caption="SUM(...) OVER(PARTITION BY 부서)는 각 사원 행을 그대로 두고 부서 합계를 옆에 붙입니다."
+        caption="SUM(...) OVER(PARTITION BY 부서)는 각 사원 행을 그대로 두고 부서 합계를 옆에 붙여."
       >
         <MiniDataTable
           title="부서별 합계 붙이기"
@@ -6981,7 +7935,7 @@ function Sqld2UsageDiagram({ mode }: { mode: Sqld2UsageDiagramMode }) {
       <LearningVisualFrame
         eyebrow="LAG · LEAD · FRAME"
         title="이전/다음 행과 누적 범위를 본다"
-        caption="LAG는 이전 행, LEAD는 다음 행입니다. ROWS는 실제 행 수, RANGE는 정렬 값 범위 기준입니다."
+        caption="LAG는 이전 행, LEAD는 다음 행이야. ROWS는 실제 행 수, RANGE는 정렬 값 범위 기준이야."
       >
         <VisualPillGrid
           columns="grid-cols-2"
@@ -7001,7 +7955,7 @@ function Sqld2UsageDiagram({ mode }: { mode: Sqld2UsageDiagramMode }) {
       <LearningVisualFrame
         eyebrow="TOP N"
         title="정렬 후 상위 N개를 고른다"
-        caption="Oracle ROWNUM은 ORDER BY보다 먼저 붙을 수 있어, 정렬을 인라인 뷰 안에서 먼저 처리하는 패턴이 중요합니다."
+        caption="Oracle ROWNUM은 ORDER BY보다 먼저 붙을 수 있어, 정렬을 인라인 뷰 안에서 먼저 처리하는 패턴이 중요해."
       >
         <SqlPipeline
           steps={[
@@ -7014,11 +7968,77 @@ function Sqld2UsageDiagram({ mode }: { mode: Sqld2UsageDiagramMode }) {
     );
   }
 
+  if (mode === 'pivotUnpivot') {
+    return (
+      <LearningVisualFrame
+        eyebrow="PIVOT / UNPIVOT"
+        title="긴 표를 넓게 펼치고, 넓은 표를 다시 길게 쌓아"
+        caption="PIVOT은 행으로 반복되던 값을 열 이름으로 펼쳐서 보고서처럼 보여줘. 반대로 UNPIVOT은 넓게 펼쳐진 열들을 다시 행으로 길게 쌓아. Oracle 기준 PIVOT은 여러 행이 한 칸으로 모일 수 있어서 SUM, MAX 같은 집계 함수가 함께 필요해."
+      >
+        <div className="grid gap-3">
+          <div className="grid gap-3 sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+            <MiniDataTable
+              title="긴 표"
+              columns={['월', '과목', '점수']}
+              rows={[
+                ['1월', 'SQL', '80'],
+                ['1월', '모델링', '90'],
+                ['2월', 'SQL', '75'],
+                ['2월', '모델링', '95'],
+              ]}
+              highlight={(_, column) => (column === 1 ? 'cyan' : column === 2 ? 'lime' : null)}
+            />
+            <div className="mx-auto flex h-10 min-w-10 items-center justify-center rounded-full border border-[#d1f843]/30 bg-[#d1f843]/12 px-3 kr-num text-[10px] font-black text-[#e8ff9d] shadow-[0_0_22px_rgba(209,248,67,0.14)]">
+              PIVOT
+            </div>
+            <MiniDataTable
+              title="넓은 표"
+              columns={['월', 'SQL', '모델링']}
+              rows={[
+                ['1월', '80', '90'],
+                ['2월', '75', '95'],
+              ]}
+              highlight={(_, column) => (column > 0 ? 'lime' : null)}
+            />
+          </div>
+
+          <div className="overflow-x-auto rounded-[18px] border border-cream/10 bg-[#02091f]/82 p-3">
+            <pre className="font-mono text-[10px] font-bold leading-[1.65] text-cream/76">
+{`-- Oracle 기준
+SELECT 월, SQL, 모델링
+FROM 월별점수
+PIVOT (
+  SUM(점수)
+  FOR 과목 IN ('SQL' AS SQL, '모델링' AS 모델링)
+);`}
+            </pre>
+          </div>
+
+          <div className="grid gap-2 rounded-[18px] border border-[#c084fc]/22 bg-[#c084fc]/8 p-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="kr-heading text-[13px] text-[#eadcff]">UNPIVOT은 반대 방향이야</div>
+              <div className="rounded-full border border-[#c084fc]/28 px-2 py-1 kr-num text-[9px] font-black text-[#eadcff]/80">
+                열 -&gt; 행
+              </div>
+            </div>
+            <SqlPipeline
+              steps={[
+                { label: '월, SQL, 모델링', sub: '가로 보고서', tone: 'violet' },
+                { label: 'UNPIVOT', sub: '열 이름을 값으로', tone: 'amber' },
+                { label: '월, 과목, 점수', sub: '다시 긴 표', tone: 'cyan' },
+              ]}
+            />
+          </div>
+        </div>
+      </LearningVisualFrame>
+    );
+  }
+
   return (
     <LearningVisualFrame
       eyebrow="REGEXP"
       title="패턴으로 문자열을 찾는다"
-      caption="정규표현식은 LIKE보다 강한 패턴 검색입니다. ^는 시작, $는 끝, *는 0회 이상, +는 1회 이상입니다."
+      caption="정규표현식은 LIKE보다 강한 패턴 검색이야. ^는 시작, $는 끝, *는 0회 이상, +는 1회 이상이야."
     >
       <VisualPillGrid
         columns="grid-cols-4"
@@ -7039,7 +8059,7 @@ function Sqld2ManagementDiagram({ mode }: { mode: Sqld2ManagementDiagramMode }) 
       <LearningVisualFrame
         eyebrow="DML"
         title="데이터 행을 넣고 바꾸고 지운다"
-        caption="INSERT는 새 행, UPDATE는 기존 행 수정, DELETE는 조건에 맞는 행 삭제입니다. 테이블 구조는 그대로 둡니다."
+        caption="INSERT는 새 행, UPDATE는 기존 행 수정, DELETE는 조건에 맞는 행 삭제야. 테이블 구조는 그대로 둬."
       >
         <VisualPillGrid
           columns="grid-cols-3"
@@ -7058,7 +8078,7 @@ function Sqld2ManagementDiagram({ mode }: { mode: Sqld2ManagementDiagramMode }) 
       <LearningVisualFrame
         eyebrow="MERGE"
         title="있으면 수정, 없으면 삽입"
-        caption="MERGE는 원본 데이터와 대상 테이블을 비교해 매칭되면 UPDATE, 매칭되지 않으면 INSERT를 수행합니다."
+        caption="MERGE는 원본 데이터와 대상 테이블을 비교해 매칭되면 UPDATE, 매칭되지 않으면 INSERT를 수행해."
       >
         <SqlPipeline
           steps={[
@@ -7076,7 +8096,7 @@ function Sqld2ManagementDiagram({ mode }: { mode: Sqld2ManagementDiagramMode }) 
       <LearningVisualFrame
         eyebrow="TCL"
         title="COMMIT 전까지는 되돌릴 수 있다"
-        caption="SAVEPOINT는 중간 저장점입니다. COMMIT 후에는 이전 작업을 ROLLBACK으로 되돌릴 수 없습니다."
+        caption="SAVEPOINT는 중간 저장점이야. COMMIT 후에는 이전 작업을 ROLLBACK으로 되돌릴 수 없어."
       >
         <SqlPipeline
           steps={[
@@ -7094,7 +8114,7 @@ function Sqld2ManagementDiagram({ mode }: { mode: Sqld2ManagementDiagramMode }) 
       <LearningVisualFrame
         eyebrow="AUTOCOMMIT"
         title="DDL은 앞선 DML까지 확정시킬 수 있음"
-        caption="Oracle 기준 DDL은 자동 COMMIT 성격이 있어, 앞에서 아직 확정하지 않은 DML까지 함께 확정될 수 있습니다."
+        caption="Oracle 기준 DDL은 자동 COMMIT 성격이 있어, 앞에서 아직 확정하지 않은 DML까지 함께 확정될 수 있어."
       >
         <SqlPipeline
           steps={[
@@ -7112,7 +8132,7 @@ function Sqld2ManagementDiagram({ mode }: { mode: Sqld2ManagementDiagramMode }) 
       <LearningVisualFrame
         eyebrow="CREATE TABLE"
         title="표 이름, 컬럼, 타입, 제약을 함께 선언"
-        caption="CREATE TABLE은 구조를 만드는 DDL입니다. 컬럼명, 데이터 타입, NOT NULL/PK 같은 제약조건이 같이 등장합니다."
+        caption="CREATE TABLE은 구조를 만드는 DDL야. 컬럼명, 데이터 타입, NOT NULL/PK 같은 제약조건이 같이 등장해."
       >
         <MiniDataTable
           title="STUDENT"
@@ -7129,7 +8149,7 @@ function Sqld2ManagementDiagram({ mode }: { mode: Sqld2ManagementDiagramMode }) 
       <LearningVisualFrame
         eyebrow="DELETE · TRUNCATE · DROP"
         title="행만 지우나, 구조까지 지우나"
-        caption="DELETE는 DML이라 조건 삭제와 ROLLBACK이 가능하고, TRUNCATE/DROP은 DDL이라 자동 COMMIT 함정이 있습니다."
+        caption="DELETE는 DML이라 조건 삭제와 ROLLBACK이 가능하고, TRUNCATE/DROP은 DDL이라 자동 COMMIT 함정이 있어."
       >
         <VisualPillGrid
           columns="grid-cols-3"
@@ -7148,7 +8168,7 @@ function Sqld2ManagementDiagram({ mode }: { mode: Sqld2ManagementDiagramMode }) 
       <LearningVisualFrame
         eyebrow="CONSTRAINTS"
         title="제약조건은 값이 망가지지 않게 막는 규칙"
-        caption="PK는 대표 식별자, FK는 다른 표 참조, UNIQUE는 중복 방지, NOT NULL은 빈 값 금지입니다."
+        caption="PK는 대표 식별자, FK는 다른 표 참조, UNIQUE는 중복 방지, NOT NULL은 빈 값 금지야."
       >
         <VisualPillGrid
           columns="grid-cols-2"
@@ -7167,7 +8187,7 @@ function Sqld2ManagementDiagram({ mode }: { mode: Sqld2ManagementDiagramMode }) 
     <LearningVisualFrame
       eyebrow="DCL"
       title="권한을 주고 회수한다"
-      caption="GRANT는 권한 부여, REVOKE는 권한 회수입니다. 객체 권한의 재부여는 WITH GRANT OPTION을 봅니다."
+      caption="GRANT는 권한 부여, REVOKE는 권한 회수야. 객체 권한의 재부여는 WITH GRANT OPTION을 봐."
     >
       <SqlPipeline
         steps={[
@@ -7205,7 +8225,7 @@ function EntityTypeErdDiagram({ mode }: { mode: EntityDiagramMode }) {
           >
             <title id="entity-type-erd-title">엔터티 유무형 분류 예시 ERD</title>
             <desc id="entity-type-erd-desc">
-              학생은 유형 엔터티, 수강은 사건 엔터티, 과목은 개념 엔터티로 표현한 예시입니다.
+              학생은 유형 엔터티, 수강은 사건 엔터티, 과목은 개념 엔터티로 표현한 예시야.
             </desc>
             <defs>
               <filter id="erd-soft-shadow" x="-10%" y="-20%" width="120%" height="150%">
@@ -7238,7 +8258,7 @@ function EntityTypeErdDiagram({ mode }: { mode: EntityDiagramMode }) {
         <MobileEntityTypeErd mode={mode} />
       )}
       <figcaption className="sr-only">
-        학생은 실제로 존재하는 유형 엔터티, 수강은 발생한 일을 기록하는 사건 엔터티, 과목은 기준으로 구분하는 개념 엔터티입니다.
+        학생은 실제로 존재하는 유형 엔터티, 수강은 발생한 일을 기록하는 사건 엔터티, 과목은 기준으로 구분하는 개념 엔터티야.
       </figcaption>
     </motion.figure>
   );
@@ -7446,7 +8466,7 @@ function RelationshipErdDiagram({ mode }: { mode: RelationshipDiagramMode }) {
         <RelationshipExampleCard />
       )}
       <figcaption className="sr-only">
-        ERD 관계 표기와 작성 순서를 설명합니다.
+        ERD 관계 표기와 작성 순서를 설명해.
       </figcaption>
     </motion.figure>
   );
@@ -7574,7 +8594,7 @@ function ErdOrderSheet() {
 
       <div className="mt-2.5 rounded-[16px] border border-cream/10 bg-white/[0.035] px-3 py-2">
         <div className="kr-body text-[11.5px] font-bold leading-[1.45] text-cream/64">
-          배치는 가독성 문제입니다. 핵심 엔터티를 먼저 보이는 위치에 두면 관계선이 덜 꼬입니다.
+          배치는 가독성 문제야. 핵심 엔터티를 먼저 보이는 위치에 두면 관계선이 덜 꼬야.
         </div>
       </div>
     </div>
@@ -7630,7 +8650,7 @@ function ErdPlacementGrid() {
         ))}
       </div>
       <div className="mt-2 kr-body text-[10.5px] font-bold leading-[1.45] text-cream/52">
-        시험 포인트: 중요한 엔터티를 왼쪽 상단에 두면 사람이 흐름을 먼저 읽고, 관계선도 덜 꼬입니다.
+        시험 포인트: 중요한 엔터티를 왼쪽 상단에 두면 사람이 흐름을 먼저 읽고, 관계선도 덜 꼬야.
       </div>
     </div>
   );
@@ -7774,8 +8794,8 @@ function RelationshipExampleCard() {
 
       <div className="mt-3 rounded-[16px] border border-cream/10 bg-white/[0.04] px-3 py-2.5">
         <div className="kr-body text-[12px] font-bold leading-[1.55] text-cream/76">
-          수강내역 한 건은 반드시 학생 한 명에게 속합니다. 반대로 학생은 아직 수강내역이 없을 수도 있고,
-          여러 과목을 들으면 수강내역이 여러 건 생길 수 있습니다.
+          수강내역 한 건은 반드시 학생 한 명에게 속해. 반대로 학생은 아직 수강내역이 없을 수도 있고,
+          여러 과목을 들으면 수강내역이 여러 건 생길 수 있어.
         </div>
       </div>
     </div>
@@ -7847,7 +8867,7 @@ function IdentifierRelationshipDiagram({
         <IdentifierCompareCard />
       )}
       <figcaption className="sr-only">
-        식별자 관계와 비식별자 관계에서 부모 식별자가 자식 엔터티 안에 들어가는 위치를 비교합니다.
+        식별자 관계와 비식별자 관계에서 부모 식별자가 자식 엔터티 안에 들어가는 위치를 비교해.
       </figcaption>
     </motion.figure>
   );
@@ -7863,19 +8883,19 @@ function AnomalyTableDiagram({ mode }: { mode: AnomalyDiagramMode }) {
     overview: {
       label: 'NORMALIZATION',
       title: '정규화가 필요한 이유',
-      caption: '한 표에 섞인 정보를 나누면 중복과 이상 현상을 줄일 수 있어요.',
+      caption: '한 표에 섞인 정보를 나누면 중복과 이상 현상을 줄일 수 있어.',
       Icon: AlertTriangle,
     },
     insert: {
       label: 'INSERT',
       title: '의도하지 않은 값도 삽입됨',
-      caption: '휴학생만 넣고 싶은데 과목명·교수명 NULL까지 함께 들어오면 삽입 이상이에요.',
+      caption: '휴학생만 넣고 싶은데 과목명·교수명 NULL까지 함께 들어오면 삽입 이상이야.',
       Icon: Plus,
     },
     delete: {
       label: 'DELETE',
       title: '의도하지 않은 정보도 삭제됨',
-      caption: '학생 행을 지웠더니 과목·교수 정보도 함께 사라지면 삭제 이상이에요.',
+      caption: '학생 행을 지웠더니 과목·교수 정보도 함께 사라지면 삭제 이상이야.',
       Icon: Trash2,
     },
     update: {
@@ -7921,7 +8941,7 @@ function AnomalyTableDiagram({ mode }: { mode: AnomalyDiagramMode }) {
         {mode === 'update' ? <UpdateAnomalyCard /> : null}
       </div>
       <figcaption className="sr-only">
-        이상 현상은 중복된 정보가 있는 테이블에서 삽입, 삭제, 갱신 과정에 부작용이 생기는 상황입니다.
+        이상 현상은 중복된 정보가 있는 테이블에서 삽입, 삭제, 갱신 과정에 부작용이 생기는 상황이야.
       </figcaption>
     </motion.figure>
   );
@@ -8034,7 +9054,7 @@ function InsertAnomalyCard() {
       />
       <div className="rounded-[18px] border border-[#ff7a7a]/18 bg-[#ff7a7a]/8 px-3 py-2.5">
         <div className="kr-body text-[12px] font-bold leading-snug text-cream/62">
-          데이터 삽입 시 의도하지 않은 값까지 함께 들어오면 삽입 이상입니다.
+          데이터 삽입 시 의도하지 않은 값까지 함께 들어오면 삽입 이상이야.
         </div>
       </div>
     </div>
@@ -8088,7 +9108,7 @@ function UpdateAnomalyCard() {
           </div>
         </div>
         <div className="kr-body mt-1.5 text-[12px] font-bold leading-snug text-cream/60">
-          일부 데이터만 갱신되면 같은 사실이 서로 다르게 남아 모순이 발생합니다.
+          일부 데이터만 갱신되면 같은 사실이 서로 다르게 남아 모순이 발생해.
         </div>
       </div>
     </div>
@@ -8248,7 +9268,7 @@ function IdentifyingRelationCard() {
 
       <div className="mt-3 rounded-[16px] border border-[#c084fc]/18 bg-[#c084fc]/8 px-3 py-2.5">
         <div className="kr-body text-[12px] font-bold leading-[1.55] text-cream/76">
-          수강신청은 학생과 과목의 PK를 받아 자기 PK를 완성합니다. 그래서 부모 키가 비어 있으면 수강신청 한 건도 구분할 수 없습니다.
+          수강신청은 학생과 과목의 PK를 받아 자기 PK를 완성해. 그래서 부모 키가 비어 있으면 수강신청 한 건도 구분할 수 없어.
         </div>
       </div>
     </div>
@@ -8299,7 +9319,7 @@ function NonIdentifyingRelationCard() {
 
       <div className="mt-3 rounded-[16px] border border-cream/10 bg-white/[0.04] px-3 py-2.5">
         <div className="kr-body text-[12px] font-bold leading-[1.55] text-cream/72">
-          주문은 주문ID만으로 구분됩니다. 고객ID는 고객을 가리키는 FK지만, 주문의 PK 안에는 들어가지 않습니다.
+          주문은 주문ID만으로 구분돼. 고객ID는 고객을 가리키는 FK지만, 주문의 PK 안에는 들어가지 않아.
         </div>
       </div>
     </div>
@@ -8326,7 +9346,7 @@ function IdentifierCompareCard() {
           childLabel="수강신청 PK"
           pkRows={['학번', '과목코드']}
           attrRows={['수강일', '성적']}
-          result="학번+과목코드가 없으면 수강신청 한 건을 구분할 수 없어요."
+          result="학번+과목코드가 없으면 수강신청 한 건을 구분할 수 없어."
           accent="#c084fc"
           solid
         />

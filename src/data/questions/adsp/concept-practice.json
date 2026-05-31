@@ -883,7 +883,7 @@
       "topic": "DS 6역량",
       "type": "multiple_choice",
       "difficulty": 2,
-      "question": "다음 중 [DS 6역량 (Digital CAMERA)] 에 [속하지 않는] 것은?",
+      "question": "다음 중 데이터 사이언티스트에게 필요한 6가지 역량으로 보기 어려운 것은?",
       "choices": [
         "Communication (전달·시각화)",
         "Math (수학·통계)",
@@ -891,7 +891,7 @@
         "Management (관리·경영)"
       ],
       "answerIndex": 3,
-      "explanation": "Digital CAMERA 6역량 = [C]ommunication · [A]nalytics · [M]ath · [E]ngineering · [R]esearch · [A]rt. [Management] 는 6역량에 포함되지 않음 — 시험 단골 함정.",
+      "explanation": "데이터 사이언티스트에게 필요한 6가지 역량은 Communication · Analytics · Math · Engineering · Research · Art로 정리할 수 있어. Digital CAMERA는 이 6가지를 기억하기 위한 암기 도구야. Management는 이 묶음에 포함되지 않아.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {

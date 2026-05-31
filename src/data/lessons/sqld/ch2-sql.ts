@@ -6,125 +6,45 @@ const SQLD_2_1: Lesson = {
   chapter: 2,
   chapterTitle: 'SQL 기본 및 활용',
   topic: 'SQL 기본',
-  title: 'SQL 명령군 · SELECT · 함수 · WHERE · GROUP/HAVING · ORDER BY',
-  hook: '모든 쿼리의 뼈대. 실행 순서·NULL·집계함수·LIKE·정렬까지 한 번에.',
+  title: '관계대수 · SELECT · 함수 · WHERE · GROUP/HAVING · ORDER BY',
+  hook: 'SQL 문장을 읽는 뼈대. 실행 순서·NULL·집계함수·LIKE·정렬까지 차근차근.',
   estimatedMinutes: 18,
   steps: [
     {
       id: 'sqld-2-1-s1',
-      title: 'SQL 명령군이란',
+      title: 'SQL 기본 흐름',
+      quizId: 'sqld-2-1-cp-01',
       group: 'sqld-2-1-g1-query-basics',
       dialogue: [
-        { pose: 'wave', text: '[SQL]은 DB에 부탁하는 말이야. 만들고, 넣고, 권한을 주고, 되돌리는 말들이 있어.' },
-        { pose: 'think', text: '이 명령어들은 역할에 따라 [4가지 군]으로 나눠. 처음엔 역할만 잡으면 돼.' },
-        { pose: 'lightbulb', text: '[DDL]은 구조, [DML]은 데이터, [DCL]은 권한, [TCL]은 트랜잭션을 다뤄.' },
-        { pose: 'happy', text: '처음부터 명령어를 전부 외우기보다, 먼저 “무엇을 건드리는 명령인가?”를 보면 돼.' },
+        { pose: 'wave', text: '[SQL 기본]에서는 먼저 SQL 문장을 읽는 순서를 잡을 거야.' },
+        { pose: 'think', text: '처음부터 모든 명령어 묶음을 외우기보다,\n테이블에서 필요한 데이터를 어떻게 꺼내는지부터 보면 쉬워.' },
+        { pose: 'lightbulb', text: '먼저 어떤 테이블을 볼지 정하고,\n조건으로 행을 고르고,\n필요한 열과 정렬을 읽는 흐름이야.' },
+        { pose: 'happy', text: 'DDL, DML, DCL, TCL 같은 관리 구문은 뒤의 [관리 구문] 파트에서 따로 자세히 볼게.' },
+        { pose: 'idle', text: 'SQL 기본은 “읽는 흐름”부터 잡자.' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            'SQL은 DB에 “무엇을 해줘”라고 부탁하는 언어입니다. 먼저 명령어를 역할별로 나누어 보면 헷갈림이 줄어듭니다. 구조를 만드는 명령, 데이터를 다루는 명령, 권한을 관리하는 명령, 작업을 확정하거나 되돌리는 명령으로 나눠요.',
+            'SQL 기본 파트에서는 테이블에서 필요한 데이터를 읽어오는 흐름을 먼저 잡아. “어떤 테이블을 볼지 → 어떤 행을 남길지 → 어떤 열과 결과를 보여줄지 → 어떤 순서로 정렬할지”를 차례대로 익히면 SELECT 문장이 훨씬 덜 낯설어져.',
         },
         {
-          kind: 'table',
-          title: 'SQL 4명령군 비교',
-          headers: ['군', '용도', '대표 명령'],
-          rows: [
-            ['DDL', '객체(테이블·뷰·인덱스) 정의·변경', 'CREATE, ALTER, DROP, RENAME, TRUNCATE'],
-            ['DML', '데이터 조회·삽입·수정·삭제', 'SELECT, INSERT, UPDATE, DELETE, MERGE'],
-            ['DCL', '권한 제어', 'GRANT, REVOKE'],
-            ['TCL', '트랜잭션 제어', 'COMMIT, ROLLBACK, SAVEPOINT'],
+          kind: 'keypoints',
+          title: 'SQL 기본에서 먼저 잡을 흐름',
+          items: [
+            '관계대수: 테이블을 다루는 기본 규칙',
+            'SELECT 실행 순서: DB가 문장을 처리하는 실제 흐름',
+            'WHERE: 필요한 행만 남기는 조건',
+            'GROUP BY와 HAVING: 묶고, 묶인 결과를 거르는 조건',
+            'ORDER BY: 마지막에 결과를 정렬하는 단계',
           ],
         },
         {
           kind: 'callout',
-          tone: 'mnemonic',
-          title: '"정·조·권·트"',
+          tone: 'tip',
+          title: '관리 구문은 뒤에서',
           body:
-            'DDL=정의, DML=조작, DCL=권한, TCL=트랜잭션. 각 군의 한국어 첫 글자로 먼저 큰 역할을 잡습니다.',
-        },
-      ],
-    },
-    {
-      id: 'sqld-2-1-s1-ddl',
-      title: 'DDL',
-      quizId: 'sqld-2-1-cp-01',
-      group: 'sqld-2-1-g1-query-basics',
-      extraQuizIds: ['sqld-2-1-cp-01-ddl-tcard'],
-      dialogue: [
-        { pose: 'wave', text: '먼저 [DDL]부터 볼게.' },
-        { pose: 'think', text: '[DDL]은 Data Definition Language의 약자야.\n한국어로는 데이터 정의어라고 불러.' },
-        { pose: 'lightbulb', text: '테이블 같은 DB [구조]를 만들고, 바꾸고, 지우는 명령군이야.' },
-        { pose: 'happy', text: 'CREATE는 만들기, ALTER는 바꾸기, DROP은 구조 삭제, RENAME은 이름 변경, TRUNCATE는 행 전체 비우기야.' },
-        { pose: 'happy', text: 'DDL 5개는 [TCARD(티카드)]로 외우자.\nT = TRUNCATE\nC = CREATE\nA = ALTER\nR = RENAME\nD = DROP' },
-        { pose: 'think', text: '특히 [TRUNCATE]는 행을 비우지만 DDL이야. DELETE랑 헷갈리게 자주 물어봐.' },
-        { pose: 'idle', text: 'CREATE TABLE은 어느 명령군일까?' },
-      ],
-      blocks: [
-        {
-          kind: 'intro',
-          body:
-            'DDL(Data Definition Language)은 데이터가 들어갈 그릇, 즉 테이블·뷰·인덱스 같은 DB 객체의 구조를 정의하고 바꾸는 명령입니다.',
-        },
-        {
-          kind: 'callout',
-          tone: 'mnemonic',
-          title: '"TCARD(티카드)"',
-          body:
-            'DDL 대표 명령 5개는 TCARD로 묶어 기억합니다.\nT=TRUNCATE, C=CREATE, A=ALTER, R=RENAME, D=DROP.\n모두 테이블 같은 DB 구조를 만들거나 바꾸거나 지우는 쪽입니다.',
-        },
-        {
-          kind: 'callout',
-          tone: 'warn',
-          title: '헷갈리는 부분 — TRUNCATE',
-          body:
-            'TRUNCATE는 행을 전부 비우기 때문에 DELETE처럼 느껴질 수 있습니다. 하지만 DDL이라 자동 COMMIT되고 ROLLBACK으로 되돌릴 수 없습니다.',
-        },
-      ],
-    },
-    {
-      id: 'sqld-2-1-s1-dml-dcl-tcl',
-      title: 'DML·DCL·TCL',
-      quizId: 'sqld-sql-lab-001',
-      group: 'sqld-2-1-g1-query-basics',
-      dialogue: [
-        { pose: 'wave', text: '이번에는 DML, DCL, TCL을 역할별로 묶어볼게.' },
-        { pose: 'think', text: '[DML]은 Data Manipulation Language의 약자야.\n테이블 안의 데이터를 조회·추가·수정·삭제하는 명령군이야.' },
-        { pose: 'happy', text: 'DML 5개는 [SIDUM(시둠)]으로 외우자.\nS = SELECT\nI = INSERT\nD = DELETE\nU = UPDATE\nM = MERGE' },
-        { pose: 'lightbulb', text: '[DCL]은 Data Control Language의 약자야.\n누가 DB를 볼 수 있는지 권한을 주고 회수해.' },
-        { pose: 'happy', text: 'DCL은 [GR(지알)]만 기억해도 돼.\nG = GRANT: 권한을 준다\nR = REVOKE: 권한을 회수한다' },
-        { pose: 'think', text: '[TCL]은 Transaction Control Language의 약자야.\n작업을 확정하거나 되돌리는 명령군이야.' },
-        { pose: 'lightbulb', text: 'TCL은 [CRS(커롤세)]로 묶자.\nC = COMMIT\nR = ROLLBACK\nS = SAVEPOINT' },
-        { pose: 'idle', text: 'CREATE, ALTER, DROP은 구조를 다루니까 어느 명령군일까?' },
-      ],
-      blocks: [
-        {
-          kind: 'callout',
-          tone: 'mnemonic',
-          title: '"SIDUM(시둠)"',
-          body:
-            'DML 대표 명령 5개는 SIDUM으로 묶어 기억합니다.\nS=SELECT, I=INSERT, D=DELETE, U=UPDATE, M=MERGE.\n테이블 안의 데이터를 조회·추가·삭제·수정·병합하는 명령입니다.',
-        },
-        {
-          kind: 'callout',
-          tone: 'mnemonic',
-          title: '"GR / CRS"',
-          body:
-            'DCL은 GRANT와 REVOKE라 GR(지알)로 기억합니다.\nTCL은 COMMIT, ROLLBACK, SAVEPOINT라 CRS(커롤세)로 기억합니다.',
-        },
-        {
-          kind: 'section',
-          title: 'SELECT 는 DQL 일까 DML 일까?',
-          body:
-            '엄격한 분류로는 SELECT만 따로 DQL(Data Query Language)로 부르기도 합니다. SQLD에서는 SELECT를 DML에 포함해 설명하는 흐름도 자주 보입니다. 보기에 DQL이 있으면 SELECT는 DQL로 볼 수 있다는 정도까지 기억하면 됩니다.',
-        },
-        {
-          kind: 'callout',
-          tone: 'warn',
-          title: '헷갈리는 부분 — DROP/INSERT 분류',
-          body:
-            'DROP = DDL (객체 삭제). INSERT = DML. "DROP 이 DML 인가요?" 보기는 항상 [틀림].',
+            'CREATE, INSERT, COMMIT, GRANT처럼 구조·데이터 변경·트랜잭션·권한을 다루는 명령군은 Part 3 관리 구문에서 따로 정리해. 여기서는 SELECT 문장을 읽는 감각부터 만들면 돼.',
         },
       ],
     },
@@ -138,7 +58,8 @@ const SQLD_2_1: Lesson = {
         { pose: 'wave', text: 'SQL 은 [관계대수(Relational Algebra)] 라는 수학에서 출발했어.' },
         { pose: 'think', text: '처음엔 어렵게 느껴지지만, 일단 [릴레이션 = 테이블]이라고 생각하면 돼.' },
         { pose: 'lightbulb', text: '관계대수는 테이블에서 [행을 고르고], [열을 고르고], [테이블끼리 합치는] 규칙이야.' },
-        { pose: 'happy', text: '그래서 첫 문제는 기호 암기보다 “WHERE와 가까운 연산이 무엇인지”부터 확인할 거야.' },
+        { pose: 'happy', text: '여기서 말하는 [WHERE]는 SQL에서 “조건에 맞는 행만 남기는 부분”이야. 바로 뒤에서 WHERE 절을 따로 배울 거라 지금은 느낌만 잡으면 돼.' },
+        { pose: 'happy', text: '그래서 첫 문제는 기호 암기보다 “조건에 맞는 행을 고르는 연산이 무엇인지”부터 확인할 거야.' },
         { pose: 'happy', text: 'SQL 명령은 이 관계대수 규칙을 사람이 쓰기 쉬운 문장으로 바꾼 것이라고 보면 돼.' },
         { pose: 'happy', text: '먼저 혼자 쓰이는 연산 2개만 보자. [σ]는 행을 고르고, [π]는 열을 고르는 연산이야.' },
         { pose: 'think', text: '[σ(시그마)]는 조건에 맞는 [행]만 고른다고 보면 돼. SQL에서는 WHERE와 가장 가까워.' },
@@ -153,7 +74,7 @@ const SQLD_2_1: Lesson = {
         {
           kind: 'intro',
           body:
-            '관계대수는 관계형 DB가 테이블을 다루는 기본 규칙입니다. 처음에는 기호를 전부 외우기보다 “WHERE는 행 선택, SELECT 컬럼은 열 선택, JOIN은 테이블 결합”처럼 SQL 절과 연결해서 이해하면 쉽습니다.',
+            '관계대수는 관계형 DB가 테이블을 다루는 기본 규칙이야. 처음에는 기호를 전부 외우기보다 “WHERE는 행 선택, SELECT 컬럼은 열 선택, JOIN은 테이블 결합”처럼 SQL 절과 연결해서 이해하면 쉬워.',
         },
         {
           kind: 'table',
@@ -193,23 +114,28 @@ const SQLD_2_1: Lesson = {
       extraQuizIds: ['sqld-sql-lab-002', 'sqld-sql-order-001'],
       dialogue: [
         { pose: 'wave', text: 'SQL은 우리가 쓰는 순서와 DB가 실제로 처리하는 순서가 달라.' },
-        { pose: 'think', text: '눈에는 SELECT가 먼저 보이지만, DB는 먼저 FROM에서 어떤 표를 볼지 정해.' },
-        { pose: 'lightbulb', text: '처리 순서는 [FROM] → [WHERE] → [GROUP BY] → [HAVING] → [SELECT] → [ORDER BY]야.' },
-        { pose: 'happy', text: '줄여서 [프·웨·그·하·셀·오]로 기억하면 흐름을 떠올리기 쉬워.' },
-        { pose: 'think', text: '이 순서를 알아야 어떤 절에서 별칭이나 집계함수를 쓸 수 있는지 판단할 수 있어.' },
-        { pose: 'lightbulb', text: '예: WHERE 는 SELECT 보다 [먼저] 실행되니까 WHERE 에서 [SELECT 의 별칭(ALIAS)] 사용 [할 수 없어].' },
-        { pose: 'happy', text: '반대로 ORDER BY는 SELECT 뒤에 실행돼. 그래서 SELECT에서 만든 별칭을 정렬할 때 쓸 수 있어.' },
-        { pose: 'think', text: 'WHERE는 행을 먼저 거르고, HAVING은 GROUP BY로 묶인 결과를 거른다고 보면 돼.' },
-        { pose: 'lightbulb', text: 'WHERE 단계에서는 아직 그룹이 만들어지지 않았어. 그래서 AVG나 COUNT 같은 집계함수를 쓸 수 없어.' },
-        { pose: 'happy', text: 'GROUP BY로 묶은 뒤에는 HAVING이 그 묶음에 조건을 걸어. 그래서 AVG나 COUNT 같은 집계함수를 쓸 수 있어.' },
-        { pose: 'think', text: '예를 들어 ‘평균 급여가 5000 이상인 부서’처럼 묶은 뒤 계산한 조건은 HAVING에 둬야 해.' },
+        { pose: 'think', text: '우선 전체 순서는 [FROM] → [WHERE] → [GROUP BY] → [HAVING] → [SELECT] → [ORDER BY]야.' },
+        { pose: 'happy', text: '줄여서 [프·웨·그·하·셀·오]로 기억하자.\n이제 하나의 SQL 예시를 단계별로 확장해볼게.' },
+        { pose: 'lightbulb', text: '우선 [FROM]부터 알아보자.\nFROM은 어느 테이블에서 SQL을 시작할지 정하는 부분이야.' },
+        { pose: 'think', text: '예시: FROM EMP\n해석: EMP 직원 테이블에서 데이터를 가져오기 시작한다는 뜻이야.' },
+        { pose: 'lightbulb', text: '그다음 [WHERE]야.\nWHERE는 테이블에서 조건에 맞는 행만 먼저 남기는 부분이야.' },
+        { pose: 'think', text: '예시: WHERE JOIN_YEAR >= 2020\n해석: 입사년도가 2020년 이상인 직원 행만 남기는 거야.' },
+        { pose: 'lightbulb', text: '[GROUP BY]는 남은 행을 같은 값끼리 묶는 부분이야.\n부서별 평균 급여처럼 “부서별”이 나오면 자주 등장해.' },
+        { pose: 'think', text: '예시: GROUP BY DEPT\n해석: 남은 직원들을 부서(DEPT)별로 묶는 거야.' },
+        { pose: 'lightbulb', text: '[HAVING]은 묶은 결과에 조건을 거는 부분이야.\nWHERE는 행 조건, HAVING은 그룹 조건이라고 나눠 보면 쉬워.' },
+        { pose: 'think', text: '예시: HAVING AVG(SAL) >= 5000\n해석: 부서별 평균 급여가 5000 이상인 그룹만 남기는 거야.' },
+        { pose: 'lightbulb', text: '[SELECT]는 최종 결과에 보여줄 컬럼과 계산값을 고르는 부분이야.\n여기서 별칭도 만들 수 있어.' },
+        { pose: 'think', text: '예시: SELECT DEPT, AVG(SAL) AS AVG_SAL\n해석: 부서와 부서별 평균 급여를 AVG_SAL이라는 이름으로 보여주는 거야.' },
+        { pose: 'lightbulb', text: '마지막은 [ORDER BY]야.\nORDER BY는 최종 결과를 어떤 순서로 보여줄지 정렬하는 부분이야.' },
+        { pose: 'think', text: '예시: ORDER BY AVG_SAL DESC\n해석: 평균 급여가 높은 부서부터 내림차순으로 정렬하는 거야.' },
+        { pose: 'happy', text: '그래서 WHERE에서는 SELECT 별칭을 아직 몰라.\n별칭은 SELECT에서 만들어지고, ORDER BY는 그 뒤라 별칭을 쓸 수 있어.' },
         { pose: 'idle', text: '이제 실행 순서를 보고 어떤 절을 써야 하는지 문제로 확인해보자.' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            'SQL은 사람이 읽는 순서와 DB가 실제로 처리하는 순서가 다릅니다. 이 순서를 알면 WHERE에서 별칭을 못 쓰는 이유, HAVING에서 집계함수를 쓰는 이유를 자연스럽게 이해할 수 있습니다.',
+            'SQL은 사람이 쓰는 순서와 DB가 실제로 처리하는 순서가 달라. 먼저 FROM에서 테이블을 정하고, WHERE로 행을 거른 뒤, GROUP BY와 HAVING으로 묶은 결과를 다뤄. 마지막에 SELECT로 보여줄 값을 만들고 ORDER BY로 정렬해.',
         },
         {
           kind: 'table',
@@ -226,19 +152,19 @@ const SQLD_2_1: Lesson = {
         },
         {
           kind: 'example',
-          title: '예시 — "부서별 평균 급여 ≥ 500만 인 부서만 평균급여 내림차순"',
+          title: '예시 — 부서별 평균 급여가 5000 이상인 부서 정렬',
           body:
-            "SELECT 부서, AVG(급여) AS 평균  -- (5) 보여줄 컬럼과 별칭\nFROM EMP                    -- (1) 어떤 표를 볼지 결정\nWHERE 입사년도 >= 2020      -- (2) 행 먼저 거르기\nGROUP BY 부서               -- (3) 부서별로 묶기\nHAVING AVG(급여) >= 5000000 -- (4) 묶은 결과에 조건 걸기\nORDER BY 평균 DESC;         -- (6) SELECT에서 만든 별칭으로 정렬",
+            "SELECT DEPT, AVG(SAL) AS AVG_SAL  -- (5) 보여줄 컬럼과 별칭\nFROM EMP                         -- (1) EMP 테이블에서 시작\nWHERE JOIN_YEAR >= 2020          -- (2) 2020년 이후 입사 행만 남김\nGROUP BY DEPT                    -- (3) 부서별로 묶음\nHAVING AVG(SAL) >= 5000          -- (4) 평균 급여 5000 이상 그룹만 남김\nORDER BY AVG_SAL DESC;           -- (6) 평균 급여 높은 순 정렬",
         },
         {
           kind: 'keypoints',
           title: '실행 순서로부터 따라오는 규칙',
           items: [
-            'WHERE는 SELECT보다 먼저라 SELECT에서 만든 별칭을 아직 모릅니다.',
-            'WHERE는 GROUP BY보다 먼저라 평균·합계 같은 집계 결과를 아직 모릅니다.',
-            'HAVING은 GROUP BY 뒤에 실행되므로 그룹별 평균·합계 조건을 걸 수 있습니다.',
-            'ORDER BY는 SELECT 뒤에 실행되므로 별칭, 집계함수, 컬럼 번호를 쓸 수 있습니다.',
-            'SELECT에 집계하지 않은 컬럼을 보여주려면 GROUP BY에도 같은 컬럼이 있어야 합니다.',
+            'WHERE는 SELECT보다 먼저라 SELECT에서 만든 별칭을 아직 몰라.',
+            'WHERE는 GROUP BY보다 먼저라 평균·합계 같은 집계 결과를 아직 몰라.',
+            'HAVING은 GROUP BY 뒤에 실행되므로 그룹별 평균·합계 조건을 걸 수 있어.',
+            'ORDER BY는 SELECT 뒤에 실행되므로 별칭, 집계함수, 컬럼 번호를 쓸 수 있어.',
+            'SELECT에 집계하지 않은 컬럼을 보여주려면 GROUP BY에도 같은 컬럼이 있어야 해.',
           ],
         },
         {
@@ -246,14 +172,234 @@ const SQLD_2_1: Lesson = {
           tone: 'mnemonic',
           title: '"프웨그하셀오"',
           body:
-            'FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY. 순서를 먼저 떠올리면 "지금 이 절에서 무엇을 알고 있을까?"를 판단하기 쉬워집니다.',
+            'FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY. 순서를 먼저 떠올리면 "지금 이 절에서 무엇을 알고 있을까?"를 판단하기 쉬워져.',
         },
         {
           kind: 'callout',
           tone: 'warn',
           title: '헷갈리는 부분 — WHERE와 집계함수',
           body:
-            '"부서별 평균 급여 500만 이상"은 행 하나의 조건이 아니라 부서별로 묶은 뒤의 조건입니다. 그래서 WHERE가 아니라 HAVING에 둡니다.',
+            '"부서별 평균 급여 500만 이상"은 행 하나의 조건이 아니라 부서별로 묶은 뒤의 조건이야. 그래서 WHERE가 아니라 HAVING에 둬.',
+        },
+      ],
+    },
+    {
+      id: 'sqld-2-1-s10',
+      title: 'WHERE 절',
+      quizId: 'sqld-2-1-cp-10',
+      group: 'sqld-2-1-g3-filter-sort',
+      extraQuizIds: ['sqld-2-1-cp-10-where-flow', 'sqld-sql-lab-008', 'sqld-sql-lab-011', 'sqld-sql-lab-012'],
+      dialogue: [
+        { pose: 'wave', text: 'WHERE 절은 [행 단위 필터]. 조건에 맞는 튜플(행)만 통과.' },
+        { pose: 'think', text: '연산자가 많아 차근차근 나눠보자.' },
+        { pose: 'lightbulb', text: '[비교]: = (같다), != / <> / ^= (다르다), >, <, >=, <=.' },
+        { pose: 'happy', text: '[조건 결합]: AND (모두 만족), OR (하나라도), NOT (부정).' },
+        { pose: 'think', text: '[범위·집합]: BETWEEN A AND B (A 이상 B 이하), IN (a,b,c) (목록 중 하나).' },
+        { pose: 'lightbulb', text: '[NULL 비교]: 반드시 [IS NULL] / [IS NOT NULL]. = NULL 은 항상 UNKNOWN.' },
+        { pose: 'happy', text: '[LIKE 와일드카드]: [%] = 0개 이상 모든 문자, [_] = 정확히 1개 문자.' },
+        { pose: 'think', text: '예: LIKE "김%" → 김씨 시작. LIKE "_im" → 3글자, 끝이 "im". LIKE "%@%.%" → 이메일.' },
+        { pose: 'lightbulb', text: '특수 문자 자체 검색: ESCAPE 절. LIKE "%/_라면" ESCAPE "/" → "_라면" 으로 끝.' },
+        { pose: 'happy', text: '[우선순위] (높음 → 낮음): 괄호 → 산술(*) → 비교 → NOT → AND → OR.' },
+        { pose: 'think', text: '헷갈리는 부분. col IN (1, NULL) 에서 NULL 비교는 UNKNOWN → col=1 인 행만. NULL 행은 무시.' },
+        { pose: 'lightbulb', text: '더 무서운 헷갈리는 부분. [NOT IN] 에 NULL 섞이면 [전체가 UNKNOWN] → [0행 반환].' },
+        { pose: 'happy', text: '안전한 패턴: NOT EXISTS 사용 또는 WHERE col IS NOT NULL 추가.' },
+        { pose: 'idle', text: 'NOT IN + NULL = ?행.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'WHERE 절은 행 단위 필터로 결과 집합을 좁혀. 다양한 연산자가 있고, NULL 처리·우선순위·LIKE 와일드카드가 자주 나오는. 연산자 우선순위를 모르면 의도와 다른 결과가 나와.',
+        },
+        {
+          kind: 'table',
+          title: 'WHERE 연산자',
+          headers: ['연산자', '의미', '예'],
+          rows: [
+            ['= / != / <> / ^=', '같다 / 다르다', 'WHERE 나이 != 21'],
+            ['>, <, >=, <=', '대소 비교', 'WHERE 나이 >= 21'],
+            ['BETWEEN A AND B', 'A 이상 B 이하 (양 끝 포함)', 'BETWEEN 21 AND 22'],
+            ['IN (a,b,c)', '목록 중 하나', "IN ('A','B')"],
+            ['LIKE', '와일드카드 매칭', "LIKE '%라면'"],
+            ['IS NULL / IS NOT NULL', 'NULL 검사', '= NULL 은 X'],
+            ['NOT', '부정', 'NOT IN(...), NOT BETWEEN ...'],
+          ],
+        },
+        {
+          kind: 'table',
+          title: 'LIKE 와일드카드',
+          headers: ['패턴', '매칭'],
+          rows: [
+            ["'%라면%'", "라면을 [포함]하는 모든 문자열"],
+            ["'%라면'", "라면으로 [끝나는]"],
+            ["'_im'", "3글자, [_] 가 임의의 한 글자"],
+            ["'[KT]im'", "Kim 또는 Tim (SQL Server 만)"],
+            ["'%/_라면' ESCAPE '/'", "/_ 로 _ 자체 매칭 — '_라면' 으로 끝"],
+          ],
+        },
+        {
+          kind: 'keypoints',
+          title: '우선순위 (높음 → 낮음)',
+          items: [
+            '괄호 ( )',
+            '산술 *, /, %, +, -',
+            '비교 =, !=, <, >, >=, <=, BETWEEN, IN, LIKE, IS NULL',
+            'NOT',
+            'AND',
+            'OR',
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: '헷갈리는 부분 1 — IN/NOT IN + NULL',
+          body:
+            "col IN (1, NULL) → col=1 인 행만 (NULL 무시). col NOT IN (1, NULL) → 0행 (NULL UNKNOWN 으로 모두 거름). 안전한 NOT IN 은 NULL 미포함 보장 + NOT EXISTS.",
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: '헷갈리는 부분 2 — NOT (col=1 OR col=NULL)',
+          body:
+            "NOT (col=1 OR col=NULL) = NOT (col=1 OR UNKNOWN) = NOT UNKNOWN (또는 NOT TRUE) → 다소 복잡. NULL 인 행은 결과에서 빠짐.",
+        },
+      ],
+    },
+    {
+      id: 'sqld-2-1-s11',
+      title: 'GROUP BY · HAVING',
+      quizId: 'sqld-2-1-cp-11',
+      group: 'sqld-2-1-g3-filter-sort',
+      extraQuizIds: ['sqld-sql-lab-013', 'sqld-sql-read-001', 'sqld-sql-order-002'],
+      dialogue: [
+        { pose: 'wave', text: '[GROUP BY]는 [같은 값을 가진 행을 묶어 한 줄로 요약].' },
+        { pose: 'think', text: '예: 부서별 평균급여 — GROUP BY 부서 후 AVG(급여) 계산. 부서마다 한 줄.' },
+        { pose: 'lightbulb', text: '[HAVING]은 묶은 뒤에 나온 결과에 조건을 거는 절이야. WHERE와 역할이 달라.' },
+        { pose: 'happy', text: '[WHERE]는 묶기 전에 행을 고르고, [HAVING]은 묶은 뒤의 그룹을 골라.' },
+        { pose: 'think', text: '순서로 보면 더 쉬워. FROM → WHERE → GROUP BY → HAVING 순서로 처리돼.' },
+        { pose: 'lightbulb', text: 'WHERE 단계에서는 아직 평균이나 합계가 만들어지지 않았어. 그래서 집계함수를 쓸 수 없어.' },
+        { pose: 'happy', text: 'GROUP BY로 묶고 나면 평균, 합계, 개수 같은 값이 생겨. 그때 HAVING으로 조건을 걸 수 있어.' },
+        { pose: 'think', text: '"부서별 평균급여 500만 이상"처럼 묶은 뒤 계산한 조건은 HAVING AVG(급여) >= 5000000으로 써.' },
+        { pose: 'lightbulb', text: 'WHERE AVG(급여) >= 5000000처럼 쓰면 아직 평균이 없어서 오류가 나.' },
+        { pose: 'happy', text: '핵심 규칙: SELECT 의 [비집계 컬럼]은 [모두 GROUP BY 에 등장해야 함].' },
+        { pose: 'think', text: '예: SELECT 부서, COUNT(*) FROM EMP — GROUP BY 부서 없이 쓰면 [오류].' },
+        { pose: 'lightbulb', text: '성능 팁: WHERE 로 먼저 행을 줄인 뒤 GROUP BY 가 빠름. GROUP BY 가 비싼 작업이라.' },
+        { pose: 'idle', text: 'WHERE 와 HAVING 의 차이는?' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'GROUP BY 는 "같은 값을 가진 행을 묶어 한 그룹으로 만들고, 각 그룹에 집계함수를 적용" 하는 절. HAVING 은 그 결과에 조건을 거는 그룹 단위 필터. 둘은 항상 짝으로 등장하는 개념이야.',
+        },
+        {
+          kind: 'example',
+          title: '5절 모두 사용한 종합 예시',
+          body:
+            "SELECT 부서, AVG(급여) AS 평균\nFROM EMP                           -- (1) FROM\nWHERE 입사년도 >= 2020             -- (2) WHERE — 행 필터\nGROUP BY 부서                       -- (3) GROUP BY — 그룹화\nHAVING AVG(급여) >= 5000000        -- (4) HAVING — 그룹 필터\nORDER BY 평균 DESC;                -- (6) ORDER BY",
+        },
+        {
+          kind: 'table',
+          title: 'WHERE vs HAVING',
+          headers: ['항목', 'WHERE', 'HAVING'],
+          rows: [
+            ['실행 시점', 'GROUP BY 전', 'GROUP BY 후'],
+            ['필터 단위', '행', '그룹'],
+            ['집계함수', '쓸 수 없어', '쓸 수 있어'],
+            ['단독 사용', '가능', '가능 (전체 1그룹)'],
+          ],
+        },
+        {
+          kind: 'keypoints',
+          title: '핵심 규칙',
+          items: [
+            'SELECT에 집계하지 않은 컬럼을 보여주려면 GROUP BY에도 같은 컬럼이 있어야 해.',
+            '집계함수는 WHERE 에 쓸 수 없어 — HAVING 에서만',
+            'WHERE 로 먼저 거른 뒤 GROUP BY 가 성능상 유리',
+            'GROUP BY 없이 집계함수만 = 전체 집합 1그룹 집계',
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: '헷갈리는 부분 1 — 집계 + 일반 컬럼 혼합',
+          body:
+            "SELECT 부서, COUNT(*) FROM EMP — 오류가 나. 부서가 GROUP BY 에 없어 \"어느 부서?\" 결정 안 됨. SELECT 부서, COUNT(*) FROM EMP GROUP BY 부서 로 수정.",
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: '헷갈리는 부분 2 — 집계함수 위치',
+          body:
+            "WHERE AVG(급여) >= 5000000 → 오류. WHERE 는 행 단위, AVG 가 그룹별이라 모순. 그룹 조건은 HAVING.",
+        },
+      ],
+    },
+    {
+      id: 'sqld-2-1-s12',
+      title: 'ORDER BY',
+      quizId: 'sqld-2-1-cp-12',
+      group: 'sqld-2-1-g3-filter-sort',
+      extraQuizIds: ['sqld-sql-lab-014'],
+      dialogue: [
+        { pose: 'wave', text: 'ORDER BY 는 결과의 [최종 정렬]. SELECT 의 가장 마지막 절.' },
+        { pose: 'think', text: '[ASC] = 오름차순 (기본·생략 할 수 있어). [DESC] = 내림차순.' },
+        { pose: 'lightbulb', text: '여러 컬럼 정렬: ORDER BY 컬럼1 DESC, 컬럼2 ASC — 컬럼1 우선, 같으면 컬럼2.' },
+        { pose: 'happy', text: 'ORDER BY 는 [SELECT 후 실행]이라 [ALIAS] · [컬럼 번호] · [집계함수] 모두 쓸 수 있어.' },
+        { pose: 'think', text: '예: ORDER BY 평균 DESC (ALIAS), ORDER BY 2 DESC (2번째 컬럼), ORDER BY AVG(급여) DESC.' },
+        { pose: 'lightbulb', text: '데이터 형에 따른 정렬 — 숫자: 작은→큰, 문자: 사전순, 날짜: 과거→미래.' },
+        { pose: 'happy', text: '[NULL 정렬] 자주 헷갈리는 포인트. [Oracle] 은 NULL 을 [최댓값] 취급.' },
+        { pose: 'think', text: 'Oracle ASC 시 NULL = [맨 끝(NULLS LAST)]. DESC 시 NULL = [맨 앞(NULLS FIRST)].' },
+        { pose: 'lightbulb', text: '[SQL Server] 는 정반대. NULL 을 [최솟값] 취급. ASC = NULLS FIRST.' },
+        { pose: 'happy', text: '제어: ORDER BY col DESC NULLS LAST 처럼 [명시] 할 수 있어 (Oracle).' },
+        { pose: 'think', text: 'ORDER BY 가 빠지면 결과 순서는 [보장 X]. TOP N·LIMIT 와 결합 시 반드시 명시.' },
+        { pose: 'idle', text: 'Oracle 에서 ORDER BY DESC 시 NULL 은? 맨 앞.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'ORDER BY 는 결과를 정렬하는 마지막 단계. SELECT 후 실행되어 ALIAS·집계함수·컬럼 번호 모두 쓸 수 있어. NULL 정렬이 DBMS 별로 다른 점이 자주 헷갈리는 부분.',
+        },
+        {
+          kind: 'example',
+          title: '활용 예시',
+          body:
+            "-- 다중 컬럼 + ALIAS\nSELECT 사번, 급여 AS 연봉, 보너스\nFROM 직원\nORDER BY 연봉 DESC, 보너스 ASC;\n\n-- 컬럼 번호 (1=사번, 2=연봉, 3=보너스)\nSELECT 사번, 급여 AS 연봉, 보너스\nFROM 직원\nORDER BY 2 DESC, 3 ASC;\n\n-- 집계함수\nSELECT 부서, AVG(급여)\nFROM EMP GROUP BY 부서\nORDER BY AVG(급여) DESC;",
+        },
+        {
+          kind: 'table',
+          title: '데이터 형에 따른 ASC 정렬',
+          headers: ['형', '순서'],
+          rows: [
+            ['숫자', '작은 수 → 큰 수'],
+            ['문자', '사전순 (ASCII/유니코드)'],
+            ['날짜', '과거 → 미래'],
+          ],
+        },
+        {
+          kind: 'table',
+          title: 'NULL 정렬 — DBMS 별 차이',
+          headers: ['DBMS', 'ASC', 'DESC'],
+          rows: [
+            ['Oracle', '맨 끝 (NULLS LAST)', '맨 앞 (NULLS FIRST)'],
+            ['SQL Server', '맨 앞 (NULLS FIRST)', '맨 끝 (NULLS LAST)'],
+            ['Oracle 명시 가능', 'NULLS FIRST / NULLS LAST 옵션', '동일'],
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: 'ORDER BY 는 어디서나',
+          body:
+            'ALIAS, 컬럼 번호 (1, 2, 3...), 집계함수, 표현식 모두 쓸 수 있어. 단 컬럼 번호 사용은 가독성 ↓ 권장하지 않음.',
+        },
+        {
+          kind: 'callout',
+          tone: 'warn',
+          title: '헷갈리는 부분 — DESC 누락',
+          body:
+            '"매출 높은 순으로"처럼 큰 값부터 보여야 하는데 DESC가 없으면 기본값 ASC가 적용되어 결과가 반대로 나와. 요구 문장에서 "높은 순", "최근 순" 같은 표현을 먼저 확인해.',
         },
       ],
     },
@@ -264,35 +410,36 @@ const SQLD_2_1: Lesson = {
       group: 'sqld-2-1-g1-query-basics',
       extraQuizIds: ['sqld-sql-lab-004'],
       dialogue: [
-        { pose: 'wave', text: '[ALIAS(별칭)]는 컬럼이나 테이블에 잠깐 쓰는 이름을 붙이는 기능이야.' },
-        { pose: 'think', text: '결과 컬럼명을 보기 쉽게 바꾸거나, JOIN할 때 같은 이름의 컬럼을 구분할 때 필요해.' },
-        { pose: 'lightbulb', text: '예를 들면 SELECT 사번 AS ID, 급여 AS 연봉 FROM 직원 emp처럼 쓸 수 있어.' },
-        { pose: 'happy', text: 'SELECT 절의 AS는 생략할 수 있어. 다만 Oracle에서 테이블 별칭을 줄 때는 AS 없이 공백으로 붙인다고 기억하자.' },
-        { pose: 'think', text: 'ALIAS 규칙: [숫자/특수문자/예약어 쓸 수 없어]. 공백·특수문자 포함하려면 [큰따옴표 "." 로 감싸기].' },
-        { pose: 'lightbulb', text: '예: SELECT 사번 AS "사 원 번 호" FROM 직원 — 공백 포함 별칭은 큰따옴표.' },
-        { pose: 'happy', text: 'WHERE, GROUP BY, HAVING은 SELECT보다 먼저 처리돼. 그래서 SELECT에서 만든 별칭을 아직 사용할 수 없어.' },
-        { pose: 'think', text: 'ORDER BY는 SELECT 뒤에 처리되므로 별칭을 알아볼 수 있어.' },
-        { pose: 'lightbulb', text: '[DISTINCT]는 중복 행을 제거하는 구문이야.\nSELECT DISTINCT col1, col2처럼 여러 컬럼을 쓰면 두 컬럼이 모두 같은 행만 중복으로 봐.' },
-        { pose: 'happy', text: 'NULL 도 한 값으로 취급 — 모든 NULL 행은 하나로 합쳐짐.' },
-        { pose: 'think', text: '문자열 연결: [Oracle ||] / [SQL Server +] / [표준 CONCAT()].' },
-        { pose: 'lightbulb', text: "예: SELECT 성 || ' ' || 이름 AS 전체이름 FROM 학생 (Oracle)." },
-        { pose: 'idle', text: 'ALIAS 쓸 수 없는 절은? WHERE/GROUP BY/HAVING.' },
+        { pose: 'wave', text: '[ALIAS]는 SQL 결과에 잠깐 붙이는 별명이야. 한국어로는 별칭이라고 해.' },
+        { pose: 'think', text: '예를 들어 급여 * 12를 그대로 보여주면 무슨 값인지 헷갈릴 수 있지?' },
+        { pose: 'lightbulb', text: '그래서 급여 * 12 AS 연봉처럼 이름을 붙여 주면, 결과표에서 연봉이라는 컬럼명으로 보여.' },
+        { pose: 'happy', text: 'SELECT 절에서는 AS를 생략할 수도 있어.\n다만 Oracle에서 테이블 별칭을 줄 때는 AS 없이 공백으로 붙인다고 기억하자.' },
+        { pose: 'think', text: '별칭 이름도 아무렇게나 붙이면 안 돼.\n숫자로 시작하거나, 예약어를 그대로 쓰거나, 특수문자를 막 넣으면 오류가 날 수 있어.' },
+        { pose: 'lightbulb', text: '공백이 들어간 별칭을 꼭 쓰고 싶다면 큰따옴표로 감싸.\n예: SELECT 사번 AS "사 원 번 호" FROM 직원.' },
+        { pose: 'happy', text: '중요한 함정 하나!\nWHERE, GROUP BY, HAVING은 SELECT보다 먼저 처리돼서 SELECT에서 만든 별칭을 아직 몰라.' },
+        { pose: 'think', text: '반대로 ORDER BY는 SELECT 뒤에 처리돼.\n그래서 SELECT에서 만든 별칭으로 정렬할 수 있어.' },
+        { pose: 'lightbulb', text: '[DISTINCT]는 똑같이 반복되는 결과 줄을 하나만 남기는 기능이야.' },
+        { pose: 'happy', text: '컬럼을 여러 개 쓰면 모든 컬럼 값이 전부 같을 때만 중복으로 봐.\n예: 부서와 직급이 둘 다 같아야 같은 줄이야.' },
+        { pose: 'think', text: '[SELECT DISTINCT]에서는 NULL도 같은 묶음으로 봐.\n부서 값이 NULL인 행이 여러 개 있어도 결과에는 NULL 줄이 하나만 남을 수 있어.' },
+        { pose: 'lightbulb', text: '문자열을 붙이는 방법은 DBMS마다 조금 달라.\nOracle은 ||, SQL Server는 +, 표준 SQL은 CONCAT()을 자주 써.' },
+        { pose: 'happy', text: "Oracle 예시로 보면 SELECT 성 || ' ' || 이름 AS 전체이름 FROM 학생처럼 성과 이름을 붙일 수 있어." },
+        { pose: 'idle', text: '이제 별칭을 어디에서 쓸 수 없는지 확인해보자.' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            'ALIAS·DISTINCT·문자열 연결은 SELECT 절의 기본 도구입니다. ALIAS는 어느 절에서 알아볼 수 있는지, DISTINCT는 NULL을 어떻게 다루는지, DBMS마다 문자열 연결 방식이 어떻게 다른지 차근차근 보면 됩니다.',
+            'ALIAS, DISTINCT, 문자열 연결은 SELECT 결과를 읽기 좋게 만드는 기본 도구야. 먼저 별칭으로 이름을 붙이고, DISTINCT로 중복을 줄이고, 필요하면 문자 값을 이어 붙인다고 생각하면 쉬워.',
         },
         {
           kind: 'keypoints',
-          title: 'ALIAS 5대 규칙',
+          title: 'ALIAS에서 먼저 볼 규칙',
           items: [
-            'AS 생략 가능 (Oracle 의 FROM 절은 AS 못 씀)',
-            '숫자·특수문자·예약어 X',
-            '공백·특수문자 포함 시 "..." 큰따옴표',
-            'WHERE/GROUP BY/HAVING 에서 쓸 수 없어',
-            'ORDER BY 에서만 쓸 수 있어',
+            'SELECT 절에서는 AS를 생략할 수 있어',
+            'Oracle에서 테이블 별칭은 AS 없이 공백으로 붙여',
+            '공백이 들어간 별칭은 큰따옴표로 감싸',
+            'WHERE, GROUP BY, HAVING은 SELECT 별칭을 아직 몰라',
+            'ORDER BY는 SELECT 뒤라 별칭을 사용할 수 있어',
           ],
         },
         {
@@ -316,14 +463,14 @@ const SQLD_2_1: Lesson = {
           tone: 'tip',
           title: 'DISTINCT 동작',
           body:
-            "SELECT DISTINCT col1, col2 — 두 컬럼이 모두 같은 행만 중복으로 봄. NULL 들은 모두 한 값으로 취급. COUNT(DISTINCT col) 에서도 NULL 은 한 번만 셈.",
+            'SELECT DISTINCT col1, col2는 두 컬럼 값이 모두 같을 때만 중복으로 봐. SELECT DISTINCT 결과에서는 NULL도 같은 묶음처럼 처리되어 NULL 줄이 하나만 남을 수 있어. 단, COUNT(DISTINCT col)은 일반적으로 NULL을 세지 않는다는 점을 따로 구분해.',
         },
         {
           kind: 'callout',
           tone: 'warn',
           title: '헷갈리는 부분 — ALIAS 위치 오류',
           body:
-            'SELECT salary*12 AS 연봉 FROM emp WHERE 연봉 > 5000 — 오류가 나. WHERE 가 SELECT 보다 먼저라 ALIAS 모름. WHERE salary*12 > 5000 으로 표현식 그대로 쓰거나 인라인뷰 활용.',
+            'SELECT salary * 12 AS 연봉 FROM emp WHERE 연봉 > 5000처럼 쓰면 오류가 나. WHERE가 SELECT보다 먼저 처리되어 아직 연봉이라는 별칭을 모르기 때문이야. WHERE에는 salary * 12 > 5000처럼 원래 표현식을 다시 쓰거나, 인라인뷰로 한 번 감싸서 사용해.',
         },
       ],
     },
@@ -353,7 +500,7 @@ const SQLD_2_1: Lesson = {
         {
           kind: 'intro',
           body:
-            '문자 함수는 문자열을 자르거나, 찾거나, 바꾸는 도구입니다. 먼저 입력 문자열이 함수 안에서 어떻게 변하는지 보고, 그다음 SUBSTR·INSTR처럼 자주 헷갈리는 규칙을 확인하면 훨씬 편합니다.',
+            '문자 함수는 문자열을 자르거나, 찾거나, 바꾸는 도구야. 먼저 입력 문자열이 함수 안에서 어떻게 변하는지 보고, 그다음 SUBSTR·INSTR처럼 자주 헷갈리는 규칙을 확인하면 훨씬 편해.',
         },
         {
           kind: 'table',
@@ -383,7 +530,7 @@ const SQLD_2_1: Lesson = {
           tone: 'warn',
           title: '헷갈리는 부분 — SUBSTR 길이 음수',
           body:
-            "Oracle에서 SUBSTR('abcdefgh', 8, -2)는 NULL입니다. 시작 위치는 뒤에서 셀 수 있지만, 잘라낼 길이는 0 이상이어야 한다고 기억하면 됩니다.",
+            "Oracle에서 SUBSTR('abcdefgh', 8, -2)는 NULL야. 시작 위치는 뒤에서 셀 수 있지만, 잘라낼 길이는 0 이상이어야 한다고 기억하면 돼.",
         },
         {
           tone: 'tip',
@@ -501,7 +648,7 @@ const SQLD_2_1: Lesson = {
         {
           kind: 'intro',
           body:
-            '집계함수는 여러 행을 한 값으로 요약합니다. 이때 NULL을 세는지, 건너뛰는지가 자주 헷갈립니다. 특히 COUNT(*)와 COUNT(컬럼)는 이름이 비슷하지만 NULL 처리 방식이 다릅니다.',
+            '집계함수는 여러 행을 한 값으로 요약해. 이때 NULL을 세는지, 건너뛰는지가 자주 헷갈려. 특히 COUNT(*)와 COUNT(컬럼)는 이름이 비슷하지만 NULL 처리 방식이 달라.',
         },
         {
           kind: 'table',
@@ -538,7 +685,7 @@ const SQLD_2_1: Lesson = {
           tone: 'warn',
           title: '헷갈리는 부분 — COUNT(*) vs COUNT(컬럼)',
           body:
-            'COUNT(*)는 행 자체를 세므로 NULL이 있어도 행 수에 포함됩니다. COUNT(컬럼)는 그 컬럼 값이 NULL인 행을 빼고 셉니다.',
+            'COUNT(*)는 행 자체를 세므로 NULL이 있어도 행 수에 포함돼. COUNT(컬럼)는 그 컬럼 값이 NULL인 행을 빼고 세.',
         },
         {
           kind: 'callout',
@@ -551,70 +698,132 @@ const SQLD_2_1: Lesson = {
     },
     {
       id: 'sqld-2-1-s8',
-      title: 'NULL 처리 함수',
-      quizId: 'sqld-2-1-cp-08',
-      group: 'sqld-2-1-g2-functions',
-      extraQuizIds: ['sqld-sql-lab-009'],
+      title: 'NVL',
+      group: 'sqld-2-1-g2-null-functions',
       dialogue: [
         { pose: 'wave', text: '이번에는 NULL을 다른 값으로 바꾸거나, NULL 여부에 따라 분기하는 함수를 볼 거야.' },
-        { pose: 'think', text: '첫째, [NVL]은 값이 NULL이면 대신 넣을 값을 정하는 함수야.\nNULL이 아니면 원래 값을 그대로 써.' },
-        { pose: 'lightbulb', text: '예: NVL(전화번호, "미등록") — 전화번호가 NULL 인 행에 "미등록" 표시.' },
-        { pose: 'happy', text: '둘째, [NVL2]는 NULL인지 아닌지에 따라 결과를 둘로 나눠.\n값이 있으면 x, NULL이면 y를 반환해.' },
-        { pose: 'think', text: '예: NVL2(보너스, "있음", "없음") — 보너스 컬럼 유무에 따라 분기.' },
-        { pose: 'lightbulb', text: '셋째, [NULLIF]는 두 값이 같으면 NULL을 반환해.\n다르면 첫 번째 값을 그대로 반환해.' },
-        { pose: 'happy', text: '예: NULLIF(점수, 0) — 점수 0 을 NULL 로 (분모로 쓸 때 0 나누기 방지).' },
-        { pose: 'think', text: '넷째, [COALESCE]는 왼쪽부터 보면서 처음으로 NULL이 아닌 값을 골라.' },
-        { pose: 'lightbulb', text: '예: COALESCE(휴대폰, 집전화, 이메일)은 연락 가능한 첫 번째 수단을 고르는 느낌이야.' },
-        { pose: 'happy', text: 'COALESCE 는 [표준 SQL], NVL 은 [Oracle 전용]. 호환성 높아짐 코드는 COALESCE.' },
-        { pose: 'think', text: '동치 변환: NVL(c, 0) ≡ COALESCE(c, 0) ≡ CASE WHEN c IS NULL THEN 0 ELSE c END.' },
-        { pose: 'lightbulb', text: 'DECODE(c, NULL, 0, c) 도 같은 의미 — DECODE 는 NULL 비교 할 수 있어.' },
-        { pose: 'idle', text: 'COALESCE(NULL, NULL, "S", NULL, "QL") = ?' },
+        { pose: 'think', text: '한 번에 다 외우려고 하지 말고, 먼저 [NVL]부터 보자.' },
+        { pose: 'lightbulb', text: '[NVL]은 값이 NULL이면 대신 보여줄 값을 정하는 Oracle 함수야.' },
+        { pose: 'happy', text: '형태는 NVL(컬럼, 대체값)이야.\n컬럼 값이 NULL이면 대체값을 보여주고, NULL이 아니면 원래 값을 그대로 보여줘.' },
+        { pose: 'think', text: '예: NVL(전화번호, "미등록")\n해석: 전화번호가 비어 있으면 "미등록"이라고 보여줘.' },
+        { pose: 'idle', text: '다음에는 NULL인지 아닌지에 따라 결과를 둘로 나누는 NVL2를 볼게.' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            'NULL 처리 함수는 4가지가 있고 각각의 동작이 미묘하게 달라 자주 나오는 패턴입니다. 같은 결과를 여러 함수로 만들 수 있어 "결과가 같은 표현 찾기" 같은 매칭이 자주 문제.',
+            'NVL은 Oracle에서 자주 쓰는 NULL 대체 함수야. 값이 NULL이면 대체값을 보여주고, NULL이 아니면 원래 값을 그대로 보여줘.',
+        },
+        {
+          kind: 'example',
+          title: 'Oracle 예시',
+          body:
+            "SELECT 이름,\n       NVL(전화번호, '미등록') AS 연락처\nFROM 학생;\n\n-- 전화번호가 NULL인 행은 연락처에 '미등록'이 표시돼.",
+        },
+      ],
+    },
+    {
+      id: 'sqld-2-1-s8-nvl2',
+      title: 'NVL2',
+      group: 'sqld-2-1-g2-null-functions',
+      dialogue: [
+        { pose: 'wave', text: '이번에는 [NVL2]야.' },
+        { pose: 'think', text: 'NVL은 NULL일 때만 대체값을 정했지?\nNVL2는 NULL일 때와 NULL이 아닐 때를 둘 다 정해.' },
+        { pose: 'lightbulb', text: '형태는 NVL2(컬럼, 값이_있을_때, NULL일_때)야.' },
+        { pose: 'happy', text: '예: NVL2(보너스, "있음", "없음")\n해석: 보너스 값이 있으면 "있음", NULL이면 "없음"이라고 보여줘.' },
+        { pose: 'idle', text: '다음에는 두 값이 같을 때 NULL을 만드는 NULLIF를 볼게.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'NVL2는 값이 있는 경우와 NULL인 경우를 나누어 다른 결과를 반환해. “있으면 A, 없으면 B”처럼 상태 라벨을 만들 때 이해하기 쉬워.',
+        },
+        {
+          kind: 'example',
+          title: 'Oracle 예시',
+          body:
+            "SELECT 이름,\n       NVL2(보너스, '있음', '없음') AS 보너스여부\nFROM 사원;\n\n-- 보너스가 300이면 '있음', 보너스가 NULL이면 '없음'이 돼.",
+        },
+      ],
+    },
+    {
+      id: 'sqld-2-1-s8-nullif',
+      title: 'NULLIF',
+      group: 'sqld-2-1-g2-null-functions',
+      dialogue: [
+        { pose: 'wave', text: '이번에는 [NULLIF]야.' },
+        { pose: 'think', text: 'NULLIF는 두 값을 비교해서, 같으면 NULL을 만들고 다르면 첫 번째 값을 그대로 돌려줘.' },
+        { pose: 'lightbulb', text: '형태는 NULLIF(a, b)야.\na = b이면 NULL, a와 b가 다르면 a를 반환해.' },
+        { pose: 'happy', text: '예: NULLIF(시도횟수, 0)\n시도횟수가 0이면 NULL로 바꿔서 0으로 나누는 오류를 피할 수 있어.' },
+        { pose: 'idle', text: '다음에는 여러 후보 중 첫 번째 값을 고르는 COALESCE를 볼게.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'NULLIF는 두 값이 같을 때 NULL을 반환해. 특히 분모가 0이 되는 상황을 NULL로 바꾸어 계산 오류를 피하는 예시로 자주 설명돼.',
+        },
+        {
+          kind: 'example',
+          title: '표준 SQL 예시',
+          body:
+            "SELECT 이름,\n       점수 / NULLIF(시도횟수, 0) AS 평균점수\nFROM 풀이기록;\n\n-- 시도횟수가 0이면 NULLIF(0, 0)이 NULL이 되어 0으로 나누는 오류를 피해.",
+        },
+      ],
+    },
+    {
+      id: 'sqld-2-1-s8-coalesce',
+      title: 'COALESCE',
+      quizId: 'sqld-sql-lab-009',
+      group: 'sqld-2-1-g2-null-functions',
+      dialogue: [
+        { pose: 'wave', text: '마지막은 [COALESCE]야.' },
+        { pose: 'think', text: 'COALESCE는 왼쪽부터 차례대로 보면서 처음으로 NULL이 아닌 값을 골라.' },
+        { pose: 'lightbulb', text: '형태는 COALESCE(a, b, c, ...)야.\na가 NULL이면 b를 보고, b도 NULL이면 c를 보는 식이야.' },
+        { pose: 'happy', text: '예: COALESCE(휴대폰, 집전화, 이메일, "연락처 없음")\n해석: 가능한 연락처 중 가장 먼저 있는 값을 보여줘.' },
+        { pose: 'think', text: '중요한 차이!\nCOALESCE는 표준 SQL이고, NVL과 NVL2는 Oracle에서 자주 보는 함수야.' },
+        { pose: 'lightbulb', text: '정리하면 NVL은 NULL 대체, NVL2는 있음/없음 분기, NULLIF는 같으면 NULL, COALESCE는 첫 NOT NULL이야.' },
+        { pose: 'idle', text: '이제 COALESCE와 NULLIF 결과를 문제로 확인해보자.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'COALESCE는 여러 후보 중 첫 번째 NOT NULL 값을 반환하는 표준 SQL 함수야. 연락처 후보처럼 “앞에서부터 가능한 값 하나를 고르는” 상황으로 이해하면 쉬워.',
         },
         {
           kind: 'table',
-          title: 'NULL 처리 함수 4종',
-          headers: ['함수', '동작', '예'],
+          title: 'NULL 처리 함수 정리',
+          headers: ['함수', '핵심 동작', '기준'],
           rows: [
-            ['NVL(c, repl)', 'c IS NULL 이면 repl, 아니면 c', "NVL(NULL, 0) = 0"],
-            ['NVL2(c, x, y)', 'c NOT NULL → x, c NULL → y', "NVL2(점수, '있음', '없음')"],
-            ['NULLIF(a, b)', 'a = b 면 NULL, 다르면 a', "NULLIF(0, 0) = NULL"],
-            ['COALESCE(a, b, c, ...)', '첫 NOT NULL 반환', "COALESCE(NULL,NULL,'S','QL') = 'S'"],
+            ['NVL(c, x)', 'c가 NULL이면 x', 'Oracle'],
+            ['NVL2(c, x, y)', 'c가 있으면 x, NULL이면 y', 'Oracle'],
+            ['NULLIF(a, b)', 'a와 b가 같으면 NULL, 다르면 a', '표준 SQL'],
+            ['COALESCE(a, b, ...)', '첫 번째 NOT NULL 반환', '표준 SQL'],
           ],
         },
         {
           kind: 'example',
-          title: '동치 변환 — 같은 결과의 4가지 표현',
+          title: '표준 SQL 예시',
           body:
-            "-- col 이 NULL 이면 0, 아니면 col\nNVL(col, 0)\nCOALESCE(col, 0)\nCASE WHEN col IS NULL THEN 0 ELSE col END\nDECODE(col, NULL, 0, col)\n→ 모두 동일한 결과 (DECODE 는 Oracle 의 NULL 비교 가능 특성 활용)",
+            "SELECT 이름,\n       COALESCE(휴대폰, 집전화, 이메일, '연락처 없음') AS 대표연락처\nFROM 회원;\n\n-- 휴대폰이 NULL이면 집전화, 집전화도 NULL이면 이메일, 전부 NULL이면 '연락처 없음'을 보여줘.",
         },
         {
           kind: 'callout',
           tone: 'tip',
-          title: '함수 표준화',
+          title: '비슷한 표현',
           body:
-            'COALESCE 는 표준 SQL 이라 DBMS 어디서나 동작. NVL·NVL2·DECODE 는 Oracle 전용. 코드 이식성을 원하면 COALESCE.',
-        },
-        {
-          kind: 'callout',
-          tone: 'warn',
-          title: '헷갈리는 부분 — Simple CASE WHEN NULL',
-          body:
-            "CASE col WHEN NULL THEN -1 ELSE 0 END 은 동작 X (= NULL 비교는 UNKNOWN). NULL 분기는 Searched CASE 또는 DECODE.",
+            'NVL(c, 0)과 COALESCE(c, 0)은 “c가 NULL이면 0”이라는 같은 결과를 만들 수 있어. 다만 COALESCE는 표준 SQL이라 여러 DBMS에서 더 넓게 쓰여.',
         },
       ],
     },
     {
       id: 'sqld-2-1-s9',
       title: 'CASE와 DECODE',
-      quizId: 'sqld-2-1-cp-09',
+      quizId: 'sqld-2-1-cp-08',
       group: 'sqld-2-1-g2-functions',
-      extraQuizIds: ['sqld-sql-lab-010'],
+      extraQuizIds: ['sqld-2-1-cp-09', 'sqld-sql-lab-010'],
       dialogue: [
         { pose: 'wave', text: '[CASE]와 [DECODE]는 SQL 안에서 조건에 따라 값을 다르게 보여주는 도구야.' },
         { pose: 'think', text: 'CASE는 크게 두 가지 형태가 있어.\n조건식을 직접 쓰는 Searched CASE와, 특정 값이 무엇인지 비교하는 Simple CASE야.' },
@@ -634,7 +843,7 @@ const SQLD_2_1: Lesson = {
         {
           kind: 'intro',
           body:
-            'CASE 와 DECODE 는 SQL 안에서 조건 분기를 가능케 합니다. CASE 는 표준 SQL, DECODE 는 Oracle 전용. 둘 다 SELECT·WHERE·ORDER BY·HAVING 모든 절에서 쓸 수 있어.',
+            'CASE 와 DECODE 는 SQL 안에서 조건 분기를 가능케 해. CASE 는 표준 SQL, DECODE 는 Oracle 전용. 둘 다 SELECT·WHERE·ORDER BY·HAVING 모든 절에서 쓸 수 있어.',
         },
         {
           kind: 'example',
@@ -671,227 +880,7 @@ const SQLD_2_1: Lesson = {
           tone: 'tip',
           title: '동치 변환',
           body:
-            'NVL(c, 0), COALESCE(c, 0), CASE WHEN c IS NULL THEN 0 ELSE c END, DECODE(c, NULL, 0, c)는 같은 결과를 만들 수 있습니다. 형태가 달라도 같은 뜻인지 비교해보면 됩니다.',
-        },
-      ],
-    },
-    {
-      id: 'sqld-2-1-s10',
-      title: 'WHERE 절',
-      quizId: 'sqld-2-1-cp-10',
-      group: 'sqld-2-1-g3-filter-sort',
-      extraQuizIds: ['sqld-2-1-cp-10-where-flow', 'sqld-sql-lab-008', 'sqld-sql-lab-011', 'sqld-sql-lab-012'],
-      dialogue: [
-        { pose: 'wave', text: 'WHERE 절은 [행 단위 필터]. 조건에 맞는 튜플(행)만 통과.' },
-        { pose: 'think', text: '연산자가 많아 차근차근 나눠보자.' },
-        { pose: 'lightbulb', text: '[비교]: = (같다), != / <> / ^= (다르다), >, <, >=, <=.' },
-        { pose: 'happy', text: '[조건 결합]: AND (모두 만족), OR (하나라도), NOT (부정).' },
-        { pose: 'think', text: '[범위·집합]: BETWEEN A AND B (A 이상 B 이하), IN (a,b,c) (목록 중 하나).' },
-        { pose: 'lightbulb', text: '[NULL 비교]: 반드시 [IS NULL] / [IS NOT NULL]. = NULL 은 항상 UNKNOWN.' },
-        { pose: 'happy', text: '[LIKE 와일드카드]: [%] = 0개 이상 모든 문자, [_] = 정확히 1개 문자.' },
-        { pose: 'think', text: '예: LIKE "김%" → 김씨 시작. LIKE "_im" → 3글자, 끝이 "im". LIKE "%@%.%" → 이메일.' },
-        { pose: 'lightbulb', text: '특수 문자 자체 검색: ESCAPE 절. LIKE "%/_라면" ESCAPE "/" → "_라면" 으로 끝.' },
-        { pose: 'happy', text: '[우선순위] (높음 → 낮음): 괄호 → 산술(*) → 비교 → NOT → AND → OR.' },
-        { pose: 'think', text: '헷갈리는 부분. col IN (1, NULL) 에서 NULL 비교는 UNKNOWN → col=1 인 행만. NULL 행은 무시.' },
-        { pose: 'lightbulb', text: '더 무서운 헷갈리는 부분. [NOT IN] 에 NULL 섞이면 [전체가 UNKNOWN] → [0행 반환].' },
-        { pose: 'happy', text: '안전한 패턴: NOT EXISTS 사용 또는 WHERE col IS NOT NULL 추가.' },
-        { pose: 'idle', text: 'NOT IN + NULL = ?행.' },
-      ],
-      blocks: [
-        {
-          kind: 'intro',
-          body:
-            'WHERE 절은 행 단위 필터로 결과 집합을 좁힙니다. 다양한 연산자가 있고, NULL 처리·우선순위·LIKE 와일드카드가 자주 나오는. 연산자 우선순위를 모르면 의도와 다른 결과가 나옵니다.',
-        },
-        {
-          kind: 'table',
-          title: 'WHERE 연산자',
-          headers: ['연산자', '의미', '예'],
-          rows: [
-            ['= / != / <> / ^=', '같다 / 다르다', 'WHERE 나이 != 21'],
-            ['>, <, >=, <=', '대소 비교', 'WHERE 나이 >= 21'],
-            ['BETWEEN A AND B', 'A 이상 B 이하 (양 끝 포함)', 'BETWEEN 21 AND 22'],
-            ['IN (a,b,c)', '목록 중 하나', "IN ('A','B')"],
-            ['LIKE', '와일드카드 매칭', "LIKE '%라면'"],
-            ['IS NULL / IS NOT NULL', 'NULL 검사', '= NULL 은 X'],
-            ['NOT', '부정', 'NOT IN(...), NOT BETWEEN ...'],
-          ],
-        },
-        {
-          kind: 'table',
-          title: 'LIKE 와일드카드',
-          headers: ['패턴', '매칭'],
-          rows: [
-            ["'%라면%'", "라면을 [포함]하는 모든 문자열"],
-            ["'%라면'", "라면으로 [끝나는]"],
-            ["'_im'", "3글자, [_] 가 임의의 한 글자"],
-            ["'[KT]im'", "Kim 또는 Tim (SQL Server 만)"],
-            ["'%/_라면' ESCAPE '/'", "/_ 로 _ 자체 매칭 — '_라면' 으로 끝"],
-          ],
-        },
-        {
-          kind: 'keypoints',
-          title: '우선순위 (높음 → 낮음)',
-          items: [
-            '괄호 ( )',
-            '산술 *, /, %, +, -',
-            '비교 =, !=, <, >, >=, <=, BETWEEN, IN, LIKE, IS NULL',
-            'NOT',
-            'AND',
-            'OR',
-          ],
-        },
-        {
-          kind: 'callout',
-          tone: 'warn',
-          title: '헷갈리는 부분 1 — IN/NOT IN + NULL',
-          body:
-            "col IN (1, NULL) → col=1 인 행만 (NULL 무시). col NOT IN (1, NULL) → 0행 (NULL UNKNOWN 으로 모두 거름). 안전한 NOT IN 은 NULL 미포함 보장 + NOT EXISTS.",
-        },
-        {
-          kind: 'callout',
-          tone: 'warn',
-          title: '헷갈리는 부분 2 — NOT (col=1 OR col=NULL)',
-          body:
-            "NOT (col=1 OR col=NULL) = NOT (col=1 OR UNKNOWN) = NOT UNKNOWN (또는 NOT TRUE) → 다소 복잡. NULL 인 행은 결과에서 빠짐.",
-        },
-      ],
-    },
-    {
-      id: 'sqld-2-1-s11',
-      title: 'GROUP BY · HAVING',
-      quizId: 'sqld-2-1-cp-11',
-      group: 'sqld-2-1-g3-filter-sort',
-      extraQuizIds: ['sqld-sql-lab-013', 'sqld-sql-read-001', 'sqld-sql-order-002'],
-      dialogue: [
-        { pose: 'wave', text: '[GROUP BY]는 [같은 값을 가진 행을 묶어 한 줄로 요약].' },
-        { pose: 'think', text: '예: 부서별 평균급여 — GROUP BY 부서 후 AVG(급여) 계산. 부서마다 한 줄.' },
-        { pose: 'lightbulb', text: '[HAVING]은 묶은 뒤에 나온 결과에 조건을 거는 절이야. WHERE와 역할이 달라.' },
-        { pose: 'happy', text: '[WHERE]는 묶기 전에 행을 고르고, [HAVING]은 묶은 뒤의 그룹을 골라.' },
-        { pose: 'think', text: '순서로 보면 더 쉬워. FROM → WHERE → GROUP BY → HAVING 순서로 처리돼.' },
-        { pose: 'lightbulb', text: 'WHERE 단계에서는 아직 평균이나 합계가 만들어지지 않았어. 그래서 집계함수를 쓸 수 없어.' },
-        { pose: 'happy', text: 'GROUP BY로 묶고 나면 평균, 합계, 개수 같은 값이 생겨. 그때 HAVING으로 조건을 걸 수 있어.' },
-        { pose: 'think', text: '"부서별 평균급여 500만 이상"처럼 묶은 뒤 계산한 조건은 HAVING AVG(급여) >= 5000000으로 써.' },
-        { pose: 'lightbulb', text: 'WHERE AVG(급여) >= 5000000처럼 쓰면 아직 평균이 없어서 오류가 나.' },
-        { pose: 'happy', text: '핵심 규칙: SELECT 의 [비집계 컬럼]은 [모두 GROUP BY 에 등장해야 함].' },
-        { pose: 'think', text: '예: SELECT 부서, COUNT(*) FROM EMP — GROUP BY 부서 없이 쓰면 [오류].' },
-        { pose: 'lightbulb', text: '성능 팁: WHERE 로 먼저 행을 줄인 뒤 GROUP BY 가 빠름. GROUP BY 가 비싼 작업이라.' },
-        { pose: 'idle', text: 'WHERE 와 HAVING 의 차이는?' },
-      ],
-      blocks: [
-        {
-          kind: 'intro',
-          body:
-            'GROUP BY 는 "같은 값을 가진 행을 묶어 한 그룹으로 만들고, 각 그룹에 집계함수를 적용" 하는 절. HAVING 은 그 결과에 조건을 거는 그룹 단위 필터. 둘은 항상 짝으로 등장하는 개념입니다.',
-        },
-        {
-          kind: 'example',
-          title: '5절 모두 사용한 종합 예시',
-          body:
-            "SELECT 부서, AVG(급여) AS 평균\nFROM EMP                           -- (1) FROM\nWHERE 입사년도 >= 2020             -- (2) WHERE — 행 필터\nGROUP BY 부서                       -- (3) GROUP BY — 그룹화\nHAVING AVG(급여) >= 5000000        -- (4) HAVING — 그룹 필터\nORDER BY 평균 DESC;                -- (6) ORDER BY",
-        },
-        {
-          kind: 'table',
-          title: 'WHERE vs HAVING',
-          headers: ['항목', 'WHERE', 'HAVING'],
-          rows: [
-            ['실행 시점', 'GROUP BY 전', 'GROUP BY 후'],
-            ['필터 단위', '행', '그룹'],
-            ['집계함수', '쓸 수 없어', '쓸 수 있어'],
-            ['단독 사용', '가능', '가능 (전체 1그룹)'],
-          ],
-        },
-        {
-          kind: 'keypoints',
-          title: '핵심 규칙',
-          items: [
-            'SELECT에 집계하지 않은 컬럼을 보여주려면 GROUP BY에도 같은 컬럼이 있어야 합니다.',
-            '집계함수는 WHERE 에 쓸 수 없어 — HAVING 에서만',
-            'WHERE 로 먼저 거른 뒤 GROUP BY 가 성능상 유리',
-            'GROUP BY 없이 집계함수만 = 전체 집합 1그룹 집계',
-          ],
-        },
-        {
-          kind: 'callout',
-          tone: 'warn',
-          title: '헷갈리는 부분 1 — 집계 + 일반 컬럼 혼합',
-          body:
-            "SELECT 부서, COUNT(*) FROM EMP — 오류가 나. 부서가 GROUP BY 에 없어 \"어느 부서?\" 결정 안 됨. SELECT 부서, COUNT(*) FROM EMP GROUP BY 부서 로 수정.",
-        },
-        {
-          kind: 'callout',
-          tone: 'warn',
-          title: '헷갈리는 부분 2 — 집계함수 위치',
-          body:
-            "WHERE AVG(급여) >= 5000000 → 오류. WHERE 는 행 단위, AVG 가 그룹별이라 모순. 그룹 조건은 HAVING.",
-        },
-      ],
-    },
-    {
-      id: 'sqld-2-1-s12',
-      title: 'ORDER BY',
-      quizId: 'sqld-2-1-cp-12',
-      group: 'sqld-2-1-g3-filter-sort',
-      extraQuizIds: ['sqld-sql-lab-014'],
-      dialogue: [
-        { pose: 'wave', text: 'ORDER BY 는 결과의 [최종 정렬]. SELECT 의 가장 마지막 절.' },
-        { pose: 'think', text: '[ASC] = 오름차순 (기본·생략 할 수 있어). [DESC] = 내림차순.' },
-        { pose: 'lightbulb', text: '여러 컬럼 정렬: ORDER BY 컬럼1 DESC, 컬럼2 ASC — 컬럼1 우선, 같으면 컬럼2.' },
-        { pose: 'happy', text: 'ORDER BY 는 [SELECT 후 실행]이라 [ALIAS] · [컬럼 번호] · [집계함수] 모두 쓸 수 있어.' },
-        { pose: 'think', text: '예: ORDER BY 평균 DESC (ALIAS), ORDER BY 2 DESC (2번째 컬럼), ORDER BY AVG(급여) DESC.' },
-        { pose: 'lightbulb', text: '데이터 형에 따른 정렬 — 숫자: 작은→큰, 문자: 사전순, 날짜: 과거→미래.' },
-        { pose: 'happy', text: '[NULL 정렬] 자주 헷갈리는 포인트. [Oracle] 은 NULL 을 [최댓값] 취급.' },
-        { pose: 'think', text: 'Oracle ASC 시 NULL = [맨 끝(NULLS LAST)]. DESC 시 NULL = [맨 앞(NULLS FIRST)].' },
-        { pose: 'lightbulb', text: '[SQL Server] 는 정반대. NULL 을 [최솟값] 취급. ASC = NULLS FIRST.' },
-        { pose: 'happy', text: '제어: ORDER BY col DESC NULLS LAST 처럼 [명시] 할 수 있어 (Oracle).' },
-        { pose: 'think', text: 'ORDER BY 가 빠지면 결과 순서는 [보장 X]. TOP N·LIMIT 와 결합 시 반드시 명시.' },
-        { pose: 'idle', text: 'Oracle 에서 ORDER BY DESC 시 NULL 은? 맨 앞.' },
-      ],
-      blocks: [
-        {
-          kind: 'intro',
-          body:
-            'ORDER BY 는 결과를 정렬하는 마지막 단계. SELECT 후 실행되어 ALIAS·집계함수·컬럼 번호 모두 쓸 수 있어. NULL 정렬이 DBMS 별로 다른 점이 자주 헷갈리는 부분.',
-        },
-        {
-          kind: 'example',
-          title: '활용 예시',
-          body:
-            "-- 다중 컬럼 + ALIAS\nSELECT 사번, 급여 AS 연봉, 보너스\nFROM 직원\nORDER BY 연봉 DESC, 보너스 ASC;\n\n-- 컬럼 번호 (1=사번, 2=연봉, 3=보너스)\nSELECT 사번, 급여 AS 연봉, 보너스\nFROM 직원\nORDER BY 2 DESC, 3 ASC;\n\n-- 집계함수\nSELECT 부서, AVG(급여)\nFROM EMP GROUP BY 부서\nORDER BY AVG(급여) DESC;",
-        },
-        {
-          kind: 'table',
-          title: '데이터 형에 따른 ASC 정렬',
-          headers: ['형', '순서'],
-          rows: [
-            ['숫자', '작은 수 → 큰 수'],
-            ['문자', '사전순 (ASCII/유니코드)'],
-            ['날짜', '과거 → 미래'],
-          ],
-        },
-        {
-          kind: 'table',
-          title: 'NULL 정렬 — DBMS 별 차이',
-          headers: ['DBMS', 'ASC', 'DESC'],
-          rows: [
-            ['Oracle', '맨 끝 (NULLS LAST)', '맨 앞 (NULLS FIRST)'],
-            ['SQL Server', '맨 앞 (NULLS FIRST)', '맨 끝 (NULLS LAST)'],
-            ['Oracle 명시 가능', 'NULLS FIRST / NULLS LAST 옵션', '동일'],
-          ],
-        },
-        {
-          kind: 'callout',
-          tone: 'tip',
-          title: 'ORDER BY 는 어디서나',
-          body:
-            'ALIAS, 컬럼 번호 (1, 2, 3...), 집계함수, 표현식 모두 쓸 수 있어. 단 컬럼 번호 사용은 가독성 ↓ 권장하지 않음.',
-        },
-        {
-          kind: 'callout',
-          tone: 'warn',
-          title: '헷갈리는 부분 — DESC 누락',
-          body:
-            '"매출 높은 순으로"처럼 큰 값부터 보여야 하는데 DESC가 없으면 기본값 ASC가 적용되어 결과가 반대로 나옵니다. 요구 문장에서 "높은 순", "최근 순" 같은 표현을 먼저 확인하세요.',
+            'NVL(c, 0), COALESCE(c, 0), CASE WHEN c IS NULL THEN 0 ELSE c END, DECODE(c, NULL, 0, c)는 같은 결과를 만들 수 있어. 형태가 달라도 같은 뜻인지 비교해보면 돼.',
         },
       ],
     },
@@ -913,64 +902,64 @@ const SQLD_2_2: Lesson = {
       title: 'JOIN 4종',
       quizId: 'sqld-2-2-cp-01',
       group: 'sqld-2-2-g1-joins',
-      extraQuizIds: ['sqld-2-2-cp-01-left-join', 'sqld-sql-lab-015', 'sqld-sql-lab-016', 'sqld-sql-order-003'],
+      extraQuizIds: ['sqld-sql-order-003', 'sqld-2-2-cp-01-left-join', 'sqld-sql-lab-016'],
       dialogue: [
-        { pose: 'wave', text: '[JOIN]은 [여러 테이블을 한 결과로 묶는 가장 자주 쓰는 도구]. 자주 나오는 핵심 개념.' },
-        { pose: 'think', text: 'JOIN 종류 [4가지]: [INNER] · [LEFT OUTER] · [RIGHT OUTER] · [FULL OUTER].' },
-        { pose: 'lightbulb', text: '[INNER JOIN]은 양쪽 테이블에서 조건이 맞는 행만 결과로 보여줘.\n가장 기본적인 JOIN이야.' },
-        { pose: 'happy', text: '예: 사원 ↔ 부서 INNER JOIN — 부서가 매칭되는 사원만 표시.' },
-        { pose: 'think', text: '[LEFT OUTER JOIN]은 왼쪽 테이블의 행을 모두 남겨.\n오른쪽에서 매칭되는 값이 없으면 그 부분은 NULL로 채워져.' },
-        { pose: 'lightbulb', text: '예: 부서 LEFT JOIN 사원 → 사원이 한 명도 없는 부서까지 결과에 포함.' },
-        { pose: 'happy', text: '[RIGHT OUTER JOIN]은 LEFT OUTER JOIN의 반대야.\n오른쪽 테이블의 모든 행을 남기고, 왼쪽에서 매칭되는 값만 붙여.' },
-        { pose: 'think', text: '[FULL OUTER JOIN]은 양쪽 테이블의 행을 모두 보존해.\n매칭이 없는 쪽의 컬럼은 NULL로 채워져.' },
-        { pose: 'lightbulb', text: 'JOIN 단독 작성 = [INNER JOIN] 의미.' },
-        { pose: 'happy', text: '실생활: "사원이 한 명도 없는 부서도 보고 싶다" → LEFT (부서 왼쪽).' },
-        { pose: 'think', text: '"부서 정보 없는 사원도 보고 싶다" → LEFT (사원 왼쪽) 또는 RIGHT (부서 오른쪽).' },
-        { pose: 'lightbulb', text: 'JOIN은 결과에 남는 행을 눈으로 그려보면 쉬워. INNER, LEFT, RIGHT, FULL이 각각 어디까지 남기는지 비교하자.' },
-        { pose: 'idle', text: '부서 없는 사원까지 보려면? LEFT (사원 왼쪽).' },
+        { pose: 'wave', text: '[JOIN]은 표 두 개를 옆으로 붙여서, 사람이 읽기 쉬운 결과표로 만드는 방법이야.' },
+        { pose: 'think', text: '예를 들어 사원 표에는 사원 이름과 부서ID만 있고, 부서 표에는 부서ID와 부서명이 따로 있을 수 있어.' },
+        { pose: 'lightbulb', text: '이때 [부서ID가 같은 행끼리] 붙이면 “민지 — 개발팀”처럼 한 줄로 볼 수 있어.' },
+        { pose: 'happy', text: 'JOIN을 볼 때 처음 질문은 하나야.\n“두 표를 어떤 값으로 붙일까?”부터 보면 돼.' },
+        { pose: 'think', text: '예: ON E.부서ID = D.부서ID\n이 말은 사원 표의 부서ID와 부서 표의 부서ID가 같은 행끼리 붙이라는 뜻이야.' },
+        { pose: 'lightbulb', text: '그다음에 JOIN 종류를 보면 돼.\nJOIN 종류는 결국 “어느 쪽 행을 결과에 남길까?”를 정하는 규칙이야.' },
+        { pose: 'happy', text: '먼저 [INNER JOIN]이야.\n양쪽 표에서 조건이 맞는 행만 남겨.' },
+        { pose: 'think', text: '사원에 부서ID 99가 있는데 부서 표에 99번 부서가 없으면, INNER JOIN에서는 그 사원이 빠져.' },
+        { pose: 'lightbulb', text: '이번에는 [LEFT OUTER JOIN]이야.\n왼쪽 표의 행은 먼저 모두 남겨.' },
+        { pose: 'happy', text: '예: 부서 LEFT JOIN 사원은 사원이 한 명도 없는 부서도 남겨.\n사원 쪽 값이 없으면 NULL로 채워져.' },
+        { pose: 'think', text: '[RIGHT OUTER JOIN]은 LEFT의 반대야.\n오른쪽 표를 먼저 모두 남긴다고 보면 돼.' },
+        { pose: 'lightbulb', text: '[FULL OUTER JOIN]은 양쪽 표를 모두 남겨.\n한쪽에만 있는 행도 결과에 남고, 없는 쪽은 NULL이 돼.' },
+        { pose: 'idle', text: '이제 문제는 하나만 보면 돼.\n양쪽 표를 모두 남기는 JOIN은 무엇일까?' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            'JOIN은 둘 이상의 테이블을 연결해 한 결과 집합으로 만드는 SQL의 핵심 연산입니다. 어떤 행이 남고 어떤 행이 사라지는지를 그림처럼 떠올리면 행 수 계산도 쉬워집니다.',
+            'JOIN은 서로 다른 표에 흩어진 정보를 같은 값 기준으로 붙이는 방법이야. 처음에는 JOIN 종류 이름보다 “어떤 값으로 붙일까?”와 “어느 쪽 행을 남길까?” 두 가지만 보면 쉬워.',
         },
         {
           kind: 'table',
-          title: 'JOIN 4종 비교',
-          headers: ['JOIN', '결과'],
+          title: '처음엔 이렇게만 구분해',
+          headers: ['JOIN', '남기는 행'],
           rows: [
-            ['INNER JOIN', '양쪽에 매칭되는 행만'],
-            ['LEFT OUTER JOIN', '왼쪽 전부 + 매칭 (없으면 NULL)'],
-            ['RIGHT OUTER JOIN', '오른쪽 전부 + 매칭'],
-            ['FULL OUTER JOIN', '양쪽 전부 (매칭 없으면 NULL)'],
+            ['INNER JOIN', '양쪽에 모두 맞는 행만'],
+            ['LEFT OUTER JOIN', '왼쪽 표의 행은 전부'],
+            ['RIGHT OUTER JOIN', '오른쪽 표의 행은 전부'],
+            ['FULL OUTER JOIN', '양쪽 표의 행을 전부'],
           ],
         },
         {
           kind: 'example',
-          title: '실 예시 — 부서/사원',
+          title: '기준 예시 — 부서ID로 붙이기',
           body:
-            "-- 1. 부서 매칭되는 사원만\nSELECT E.이름, D.부서명\nFROM 사원 E INNER JOIN 부서 D\n  ON E.부서ID = D.부서ID;\n\n-- 2. 사원이 없는 부서까지\nSELECT D.부서명, E.이름\nFROM 부서 D LEFT JOIN 사원 E\n  ON D.부서ID = E.부서ID;\n\n-- 3. 양쪽 모두 (부서 없는 사원 + 사원 없는 부서)\nSELECT D.부서명, E.이름\nFROM 부서 D FULL OUTER JOIN 사원 E\n  ON D.부서ID = E.부서ID;",
+            "-- 사원과 부서를 부서ID로 붙이는 예시야\nSELECT E.이름, D.부서명\nFROM 사원 E\nJOIN 부서 D\n  ON E.부서ID = D.부서ID;\n\n-- ON E.부서ID = D.부서ID\n-- 뜻: 두 표에서 부서ID가 같은 행끼리 붙여.",
         },
         {
           kind: 'section',
-          title: '행 수 합계 문제 — 자주 나오는 패턴',
+          title: 'JOIN 문제 푸는 순서',
           body:
-            '각 JOIN 의 행 수 관계: INNER ≤ LEFT, INNER ≤ RIGHT ≤ FULL.\n예: 두 테이블 (T1=4행, T2=4행), 매칭 키 1개 (G가 양쪽 모두), 비매칭 키들이 양쪽에 3개씩.\n• INNER = 1\n• LEFT = 1 + 3(왼쪽 비매칭) = 4\n• RIGHT = 1 + 3(오른쪽 비매칭) = 4\n• FULL = 1 + 3 + 3 = 7\n• 합 = 1 + 4 + 4 + 7 = 16',
+            '1. 두 표를 어떤 값으로 붙이는지 먼저 찾아.\n2. 양쪽에 맞는 행만 남길지, 한쪽 표를 지킬지 봐.\n3. 매칭되지 않는 쪽은 NULL로 채워질 수 있다고 기억해.\n\n행 수 계산 문제는 이 기준이 잡힌 뒤에 보면 훨씬 쉬워.',
         },
         {
           kind: 'callout',
           tone: 'tip',
-          title: 'JOIN 만 쓰면 INNER',
+          title: 'JOIN만 쓰면 INNER',
           body:
-            '"FROM A JOIN B ON A.k = B.k" 처럼 JOIN 만 쓰면 INNER JOIN 으로 해석. 명확성 위해 INNER 명시 권장.',
+            '"FROM A JOIN B ON A.k = B.k"처럼 JOIN만 쓰면 INNER JOIN으로 해석해. 처음에는 INNER라는 말을 생략한 표현이라고 생각하면 돼.',
         },
         {
           kind: 'callout',
           tone: 'warn',
-          title: '헷갈리는 부분 — JOIN 결과가 다른 것 찾기',
+          title: '헷갈리는 부분',
           body:
-            'JOIN 결과는 남는 행의 범위가 다릅니다. INNER는 양쪽에 모두 있는 행, LEFT는 왼쪽 전체, RIGHT는 오른쪽 전체, FULL OUTER는 양쪽 전체를 남기므로 보통 가장 넓은 결과가 됩니다.',
+            'INNER는 조건이 맞는 행만 남겨. OUTER가 붙으면 한쪽 또는 양쪽 표를 더 넓게 남긴다고 보면 돼.',
         },
       ],
     },
@@ -980,25 +969,25 @@ const SQLD_2_2: Lesson = {
       quizId: 'sqld-2-2-cp-02',
       group: 'sqld-2-2-g1-joins',
       dialogue: [
-        { pose: 'wave', text: 'JOIN 의 [매칭 조건]을 명시하는 3가지 방법. 각각 특징 다름.' },
+        { pose: 'wave', text: '이제 표를 붙일 때 [조건을 어떻게 쓰는지] 볼게.' },
         { pose: 'think', text: '① [NATURAL JOIN]은 양쪽 테이블에서 이름이 같은 컬럼을 자동으로 찾아 조인해.\n그래서 ON이나 USING을 직접 쓰지 않아.' },
         { pose: 'lightbulb', text: '예: SELECT * FROM 사원 NATURAL JOIN 부서 — 양쪽에 [부서ID] 가 있으면 자동 매칭.' },
-        { pose: 'happy', text: '② [USING(컬럼)]: 같은 이름 컬럼을 [명시적]으로 지정.' },
-        { pose: 'think', text: '예: INNER JOIN 부서 USING (부서ID) — 부서ID 가 양쪽에 있어야 함.' },
+        { pose: 'happy', text: '② [USING(컬럼)]은 같은 이름 컬럼을 직접 지정하는 방식이야.' },
+        { pose: 'think', text: '예: INNER JOIN 부서 USING (부서ID)\n이건 양쪽 표에 부서ID가 있을 때 쓸 수 있어.' },
         { pose: 'lightbulb', text: '③ [ON 조건]은 조인 조건을 가장 직접적으로 적는 방식이야.\n양쪽 컬럼명이 달라도 사용할 수 있어.' },
         { pose: 'happy', text: '예: ON E.dept_id = D.id — 한쪽이 dept_id, 다른 쪽이 id 여도 쓸 수 있어.' },
-        { pose: 'think', text: '헷갈리는 부분. ON 절은 [표현식이 와야]. [ON (컬럼명)] 만 쓰면 [오류].' },
+        { pose: 'think', text: '헷갈리는 부분도 있어.\nON 절에는 E.부서ID = D.부서ID 같은 [비교식]이 와야 해.' },
         { pose: 'lightbulb', text: 'NATURAL JOIN 의 단점: 같은 이름 컬럼이 [의도치 않게 매칭]될 수 있어 [위험].' },
-        { pose: 'happy', text: '실무는 [ON 조건] 권장. NATURAL JOIN 은 가급적 피하기.' },
-        { pose: 'think', text: 'NATURAL/USING 의 결과 컬럼은 [한 번만] 등장. 테이블 prefix [쓸 수 없어].' },
-        { pose: 'lightbulb', text: '예: SELECT 부서ID FROM 사원 USING(부서ID) → 쓸 수 있어 / SELECT E.부서ID FROM. USING → 오류.' },
-        { pose: 'idle', text: 'ON (DEPT_ID) 만 쓰면 어떻게? 오류.' },
+        { pose: 'happy', text: '그래서 처음 배울 때는 ON 조건을 가장 기본으로 잡는 게 좋아.' },
+        { pose: 'think', text: 'NATURAL/USING으로 합쳐진 컬럼은 결과에서 한 번만 보여.\n그래서 그 컬럼에는 테이블 prefix를 붙이면 안 돼.' },
+        { pose: 'lightbulb', text: '예: SELECT 부서ID FROM 사원 JOIN 부서 USING(부서ID)는 가능해.\n하지만 SELECT E.부서ID처럼 쓰면 오류가 날 수 있어.' },
+        { pose: 'idle', text: 'ON (DEPT_ID)처럼 컬럼명만 쓰면 될까?\n아니야. 비교식이 필요해.' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            'JOIN 의 매칭 조건을 표기하는 3가지 방법 — NATURAL, USING, ON. 각각 컬럼명 같음 여부·명시도·prefix 쓸 수 있어 여부가 다릅니다. 실무는 ON 조건이 가장 명확하고 안전.',
+            'JOIN 조건은 “두 표를 어떤 기준으로 붙일지” 적는 부분이야. ON, USING, NATURAL이 있는데, 처음에는 가장 직접적인 ON 조건부터 잡으면 안전해.',
         },
         {
           kind: 'example',
@@ -1021,7 +1010,7 @@ const SQLD_2_2: Lesson = {
           tone: 'warn',
           title: '헷갈리는 부분 1 — ON (컬럼명) 단독',
           body:
-            "INNER JOIN B ON (DEPT_ID) — 오류가 나. ON 절은 표현식 필요. ON A.DEPT_ID = B.DEPT_ID 또는 USING (DEPT_ID) 사용.",
+            "INNER JOIN B ON (DEPT_ID)처럼 컬럼명만 쓰면 오류가 나. ON에는 A.DEPT_ID = B.DEPT_ID처럼 양쪽을 비교하는 식이 필요해. 컬럼명이 같다면 USING (DEPT_ID)를 쓸 수도 있어.",
         },
         {
           kind: 'callout',
@@ -1035,7 +1024,7 @@ const SQLD_2_2: Lesson = {
           tone: 'tip',
           title: '실무 권장 — ON',
           body:
-            'NATURAL JOIN 은 의도치 않은 같은 이름 컬럼 (예: created_at) 까지 매칭되어 위험. USING 은 컬럼명 같을 때만 가능. ON 이 가장 안전.',
+            'NATURAL JOIN은 의도하지 않은 같은 이름 컬럼까지 자동으로 붙일 수 있어. USING은 컬럼명이 같을 때만 가능해. 그래서 처음에는 ON 조건을 기본으로 잡는 게 가장 안전해.',
         },
       ],
     },
@@ -1126,7 +1115,7 @@ const SQLD_2_2: Lesson = {
         {
           kind: 'intro',
           body:
-            '서브쿼리는 한 쿼리의 결과를 다른 쿼리 안에서 다시 사용하는 방식입니다. 먼저 결과가 값 하나인지, 여러 행인지, 여러 컬럼인지부터 구분하면 뒤의 위치 분류도 훨씬 쉬워집니다.',
+            '서브쿼리는 한 쿼리의 결과를 다른 쿼리 안에서 다시 사용하는 방식이야. 먼저 결과가 값 하나인지, 여러 행인지, 여러 컬럼인지부터 구분하면 뒤의 위치 분류도 훨씬 쉬워져.',
         },
         {
           kind: 'table',
@@ -1172,7 +1161,7 @@ const SQLD_2_2: Lesson = {
         {
           kind: 'intro',
           body:
-            '서브쿼리는 결과 모양뿐 아니라 위치로도 구분합니다. FROM 절 안에 있으면 인라인 뷰, SELECT 절에서 값처럼 쓰면 스칼라 서브쿼리, 바깥 쿼리 값을 참조하면 상호연관 서브쿼리라고 부릅니다.',
+            '서브쿼리는 결과 모양뿐 아니라 위치로도 구분해. FROM 절 안에 있으면 인라인 뷰, SELECT 절에서 값처럼 쓰면 스칼라 서브쿼리, 바깥 쿼리 값을 참조하면 상호연관 서브쿼리라고 불러.',
         },
         {
           kind: 'table',
@@ -1226,7 +1215,7 @@ const SQLD_2_2: Lesson = {
         {
           kind: 'intro',
           body:
-            'EXISTS·IN·ANY·ALL 은 다중행 서브쿼리와 함께 쓰는 4가지 연산자. 의미가 비슷해 보이지만 차이가 있어 자주 나오는 패턴. 특히 NOT IN + NULL 의 헷갈리는 부분을 알면 실무 버그도 줄어듭니다.',
+            'EXISTS·IN·ANY·ALL 은 다중행 서브쿼리와 함께 쓰는 4가지 연산자. 의미가 비슷해 보이지만 차이가 있어 자주 나오는 패턴. 특히 NOT IN + NULL 의 헷갈리는 부분을 알면 실무 버그도 줄어들어.',
         },
         {
           kind: 'table',
@@ -1289,7 +1278,7 @@ const SQLD_2_2: Lesson = {
         {
           kind: 'intro',
           body:
-            '집합 연산자는 두 SELECT 결과를 세로로 합치거나 비교하는 도구입니다. 수학의 합집합·교집합·차집합을 SQL 결과표에 적용한다고 보면 됩니다.',
+            '집합 연산자는 두 SELECT 결과를 세로로 합치거나 비교하는 도구야. 수학의 합집합·교집합·차집합을 SQL 결과표에 적용한다고 보면 돼.',
         },
         {
           kind: 'table',
@@ -1336,68 +1325,108 @@ const SQLD_2_2: Lesson = {
     },
     {
       id: 'sqld-2-2-s7',
-      title: '그룹 함수',
-      quizId: 'sqld-2-2-cp-07',
-      group: 'sqld-2-2-g3-set-group',
-      extraQuizIds: ['sqld-sql-lab-019'],
+      title: 'ROLLUP',
+      group: 'sqld-2-2-g3-rollup-cube',
       dialogue: [
-        { pose: 'wave', text: 'GROUP BY 의 [확장 형태] 3총사 — [ROLLUP], [CUBE], [GROUPING SETS].' },
-        { pose: 'think', text: '소계·총계·다양한 조합을 한 쿼리로 만드는 도구.' },
-        { pose: 'lightbulb', text: '① [ROLLUP(a, b)]: 컬럼 순서대로 [점진적]으로 그룹을 줄여 소계+총계.' },
-        { pose: 'happy', text: 'ROLLUP(지역, 상품) → [(지역,상품), (지역), ()] 3가지 그룹.' },
-        { pose: 'think', text: '예: 지역별·상품별 매출 + 지역 소계 + 전체 총계 한 번에.' },
-        { pose: 'lightbulb', text: '헷갈리는 부분. ROLLUP(a,b) 와 ROLLUP(b,a) 는 [결과 다름]. 컬럼 순서 중요.' },
-        { pose: 'happy', text: '② [CUBE]는 가능한 모든 조합의 소계와 총계를 만들어.\nROLLUP보다 더 많은 집계 조합을 보여줘.' },
-        { pose: 'think', text: 'CUBE(지역, 상품) → [(지역,상품), (지역), (상품), ()] 4가지.' },
-        { pose: 'lightbulb', text: '컬럼 순서 [무관]. 모든 조합 다 만들기 때문.' },
-        { pose: 'happy', text: '③ [GROUPING SETS]는 원하는 집계 조합만 직접 지정하는 방식이야.\n필요한 소계만 골라 만들 수 있어.' },
-        { pose: 'think', text: 'GROUPING SETS ((a,b), (c), ()) — 정확히 이 3가지만.' },
-        { pose: 'lightbulb', text: '동치 변환: ROLLUP(a, b) ≡ GROUPING SETS ((a,b), (a), ()).' },
-        { pose: 'happy', text: '[GROUPING(col)] 함수: 그 컬럼이 소계 행이면 1, 아니면 0.' },
-        { pose: 'think', text: 'CASE WHEN GROUPING(col)=1 THEN "소계" ELSE col END 패턴 자주.' },
-        { pose: 'idle', text: 'CUBE(a,b) 의 결과 그룹은 몇 개? 4개.' },
+        { pose: 'wave', text: '이번에는 매출표를 보고 있다고 생각해보자.' },
+        { pose: 'think', text: '지역별·상품별 매출을 보다가 “서울 전체는 얼마지?”, “전국 전체는 얼마지?”가 궁금할 수 있어.' },
+        { pose: 'lightbulb', text: '그때 쓰는 게 [ROLLUP]이야. 자세한 줄 아래에 소계와 총계를 차례로 붙여줘.' },
+        { pose: 'happy', text: 'GROUP BY ROLLUP(지역, 상품)은 이렇게 읽으면 돼.\n“지역과 상품으로 묶고, 상품을 접어서 지역 합계도 보여줘!”' },
+        { pose: 'think', text: '그래서 결과는 상세 매출 → 지역별 합계 → 전체 합계 순서로 이어져.' },
+        { pose: 'lightbulb', text: '여기서 시험 포인트!\nROLLUP은 컬럼 순서가 중요해. 무엇을 먼저 쓰느냐에 따라 소계 기준이 달라져.' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            '집계 보고서를 만들 때 GROUP BY만으로는 소계와 총계를 한 번에 만들기 어렵습니다. ROLLUP, CUBE, GROUPING SETS는 여러 집계 단계를 한 쿼리에서 표현하게 해줍니다.',
-        },
-        {
-          kind: 'table',
-          title: '그룹 확장 함수 비교',
-          headers: ['함수', '생성하는 그룹', '용도'],
-          rows: [
-            ['ROLLUP(a, b)', '(a,b), (a), ()', '소계 + 총계 (계층적)'],
-            ['CUBE(a, b)', '(a,b), (a), (b), ()', '모든 조합'],
-            ['GROUPING SETS ((a),(b),())', '명시한 조합만', '특정 조합만 필요할 때'],
-          ],
+            'ROLLUP은 “자세한 결과를 보여주고, 그 아래에 중간 합계와 전체 합계도 붙여줘”라고 DB에 요청하는 방법이야. 시험에서는 어떤 소계가 만들어지는지, 컬럼 순서가 왜 중요한지를 자주 봐.',
         },
         {
           kind: 'example',
-          title: 'ROLLUP 예시',
+          title: 'ROLLUP은 상세 → 소계 → 총계',
           body:
-            "SELECT 지역, 상품, SUM(가격) AS 합계\nFROM 판매\nGROUP BY ROLLUP(지역, 상품);\n\n-- 결과:\n-- (서울, 사과, 1000)\n-- (서울, 배,   2000)\n-- (서울, NULL, 3000)  ← 지역 소계\n-- (부산, 사과, 1500)\n-- (부산, NULL, 1500)  ← 지역 소계\n-- (NULL, NULL, 4500) ← 총계",
-        },
-        {
-          kind: 'example',
-          title: 'GROUPING(col) 활용',
-          body:
-            "SELECT\n  CASE WHEN GROUPING(지역)=1 THEN '전체' ELSE 지역 END AS 지역,\n  CASE WHEN GROUPING(상품)=1 AND GROUPING(지역)=0 THEN '소계' ELSE 상품 END AS 상품,\n  SUM(가격)\nFROM 판매\nGROUP BY ROLLUP(지역, 상품);",
-        },
-        {
-          kind: 'callout',
-          tone: 'tip',
-          title: 'ROLLUP/CUBE/GROUPING SETS 동치',
-          body:
-            'ROLLUP(a,b)는 (a,b) → (a) → 전체 총계 순서로 내려갑니다. CUBE(a,b)는 (a,b), (a), (b), 전체 총계를 모두 만듭니다.',
+            "SELECT 지역, 상품, SUM(매출) AS 매출합계\nFROM 판매\nGROUP BY ROLLUP(지역, 상품);\n\n-- 결과 흐름\n-- 1. 지역+상품별 상세 매출\n-- 2. 지역별 매출 합계\n-- 3. 전체 매출 합계",
         },
         {
           kind: 'callout',
           tone: 'warn',
-          title: '헷갈리는 부분 — ROLLUP 컬럼 순서',
+          title: '순서를 바꾸면 소계 기준도 바뀐다',
           body:
-            'ROLLUP(a, b) 와 ROLLUP(b, a) 결과 다름. 첫 컬럼 기준으로 점진적 소계가 만들어지므로 순서가 중요. CUBE 는 무관.',
+            'ROLLUP(지역, 상품)은 지역별 소계를 만들고, ROLLUP(상품, 지역)은 상품별 소계를 만들 수 있어. 같은 컬럼을 써도 순서를 바꾸면 결과에서 강조되는 합계가 달라져.',
+        },
+      ],
+    },
+    {
+      id: 'sqld-2-2-s7-cube',
+      title: 'CUBE',
+      group: 'sqld-2-2-g3-rollup-cube',
+      dialogue: [
+        { pose: 'wave', text: '이번에는 [CUBE]야.' },
+        { pose: 'think', text: 'ROLLUP은 한 방향으로 접어가며 합계를 만들었지?' },
+        { pose: 'lightbulb', text: 'CUBE는 더 넓게 보는 방식이야.\n가능한 합계 조합을 전부 보고 싶을 때 써.' },
+        { pose: 'happy', text: 'CUBE(지역, 상품)은 지역별 합계도, 상품별 합계도, 전체 합계도 한 번에 만들어.' },
+        { pose: 'think', text: '즉 “지역 기준으로도 보고 싶고, 상품 기준으로도 보고 싶어”라면 CUBE가 잘 맞아.' },
+        { pose: 'lightbulb', text: '기준이 2개면 상세, 지역별 합계, 상품별 합계, 전체 합계. 이렇게 4묶음이 나온다고 보면 돼.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'CUBE는 “가능한 합계 조합을 전부 보여줘”라고 요청하는 방법이야. 지역과 상품을 기준으로 잡았다면, 지역별로도 보고 상품별로도 볼 수 있게 결과를 넓게 만들어 줘.',
+        },
+        {
+          kind: 'example',
+          title: 'CUBE는 가능한 합계를 모두 보기',
+          body:
+            "SELECT 지역, 상품, SUM(매출) AS 매출합계\nFROM 판매\nGROUP BY CUBE(지역, 상품);\n\n-- 결과 흐름\n-- 1. 지역+상품별 상세 매출\n-- 2. 지역별 매출 합계\n-- 3. 상품별 매출 합계\n-- 4. 전체 매출 합계",
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: 'ROLLUP과 CUBE의 차이',
+          body:
+            'ROLLUP은 한 방향으로 접어가며 합계를 만들고, CUBE는 가능한 합계 조합을 모두 만들어. “한쪽 방향 소계”는 ROLLUP, “여러 방향 소계”는 CUBE로 떠올리면 쉬워요.',
+        },
+      ],
+    },
+    {
+      id: 'sqld-2-2-s7-grouping',
+      title: 'GROUPING',
+      quizId: 'sqld-2-2-cp-07',
+      group: 'sqld-2-2-g3-rollup-cube',
+      extraQuizIds: ['sqld-sql-lab-019'],
+      dialogue: [
+        { pose: 'wave', text: '마지막은 [GROUPING SETS]와 [GROUPING]이야. 이름은 딱딱하지만 역할은 단순해.' },
+        { pose: 'think', text: 'GROUPING SETS는 필요한 합계 모양만 직접 골라서 만드는 방법이야.' },
+        { pose: 'lightbulb', text: '예를 들어 상세, 지역별 합계, 전체 합계만 필요하다면 그 3가지만 직접 적을 수 있어.' },
+        { pose: 'happy', text: '그리고 GROUPING(컬럼)은 “이 칸이 진짜 값인지, 합계라서 비워진 자리인지”를 구분해줘.' },
+        { pose: 'think', text: 'GROUPING(상품)=1이면 상품이 접힌 소계 행이라는 뜻.\n0이면 실제 상품 값이 있는 행이야.' },
+        { pose: 'idle', text: '정리하면 ROLLUP은 차례로 접기, CUBE는 모든 조합, GROUPING은 소계 행 구분이야!' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'GROUPING SETS는 필요한 합계 조합만 직접 고르는 방법이야. GROUPING 함수는 결과표에서 이 줄이 실제 상세 데이터인지, 소계나 총계 줄인지 구분할 때 써.',
+        },
+        {
+          kind: 'example',
+          title: '필요한 묶음만 골라 만들기',
+          body:
+            "SELECT 지역, 상품, SUM(매출) AS 매출합계\nFROM 판매\nGROUP BY GROUPING SETS ((지역, 상품), (지역), ());\n\n-- 필요한 결과만 선택\n-- 1. 지역+상품별 상세 매출\n-- 2. 지역별 매출 합계\n-- 3. 전체 매출 합계",
+        },
+        {
+          kind: 'example',
+          title: 'NULL처럼 보이는 자리를 구분하기',
+          body:
+            "SELECT\n  CASE WHEN GROUPING(지역)=1 THEN '전체' ELSE 지역 END AS 지역,\n  CASE WHEN GROUPING(상품)=1 THEN '소계' ELSE 상품 END AS 상품,\n  SUM(매출) AS 매출합계\nFROM 판매\nGROUP BY ROLLUP(지역, 상품);",
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '0과 1만 기억하자',
+          body:
+            'GROUPING(컬럼)=0이면 실제 값이 있는 행이야. 1이면 소계나 총계를 만들기 위해 비워진 자리야. 결과표에서 “이 NULL이 진짜 NULL인가?” 헷갈릴 때 구분해주는 신호라고 보면 돼.',
         },
       ],
     },
@@ -1427,7 +1456,7 @@ const SQLD_2_2: Lesson = {
         {
           kind: 'intro',
           body:
-            '윈도우 함수는 행을 줄이지 않고 각 행 옆에 순위, 누적합, 그룹 평균 같은 값을 붙입니다. “직원 목록은 그대로 두고 각 직원의 부서 평균도 같이 보고 싶다” 같은 상황에서 사용합니다.',
+            '윈도우 함수는 행을 줄이지 않고 각 행 옆에 순위, 누적합, 그룹 평균 같은 값을 붙여. “직원 목록은 그대로 두고 각 직원의 부서 평균도 같이 보고 싶다” 같은 상황에서 사용해.',
         },
         {
           kind: 'example',
@@ -1492,7 +1521,7 @@ const SQLD_2_2: Lesson = {
         {
           kind: 'intro',
           body:
-            '집계 윈도우 함수는 GROUP BY 의 한계를 깨뜨립니다. "각 행 옆에 그룹 통계를 동시에 표시" 가 가능. PARTITION BY + ORDER BY 조합으로 누적/이동평균/순위 등 풍부한 분석.',
+            '집계 윈도우 함수는 GROUP BY 의 한계를 깨뜨려. "각 행 옆에 그룹 통계를 동시에 표시" 가 가능. PARTITION BY + ORDER BY 조합으로 누적/이동평균/순위 등 풍부한 분석.',
         },
         {
           kind: 'example',
@@ -1619,7 +1648,7 @@ const SQLD_2_2: Lesson = {
         {
           kind: 'intro',
           body:
-            'TOP N은 정렬한 결과에서 상위 N개만 가져오는 패턴입니다. SQLD에서는 DBMS별 문법 차이와 Oracle 구버전 ROWNUM의 실행 순서 함정이 자주 나옵니다.',
+            'TOP N은 정렬한 결과에서 상위 N개만 가져오는 패턴이야. SQLD에서는 DBMS별 문법 차이와 Oracle 구버전 ROWNUM의 실행 순서 함정이 자주 나와.',
         },
         {
           kind: 'table',
@@ -1658,7 +1687,7 @@ const SQLD_2_2: Lesson = {
         {
           kind: 'intro',
           body:
-            '비율 함수는 결과를 줄 세운 뒤 “몇 등인가”보다 더 자세히, 전체 중 어느 구간인지 또는 전체 합에서 얼마만큼 차지하는지를 보여주는 함수입니다.',
+            '비율 함수는 결과를 줄 세운 뒤 “몇 등인가”보다 더 자세히, 전체 중 어느 구간인지 또는 전체 합에서 얼마만큼 차지하는지를 보여주는 함수야.',
         },
         {
           kind: 'keypoints',
@@ -1675,7 +1704,7 @@ const SQLD_2_2: Lesson = {
           tone: 'tip',
           title: '처음에는 이렇게 구분',
           body:
-            'NTILE은 “구간 나누기”, RATIO_TO_REPORT는 “전체 중 몇 퍼센트”, CUME_DIST와 PERCENT_RANK는 “정렬된 위치”를 보는 함수로 먼저 잡으면 됩니다.',
+            'NTILE은 “구간 나누기”, RATIO_TO_REPORT는 “전체 중 몇 퍼센트”, CUME_DIST와 PERCENT_RANK는 “정렬된 위치”를 보는 함수로 먼저 잡으면 돼.',
         },
       ],
     },
@@ -1696,13 +1725,13 @@ const SQLD_2_2: Lesson = {
         {
           kind: 'intro',
           body:
-            '계층형 질의는 트리 구조를 SQL로 따라가는 Oracle 문법입니다. START WITH로 시작점을 정하고, CONNECT BY PRIOR로 부모-자식 연결 규칙을 적습니다.',
+            '계층형 질의는 트리 구조를 SQL로 따라가는 Oracle 문법이야. START WITH로 시작점을 정하고, CONNECT BY PRIOR로 부모-자식 연결 규칙을 적어.',
         },
         {
           kind: 'example',
           title: '사원·관리자 트리',
           body:
-            "-- 최상위(직속상관 IS NULL)부터 아래로 출력\nSELECT LEVEL, 사원이름, 직속상관\nFROM 사원\nSTART WITH 직속상관 IS NULL\nCONNECT BY PRIOR 사원이름 = 직속상관;\n\n-- PRIOR가 붙은 쪽을 이미 찾은 부모 행으로 보면 이해하기 쉽습니다.",
+            "-- 최상위(직속상관 IS NULL)부터 아래로 출력\nSELECT LEVEL, 사원이름, 직속상관\nFROM 사원\nSTART WITH 직속상관 IS NULL\nCONNECT BY PRIOR 사원이름 = 직속상관;\n\n-- PRIOR가 붙은 쪽을 이미 찾은 부모 행으로 보면 이해하기 쉬워.",
         },
         {
           kind: 'table',
@@ -1735,7 +1764,7 @@ const SQLD_2_2: Lesson = {
         {
           kind: 'intro',
           body:
-            'PIVOT은 행을 열로 펼쳐 보고서 모양을 만들고, UNPIVOT은 열을 다시 행으로 길게 바꿉니다. SQLD에서는 PIVOT이 집계 함수와 함께 쓰인다는 점을 특히 기억해야 합니다.',
+            'PIVOT은 행을 열로 펼쳐 보고서 모양을 만들고, UNPIVOT은 열을 다시 행으로 길게 바꿔. SQLD에서는 PIVOT이 집계 함수와 함께 쓰인다는 점을 특히 기억해야 해.',
         },
         {
           kind: 'table',
@@ -1751,7 +1780,7 @@ const SQLD_2_2: Lesson = {
           tone: 'tip',
           title: '처음에는 모양으로 기억',
           body:
-            'PIVOT은 보고서처럼 가로로 펼치는 것, UNPIVOT은 다시 세로로 길게 쌓는 것입니다. “피벗 테이블”을 떠올리면 쉽습니다.',
+            'PIVOT은 보고서처럼 가로로 펼치는 것, UNPIVOT은 다시 세로로 길게 쌓는 거야. “피벗 테이블”을 떠올리면 쉬워.',
         },
       ],
     },
@@ -1785,7 +1814,7 @@ const SQLD_2_2: Lesson = {
         {
           kind: 'intro',
           body:
-            '정규표현식은 SQL 안에서 복잡한 문자열 패턴을 검색·치환·추출하는 도구입니다. 기호가 어떤 반복과 범위를 뜻하는지, Oracle의 주요 함수가 어떤 역할을 하는지 나눠서 보면 됩니다. 한국어 한 음절은 한 문자 단위로 처리됩니다.',
+            '정규표현식은 SQL 안에서 복잡한 문자열 패턴을 검색·치환·추출하는 도구야. 기호가 어떤 반복과 범위를 뜻하는지, Oracle의 주요 함수가 어떤 역할을 하는지 나눠서 보면 돼. 한국어 한 음절은 한 문자 단위로 처리돼.',
         },
         {
           kind: 'table',
@@ -1849,35 +1878,49 @@ const SQLD_2_3: Lesson = {
   chapter: 2,
   chapterTitle: 'SQL 기본 및 활용',
   topic: '관리 구문',
-  title: 'INSERT/UPDATE/DELETE · MERGE · TCL · DDL · 제약조건 · DCL',
-  hook: '데이터를 바꾸고, 확정하고, 구조를 만들고, 권한을 주는 SQL을 차근차근 배워요.',
+  title: 'DML · TCL · DDL · DCL',
+  hook: '데이터 조작, 트랜잭션, 구조 정의, 권한 제어를 큰 묶음부터 차근차근 배워요.',
   estimatedMinutes: 14,
   steps: [
     {
       id: 'sqld-2-3-s1',
       title: 'DML이란',
+      quizId: 'sqld-sql-lab-001',
       group: 'sqld-2-3-g1-dml',
       dialogue: [
-        { pose: 'wave', text: '관리 구문에서 먼저 볼 것은 [DML]이야.' },
+        { pose: 'wave', text: '먼저 [DML]이 뭔지부터 확실히 잡고 갈게.' },
         { pose: 'think', text: '[DML]은 Data Manipulation Language의 약자야.\n한국어로는 데이터 조작어라고 불러.' },
-        { pose: 'lightbulb', text: '말 그대로 테이블 안의 [데이터 자체]를 조회하고, 넣고, 고치고, 지우는 SQL 묶음이야.' },
-        { pose: 'happy', text: '이번 흐름에서는 INSERT, UPDATE, DELETE를 하나씩 따로 볼 거야.\n먼저 전체 그림만 잡자.' },
+        { pose: 'lightbulb', text: '여기서 조작은 테이블 안의 [행 데이터]를 넣고, 고치고, 지우고, 합치는 흐름이야.' },
+        { pose: 'think', text: '그래서 DML 아래에 INSERT, UPDATE, DELETE, MERGE가 딸려온다고 보면 돼.' },
+        { pose: 'happy', text: '반대로 테이블 구조를 만들고 바꾸는 건 DDL,\n확정과 취소는 TCL, 권한은 DCL에서 볼 거야.' },
+        { pose: 'idle', text: 'DML이 어느 묶음인지 먼저 확인하고, 다음에 INSERT로 넘어가자.' },
       ],
       blocks: [
         {
           kind: 'intro',
           body:
-            'DML(Data Manipulation Language)은 테이블 안의 데이터를 직접 다루는 명령입니다. SELECT는 조회, INSERT는 새 행 추가, UPDATE는 기존 행 수정, DELETE는 행 삭제, MERGE는 있으면 수정하고 없으면 추가하는 흐름입니다.',
+            'DML(Data Manipulation Language)은 데이터 조작어야. 테이블 구조를 만드는 명령이 아니라, 이미 있는 테이블 안의 행 데이터를 추가하거나 수정하거나 삭제하거나 병합하는 명령군이야.',
         },
         {
           kind: 'table',
-          title: 'DML에서 먼저 볼 명령',
-          headers: ['명령', '하는 일', '처음 볼 때 의미'],
+          title: 'DML이 하는 일',
+          headers: ['흐름', '대표 명령', '쉽게 말하면'],
           rows: [
-            ['INSERT', '행 추가', '새 기록을 넣는다'],
-            ['UPDATE', '행 수정', '이미 있는 값을 고친다'],
-            ['DELETE', '행 삭제', '조건에 맞는 행을 지운다'],
-            ['MERGE', '삽입+수정', '있으면 고치고 없으면 넣는다'],
+            ['추가', 'INSERT', '새 행을 넣는다'],
+            ['수정', 'UPDATE', '이미 있는 값을 고친다'],
+            ['삭제', 'DELETE', '조건에 맞는 행을 지운다'],
+            ['병합', 'MERGE', '있으면 고치고 없으면 넣는다'],
+          ],
+        },
+        {
+          kind: 'table',
+          title: '관리 구문 큰 묶음',
+          headers: ['묶음', '하는 일', '대표 명령'],
+          rows: [
+            ['DML', '행 데이터 조작', 'INSERT, UPDATE, DELETE, MERGE'],
+            ['TCL', '트랜잭션 제어', 'COMMIT, ROLLBACK, SAVEPOINT'],
+            ['DDL', 'DB 구조 정의/변경', 'CREATE, ALTER, DROP, TRUNCATE'],
+            ['DCL', '권한 제어', 'GRANT, REVOKE'],
           ],
         },
         {
@@ -1885,7 +1928,7 @@ const SQLD_2_3: Lesson = {
           tone: 'tip',
           title: '먼저 이것만 잡기',
           body:
-            'DML은 테이블 구조를 만드는 명령이 아니라, 이미 있는 테이블 안의 데이터를 움직이는 명령입니다. 테이블을 만들고 바꾸는 CREATE, ALTER, DROP은 DDL 쪽입니다.',
+            'DML은 테이블 안의 행 데이터를 다루는 묶음이야. 테이블이라는 그릇 자체를 만들고 바꾸는 CREATE, ALTER, DROP은 DDL 쪽이야. SELECT는 앞에서 SQL 기본 흐름으로 따로 배웠고, 여기서는 변경 중심 DML을 잡아.',
         },
       ],
     },
@@ -1896,7 +1939,8 @@ const SQLD_2_3: Lesson = {
       group: 'sqld-2-3-g1-dml',
       extraQuizIds: ['sqld-sql-lab-028'],
       dialogue: [
-        { pose: 'wave', text: '이제 DML 중에서 [INSERT]부터 볼게.' },
+        { pose: 'wave', text: '방금 DML이 테이블 안의 행 데이터를 다루는 묶음이라고 봤지?' },
+        { pose: 'happy', text: '이제 DML의 첫 번째 구성요소, [INSERT]부터 볼게.' },
         { pose: 'lightbulb', text: '[INSERT]는 테이블에 [새 행]을 추가하는 구문이야.' },
         { pose: 'happy', text: 'INSERT는 크게 두 가지 형태로 써.\n첫째, 모든 컬럼 값을 순서대로 넣는 방식.' },
         { pose: 'think', text: '예: INSERT INTO T VALUES (값1, 값2, ...)\n이때는 테이블 컬럼 순서와 값 순서를 정확히 맞춰야 해.' },
@@ -1909,7 +1953,7 @@ const SQLD_2_3: Lesson = {
         {
           kind: 'intro',
           body:
-            'INSERT는 테이블에 새 행을 추가하는 DML입니다. 모든 컬럼 값을 순서대로 넣을 수도 있고, 값을 넣을 컬럼 이름을 직접 적을 수도 있습니다.',
+            'DML이 “테이블 안의 행 데이터를 다루는 묶음”이라면, INSERT는 그중 새 행을 추가하는 명령이야. 모든 컬럼 값을 순서대로 넣을 수도 있고, 값을 넣을 컬럼 이름을 직접 적을 수도 있어.',
         },
         {
           kind: 'example',
@@ -1922,7 +1966,7 @@ const SQLD_2_3: Lesson = {
           tone: 'warn',
           title: '헷갈리는 부분 — 생략한 컬럼',
           body:
-            '컬럼 목록을 적고 일부 컬럼을 생략하면, 그 컬럼에는 기본값이 있으면 DEFAULT, 없고 NULL 허용이면 NULL이 들어갑니다. 하지만 NOT NULL 컬럼을 생략하면 오류입니다.',
+            '컬럼 목록을 적고 일부 컬럼을 생략하면, 그 컬럼에는 기본값이 있으면 DEFAULT, 없고 NULL 허용이면 NULL이 들어가. 하지만 NOT NULL 컬럼을 생략하면 오류야.',
         },
       ],
     },
@@ -1945,7 +1989,7 @@ const SQLD_2_3: Lesson = {
         {
           kind: 'intro',
           body:
-            'UPDATE는 이미 있는 행의 값을 고치고, DELETE는 행을 삭제하는 DML입니다. 둘 다 WHERE 절로 대상을 제한합니다. WHERE를 생략하면 전체 행이 대상이 될 수 있어 가장 위험한 부분입니다.',
+            'UPDATE는 이미 있는 행의 값을 고치고, DELETE는 행을 삭제하는 DML야. 둘 다 WHERE 절로 대상을 제한해. WHERE를 생략하면 전체 행이 대상이 될 수 있어 가장 위험한 부분이야.',
         },
         {
           kind: 'example',
@@ -1967,7 +2011,7 @@ const SQLD_2_3: Lesson = {
           tone: 'warn',
           title: '헷갈리는 부분 — WHERE 생략',
           body:
-            'UPDATE와 DELETE는 문법상 WHERE 없이도 실행될 수 있습니다. 그래서 “한 행만 바꾸려던 작업”이 전체 행 변경이나 전체 행 삭제로 이어질 수 있습니다.',
+            'UPDATE와 DELETE는 문법상 WHERE 없이도 실행될 수 있어. 그래서 “한 행만 바꾸려던 작업”이 전체 행 변경이나 전체 행 삭제로 이어질 수 있어.',
         },
       ],
     },
@@ -1996,7 +2040,7 @@ const SQLD_2_3: Lesson = {
         {
           kind: 'intro',
           body:
-            'MERGE는 대상 테이블에 같은 데이터가 이미 있으면 UPDATE하고, 없으면 INSERT하는 명령입니다. “있으면 고치고, 없으면 추가한다”는 흐름이 핵심입니다. 외부 데이터와 내부 테이블을 맞추는 동기화 작업에서 자주 쓰입니다.',
+            'MERGE는 대상 테이블에 같은 데이터가 이미 있으면 UPDATE하고, 없으면 INSERT하는 명령이야. “있으면 고치고, 없으면 추가한다”는 흐름이 핵심이야. 외부 데이터와 내부 테이블을 맞추는 동기화 작업에서 자주 쓰여.',
         },
         {
           kind: 'example',
@@ -2058,7 +2102,7 @@ const SQLD_2_3: Lesson = {
         {
           kind: 'intro',
           body:
-            'TCL(Transaction Control Language)은 트랜잭션을 제어하는 명령입니다. COMMIT은 변경을 확정하고, ROLLBACK은 변경을 취소하고, SAVEPOINT는 트랜잭션 안에 되돌아갈 수 있는 중간 지점을 만듭니다.',
+            'TCL(Transaction Control Language)은 트랜잭션을 제어하는 명령이야. COMMIT은 변경을 확정하고, ROLLBACK은 변경을 취소하고, SAVEPOINT는 트랜잭션 안에 되돌아갈 수 있는 중간 지점을 만들어.',
         },
         {
           kind: 'table',
@@ -2123,7 +2167,7 @@ const SQLD_2_3: Lesson = {
         {
           kind: 'intro',
           body:
-            'AUTOCOMMIT은 SQL 실행 후 자동으로 COMMIT할지 정하는 설정입니다. Oracle의 DML은 기본적으로 직접 COMMIT해야 하지만, Oracle의 DDL은 자동 COMMIT됩니다. 이 차이를 모르면 되돌릴 수 있다고 생각한 작업이 이미 영구 반영될 수 있습니다.',
+            'AUTOCOMMIT은 SQL 실행 후 자동으로 COMMIT할지 정하는 설정이야. Oracle의 DML은 기본적으로 직접 COMMIT해야 하지만, Oracle의 DDL은 자동 COMMIT돼. 이 차이를 모르면 되돌릴 수 있다고 생각한 작업이 이미 영구 반영될 수 있어.',
         },
         {
           kind: 'table',
@@ -2153,6 +2197,46 @@ const SQLD_2_3: Lesson = {
           title: 'AUTOCOMMIT 모드 변경',
           body:
             'SQL Plus: SET AUTOCOMMIT ON; / OFF;. SQL Developer 도구·드라이버마다 다른 옵션 제공. 실무에선 명시적 BEGIN/COMMIT 으로 트랜잭션 관리 권장.',
+        },
+      ],
+    },
+    {
+      id: 'sqld-2-3-s5-ddl',
+      title: 'DDL',
+      quizId: 'sqld-2-1-cp-01-ddl-tcard',
+      group: 'sqld-2-3-g3-ddl-constraints',
+      dialogue: [
+        { pose: 'wave', text: '이제 두 번째 큰 구조 묶음, [DDL]을 볼게.' },
+        { pose: 'think', text: '[DDL]은 Data Definition Language의 약자야.\n한국어로는 데이터 정의어라고 불러.' },
+        { pose: 'lightbulb', text: 'DDL은 테이블, 뷰, 인덱스처럼 DB의 [구조]를 만들고, 바꾸고, 지우는 명령군이야.' },
+        { pose: 'happy', text: 'DDL 아래에는 CREATE TABLE, ALTER, DROP, TRUNCATE, 제약조건 같은 내용이 따라와.' },
+        { pose: 'happy', text: '대표 DDL은 [TCARD(티카드)]로 외우자.\nT = TRUNCATE\nC = CREATE\nA = ALTER\nR = RENAME\nD = DROP' },
+        { pose: 'idle', text: 'DDL 대표 명령 묶음을 골라보자.' },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            'DDL(Data Definition Language)은 DB 구조를 정의하고 바꾸는 명령군이야. DML이 테이블 안의 데이터를 움직인다면, DDL은 데이터가 들어갈 그릇 자체를 만들거나 바꾸거나 지워.',
+        },
+        {
+          kind: 'callout',
+          tone: 'mnemonic',
+          title: '"TCARD(티카드)"',
+          body:
+            'DDL 대표 명령 5개는 TCARD로 묶어 기억해.\nT=TRUNCATE, C=CREATE, A=ALTER, R=RENAME, D=DROP.\n모두 테이블 같은 DB 구조를 만들거나 바꾸거나 지우는 명령이야.',
+        },
+        {
+          kind: 'table',
+          title: 'DDL 아래에 따라오는 개념',
+          headers: ['개념', '처음 볼 때 의미'],
+          rows: [
+            ['CREATE TABLE', '새 테이블 설계도를 만든다'],
+            ['ALTER', '이미 만든 테이블 구조를 바꾼다'],
+            ['DROP', '테이블 자체를 삭제한다'],
+            ['TRUNCATE', '테이블 구조는 남기고 전체 행을 비운다'],
+            ['제약조건', '잘못된 값이 들어오지 못하게 막는다'],
+          ],
         },
       ],
     },
@@ -2237,9 +2321,12 @@ const SQLD_2_3: Lesson = {
       title: 'ALTER · DROP · TRUNCATE',
       quizId: 'sqld-2-3-cp-06',
       group: 'sqld-2-3-g3-ddl-constraints',
-      extraQuizIds: ['sqld-2-3-cp-06-ddl-delete-compare', 'sqld-sql-lab-032'],
+      extraQuizIds: [
+        'sqld-2-3-cp-06-ddl-delete-compare',
+        'sqld-sql-lab-032',
+      ],
       dialogue: [
-        { pose: 'wave', text: '이번에는 테이블 구조를 바꾸거나 지우는 DDL 명령을 볼 거야.' },
+        { pose: 'wave', text: '이번에는 DDL 안에서 테이블 구조를 바꾸거나 지우는 명령을 볼 거야.' },
         { pose: 'think', text: '[ALTER TABLE]은 이미 만들어진 테이블의 구조를 수정하는 명령이야.' },
         { pose: 'lightbulb', text: 'ALTER로 할 수 있는 대표 작업은 컬럼 추가, 컬럼 변경, 컬럼 삭제, 컬럼 이름 변경, 제약조건 추가야.' },
         { pose: 'happy', text: '[ADD]는 새 컬럼을 추가하는 구문이야.\n예: 학생 테이블에 이메일 컬럼을 새로 붙이는 느낌.' },
@@ -2259,7 +2346,7 @@ const SQLD_2_3: Lesson = {
         {
           kind: 'intro',
           body:
-            'ALTER는 이미 만든 테이블의 구조를 바꾸는 명령입니다. TRUNCATE는 테이블 구조는 남겨두고 행을 전부 비우는 명령이고, DROP은 테이블 자체를 삭제하는 명령입니다. DELETE까지 함께 비교하면 “행만 지우는가, 구조까지 지우는가, 되돌릴 수 있는가”가 핵심입니다.',
+            'ALTER는 이미 만든 테이블의 구조를 바꾸는 명령이야. TRUNCATE는 테이블 구조는 남겨두고 행을 전부 비우는 명령이고, DROP은 테이블 자체를 삭제하는 명령이야. DELETE까지 함께 비교하면 “행만 지우는가, 구조까지 지우는가, 되돌릴 수 있는가”가 핵심이야.',
         },
         {
           kind: 'table',
@@ -2332,7 +2419,7 @@ const SQLD_2_3: Lesson = {
         {
           kind: 'intro',
           body:
-            '제약조건은 테이블에 잘못된 값이 들어오지 못하게 막는 규칙입니다. PK는 행을 식별하고, UNIQUE는 중복을 막고, NOT NULL은 빈 값을 막고, FK는 다른 테이블과의 연결을 지킵니다. CTAS와 VIEW는 제약조건 문제와 함께 자주 묶여 나오므로 같이 정리합니다.',
+            '제약조건은 테이블에 잘못된 값이 들어오지 못하게 막는 규칙이야. PK는 행을 식별하고, UNIQUE는 중복을 막고, NOT NULL은 빈 값을 막고, FK는 다른 테이블과의 연결을 지켜. CTAS와 VIEW는 제약조건 문제와 함께 자주 묶여 나오므로 같이 정리해.',
         },
         {
           kind: 'table',
@@ -2414,7 +2501,7 @@ const SQLD_2_3: Lesson = {
         {
           kind: 'intro',
           body:
-            'DCL은 누가 어떤 데이터에 접근할 수 있는지 정하는 명령입니다. GRANT는 권한을 주고, REVOKE는 권한을 회수합니다. 헷갈리는 지점은 권한을 다시 나눠줄 수 있는 두 옵션의 차이입니다.',
+            'DCL은 누가 어떤 데이터에 접근할 수 있는지 정하는 명령이야. GRANT는 권한을 주고, REVOKE는 권한을 회수해. 헷갈리는 지점은 권한을 다시 나눠줄 수 있는 두 옵션의 차이야.',
         },
         {
           kind: 'example',

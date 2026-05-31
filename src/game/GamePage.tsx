@@ -684,6 +684,25 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
             const lesson = getLesson(screen.subject, screen.chapter, topic);
             const lessonId = lesson?.id ?? `${screen.subject}-${screen.chapter}`;
             const targetStep = lesson?.steps[stepIdx];
+            const groupKey = (s: typeof targetStep): string | null => {
+              if (!s) return null;
+              if (s.group) return s.group;
+              const m = s.id.match(/^(.+-s\d+)(?:-[a-zA-Z][a-zA-Z0-9-]*)?$/);
+              return m ? m[1] : s.id;
+            };
+            const targetGroupKey = groupKey(targetStep);
+            const groupStartIdx =
+              lesson && targetGroupKey
+                ? lesson.steps.findIndex((s) => groupKey(s) === targetGroupKey)
+                : -1;
+            const entryStepIdx =
+              lesson &&
+              groupStartIdx >= 0 &&
+              groupStartIdx < stepIdx &&
+              !lesson.steps[groupStartIdx]?.quizId
+                ? groupStartIdx
+                : stepIdx;
+            const entryStep = lesson?.steps[entryStepIdx];
             // finale step 은 절대 잠금 (subject 완주 + admin 검수 모드만 우회).
             if (
               targetStep &&
@@ -697,7 +716,8 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
               return;
             }
             // 이전 step 클리어 cross-check (review 전용 step 은 진입만으로 통과)
-            const prevStep = lesson && stepIdx > 0 ? lesson.steps[stepIdx - 1] : null;
+            const prevStep =
+              lesson && entryStepIdx > 0 ? lesson.steps[entryStepIdx - 1] : null;
             const prevSolved = !prevStep
               ? true
               : !prevStep.quizId
@@ -706,20 +726,20 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
                     const ps = progress.questionStats[prevStep.quizId];
                     return !!ps && (ps.correct ?? 0) > 0;
                   })();
-            if (isStepLocked(stepLockSnap, lessonId, stepIdx, prevSolved)) {
+            if (isStepLocked(stepLockSnap, lessonId, entryStepIdx, prevSolved)) {
               setLockToast('앞 단계의 문제를 먼저 정답 처리해야 열려요.');
               window.setTimeout(() => setLockToast(null), 2400);
               return;
             }
             // 자동 해금 제거 — 정답 맞춰야 다음 step 해금 (DialogueLesson/LessonScreen
             // 의 handleChoose 가 처리). 진입만으로는 unlock 안 됨.
-            if (targetStep) {
+            if (entryStep) {
               saveLearningResume({
                 subject: screen.subject,
                 chapter: screen.chapter,
                 topic,
-                stepIdx,
-                stepId: targetStep.id,
+                stepIdx: entryStepIdx,
+                stepId: entryStep.id,
               });
             }
             setScreen({
@@ -727,7 +747,7 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
               subject: screen.subject,
               chapter: screen.chapter,
               topic,
-              stepIdx,
+              stepIdx: entryStepIdx,
               passNumber,
             });
           }}

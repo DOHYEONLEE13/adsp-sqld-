@@ -2900,15 +2900,15 @@
       "topic": "SQL 기본",
       "type": "multiple_choice",
       "difficulty": 1,
-      "question": "학교 DB에 새 `학생` 테이블을 만들려고 해. `CREATE TABLE`이 속한 SQL 명령군은?",
+      "question": "SQL 기본 파트에서 먼저 잡아야 할 흐름으로 가장 적절한 것은?",
       "choices": [
-        "DML — 테이블 안의 데이터를 넣고 고치는 명령군",
-        "TCL — 작업을 확정하거나 되돌리는 명령군",
-        "DDL — 테이블 같은 DB 구조를 만들고 바꾸는 명령군",
-        "DCL — 권한을 주고 회수하는 명령군"
+        "테이블 구조를 만드는 명령과 권한 명령을 먼저 전부 외운다",
+        "어떤 테이블을 볼지 정하고, 조건으로 행을 고르고, 필요한 열과 정렬을 읽는다",
+        "COMMIT과 ROLLBACK만 외우면 SELECT 문장은 이해하지 않아도 된다",
+        "DB 화면 디자인을 먼저 정하고 SQL 문장은 나중에 생각한다"
       ],
-      "answerIndex": 2,
-      "explanation": "CREATE TABLE은 새 테이블 구조를 만드는 명령이므로 DDL입니다. DML은 INSERT/UPDATE/DELETE처럼 데이터 행을 조작하고, TCL은 COMMIT/ROLLBACK, DCL은 GRANT/REVOKE와 연결됩니다.",
+      "answerIndex": 1,
+      "explanation": "SQL 기본 파트에서는 SELECT 문장을 읽는 흐름이 먼저입니다. FROM으로 볼 테이블을 정하고, WHERE로 행을 거르고, SELECT/GROUP BY/HAVING/ORDER BY로 결과를 만드는 순서를 잡으면 이후 SQL이 훨씬 쉬워집니다. 구조·권한·트랜잭션 명령군은 관리 구문에서 따로 다룹니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
@@ -2919,8 +2919,8 @@
           "answerIndex",
           "explanation"
         ],
-        "reason": "SQLD 2과목 첫 문제를 부정형 함정 문제에서 초보자용 역할 매칭 문제로 완화",
-        "audited_at": "2026-05-26",
+        "reason": "DDL/DML/DCL/TCL 범위가 Part 3 관리 구문에 속하므로 Part 1 첫 문제를 SQL 읽기 흐름 확인으로 재배치",
+        "audited_at": "2026-05-31",
         "auditor": "codex",
         "source_md": "Q-SQLD-2-1-0001"
       }
@@ -2930,7 +2930,7 @@
       "subject": "sqld",
       "chapter": 2,
       "chapterTitle": "SQL 기본 및 활용",
-      "topic": "SQL 기본",
+      "topic": "관리 구문",
       "type": "multiple_choice",
       "difficulty": 1,
       "question": "`TCARD(티카드)`로 외우는 DDL 대표 명령 5개로 가장 알맞은 묶음은?",
@@ -3721,16 +3721,16 @@
       "chapterTitle": "SQL 기본 및 활용",
       "topic": "관리 구문",
       "type": "multiple_choice",
-      "difficulty": 3,
-      "question": "다음 SQL 실행 후 SELECT COUNT(*) FROM T 의 결과는?\n\nINSERT INTO T VALUES(1);\nINSERT INTO T VALUES(2);\nINSERT INTO T VALUES(3);\nSAVEPOINT SV1;\nINSERT INTO T VALUES(4);\nINSERT INTO T VALUES(5);\nCOMMIT;\nINSERT INTO T VALUES(6);\nROLLBACK TO SAVEPOINT SV1;",
+      "difficulty": 1,
+      "question": "TCL(Transaction Control Language)에 대한 설명으로 가장 적절한 것은?",
       "choices": [
-        "3",
-        "5",
-        "6",
-        "오류 발생"
+        "COMMIT, ROLLBACK, SAVEPOINT처럼 트랜잭션을 확정하거나 되돌리는 명령군이다.",
+        "CREATE, ALTER, DROP처럼 테이블 구조를 만들고 바꾸는 명령군이다.",
+        "GRANT, REVOKE처럼 사용자 권한을 주고 회수하는 명령군이다.",
+        "SUBSTR, ROUND처럼 값을 계산하거나 변환하는 함수 묶음이다."
       ],
-      "answerIndex": 3,
-      "explanation": "COMMIT 후에는 SAVEPOINT 가 모두 사라지므로 ROLLBACK TO SV1 은 \"존재하지 않는 SAVEPOINT\" 오류. COMMIT 직전까지 5건이 영구 반영, 그 뒤 INSERT 6은 별도 트랜잭션. SV1 ROLLBACK 자체가 실패하므로 6번도 그대로 유지되어 6건.",
+      "answerIndex": 0,
+      "explanation": "TCL은 Transaction Control Language, 즉 트랜잭션 제어어입니다. COMMIT은 변경을 확정하고, ROLLBACK은 되돌리고, SAVEPOINT는 중간 지점을 남깁니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {
@@ -3871,16 +3871,16 @@
       "chapterTitle": "SQL 기본 및 활용",
       "topic": "관리 구문",
       "type": "multiple_choice",
-      "difficulty": 3,
-      "question": "WITH GRANT OPTION 과 WITH ADMIN OPTION 의 차이로 옳지 않은 것은?",
+      "difficulty": 1,
+      "question": "DCL(Data Control Language)에 대한 설명으로 가장 적절한 것은?",
       "choices": [
-        "WITH GRANT OPTION 은 객체 권한(SELECT 등) 부여 시 사용한다",
-        "WITH ADMIN OPTION 은 시스템 권한(CREATE TABLE 등) 부여 시 사용한다",
-        "WITH GRANT OPTION 으로 부여된 권한은 회수 시 연쇄 회수된다",
-        "WITH ADMIN OPTION 으로 부여된 권한도 회수 시 연쇄 회수된다"
+        "GRANT, REVOKE처럼 DB 권한을 주고 회수하는 명령군이다.",
+        "COMMIT, ROLLBACK처럼 트랜잭션을 확정하거나 되돌리는 명령군이다.",
+        "CREATE, ALTER처럼 테이블 구조를 정의하고 바꾸는 명령군이다.",
+        "WHERE, ORDER BY처럼 조회 결과를 거르고 정렬하는 구문이다."
       ],
-      "answerIndex": 3,
-      "explanation": "WITH ADMIN OPTION 은 회수해도 받은 사용자의 권한은 유지됩니다. WITH GRANT OPTION 만 연쇄 회수됨.",
+      "answerIndex": 0,
+      "explanation": "DCL은 Data Control Language, 즉 데이터 제어어입니다. DB에서는 권한 관리가 핵심이고, GRANT는 권한 부여, REVOKE는 권한 회수를 뜻합니다.",
       "source": "개념 예제",
       "status": "self-reviewed",
       "_audit": {

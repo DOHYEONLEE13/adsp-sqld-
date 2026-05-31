@@ -29,6 +29,46 @@ export const GLOSSARY_TERMS: Record<string, { title: string; body: string }> = {
     body:
       '컬럼은 표에서 세로로 놓이는 항목이야. 학생 표라면 학번, 이름, 학과 같은 칸 이름을 컬럼이라고 생각하면 돼.',
   },
+  WHERE: {
+    title: 'WHERE',
+    body:
+      'WHERE는 SQL에서 조건에 맞는 행만 남기는 부분이야. 예를 들면 “점수가 80점 이상인 학생만 보기”처럼 필요한 행을 먼저 거를 때 써.',
+  },
+  FROM: {
+    title: 'FROM',
+    body:
+      'FROM은 SQL을 어느 테이블에서 시작할지 정하는 절이야. 예를 들면 FROM EMP는 EMP 테이블을 대상으로 보겠다는 뜻이야.',
+  },
+  SELECT: {
+    title: 'SELECT',
+    body:
+      'SELECT는 최종 결과에 어떤 컬럼이나 계산값을 보여줄지 고르는 절이야. SELECT 이름, 급여처럼 보여줄 항목을 적어.',
+  },
+  'GROUP BY': {
+    title: 'GROUP BY',
+    body:
+      'GROUP BY는 같은 값을 가진 행끼리 묶는 절이야. 부서별 평균 급여처럼 “별”이 붙는 집계를 만들 때 자주 써.',
+  },
+  HAVING: {
+    title: 'HAVING',
+    body:
+      'HAVING은 GROUP BY로 묶은 결과에 조건을 거는 절이야. 평균 급여가 5000 이상인 부서만 보기처럼 그룹 조건에 써.',
+  },
+  'ORDER BY': {
+    title: 'ORDER BY',
+    body:
+      'ORDER BY는 최종 결과를 정렬하는 절이야. 오름차순은 ASC, 내림차순은 DESC를 붙여 정렬할 수 있어.',
+  },
+  ALIAS: {
+    title: 'ALIAS',
+    body:
+      'ALIAS는 SQL 결과에 잠깐 붙이는 별명이야. 예를 들면 급여 * 12 결과를 연봉이라는 이름으로 보여주는 식이야.',
+  },
+  DISTINCT: {
+    title: 'DISTINCT',
+    body:
+      'DISTINCT는 조회 결과에서 똑같이 반복되는 줄을 하나만 남기는 기능이야. 중복을 줄여서 결과를 깔끔하게 볼 때 써.',
+  },
   원자성: {
     title: '원자성',
     body:

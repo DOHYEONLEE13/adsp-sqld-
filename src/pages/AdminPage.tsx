@@ -44,6 +44,14 @@ interface UserRow {
   created_at: string;
 }
 
+type UserSortKey = 'xp' | 'premium' | 'recent';
+
+const USER_SORT_OPTIONS: Array<{ key: UserSortKey; label: string; hint: string }> = [
+  { key: 'xp', label: 'XP순', hint: 'XP 높은 순' },
+  { key: 'premium', label: '프리미엄순', hint: '프리미엄 먼저' },
+  { key: 'recent', label: '최근 접속순', hint: '최근 접속 먼저' },
+];
+
 interface TopNewQuestionUser {
   userId: string;
   tag: string;
@@ -125,9 +133,20 @@ function normalizeLearningMetrics(value: unknown): LearningMetrics {
   };
 }
 
+function userTotalXp(user: UserRow): number {
+  return (user.total_xp ?? 0) + (user.lesson_xp ?? 0);
+}
+
+function userLastSeenMs(user: UserRow): number {
+  if (!user.last_seen_at) return 0;
+  const parsed = Date.parse(user.last_seen_at);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 export default function AdminPage({ onBack }: { onBack: () => void }) {
   const profile = useMyProfile();
   const [users, setUsers] = useState<UserRow[]>([]);
+  const [userSort, setUserSort] = useState<UserSortKey>('xp');
   const [learningMetrics, setLearningMetrics] = useState<LearningMetrics | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -166,6 +185,21 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
   }, []);
 
   const isAdminFinal = profile.isAdmin || serverAdmin === true;
+  const sortedUsers = useMemo(() => {
+    const byXp = (a: UserRow, b: UserRow) =>
+      userTotalXp(b) - userTotalXp(a) || userLastSeenMs(b) - userLastSeenMs(a);
+    const byRecent = (a: UserRow, b: UserRow) =>
+      userLastSeenMs(b) - userLastSeenMs(a) || userTotalXp(b) - userTotalXp(a);
+
+    return [...users].sort((a, b) => {
+      if (userSort === 'premium') {
+        const premiumDiff = Number(b.is_premium) - Number(a.is_premium);
+        return premiumDiff || byXp(a, b);
+      }
+      if (userSort === 'recent') return byRecent(a, b);
+      return byXp(a, b);
+    });
+  }, [users, userSort]);
 
   // ── 검수 모드 — 모든 회독·step 잠금해제 토글 ─────────────────
   // pass + step 두 잠금 시스템을 동시에 ON/OFF. 즉시 반영 (reload 불필요).
@@ -342,9 +376,41 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
 
         {/* 사용자 목록 */}
         <section>
-          <div className="flex items-center gap-2 mb-4">
-            <Users size={16} className="text-neon" />
-            <h2 className="kr-heading text-[16px]">최근 활성 사용자 (XP 상위 100명)</h2>
+          <div className="flex flex-col gap-3 mb-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <div className="flex items-center gap-2">
+                <Users size={16} className="text-neon" />
+                <h2 className="kr-heading text-[16px]">최근 활성 사용자</h2>
+              </div>
+              <p className="kr-body mt-1 text-[11px] text-cream/45">
+                DB 재조회 없이 현재 불러온 100명을 기준으로 정렬해요.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2" aria-label="사용자 목록 정렬">
+              {USER_SORT_OPTIONS.map((option) => {
+                const active = userSort === option.key;
+                return (
+                  <button
+                    key={option.key}
+                    type="button"
+                    onClick={() => setUserSort(option.key)}
+                    title={option.hint}
+                    className="kr-heading rounded-full border px-3 py-2 text-[11px] tracking-tight transition"
+                    style={{
+                      background: active
+                        ? 'rgba(209,248,67,0.16)'
+                        : 'rgba(239,244,255,0.05)',
+                      borderColor: active
+                        ? 'rgba(209,248,67,0.55)'
+                        : 'rgba(239,244,255,0.14)',
+                      color: active ? 'var(--neon)' : 'rgba(239,244,255,0.7)',
+                    }}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <div className="overflow-x-auto rounded-[16px] border border-cream/12">
@@ -371,7 +437,7 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
                     </td>
                   </tr>
                 ) : null}
-                {users.map((u) => (
+                {sortedUsers.map((u) => (
                   <tr
                     key={u.id}
                     className="border-t border-cream/10 hover:bg-cream/5 transition"

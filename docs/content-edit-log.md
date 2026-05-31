@@ -2827,3 +2827,39 @@ order by expected.id;
 ### Supabase 반영 상태
 
 - 새 문제 ID를 추가하지 않은 설명/도식 변경이므로 별도 Supabase migration은 필요하지 않다.
+
+
+## 2026-05-31 - Same-concept drill pack connection hardening
+
+### User problem
+
+- The feedback action for same-concept practice should feel like a focused concept drill pack.
+- Steps without `extraQuizIds` could still rely on a broad fallback, so related but not exact old questions could appear in a way that felt random.
+- Creating hundreds of new ADSP/SQLD questions in one pass would raise content accuracy and Supabase sync risk.
+
+### Change direction
+
+- Did not generate new question IDs in this pass.
+- Reused already reviewed lesson-group questions that already exist in the local bank and server-backed IDs.
+- Selection priority is now: explicit `quizId + extraQuizIds` first, then same narrow lesson group in authored order.
+- Removed the old random shuffle / two-item fallback behavior.
+- Added `scripts/audit-drill-packs.mjs` to check missing IDs, duplicate pack IDs, and groups that still need more authored questions.
+
+### Learner impact
+
+- After a wrong answer, learners now see more stable questions from the same concept family.
+- Existing reviewed questions are reused before writing new ones, reducing the chance of wrong content.
+- Remaining weak packs are now measurable and can be filled chapter by chapter.
+
+### Files changed
+
+- `src/game/similarQuestions.ts`
+- `src/game/similarQuestions.test.ts`
+- `scripts/audit-drill-packs.mjs`
+- `docs/content-edit-log.md`
+
+### Supabase status
+
+- No new `quizId` or `extraQuizIds` were added.
+- No migration is required for this pass because the runtime only reuses existing question IDs.
+- `audit-drill-packs` confirmed 0 missing lesson-referenced question IDs.

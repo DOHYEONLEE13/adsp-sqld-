@@ -14,7 +14,7 @@
  * 풀 부족 시 (그룹 substep 수가 적을 때) 그대로 노출 — 같은 group 안에서 가져올 수
  * 있는 만큼만. fallback 으로 다른 group 풀을 끌어쓰지 않음 (정확도 우선).
  *
- * 정렬: difficulty 차이가 작은 것 우선, 동률은 random shuffle.
+ * 정렬: difficulty 차이가 작은 것 우선, authored group order 로 보강.
  *
  * 한계: lesson step 에 매핑되지 않는 quiz (실전 세트·모의고사·기출 단독 풀이) 는
  * group 미매핑 → 풀 0 반환 → "비슷한 문제 더 풀기" 버튼 자동 숨김.
@@ -22,7 +22,6 @@
 
 import { ALL_QUESTIONS } from '@/lib/questions';
 import { ALL_LESSONS } from '@/data/lessons';
-import { shuffle } from '@/lib/utils';
 import { isPlayable } from './session';
 import type { MultipleChoiceQuestion } from '@/types/question';
 
@@ -86,22 +85,24 @@ function quizToDrillIds(): Map<string, string[]> {
   return _quizToDrillIds!;
 }
 
+function pushQuestionById(
+  out: MultipleChoiceQuestion[],
+  seen: Set<string>,
+  id: string,
+) {
+  if (seen.has(id)) return;
+  const q = findById(id);
+  if (!q) return;
+  out.push(q);
+  seen.add(id);
+}
+
 /** ALL_QUESTIONS 안에서 id 로 1건 찾기 (playable 가드 포함). */
 function findById(id: string): MultipleChoiceQuestion | undefined {
   for (const q of ALL_QUESTIONS) {
     if (q.id === id && isPlayable(q)) return q;
   }
   return undefined;
-}
-
-/** difficulty 차이 가까운 순. */
-function makeDifficultySorter(target: MultipleChoiceQuestion) {
-  const t = target.difficulty ?? 2;
-  return (a: MultipleChoiceQuestion, b: MultipleChoiceQuestion) => {
-    const da = Math.abs((a.difficulty ?? 2) - t);
-    const db = Math.abs((b.difficulty ?? 2) - t);
-    return da - db;
-  };
 }
 
 /**
@@ -114,41 +115,32 @@ export function findSimilarQuestions(
   currentQuizId: string,
   count: number = 5,
 ): MultipleChoiceQuestion[] {
-  const current = findById(currentQuizId);
-  if (!current) return [];
+  if (!findById(currentQuizId)) return [];
 
-  // First priority: the exact concept drill pack.
-  // This is `step.quizId + step.extraQuizIds`, so the learner sees more
-  // questions about the concept they just answered instead of random nearby
-  // concepts from the broader lesson group.
+  // First priority: the exact concept drill pack. If it is short, supplement
+  // from the same narrow lesson group in authored order.
+  const seen = new Set<string>([currentQuizId]);
+  const out: MultipleChoiceQuestion[] = [];
   const drillIds = quizToDrillIds().get(currentQuizId) ?? [];
-  const drillPool = drillIds
-    .filter((qid) => qid !== currentQuizId)
-    .map(findById)
-    .filter((q): q is MultipleChoiceQuestion => !!q);
-  if (drillPool.length > 0) {
-    return drillPool.sort(makeDifficultySorter(current)).slice(0, count);
+  for (const qid of drillIds) {
+    if (out.length >= count) break;
+    pushQuestionById(out, seen, qid);
   }
+  if (out.length >= count) return out;
 
   const groupKey = quizToGroup().get(currentQuizId);
-  if (!groupKey) return []; // lesson step 매핑 없음 (예: 실전 세트 단독 quiz)
+  if (!groupKey) return out; // lesson step 매핑 없음 (예: 실전 세트 단독 quiz)
 
   const groupQuizIds = groupToQuizIds().get(groupKey);
-  if (!groupQuizIds) return [];
+  if (!groupQuizIds) return out;
 
   // 같은 group 의 다른 quizId 들 → question 으로 resolve
-  const pool: MultipleChoiceQuestion[] = [];
   for (const qid of groupQuizIds) {
-    if (qid === currentQuizId) continue;
-    const q = findById(qid);
-    if (q) pool.push(q);
+    if (out.length >= count) break;
+    pushQuestionById(out, seen, qid);
   }
 
-  if (pool.length === 0) return [];
-
-  // Legacy fallback only. Keep this intentionally small so broad group
-  // questions do not look like a complete concept-specific drill set.
-  return shuffle(pool).sort(makeDifficultySorter(current)).slice(0, Math.min(2, count));
+  return out.slice(0, count);
 }
 
 /**
@@ -156,21 +148,26 @@ export function findSimilarQuestions(
  * 그룹 안의 다른 unique quizId 수 (본인 제외).
  */
 export function countSimilarQuestions(currentQuizId: string): number {
+  const seen = new Set<string>([currentQuizId]);
+  let n = 0;
   const drillIds = quizToDrillIds().get(currentQuizId) ?? [];
-  const drillCount = drillIds.filter(
-    (qid) => qid !== currentQuizId && !!findById(qid),
-  ).length;
-  if (drillCount > 0) return drillCount;
+  for (const qid of drillIds) {
+    if (seen.has(qid)) continue;
+    if (!findById(qid)) continue;
+    seen.add(qid);
+    n += 1;
+  }
 
   const groupKey = quizToGroup().get(currentQuizId);
-  if (!groupKey) return 0;
+  if (!groupKey) return Math.min(n, 5);
   const groupQuizIds = groupToQuizIds().get(groupKey);
-  if (!groupQuizIds) return 0;
-  // 본인 제외 + ALL_QUESTIONS 에 실제 존재하고 playable 인 것만
-  let n = 0;
+  if (!groupQuizIds) return Math.min(n, 5);
+
   for (const qid of groupQuizIds) {
-    if (qid === currentQuizId) continue;
-    if (findById(qid)) n++;
+    if (seen.has(qid)) continue;
+    if (!findById(qid)) continue;
+    seen.add(qid);
+    n += 1;
   }
-  return Math.min(n, 2);
+  return Math.min(n, 5);
 }

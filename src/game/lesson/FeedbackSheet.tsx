@@ -132,16 +132,16 @@ export default function FeedbackSheet({
           </div>
 
           <div className="flex items-center gap-2 shrink-0 justify-end flex-wrap">
-            {/* "비슷한 문제 더 풀기" — 같은 토픽의 다른 문제 N개 풀이 진입점 */}
+            {/* "같은 개념 문제 더 풀기" — 현재 step 의 drill pack 우선 풀이 진입점 */}
             {onSimilarProblems && (similarCount ?? 0) > 0 ? (
               <button
                 type="button"
                 onClick={onSimilarProblems}
-                aria-label={`비슷한 문제 ${similarCount}개 더 풀기`}
+                aria-label={`같은 개념 문제 ${similarCount}개 더 풀기`}
                 className="kr-heading uppercase tracking-widest text-[11px] md:text-[12px] px-3.5 py-2.5 md:px-4 md:py-3 rounded-full transition liquid-glass hover:bg-white/10 whitespace-nowrap inline-flex items-center gap-1.5"
               >
                 <RefreshCcw size={12} strokeWidth={2.6} />
-                비슷한 문제 더 풀기
+                같은 개념 문제 더 풀기
                 <span
                   className="kr-num tabular-nums px-1.5 py-0.5 rounded-full text-[9.5px]"
                   style={{

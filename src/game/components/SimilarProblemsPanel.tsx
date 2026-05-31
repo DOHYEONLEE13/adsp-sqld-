@@ -5,7 +5,7 @@
  * 흐름:
  *   1. mount 시 findSimilarQuestions 호출로 풀 구성
  *   2. 각 문제: phase='question' → 선택 → recordSingleAnswer → phase='feedback'
- *   3. "다음 비슷한 문제" 클릭 → 다음 문제로 / 마지막이면 "학습으로 돌아가기"
+ *   3. "다음 같은 개념 문제" 클릭 → 다음 문제로 / 마지막이면 "학습으로 돌아가기"
  *   4. ×, backdrop, ESC 모두 onClose
  *
  * 풀 0건이면 마운트 안 됨 (호출 측에서 가드 — FeedbackSheet 의 버튼 자체 숨김).
@@ -107,7 +107,7 @@ export default function SimilarProblemsPanel({
       className="fixed inset-0 z-[70] flex items-end justify-center"
       role="dialog"
       aria-modal="true"
-      aria-label="비슷한 문제 더 풀기"
+      aria-label="같은 개념 문제 더 풀기"
     >
       {/* Backdrop */}
       <button
@@ -142,7 +142,7 @@ export default function SimilarProblemsPanel({
               className="kr-heading uppercase text-[10px] tracking-widest"
               style={{ color: accent }}
             >
-              비슷한 문제
+              같은 개념 문제
             </span>
             <span
               className="kr-num tabular-nums text-[12px]"
@@ -279,7 +279,7 @@ export default function SimilarProblemsPanel({
                   ? total < POOL_SIZE
                     ? '관련 문제가 더 추가될 예정이에요.'
                     : '다 풀었어! 학습으로 돌아갈까?'
-                  : '다음 비슷한 문제로 넘어갈까?'}
+                  : '다음 같은 개념 문제로 넘어갈까?'}
               </p>
               <button
                 type="button"
@@ -296,7 +296,7 @@ export default function SimilarProblemsPanel({
                 ) : (
                   <span className="inline-flex items-center gap-1.5">
                     <RefreshCcw size={13} strokeWidth={2.6} />
-                    다음 비슷한 문제
+                    다음 같은 개념 문제
                   </span>
                 )}
               </button>

@@ -45,21 +45,30 @@ function extractGroupKey(stepId: string, explicitGroup?: string): string {
  */
 let _quizToGroup: Map<string, string> | null = null;
 let _groupToQuizIds: Map<string, Set<string>> | null = null;
+let _quizToDrillIds: Map<string, string[]> | null = null;
 
 function buildIndex() {
   const q2g = new Map<string, string>();
   const g2q = new Map<string, Set<string>>();
+  const q2d = new Map<string, string[]>();
   for (const lesson of ALL_LESSONS) {
     for (const step of lesson.steps) {
       if (!step.quizId) continue;
       const gkey = extractGroupKey(step.id, step.group);
-      if (!q2g.has(step.quizId)) q2g.set(step.quizId, gkey);
+      const drillIds = [step.quizId, ...(step.extraQuizIds ?? [])];
+      for (const qid of drillIds) {
+        if (!q2g.has(qid)) q2g.set(qid, gkey);
+        if (!q2d.has(qid)) q2d.set(qid, drillIds);
+      }
       if (!g2q.has(gkey)) g2q.set(gkey, new Set());
-      g2q.get(gkey)!.add(step.quizId);
+      for (const qid of drillIds) {
+        g2q.get(gkey)!.add(qid);
+      }
     }
   }
   _quizToGroup = q2g;
   _groupToQuizIds = g2q;
+  _quizToDrillIds = q2d;
 }
 
 function quizToGroup(): Map<string, string> {
@@ -70,6 +79,11 @@ function quizToGroup(): Map<string, string> {
 function groupToQuizIds(): Map<string, Set<string>> {
   if (!_groupToQuizIds) buildIndex();
   return _groupToQuizIds!;
+}
+
+function quizToDrillIds(): Map<string, string[]> {
+  if (!_quizToDrillIds) buildIndex();
+  return _quizToDrillIds!;
 }
 
 /** ALL_QUESTIONS 안에서 id 로 1건 찾기 (playable 가드 포함). */
@@ -103,6 +117,19 @@ export function findSimilarQuestions(
   const current = findById(currentQuizId);
   if (!current) return [];
 
+  // First priority: the exact concept drill pack.
+  // This is `step.quizId + step.extraQuizIds`, so the learner sees more
+  // questions about the concept they just answered instead of random nearby
+  // concepts from the broader lesson group.
+  const drillIds = quizToDrillIds().get(currentQuizId) ?? [];
+  const drillPool = drillIds
+    .filter((qid) => qid !== currentQuizId)
+    .map(findById)
+    .filter((q): q is MultipleChoiceQuestion => !!q);
+  if (drillPool.length > 0) {
+    return drillPool.sort(makeDifficultySorter(current)).slice(0, count);
+  }
+
   const groupKey = quizToGroup().get(currentQuizId);
   if (!groupKey) return []; // lesson step 매핑 없음 (예: 실전 세트 단독 quiz)
 
@@ -118,7 +145,10 @@ export function findSimilarQuestions(
   }
 
   if (pool.length === 0) return [];
-  return shuffle(pool).sort(makeDifficultySorter(current)).slice(0, count);
+
+  // Legacy fallback only. Keep this intentionally small so broad group
+  // questions do not look like a complete concept-specific drill set.
+  return shuffle(pool).sort(makeDifficultySorter(current)).slice(0, Math.min(2, count));
 }
 
 /**
@@ -126,6 +156,12 @@ export function findSimilarQuestions(
  * 그룹 안의 다른 unique quizId 수 (본인 제외).
  */
 export function countSimilarQuestions(currentQuizId: string): number {
+  const drillIds = quizToDrillIds().get(currentQuizId) ?? [];
+  const drillCount = drillIds.filter(
+    (qid) => qid !== currentQuizId && !!findById(qid),
+  ).length;
+  if (drillCount > 0) return drillCount;
+
   const groupKey = quizToGroup().get(currentQuizId);
   if (!groupKey) return 0;
   const groupQuizIds = groupToQuizIds().get(groupKey);
@@ -136,5 +172,5 @@ export function countSimilarQuestions(currentQuizId: string): number {
     if (qid === currentQuizId) continue;
     if (findById(qid)) n++;
   }
-  return n;
+  return Math.min(n, 2);
 }

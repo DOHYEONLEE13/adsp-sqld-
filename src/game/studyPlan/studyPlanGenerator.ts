@@ -32,7 +32,7 @@ import type {
 } from '@/types/learning/studyPlan';
 import { REVIEW_BUFFER_DAYS } from '@/types/learning/studyPlan';
 import type { Persona, UserBackground, StudyStyle } from '@/types/learning';
-import type { Subject } from '@/types/question';
+import type { LearningExamSubject } from '@/types/learning';
 import {
   calculateRequiredHours,
   calculateAvailableMinutes,
@@ -43,7 +43,7 @@ import {
 } from './timeAllocation';
 import type { AreaConfig } from './areaConfig';
 
-type ExamSubject = Extract<Subject, 'adsp' | 'sqld'>;
+type ExamSubject = LearningExamSubject;
 
 /** 입문자 플랜 입력. */
 export interface BeginnerPlanInput {

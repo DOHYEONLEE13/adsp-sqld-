@@ -18,9 +18,9 @@ import {
   generateBeginnerPlan,
   generateReviewerPlan,
 } from './studyPlanGenerator';
-import type { Subject } from '@/types/question';
+import type { LearningExamSubject } from '@/types/learning';
 
-type ExamSubject = Extract<Subject, 'adsp' | 'sqld'>;
+type ExamSubject = LearningExamSubject;
 
 /**
  * OnboardingResult 에서 plan 생성용 입력 추출.

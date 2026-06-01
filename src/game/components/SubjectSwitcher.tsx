@@ -22,6 +22,7 @@ import SpeechBubble from '@/game/lesson/SpeechBubble';
 import { characterForSubject } from '@/components/mascot/types';
 import type { Subject } from '@/types/question';
 import { setActiveSubject } from '@/game/storage';
+import type { ExpansionSubjectId } from '../expansionSubjects';
 
 const SUBJECT_VISUAL = {
   adsp: {
@@ -47,13 +48,25 @@ const COMHWAL_VISUAL = {
 interface Props {
   /** 현재 활성 과목 (체크 표시용). */
   current: Subject | null;
+  currentExpansion?: ExpansionSubjectId | null;
   onClose: () => void;
   /** 과목 전환 시 caller (보통 toast 노출 + 라우트 이동). */
   onSwitched?: (newSubject: Subject) => void;
 }
 
+function navigateHash(hash: string) {
+  if (typeof window === 'undefined') return;
+  const normalized = hash.startsWith('#') ? hash : `#${hash}`;
+  if (window.location.hash === normalized) {
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+    return;
+  }
+  window.location.hash = hash;
+}
+
 export default function SubjectSwitcher({
   current,
+  currentExpansion = null,
   onClose,
   onSwitched,
 }: Props) {
@@ -68,14 +81,19 @@ export default function SubjectSwitcher({
   };
 
   const handleSelectComhwal = () => {
+    if (currentExpansion === 'comhwal') {
+      onClose();
+      return;
+    }
     onClose();
-    window.location.hash = '/game/comhwal';
+    navigateHash('/game/comhwal');
   };
 
   const activeChar =
     current === 'adsp' || current === 'sqld'
       ? characterForSubject(current)
       : characterForSubject('adsp');
+  const isComhwalActive = currentExpansion === 'comhwal';
 
   if (typeof document === 'undefined') return null;
 
@@ -183,8 +201,15 @@ export default function SubjectSwitcher({
             onClick={handleSelectComhwal}
             className="relative w-full p-4 rounded-2xl text-left transition active:scale-[0.99]"
             style={{
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(239,244,255,0.12)',
+              background: isComhwalActive
+                ? 'rgba(167,233,106,0.08)'
+                : 'rgba(255,255,255,0.04)',
+              border: isComhwalActive
+                ? `1.5px solid ${COMHWAL_VISUAL.accent}`
+                : '1px solid rgba(239,244,255,0.12)',
+              boxShadow: isComhwalActive
+                ? '0 0 18px rgba(167,233,106,0.24)'
+                : 'none',
             }}
           >
             <div className="flex items-center gap-3">

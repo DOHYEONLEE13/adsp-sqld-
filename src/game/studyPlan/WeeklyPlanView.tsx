@@ -12,11 +12,11 @@
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import type { StudyPlanWeek } from '@/types/learning/studyPlan';
-import type { Subject } from '@/types/question';
+import type { LearningExamSubject } from '@/types/learning';
 import { getAreas } from './areaConfig';
 import { formatMinutes } from './timeAllocation';
 
-type ExamSubject = Extract<Subject, 'adsp' | 'sqld'>;
+type ExamSubject = LearningExamSubject;
 
 interface Props {
   weeks: StudyPlanWeek[];

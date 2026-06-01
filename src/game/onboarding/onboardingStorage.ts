@@ -11,10 +11,14 @@
  *   - localStorage 는 cache 역할만
  */
 
-import type { Persona, UserBackground, StudyStyle } from '@/types/learning';
-import type { Subject } from '@/types/question';
+import type {
+  Persona,
+  UserBackground,
+  StudyStyle,
+  LearningExamSubject,
+} from '@/types/learning';
 
-type ExamSubject = Extract<Subject, 'adsp' | 'sqld'>;
+type ExamSubject = LearningExamSubject;
 
 const STORAGE_KEY = 'questdp_onboarding_v4';
 const SKIPPED_KEY = 'questdp_onboarding_skipped_v4';

@@ -26,3 +26,4 @@ export * from './cohortStats';
 export * from './passResponse';
 export * from './diagnostic';
 export * from './premium';
+export * from './exam';

@@ -38,6 +38,7 @@ import GuestDiscardToast from './components/GuestDiscardToast';
 import AuthGuard from './components/auth/AuthGuard';
 import { trackPageview } from './lib/analytics';
 import { needsOnboarding } from './game/onboarding/onboardingStorage';
+import { isComhwalExam } from './types/learning';
 import { initAuthSessionSync } from './lib/auth/sessionStore';
 import {
   installAppModeChrome,
@@ -301,6 +302,9 @@ function getRoute(): RouteState {
           const ex = parsed.exams?.[0];
           if (ex === 'adsp' || ex === 'sqld') {
             return { route: 'game', initialSubject: ex };
+          }
+          if (isComhwalExam(ex)) {
+            return { route: 'game', initialExpansionSubject: 'comhwal' };
           }
         }
       }

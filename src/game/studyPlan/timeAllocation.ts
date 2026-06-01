@@ -17,10 +17,10 @@
 import type { PlanMode } from '@/types/learning/studyPlan';
 import { TIME_RATIO_THRESHOLDS, REVIEW_BUFFER_DAYS } from '@/types/learning/studyPlan';
 import type { Persona, UserBackground } from '@/types/learning';
-import type { Subject } from '@/types/question';
+import type { LearningExamSubject } from '@/types/learning';
 import { getAreas, type AreaConfig } from './areaConfig';
 
-type ExamSubject = Extract<Subject, 'adsp' | 'sqld'>;
+type ExamSubject = LearningExamSubject;
 
 /** 권장 시간 범위. */
 export interface HoursRange {
@@ -58,6 +58,22 @@ const HOURS_TABLE: {
       novice: { min: 40, max: 50, recommended: 45 },
       some_basis: { min: 20, max: 25, recommended: 22 },
       experienced: { min: 14, max: 20, recommended: 17 },
+    },
+    reviewer: { min: 10, max: 15, recommended: 12 },
+  },
+  comhwal1: {
+    beginner: {
+      novice: { min: 55, max: 70, recommended: 60 },
+      some_basis: { min: 35, max: 45, recommended: 40 },
+      experienced: { min: 22, max: 30, recommended: 26 },
+    },
+    reviewer: { min: 15, max: 22, recommended: 18 },
+  },
+  comhwal2: {
+    beginner: {
+      novice: { min: 35, max: 45, recommended: 40 },
+      some_basis: { min: 22, max: 30, recommended: 25 },
+      experienced: { min: 14, max: 20, recommended: 16 },
     },
     reviewer: { min: 10, max: 15, recommended: 12 },
   },

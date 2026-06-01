@@ -18,9 +18,13 @@ import { DiagnosticScreen } from '../diagnostic/DiagnosticScreen';
 import { saveOnboardingResult, loadOnboardingResult } from './onboardingStorage';
 import { buildPlanFromOnboarding, saveStudyPlan } from '../studyPlan';
 import { setActiveSubject } from '../storage';
-import type { Subject } from '@/types/question';
+import {
+  isCoreExamSubject,
+  type CoreExamSubject,
+  type LearningExamSubject,
+} from '@/types/learning';
 
-type ExamSubject = Extract<Subject, 'adsp' | 'sqld'>;
+type ExamSubject = LearningExamSubject;
 
 interface OnboardingFlowProps {
   /** Onboarding 완전 완료 시 callback (caller 가 다음 화면으로 이동). */
@@ -36,7 +40,7 @@ type Phase =
   | { kind: 'onboarding' }
   | {
       kind: 'diagnostic';
-      exams: ExamSubject[];
+      exams: CoreExamSubject[];
       onDiagnosticDone: (weak_chapters: string[]) => void;
     };
 
@@ -45,7 +49,12 @@ export function OnboardingFlow({ onFinish }: OnboardingFlowProps) {
 
   const handleDiagnosticEntry = useCallback(
     (exams: ExamSubject[], onDiagnosticDone: (weak_chapters: string[]) => void) => {
-      setPhase({ kind: 'diagnostic', exams, onDiagnosticDone });
+      const coreExams = exams.filter(isCoreExamSubject);
+      if (coreExams.length === 0) {
+        onDiagnosticDone([]);
+        return;
+      }
+      setPhase({ kind: 'diagnostic', exams: coreExams, onDiagnosticDone });
     },
     [],
   );
@@ -86,7 +95,7 @@ export function OnboardingFlow({ onFinish }: OnboardingFlowProps) {
       // onboarding 에서 이미 시험 선택했으니 chooser 다시 보지 않게 progressStore 에 마킹.
       // 첫 exam 우선 (multi-exam 사용자도 첫 학습은 첫 exam — 이후 SubjectSwitcher 로 전환 가능).
       const firstExam = result.exams[0];
-      if (firstExam) {
+      if (isCoreExamSubject(firstExam)) {
         setActiveSubject(firstExam);
       }
       onFinish();

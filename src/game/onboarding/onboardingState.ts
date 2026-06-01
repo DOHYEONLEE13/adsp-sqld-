@@ -14,10 +14,10 @@ import type {
   Persona,
   UserBackground,
   StudyStyle,
+  LearningExamSubject,
 } from '@/types/learning';
-import type { Subject } from '@/types/question';
 
-type ExamSubject = Extract<Subject, 'adsp' | 'sqld'>;
+type ExamSubject = LearningExamSubject;
 
 /** Onboarding 단계 식별자. */
 export type OnboardingStep =

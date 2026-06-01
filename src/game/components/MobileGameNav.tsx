@@ -14,7 +14,7 @@
 
 import { RefreshCw, Settings as SettingsIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useState, type ComponentType } from 'react';
+import { useEffect, useState, type ComponentType } from 'react';
 import {
   BookTabIcon,
   FlagTabIcon,
@@ -35,8 +35,10 @@ import PassTierBadge from '@/components/passes/PassTierBadge';
 import ProfileSyncSkeleton from '@/components/profile/ProfileSyncSkeleton';
 import SubjectBadge from './SubjectBadge';
 import SubjectSwitcher from './SubjectSwitcher';
+import type { ExpansionSubjectId } from '../expansionSubjects';
 import SubjectSwitchToast from './SubjectSwitchToast';
 import { loadOnboardingResult } from '../onboarding/onboardingStorage';
+import { isCoreExamSubject } from '@/types/learning';
 import {
   isAppMode,
   openWebOrAppPremiumEntry,
@@ -48,6 +50,28 @@ const SUBJECT_ACCENT: Record<Subject, string> = {
   sqld: '#c084fc',
 };
 
+const LAST_LEARN_HASH_KEY = 'questdp:last-learn-hash:v1';
+
+function readLastLearnHash(): string {
+  if (typeof window === 'undefined') return '/game';
+  try {
+    const saved = window.localStorage.getItem(LAST_LEARN_HASH_KEY);
+    return saved?.startsWith('/game') ? saved : '/game';
+  } catch {
+    return '/game';
+  }
+}
+
+function rememberLastLearnHash() {
+  if (typeof window === 'undefined') return;
+  const hash = window.location.hash.replace(/^#/, '') || '/game';
+  if (!hash.startsWith('/game')) return;
+  try {
+    window.localStorage.setItem(LAST_LEARN_HASH_KEY, hash);
+  } catch {
+    // localStorage can be unavailable in some embedded browsers.
+  }
+}
 
 // ---------------------------------------------------------------- Top Bar
 
@@ -55,6 +79,7 @@ interface TopProps {
   /** 현재 화면의 과목. 좌측 뱃지 색·글자 결정. 미지정 시 프로필 모드. */
   subject?: Subject;
   customSubject?: {
+    id?: ExpansionSubjectId;
     label: string;
     accent: string;
     onClick?: () => void;
@@ -75,10 +100,11 @@ export function MobileTopBar({ subject, customSubject }: TopProps) {
   // 사용자 흐름 폴리시 — 좌측 상단 마스코트 옆 과목 배지 + 전환 모달.
   // 활성 과목 = props.subject 우선, 없으면 progress.activeSubject, 없으면 onboarding.exams[0].
   const onboarding = loadOnboardingResult();
+  const onboardingSubject = onboarding?.exams.find(isCoreExamSubject) ?? null;
   const activeSubject: Subject | null =
     subject ??
     progress.activeSubject ??
-    onboarding?.exams[0] ??
+    onboardingSubject ??
     null;
   const [switcherOpen, setSwitcherOpen] = useState(false);
   const [toastSubject, setToastSubject] = useState<Subject | null>(null);
@@ -195,7 +221,7 @@ export function MobileTopBar({ subject, customSubject }: TopProps) {
         {customSubject ? (
           <button
             type="button"
-            onClick={customSubject.onClick}
+            onClick={() => setSwitcherOpen(true)}
             className="kr-num shrink-0 inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold leading-none transition active:scale-95"
             style={{
               color: customSubject.accent,
@@ -305,7 +331,8 @@ export function MobileTopBar({ subject, customSubject }: TopProps) {
       {/* 과목 전환 모달 */}
       {switcherOpen ? (
         <SubjectSwitcher
-          current={activeSubject}
+          current={customSubject ? null : activeSubject}
+          currentExpansion={customSubject?.id ?? null}
           onClose={() => setSwitcherOpen(false)}
           onSwitched={(newSubject) => {
             setToastSubject(newSubject);
@@ -375,6 +402,10 @@ export function MobileBottomNav({
   onQuests,
   accent = SUBJECT_ACCENT.adsp,
 }: BottomProps) {
+  useEffect(() => {
+    if (active === 'learn') rememberLastLearnHash();
+  }, [active]);
+
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 z-30"
@@ -401,7 +432,7 @@ export function MobileBottomNav({
             if (onLearn) {
               onLearn();
             } else {
-              window.location.hash = '/game';
+              window.location.hash = readLastLearnHash();
             }
           }}
         />

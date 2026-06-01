@@ -19,9 +19,9 @@
  *  - 내부 progress tracking: topic 단위 (sessions.topic 필드 활용)
  */
 
-import type { Subject } from '@/types/question';
+import type { LearningExamSubject } from '@/types/learning';
 
-type ExamSubject = Extract<Subject, 'adsp' | 'sqld'>;
+type ExamSubject = LearningExamSubject;
 
 /** 한 영역 안의 운영 chapter/topic 매핑 1건. */
 export interface AreaTopic {
@@ -144,18 +144,72 @@ export const SQLD_AREAS: AreaConfig[] = [
 ];
 
 /** 시험별 영역 설정 조회. */
+export const COMHWAL1_AREAS: AreaConfig[] = [
+  {
+    area_id: 'comhwal1-area-1',
+    chapter_id: 'comhwal1-computer-general',
+    display_name: '컴퓨터 일반',
+    ratio: 0.35,
+    topics: [{ chapter: 1, topic: null }],
+  },
+  {
+    area_id: 'comhwal1-area-2',
+    chapter_id: 'comhwal1-spreadsheet-general',
+    display_name: '스프레드시트 일반',
+    ratio: 0.35,
+    topics: [{ chapter: 2, topic: null }],
+  },
+  {
+    area_id: 'comhwal1-area-3',
+    chapter_id: 'comhwal1-database-general',
+    display_name: '데이터베이스 일반',
+    ratio: 0.3,
+    topics: [{ chapter: 3, topic: null }],
+  },
+];
+
+export const COMHWAL2_AREAS: AreaConfig[] = [
+  {
+    area_id: 'comhwal2-area-1',
+    chapter_id: 'comhwal2-computer-general',
+    display_name: '컴퓨터 일반',
+    ratio: 0.45,
+    topics: [{ chapter: 1, topic: null }],
+  },
+  {
+    area_id: 'comhwal2-area-2',
+    chapter_id: 'comhwal2-spreadsheet-general',
+    display_name: '스프레드시트 일반',
+    ratio: 0.55,
+    topics: [{ chapter: 2, topic: null }],
+  },
+];
+
 export function getAreas(exam: ExamSubject): AreaConfig[] {
-  return exam === 'adsp' ? ADSP_AREAS : SQLD_AREAS;
+  switch (exam) {
+    case 'adsp':
+      return ADSP_AREAS;
+    case 'sqld':
+      return SQLD_AREAS;
+    case 'comhwal1':
+      return COMHWAL1_AREAS;
+    case 'comhwal2':
+      return COMHWAL2_AREAS;
+  }
 }
 
 /** 영역 ID 로 영역 1건 조회. */
 export function findAreaById(area_id: string): AreaConfig | undefined {
-  return [...ADSP_AREAS, ...SQLD_AREAS].find((a) => a.area_id === area_id);
+  return [...ADSP_AREAS, ...SQLD_AREAS, ...COMHWAL1_AREAS, ...COMHWAL2_AREAS].find(
+    (a) => a.area_id === area_id,
+  );
 }
 
 /** chapter_id 로 영역 1건 조회. */
 export function findAreaByChapterId(chapter_id: string): AreaConfig | undefined {
-  return [...ADSP_AREAS, ...SQLD_AREAS].find((a) => a.chapter_id === chapter_id);
+  return [...ADSP_AREAS, ...SQLD_AREAS, ...COMHWAL1_AREAS, ...COMHWAL2_AREAS].find(
+    (a) => a.chapter_id === chapter_id,
+  );
 }
 
 /**
@@ -164,7 +218,7 @@ export function findAreaByChapterId(chapter_id: string): AreaConfig | undefined 
  */
 export function validateAreaRatios(): { exam: ExamSubject; sum: number; ok: boolean }[] {
   const out: { exam: ExamSubject; sum: number; ok: boolean }[] = [];
-  for (const exam of ['adsp', 'sqld'] as const) {
+  for (const exam of ['adsp', 'sqld', 'comhwal1', 'comhwal2'] as const) {
     const sum = getAreas(exam).reduce((s, a) => s + a.ratio, 0);
     out.push({ exam, sum, ok: Math.abs(sum - 1) < 0.001 });
   }

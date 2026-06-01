@@ -23,6 +23,7 @@ import {
   saveOnboardingResult,
 } from '@/game/onboarding/onboardingStorage';
 import type { StudyPlan } from '@/types/learning/studyPlan';
+import { examToGameHash } from '@/types/learning';
 
 export default function StudyPlanRoute() {
   const [plan, setPlan] = useState<StudyPlan | null | 'loading'>('loading');
@@ -152,7 +153,15 @@ export default function StudyPlanRoute() {
         return;
       }
     }
-    window.location.hash = '/game';
+    const nextHash = examToGameHash(stable.exam);
+    if (nextHash === '/game/comhwal') {
+      try {
+        window.localStorage.setItem('questdp:last-learn-hash:v1', nextHash);
+      } catch {
+        /* noop */
+      }
+    }
+    window.location.hash = nextHash;
   };
 
   const handleRegenerate = () => {

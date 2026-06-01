@@ -20,6 +20,7 @@
  */
 
 import type { Subject } from '../question';
+import type { LearningExamSubject } from './exam';
 
 /** 학습자 페르소나 (1-1절). 첫 진입 시 마스코트 대화로 분기. */
 export type Persona = 'beginner' | 'reviewer' | 'unknown';
@@ -89,7 +90,7 @@ export interface RewardCredit {
 }
 
 /** Subject literal — 운영 코드의 'adsp'/'sqld' 와 호환. */
-type ExamSubject = Extract<Subject, 'adsp' | 'sqld'>;
+type ExamSubject = LearningExamSubject;
 
 /**
  * UserProfile — 학습 시스템의 단일 진실의 원천.

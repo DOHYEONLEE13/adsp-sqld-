@@ -13,11 +13,14 @@
  */
 
 import type { StudyPlan, StudyPlanChapter, StudyPlanWeek } from '@/types/learning/studyPlan';
-import type { Subject } from '@/types/question';
+import {
+  isCoreExamSubject,
+  type LearningExamSubject,
+} from '@/types/learning';
 import type { SessionRecord } from '@/game/storage';
 import { getAreas, type AreaConfig } from './areaConfig';
 
-type ExamSubject = Extract<Subject, 'adsp' | 'sqld'>;
+type ExamSubject = LearningExamSubject;
 
 /** 진도 측정 결과. */
 export interface ProgressSnapshot {
@@ -122,6 +125,7 @@ function aggregateActualMinutes(
 ): Map<string, number> {
   const result = new Map<string, number>();
   for (const a of areas) result.set(a.chapter_id, 0);
+  if (!isCoreExamSubject(exam)) return result;
 
   for (const s of sessions) {
     if (s.subject !== exam) continue;

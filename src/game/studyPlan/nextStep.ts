@@ -17,14 +17,14 @@
  */
 
 import type { StudyPlan } from '@/types/learning/studyPlan';
-import type { Subject } from '@/types/question';
+import { isCoreExamSubject, type CoreExamSubject } from '@/types/learning';
 import type { ChapterStepEntry } from '@/data/lessons';
 import type { ProgressStore } from '@/game/storage';
 import { getLessonsInChapter } from '@/data/lessons';
 import { getAreas, type AreaConfig, type AreaTopic } from './areaConfig';
 import { getCurrentWeekProgress } from './progressTracker';
 
-type ExamSubject = Extract<Subject, 'adsp' | 'sqld'>;
+type ExamSubject = CoreExamSubject;
 
 /** 본 주차 목표 진입 정보. */
 export interface NextStepRecommendation {
@@ -63,6 +63,8 @@ export function recommendNextStep(
   questionStats: ProgressStore['questionStats'],
   now: number = Date.now(),
 ): NextStepRecommendation | null {
+  if (!isCoreExamSubject(plan.exam)) return null;
+
   const areas = getAreas(plan.exam);
 
   // 1. 본 주차 진도

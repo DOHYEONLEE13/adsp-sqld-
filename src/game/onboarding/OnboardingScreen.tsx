@@ -30,10 +30,17 @@ import {
   type OnboardingState,
   type OnboardingEvent,
 } from './onboardingState';
-import type { Subject } from '@/types/question';
-import type { Persona, UserBackground, StudyStyle } from '@/types/learning';
+import {
+  examShortLabel,
+  isCoreExamSubject,
+  type LearningExamSubject,
+  type Persona,
+  type UserBackground,
+  type StudyStyle,
+} from '@/types/learning';
+import { getAreas } from '@/game/studyPlan/areaConfig';
 
-type ExamSubject = Extract<Subject, 'adsp' | 'sqld'>;
+type ExamSubject = LearningExamSubject;
 
 interface OnboardingScreenProps {
   /** 완료 시 callback — caller (App 또는 GamePage) 가 UserProfile 갱신. */
@@ -270,6 +277,12 @@ function StepContent({
           <ChoiceButton onClick={() => dispatch({ type: 'q2_answer', exams: ['sqld'] })}>
             ② SQLD (SQL 개발자)
           </ChoiceButton>
+          <ChoiceButton onClick={() => dispatch({ type: 'q2_answer', exams: ['comhwal1'] })}>
+            컴활 1급 (컴퓨터활용능력 필기)
+          </ChoiceButton>
+          <ChoiceButton onClick={() => dispatch({ type: 'q2_answer', exams: ['comhwal2'] })}>
+            컴활 2급 (컴퓨터활용능력 필기)
+          </ChoiceButton>
           <ChoiceButton onClick={() => dispatch({ type: 'q2_answer', exams: ['adsp', 'sqld'] })}>
             ③ 둘 다 (순차 학습 권장)
           </ChoiceButton>
@@ -279,10 +292,27 @@ function StepContent({
       // 선택한 시험에 따라 경험 도메인 워딩 분기 — ADsP=통계, SQLD=SQL, 둘 다=통계/SQL
       const hasAdsp = state.exams.includes('adsp');
       const hasSqld = state.exams.includes('sqld');
+      const hasComhwal = state.exams.some((ex) => ex === 'comhwal1' || ex === 'comhwal2');
       const domain =
-        hasAdsp && hasSqld ? '통계/SQL' : hasSqld ? 'SQL' : '통계';
+        hasAdsp && hasSqld
+          ? '통계/SQL'
+          : hasSqld
+            ? 'SQL'
+            : hasAdsp
+              ? '통계'
+              : hasComhwal
+                ? '컴퓨터/엑셀'
+                : '기초';
       const expDomain =
-        hasAdsp && hasSqld ? '개발/통계' : hasSqld ? '개발' : '통계';
+        hasAdsp && hasSqld
+          ? '개발/통계'
+          : hasSqld
+            ? '개발'
+            : hasAdsp
+              ? '통계'
+              : hasComhwal
+                ? '컴퓨터/엑셀'
+                : '기초';
       return (
         <div className="space-y-2">
           <ChoiceButton onClick={() => dispatch({ type: 'q3_beginner_answer', background: 'novice' })}>
@@ -442,6 +472,13 @@ function ymdToDate(ymd: string): Date {
   return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
 }
 
+function dateToYmd(date: Date): string {
+  const yyyy = date.getFullYear();
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
 /** 다가오는 회차 + D-day 라벨. */
 function presetLabel(p: ExamPreset, now: number = Date.now()): string {
   const target = ymdToDate(p.date);
@@ -463,7 +500,35 @@ function ExamRoundPicker({
   selected?: string;
   onSelect: (ymd: string) => void;
 }) {
-  const presets = useMemo(() => getUpcomingPresets(exam), [exam]);
+  const presets = useMemo(
+    () => (isCoreExamSubject(exam) ? getUpcomingPresets(exam) : []),
+    [exam],
+  );
+  if (!isCoreExamSubject(exam)) {
+    const defaultYmd = dateToYmd(new Date(Date.now() + 60 * 24 * 3600 * 1000));
+    return (
+      <div>
+        <div className="kr-body text-sm text-white/80 mb-2">
+          {examShortLabel(exam)} 시험일을 선택해줘
+        </div>
+        <div className="space-y-2">
+          <input
+            type="date"
+            value={selected ?? ''}
+            onChange={(event) => onSelect(event.currentTarget.value)}
+            className="w-full p-3 rounded-xl liquid-glass kr-body text-sm text-white bg-white/5"
+          />
+          <button
+            type="button"
+            onClick={() => onSelect(defaultYmd)}
+            className="w-full text-left p-3 rounded-xl liquid-glass kr-body text-sm text-white/80 hover:bg-white/10 transition"
+          >
+            아직 정하지 않았어. 우선 D-60으로 계획할게
+          </button>
+        </div>
+      </div>
+    );
+  }
   if (presets.length === 0) {
     return (
       <div className="kr-body text-sm text-white/60">
@@ -544,7 +609,14 @@ function WeakChapterInput({
     ],
   };
 
-  const candidates = exams.flatMap((ex) => chapterCandidates[ex] ?? []);
+  void chapterCandidates;
+
+  const candidates = exams.flatMap((ex) =>
+    getAreas(ex).map((area) => ({
+      id: area.chapter_id,
+      name: area.display_name,
+    })),
+  );
   const toggle = (id: string) =>
     setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
 

@@ -19,6 +19,7 @@ import SpeechBubble from '@/game/lesson/SpeechBubble';
 import PageAmbientBg from '@/game/components/PageAmbientBg';
 import type { StudyPlan } from '@/types/learning/studyPlan';
 import { REVIEW_BUFFER_DAYS } from '@/types/learning/studyPlan';
+import { isCoreExamSubject } from '@/types/learning';
 import { formatMinutes } from './timeAllocation';
 import { daysUntil } from '@/game/examDate';
 import WeeklyPlanView from './WeeklyPlanView';
@@ -53,7 +54,9 @@ export function StudyPlanScreen({
   }, []);
   const bubblePlacement: 'top' | 'right' = isMobile ? 'top' : 'right';
 
-  const character: MascotCharacter = characterForSubject(plan.exam);
+  const character: MascotCharacter = isCoreExamSubject(plan.exam)
+    ? characterForSubject(plan.exam)
+    : characterForSubject('adsp');
 
   // D-day 계산 (yyyy-mm-dd 포맷으로)
   const dDayYmd = formatYmd(plan.d_day);

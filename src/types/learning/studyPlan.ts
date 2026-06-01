@@ -22,10 +22,10 @@
  *   - replan_history 는 별도 테이블 — 마케팅 자산 활용 ("플랜 재조정 N회 후 합격").
  */
 
-import type { Subject } from '../question';
 import type { UserBackground } from './userProfile';
+import type { LearningExamSubject } from './exam';
 
-type ExamSubject = Extract<Subject, 'adsp' | 'sqld'>;
+type ExamSubject = LearningExamSubject;
 
 /**
  * 시간 부족/여유 판정 모드 (2-1-4절).

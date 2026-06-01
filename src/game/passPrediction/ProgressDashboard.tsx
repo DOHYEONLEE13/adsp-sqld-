@@ -21,6 +21,7 @@ import OnboardingPromptBanner from '../studyPlan/OnboardingPromptBanner';
 import { useProgress } from '../useProgress';
 import { loadOnboardingResult } from '../onboarding/onboardingStorage';
 import { loadStudyPlan } from '../studyPlan/studyPlanStorage';
+import { isCoreExamSubject } from '@/types/learning';
 import { daysUntil } from '../examDate';
 import {
   getFullChapterAccuracies,
@@ -42,8 +43,9 @@ export default function ProgressDashboard({ onExit }: Props) {
 
   // subject 결정 — plan 우선, fallback questionStats
   const subject = useMemo<'adsp' | 'sqld' | null>(() => {
-    if (plan?.exam) return plan.exam;
-    if (onboarding && onboarding.exams[0]) return onboarding.exams[0];
+    if (plan?.exam && isCoreExamSubject(plan.exam)) return plan.exam;
+    const onboardingExam = onboarding?.exams.find(isCoreExamSubject);
+    if (onboardingExam) return onboardingExam;
     return null;
   }, [plan, onboarding]);
 

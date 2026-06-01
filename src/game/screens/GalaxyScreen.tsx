@@ -798,6 +798,7 @@ function ExpansionPlanetScreen({
       />
       <MobileTopBar
         customSubject={{
+          id: subject.id,
           label: variant.shortLabel,
           accent: subject.accent,
           onClick: onBack,
@@ -1078,6 +1079,7 @@ function ExpansionOutlineScreen({
       />
       <MobileTopBar
         customSubject={{
+          id: subject.id,
           label: variant.shortLabel,
           accent: subject.accent,
           onClick: onSubjectBack,

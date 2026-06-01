@@ -59,6 +59,7 @@ import {
 } from '../expansionSubjects';
 
 interface Props {
+  initialExpansionSubject?: ExpansionSubjectId;
   onSelectSubject: (subject: Subject) => void;
   onStartDailyMission: (subject: Subject) => void;
   onStartMockExam: (subject: Subject) => void;
@@ -109,12 +110,24 @@ type View =
   | { kind: 'detail'; subject: Subject }
   | { kind: 'launching'; subject: Subject }
   | {
+      kind: 'expansionLaunching';
+      subjectId: ExpansionSubjectId;
+      variantId: ExpansionVariantId;
+    }
+  | {
       kind: 'expansionPlanets';
       subjectId: ExpansionSubjectId;
       variantId: ExpansionVariantId;
+    }
+  | {
+      kind: 'expansionOutline';
+      subjectId: ExpansionSubjectId;
+      variantId: ExpansionVariantId;
+      planetKey: string;
     };
 
 export default function GalaxyScreen({
+  initialExpansionSubject,
   onSelectSubject,
   onStartDailyMission,
   onStartMockExam,
@@ -131,7 +144,17 @@ export default function GalaxyScreen({
   const adspTotal = playableCount('adsp');
   const sqldTotal = playableCount('sqld');
 
-  const [view, setView] = useState<View>({ kind: 'overview' });
+  const [view, setView] = useState<View>(() => {
+    if (initialExpansionSubject && EXPANSION_SUBJECTS[initialExpansionSubject]) {
+      const expansionSubject = EXPANSION_SUBJECTS[initialExpansionSubject];
+      return {
+        kind: 'expansionLaunching',
+        subjectId: expansionSubject.id,
+        variantId: expansionSubject.variants[0].id,
+      };
+    }
+    return { kind: 'overview' };
+  });
 
   // 닉네임 onboarding 게이트 — 첫 방문 + 닉네임 미설정일 때만 노출.
   //
@@ -157,6 +180,18 @@ export default function GalaxyScreen({
     return () => window.clearTimeout(id);
   }, [view, onSelectSubject]);
 
+  useEffect(() => {
+    if (view.kind !== 'expansionLaunching') return;
+    const id = window.setTimeout(() => {
+      setView({
+        kind: 'expansionPlanets',
+        subjectId: view.subjectId,
+        variantId: view.variantId,
+      });
+    }, WARP_DURATION_MS);
+    return () => window.clearTimeout(id);
+  }, [view]);
+
   // 닉네임 미설정 + subject 클릭 시 NicknameOnboarding 노출 후 자동 진입.
   const [pendingSubject, setPendingSubject] = useState<Subject | null>(null);
 
@@ -178,7 +213,18 @@ export default function GalaxyScreen({
 
   const selectedSubject =
     view.kind === 'detail' || view.kind === 'launching' ? view.subject : null;
-  const isLaunching = view.kind === 'launching';
+  const launchingExpansion =
+    view.kind === 'expansionLaunching'
+      ? {
+          subject: EXPANSION_SUBJECTS[view.subjectId],
+          variant:
+            EXPANSION_SUBJECTS[view.subjectId].variants.find(
+              (item) => item.id === view.variantId,
+            ) ?? EXPANSION_SUBJECTS[view.subjectId].variants[0],
+        }
+      : null;
+  const isLaunching =
+    view.kind === 'launching' || view.kind === 'expansionLaunching';
 
   // 오늘 데일리 미션 완료 여부 — banner 상태 표시.
   const dailyDoneToday = isToday(progress.lastDailyMissionAt);
@@ -213,6 +259,60 @@ export default function GalaxyScreen({
         subject={expansionSubject}
         variant={variant}
         onBack={() => setView({ kind: 'overview' })}
+        onSelectPlanet={(planetKey) =>
+          setView({
+            kind: 'expansionOutline',
+            subjectId: expansionSubject.id,
+            variantId: variant.id,
+            planetKey,
+          })
+        }
+      />
+    );
+  }
+
+  if (view.kind === 'expansionOutline') {
+    const expansionSubject = EXPANSION_SUBJECTS[view.subjectId];
+    const variant =
+      expansionSubject.variants.find((item) => item.id === view.variantId) ??
+      expansionSubject.variants[0];
+    const planet =
+      expansionSubject.planets.find((item) => item.key === view.planetKey) ??
+      expansionSubject.planets.find((item) =>
+        item.variantIds.includes(variant.id),
+      );
+
+    if (!planet) {
+      return (
+        <ExpansionPlanetScreen
+          subject={expansionSubject}
+          variant={variant}
+          onBack={() => setView({ kind: 'overview' })}
+          onSelectPlanet={(planetKey) =>
+            setView({
+              kind: 'expansionOutline',
+              subjectId: expansionSubject.id,
+              variantId: variant.id,
+              planetKey,
+            })
+          }
+        />
+      );
+    }
+
+    return (
+      <ExpansionOutlineScreen
+        subject={expansionSubject}
+        variant={variant}
+        planet={planet}
+        onBack={() =>
+          setView({
+            kind: 'expansionPlanets',
+            subjectId: expansionSubject.id,
+            variantId: variant.id,
+          })
+        }
+        onSubjectBack={() => setView({ kind: 'overview' })}
       />
     );
   }
@@ -328,7 +428,7 @@ export default function GalaxyScreen({
                 variant={variant}
                 onSelect={() =>
                   setView({
-                    kind: 'expansionPlanets',
+                    kind: 'expansionLaunching',
                     subjectId: expansionSubject.id,
                     variantId: variant.id,
                   })
@@ -434,7 +534,10 @@ export default function GalaxyScreen({
               letterSpacing: '0.18em',
             }}
           >
-            Entering {selectedSubject?.toUpperCase()}…
+            Entering{' '}
+            {selectedSubject?.toUpperCase() ??
+              launchingExpansion?.variant.shortLabel ??
+              'QUEST'}…
           </div>
         </div>
       ) : null}
@@ -672,10 +775,12 @@ function ExpansionPlanetScreen({
   subject,
   variant,
   onBack,
+  onSelectPlanet,
 }: {
   subject: ExpansionSubjectConfig;
   variant: ExpansionVariant;
   onBack: () => void;
+  onSelectPlanet: (planetKey: string) => void;
 }) {
   const planets = subject.planets.filter((planet) =>
     planet.variantIds.includes(variant.id),
@@ -722,7 +827,7 @@ function ExpansionPlanetScreen({
             <span>Galaxy</span>
             <span className="text-cream/30">›</span>
             <span style={{ color: subject.accent }}>
-              {subject.routeLabel} Planet
+              {subject.routeLabel}
             </span>
           </div>
           <h1 className="kr-heading text-[26px] uppercase leading-[1.15] tracking-[0.01em] drop-shadow-[0_2px_20px_rgba(0,0,0,0.75)] md:text-[36px] lg:text-[44px]">
@@ -734,7 +839,11 @@ function ExpansionPlanetScreen({
         </header>
 
         <div className="flex justify-center lg:justify-end lg:pr-4 xl:pr-10">
-          <ExpansionChapterPath planets={planets} accent={subject.accent} />
+          <ExpansionChapterPath
+            planets={planets}
+            accent={subject.accent}
+            onSelectPlanet={onSelectPlanet}
+          />
         </div>
       </div>
     </section>
@@ -744,9 +853,11 @@ function ExpansionPlanetScreen({
 function ExpansionChapterPath({
   planets,
   accent,
+  onSelectPlanet,
 }: {
   planets: ExpansionPlanet[];
   accent: string;
+  onSelectPlanet: (planetKey: string) => void;
 }) {
   const W = 420;
   const NODE = 78;
@@ -799,15 +910,20 @@ function ExpansionChapterPath({
       {nodes.map((node) => (
         <ExpansionChapterNode
           key={node.planet.key}
+          planetKey={node.planet.key}
           cx={node.cx}
           cy={node.cy}
           chapter={node.idx + 1}
           title={node.planet.title}
-          subtitle={node.planet.subtitle}
+          subtitle={`${node.planet.sections.length}단원 · ${node.planet.sections.reduce(
+            (sum, section) => sum + section.topics.length,
+            0,
+          )}개`}
           accent={accent}
           NODE={NODE}
           TITLE_GAP={TITLE_GAP}
           containerW={W}
+          onSelect={onSelectPlanet}
         />
       ))}
     </div>
@@ -815,6 +931,7 @@ function ExpansionChapterPath({
 }
 
 function ExpansionChapterNode({
+  planetKey,
   cx,
   cy,
   chapter,
@@ -824,7 +941,9 @@ function ExpansionChapterNode({
   NODE,
   TITLE_GAP,
   containerW,
+  onSelect,
 }: {
+  planetKey: string;
   cx: number;
   cy: number;
   chapter: number;
@@ -834,6 +953,7 @@ function ExpansionChapterNode({
   NODE: number;
   TITLE_GAP: number;
   containerW: number;
+  onSelect: (planetKey: string) => void;
 }) {
   const ringSize = NODE + 12;
   const r = (ringSize - 4) / 2;
@@ -867,6 +987,7 @@ function ExpansionChapterNode({
 
         <button
           type="button"
+          onClick={() => onSelect(planetKey)}
           aria-label={`${title} 과목`}
           className="absolute rounded-full inline-flex items-center justify-center transition-transform duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-neon"
           style={{
@@ -924,6 +1045,238 @@ function ExpansionChapterNode({
         </div>
       </div>
     </>
+  );
+}
+
+function ExpansionOutlineScreen({
+  subject,
+  variant,
+  planet,
+  onBack,
+  onSubjectBack,
+}: {
+  subject: ExpansionSubjectConfig;
+  variant: ExpansionVariant;
+  planet: ExpansionPlanet;
+  onBack: () => void;
+  onSubjectBack: () => void;
+}) {
+  const totalTopics = planet.sections.reduce(
+    (sum, section) => sum + section.topics.length,
+    0,
+  );
+
+  return (
+    <section className="relative min-h-screen isolate overflow-hidden text-cream">
+      <PageAmbientBg />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10"
+        style={{
+          background: `radial-gradient(ellipse at 50% 0%, ${subject.accent}1f 0%, rgba(1,8,40,0) 55%)`,
+        }}
+      />
+      <MobileTopBar
+        customSubject={{
+          label: variant.shortLabel,
+          accent: subject.accent,
+          onClick: onSubjectBack,
+        }}
+      />
+      <MobileBottomNav
+        active="learn"
+        accent={subject.accent}
+        onLearn={() => {
+          window.location.hash = `/game/${subject.id}`;
+        }}
+      />
+
+      <div className="relative z-10 mx-auto min-h-screen w-full max-w-layout px-6 pb-28 pt-20 md:px-10 lg:px-16">
+        <header className="mb-8 max-w-[680px] md:mb-10">
+          <button
+            type="button"
+            onClick={onBack}
+            aria-label="행성으로 돌아가기"
+            className="game-back-button mb-5 inline-flex items-center gap-2 kr-heading text-[11px] uppercase tracking-widest transition"
+          >
+            <ArrowLeft size={14} strokeWidth={2.4} />
+            행성으로
+          </button>
+
+          <div className="mb-3 flex items-center gap-2 kr-num text-[10px] uppercase tracking-widest text-cream/55">
+            <span>Galaxy</span>
+            <span className="text-cream/30">›</span>
+            <span style={{ color: subject.accent }}>
+              {subject.routeLabel}
+            </span>
+          </div>
+
+          <h1 className="kr-heading text-[26px] uppercase leading-[1.12] tracking-[0.01em] drop-shadow-[0_2px_20px_rgba(0,0,0,0.75)] md:text-[36px] lg:text-[44px]">
+            {planet.title}
+          </h1>
+          <p className="kr-body mt-3 max-w-xl text-[13px] leading-[1.65] text-cream/78 md:text-[14px]">
+            단원 목차를 먼저 열어뒀어요. 세부 개념과 문제는 이 순서로 붙일게요.
+          </p>
+
+          <div className="mt-4 flex items-center gap-2 kr-num text-[10px] uppercase tracking-widest text-cream/50">
+            <span style={{ color: subject.accent }}>
+              {planet.sections.length}단원
+            </span>
+            <span className="text-cream/25">·</span>
+            <span>{totalTopics}개 목차</span>
+            <span className="text-cream/25">·</span>
+            <span>개념 준비 중</span>
+          </div>
+        </header>
+
+        <div className="flex flex-col gap-8 md:gap-10">
+          {planet.sections.map((section, sectionIndex) => (
+            <ExpansionOutlineSection
+              key={section.key}
+              index={sectionIndex + 1}
+              title={section.title}
+              topics={section.topics}
+              accent={subject.accent}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ExpansionOutlineSection({
+  index,
+  title,
+  topics,
+  accent,
+}: {
+  index: number;
+  title: string;
+  topics: ExpansionPlanet['sections'][number]['topics'];
+  accent: string;
+}) {
+  return (
+    <section className="mt-2 md:mt-3" aria-label={title}>
+      <div className="mb-3">
+        <div className="flex items-end justify-between gap-3">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <span
+                className="kr-heading text-[10px] uppercase tracking-[0.18em]"
+                style={{ color: accent }}
+              >
+                Part {index}
+              </span>
+            </div>
+            <h2
+              className="kr-heading mt-1 text-[18px] uppercase leading-tight tracking-[0.01em] md:text-[21px]"
+              style={{ color: 'var(--cream)' }}
+            >
+              {title}
+            </h2>
+          </div>
+          <span className="kr-num shrink-0 text-[11px] uppercase tracking-widest text-cream/62">
+            {topics.length}개
+          </span>
+        </div>
+        <div
+          className="mt-3 h-px"
+          style={{ background: `${accent}33` }}
+          aria-hidden
+        />
+      </div>
+
+      <div className="flex flex-col">
+        {topics.map((topic, topicIndex) => (
+          <ExpansionOutlineNode
+            key={topic.id}
+            n={topicIndex + 1}
+            topicId={topic.id}
+            title={topic.title}
+            accent={accent}
+            isLast={topicIndex === topics.length - 1}
+          />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function ExpansionOutlineNode({
+  n,
+  topicId,
+  title,
+  accent,
+  isLast,
+}: {
+  n: number;
+  topicId: string;
+  title: string;
+  accent: string;
+  isLast: boolean;
+}) {
+  return (
+    <div className="flex">
+      <div className="mr-4 flex flex-col items-center md:mr-5">
+        <span
+          aria-hidden
+          className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full md:h-12 md:w-12"
+          style={{
+            background:
+              'linear-gradient(180deg, rgba(239,244,255,0.16), rgba(239,244,255,0.07))',
+            border: '1.5px solid rgba(239,244,255,0.48)',
+            color: 'rgba(239,244,255,0.96)',
+            boxShadow:
+              'inset 0 1px 0 rgba(255,255,255,0.14), 0 8px 18px -16px rgba(239,244,255,0.42)',
+            textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+          }}
+        >
+          <span className="kr-heading text-[13px] leading-none tabular-nums">
+            {n}
+          </span>
+        </span>
+        {!isLast ? (
+          <div
+            className="my-1 w-px flex-1"
+            style={{
+              background: 'rgba(239,244,255,0.30)',
+              minHeight: 28,
+            }}
+            aria-hidden
+          />
+        ) : null}
+      </div>
+
+      <div className="flex-1 pb-6 md:pb-7">
+        <h3
+          className="kr-body text-[13px] font-medium leading-[1.4] tracking-[-0.005em] md:text-[14px]"
+          style={{
+            color: 'var(--cream)',
+            textShadow:
+              '0 1px 3px rgba(1,8,40,0.7), 0 0 1px rgba(0,0,0,0.4)',
+          }}
+        >
+          {title}
+        </h3>
+        <div
+          className="kr-body mt-1 flex flex-wrap items-center gap-2 text-[10.5px]"
+          style={{
+            color: 'rgba(239,244,255,0.7)',
+            textShadow: '0 1px 2px rgba(1,8,40,0.6)',
+          }}
+        >
+          <span
+            className="kr-num uppercase tracking-widest text-[9px]"
+            style={{ color: accent }}
+          >
+            NO. {topicId}
+          </span>
+          <span style={{ color: 'rgba(239,244,255,0.4)' }}>·</span>
+          <span style={{ color: 'rgba(239,244,255,0.7)' }}>개념 준비 중</span>
+        </div>
+      </div>
+    </div>
   );
 }
 

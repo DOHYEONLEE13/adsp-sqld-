@@ -5,6 +5,7 @@
 
 import { useEffect, useState } from 'react';
 import type { Subject } from '@/types/question';
+import type { ExpansionSubjectId } from './expansionSubjects';
 import type { FlowMode, GameScreen, QuestSession, QuestSummary } from './types';
 import {
   createDailyMissionSession,
@@ -67,6 +68,8 @@ interface Props {
    * 해당 과목의 Planet 화면으로 시작. 랜딩의 ADSP/SQLD 카드에서 옴.
    */
   initialSubject?: Subject;
+  /** 컴활처럼 아직 정식 문제 Subject 가 아닌 확장 과목 딥링크. */
+  initialExpansionSubject?: ExpansionSubjectId;
   /** 랜딩으로 빠져나가는 훅. 해시에서 `#/` 로 복귀시킵니다. */
   onExitToLanding: () => void;
 }
@@ -172,7 +175,11 @@ function consumePendingZoneOpen(): PendingZoneOpen | null {
   }
 }
 
-export default function GamePage({ initialSubject, onExitToLanding }: Props) {
+export default function GamePage({
+  initialSubject,
+  initialExpansionSubject,
+  onExitToLanding,
+}: Props) {
   const [screen, setScreen] = useState<GameScreen>(() => {
     // 1순위: ZoneScreen 직진 (나의 약점 탭 → 단원 노드 클릭)
     const pendingZone = consumePendingZoneOpen();
@@ -604,6 +611,7 @@ export default function GamePage({ initialSubject, onExitToLanding }: Props) {
     case 'galaxy':
       return (
         <GalaxyScreen
+          initialExpansionSubject={initialExpansionSubject}
           onSelectSubject={goToPlanet}
           onStartDailyMission={startDailyMission}
           onStartMockExam={startMockExam}

@@ -3,8 +3,6 @@ import {
   Check,
   Copy,
   CreditCard,
-  Network,
-  Sparkles,
   TicketPercent,
   X,
 } from 'lucide-react';
@@ -161,21 +159,6 @@ function primaryFeatures(plan: PricingPlan): string[] {
   }
 }
 
-function cardIcon(plan: PricingPlan) {
-  const isMax = plan.id === 'premium-monthly';
-  return (
-    <div
-      className={cx(
-        'mb-8 inline-flex h-9 w-9 items-center justify-center text-cream/82',
-        isMax && 'text-neon',
-      )}
-      aria-hidden
-    >
-      {isMax ? <Sparkles size={32} strokeWidth={1.55} /> : <Network size={32} strokeWidth={1.55} />}
-    </div>
-  );
-}
-
 function PricingCard({
   plan,
   onPaidClick,
@@ -195,8 +178,6 @@ function PricingCard({
           : 'border-[rgba(239,244,255,0.13)] bg-cream/[0.035]',
       )}
     >
-      {cardIcon(plan)}
-
       <h3 className="kr-heading text-[24px] font-medium leading-tight tracking-normal text-cream">
         {planTitle(plan)}
       </h3>

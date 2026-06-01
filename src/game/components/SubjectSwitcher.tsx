@@ -38,6 +38,12 @@ const SUBJECT_VISUAL = {
   },
 } as const;
 
+const COMHWAL_VISUAL = {
+  label: '컴활',
+  full: '컴퓨터활용능력 필기',
+  accent: '#a7e96a',
+} as const;
+
 interface Props {
   /** 현재 활성 과목 (체크 표시용). */
   current: Subject | null;
@@ -59,6 +65,11 @@ export default function SubjectSwitcher({
     setActiveSubject(subject);
     onSwitched?.(subject);
     onClose();
+  };
+
+  const handleSelectComhwal = () => {
+    onClose();
+    window.location.hash = '/game/comhwal';
   };
 
   const activeChar =
@@ -107,7 +118,7 @@ export default function SubjectSwitcher({
           </div>
         </div>
 
-        {/* 과목 카드 2개 */}
+        {/* 과목 카드 */}
         <div className="grid grid-cols-1 gap-2.5">
           {(['adsp', 'sqld'] as const).map((subject) => {
             const v = SUBJECT_VISUAL[subject];
@@ -166,10 +177,42 @@ export default function SubjectSwitcher({
               </button>
             );
           })}
+
+          <button
+            type="button"
+            onClick={handleSelectComhwal}
+            className="relative w-full p-4 rounded-2xl text-left transition active:scale-[0.99]"
+            style={{
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(239,244,255,0.12)',
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <span
+                className="kr-heading text-[18px] tabular-nums shrink-0"
+                style={{
+                  color: COMHWAL_VISUAL.accent,
+                  letterSpacing: '0.04em',
+                }}
+              >
+                {COMHWAL_VISUAL.label}
+              </span>
+              <span className="kr-body text-[12.5px] text-cream/70 flex-1 truncate">
+                {COMHWAL_VISUAL.full}
+              </span>
+              <span
+                className="kr-num shrink-0 text-[10px] uppercase tracking-widest"
+                style={{ color: COMHWAL_VISUAL.accent }}
+              >
+                1급·2급
+              </span>
+            </div>
+          </button>
         </div>
 
         <p className="kr-body text-[11.5px] text-cream/45 mt-4 leading-[1.5]">
-          과목을 바꿔도 진행도는 각 과목별로 따로 보존돼요.
+          과목을 바꿔도 진행도는 각 과목별로 따로 보존돼요. 컴활은 학습 화면에서
+          1급·2급을 먼저 고를 수 있어요.
         </p>
       </div>
     </div>,

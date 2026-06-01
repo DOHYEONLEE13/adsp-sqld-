@@ -554,6 +554,7 @@ export default function App() {
           // ex) /game (chooser) ↔ /game/adsp 사이 이동 시 초기 화면이 갱신됨.
           key={initialExpansionSubject ?? initialSubject ?? 'chooser'}
           initialSubject={initialSubject}
+          initialExpansionSubject={initialExpansionSubject}
           onExitToLanding={() => {
             if (isAppMode()) {
               window.history.replaceState({}, '', '/app/#/game');

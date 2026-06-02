@@ -122,6 +122,7 @@ export default function ProfileCustomizer() {
   const CHAR_LABEL: Record<MascotCharacter, string> = {
     tori: '토리 (ADSP)',
     selli: '셀리 (SQLD)',
+    comhwal: '컴활',
   };
 
   // 닉네임 미설정 — 빈 값이거나 자동 생성된 태그 그대로면 "미설정" 으로 본다.

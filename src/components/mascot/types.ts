@@ -21,7 +21,7 @@ export type QuesPose =
  * 기본. subject-aware 컨텍스트 (lesson / planet / zone / chooser greeting) 는
  * adsp→tori, sqld→selli 로 자동 라우팅.
  */
-export type MascotCharacter = 'tori' | 'selli';
+export type MascotCharacter = 'tori' | 'selli' | 'comhwal';
 
 /** 기본 캐릭터 — 미지정 시 사용. */
 export const DEFAULT_CHARACTER: MascotCharacter = 'tori';

@@ -35,7 +35,7 @@ import {
   type StudyMode,
 } from '../studyMode';
 import { computePlayerStats, type PlayerStats } from '../rpg';
-import Ques from '@/components/mascot/Ques';
+import Ques, { preloadMascotPoses } from '@/components/mascot/Ques';
 import SpeechBubble from '@/game/lesson/SpeechBubble';
 import type { QuesPose } from '@/components/mascot/types';
 import type { ProgressStore } from '../storage';
@@ -57,6 +57,12 @@ import {
   type ExpansionVariant,
   type ExpansionVariantId,
 } from '../expansionSubjects';
+import {
+  getComhwalTopicCards,
+  getComhwalTopicMeta,
+  hasComhwalTopicCards,
+  type ComhwalConceptCard,
+} from '@/data/comhwal/concepts';
 
 interface Props {
   initialExpansionSubject?: ExpansionSubjectId;
@@ -78,6 +84,19 @@ const FG = '#FFFFFF';
 const FG_SOFT = 'rgba(255,255,255,0.72)';
 const FG_DIM = 'rgba(255,255,255,0.5)';
 const LINE = 'rgba(255,255,255,0.22)';
+const LAST_LEARN_HASH_KEY = 'questdp:last-learn-hash:v1';
+const LAST_EXPANSION_VIEW_KEY = 'questdp:last-expansion-view:v1';
+const COMHWAL_MASCOT_CHARACTER = 'comhwal' as const;
+const COMHWAL_MASCOT_POSES: QuesPose[] = [
+  'idle',
+  'happy',
+  'sad',
+  'celebrate',
+  'sleep',
+  'wave',
+  'think',
+  'lightbulb',
+];
 
 /** 과목별 액센트. */
 const SUBJECT_ACCENT: Record<Subject, string> = {
@@ -124,7 +143,145 @@ type View =
       subjectId: ExpansionSubjectId;
       variantId: ExpansionVariantId;
       planetKey: string;
+    }
+  | {
+      kind: 'expansionConcept';
+      subjectId: ExpansionSubjectId;
+      variantId: ExpansionVariantId;
+      planetKey: string;
+      topicId: string;
     };
+
+type ExpansionView = Extract<
+  View,
+  {
+    kind:
+      | 'expansionLaunching'
+      | 'expansionPlanets'
+      | 'expansionOutline'
+      | 'expansionConcept';
+  }
+>;
+
+interface SavedExpansionView {
+  subjectId: ExpansionSubjectId;
+  variantId: ExpansionVariantId;
+  planetKey?: string;
+  topicId?: string;
+}
+
+function preferredExpansionVariant(subjectId: ExpansionSubjectId) {
+  const subject = EXPANSION_SUBJECTS[subjectId];
+  if (typeof window !== 'undefined') {
+    try {
+      const raw = window.localStorage.getItem('questdp_onboarding_v4');
+      const parsed = raw
+        ? (JSON.parse(raw) as { version?: number; exams?: string[] })
+        : null;
+      const firstExam = parsed?.version === 1 ? parsed.exams?.[0] : null;
+      if (
+        firstExam === 'comhwal2' &&
+        subject.variants.some((variant) => variant.id === 'grade-2')
+      ) {
+        return 'grade-2';
+      }
+    } catch {
+      // Ignore malformed onboarding data and fall back to the first variant.
+    }
+  }
+  return subject.variants[0].id;
+}
+
+function isValidSavedExpansionView(
+  saved: SavedExpansionView | null,
+): saved is SavedExpansionView {
+  if (!saved) return false;
+  const subject = EXPANSION_SUBJECTS[saved.subjectId];
+  if (!subject) return false;
+  const hasVariant = subject.variants.some(
+    (variant) => variant.id === saved.variantId,
+  );
+  if (!hasVariant) return false;
+  if (!saved.planetKey) return true;
+  const validPlanet = subject.planets.some(
+    (planet) =>
+      planet.key === saved.planetKey &&
+      planet.variantIds.includes(saved.variantId),
+  );
+  if (!validPlanet) return false;
+  if (!saved.topicId) return true;
+  return hasComhwalTopicCards(saved.planetKey, saved.topicId);
+}
+
+function readSavedExpansionView(subjectId: ExpansionSubjectId) {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.localStorage.getItem(LAST_EXPANSION_VIEW_KEY);
+    const saved = raw ? (JSON.parse(raw) as SavedExpansionView) : null;
+    if (saved?.subjectId !== subjectId) return null;
+    return isValidSavedExpansionView(saved) ? saved : null;
+  } catch {
+    return null;
+  }
+}
+
+function initialExpansionView(subjectId: ExpansionSubjectId): View {
+  const saved = readSavedExpansionView(subjectId);
+  const variantId = saved?.variantId ?? preferredExpansionVariant(subjectId);
+  if (saved?.planetKey && saved.topicId) {
+    return {
+      kind: 'expansionConcept',
+      subjectId,
+      variantId,
+      planetKey: saved.planetKey,
+      topicId: saved.topicId,
+    };
+  }
+  if (saved?.planetKey) {
+    return {
+      kind: 'expansionOutline',
+      subjectId,
+      variantId,
+      planetKey: saved.planetKey,
+    };
+  }
+  return {
+    kind: 'expansionPlanets',
+    subjectId,
+    variantId,
+  };
+}
+
+function replaceHashSilently(nextHash: string) {
+  if (typeof window === 'undefined') return;
+  const normalized = nextHash.startsWith('/') ? nextHash : `/${nextHash}`;
+  const current = window.location.hash.replace(/^#/, '') || '/';
+  if (current === normalized) return;
+  window.history.replaceState({}, '', `#${normalized}`);
+}
+
+function rememberExpansionView(view: ExpansionView) {
+  if (typeof window === 'undefined') return;
+  const route = `/game/${view.subjectId}`;
+  const saved: SavedExpansionView = {
+    subjectId: view.subjectId,
+    variantId: view.variantId,
+    ...(view.kind === 'expansionOutline' || view.kind === 'expansionConcept'
+      ? { planetKey: view.planetKey }
+      : {}),
+    ...(view.kind === 'expansionConcept' ? { topicId: view.topicId } : {}),
+  };
+  try {
+    window.localStorage.setItem(LAST_LEARN_HASH_KEY, route);
+    window.localStorage.setItem(
+      LAST_EXPANSION_VIEW_KEY,
+      JSON.stringify(saved),
+    );
+  } catch {
+    // Embedded/mobile webviews may occasionally block localStorage.
+  }
+  replaceHashSilently(route);
+}
 
 export default function GalaxyScreen({
   initialExpansionSubject,
@@ -146,12 +303,7 @@ export default function GalaxyScreen({
 
   const [view, setView] = useState<View>(() => {
     if (initialExpansionSubject && EXPANSION_SUBJECTS[initialExpansionSubject]) {
-      const expansionSubject = EXPANSION_SUBJECTS[initialExpansionSubject];
-      return {
-        kind: 'expansionLaunching',
-        subjectId: expansionSubject.id,
-        variantId: expansionSubject.variants[0].id,
-      };
+      return initialExpansionView(initialExpansionSubject);
     }
     return { kind: 'overview' };
   });
@@ -192,7 +344,35 @@ export default function GalaxyScreen({
     return () => window.clearTimeout(id);
   }, [view]);
 
+  useEffect(() => {
+    if (
+      view.kind === 'expansionLaunching' ||
+      view.kind === 'expansionPlanets' ||
+      view.kind === 'expansionOutline' ||
+      view.kind === 'expansionConcept'
+    ) {
+      rememberExpansionView(view);
+      return;
+    }
+    if (view.kind === 'overview') {
+      replaceHashSilently('/game');
+    }
+  }, [view]);
+
   // 닉네임 미설정 + subject 클릭 시 NicknameOnboarding 노출 후 자동 진입.
+  useEffect(() => {
+    if (
+      view.kind !== 'expansionLaunching' &&
+      view.kind !== 'expansionPlanets' &&
+      view.kind !== 'expansionOutline' &&
+      view.kind !== 'expansionConcept'
+    ) {
+      return;
+    }
+    if (view.subjectId !== 'comhwal') return;
+    preloadMascotPoses(COMHWAL_MASCOT_CHARACTER, COMHWAL_MASCOT_POSES);
+  }, [view]);
+
   const [pendingSubject, setPendingSubject] = useState<Subject | null>(null);
 
   const handlePlanetClick = (subject: Subject) => {
@@ -310,6 +490,63 @@ export default function GalaxyScreen({
             kind: 'expansionPlanets',
             subjectId: expansionSubject.id,
             variantId: variant.id,
+          })
+        }
+        onSubjectBack={() => setView({ kind: 'overview' })}
+        onSelectTopic={(topicId) =>
+          setView({
+            kind: 'expansionConcept',
+            subjectId: expansionSubject.id,
+            variantId: variant.id,
+            planetKey: planet.key,
+            topicId,
+          })
+        }
+      />
+    );
+  }
+
+  if (view.kind === 'expansionConcept') {
+    const expansionSubject = EXPANSION_SUBJECTS[view.subjectId];
+    const variant =
+      expansionSubject.variants.find((item) => item.id === view.variantId) ??
+      expansionSubject.variants[0];
+    const planet =
+      expansionSubject.planets.find((item) => item.key === view.planetKey) ??
+      expansionSubject.planets.find((item) =>
+        item.variantIds.includes(variant.id),
+      );
+
+    if (!planet) {
+      return (
+        <ExpansionPlanetScreen
+          subject={expansionSubject}
+          variant={variant}
+          onBack={() => setView({ kind: 'overview' })}
+          onSelectPlanet={(planetKey) =>
+            setView({
+              kind: 'expansionOutline',
+              subjectId: expansionSubject.id,
+              variantId: variant.id,
+              planetKey,
+            })
+          }
+        />
+      );
+    }
+
+    return (
+      <ExpansionConceptScreen
+        subject={expansionSubject}
+        variant={variant}
+        planet={planet}
+        topicId={view.topicId}
+        onBack={() =>
+          setView({
+            kind: 'expansionOutline',
+            subjectId: expansionSubject.id,
+            variantId: variant.id,
+            planetKey: planet.key,
           })
         }
         onSubjectBack={() => setView({ kind: 'overview' })}
@@ -807,9 +1044,7 @@ function ExpansionPlanetScreen({
       <MobileBottomNav
         active="learn"
         accent={subject.accent}
-        onLearn={() => {
-          window.location.hash = `/game/${subject.id}`;
-        }}
+        onLearn={() => {}}
       />
 
       <div className="relative z-10 mx-auto min-h-screen w-full max-w-layout px-6 pb-28 pt-20 md:px-10 lg:px-16">
@@ -1055,12 +1290,14 @@ function ExpansionOutlineScreen({
   planet,
   onBack,
   onSubjectBack,
+  onSelectTopic,
 }: {
   subject: ExpansionSubjectConfig;
   variant: ExpansionVariant;
   planet: ExpansionPlanet;
   onBack: () => void;
   onSubjectBack: () => void;
+  onSelectTopic: (topicId: string) => void;
 }) {
   const totalTopics = planet.sections.reduce(
     (sum, section) => sum + section.topics.length,
@@ -1088,9 +1325,7 @@ function ExpansionOutlineScreen({
       <MobileBottomNav
         active="learn"
         accent={subject.accent}
-        onLearn={() => {
-          window.location.hash = `/game/${subject.id}`;
-        }}
+        onLearn={() => {}}
       />
 
       <div className="relative z-10 mx-auto min-h-screen w-full max-w-layout px-6 pb-28 pt-20 md:px-10 lg:px-16">
@@ -1137,8 +1372,10 @@ function ExpansionOutlineScreen({
               key={section.key}
               index={sectionIndex + 1}
               title={section.title}
+              planetKey={planet.key}
               topics={section.topics}
               accent={subject.accent}
+              onSelectTopic={onSelectTopic}
             />
           ))}
         </div>
@@ -1150,13 +1387,17 @@ function ExpansionOutlineScreen({
 function ExpansionOutlineSection({
   index,
   title,
+  planetKey,
   topics,
   accent,
+  onSelectTopic,
 }: {
   index: number;
   title: string;
+  planetKey: string;
   topics: ExpansionPlanet['sections'][number]['topics'];
   accent: string;
+  onSelectTopic: (topicId: string) => void;
 }) {
   return (
     <section className="mt-2 md:mt-3" aria-label={title}>
@@ -1194,10 +1435,12 @@ function ExpansionOutlineSection({
           <ExpansionOutlineNode
             key={topic.id}
             n={topicIndex + 1}
+            planetKey={planetKey}
             topicId={topic.id}
             title={topic.title}
             accent={accent}
             isLast={topicIndex === topics.length - 1}
+            onSelectTopic={onSelectTopic}
           />
         ))}
       </div>
@@ -1207,19 +1450,34 @@ function ExpansionOutlineSection({
 
 function ExpansionOutlineNode({
   n,
+  planetKey,
   topicId,
   title,
   accent,
   isLast,
+  onSelectTopic,
 }: {
   n: number;
+  planetKey: string;
   topicId: string;
   title: string;
   accent: string;
   isLast: boolean;
+  onSelectTopic: (topicId: string) => void;
 }) {
+  const cardCount = getComhwalTopicCards(planetKey, topicId).length;
+  const isReady = cardCount > 0;
+
   return (
-    <div className="flex">
+    <button
+      type="button"
+      className="group flex w-full text-left disabled:cursor-not-allowed disabled:opacity-60"
+      disabled={!isReady}
+      onClick={() => onSelectTopic(topicId)}
+      aria-label={
+        isReady ? `${title} 개념 카드 열기` : `${title} 개념 준비 중`
+      }
+    >
       <div className="mr-4 flex flex-col items-center md:mr-5">
         <span
           aria-hidden
@@ -1252,7 +1510,7 @@ function ExpansionOutlineNode({
 
       <div className="flex-1 pb-6 md:pb-7">
         <h3
-          className="kr-body text-[13px] font-medium leading-[1.4] tracking-[-0.005em] md:text-[14px]"
+          className="kr-body text-[13px] font-medium leading-[1.4] tracking-[-0.005em] transition md:text-[14px]"
           style={{
             color: 'var(--cream)',
             textShadow:
@@ -1275,13 +1533,562 @@ function ExpansionOutlineNode({
             NO. {topicId}
           </span>
           <span style={{ color: 'rgba(239,244,255,0.4)' }}>·</span>
-          <span style={{ color: 'rgba(239,244,255,0.7)' }}>개념 준비 중</span>
+          <span style={{ color: isReady ? 'rgba(239,244,255,0.78)' : 'rgba(239,244,255,0.7)' }}>
+            {isReady ? `개념 카드 ${cardCount}장` : '개념 준비 중'}
+          </span>
+          {isReady ? (
+            <>
+              <span style={{ color: 'rgba(239,244,255,0.4)' }}>·</span>
+              <span
+                className="inline-flex items-center gap-1 kr-num text-[9px] uppercase tracking-widest"
+                style={{ color: accent }}
+              >
+                열기
+                <ChevronRight size={11} strokeWidth={2.4} />
+              </span>
+            </>
+          ) : null}
         </div>
       </div>
-    </div>
+    </button>
   );
 }
 
+function getComhwalConceptPose(
+  card: ComhwalConceptCard | undefined,
+  index: number,
+  total: number,
+): QuesPose {
+  if (!card) return 'sad';
+  if (total > 0 && index === total - 1) return 'celebrate';
+  if (index === 0) return 'wave';
+  if (card.examTip) return 'think';
+  if (card.visualHint) return 'lightbulb';
+  return 'idle';
+}
+
+function ComhwalConceptFocusPanel({
+  card,
+  index,
+  accent,
+}: {
+  card: ComhwalConceptCard;
+  index: number;
+  accent: string;
+}) {
+  return (
+    <article
+      className="relative overflow-hidden rounded-[22px] p-5 md:p-6"
+      style={{
+        background:
+          'linear-gradient(180deg, rgba(239,244,255,0.075) 0%, rgba(239,244,255,0.035) 100%)',
+        border: '1px solid rgba(239,244,255,0.16)',
+        boxShadow: `0 18px 42px -28px ${accent}aa, inset 0 1px 0 rgba(255,255,255,0.08)`,
+      }}
+    >
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-px"
+        style={{ background: `${accent}66` }}
+      />
+      <div className="flex items-start gap-3">
+        <span
+          className="kr-num mt-1 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px]"
+          style={{
+            color: '#07121f',
+            background: accent,
+            boxShadow: `0 0 14px ${accent}66`,
+          }}
+        >
+          {index}
+        </span>
+        <div className="min-w-0 flex-1">
+          <p
+            className="kr-num text-[9px] uppercase tracking-[0.18em]"
+            style={{ color: accent }}
+          >
+            Concept Card · {card.topicId}
+          </p>
+          <h2 className="kr-heading mt-1 text-[20px] leading-[1.25] md:text-[24px]">
+            {card.title}
+          </h2>
+        </div>
+      </div>
+
+      <div
+        className="mt-5 rounded-[18px] p-4"
+        style={{
+          background: 'rgba(1,8,40,0.34)',
+          border: '1px solid rgba(239,244,255,0.10)',
+        }}
+      >
+        <h3 className="kr-heading mb-3 inline-flex items-center gap-2 text-[12px] uppercase tracking-widest text-cream/88">
+          <Info size={13} strokeWidth={2.4} style={{ color: accent }} />
+          핵심 포인트
+        </h3>
+        <ul className="space-y-2.5">
+          {card.keyPoints.map((point) => (
+            <li
+              key={point}
+              className="kr-body relative pl-5 text-[13px] leading-[1.65] text-cream/84 md:text-[14px]"
+            >
+              <span
+                className="absolute left-0 top-[0.72em] h-1.5 w-1.5 rounded-full"
+                style={{ background: accent, boxShadow: `0 0 8px ${accent}` }}
+              />
+              {point}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {card.examTip ? (
+        <div
+          className="mt-4 rounded-[18px] p-4"
+          style={{
+            background: 'rgba(251,191,36,0.07)',
+            border: '1px solid rgba(251,191,36,0.25)',
+          }}
+        >
+          <p className="kr-heading text-[11px] uppercase tracking-widest text-[#fbbf24]">
+            시험 포인트
+          </p>
+          <p className="kr-body mt-2 text-[13px] leading-[1.7] text-cream/86 md:text-[14px]">
+            {card.examTip}
+          </p>
+        </div>
+      ) : null}
+
+      {card.visualHint ? (
+        <p className="kr-num mt-4 text-[10px] uppercase tracking-widest text-cream/40">
+          Visual hint · {card.visualHint}
+        </p>
+      ) : null}
+    </article>
+  );
+}
+
+function ExpansionConceptStudyScreen({
+  subject,
+  variant,
+  planet,
+  topicId,
+  onBack,
+  onSubjectBack,
+}: {
+  subject: ExpansionSubjectConfig;
+  variant: ExpansionVariant;
+  planet: ExpansionPlanet;
+  topicId: string;
+  onBack: () => void;
+  onSubjectBack: () => void;
+}) {
+  const cards = getComhwalTopicCards(planet.key, topicId);
+  const topic = planet.sections
+    .flatMap((section) => section.topics)
+    .find((item) => item.id === topicId);
+  const meta = getComhwalTopicMeta(planet.key, topicId);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeCard = cards[activeIndex];
+  const isLastCard = activeIndex >= cards.length - 1;
+  const activePose = getComhwalConceptPose(
+    activeCard,
+    activeIndex,
+    cards.length,
+  );
+
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [planet.key, topicId]);
+
+  const handlePrev = () => {
+    setActiveIndex((index) => Math.max(0, index - 1));
+  };
+
+  const handleNext = () => {
+    if (cards.length === 0 || isLastCard) {
+      onBack();
+      return;
+    }
+    setActiveIndex((index) => Math.min(cards.length - 1, index + 1));
+  };
+
+  const speechText = activeCard
+    ? activeCard.body
+    : '아직 이 토픽의 개념 카드가 준비 중이야. 목차는 열어뒀고, 곧 ADSP·SQLD처럼 하나씩 붙일게.';
+
+  return (
+    <section className="relative min-h-screen isolate overflow-hidden text-cream">
+      <PageAmbientBg />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10"
+        style={{
+          background: `radial-gradient(ellipse at 50% 0%, ${subject.accent}1f 0%, rgba(1,8,40,0) 55%)`,
+        }}
+      />
+      <MobileTopBar
+        customSubject={{
+          id: subject.id,
+          label: variant.shortLabel,
+          accent: subject.accent,
+          onClick: onSubjectBack,
+        }}
+      />
+      <MobileBottomNav
+        active="learn"
+        accent={subject.accent}
+        onLearn={() => {}}
+      />
+
+      <div className="relative z-10 mx-auto min-h-screen w-full max-w-layout px-6 pb-28 pt-20 md:px-10 lg:px-16">
+        <header className="mb-5 max-w-[680px] md:mb-7">
+          <button
+            type="button"
+            onClick={onBack}
+            aria-label="목차로 돌아가기"
+            className="game-back-button mb-5 inline-flex items-center gap-2 kr-heading text-[11px] uppercase tracking-widest transition"
+          >
+            <ArrowLeft size={14} strokeWidth={2.4} />
+            목차로
+          </button>
+
+          <div className="mb-3 flex items-center gap-2 kr-num text-[10px] uppercase tracking-widest text-cream/55">
+            <span>컴활 필기</span>
+            <span className="text-cream/30">·</span>
+            <span style={{ color: subject.accent }}>{planet.title}</span>
+            <span className="text-cream/30">·</span>
+            <span>NO. {topicId}</span>
+          </div>
+
+          <h1 className="kr-heading text-[26px] leading-[1.12] tracking-[0.01em] drop-shadow-[0_2px_20px_rgba(0,0,0,0.75)] md:text-[36px] lg:text-[44px]">
+            {topic?.title ?? '컴활 개념 카드'}
+          </h1>
+          <p className="kr-body mt-3 max-w-xl text-[13px] leading-[1.65] text-cream/78 md:text-[14px]">
+            {meta
+              ? `${meta.section.title} 흐름 안에서 핵심 개념만 하나씩 볼게.`
+              : '핵심 개념만 하나씩 볼게.'}
+          </p>
+
+          <div className="mt-4 flex items-center gap-2 kr-num text-[10px] uppercase tracking-widest text-cream/50">
+            <span style={{ color: subject.accent }}>{cards.length}개 카드</span>
+            <span className="text-cream/25">·</span>
+            <span>문제는 다음 단계에서 붙일게</span>
+          </div>
+        </header>
+
+        <div className="mx-auto flex max-w-[760px] flex-col items-center">
+          <div className="mt-2 flex justify-center">
+            <Ques
+              pose={activePose}
+              character={COMHWAL_MASCOT_CHARACTER}
+              size={126}
+              priority
+            />
+          </div>
+
+          <div className="mt-5 w-full">
+            <SpeechBubble text={speechText} placement="top" />
+          </div>
+
+          <div className="mt-7 flex items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={handlePrev}
+              disabled={activeIndex === 0}
+              className="inline-flex min-h-12 items-center gap-2 rounded-full px-5 kr-heading text-[13px] transition disabled:cursor-not-allowed disabled:opacity-40"
+              style={{
+                color: 'rgba(239,244,255,0.9)',
+                background: 'rgba(1,8,40,0.42)',
+                border: '1px solid rgba(239,244,255,0.22)',
+                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)',
+              }}
+            >
+              <ArrowLeft size={15} strokeWidth={2.6} />
+              이전
+            </button>
+            <button
+              type="button"
+              onClick={handleNext}
+              className="inline-flex min-h-12 items-center gap-2 rounded-full px-7 kr-heading text-[13px] text-[#07121f] transition hover:-translate-y-0.5"
+              style={{
+                background: subject.accent,
+                boxShadow: `0 14px 30px -16px ${subject.accent}, inset 0 1px 0 rgba(255,255,255,0.34)`,
+              }}
+            >
+              {cards.length === 0 || isLastCard ? '목차로' : '계속'}
+              <ChevronRight size={16} strokeWidth={2.7} />
+            </button>
+          </div>
+
+          <nav className="mt-8 w-full max-w-[560px]" aria-label="컴활 개념 진행">
+            <div className="mb-3 flex items-center justify-between kr-num text-[10px] uppercase tracking-widest text-cream/52">
+              <span>개념 진행</span>
+              <span>
+                {cards.length > 0 ? activeIndex + 1 : 0} / {cards.length}
+              </span>
+            </div>
+            <div className="h-2 overflow-hidden rounded-full bg-white/10">
+              <div
+                className="h-full rounded-full transition-all duration-300"
+                style={{
+                  width:
+                    cards.length > 0
+                      ? `${((activeIndex + 1) / cards.length) * 100}%`
+                      : '0%',
+                  background: subject.accent,
+                  boxShadow: `0 0 14px ${subject.accent}88`,
+                }}
+              />
+            </div>
+          </nav>
+
+          <div className="mt-5 w-full">
+            {activeCard ? (
+              <ComhwalConceptFocusPanel
+                key={activeCard.id}
+                card={activeCard}
+                index={activeIndex + 1}
+                accent={subject.accent}
+              />
+            ) : (
+              <div className="liquid-glass rounded-[22px] p-6">
+                <p className="kr-body text-[14px] leading-[1.8] text-cream/82">
+                  아직 이 목차의 개념 카드는 준비 중이야. 먼저 1과목 컴퓨터 일반부터 순서대로 붙이고 있어.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ExpansionConceptScreen({
+  subject,
+  variant,
+  planet,
+  topicId,
+  onBack,
+  onSubjectBack,
+}: {
+  subject: ExpansionSubjectConfig;
+  variant: ExpansionVariant;
+  planet: ExpansionPlanet;
+  topicId: string;
+  onBack: () => void;
+  onSubjectBack: () => void;
+}) {
+  return (
+    <ExpansionConceptStudyScreen
+      subject={subject}
+      variant={variant}
+      planet={planet}
+      topicId={topicId}
+      onBack={onBack}
+      onSubjectBack={onSubjectBack}
+    />
+  );
+
+  /*
+  const cards = getComhwalTopicCards(planet.key, topicId);
+  const topic = planet.sections
+    .flatMap((section) => section.topics)
+    .find((item) => item.id === topicId);
+  const meta = getComhwalTopicMeta(planet.key, topicId);
+
+  return (
+    <section className="relative min-h-screen isolate overflow-hidden text-cream">
+      <PageAmbientBg />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10"
+        style={{
+          background: `radial-gradient(ellipse at 50% 0%, ${subject.accent}1f 0%, rgba(1,8,40,0) 55%)`,
+        }}
+      />
+      <MobileTopBar
+        customSubject={{
+          id: subject.id,
+          label: variant.shortLabel,
+          accent: subject.accent,
+          onClick: onSubjectBack,
+        }}
+      />
+      <MobileBottomNav
+        active="learn"
+        accent={subject.accent}
+        onLearn={() => {}}
+      />
+
+      <div className="relative z-10 mx-auto min-h-screen w-full max-w-layout px-6 pb-28 pt-20 md:px-10 lg:px-16">
+        <header className="mb-7 max-w-[680px] md:mb-9">
+          <button
+            type="button"
+            onClick={onBack}
+            aria-label="목차로 돌아가기"
+            className="game-back-button mb-5 inline-flex items-center gap-2 kr-heading text-[11px] uppercase tracking-widest transition"
+          >
+            <ArrowLeft size={14} strokeWidth={2.4} />
+            목차로
+          </button>
+
+          <div className="mb-3 flex items-center gap-2 kr-num text-[10px] uppercase tracking-widest text-cream/55">
+            <span>컴활 필기</span>
+            <span className="text-cream/30">›</span>
+            <span style={{ color: subject.accent }}>{planet.title}</span>
+            <span className="text-cream/30">›</span>
+            <span>NO. {topicId}</span>
+          </div>
+
+          <h1 className="kr-heading text-[26px] leading-[1.12] tracking-[0.01em] drop-shadow-[0_2px_20px_rgba(0,0,0,0.75)] md:text-[36px] lg:text-[44px]">
+            {topic?.title ?? '컴활 개념 카드'}
+          </h1>
+          <p className="kr-body mt-3 max-w-xl text-[13px] leading-[1.65] text-cream/78 md:text-[14px]">
+            {meta
+              ? `${meta.section.title} 흐름 안에서 이 개념만 짧게 먼저 잡아볼게요.`
+              : '이 개념만 짧게 먼저 잡아볼게요.'}
+          </p>
+
+          <div className="mt-4 flex items-center gap-2 kr-num text-[10px] uppercase tracking-widest text-cream/50">
+            <span style={{ color: subject.accent }}>{cards.length}개 카드</span>
+            <span className="text-cream/25">·</span>
+            <span>문제는 카드 검수 후 연결</span>
+          </div>
+        </header>
+
+        <div className="space-y-4 md:space-y-5">
+          {cards.length > 0 ? (
+            cards.map((card, index) => (
+              <ComhwalConceptCardPanel
+                key={card.id}
+                card={card}
+                index={index + 1}
+                accent={subject.accent}
+              />
+            ))
+          ) : (
+            <div className="liquid-glass rounded-[22px] p-6">
+              <p className="kr-body text-[14px] leading-[1.8] text-cream/82">
+                아직 이 목차의 개념 카드는 준비 중이야. 먼저 1과목 컴퓨터 일반부터 순서대로 붙이고 있어.
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+  */
+}
+
+/*
+function ComhwalConceptCardPanel({
+  card,
+  index,
+  accent,
+}: {
+  card: ComhwalConceptCard;
+  index: number;
+  accent: string;
+}) {
+  return (
+    <article
+      className="relative overflow-hidden rounded-[22px] p-5 md:p-6"
+      style={{
+        background:
+          'linear-gradient(180deg, rgba(239,244,255,0.075) 0%, rgba(239,244,255,0.035) 100%)',
+        border: '1px solid rgba(239,244,255,0.16)',
+        boxShadow: `0 18px 42px -28px ${accent}aa, inset 0 1px 0 rgba(255,255,255,0.08)`,
+      }}
+    >
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-px"
+        style={{ background: `${accent}66` }}
+      />
+      <div className="flex items-start gap-3">
+        <span
+          className="kr-num mt-1 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px]"
+          style={{
+            color: '#07121f',
+            background: accent,
+            boxShadow: `0 0 14px ${accent}66`,
+          }}
+        >
+          {index}
+        </span>
+        <div className="min-w-0 flex-1">
+          <p
+            className="kr-num text-[9px] uppercase tracking-[0.18em]"
+            style={{ color: accent }}
+          >
+            Concept Card · {card.topicId}
+          </p>
+          <h2 className="kr-heading mt-1 text-[20px] leading-[1.25] md:text-[24px]">
+            {card.title}
+          </h2>
+        </div>
+      </div>
+
+      <p className="kr-body mt-4 whitespace-pre-line text-[14px] leading-[1.85] text-cream/88 md:text-[15px]">
+        {card.body}
+      </p>
+
+      <div
+        className="mt-5 rounded-[18px] p-4"
+        style={{
+          background: 'rgba(1,8,40,0.34)',
+          border: '1px solid rgba(239,244,255,0.10)',
+        }}
+      >
+        <h3 className="kr-heading mb-3 inline-flex items-center gap-2 text-[12px] uppercase tracking-widest text-cream/88">
+          <Info size={13} strokeWidth={2.4} style={{ color: accent }} />
+          핵심 포인트
+        </h3>
+        <ul className="space-y-2.5">
+          {card.keyPoints.map((point) => (
+            <li
+              key={point}
+              className="kr-body relative pl-5 text-[13px] leading-[1.65] text-cream/84 md:text-[14px]"
+            >
+              <span
+                className="absolute left-0 top-[0.72em] h-1.5 w-1.5 rounded-full"
+                style={{ background: accent, boxShadow: `0 0 8px ${accent}` }}
+              />
+              {point}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {card.examTip ? (
+        <div
+          className="mt-4 rounded-[18px] p-4"
+          style={{
+            background: 'rgba(251,191,36,0.07)',
+            border: '1px solid rgba(251,191,36,0.25)',
+          }}
+        >
+          <p className="kr-heading text-[11px] uppercase tracking-widest text-[#fbbf24]">
+            시험 포인트
+          </p>
+          <p className="kr-body mt-2 text-[13px] leading-[1.7] text-cream/86 md:text-[14px]">
+            {card.examTip}
+          </p>
+        </div>
+      ) : null}
+
+      {card.visualHint ? (
+        <p className="kr-num mt-4 text-[10px] uppercase tracking-widest text-cream/40">
+          Visual hint · {card.visualHint}
+        </p>
+      ) : null}
+    </article>
+  );
+}
+
+*/
 /*
 function ComhwalGradePanel({
   onBack,

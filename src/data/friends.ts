@@ -317,7 +317,7 @@ async function pullFromSupabase(): Promise<void> {
     const tier: T = validTiers.includes(f.pass_tier as T)
       ? (f.pass_tier as T)
       : 'bronze';
-    const validChars = ['tori', 'selli'] as const;
+    const validChars = ['tori', 'selli', 'comhwal'] as const;
     type C = (typeof validChars)[number];
     const character: C = validChars.includes(f.avatar_character as C)
       ? (f.avatar_character as C)

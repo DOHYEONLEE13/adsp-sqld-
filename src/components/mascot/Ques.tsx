@@ -20,6 +20,7 @@ import SleepZOverlay from './SleepZOverlay';
 const PREFIX_BY_CHARACTER: Record<MascotCharacter, string> = {
   tori: 'ques',
   selli: 'selli',
+  comhwal: 'comhwal',
 };
 
 const FAST_WIDTHS = [160, 320, 480] as const;

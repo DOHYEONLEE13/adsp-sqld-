@@ -9,11 +9,12 @@
  * 다른 화면(Planet, Zone, Lesson, Stats…)은 기존 톤 유지 — phase 2+ 에서 확장.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import {
   ArrowLeft,
   ArrowRight,
   BarChart3,
+  ChevronLeft,
   ChevronRight,
   Info,
   ListTodo,
@@ -37,6 +38,8 @@ import {
 import { computePlayerStats, type PlayerStats } from '../rpg';
 import Ques, { preloadMascotPoses } from '@/components/mascot/Ques';
 import SpeechBubble from '@/game/lesson/SpeechBubble';
+import TopBar from '@/game/lesson/TopBar';
+import OptionsPanel from '@/game/lesson/OptionsPanel';
 import type { QuesPose } from '@/components/mascot/types';
 import type { ProgressStore } from '../storage';
 import VideoBg from '@/components/ui/VideoBg';
@@ -59,7 +62,6 @@ import {
 } from '../expansionSubjects';
 import {
   getComhwalTopicCards,
-  getComhwalTopicMeta,
   hasComhwalTopicCards,
   type ComhwalConceptCard,
 } from '@/data/comhwal/concepts';
@@ -1567,114 +1569,164 @@ function getComhwalConceptPose(
   return 'idle';
 }
 
-function ComhwalConceptFocusPanel({
-  card,
-  index,
+function ComhwalConceptQuestionPanel({
+  question,
   accent,
+  selectedAnswer,
+  onSelectAnswer,
 }: {
-  card: ComhwalConceptCard;
-  index: number;
+  question: NonNullable<ComhwalConceptCard['question']>;
   accent: string;
+  selectedAnswer?: number;
+  onSelectAnswer: (choiceIndex: number) => void;
 }) {
+  const hasAnswered = selectedAnswer !== undefined;
+  const isCorrectAnswer =
+    selectedAnswer !== undefined ? selectedAnswer === question.answerIndex : false;
+
   return (
-    <article
-      className="relative overflow-hidden rounded-[22px] p-5 md:p-6"
-      style={{
-        background:
-          'linear-gradient(180deg, rgba(239,244,255,0.075) 0%, rgba(239,244,255,0.035) 100%)',
-        border: '1px solid rgba(239,244,255,0.16)',
-        boxShadow: `0 18px 42px -28px ${accent}aa, inset 0 1px 0 rgba(255,255,255,0.08)`,
-      }}
+    <div className="mt-8 w-full max-w-[560px]">
+      <OptionsPanel
+        choices={question.choices}
+        chosen={selectedAnswer ?? null}
+        correctIndex={hasAnswered ? question.answerIndex : null}
+        graded={hasAnswered}
+        onChoose={onSelectAnswer}
+      />
+
+      {hasAnswered ? (
+        <div
+          className="mt-4 rounded-2xl px-4 py-3"
+          style={{
+            background: isCorrectAnswer
+              ? `${accent}18`
+              : 'rgba(251,113,133,0.12)',
+            border: `1px solid ${
+              isCorrectAnswer ? `${accent}66` : 'rgba(251,113,133,0.36)'
+            }`,
+          }}
+        >
+          <p
+            className="kr-heading text-[13px]"
+            style={{ color: isCorrectAnswer ? accent : '#fb7185' }}
+          >
+            {isCorrectAnswer ? '좋아, 정확해!' : '다시 확인해볼까?'}
+          </p>
+          <p className="kr-body mt-1.5 text-[13px] leading-[1.65] text-cream/78">
+            {question.explanation}
+          </p>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function ComhwalConceptProgressList({
+  cards,
+  activeIndex,
+  accent,
+  answeredCardIds,
+  currentStepProgress,
+}: {
+  cards: ComhwalConceptCard[];
+  activeIndex: number;
+  accent: string;
+  answeredCardIds: Set<string>;
+  currentStepProgress: number;
+}) {
+  const currentPercent = Math.max(0, Math.min(100, Math.round(currentStepProgress * 100)));
+
+  return (
+    <nav
+      className="w-full max-w-[420px]"
+      aria-label="개념 진행"
     >
       <div
-        aria-hidden
-        className="absolute inset-x-0 top-0 h-px"
-        style={{ background: `${accent}66` }}
-      />
-      <div className="flex items-start gap-3">
-        <span
-          className="kr-num mt-1 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px]"
-          style={{
-            color: '#07121f',
-            background: accent,
-            boxShadow: `0 0 14px ${accent}66`,
-          }}
-        >
-          {index}
-        </span>
-        <div className="min-w-0 flex-1">
-          <p
-            className="kr-num text-[9px] uppercase tracking-[0.18em]"
-            style={{ color: accent }}
-          >
-            Concept Card · {card.topicId}
-          </p>
-          <h2 className="kr-heading mt-1 text-[20px] leading-[1.25] md:text-[24px]">
-            {card.title}
-          </h2>
-        </div>
-      </div>
-
-      <div
-        className="mt-5 rounded-[18px] p-4"
-        style={{
-          background: 'rgba(1,8,40,0.34)',
-          border: '1px solid rgba(239,244,255,0.10)',
-        }}
+        className="kr-num mb-3.5 text-[10px] uppercase tracking-[0.18em]"
+        style={{ color: 'rgba(239,244,255,0.45)' }}
       >
-        <h3 className="kr-heading mb-3 inline-flex items-center gap-2 text-[12px] uppercase tracking-widest text-cream/88">
-          <Info size={13} strokeWidth={2.4} style={{ color: accent }} />
-          핵심 포인트
-        </h3>
-        <ul className="space-y-2.5">
-          {card.keyPoints.map((point) => (
-            <li
-              key={point}
-              className="kr-body relative pl-5 text-[13px] leading-[1.65] text-cream/84 md:text-[14px]"
-            >
-              <span
-                className="absolute left-0 top-[0.72em] h-1.5 w-1.5 rounded-full"
-                style={{ background: accent, boxShadow: `0 0 8px ${accent}` }}
-              />
-              {point}
-            </li>
-          ))}
-        </ul>
+        개념 진행 · {cards.length > 0 ? activeIndex + 1 : 0} / {cards.length}
       </div>
+      <ol className="relative m-0 flex list-none flex-col gap-6 p-0 md:gap-5">
+        <span
+          aria-hidden
+          className="absolute bottom-3 left-[7px] top-3 z-0 w-px"
+          style={{ background: 'rgba(239,244,255,0.08)' }}
+        />
+        {cards.map((card, index) => {
+          const isActive = index === activeIndex;
+          const isPast = index < activeIndex;
+          const isDone = answeredCardIds.has(card.id) || isPast;
+          return (
+            <li
+              key={card.id}
+              className="relative flex items-center gap-3"
+              aria-current={isActive ? 'step' : undefined}
+            >
+            <span
+              aria-hidden
+              className="relative z-10 inline-flex shrink-0 items-center justify-center rounded-full transition-all"
+              style={{
+                width: isActive ? 16 : 14,
+                height: isActive ? 16 : 14,
+                border: isActive
+                  ? `2px solid ${accent}`
+                  : isDone || isPast
+                    ? '1.5px solid var(--neon-55)'
+                    : '1.5px solid rgba(239,244,255,0.22)',
+                background: isActive
+                  ? accent
+                  : 'linear-gradient(#010828, #010828) padding-box',
+                boxShadow: isActive
+                  ? `0 0 12px ${accent}, 0 0 0 3px rgba(1,8,40,1)`
+                  : '0 0 0 3px var(--base, #010828)',
+                color: isDone || isPast ? 'var(--neon)' : 'transparent',
+              }}
+            >
+              {isDone || isPast ? (
+                <span className="text-[9px] font-black leading-none">
+                  ✓
+                </span>
+              ) : null}
+            </span>
 
-      {card.examTip ? (
-        <div
-          className="mt-4 rounded-[18px] p-4"
-          style={{
-            background: 'rgba(251,191,36,0.07)',
-            border: '1px solid rgba(251,191,36,0.25)',
-          }}
-        >
-          <p className="kr-heading text-[11px] uppercase tracking-widest text-[#fbbf24]">
-            시험 포인트
-          </p>
-          <p className="kr-body mt-2 text-[13px] leading-[1.7] text-cream/86 md:text-[14px]">
-            {card.examTip}
-          </p>
-        </div>
-      ) : null}
+            <span
+              title={card.title}
+              className="kr-body flex-1 text-[12.5px] leading-tight"
+              style={{
+                color: isActive
+                  ? accent
+                  : isDone || isPast
+                    ? 'rgba(239,244,255,0.85)'
+                    : 'rgba(239,244,255,0.5)',
+                fontWeight: isActive ? 700 : isDone || isPast ? 500 : 400,
+              }}
+            >
+              {card.title}
+            </span>
 
-      {card.visualHint ? (
-        <p className="kr-num mt-4 text-[10px] uppercase tracking-widest text-cream/40">
-          Visual hint · {card.visualHint}
-        </p>
-      ) : null}
-    </article>
+            {isActive ? (
+              <span
+                className="kr-num shrink-0 tabular-nums text-[10px]"
+                style={{ color: accent }}
+              >
+                {currentPercent}%
+              </span>
+            ) : null}
+          </li>
+        );
+      })}
+      </ol>
+    </nav>
   );
 }
 
 function ExpansionConceptStudyScreen({
   subject,
-  variant,
   planet,
   topicId,
   onBack,
-  onSubjectBack,
+  onSubjectBack: _onSubjectBack,
 }: {
   subject: ExpansionSubjectConfig;
   variant: ExpansionVariant;
@@ -1684,28 +1736,48 @@ function ExpansionConceptStudyScreen({
   onSubjectBack: () => void;
 }) {
   const cards = getComhwalTopicCards(planet.key, topicId);
-  const topic = planet.sections
-    .flatMap((section) => section.topics)
-    .find((item) => item.id === topicId);
-  const meta = getComhwalTopicMeta(planet.key, topicId);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({});
+  const [showQuestion, setShowQuestion] = useState(false);
   const activeCard = cards[activeIndex];
   const isLastCard = activeIndex >= cards.length - 1;
-  const activePose = getComhwalConceptPose(
-    activeCard,
-    activeIndex,
-    cards.length,
+  const activeQuestion = activeCard?.question;
+  const selectedAnswer = activeCard ? selectedAnswers[activeCard.id] : undefined;
+  const isQuestionMode = showQuestion && !!activeQuestion;
+  const answeredCardIds = new Set(
+    Object.keys(selectedAnswers).filter((cardId) => selectedAnswers[cardId] !== undefined),
   );
+  const lessonProgress =
+    cards.length > 0 ? (activeIndex + (isQuestionMode ? 1 : 0)) / cards.length : 0;
+  const stepProgress = isQuestionMode ? 1 : activeQuestion ? 0.55 : 1;
+  const activePose: QuesPose =
+    isQuestionMode && activeQuestion
+      ? selectedAnswer === undefined
+        ? 'think'
+        : selectedAnswer === activeQuestion.answerIndex
+          ? 'happy'
+          : 'sad'
+      : getComhwalConceptPose(activeCard, activeIndex, cards.length);
 
   useEffect(() => {
     setActiveIndex(0);
+    setSelectedAnswers({});
+    setShowQuestion(false);
   }, [planet.key, topicId]);
 
+  useEffect(() => {
+    setShowQuestion(false);
+  }, [activeCard?.id]);
+
   const handlePrev = () => {
+    if (isQuestionMode) {
+      setShowQuestion(false);
+      return;
+    }
     setActiveIndex((index) => Math.max(0, index - 1));
   };
 
-  const handleNext = () => {
+  const goNextCard = () => {
     if (cards.length === 0 || isLastCard) {
       onBack();
       return;
@@ -1713,12 +1785,41 @@ function ExpansionConceptStudyScreen({
     setActiveIndex((index) => Math.min(cards.length - 1, index + 1));
   };
 
+  const handleNext = () => {
+    if (isQuestionMode) {
+      if (selectedAnswer === undefined) return;
+      goNextCard();
+      return;
+    }
+
+    if (activeQuestion) {
+      setShowQuestion(true);
+      return;
+    }
+
+    goNextCard();
+  };
+
   const speechText = activeCard
-    ? activeCard.body
+    ? isQuestionMode && activeQuestion
+      ? activeQuestion.prompt
+      : activeCard.body
     : '아직 이 토픽의 개념 카드가 준비 중이야. 목차는 열어뒀고, 곧 ADSP·SQLD처럼 하나씩 붙일게.';
+  const primaryLabel = isQuestionMode
+    ? isLastCard
+      ? '목차로'
+      : '다음 카드'
+    : activeQuestion
+      ? '문제 풀기'
+      : cards.length === 0 || isLastCard
+        ? '목차로'
+        : '계속';
 
   return (
-    <section className="relative min-h-screen isolate overflow-hidden text-cream">
+    <section
+      className="relative isolate flex min-h-screen flex-col overflow-hidden text-cream"
+      style={{ '--subject-accent': subject.accent } as CSSProperties}
+    >
       <PageAmbientBg />
       <div
         aria-hidden
@@ -1727,62 +1828,30 @@ function ExpansionConceptStudyScreen({
           background: `radial-gradient(ellipse at 50% 0%, ${subject.accent}1f 0%, rgba(1,8,40,0) 55%)`,
         }}
       />
-      <MobileTopBar
-        customSubject={{
-          id: subject.id,
-          label: variant.shortLabel,
-          accent: subject.accent,
-          onClick: onSubjectBack,
-        }}
-      />
-      <MobileBottomNav
-        active="learn"
+      <TopBar
+        progress={lessonProgress}
+        stepProgress={stepProgress}
         accent={subject.accent}
-        onLearn={() => {}}
+        onExit={onBack}
       />
 
-      <div className="relative z-10 mx-auto min-h-screen w-full max-w-layout px-6 pb-28 pt-20 md:px-10 lg:px-16">
-        <header className="mb-5 max-w-[680px] md:mb-7">
-          <button
-            type="button"
-            onClick={onBack}
-            aria-label="목차로 돌아가기"
-            className="game-back-button mb-5 inline-flex items-center gap-2 kr-heading text-[11px] uppercase tracking-widest transition"
-          >
-            <ArrowLeft size={14} strokeWidth={2.4} />
-            목차로
-          </button>
-
-          <div className="mb-3 flex items-center gap-2 kr-num text-[10px] uppercase tracking-widest text-cream/55">
-            <span>컴활 필기</span>
-            <span className="text-cream/30">·</span>
-            <span style={{ color: subject.accent }}>{planet.title}</span>
-            <span className="text-cream/30">·</span>
-            <span>NO. {topicId}</span>
-          </div>
-
-          <h1 className="kr-heading text-[26px] leading-[1.12] tracking-[0.01em] drop-shadow-[0_2px_20px_rgba(0,0,0,0.75)] md:text-[36px] lg:text-[44px]">
-            {topic?.title ?? '컴활 개념 카드'}
-          </h1>
-          <p className="kr-body mt-3 max-w-xl text-[13px] leading-[1.65] text-cream/78 md:text-[14px]">
-            {meta
-              ? `${meta.section.title} 흐름 안에서 핵심 개념만 하나씩 볼게.`
-              : '핵심 개념만 하나씩 볼게.'}
-          </p>
-
-          <div className="mt-4 flex items-center gap-2 kr-num text-[10px] uppercase tracking-widest text-cream/50">
-            <span style={{ color: subject.accent }}>{cards.length}개 카드</span>
-            <span className="text-cream/25">·</span>
-            <span>문제는 다음 단계에서 붙일게</span>
-          </div>
-        </header>
-
+      <main className="relative z-10 mx-auto flex-1 w-full max-w-[820px] px-5 pb-36 pt-6 md:px-8 lg:max-w-[1000px] lg:px-12 lg:pt-10 xl:max-w-[1180px] xl:px-16">
         <div className="mx-auto flex max-w-[760px] flex-col items-center">
-          <div className="mt-2 flex justify-center">
+          {activeCard ? (
+            <ComhwalConceptProgressList
+              cards={cards}
+              activeIndex={activeIndex}
+              accent={subject.accent}
+              answeredCardIds={answeredCardIds}
+              currentStepProgress={stepProgress}
+            />
+          ) : null}
+
+          <div className={activeCard ? 'mt-8 flex justify-center' : 'flex justify-center'}>
             <Ques
               pose={activePose}
               character={COMHWAL_MASCOT_CHARACTER}
-              size={126}
+              size={152}
               priority
             />
           </div>
@@ -1795,72 +1864,54 @@ function ExpansionConceptStudyScreen({
             <button
               type="button"
               onClick={handlePrev}
-              disabled={activeIndex === 0}
-              className="inline-flex min-h-12 items-center gap-2 rounded-full px-5 kr-heading text-[13px] transition disabled:cursor-not-allowed disabled:opacity-40"
-              style={{
-                color: 'rgba(239,244,255,0.9)',
-                background: 'rgba(1,8,40,0.42)',
-                border: '1px solid rgba(239,244,255,0.22)',
-                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)',
-              }}
+              disabled={!isQuestionMode && activeIndex === 0}
+              aria-label="이전 대사"
+              className="liquid-glass inline-flex items-center gap-1.5 rounded-full px-4 py-3 kr-heading text-[12px] uppercase tracking-widest transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-30 md:px-5 md:py-3.5 md:text-[13px]"
             >
-              <ArrowLeft size={15} strokeWidth={2.6} />
+              <ChevronLeft size={16} strokeWidth={2.7} />
               이전
             </button>
             <button
               type="button"
               onClick={handleNext}
-              className="inline-flex min-h-12 items-center gap-2 rounded-full px-7 kr-heading text-[13px] text-[#07121f] transition hover:-translate-y-0.5"
+              disabled={isQuestionMode && selectedAnswer === undefined}
+              className="inline-flex items-center gap-2 rounded-full px-6 py-3.5 kr-heading text-[13px] uppercase tracking-widest text-[#07121f] transition hover:-translate-y-0.5 active:translate-y-0 md:px-8 md:py-4 md:text-[14px]"
               style={{
-                background: subject.accent,
-                boxShadow: `0 14px 30px -16px ${subject.accent}, inset 0 1px 0 rgba(255,255,255,0.34)`,
+                background:
+                  'linear-gradient(180deg, var(--subject-accent) 0%, color-mix(in srgb, var(--subject-accent) 70%, #010828) 100%)',
+                boxShadow:
+                  '0 6px 0 -2px rgba(0,0,0,0.5), 0 10px 22px -8px var(--subject-accent)',
               }}
             >
-              {cards.length === 0 || isLastCard ? '목차로' : '계속'}
+              {primaryLabel}
               <ChevronRight size={16} strokeWidth={2.7} />
             </button>
           </div>
 
-          <nav className="mt-8 w-full max-w-[560px]" aria-label="컴활 개념 진행">
-            <div className="mb-3 flex items-center justify-between kr-num text-[10px] uppercase tracking-widest text-cream/52">
-              <span>개념 진행</span>
-              <span>
-                {cards.length > 0 ? activeIndex + 1 : 0} / {cards.length}
-              </span>
+          {isQuestionMode && activeQuestion && activeCard ? (
+            <ComhwalConceptQuestionPanel
+              key={activeQuestion.id}
+              question={activeQuestion}
+              accent={subject.accent}
+              selectedAnswer={selectedAnswer}
+              onSelectAnswer={(choiceIndex) =>
+                setSelectedAnswers((answers) => ({
+                  ...answers,
+                  [activeCard.id]: choiceIndex,
+                }))
+              }
+            />
+          ) : activeCard ? (
+            null
+          ) : (
+            <div className="liquid-glass mt-8 w-full max-w-[560px] rounded-[22px] p-6">
+              <p className="kr-body text-[14px] leading-[1.8] text-cream/82">
+                아직 이 목차의 개념 카드는 준비 중이야. 먼저 1과목 컴퓨터 일반부터 순서대로 붙이고 있어.
+              </p>
             </div>
-            <div className="h-2 overflow-hidden rounded-full bg-white/10">
-              <div
-                className="h-full rounded-full transition-all duration-300"
-                style={{
-                  width:
-                    cards.length > 0
-                      ? `${((activeIndex + 1) / cards.length) * 100}%`
-                      : '0%',
-                  background: subject.accent,
-                  boxShadow: `0 0 14px ${subject.accent}88`,
-                }}
-              />
-            </div>
-          </nav>
-
-          <div className="mt-5 w-full">
-            {activeCard ? (
-              <ComhwalConceptFocusPanel
-                key={activeCard.id}
-                card={activeCard}
-                index={activeIndex + 1}
-                accent={subject.accent}
-              />
-            ) : (
-              <div className="liquid-glass rounded-[22px] p-6">
-                <p className="kr-body text-[14px] leading-[1.8] text-cream/82">
-                  아직 이 목차의 개념 카드는 준비 중이야. 먼저 1과목 컴퓨터 일반부터 순서대로 붙이고 있어.
-                </p>
-              </div>
-            )}
-          </div>
+          )}
         </div>
-      </div>
+      </main>
     </section>
   );
 }
@@ -1890,469 +1941,7 @@ function ExpansionConceptScreen({
       onSubjectBack={onSubjectBack}
     />
   );
-
-  /*
-  const cards = getComhwalTopicCards(planet.key, topicId);
-  const topic = planet.sections
-    .flatMap((section) => section.topics)
-    .find((item) => item.id === topicId);
-  const meta = getComhwalTopicMeta(planet.key, topicId);
-
-  return (
-    <section className="relative min-h-screen isolate overflow-hidden text-cream">
-      <PageAmbientBg />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          background: `radial-gradient(ellipse at 50% 0%, ${subject.accent}1f 0%, rgba(1,8,40,0) 55%)`,
-        }}
-      />
-      <MobileTopBar
-        customSubject={{
-          id: subject.id,
-          label: variant.shortLabel,
-          accent: subject.accent,
-          onClick: onSubjectBack,
-        }}
-      />
-      <MobileBottomNav
-        active="learn"
-        accent={subject.accent}
-        onLearn={() => {}}
-      />
-
-      <div className="relative z-10 mx-auto min-h-screen w-full max-w-layout px-6 pb-28 pt-20 md:px-10 lg:px-16">
-        <header className="mb-7 max-w-[680px] md:mb-9">
-          <button
-            type="button"
-            onClick={onBack}
-            aria-label="목차로 돌아가기"
-            className="game-back-button mb-5 inline-flex items-center gap-2 kr-heading text-[11px] uppercase tracking-widest transition"
-          >
-            <ArrowLeft size={14} strokeWidth={2.4} />
-            목차로
-          </button>
-
-          <div className="mb-3 flex items-center gap-2 kr-num text-[10px] uppercase tracking-widest text-cream/55">
-            <span>컴활 필기</span>
-            <span className="text-cream/30">›</span>
-            <span style={{ color: subject.accent }}>{planet.title}</span>
-            <span className="text-cream/30">›</span>
-            <span>NO. {topicId}</span>
-          </div>
-
-          <h1 className="kr-heading text-[26px] leading-[1.12] tracking-[0.01em] drop-shadow-[0_2px_20px_rgba(0,0,0,0.75)] md:text-[36px] lg:text-[44px]">
-            {topic?.title ?? '컴활 개념 카드'}
-          </h1>
-          <p className="kr-body mt-3 max-w-xl text-[13px] leading-[1.65] text-cream/78 md:text-[14px]">
-            {meta
-              ? `${meta.section.title} 흐름 안에서 이 개념만 짧게 먼저 잡아볼게요.`
-              : '이 개념만 짧게 먼저 잡아볼게요.'}
-          </p>
-
-          <div className="mt-4 flex items-center gap-2 kr-num text-[10px] uppercase tracking-widest text-cream/50">
-            <span style={{ color: subject.accent }}>{cards.length}개 카드</span>
-            <span className="text-cream/25">·</span>
-            <span>문제는 카드 검수 후 연결</span>
-          </div>
-        </header>
-
-        <div className="space-y-4 md:space-y-5">
-          {cards.length > 0 ? (
-            cards.map((card, index) => (
-              <ComhwalConceptCardPanel
-                key={card.id}
-                card={card}
-                index={index + 1}
-                accent={subject.accent}
-              />
-            ))
-          ) : (
-            <div className="liquid-glass rounded-[22px] p-6">
-              <p className="kr-body text-[14px] leading-[1.8] text-cream/82">
-                아직 이 목차의 개념 카드는 준비 중이야. 먼저 1과목 컴퓨터 일반부터 순서대로 붙이고 있어.
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
-    </section>
-  );
-  */
 }
-
-/*
-function ComhwalConceptCardPanel({
-  card,
-  index,
-  accent,
-}: {
-  card: ComhwalConceptCard;
-  index: number;
-  accent: string;
-}) {
-  return (
-    <article
-      className="relative overflow-hidden rounded-[22px] p-5 md:p-6"
-      style={{
-        background:
-          'linear-gradient(180deg, rgba(239,244,255,0.075) 0%, rgba(239,244,255,0.035) 100%)',
-        border: '1px solid rgba(239,244,255,0.16)',
-        boxShadow: `0 18px 42px -28px ${accent}aa, inset 0 1px 0 rgba(255,255,255,0.08)`,
-      }}
-    >
-      <div
-        aria-hidden
-        className="absolute inset-x-0 top-0 h-px"
-        style={{ background: `${accent}66` }}
-      />
-      <div className="flex items-start gap-3">
-        <span
-          className="kr-num mt-1 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px]"
-          style={{
-            color: '#07121f',
-            background: accent,
-            boxShadow: `0 0 14px ${accent}66`,
-          }}
-        >
-          {index}
-        </span>
-        <div className="min-w-0 flex-1">
-          <p
-            className="kr-num text-[9px] uppercase tracking-[0.18em]"
-            style={{ color: accent }}
-          >
-            Concept Card · {card.topicId}
-          </p>
-          <h2 className="kr-heading mt-1 text-[20px] leading-[1.25] md:text-[24px]">
-            {card.title}
-          </h2>
-        </div>
-      </div>
-
-      <p className="kr-body mt-4 whitespace-pre-line text-[14px] leading-[1.85] text-cream/88 md:text-[15px]">
-        {card.body}
-      </p>
-
-      <div
-        className="mt-5 rounded-[18px] p-4"
-        style={{
-          background: 'rgba(1,8,40,0.34)',
-          border: '1px solid rgba(239,244,255,0.10)',
-        }}
-      >
-        <h3 className="kr-heading mb-3 inline-flex items-center gap-2 text-[12px] uppercase tracking-widest text-cream/88">
-          <Info size={13} strokeWidth={2.4} style={{ color: accent }} />
-          핵심 포인트
-        </h3>
-        <ul className="space-y-2.5">
-          {card.keyPoints.map((point) => (
-            <li
-              key={point}
-              className="kr-body relative pl-5 text-[13px] leading-[1.65] text-cream/84 md:text-[14px]"
-            >
-              <span
-                className="absolute left-0 top-[0.72em] h-1.5 w-1.5 rounded-full"
-                style={{ background: accent, boxShadow: `0 0 8px ${accent}` }}
-              />
-              {point}
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {card.examTip ? (
-        <div
-          className="mt-4 rounded-[18px] p-4"
-          style={{
-            background: 'rgba(251,191,36,0.07)',
-            border: '1px solid rgba(251,191,36,0.25)',
-          }}
-        >
-          <p className="kr-heading text-[11px] uppercase tracking-widest text-[#fbbf24]">
-            시험 포인트
-          </p>
-          <p className="kr-body mt-2 text-[13px] leading-[1.7] text-cream/86 md:text-[14px]">
-            {card.examTip}
-          </p>
-        </div>
-      ) : null}
-
-      {card.visualHint ? (
-        <p className="kr-num mt-4 text-[10px] uppercase tracking-widest text-cream/40">
-          Visual hint · {card.visualHint}
-        </p>
-      ) : null}
-    </article>
-  );
-}
-
-*/
-/*
-function ComhwalGradePanel({
-  onBack,
-  onSelectGrade,
-}: {
-  onBack: () => void;
-  onSelectGrade: (grade: ComhwalGrade) => void;
-}) {
-  return (
-    <div className="panel-slide-up">
-      <div
-        className="relative overflow-hidden rounded-[22px]"
-        style={{
-          padding: '24px 20px 20px',
-          color: FG,
-          background:
-            'linear-gradient(135deg, rgba(12,29,45,0.86) 0%, rgba(10,18,48,0.78) 100%)',
-          backdropFilter: 'blur(28px) saturate(170%)',
-          WebkitBackdropFilter: 'blur(28px) saturate(170%)',
-          border: `1px solid rgba(${COMHWAL_ACCENT_RGB}, 0.3)`,
-          boxShadow: `0 24px 64px rgba(0,0,0,0.55), inset 0 1px 0 rgba(${COMHWAL_ACCENT_RGB}, 0.22)`,
-        }}
-      >
-        <button
-          type="button"
-          onClick={onBack}
-          aria-label="닫기"
-          className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-[rgba(255,255,255,0.12)]"
-          style={{ color: FG }}
-        >
-          <X size={16} strokeWidth={2} />
-        </button>
-
-        <p
-          className="kr-heading text-[10px] uppercase"
-          style={{
-            color: COMHWAL_ACCENT,
-            letterSpacing: '0.18em',
-          }}
-        >
-          Computer Literacy
-        </p>
-        <h3 className="kr-heading mt-2 text-[24px] leading-tight">
-          컴활 필기, 몇 급으로 시작할까요?
-        </h3>
-        <p
-          className="kr-body mt-3 text-[13px] leading-[1.7]"
-          style={{ color: FG_SOFT }}
-        >
-          2급은 공통 2과목으로 시작하고, 1급은 여기에 데이터베이스 일반이
-          추가돼요. 지금은 상세 개념 노드 없이 과목 행성까지만 열어둘게요.
-        </p>
-
-        <div className="mt-5 grid gap-3">
-          <ComhwalGradeButton
-            grade={1}
-            title="컴활 1급 필기"
-            description="컴퓨터 일반 · 스프레드시트 일반 · 데이터베이스 일반"
-            onClick={() => onSelectGrade(1)}
-          />
-          <ComhwalGradeButton
-            grade={2}
-            title="컴활 2급 필기"
-            description="컴퓨터 일반 · 스프레드시트 일반"
-            onClick={() => onSelectGrade(2)}
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ComhwalGradeButton({
-  grade,
-  title,
-  description,
-  onClick,
-}: {
-  grade: ComhwalGrade;
-  title: string;
-  description: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="group flex items-center gap-3 rounded-[18px] p-4 text-left transition hover:bg-white/[0.08] focus:outline-none focus-visible:bg-white/[0.1]"
-      style={{
-        background:
-          grade === 1
-            ? `rgba(${COMHWAL_ACCENT_RGB}, 0.1)`
-            : 'rgba(255,255,255,0.045)',
-        border:
-          grade === 1
-            ? `1px solid rgba(${COMHWAL_ACCENT_RGB}, 0.32)`
-            : '1px solid rgba(255,255,255,0.12)',
-      }}
-    >
-      <span
-        className="kr-num inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[15px] font-black"
-        style={{
-          color: grade === 1 ? '#0a1320' : COMHWAL_ACCENT,
-          background:
-            grade === 1
-              ? COMHWAL_ACCENT
-              : `rgba(${COMHWAL_ACCENT_RGB}, 0.12)`,
-        }}
-      >
-        {grade}급
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="kr-heading block text-[16px]">{title}</span>
-        <span
-          className="kr-body mt-1 block text-[12px] leading-[1.55]"
-          style={{ color: FG_SOFT }}
-        >
-          {description}
-        </span>
-      </span>
-      <ChevronRight
-        size={18}
-        strokeWidth={2.4}
-        className="shrink-0 transition group-hover:translate-x-0.5"
-        style={{ color: COMHWAL_ACCENT }}
-      />
-    </button>
-  );
-}
-
-function ComhwalPlanetPanel({
-  grade,
-  onBack,
-  onClose,
-}: {
-  grade: ComhwalGrade;
-  onBack: () => void;
-  onClose: () => void;
-}) {
-  const planets = COMHWAL_PLANETS.filter((planet) =>
-    planet.grade.includes(grade),
-  );
-  return (
-    <div className="panel-slide-up">
-      <div
-        className="relative overflow-hidden rounded-[22px]"
-        style={{
-          padding: '22px 18px 18px',
-          color: FG,
-          background:
-            'linear-gradient(135deg, rgba(10,24,46,0.88) 0%, rgba(7,16,42,0.8) 100%)',
-          backdropFilter: 'blur(28px) saturate(170%)',
-          WebkitBackdropFilter: 'blur(28px) saturate(170%)',
-          border: `1px solid rgba(${COMHWAL_ACCENT_RGB}, 0.3)`,
-          boxShadow: `0 24px 64px rgba(0,0,0,0.55), inset 0 1px 0 rgba(${COMHWAL_ACCENT_RGB}, 0.2)`,
-        }}
-      >
-        <div className="flex items-start justify-between gap-3">
-          <button
-            type="button"
-            onClick={onBack}
-            className="game-back-button inline-flex items-center gap-2 kr-heading text-[10px] uppercase tracking-widest transition"
-          >
-            <ChevronRight
-              size={14}
-              strokeWidth={2.4}
-              style={{ transform: 'rotate(180deg)' }}
-            />
-            급수 다시 선택
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="닫기"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-[rgba(255,255,255,0.12)]"
-            style={{ color: FG }}
-          >
-            <X size={16} strokeWidth={2} />
-          </button>
-        </div>
-
-        <p
-          className="kr-heading mt-5 text-[10px] uppercase"
-          style={{
-            color: COMHWAL_ACCENT,
-            letterSpacing: '0.18em',
-          }}
-        >
-          {grade === 1 ? 'Level 1' : 'Level 2'} Planet
-        </p>
-        <h3 className="kr-heading mt-2 text-[24px] leading-tight">
-          컴활 {grade}급 필기 행성
-        </h3>
-        <p
-          className="kr-body mt-3 text-[13px] leading-[1.7]"
-          style={{ color: FG_SOFT }}
-        >
-          아직 상세 개념 노드는 만들지 않고, 시험 과목 행성만 먼저 열었어요.
-          다음 단계에서 각 행성 안에 짧은 개념과 문제를 붙이면 돼요.
-        </p>
-
-        <div className="mt-5 grid gap-3">
-          {planets.map((planet, index) => {
-            const Icon = planet.icon;
-            return (
-              <article
-                key={planet.key}
-                className="rounded-[18px] p-4"
-                style={{
-                  background: 'rgba(255,255,255,0.055)',
-                  border: '1px solid rgba(255,255,255,0.13)',
-                }}
-              >
-                <div className="flex items-start gap-3">
-                  <span
-                    className="kr-num inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-[13px] font-black"
-                    style={{
-                      color: COMHWAL_ACCENT,
-                      background: `rgba(${COMHWAL_ACCENT_RGB}, 0.1)`,
-                      border: `1px solid rgba(${COMHWAL_ACCENT_RGB}, 0.3)`,
-                    }}
-                  >
-                    {index + 1}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <Icon
-                        size={16}
-                        strokeWidth={2.3}
-                        style={{ color: COMHWAL_ACCENT }}
-                      />
-                      <h4 className="kr-heading text-[16px] leading-tight">
-                        {planet.title}
-                      </h4>
-                    </div>
-                    <p
-                      className="kr-body mt-2 text-[12px] leading-[1.6]"
-                      style={{ color: FG_SOFT }}
-                    >
-                      {planet.description}
-                    </p>
-                  </div>
-                  <span
-                    className="kr-heading shrink-0 rounded-full px-2.5 py-1 text-[9px] uppercase"
-                    style={{
-                      color: 'rgba(239,244,255,0.64)',
-                      background: 'rgba(255,255,255,0.055)',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      letterSpacing: '0.12em',
-                    }}
-                  >
-                    행성
-                  </span>
-                </div>
-              </article>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-*/
 
 // ----------------------------------------------------------------
 // IconBox — 미니멀 36px 보더 박스 + 아이콘.

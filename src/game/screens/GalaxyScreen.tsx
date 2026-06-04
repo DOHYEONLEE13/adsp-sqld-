@@ -133,6 +133,11 @@ type View =
   | { kind: 'detail'; subject: Subject }
   | { kind: 'launching'; subject: Subject }
   | {
+      kind: 'expansionDetail';
+      subjectId: ExpansionSubjectId;
+      variantId: ExpansionVariantId;
+    }
+  | {
       kind: 'expansionLaunching';
       subjectId: ExpansionSubjectId;
       variantId: ExpansionVariantId;
@@ -366,6 +371,7 @@ export default function GalaxyScreen({
   // 닉네임 미설정 + subject 클릭 시 NicknameOnboarding 노출 후 자동 진입.
   useEffect(() => {
     if (
+      view.kind !== 'expansionDetail' &&
       view.kind !== 'expansionLaunching' &&
       view.kind !== 'expansionPlanets' &&
       view.kind !== 'expansionOutline' &&
@@ -397,8 +403,8 @@ export default function GalaxyScreen({
 
   const selectedSubject =
     view.kind === 'detail' || view.kind === 'launching' ? view.subject : null;
-  const launchingExpansion =
-    view.kind === 'expansionLaunching'
+  const selectedExpansion =
+    view.kind === 'expansionDetail' || view.kind === 'expansionLaunching'
       ? {
           subject: EXPANSION_SUBJECTS[view.subjectId],
           variant:
@@ -407,6 +413,8 @@ export default function GalaxyScreen({
             ) ?? EXPANSION_SUBJECTS[view.subjectId].variants[0],
         }
       : null;
+  const launchingExpansion =
+    view.kind === 'expansionLaunching' ? selectedExpansion : null;
   const isLaunching =
     view.kind === 'launching' || view.kind === 'expansionLaunching';
 
@@ -669,7 +677,7 @@ export default function GalaxyScreen({
                 variant={variant}
                 onSelect={() =>
                   setView({
-                    kind: 'expansionLaunching',
+                    kind: 'expansionDetail',
                     subjectId: expansionSubject.id,
                     variantId: variant.id,
                   })
@@ -761,6 +769,43 @@ export default function GalaxyScreen({
       ) : null}
 
       {/* === Overlay: Full — 워프 === */}
+      {selectedExpansion ? (
+        <div
+          className="fixed inset-0 z-20 flex items-center justify-center p-4 md:p-6"
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !isLaunching) handleBack();
+          }}
+          role="dialog"
+          aria-modal="true"
+          aria-label={`${selectedExpansion.variant.title} 과목 정보`}
+        >
+          <div
+            aria-hidden
+            className="absolute inset-0"
+            style={{
+              background: 'rgba(1,8,40,0.62)',
+              backdropFilter: 'blur(14px) saturate(110%)',
+              WebkitBackdropFilter: 'blur(14px) saturate(110%)',
+            }}
+          />
+          <div className="relative w-full max-w-[460px]">
+            <ExpansionSubjectInfoPanel
+              subject={selectedExpansion.subject}
+              variant={selectedExpansion.variant}
+              launching={isLaunching}
+              onBack={handleBack}
+              onPlay={() =>
+                setView({
+                  kind: 'expansionLaunching',
+                  subjectId: selectedExpansion.subject.id,
+                  variantId: selectedExpansion.variant.id,
+                })
+              }
+            />
+          </div>
+        </div>
+      ) : null}
+
       {isLaunching ? (
         <div
           className="warp-overlay pointer-events-none absolute inset-0 flex items-center justify-center z-30"
@@ -1009,6 +1054,178 @@ function ExpansionVariantChoice({
         />
       </div>
     </button>
+  );
+}
+
+function ExpansionSubjectInfoPanel({
+  subject,
+  variant,
+  launching,
+  onBack,
+  onPlay,
+}: {
+  subject: ExpansionSubjectConfig;
+  variant: ExpansionVariant;
+  launching: boolean;
+  onBack: () => void;
+  onPlay: () => void;
+}) {
+  const planets = subject.planets.filter((planet) =>
+    planet.variantIds.includes(variant.id),
+  );
+  const totalSections = planets.reduce(
+    (sum, planet) => sum + planet.sections.length,
+    0,
+  );
+  const totalTopics = planets.reduce(
+    (sum, planet) =>
+      sum +
+      planet.sections.reduce(
+        (sectionSum, section) => sectionSum + section.topics.length,
+        0,
+      ),
+    0,
+  );
+  const intro =
+    variant.id === 'grade-1'
+      ? '컴퓨터 일반, 스프레드시트 일반, 데이터베이스 일반까지 1급 필기 범위를 행성 로드맵으로 나눠서 들어가요.'
+      : '컴퓨터 일반과 스프레드시트 일반을 먼저 열고, 2급 필기 범위를 짧은 토픽 단위로 따라가요.';
+
+  return (
+    <div className="panel-slide-up">
+      <div
+        className="relative overflow-hidden rounded-[20px]"
+        style={{
+          padding: '24px 22px 24px',
+          color: FG,
+          background:
+            'linear-gradient(135deg, rgba(15,25,50,0.72) 0%, rgba(15,25,50,0.55) 100%)',
+          backdropFilter: 'blur(28px) saturate(170%)',
+          WebkitBackdropFilter: 'blur(28px) saturate(170%)',
+          border: `1px solid rgba(${subject.accentRgb}, 0.3)`,
+          boxShadow: `0 24px 64px rgba(0,0,0,0.55), inset 0 1px 0 rgba(${subject.accentRgb}, 0.25)`,
+        }}
+      >
+        <button
+          type="button"
+          onClick={onBack}
+          disabled={launching}
+          aria-label="닫기"
+          className="absolute right-3 top-3 inline-flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-[rgba(255,255,255,0.12)] disabled:opacity-40"
+          style={{ color: FG }}
+        >
+          <X size={16} strokeWidth={2} />
+        </button>
+
+        <div className="flex items-baseline gap-3 pr-8">
+          <span
+            className="kr-heading text-[28px] uppercase leading-none md:text-[34px]"
+            style={{ letterSpacing: '0.005em', color: subject.accent }}
+          >
+            {variant.title}
+          </span>
+          <span
+            className="kr-heading text-[10px] uppercase md:text-[11px]"
+            style={{ letterSpacing: '0.16em', color: FG_SOFT }}
+          >
+            {subject.routeLabel}
+          </span>
+        </div>
+
+        <h3
+          className="kr-heading mt-2 text-[14px] uppercase leading-tight md:text-[15px]"
+          style={{ letterSpacing: '0.04em', color: FG }}
+        >
+          {variant.subtitle}
+        </h3>
+
+        <p
+          className="kr-body mt-3 text-[12px] leading-[1.7] md:text-[13px]"
+          style={{ color: FG_SOFT }}
+        >
+          {intro}
+        </p>
+
+        <div
+          className="mt-3 flex flex-wrap items-center gap-2 kr-heading text-[10px] uppercase"
+          style={{ letterSpacing: '0.13em', color: FG_SOFT }}
+        >
+          <span>{variant.meta}</span>
+          <span style={{ color: FG_DIM }}>·</span>
+          <span>섹션 {totalSections}</span>
+          <span style={{ color: FG_DIM }}>·</span>
+          <span>토픽 {totalTopics}</span>
+        </div>
+
+        <div className="mt-5 space-y-2">
+          {planets.map((planet, index) => (
+            <div
+              key={planet.key}
+              className="flex items-center justify-between gap-3 rounded-[12px] border px-3.5 py-2.5"
+              style={{
+                borderColor: 'rgba(239,244,255,0.12)',
+                background: 'rgba(239,244,255,0.04)',
+              }}
+            >
+              <div className="min-w-0">
+                <p
+                  className="kr-num text-[10px] uppercase"
+                  style={{ letterSpacing: '0.14em', color: subject.accent }}
+                >
+                  Planet {index + 1}
+                </p>
+                <p className="kr-body mt-1 truncate text-[12.5px] font-semibold text-cream/90">
+                  {planet.title}
+                </p>
+              </div>
+              <span
+                className="kr-num shrink-0 text-[11px]"
+                style={{ color: FG_SOFT }}
+              >
+                {planet.sections.reduce(
+                  (sum, section) => sum + section.topics.length,
+                  0,
+                )}
+                토픽
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-5 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onPlay}
+            disabled={launching}
+            aria-label={`${variant.title} 시작하기`}
+            className="kr-heading inline-flex flex-1 items-center justify-center gap-2 rounded-full px-5 py-3 text-[12px] uppercase tracking-widest transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50 md:text-[13px]"
+            style={{
+              background: subject.accent,
+              color: '#0a0f1f',
+              letterSpacing: '0.16em',
+              boxShadow: `0 6px 18px rgba(${subject.accentRgb}, 0.45)`,
+            }}
+          >
+            {launching ? '워프 중' : `${variant.shortLabel} 시작하기`}
+            {!launching ? <ChevronRight size={15} strokeWidth={2.4} /> : null}
+          </button>
+          <button
+            type="button"
+            onClick={onBack}
+            disabled={launching}
+            className="kr-heading shrink-0 rounded-full px-4 py-3 text-[10px] uppercase transition hover:bg-[rgba(255,255,255,0.1)] disabled:opacity-40 md:text-[11px]"
+            style={{
+              border: `1px solid ${LINE}`,
+              color: FG,
+              letterSpacing: '0.16em',
+              background: 'rgba(255,255,255,0.04)',
+            }}
+          >
+            다른 과목
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -1948,6 +2165,150 @@ function ComhwalMiniCell({
   );
 }
 
+function getComhwalPatternVariant(pattern?: string) {
+  if (!pattern) return 0;
+  return Array.from(pattern).reduce((total, char) => total + char.charCodeAt(0), 0);
+}
+
+function ComhwalPatternMotif({
+  pattern,
+  accent,
+  labels,
+}: {
+  pattern?: string;
+  accent: string;
+  labels: string[];
+}) {
+  const variant = getComhwalPatternVariant(pattern);
+  const mode = variant % 6;
+  const safeLabels = labels.length > 0 ? labels : ['입력', '처리', '결과'];
+
+  if (mode === 0) {
+    return (
+      <div className="grid grid-cols-4 gap-1.5">
+        {Array.from({ length: 12 }).map((_, index) => (
+          <ComhwalMiniCell
+            key={index}
+            accent={accent}
+            active={index === variant % 12 || index === (variant + 5) % 12}
+          >
+            {index % 5 === 0 ? safeLabels[index % safeLabels.length] : ''}
+          </ComhwalMiniCell>
+        ))}
+      </div>
+    );
+  }
+
+  if (mode === 1) {
+    return (
+      <div className="relative mx-auto h-[126px] max-w-[280px]">
+        <div
+          className="absolute left-1/2 top-1/2 h-14 w-14 -translate-x-1/2 -translate-y-1/2 rounded-full border-2"
+          style={{ borderColor: accent, background: 'rgba(239,244,255,0.06)' }}
+        />
+        {safeLabels.slice(0, 3).map((label, index) => (
+          <div
+            key={label}
+            className="absolute rounded-2xl border px-3 py-2 kr-heading text-[10px]"
+            style={{
+              left: index === 0 ? 0 : index === 1 ? '50%' : 'auto',
+              right: index === 2 ? 0 : 'auto',
+              top: index === 1 ? 0 : 78,
+              transform: index === 1 ? 'translateX(-50%)' : undefined,
+              borderColor: index === variant % 3 ? accent : 'rgba(239,244,255,0.16)',
+              background: index === variant % 3 ? accent : 'rgba(239,244,255,0.07)',
+              color: index === variant % 3 ? '#07121f' : 'rgba(239,244,255,0.76)',
+            }}
+          >
+            {label}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (mode === 2) {
+    return (
+      <div className="space-y-2">
+        {safeLabels.slice(0, 3).map((label, index) => (
+          <div
+            key={label}
+            className="rounded-2xl border px-3 py-2 kr-heading text-[11px]"
+            style={{
+              marginLeft: `${index * 18}px`,
+              width: `calc(100% - ${index * 18}px)`,
+              borderColor: index === 1 ? accent : 'rgba(239,244,255,0.16)',
+              background: index === 1 ? accent : 'rgba(239,244,255,0.07)',
+              color: index === 1 ? '#07121f' : 'rgba(239,244,255,0.76)',
+            }}
+          >
+            {label}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (mode === 3) {
+    return (
+      <div className="grid grid-cols-[1fr_76px_1fr] items-center gap-2">
+        <div className="grid gap-1.5">
+          {safeLabels.slice(0, 2).map((label) => (
+            <ComhwalMiniCell key={label} accent={accent}>
+              {label}
+            </ComhwalMiniCell>
+          ))}
+        </div>
+        <div className="flex items-center justify-center">
+          <span
+            className="flex h-14 w-14 items-center justify-center rounded-full border-2 kr-num text-[11px]"
+            style={{ borderColor: accent, color: accent }}
+          >
+            {variant % 100}
+          </span>
+        </div>
+        <ComhwalMiniCell accent={accent} active>
+          {safeLabels[2] ?? safeLabels[0]}
+        </ComhwalMiniCell>
+      </div>
+    );
+  }
+
+  if (mode === 4) {
+    const fill = 38 + (variant % 44);
+
+    return (
+      <div className="space-y-3">
+        <div className="h-3 overflow-hidden rounded-full bg-cream/10">
+          <div className="h-full rounded-full" style={{ width: `${fill}%`, background: accent }} />
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          {safeLabels.slice(0, 3).map((label, index) => (
+            <ComhwalMiniCell key={label} accent={accent} active={index === 1}>
+              {label}
+            </ComhwalMiniCell>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-2">
+      {safeLabels.slice(0, 3).map((label, index) => (
+        <div key={label} className="contents">
+          <ComhwalMiniCell accent={accent} active={index === variant % 3}>
+            {label}
+          </ComhwalMiniCell>
+          {index < 2 ? (
+            <ArrowRight size={16} strokeWidth={2.5} style={{ color: accent }} />
+          ) : null}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function ComhwalVisualFlow({
   model,
   accent,
@@ -2320,7 +2681,7 @@ function ComhwalFormulaPattern({
   return (
     <ComhwalDiagramFrame accent={accent}>
       <div className="rounded-2xl border border-cream/15 bg-cream/[0.04] p-3">
-        <ComhwalVisualFlow model={model} accent={accent} />
+        <ComhwalPatternMotif pattern={model.pattern} accent={accent} labels={model.flow} />
         <div
           className="mt-3 rounded-2xl border px-3 py-2 kr-num text-[12px] text-cream/82"
           style={{ borderColor: 'rgba(239,244,255,0.14)', background: 'rgba(239,244,255,0.06)' }}
@@ -2426,7 +2787,7 @@ function ComhwalAnalysisPattern({
 
   return (
     <ComhwalDiagramFrame accent={accent}>
-      <ComhwalVisualFlow model={model} accent={accent} />
+      <ComhwalPatternMotif pattern={model.pattern} accent={accent} labels={model.flow} />
     </ComhwalDiagramFrame>
   );
 }
@@ -2494,6 +2855,58 @@ function ComhwalDatabasePattern({
           <div className="grid gap-1.5">
             <ComhwalMiniCell accent={accent} active>고객 표</ComhwalMiniCell>
             <ComhwalMiniCell accent={accent}>주문 표</ComhwalMiniCell>
+          </div>
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.includes('system-layers')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="mx-auto max-w-[260px] space-y-2">
+          {model.flow.map((item, index) => (
+            <div
+              key={item}
+              className="rounded-2xl border px-4 py-3 text-center kr-heading text-[11px]"
+              style={{
+                transform: `translateX(${(index - 1) * 14}px)`,
+                borderColor: index === 1 ? accent : 'rgba(239,244,255,0.16)',
+                background: index === 1 ? accent : 'rgba(239,244,255,0.07)',
+                color: index === 1 ? '#07121f' : 'rgba(239,244,255,0.78)',
+              }}
+            >
+              {item}
+            </div>
+          ))}
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (
+    pattern.includes('relational') ||
+    pattern.includes('design-grid') ||
+    pattern.includes('data-type')
+  ) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-[1fr_92px] gap-3">
+          <div className="grid grid-cols-3 gap-1.5">
+            {['필드', '형식', '설명', 'ID', '숫자', '키', '이름', '텍스트', '값'].map(
+              (label, index) => (
+                <ComhwalMiniCell key={`${label}-${index}`} accent={accent} active={index === 0 || index === 5}>
+                  {label}
+                </ComhwalMiniCell>
+              ),
+            )}
+          </div>
+          <div className="grid gap-1.5">
+            {model.flow.map((item, index) => (
+              <ComhwalMiniCell key={item} accent={accent} active={index === 1}>
+                {item}
+              </ComhwalMiniCell>
+            ))}
           </div>
         </div>
       </ComhwalDiagramFrame>
@@ -2700,13 +3113,7 @@ function ComhwalFormReportPattern({
         <div className="mb-2 rounded-xl px-3 py-2 kr-heading text-[11px]" style={{ background: accent, color: '#07121f' }}>
           {isReport ? 'REPORT' : 'FORM'}
         </div>
-        <div className="space-y-1.5">
-          {model.flow.map((item, index) => (
-            <ComhwalMiniCell key={item} accent={accent} active={index === 1}>
-              {item}
-            </ComhwalMiniCell>
-          ))}
-        </div>
+        <ComhwalPatternMotif pattern={model.pattern} accent={accent} labels={model.flow} />
       </div>
     </ComhwalDiagramFrame>
   );
@@ -2761,10 +3168,8 @@ function ComhwalAutomationPattern({
           </div>
         ))}
       </div>
-      <div className="mt-3 grid grid-cols-3 gap-2">
-        {['OpenForm', 'RunQuery', 'SetValue'].map((label, index) => (
-          <ComhwalMiniCell key={label} accent={accent} active={index === 1}>{label}</ComhwalMiniCell>
-        ))}
+      <div className="mt-3">
+        <ComhwalPatternMotif pattern={model.pattern} accent={accent} labels={['OpenForm', 'RunQuery', 'SetValue']} />
       </div>
     </ComhwalDiagramFrame>
   );
@@ -2810,7 +3215,7 @@ function ComhwalAdaptiveDiagram({
 
   return (
     <ComhwalDiagramFrame accent={accent}>
-      <ComhwalVisualFlow model={model} accent={accent} />
+      <ComhwalPatternMotif pattern={model.pattern} accent={accent} labels={model.flow} />
     </ComhwalDiagramFrame>
   );
 }

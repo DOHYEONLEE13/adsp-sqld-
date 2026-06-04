@@ -1,3 +1,8 @@
+import {
+  DATABASE_GENERAL_TOPICS,
+  SPREADSHEET_GENERAL_TOPICS,
+} from './expansionConcepts';
+
 export interface ComhwalConceptQuestion {
   id: string;
   prompt: string;
@@ -32,6 +37,7 @@ export interface ComhwalChapter {
 
 interface MicroCardSpec {
   title: string;
+  setupBody?: string;
   body: string;
   keyPoints: string[];
   examTip: string;
@@ -1811,6 +1817,7 @@ function getReinforcedTopicCards(topic: TopicSpec): MicroCardSpec[] {
       ...card,
       title: '쉽게 먼저 보자',
       body:
+        card.setupBody ??
         bubbles[cardIndex % Math.max(bubbles.length, 1)] ??
         `${topic.title}은 시험에서 쓰임을 구분하면 쉬워.`,
       questionCheckpoint: false,
@@ -1826,7 +1833,13 @@ function getReinforcedTopicCards(topic: TopicSpec): MicroCardSpec[] {
   });
 }
 
-const questionChoicePool = COMPUTER_GENERAL_TOPICS.flatMap((topic) =>
+const ALL_COMHWAL_TOPICS: TopicSpec[] = [
+  ...COMPUTER_GENERAL_TOPICS,
+  ...SPREADSHEET_GENERAL_TOPICS,
+  ...DATABASE_GENERAL_TOPICS,
+];
+
+const questionChoicePool = ALL_COMHWAL_TOPICS.flatMap((topic) =>
   topic.cards.map((card) => card.correct),
 );
 
@@ -1861,6 +1874,7 @@ function pickQuestionChoices(
 }
 
 function buildQuestion(
+  cardIdPrefix: string,
   topic: TopicSpec,
   card: MicroCardSpec,
   topicIndex: number,
@@ -1873,7 +1887,7 @@ function buildQuestion(
   );
 
   return {
-    id: `comhwal-1-${topic.id}-q${String(cardIndex + 1).padStart(2, '0')}`,
+    id: `${cardIdPrefix}-${topic.id}-q${String(cardIndex + 1).padStart(2, '0')}`,
     prompt:
       card.questionPrompt ??
       `${topic.title}에서 방금 배운 핵심은 뭐야?`,
@@ -1895,11 +1909,15 @@ function shouldAttachQuestion(cards: MicroCardSpec[], cardIndex: number): boolea
   return cardIndex === cards.length - 1;
 }
 
-function buildComputerGeneralSections(): ComhwalSection[] {
-  return COMPUTER_GENERAL_TOPICS.flatMap((topic, topicIndex) => {
+function buildTopicSections(
+  planetKey: string,
+  cardIdPrefix: string,
+  topics: TopicSpec[],
+): ComhwalSection[] {
+  return topics.flatMap((topic, topicIndex) => {
     const topicCards = getReinforcedTopicCards(topic);
     const cards: ComhwalConceptCard[] = topicCards.map((card, cardIndex) => ({
-      id: `comhwal-1-${topic.id}-c${String(cardIndex + 1).padStart(2, '0')}`,
+      id: `${cardIdPrefix}-${topic.id}-c${String(cardIndex + 1).padStart(2, '0')}`,
       topicId: topic.id,
       title: card.title,
       body: card.body,
@@ -1907,7 +1925,7 @@ function buildComputerGeneralSections(): ComhwalSection[] {
       examTip: card.examTip,
       visualHint: card.visualHint,
       question: shouldAttachQuestion(topicCards, cardIndex)
-        ? buildQuestion(topic, card, topicIndex, cardIndex)
+        ? buildQuestion(cardIdPrefix, topic, card, topicIndex, cardIndex)
         : undefined,
     }));
 
@@ -1918,8 +1936,8 @@ function buildComputerGeneralSections(): ComhwalSection[] {
       sections.push({
         id:
           cards.length <= 5
-            ? `computer-general-${topic.id}`
-            : `computer-general-${topic.id}-${sectionIndex}`,
+            ? `${planetKey}-${topic.id}`
+            : `${planetKey}-${topic.id}-${sectionIndex}`,
         title: cards.length <= 5 ? topic.title : `${topic.title} ${sectionIndex}`,
         topicRange: topic.id,
         cards: slice,
@@ -1929,13 +1947,39 @@ function buildComputerGeneralSections(): ComhwalSection[] {
   });
 }
 
-const computerGeneralSections: ComhwalSection[] = buildComputerGeneralSections();
+const computerGeneralSections: ComhwalSection[] = buildTopicSections(
+  'computer-general',
+  'comhwal-1',
+  COMPUTER_GENERAL_TOPICS,
+);
+
+const spreadsheetGeneralSections: ComhwalSection[] = buildTopicSections(
+  'spreadsheet-general',
+  'comhwal-2',
+  SPREADSHEET_GENERAL_TOPICS,
+);
+
+const databaseGeneralSections: ComhwalSection[] = buildTopicSections(
+  'database-general',
+  'comhwal-3',
+  DATABASE_GENERAL_TOPICS,
+);
 
 export const COMHWAL_CONCEPT_CHAPTERS: ComhwalChapter[] = [
   {
     planetKey: 'computer-general',
     title: '컴퓨터 일반',
     sections: computerGeneralSections,
+  },
+  {
+    planetKey: 'spreadsheet-general',
+    title: '스프레드시트 일반',
+    sections: spreadsheetGeneralSections,
+  },
+  {
+    planetKey: 'database-general',
+    title: '데이터베이스 일반',
+    sections: databaseGeneralSections,
   },
 ];
 

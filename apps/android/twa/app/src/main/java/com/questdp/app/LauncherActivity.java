@@ -26,6 +26,8 @@ public class LauncherActivity
         extends com.google.androidbrowserhelper.trusted.LauncherActivity {
 
 
+    private static final String APP_ENTRY_PATH = "/app/";
+
 
 
     @Override
@@ -47,8 +49,19 @@ public class LauncherActivity
         // Get the original launch Url.
         Uri uri = super.getLaunchingUrl();
 
+        if (uri == null) {
+            return Uri.parse("https://quest-dp.com" + APP_ENTRY_PATH);
+        }
 
+        String path = uri.getPath();
+        boolean isAppPath = path != null && (path.equals("/app") || path.startsWith(APP_ENTRY_PATH));
+        if (isAppPath) {
+            return uri;
+        }
 
-        return uri;
+        return uri.buildUpon()
+                .path(APP_ENTRY_PATH)
+                .query(null)
+                .build();
     }
 }

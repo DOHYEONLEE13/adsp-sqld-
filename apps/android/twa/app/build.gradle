@@ -26,8 +26,8 @@ def twaManifest = [
     launchUrl: '/app/', // The start path for the TWA. Must be relative to the domain.
     name: 'QuestDP', // The application name.
     launcherName: 'QuestDP', // The name shown on the Android Launcher.
-    themeColor: '#14202E', // The color used for the status bar.
-    themeColorDark: '#14202E', // The color used for the dark status bar.
+    themeColor: '#010828', // The color used for the status bar.
+    themeColorDark: '#010828', // The color used for the dark status bar.
     navigationColor: '#010828', // The color used for the navigation bar.
     navigationColorDark: '#010828', // The color used for the dark navbar.
     navigationDividerColor: '#010828', // The navbar divider color.
@@ -76,7 +76,7 @@ android {
 
 
             // This is used by Meta Quest.
-            resValue "string", "fullScopeUrl", 'https://quest-dp.com/'
+            resValue "string", "fullScopeUrl", 'https://quest-dp.com/app/'
 
 
 

@@ -51,4 +51,19 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://quest-dp.com/blog/comhwal-%ED%95%84%EA%B8%B0%EC%97%90%EC%84%9C-%EC%8B%A4%EA%B8%B0-%EC%A0%84%ED%99%98%EB%B2%95/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://quest-dp.com/blog/comhwal-7%EC%9D%BC-%ED%95%84%EA%B8%B0-%ED%94%8C%EB%9E%9C/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://quest-dp.com/blog/comhwal-%EA%B8%B0%EC%B6%9C-%EB%B3%B5%EC%8A%B5%EB%B2%95/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>

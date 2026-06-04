@@ -209,7 +209,7 @@ function buildHtml(post) {
 
     <div class="footer">
       <div class="domain">quest-dp.com/blog</div>
-      <div class="tagline">ADSP · SQLD, 놀면서 합격</div>
+      <div class="tagline">ADSP · SQLD · 컴활, 놀면서 합격</div>
     </div>
   </div>
 </body>

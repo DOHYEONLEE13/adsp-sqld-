@@ -1,122 +1,249 @@
-/**
- * curriculum.ts — 과목 전체 커리큘럼 트리 조회.
- *
- * Tier 2 programmatic SEO 의 pillar 페이지 (`/curriculum/:subject`).
- * 한 과목의 전체 챕터 → 토픽 → lesson → step 트리를 구성해서, 모든
- * lesson 정적 페이지 (353개) 를 한 곳에서 들어갈 수 있는 hub 를 만든다.
- *
- * SEO 이점:
- *   - 고볼륨 키워드 진입 — "ADsP 출제범위", "SQLD 시험범위", "ADsP 커리큘럼"
- *   - lesson 페이지 353개로 향하는 internal link 그래프의 root
- *   - JSON-LD ItemList 로 구조화
- */
-
+import { COMHWAL_CONCEPT_CHAPTERS, getComhwalTopicCards } from '@/data/comhwal/concepts';
 import { ALL_LESSONS, type Lesson, type LessonStep } from '@/data/lessons';
 import { SUBJECT_SCHEMAS } from '@/data/subjects';
+import { EXPANSION_SUBJECTS } from '@/game/expansionSubjects';
+import type { SeoCurriculumSubject } from '@/types/seo';
 import type { Subject } from '@/types/question';
 
 export interface CurriculumStep {
-  step: LessonStep;
-  /** 0-based — 챕터 내 step 번호. */
+  id: string;
+  title: string;
+  href: string;
   indexInChapter: number;
+  description?: string;
 }
 
 export interface CurriculumLesson {
-  lesson: Lesson;
+  title: string;
   steps: CurriculumStep[];
+  lesson?: Lesson;
 }
 
 export interface CurriculumTopic {
   topic: string;
+  topicId?: string;
+  sectionTitle?: string;
+  href?: string;
   lessons: CurriculumLesson[];
+  totalCards?: number;
+  available: boolean;
 }
 
 export interface CurriculumChapter {
   chapter: number;
   title: string;
+  subtitle?: string;
   topics: CurriculumTopic[];
   totalLessons: number;
   totalSteps: number;
+  totalTopics: number;
+  availableTopics: number;
 }
 
 export interface SubjectCurriculum {
-  subject: Subject;
+  subject: SeoCurriculumSubject;
   title: string;
+  label: string;
   chapters: CurriculumChapter[];
   totalChapters: number;
   totalTopics: number;
   totalLessons: number;
   totalSteps: number;
+  availableTopics: number;
+  isExpansion: boolean;
 }
 
-/**
- * 과목 전체 커리큘럼 트리 — schema 의 챕터·토픽 순서를 그대로 따름.
- * lesson 이 없는 토픽도 노드로 유지 (UI 가 "준비 중" 처리 가능).
- */
-export function getCurriculum(subject: Subject): SubjectCurriculum {
-  const schema = SUBJECT_SCHEMAS[subject];
+export function getCurriculum(
+  subject: SeoCurriculumSubject,
+): SubjectCurriculum {
+  if (subject === 'adsp' || subject === 'sqld') {
+    return getCoreCurriculum(subject);
+  }
+  return getComhwalCurriculum(subject);
+}
 
-  // 모든 step 의 챕터 내 index 를 미리 계산 (schema 토픽 순서 기준).
-  const subjectLessons = ALL_LESSONS.filter((l) => l.subject === subject);
+function getCoreCurriculum(subject: Subject): SubjectCurriculum {
+  const schema = SUBJECT_SCHEMAS[subject];
+  const subjectLessons = ALL_LESSONS.filter((lesson) => lesson.subject === subject);
 
   let totalLessons = 0;
   let totalSteps = 0;
   let totalTopics = 0;
+  let availableTopics = 0;
 
   const chapters: CurriculumChapter[] = schema.chapters.map((schemaChapter) => {
-    // 챕터 내 schema 순서로 lesson 정렬
     const chapterLessons = schemaChapter.topics
       .map((topic) =>
         subjectLessons.find(
-          (l) => l.chapter === schemaChapter.chapter && l.topic === topic,
+          (lesson) =>
+            lesson.chapter === schemaChapter.chapter && lesson.topic === topic,
         ),
       )
-      .filter((l): l is Lesson => !!l);
+      .filter((lesson): lesson is Lesson => !!lesson);
 
-    // 챕터 내 step 인덱스 집계
-    let chapterIdx = 0;
-    const topicsOut: CurriculumTopic[] = schemaChapter.topics.map((topic) => {
+    let chapterStepIndex = 0;
+    const topics: CurriculumTopic[] = schemaChapter.topics.map((topic) => {
       totalTopics++;
-      const lesson = chapterLessons.find((l) => l.topic === topic);
+      const lesson = chapterLessons.find((entry) => entry.topic === topic);
       if (!lesson) {
-        return { topic, lessons: [] };
+        return {
+          topic,
+          lessons: [],
+          available: false,
+        };
       }
-      const steps: CurriculumStep[] = lesson.steps.map((step) => {
-        const entry = { step, indexInChapter: chapterIdx };
-        chapterIdx++;
-        return entry;
-      });
+
+      availableTopics++;
+      const steps = lesson.steps.map((step) =>
+        mapLessonStep(step, chapterStepIndex++),
+      );
+
       return {
         topic,
-        lessons: [{ lesson, steps }],
+        lessons: [{ title: lesson.title, lesson, steps }],
+        available: true,
       };
     });
 
-    const chapTotalLessons = chapterLessons.length;
-    const chapTotalSteps = chapterLessons.reduce(
-      (sum, l) => sum + l.steps.length,
+    const chapterTotalLessons = chapterLessons.length;
+    const chapterTotalSteps = chapterLessons.reduce(
+      (sum, lesson) => sum + lesson.steps.length,
       0,
     );
 
-    totalLessons += chapTotalLessons;
-    totalSteps += chapTotalSteps;
+    totalLessons += chapterTotalLessons;
+    totalSteps += chapterTotalSteps;
 
     return {
       chapter: schemaChapter.chapter,
       title: schemaChapter.title,
-      topics: topicsOut,
-      totalLessons: chapTotalLessons,
-      totalSteps: chapTotalSteps,
+      topics,
+      totalLessons: chapterTotalLessons,
+      totalSteps: chapterTotalSteps,
+      totalTopics: topics.length,
+      availableTopics: topics.filter((topic) => topic.available).length,
     };
   });
 
   return {
     subject,
     title: schema.title,
+    label:
+      subject === 'adsp'
+        ? 'ADsP 데이터분석준전문가'
+        : 'SQLD SQL 개발자',
     chapters,
-    totalChapters: schema.chapters.length,
+    totalChapters: chapters.length,
     totalTopics,
     totalLessons,
     totalSteps,
+    availableTopics,
+    isExpansion: false,
+  };
+}
+
+function mapLessonStep(step: LessonStep, indexInChapter: number): CurriculumStep {
+  return {
+    id: step.id,
+    title: step.title,
+    href: `/lesson/${step.id}`,
+    indexInChapter,
+  };
+}
+
+function getComhwalCurriculum(
+  subject: Exclude<SeoCurriculumSubject, Subject>,
+): SubjectCurriculum {
+  const config = EXPANSION_SUBJECTS.comhwal;
+  const variantId =
+    subject === 'comhwal-1'
+      ? 'grade-1'
+      : subject === 'comhwal-2'
+        ? 'grade-2'
+        : null;
+  const label =
+    subject === 'comhwal-1'
+      ? '컴활 1급 필기'
+      : subject === 'comhwal-2'
+        ? '컴활 2급 필기'
+        : '컴활 필기';
+  const indexedPlanets = config.planets.filter((planet) =>
+    variantId ? planet.variantIds.includes(variantId) : true,
+  );
+  const contentChapterKeys = new Set(
+    COMHWAL_CONCEPT_CHAPTERS.map((chapter) => chapter.planetKey),
+  );
+
+  let totalTopics = 0;
+  let totalLessons = 0;
+  let totalSteps = 0;
+  let availableTopics = 0;
+
+  const chapters: CurriculumChapter[] = indexedPlanets.map((planet, index) => {
+    let chapterStepIndex = 0;
+    const topics: CurriculumTopic[] = [];
+
+    for (const section of planet.sections) {
+      for (const topic of section.topics) {
+        totalTopics++;
+        const cards = contentChapterKeys.has(planet.key)
+          ? getComhwalTopicCards(planet.key, topic.id)
+          : [];
+        const href =
+          cards.length > 0
+            ? `/topics/comhwal/${planet.key}/${topic.id}`
+            : undefined;
+        const steps: CurriculumStep[] = cards.map((card) => ({
+          id: card.id,
+          title: card.title,
+          href: href ?? '#',
+          indexInChapter: chapterStepIndex++,
+          description: card.body,
+        }));
+
+        if (cards.length > 0) {
+          availableTopics++;
+          totalLessons++;
+          totalSteps += cards.length;
+        }
+
+        topics.push({
+          topic: topic.title,
+          topicId: topic.id,
+          sectionTitle: section.title,
+          href,
+          totalCards: cards.length,
+          lessons:
+            cards.length > 0
+              ? [{ title: `${topic.title} 개념 카드`, steps }]
+              : [],
+          available: cards.length > 0,
+        });
+      }
+    }
+
+    return {
+      chapter: index + 1,
+      title: planet.title,
+      subtitle: planet.variantIds.length === 1 ? '컴활 1급 전용 과목' : '컴활 1·2급 공통 과목',
+      topics,
+      totalLessons: topics.filter((topic) => topic.available).length,
+      totalSteps: topics.reduce((sum, topic) => sum + (topic.totalCards ?? 0), 0),
+      totalTopics: topics.length,
+      availableTopics: topics.filter((topic) => topic.available).length,
+    };
+  });
+
+  return {
+    subject,
+    title: config.routeLabel,
+    label,
+    chapters,
+    totalChapters: chapters.length,
+    totalTopics,
+    totalLessons,
+    totalSteps,
+    availableTopics,
+    isExpansion: true,
   };
 }

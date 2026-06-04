@@ -29,7 +29,7 @@ for (const route of manifest.all) {
 
 console.log(
   `static route HTML generated: ${manifest.all.length} pages ` +
-    `(core ${manifest.core.length}, blog ${manifest.blog.length}, lessons ${manifest.lessons.length}, quiz 0)`,
+    `(core ${manifest.core.length}, blog ${manifest.blog.length}, lessons ${manifest.lessons.length}, topics ${manifest.topics.length}, quiz 0)`,
 );
 
 function routeHtml(baseTemplate, route) {

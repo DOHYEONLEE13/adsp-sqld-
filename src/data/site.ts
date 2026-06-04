@@ -12,7 +12,7 @@ export const BRAND = {
   separator: '.',
   logoLeft: '퀘스트',
   logoRight: '디피',
-  tagline: 'ADsP·SQLD 자격증 학습사이트',
+  tagline: 'ADsP·SQLD·컴활 자격증 학습사이트',
 } as const;
 
 export const VIDEO_URLS = {
@@ -41,14 +41,14 @@ export const VIDEO_POSTERS = {
 } as const;
 
 export const HERO: HeroContent = {
-  headingLines: ['ADSP, SQLD', '게임으로', '놀면서 합격!'],
+  headingLines: ['ADSP, SQLD', '컴활까지', '놀면서 합격!'],
   cursiveAccent: 'Play & Pass',
   videoUrl: VIDEO_URLS.hero,
 };
 
 export const ABOUT: AboutContent = {
   headingLines: ['안녕!', '난 퀘스트디피야'],
-  lead: 'ADSP 학습사이트, SQLD 학습사이트를 찾고 있다면 QuestDP에서 개념부터 문제풀이까지 게임처럼 따라가면 돼요. 오늘 공부할 챕터와 약점이 한눈에 보입니다.',
+  lead: 'ADSP 학습사이트, SQLD 학습사이트, 컴활 학습사이트를 찾고 있다면 QuestDP에서 개념부터 문제풀이까지 게임처럼 따라가면 돼요. 오늘 공부할 챕터와 약점이 한눈에 보입니다.',
   bulletLines: [
     '짧은 개념을 보고 바로 한 문제를 풀어요. 익숙해지면 기출 풀이와 챕터 모의고사로 이어집니다.',
     '틀린 문제와 헷갈린 개념은 다시 나타나요. 오늘 푼 내용이 내일 복습 미션이 됩니다.',

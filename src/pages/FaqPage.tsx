@@ -1,37 +1,23 @@
-/**
- * FaqPage — Tier 2 SEO 자주 묻는 질문 페이지.
- *
- * 라우트: `/faq/:subject` — adsp · sqld
- *
- * 목적:
- *   - 네이버 People Also Ask · 구글 PAA 노출
- *   - 정보형 검색 ("ADsP 비전공자", "SQLD 합격 기준") 진입
- *   - 본문 내 lesson · curriculum · 내부 페이지로 link
- *
- * SEO 요소:
- *   - 페이지별 unique title/description
- *   - canonical
- *   - JSON-LD FAQPage (Question · Answer 구조)
- *   - BreadcrumbList
- */
-
-import { useSeoMeta } from '@/lib/seo';
 import { ArrowLeft, ChevronRight, HelpCircle, Sparkles } from 'lucide-react';
 import { ALL_FAQ } from '@/data/seo/faq';
 import { handleNavClick } from '@/lib/navigate';
+import { useSeoMeta } from '@/lib/seo';
+import type { SeoFaqSubject } from '@/types/seo';
 
 interface Props {
-  subject: 'adsp' | 'sqld';
+  subject: SeoFaqSubject;
 }
 
-const SUBJECT_LABEL: Record<'adsp' | 'sqld', string> = {
+const SUBJECT_LABEL: Record<SeoFaqSubject, string> = {
   adsp: 'ADsP 데이터분석준전문가',
   sqld: 'SQLD SQL 개발자',
+  comhwal: '컴활 필기',
 };
 
-const SUBJECT_ACCENT: Record<'adsp' | 'sqld', string> = {
+const SUBJECT_ACCENT: Record<SeoFaqSubject, string> = {
   adsp: '#67e8f9',
   sqld: '#c084fc',
+  comhwal: '#A7E96A',
 };
 
 export default function FaqPage({ subject }: Props) {
@@ -40,17 +26,16 @@ export default function FaqPage({ subject }: Props) {
   const label = SUBJECT_LABEL[subject];
   const canonical = `https://quest-dp.com/faq/${subject}/`;
 
-  // FAQPage JSON-LD — Q&A 평탄화
   const faqJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: data.groups.flatMap((g) =>
-      g.items.map((it) => ({
+    mainEntity: data.groups.flatMap((group) =>
+      group.items.map((item) => ({
         '@type': 'Question',
-        name: it.q,
+        name: item.q,
         acceptedAnswer: {
           '@type': 'Answer',
-          text: it.a,
+          text: item.a,
         },
       })),
     ),
@@ -61,7 +46,12 @@ export default function FaqPage({ subject }: Props) {
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: '홈', item: 'https://quest-dp.com/' },
-      { '@type': 'ListItem', position: 2, name: label, item: `https://quest-dp.com/curriculum/${subject}/` },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: label,
+        item: `https://quest-dp.com/${curriculumHref(subject).slice(1)}/`,
+      },
       { '@type': 'ListItem', position: 3, name: '자주 묻는 질문', item: canonical },
     ],
   };
@@ -76,60 +66,56 @@ export default function FaqPage({ subject }: Props) {
   });
 
   return (
-    <article className="relative min-h-screen isolate overflow-hidden bg-base text-cream">
-      <div className="relative z-10 max-w-[820px] lg:max-w-[920px] mx-auto px-5 md:px-8 lg:px-12 pt-8 pb-16">
-        {/* Back home */}
+    <article className="relative isolate min-h-screen overflow-hidden bg-base text-cream">
+      <div className="relative z-10 mx-auto max-w-[820px] px-5 pb-16 pt-8 md:px-8 lg:max-w-[920px] lg:px-12">
         <a
           href="/"
-          onClick={(e) => handleNavClick(e, '/')}
-          className="inline-flex items-center gap-2 kr-heading uppercase text-[11px] tracking-widest text-cream/65 hover:text-neon transition mb-6"
+          onClick={(event) => handleNavClick(event, '/')}
+          className="mb-6 inline-flex items-center gap-2 text-[11px] uppercase tracking-widest text-cream/65 transition hover:text-neon"
         >
           <ArrowLeft size={14} strokeWidth={2.4} />
           홈으로
         </a>
 
-        {/* Breadcrumb */}
         <nav
           aria-label="breadcrumb"
-          className="kr-num text-[11px] text-cream/55 mb-3 flex items-center gap-1.5 flex-wrap"
+          className="mb-3 flex flex-wrap items-center gap-1.5 text-[11px] text-cream/55"
         >
           <span style={{ color: accent }}>{label}</span>
           <ChevronRight size={12} className="text-cream/30" />
           <span className="text-cream/85">자주 묻는 질문</span>
         </nav>
 
-        {/* H1 */}
-        <header className="mb-10 pb-8 border-b border-cream/10">
-          <h1 className="kr-heading text-[28px] md:text-[36px] lg:text-[42px] leading-[1.2] mb-3">
+        <header className="mb-10 border-b border-cream/10 pb-8">
+          <h1 className="kr-heading mb-3 text-[28px] leading-[1.2] md:text-[36px] lg:text-[42px]">
             {data.title}
           </h1>
-          <p className="kr-body text-[14.5px] md:text-[15.5px] text-cream/75 leading-[1.65] max-w-[680px]">
+          <p className="kr-body max-w-[700px] text-[14.5px] leading-[1.65] text-cream/75 md:text-[15.5px]">
             {data.metaDescription}
           </p>
         </header>
 
-        {/* FAQ groups */}
         <div className="space-y-12">
           {data.groups.map((group) => (
             <section key={group.heading}>
               <h2
-                className="kr-heading text-[18px] md:text-[22px] mb-5 inline-flex items-center gap-2"
+                className="kr-heading mb-5 inline-flex items-center gap-2 text-[18px] md:text-[22px]"
                 style={{ color: accent }}
               >
                 <HelpCircle size={18} strokeWidth={2.4} />
                 {group.heading}
               </h2>
-              <ul className="space-y-4 list-none m-0 p-0">
-                {group.items.map((it, i) => (
+              <ul className="m-0 list-none space-y-4 p-0">
+                {group.items.map((item) => (
                   <li
-                    key={i}
-                    className="rounded-[14px] p-5 md:p-6 border border-cream/10 bg-white/[0.02]"
+                    key={item.q}
+                    className="rounded-[14px] border border-cream/10 bg-white/[0.02] p-5 md:p-6"
                   >
-                    <h3 className="kr-heading text-[15px] md:text-[16.5px] text-cream/95 mb-2.5 leading-[1.4]">
-                      Q. {it.q}
+                    <h3 className="kr-heading mb-2.5 text-[15px] leading-[1.4] text-cream/95 md:text-[16.5px]">
+                      Q. {item.q}
                     </h3>
-                    <p className="kr-body text-[13.5px] md:text-[14.5px] text-cream/80 leading-[1.7] whitespace-pre-line">
-                      {it.a}
+                    <p className="kr-body whitespace-pre-line text-[13.5px] leading-[1.7] text-cream/80 md:text-[14.5px]">
+                      {item.a}
                     </p>
                   </li>
                 ))}
@@ -138,7 +124,6 @@ export default function FaqPage({ subject }: Props) {
           ))}
         </div>
 
-        {/* Cross-link CTA */}
         <section
           className="mt-14 rounded-[20px] p-6 md:p-8"
           style={{
@@ -146,42 +131,42 @@ export default function FaqPage({ subject }: Props) {
             border: `1px solid ${accent}40`,
           }}
         >
-          <h2 className="kr-heading text-[18px] md:text-[20px] mb-2 inline-flex items-center gap-2">
+          <h2 className="kr-heading mb-2 inline-flex items-center gap-2 text-[18px] md:text-[20px]">
             <Sparkles size={18} style={{ color: accent }} />
             바로 학습 시작하기
           </h2>
-          <p className="kr-body text-[13px] md:text-[14px] text-cream/75 leading-[1.65] mb-5">
-            궁금한 게 더 있다면 토리·셀리와 함께 한 챕터씩 마이크로 러닝으로 풀어보세요.
-            225 학습 스텝과 631 기출문제가 모두 무료.
+          <p className="kr-body mb-5 text-[13px] leading-[1.65] text-cream/75 md:text-[14px]">
+            질문으로 큰 그림을 잡았다면, 커리큘럼에서 시험범위를 토픽 단위로 확인하고
+            실제 학습 화면으로 이어가세요.
           </p>
           <div className="flex flex-wrap gap-3">
             <a
-              href={`/curriculum/${subject}`}
-              onClick={(e) => handleNavClick(e, `/curriculum/${subject}`)}
-              className="kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full active:scale-95 transition"
+              href={curriculumHref(subject)}
+              onClick={(event) => handleNavClick(event, curriculumHref(subject))}
+              className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-[12px] uppercase tracking-widest text-[#010828] transition active:scale-95 md:text-[13px]"
               style={{
                 background: '#FD802E',
-                color: '#010828',
                 boxShadow: '0 8px 22px -6px rgba(253,128,46,0.55)',
               }}
             >
-              {label.split(' ')[0]} 출제범위 보기
+              {label.split(' ')[0]} 커리큘럼 보기
               <ChevronRight size={14} strokeWidth={2.6} />
             </a>
-            <a
-              href={subject === 'adsp' ? '/faq/sqld' : '/faq/adsp'}
-              onClick={(e) =>
-                handleNavClick(e, subject === 'adsp' ? '/faq/sqld' : '/faq/adsp')
-              }
-              className="kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full border border-cream/20 hover:border-neon/40 hover:text-neon transition"
-            >
-              {subject === 'adsp' ? 'SQLD FAQ' : 'ADsP FAQ'}
-              <ChevronRight size={14} strokeWidth={2.6} />
-            </a>
+            {alternateFaqLinks(subject).map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={(event) => handleNavClick(event, link.href)}
+                className="inline-flex items-center gap-2 rounded-full border border-cream/20 px-5 py-3 text-[12px] uppercase tracking-widest transition hover:border-neon/40 hover:text-neon md:text-[13px]"
+              >
+                {link.label}
+                <ChevronRight size={14} strokeWidth={2.6} />
+              </a>
+            ))}
             <a
               href="/glossary"
-              onClick={(e) => handleNavClick(e, '/glossary')}
-              className="kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full border border-cream/20 hover:border-neon/40 hover:text-neon transition"
+              onClick={(event) => handleNavClick(event, '/glossary')}
+              className="inline-flex items-center gap-2 rounded-full border border-cream/20 px-5 py-3 text-[12px] uppercase tracking-widest transition hover:border-neon/40 hover:text-neon md:text-[13px]"
             >
               용어 사전
               <ChevronRight size={14} strokeWidth={2.6} />
@@ -189,15 +174,14 @@ export default function FaqPage({ subject }: Props) {
           </div>
         </section>
 
-        {/* Footer */}
-        <div className="mt-12 pt-6 border-t border-cream/10 text-center">
-          <p className="kr-body text-[12px] text-cream/50 mb-3">
-            QuestDP — 한국 ADsP·SQLD 자격증을 우주 탐험 RPG 로 재구성
+        <div className="mt-12 border-t border-cream/10 pt-6 text-center">
+          <p className="kr-body mb-3 text-[12px] text-cream/50">
+            QuestDP — ADsP·SQLD·컴활 자격증을 우주 탐험 RPG로 재구성
           </p>
           <a
             href="/about"
-            onClick={(e) => handleNavClick(e, '/about')}
-            className="kr-heading uppercase tracking-widest text-[11px] text-cream/65 hover:text-neon transition"
+            onClick={(event) => handleNavClick(event, '/about')}
+            className="text-[11px] uppercase tracking-widest text-cream/65 transition hover:text-neon"
           >
             QuestDP 소개 →
           </a>
@@ -205,4 +189,17 @@ export default function FaqPage({ subject }: Props) {
       </div>
     </article>
   );
+}
+
+function curriculumHref(subject: SeoFaqSubject): string {
+  return subject === 'comhwal' ? '/curriculum/comhwal' : `/curriculum/${subject}`;
+}
+
+function alternateFaqLinks(subject: SeoFaqSubject): Array<{ href: string; label: string }> {
+  return (['adsp', 'sqld', 'comhwal'] as const)
+    .filter((item) => item !== subject)
+    .map((item) => ({
+      href: `/faq/${item}`,
+      label: `${SUBJECT_LABEL[item].split(' ')[0]} FAQ`,
+    }));
 }

@@ -10,6 +10,12 @@ import {
 import Landing from './pages/Landing';
 import type { Subject } from './types/question';
 import {
+  isSeoCurriculumSubject,
+  isSeoFaqSubject,
+  type SeoCurriculumSubject,
+  type SeoFaqSubject,
+} from './types/seo';
+import {
   isExpansionSubjectId,
   type ExpansionSubjectId,
 } from './game/expansionSubjects';
@@ -65,6 +71,7 @@ const PricingPage = lazy(() => import('./pages/PricingPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage'));
 const CurriculumPage = lazy(() => import('./pages/CurriculumPage'));
 const FaqPage = lazy(() => import('./pages/FaqPage'));
+const ComhwalTopicPage = lazy(() => import('./pages/ComhwalTopicPage'));
 const GlossaryPage = lazy(() => import('./pages/GlossaryPage'));
 const BlogIndexPage = lazy(() => import('./pages/BlogIndexPage'));
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
@@ -107,6 +114,7 @@ type Route =
   | 'quiz-static'
   | 'curriculum'
   | 'faq'
+  | 'comhwal-topic'
   | 'glossary'
   | 'blog-index'
   | 'blog-post'
@@ -126,9 +134,12 @@ interface RouteState {
   /** `/quiz/:questionId` — Tier 2 SEO 진입점. */
   quizQuestionId?: string;
   /** `/curriculum/:subject` — Tier 2 SEO pillar 페이지. */
-  curriculumSubject?: Subject;
+  curriculumSubject?: SeoCurriculumSubject;
   /** `/faq/:subject` — Tier 2 SEO FAQ. */
-  faqSubject?: Subject;
+  faqSubject?: SeoFaqSubject;
+  /** `/topics/comhwal/:planetKey/:topicId` — 실제 카드가 있는 컴활 토픽 SEO 페이지. */
+  topicPlanetKey?: string;
+  topicId?: string;
   /** `/blog/:slug` — Tier 2 SEO 블로그 포스트. */
   blogSlug?: string;
 }
@@ -225,17 +236,25 @@ function getRoute(): RouteState {
     const cleanId = questionId.split('/')[0];
     if (cleanId) return { route: 'quiz-static', quizQuestionId: cleanId };
   }
-  // Tier 2 — 커리큘럼 pillar 페이지. `/curriculum/adsp` · `/curriculum/sqld`
+  // Tier 2 — 컴활 실콘텐츠 토픽. `/topics/comhwal/computer-general/:topicId`
+  if (pathname.startsWith('/topics/comhwal/')) {
+    const parts = pathname.slice('/topics/comhwal/'.length).split('/').filter(Boolean);
+    const [planetKey, topicId] = parts;
+    if (planetKey && topicId) {
+      return { route: 'comhwal-topic', topicPlanetKey: planetKey, topicId };
+    }
+  }
+  // Tier 2 — 커리큘럼 pillar 페이지. `/curriculum/adsp` · `/curriculum/sqld` · `/curriculum/comhwal`
   if (pathname.startsWith('/curriculum/')) {
     const sub = pathname.slice('/curriculum/'.length).split('/')[0];
-    if (sub === 'adsp' || sub === 'sqld') {
+    if (isSeoCurriculumSubject(sub)) {
       return { route: 'curriculum', curriculumSubject: sub };
     }
   }
-  // Tier 2 — FAQ. `/faq/adsp` · `/faq/sqld`
+  // Tier 2 — FAQ. `/faq/adsp` · `/faq/sqld` · `/faq/comhwal`
   if (pathname.startsWith('/faq/')) {
     const sub = pathname.slice('/faq/'.length).split('/')[0];
-    if (sub === 'adsp' || sub === 'sqld') {
+    if (isSeoFaqSubject(sub)) {
       return { route: 'faq', faqSubject: sub };
     }
   }
@@ -343,6 +362,8 @@ export default function App() {
       quizQuestionId,
       curriculumSubject,
       faqSubject,
+      topicPlanetKey,
+      topicId,
       blogSlug,
     },
     setRouteState,
@@ -715,6 +736,10 @@ export default function App() {
 
     if (route === 'faq' && faqSubject) {
       return <FaqPage subject={faqSubject} />;
+    }
+
+    if (route === 'comhwal-topic' && topicPlanetKey && topicId) {
+      return <ComhwalTopicPage planetKey={topicPlanetKey} topicId={topicId} />;
     }
 
     if (route === 'glossary') {

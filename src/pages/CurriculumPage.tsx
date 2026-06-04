@@ -1,47 +1,23 @@
-/**
- * CurriculumPage — Tier 2 programmatic SEO pillar 페이지.
- *
- * 라우트: `/curriculum/:subject` — `adsp` 또는 `sqld`
- *
- * 목적:
- *   - 고볼륨 키워드 진입 ("ADsP 출제범위", "SQLD 시험범위", "ADsP 커리큘럼")
- *   - 353 lesson 페이지로 향하는 internal link 그래프의 root (pillar ↔ supporting)
- *   - 사용자가 한 화면에서 전체 커리큘럼을 훑고 원하는 토픽으로 점프
- *
- * SEO 요소:
- *   - 페이지별 unique title — 과목명 + 출제범위
- *   - description (총 챕터·토픽·step 카운트)
- *   - canonical
- *   - JSON-LD Course (subject 단위) + ItemList (모든 lesson 의 link)
- *   - BreadcrumbList
- */
-
-import { useSeoMeta } from '@/lib/seo';
-import { ArrowLeft, BookOpen, ChevronRight, Sparkles, Layers } from 'lucide-react';
-import { getCurriculum, type SubjectCurriculum, type CurriculumTopic } from '@/lib/curriculum';
+import { ArrowLeft, BookOpen, ChevronRight, Layers, Sparkles } from 'lucide-react';
+import { getCurriculum, type CurriculumTopic, type SubjectCurriculum } from '@/lib/curriculum';
 import { handleNavClick } from '@/lib/navigate';
+import { useSeoMeta } from '@/lib/seo';
+import type { SeoCurriculumSubject } from '@/types/seo';
 
 interface Props {
-  subject: 'adsp' | 'sqld';
+  subject: SeoCurriculumSubject;
 }
 
-const SUBJECT_LABEL: Record<'adsp' | 'sqld', string> = {
-  adsp: 'ADsP 데이터분석준전문가',
-  sqld: 'SQLD SQL 개발자',
-};
-
-const SUBJECT_TAGLINE: Record<'adsp' | 'sqld', string> = {
-  adsp: 'ADsP 학습사이트를 찾는 수험생을 위한 게임형 로드맵. 데이터의 이해부터 분석 기획·통계·머신러닝까지 시험 출제범위 전체.',
-  sqld: 'SQLD 학습사이트를 찾는 수험생을 위한 게임형 로드맵. 데이터 모델링부터 SQL 기본·활용·관리 구문까지 시험 출제범위 전체.',
-};
-
-const SUBJECT_ACCENT: Record<'adsp' | 'sqld', string> = {
+const SUBJECT_ACCENT: Record<SeoCurriculumSubject, string> = {
   adsp: '#67e8f9',
   sqld: '#c084fc',
+  comhwal: '#A7E96A',
+  'comhwal-1': '#A7E96A',
+  'comhwal-2': '#A7E96A',
 };
 
 const EXAM_FACTS: Record<
-  'adsp' | 'sqld',
+  SeoCurriculumSubject,
   {
     authority: string;
     exam: string;
@@ -58,7 +34,8 @@ const EXAM_FACTS: Record<
     questions: '객관식 50문항 · 90분',
     scoring: '총점 60점 이상 · 과목별 40% 미만 과락',
     scope: '데이터 이해 10문항 · 데이터분석 기획 10문항 · 데이터분석 30문항',
-    strategy: '3과목 데이터분석 비중이 가장 커서 R 기초, 통계, 가설검정, 머신러닝을 반복 풀이로 잡는 것이 중요합니다.',
+    strategy:
+      '3과목 데이터분석 비중이 가장 커서 R 기초, 통계, 가설검정, 머신러닝을 반복 루프로 묶는 것이 중요합니다.',
     officialUrl: 'https://www.dataq.or.kr/www/sub/a_06.do',
   },
   sqld: {
@@ -67,32 +44,78 @@ const EXAM_FACTS: Record<
     questions: '객관식 50문항 · 90분',
     scoring: '총점 60점 이상 · 과목별 40% 미만 과락',
     scope: '데이터 모델링의 이해 10문항 · SQL 기본 및 활용 40문항',
-    strategy: '2과목 SQL 기본 및 활용 비중이 80점이라 JOIN, 서브쿼리, 윈도우 함수, 관리 구문을 우선순위로 잡아야 합니다.',
+    strategy:
+      '2과목 SQL 기본 및 활용 배점이 80점입니다. JOIN, 서브쿼리, 윈도우 함수, 관리 구문을 우선순위로 잡아야 합니다.',
     officialUrl: 'https://www.dataq.or.kr/www/sub/a_04.do',
+  },
+  comhwal: {
+    authority: '대한상공회의소 자격평가사업단',
+    exam: '컴퓨터활용능력 필기',
+    questions: '1급 60문항 · 60분 / 2급 40문항 · 40분',
+    scoring: '필기: 과목당 40점 이상 · 평균 60점 이상',
+    scope:
+      '1급: 컴퓨터 일반, 스프레드시트 일반, 데이터베이스 일반 / 2급: 컴퓨터 일반, 스프레드시트 일반',
+    strategy:
+      '컴퓨터 일반은 1급과 2급이 함께 보는 공통 출발점입니다. QuestDP는 실제 카드가 준비된 컴퓨터 일반 001~059부터 개별 토픽 색인을 엽니다.',
+    officialUrl: 'https://devm.korcham.net/co/examguide.do%3Fcd%3D01%26jmcd%3D0103',
+  },
+  'comhwal-1': {
+    authority: '대한상공회의소 자격평가사업단',
+    exam: '컴퓨터활용능력 1급 필기',
+    questions: '객관식 60문항 · 60분',
+    scoring: '필기: 과목당 40점 이상 · 평균 60점 이상',
+    scope: '컴퓨터 일반 · 스프레드시트 일반 · 데이터베이스 일반',
+    strategy:
+      '컴활 1급은 데이터베이스 일반까지 포함됩니다. 먼저 컴퓨터 일반 공통 기반을 빠르게 끝내고, 스프레드시트와 데이터베이스는 실기 연결 개념으로 확장하세요.',
+    officialUrl: 'https://devm.korcham.net/co/examguide.do%3Fcd%3D01%26jmcd%3D0103',
+  },
+  'comhwal-2': {
+    authority: '대한상공회의소 자격평가사업단',
+    exam: '컴퓨터활용능력 2급 필기',
+    questions: '객관식 40문항 · 40분',
+    scoring: '필기: 과목당 40점 이상 · 평균 60점 이상',
+    scope: '컴퓨터 일반 · 스프레드시트 일반',
+    strategy:
+      '컴활 2급은 데이터베이스 일반이 빠지므로 컴퓨터 일반과 스프레드시트 일반을 촘촘히 회전시키는 전략이 효율적입니다.',
+    officialUrl: 'https://devm.korcham.net/co/examguide.do%3Fcd%3D01%26jmcd%3D0103',
   },
 };
 
 export default function CurriculumPage({ subject }: Props) {
   const curriculum = getCurriculum(subject);
   const accent = SUBJECT_ACCENT[subject];
-  const label = SUBJECT_LABEL[subject];
-  const tagline = SUBJECT_TAGLINE[subject];
   const facts = EXAM_FACTS[subject];
-
-  const seoTitle =
-    subject === 'adsp'
-      ? 'ADsP 학습사이트 · KDATA 시험범위·기출문제 커리큘럼 — QuestDP'
-      : 'SQLD 학습사이트 · KDATA 시험범위·기출문제 커리큘럼 — QuestDP';
-  const seoDescription =
-    `${facts.authority} 기준 ${label} 시험범위와 문제 수를 ${curriculum.totalChapters}개 챕터 · ${curriculum.totalTopics}개 토픽 · ` +
-    `${curriculum.totalSteps}개 학습 스텝으로 구조화한 ${subject === 'adsp' ? 'ADsP 게임형 학습사이트' : 'SQLD 게임형 학습사이트'}. 기출문제형 복습과 공부법까지 확인하세요.`;
+  const label = curriculum.label;
   const canonical = `https://quest-dp.com/curriculum/${subject}/`;
+  const seoTitle = `${label} 학습사이트 · 시험범위 커리큘럼 — QuestDP`;
+  const seoDescription =
+    `${facts.authority} 기준 ${facts.exam} 시험범위를 ${curriculum.totalChapters}개 과목 · ${curriculum.totalTopics}개 토픽으로 정리했습니다. ` +
+    `${curriculum.isExpansion ? '컴활은 실제 카드가 있는 컴퓨터 일반 토픽부터 개별 학습 페이지를 공개합니다.' : `${curriculum.totalSteps}개 학습 스텝과 기출형 복습으로 이어집니다.`}`;
 
-  // JSON-LD Course
+  const allItems = curriculum.isExpansion
+    ? curriculum.chapters.flatMap((chapter) =>
+        chapter.topics
+          .filter((topic) => topic.href)
+          .map((topic) => ({
+            name: `${topic.topic} 개념 카드`,
+            url: absoluteUrl(topic.href!),
+          })),
+      )
+    : curriculum.chapters.flatMap((chapter) =>
+        chapter.topics.flatMap((topic) =>
+          topic.lessons.flatMap((lesson) =>
+            lesson.steps.map((step) => ({
+              name: step.title,
+              url: absoluteUrl(step.href),
+            })),
+          ),
+        ),
+      );
+
   const courseJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Course',
-    name: `${label} 출제범위 커리큘럼`,
+    name: `${label} 시험범위 커리큘럼`,
     description: seoDescription,
     provider: {
       '@type': 'Organization',
@@ -102,14 +125,8 @@ export default function CurriculumPage({ subject }: Props) {
     inLanguage: 'ko-KR',
     educationalLevel: label,
     isAccessibleForFree: true,
-    keywords:
-      subject === 'adsp'
-        ? 'ADsP 학습사이트, ADSP 학습사이트, ADsP 게임, ADSP 게임, KDATA ADsP, ADsP 시험 범위, ADsP 기출문제, ADsP 공부법, ADsP 문제 수, ADsP 몇문제, ADsP 3과목'
-        : 'SQLD 학습사이트, SQLD 게임, SQL 개발자 자격증, KDATA SQLD, SQLD 시험 범위, SQLD 기출문제, SQLD 공부법, SQLD 문제 수, SQLD 몇문제',
-    about:
-      subject === 'adsp'
-        ? ['KDATA ADsP', 'ADsP 시험 범위', 'ADsP 기출문제', 'ADsP 공부법']
-        : ['KDATA SQLD', 'SQLD 시험 범위', 'SQLD 기출문제', 'SQLD 공부법'],
+    keywords: keywordText(subject),
+    about: aboutTerms(subject),
     hasCourseInstance: {
       '@type': 'CourseInstance',
       courseMode: 'online',
@@ -117,39 +134,24 @@ export default function CurriculumPage({ subject }: Props) {
     },
   };
 
-  // JSON-LD ItemList — 모든 lesson 페이지를 list 로 노출
-  const allLessonItems: Array<{ name: string; url: string }> = [];
-  for (const ch of curriculum.chapters) {
-    for (const topic of ch.topics) {
-      for (const tl of topic.lessons) {
-        for (const cs of tl.steps) {
-          allLessonItems.push({
-            name: cs.step.title,
-            url: `https://quest-dp.com/lesson/${cs.step.id}/`,
-          });
-        }
-      }
-    }
-  }
   const itemListJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'ItemList',
-    itemListElement: allLessonItems.slice(0, 100).map((it, i) => ({
+    itemListElement: allItems.slice(0, 100).map((item, index) => ({
       '@type': 'ListItem',
-      position: i + 1,
-      url: it.url,
-      name: it.name,
+      position: index + 1,
+      url: item.url,
+      name: item.name,
     })),
   };
 
-  // BreadcrumbList
   const breadcrumbJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: '홈', item: 'https://quest-dp.com/' },
       { '@type': 'ListItem', position: 2, name: label, item: canonical },
-      { '@type': 'ListItem', position: 3, name: '출제범위', item: canonical },
+      { '@type': 'ListItem', position: 3, name: '시험범위', item: canonical },
     ],
   };
 
@@ -163,55 +165,54 @@ export default function CurriculumPage({ subject }: Props) {
   });
 
   return (
-    <article className="relative min-h-screen isolate overflow-hidden bg-base text-cream">
-      <div className="relative z-10 max-w-[900px] lg:max-w-[1080px] mx-auto px-5 md:px-8 lg:px-12 pt-8 pb-16">
-        {/* Back home */}
+    <article className="relative isolate min-h-screen overflow-hidden bg-base text-cream">
+      <div className="relative z-10 mx-auto max-w-[900px] px-5 pb-16 pt-8 md:px-8 lg:max-w-[1080px] lg:px-12">
         <a
           href="/"
-          onClick={(e) => handleNavClick(e, '/')}
-          className="inline-flex items-center gap-2 kr-heading uppercase text-[11px] tracking-widest text-cream/65 hover:text-neon transition mb-6"
+          onClick={(event) => handleNavClick(event, '/')}
+          className="mb-6 inline-flex items-center gap-2 text-[11px] uppercase tracking-widest text-cream/65 transition hover:text-neon"
         >
           <ArrowLeft size={14} strokeWidth={2.4} />
           홈으로
         </a>
 
-        {/* Breadcrumb */}
         <nav
           aria-label="breadcrumb"
-          className="kr-num text-[11px] text-cream/55 mb-3 flex items-center gap-1.5 flex-wrap"
+          className="mb-3 flex flex-wrap items-center gap-1.5 text-[11px] text-cream/55"
         >
           <span style={{ color: accent }}>{label}</span>
           <ChevronRight size={12} className="text-cream/30" />
-          <span className="text-cream/85">출제범위 · 커리큘럼</span>
+          <span className="text-cream/85">시험범위 · 커리큘럼</span>
         </nav>
 
-        {/* H1 */}
-        <header className="mb-10 pb-8 border-b border-cream/10">
-          <h1 className="kr-heading text-[28px] md:text-[40px] lg:text-[48px] leading-[1.15] mb-3">
-            {label} 출제범위
+        <header className="mb-10 border-b border-cream/10 pb-8">
+          <h1 className="kr-heading mb-3 text-[28px] leading-[1.15] md:text-[40px] lg:text-[48px]">
+            {label} 시험범위
           </h1>
-          <p className="kr-body text-[15px] md:text-[16px] text-cream/75 leading-[1.65] mb-5 max-w-[680px]">
-            {tagline}
+          <p className="kr-body mb-5 max-w-[720px] text-[15px] leading-[1.65] text-cream/75 md:text-[16px]">
+            {seoDescription}
           </p>
-
-          {/* Stat strip */}
-          <div className="flex items-center gap-3 md:gap-4 flex-wrap">
-            <Stat label="챕터" value={curriculum.totalChapters} accent={accent} />
+          <div className="flex flex-wrap items-center gap-3 md:gap-4">
+            <Stat label="과목" value={curriculum.totalChapters} accent={accent} />
             <Stat label="토픽" value={curriculum.totalTopics} accent={accent} />
-            <Stat label="학습 스텝" value={curriculum.totalSteps} accent={accent} />
+            <Stat
+              label={curriculum.isExpansion ? '공개 토픽' : '학습 스텝'}
+              value={curriculum.isExpansion ? curriculum.availableTopics : curriculum.totalSteps}
+              accent={accent}
+            />
           </div>
         </header>
 
         <section className="mb-12 rounded-[18px] border border-cream/10 bg-white/[0.03] p-5 md:p-6">
-          <div className="kr-num mb-2 text-[10px] uppercase tracking-widest text-cream/50">
-            KDATA 공식 기준 요약
+          <div className="mb-2 text-[10px] uppercase tracking-widest text-cream/50">
+            공식 기준 요약
           </div>
           <h2 className="kr-heading mb-4 text-[18px] md:text-[22px]">
             {facts.exam} 시험 구조
           </h2>
           <dl className="grid gap-3 md:grid-cols-2">
             <Fact label="시행기관" value={facts.authority} accent={accent} />
-            <Fact label="문제 수" value={facts.questions} accent={accent} />
+            <Fact label="문항 / 시간" value={facts.questions} accent={accent} />
             <Fact label="합격 기준" value={facts.scoring} accent={accent} />
             <Fact label="시험 범위" value={facts.scope} accent={accent} />
           </dl>
@@ -220,33 +221,36 @@ export default function CurriculumPage({ subject }: Props) {
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
             <a
-              href={`/faq/${subject}`}
-              onClick={(e) => handleNavClick(e, `/faq/${subject}`)}
-              className="kr-heading inline-flex items-center gap-2 rounded-full border border-cream/18 px-4 py-2.5 text-[11px] uppercase tracking-widest text-cream/72 transition hover:border-neon/40 hover:text-neon"
+              href={faqHref(subject)}
+              onClick={(event) => handleNavClick(event, faqHref(subject))}
+              className="inline-flex items-center gap-2 rounded-full border border-cream/18 px-4 py-2.5 text-[11px] uppercase tracking-widest text-cream/72 transition hover:border-neon/40 hover:text-neon"
             >
-              문제 수 · 기출문제 · 공부법 FAQ
+              FAQ 보기
               <ChevronRight size={13} strokeWidth={2.5} />
             </a>
             <a
               href={facts.officialUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="kr-heading inline-flex items-center gap-2 rounded-full border border-cream/18 px-4 py-2.5 text-[11px] uppercase tracking-widest text-cream/72 transition hover:border-neon/40 hover:text-neon"
+              className="inline-flex items-center gap-2 rounded-full border border-cream/18 px-4 py-2.5 text-[11px] uppercase tracking-widest text-cream/72 transition hover:border-neon/40 hover:text-neon"
             >
-              KDATA 공식 안내
+              공식 안내
               <ChevronRight size={13} strokeWidth={2.5} />
             </a>
           </div>
         </section>
 
-        {/* Chapters */}
         <div className="space-y-12">
-          {curriculum.chapters.map((ch) => (
-            <ChapterSection key={ch.chapter} chapter={ch} accent={accent} />
+          {curriculum.chapters.map((chapter) => (
+            <ChapterSection
+              key={`${subject}-${chapter.chapter}`}
+              chapter={chapter}
+              accent={accent}
+              isExpansion={curriculum.isExpansion}
+            />
           ))}
         </div>
 
-        {/* CTA */}
         <section
           className="mt-14 rounded-[20px] p-6 md:p-8"
           style={{
@@ -254,49 +258,49 @@ export default function CurriculumPage({ subject }: Props) {
             border: `1px solid ${accent}40`,
           }}
         >
-          <h2 className="kr-heading text-[18px] md:text-[20px] mb-2 inline-flex items-center gap-2">
+          <h2 className="kr-heading mb-2 inline-flex items-center gap-2 text-[18px] md:text-[20px]">
             <Sparkles size={18} style={{ color: accent }} />
-            토리·셀리와 함께 풀어보기
+            로드맵에서 바로 학습하기
           </h2>
-          <p className="kr-body text-[13px] md:text-[14px] text-cream/75 leading-[1.65] mb-5">
-            QuestDP 의 우주 탐험 RPG 화면에서 이 커리큘럼을 게임처럼 학습. 정답·해설·약점 분석까지 한 화면에서.
+          <p className="kr-body mb-5 text-[13px] leading-[1.65] text-cream/75 md:text-[14px]">
+            QuestDP의 우주 탐험 화면에서 커리큘럼을 게임처럼 따라가며 개념 카드, 즉시 문제풀이,
+            약점 복습을 한 흐름으로 이어갈 수 있습니다.
           </p>
           <div className="flex flex-wrap gap-3">
             <a
-              href="#/game"
-              onClick={(e) => handleNavClick(e, '#/game')}
-              className="kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full active:scale-95 transition"
+              href={gameHref(subject)}
+              onClick={(event) => handleNavClick(event, gameHref(subject))}
+              className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-[12px] uppercase tracking-widest text-[#010828] transition active:scale-95 md:text-[13px]"
               style={{
                 background: '#FD802E',
-                color: '#010828',
                 boxShadow: '0 8px 22px -6px rgba(253,128,46,0.55)',
               }}
             >
               지금 학습하기
               <ChevronRight size={14} strokeWidth={2.6} />
             </a>
-            <a
-              href={subject === 'adsp' ? '/curriculum/sqld' : '/curriculum/adsp'}
-              onClick={(e) =>
-                handleNavClick(e, subject === 'adsp' ? '/curriculum/sqld' : '/curriculum/adsp')
-              }
-              className="kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full border border-cream/20 hover:border-neon/40 hover:text-neon transition"
-            >
-              {subject === 'adsp' ? 'SQLD 출제범위' : 'ADsP 출제범위'}
-              <ChevronRight size={14} strokeWidth={2.6} />
-            </a>
+            {alternateLinks(subject).map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                onClick={(event) => handleNavClick(event, link.href)}
+                className="inline-flex items-center gap-2 rounded-full border border-cream/20 px-5 py-3 text-[12px] uppercase tracking-widest transition hover:border-neon/40 hover:text-neon md:text-[13px]"
+              >
+                {link.label}
+                <ChevronRight size={14} strokeWidth={2.6} />
+              </a>
+            ))}
           </div>
         </section>
 
-        {/* Footer */}
-        <div className="mt-12 pt-6 border-t border-cream/10 text-center">
-          <p className="kr-body text-[12px] text-cream/50 mb-3">
-            QuestDP — 한국 ADsP·SQLD 자격증을 우주 탐험 RPG 로 재구성
+        <div className="mt-12 border-t border-cream/10 pt-6 text-center">
+          <p className="kr-body mb-3 text-[12px] text-cream/50">
+            QuestDP — ADsP·SQLD·컴활 자격증을 우주 탐험 RPG로 재구성
           </p>
           <a
             href="/about"
-            onClick={(e) => handleNavClick(e, '/about')}
-            className="kr-heading uppercase tracking-widest text-[11px] text-cream/65 hover:text-neon transition"
+            onClick={(event) => handleNavClick(event, '/about')}
+            className="text-[11px] uppercase tracking-widest text-cream/65 transition hover:text-neon"
           >
             QuestDP 소개 →
           </a>
@@ -306,15 +310,13 @@ export default function CurriculumPage({ subject }: Props) {
   );
 }
 
-// ─── 보조 컴포넌트 ────────────────────────────────────────────
-
 function Stat({ label, value, accent }: { label: string; value: number; accent: string }) {
   return (
     <div
-      className="rounded-[12px] px-4 py-2.5 border"
+      className="rounded-[12px] border px-4 py-2.5"
       style={{ borderColor: `${accent}40`, background: 'rgba(255,255,255,0.03)' }}
     >
-      <div className="kr-num text-[10px] uppercase tracking-widest text-cream/55 mb-0.5">
+      <div className="mb-0.5 text-[10px] uppercase tracking-widest text-cream/55">
         {label}
       </div>
       <div className="kr-heading text-[20px] md:text-[22px]" style={{ color: accent }}>
@@ -327,7 +329,7 @@ function Stat({ label, value, accent }: { label: string; value: number; accent: 
 function Fact({ label, value, accent }: { label: string; value: string; accent: string }) {
   return (
     <div className="rounded-[12px] border border-cream/8 bg-white/[0.025] px-4 py-3">
-      <dt className="kr-num mb-1 text-[10px] uppercase tracking-widest text-cream/45">
+      <dt className="mb-1 text-[10px] uppercase tracking-widest text-cream/45">
         {label}
       </dt>
       <dd className="kr-body m-0 text-[13.5px] leading-[1.55] text-cream/84">
@@ -340,46 +342,67 @@ function Fact({ label, value, accent }: { label: string; value: string; accent: 
 function ChapterSection({
   chapter,
   accent,
+  isExpansion,
 }: {
   chapter: SubjectCurriculum['chapters'][number];
   accent: string;
+  isExpansion: boolean;
 }) {
   return (
     <section>
       <header className="mb-5">
-        <div className="kr-num text-[10px] uppercase tracking-widest text-cream/50 mb-1">
-          Chapter {chapter.chapter}
+        <div className="mb-1 text-[10px] uppercase tracking-widest text-cream/50">
+          Subject {chapter.chapter}
         </div>
-        <h2 className="kr-heading text-[22px] md:text-[28px] leading-[1.25] mb-1.5">
+        <h2 className="kr-heading mb-1.5 text-[22px] leading-[1.25] md:text-[28px]">
           {chapter.title}
         </h2>
-        <div className="kr-num text-[11px] text-cream/55 inline-flex items-center gap-3">
+        {chapter.subtitle ? (
+          <p className="kr-body mb-2 text-[13px] text-cream/58">{chapter.subtitle}</p>
+        ) : null}
+        <div className="inline-flex items-center gap-3 text-[11px] text-cream/55">
           <span className="inline-flex items-center gap-1">
             <BookOpen size={11} strokeWidth={2.4} />
-            토픽 {chapter.topics.length}개
+            토픽 {chapter.totalTopics}개
           </span>
           <span className="inline-flex items-center gap-1">
             <Layers size={11} strokeWidth={2.4} />
-            학습 스텝 {chapter.totalSteps}개
+            {isExpansion ? `공개 ${chapter.availableTopics}개` : `학습 스텝 ${chapter.totalSteps}개`}
           </span>
         </div>
       </header>
 
-      <div className="space-y-6">
+      <div className="space-y-4">
         {chapter.topics.map((topic) => (
-          <TopicGroup key={topic.topic} topic={topic} accent={accent} />
+          <TopicGroup
+            key={`${chapter.chapter}-${topic.topicId ?? topic.topic}`}
+            topic={topic}
+            accent={accent}
+            isExpansion={isExpansion}
+          />
         ))}
       </div>
     </section>
   );
 }
 
-function TopicGroup({ topic, accent }: { topic: CurriculumTopic; accent: string }) {
-  // lesson 이 비어 있으면 placeholder
+function TopicGroup({
+  topic,
+  accent,
+  isExpansion,
+}: {
+  topic: CurriculumTopic;
+  accent: string;
+  isExpansion: boolean;
+}) {
+  if (isExpansion) {
+    return <ExpansionTopic topic={topic} accent={accent} />;
+  }
+
   if (topic.lessons.length === 0) {
     return (
-      <div className="rounded-[14px] p-4 md:p-5 border border-cream/10 bg-white/[0.02]">
-        <h3 className="kr-heading text-[15px] md:text-[16px] mb-1" style={{ color: accent }}>
+      <div className="rounded-[14px] border border-cream/10 bg-white/[0.02] p-4 md:p-5">
+        <h3 className="kr-heading mb-1 text-[15px] md:text-[16px]" style={{ color: accent }}>
           {topic.topic}
         </h3>
         <p className="kr-body text-[12.5px] text-cream/55">학습 콘텐츠 준비 중</p>
@@ -387,48 +410,143 @@ function TopicGroup({ topic, accent }: { topic: CurriculumTopic; accent: string 
     );
   }
 
-  // step 카운트 합계
-  const totalSteps = topic.lessons.reduce((sum, l) => sum + l.steps.length, 0);
+  const totalSteps = topic.lessons.reduce((sum, lesson) => sum + lesson.steps.length, 0);
 
   return (
-    <div className="rounded-[14px] p-4 md:p-5 border border-cream/10 bg-white/[0.02]">
+    <div className="rounded-[14px] border border-cream/10 bg-white/[0.02] p-4 md:p-5">
       <header className="mb-3">
-        <h3 className="kr-heading text-[15px] md:text-[17px] mb-0.5" style={{ color: accent }}>
+        <h3 className="kr-heading mb-0.5 text-[15px] md:text-[17px]" style={{ color: accent }}>
           {topic.topic}
         </h3>
-        <div className="kr-num text-[10px] uppercase tracking-widest text-cream/50">
+        <div className="text-[10px] uppercase tracking-widest text-cream/50">
           Step {totalSteps}개
         </div>
       </header>
 
-      <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 list-none m-0 p-0">
-        {topic.lessons.flatMap((tl) =>
-          tl.steps.map(({ step, indexInChapter }) => {
-            const href = `/lesson/${step.id}`;
-            return (
-              <li key={step.id}>
-                <a
-                  href={href}
-                  onClick={(e) => handleNavClick(e, href)}
-                  className="block rounded-[10px] px-3 py-2.5 border border-cream/8 hover:border-neon/40 hover:bg-white/[0.04] transition"
-                >
-                  <div className="flex items-baseline gap-2">
-                    <span
-                      className="kr-num text-[10px] tabular-nums shrink-0"
-                      style={{ color: accent }}
-                    >
-                      {String(indexInChapter + 1).padStart(2, '0')}
-                    </span>
-                    <span className="kr-body text-[13px] md:text-[13.5px] text-cream/85 leading-[1.4]">
-                      {step.title}
-                    </span>
-                  </div>
-                </a>
-              </li>
-            );
-          }),
+      <ul className="m-0 grid list-none grid-cols-1 gap-2 p-0 md:grid-cols-2">
+        {topic.lessons.flatMap((lesson) =>
+          lesson.steps.map((step) => (
+            <li key={step.id}>
+              <a
+                href={step.href}
+                onClick={(event) => handleNavClick(event, step.href)}
+                className="block rounded-[10px] border border-cream/8 px-3 py-2.5 transition hover:border-neon/40 hover:bg-white/[0.04]"
+              >
+                <div className="flex items-baseline gap-2">
+                  <span className="shrink-0 tabular-nums text-[10px]" style={{ color: accent }}>
+                    {String(step.indexInChapter + 1).padStart(2, '0')}
+                  </span>
+                  <span className="kr-body text-[13px] leading-[1.4] text-cream/85 md:text-[13.5px]">
+                    {step.title}
+                  </span>
+                </div>
+              </a>
+            </li>
+          )),
         )}
       </ul>
     </div>
   );
+}
+
+function ExpansionTopic({ topic, accent }: { topic: CurriculumTopic; accent: string }) {
+  const previewSteps = topic.lessons.flatMap((lesson) => lesson.steps).slice(0, 3);
+
+  return (
+    <div className="rounded-[14px] border border-cream/10 bg-white/[0.02] p-4 md:p-5">
+      <header className="mb-3 flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+        <div>
+          <div className="mb-1 text-[10px] uppercase tracking-widest text-cream/45">
+            {topic.topicId} · {topic.sectionTitle}
+          </div>
+          <h3 className="kr-heading text-[15px] md:text-[17px]" style={{ color: accent }}>
+            {topic.topic}
+          </h3>
+        </div>
+        <span
+          className="w-fit rounded-full border px-3 py-1 text-[10px] uppercase tracking-widest"
+          style={{ borderColor: `${accent}55`, color: topic.available ? accent : 'rgba(239,244,255,0.52)' }}
+        >
+          {topic.available ? `카드 ${topic.totalCards}개` : '로드맵 수록'}
+        </span>
+      </header>
+
+      {topic.available && topic.href ? (
+        <>
+          <ul className="mb-4 m-0 list-none space-y-1.5 p-0">
+            {previewSteps.map((step) => (
+              <li key={step.id} className="kr-body text-[12.5px] leading-[1.55] text-cream/68">
+                {step.title}
+              </li>
+            ))}
+          </ul>
+          <a
+            href={topic.href}
+            onClick={(event) => handleNavClick(event, topic.href!)}
+            className="inline-flex items-center gap-2 rounded-full border border-cream/18 px-4 py-2.5 text-[11px] uppercase tracking-widest text-cream/74 transition hover:border-neon/40 hover:text-neon"
+          >
+            개념 카드 보기
+            <ChevronRight size={13} strokeWidth={2.5} />
+          </a>
+        </>
+      ) : (
+        <p className="kr-body text-[12.5px] leading-[1.6] text-cream/55">
+          전체 시험범위에는 포함되어 있으며, 개별 색인 페이지는 실제 학습 카드가 준비되는 순서대로 엽니다.
+        </p>
+      )}
+    </div>
+  );
+}
+
+function absoluteUrl(href: string): string {
+  if (href.startsWith('http')) return href;
+  const clean = href.endsWith('/') ? href : `${href}/`;
+  return `https://quest-dp.com${clean}`;
+}
+
+function faqHref(subject: SeoCurriculumSubject): string {
+  return subject.startsWith('comhwal') ? '/faq/comhwal' : `/faq/${subject}`;
+}
+
+function gameHref(subject: SeoCurriculumSubject): string {
+  return subject.startsWith('comhwal') ? '#/game/comhwal' : `#/game/${subject}`;
+}
+
+function alternateLinks(subject: SeoCurriculumSubject): Array<{ href: string; label: string }> {
+  if (subject === 'comhwal') {
+    return [
+      { href: '/curriculum/comhwal-1', label: '컴활 1급 범위' },
+      { href: '/curriculum/comhwal-2', label: '컴활 2급 범위' },
+    ];
+  }
+  if (subject === 'comhwal-1' || subject === 'comhwal-2') {
+    return [
+      { href: '/curriculum/comhwal', label: '컴활 전체 범위' },
+      { href: subject === 'comhwal-1' ? '/curriculum/comhwal-2' : '/curriculum/comhwal-1', label: subject === 'comhwal-1' ? '컴활 2급 범위' : '컴활 1급 범위' },
+    ];
+  }
+  return [
+    { href: subject === 'adsp' ? '/curriculum/sqld' : '/curriculum/adsp', label: subject === 'adsp' ? 'SQLD 범위' : 'ADsP 범위' },
+    { href: '/curriculum/comhwal', label: '컴활 범위' },
+  ];
+}
+
+function keywordText(subject: SeoCurriculumSubject): string {
+  if (subject === 'adsp') {
+    return 'ADsP 학습사이트, ADSP 학습사이트, ADsP 시험범위, ADsP 기출문제, 데이터분석준전문가';
+  }
+  if (subject === 'sqld') {
+    return 'SQLD 학습사이트, SQLD 시험범위, SQL 개발자, SQLD 기출문제, 데이터 모델링, SQL 기본';
+  }
+  return '컴활 학습사이트, 컴퓨터활용능력 필기, 컴활 1급 필기, 컴활 2급 필기, 컴활 컴퓨터 일반, 대한상공회의소 컴활';
+}
+
+function aboutTerms(subject: SeoCurriculumSubject): string[] {
+  if (subject === 'adsp') {
+    return ['ADsP', '데이터분석준전문가', '데이터 이해', '분석 기획', '데이터 분석'];
+  }
+  if (subject === 'sqld') {
+    return ['SQLD', 'SQL 개발자', '데이터 모델링', 'SQL 기본', 'SQL 활용'];
+  }
+  return ['컴퓨터활용능력', '컴활 필기', '컴퓨터 일반', '스프레드시트 일반', '데이터베이스 일반'];
 }

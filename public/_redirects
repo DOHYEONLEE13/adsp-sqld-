@@ -36,9 +36,18 @@
 /curriculum/adsp/    /curriculum/adsp/index.html     200
 /curriculum/sqld     /curriculum/sqld/index.html     200
 /curriculum/sqld/    /curriculum/sqld/index.html     200
+/curriculum/comhwal     /curriculum/comhwal/index.html     200
+/curriculum/comhwal/    /curriculum/comhwal/index.html     200
+/curriculum/comhwal-1   /curriculum/comhwal-1/index.html   200
+/curriculum/comhwal-1/  /curriculum/comhwal-1/index.html   200
+/curriculum/comhwal-2   /curriculum/comhwal-2/index.html   200
+/curriculum/comhwal-2/  /curriculum/comhwal-2/index.html   200
 /faq/adsp            /faq/adsp/index.html            200
 /faq/adsp/           /faq/adsp/index.html            200
 /faq/sqld            /faq/sqld/index.html            200
 /faq/sqld/           /faq/sqld/index.html            200
+/faq/comhwal         /faq/comhwal/index.html         200
+/faq/comhwal/        /faq/comhwal/index.html         200
+/topics/comhwal/computer-general/*  /topics/comhwal/computer-general/:splat/index.html  200
 
 /*    /index.html   200

@@ -16,9 +16,9 @@ import { handleNavClick } from '@/lib/navigate';
 
 export default function BlogIndexPage() {
   const canonical = 'https://quest-dp.com/blog/';
-  const seoTitle = 'QuestDP 블로그 — ADsP·SQLD 학습 가이드';
+  const seoTitle = 'QuestDP 블로그 — ADsP·SQLD·컴활 학습 가이드';
   const seoDescription =
-    `ADsP vs SQLD 우선순위, 2주 합격 로드맵, SQLD 노랭이 vs QuestDP, 비전공자 가이드까지 — 한국 데이터 자격증 합격에 필요한 코너스톤 콘텐츠 ${ALL_BLOG_POSTS.length}편.`;
+    `ADsP vs SQLD 우선순위, 컴활 1급 vs 2급, 비전공자 공부법, 압축 로드맵까지 — 한국 자격증 합격에 필요한 코너스톤 콘텐츠 ${ALL_BLOG_POSTS.length}편.`;
 
   // JSON-LD Blog
   const blogJsonLd = {
@@ -84,7 +84,7 @@ export default function BlogIndexPage() {
             QuestDP 블로그
           </h1>
           <p className="kr-body text-[14.5px] md:text-[15.5px] text-cream/75 leading-[1.65] max-w-[680px]">
-            ADsP·SQLD 자격증 합격에 필요한 핵심 가이드 모음. 비교·로드맵·가이드 카테고리별로
+            ADsP·SQLD·컴활 자격증 합격에 필요한 핵심 가이드 모음. 비교·로드맵·가이드 카테고리별로
             정리된 코너스톤 콘텐츠 {ALL_BLOG_POSTS.length}편.
           </p>
         </header>
@@ -178,7 +178,7 @@ export default function BlogIndexPage() {
 
         <div className="mt-12 pt-6 border-t border-cream/10 text-center">
           <p className="kr-body text-[12px] text-cream/50 mb-3">
-            QuestDP — 한국 ADsP·SQLD 자격증을 우주 탐험 RPG 로 재구성
+            QuestDP — 한국 ADsP·SQLD·컴활 자격증을 우주 탐험 RPG 로 재구성
           </p>
           <a
             href="/about"

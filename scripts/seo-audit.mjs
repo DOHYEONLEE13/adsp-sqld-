@@ -13,6 +13,7 @@ const REQUIRED_SITEMAPS = [
   'sitemap-core.xml',
   'sitemap-blog.xml',
   'sitemap-lessons.xml',
+  'sitemap-topics.xml',
 ];
 
 const manifest = getSeoRouteManifest();

@@ -224,7 +224,7 @@ export default function BlogPostPage({ slug }: Props) {
         {/* Footer mini-CTA */}
         <div className="mt-12 pt-6 border-t border-cream/10 text-center">
           <p className="kr-body text-[12px] text-cream/50 mb-3">
-            QuestDP — 한국 ADsP·SQLD 자격증을 우주 탐험 RPG 로 재구성
+            QuestDP — 한국 ADsP·SQLD·컴활 자격증을 우주 탐험 RPG 로 재구성
           </p>
           <a
             href="/about"

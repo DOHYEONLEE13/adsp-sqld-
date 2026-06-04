@@ -35,6 +35,11 @@ const groups = [
     label: 'lessons',
     routes: manifest.lessons,
   },
+  {
+    file: 'sitemap-topics.xml',
+    label: 'topics',
+    routes: manifest.topics,
+  },
 ];
 
 for (const group of groups) {
@@ -45,7 +50,7 @@ writeXml('sitemap.xml', buildSitemapIndex(groups));
 const total = groups.reduce((sum, group) => sum + group.routes.length, 0);
 console.log(
   `sitemap generated: total ${total} URLs ` +
-    `(core ${groups[0].routes.length}, blog ${groups[1].routes.length}, lessons ${groups[2].routes.length}, quiz 0)`,
+    `(core ${groups[0].routes.length}, blog ${groups[1].routes.length}, lessons ${groups[2].routes.length}, topics ${groups[3].routes.length}, quiz 0)`,
 );
 
 function writeXml(fileName, xml) {

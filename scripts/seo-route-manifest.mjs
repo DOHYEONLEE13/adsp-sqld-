@@ -10,10 +10,12 @@ const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 const LESSONS_ROOT = path.join(REPO_ROOT, 'src/data/lessons');
 const BLOG_FILE = path.join(REPO_ROOT, 'src/data/seo/blog.ts');
+const COMHWAL_CONCEPT_FILE = path.join(REPO_ROOT, 'src/data/comhwal/concepts.ts');
 
 const SUBJECT_LABEL = {
   adsp: 'ADsP 데이터분석 준전문가',
   sqld: 'SQLD SQL 개발자',
+  comhwal: '컴퓨터활용능력 필기',
 };
 
 const STUDY_METHOD_IMAGES = [
@@ -70,18 +72,19 @@ const CORE_ROUTES = [
     path: '/',
     changefreq: 'weekly',
     priority: '1.0',
-    title: 'QuestDP — ADsP·SQLD 자격증 학습사이트 | 게임형 문제풀이',
+    title: 'QuestDP — ADsP·SQLD·컴활 자격증 학습사이트 | 게임형 문제풀이',
     description:
-      'QuestDP는 ADsP·SQLD 자격증을 게임처럼 공부하는 학습사이트입니다. 로드맵과 퀘스트를 따라 개념을 익히고, 문제풀이와 약점 복습으로 시험을 준비하세요.',
+      'QuestDP는 ADsP·SQLD·컴활 자격증을 게임처럼 공부하는 학습사이트입니다. 로드맵과 퀘스트를 따라 개념을 익히고, 문제풀이와 약점 복습으로 시험을 준비하세요.',
     h1: 'QuestDP',
-    eyebrow: 'ADsP · SQLD 게임형 학습',
+    eyebrow: 'ADsP · SQLD · 컴활 게임형 학습',
     summary:
-      'ADsP와 SQLD 시험 범위를 짧은 개념 스텝과 즉시 문제 풀이로 나누어 학습합니다. 로드맵, 약점 분석, 망각곡선 복습을 한 화면에서 이어갈 수 있습니다.',
+      'ADsP, SQLD, 컴활 시험 범위를 짧은 개념 스텝과 즉시 문제 풀이로 나누어 학습합니다. 로드맵, 약점 분석, 망각곡선 복습을 한 화면에서 이어갈 수 있습니다.',
     image: `${SITE_ORIGIN}/og/questdp-home.png`,
     links: [
       { href: '/study-method', label: '학습 원리 보기' },
       { href: '/curriculum/adsp', label: 'ADsP 커리큘럼' },
       { href: '/curriculum/sqld', label: 'SQLD 커리큘럼' },
+      { href: '/curriculum/comhwal', label: '컴활 커리큘럼' },
       { href: '/blog', label: '공부법 블로그' },
     ],
   },
@@ -90,10 +93,10 @@ const CORE_ROUTES = [
     path: '/study-method',
     changefreq: 'monthly',
     priority: '0.9',
-    title: 'ADsP·SQLD 공부법 — 게임처럼 반복하는 QuestDP 학습법',
+    title: 'ADsP·SQLD·컴활 공부법 — 게임처럼 반복하는 QuestDP 학습법',
     description:
-      'ADsP와 SQLD를 개념 스텝, 즉시 문제풀이, 약점 점수, 망각곡선 복습으로 공부하는 QuestDP의 학습 구조를 정리했습니다.',
-    h1: 'ADsP·SQLD 공부법',
+      'ADsP와 SQLD, 컴활을 개념 스텝, 즉시 문제풀이, 약점 점수, 망각곡선 복습으로 공부하는 QuestDP의 학습 구조를 정리했습니다.',
+    h1: 'ADsP·SQLD·컴활 공부법',
     eyebrow: 'Study Method',
     summary:
       '처음 보는 개념은 작은 단위로 나누고, 바로 문제를 풀고, 틀린 지점은 약점 노드와 복습 큐로 다시 만납니다. QuestDP는 시험 범위를 읽는 공부에서 끝내지 않고 행동하는 공부로 바꿉니다.',
@@ -103,8 +106,10 @@ const CORE_ROUTES = [
     links: [
       { href: '/curriculum/adsp', label: 'ADsP 시험 범위' },
       { href: '/curriculum/sqld', label: 'SQLD 시험 범위' },
+      { href: '/curriculum/comhwal', label: '컴활 시험 범위' },
       { href: '/faq/adsp', label: 'ADsP FAQ' },
       { href: '/faq/sqld', label: 'SQLD FAQ' },
+      { href: '/faq/comhwal', label: '컴활 FAQ' },
     ],
   },
   {
@@ -145,6 +150,63 @@ const CORE_ROUTES = [
   },
   {
     group: 'core',
+    path: '/curriculum/comhwal',
+    changefreq: 'weekly',
+    priority: '0.9',
+    title: '컴활 학습사이트 · 컴퓨터활용능력 1급·2급 필기 커리큘럼 — QuestDP',
+    description:
+      '대한상공회의소 컴퓨터활용능력 필기 시험범위, 컴활 1급·2급 차이, 컴퓨터 일반·스프레드시트·데이터베이스 로드맵을 정리했습니다.',
+    h1: '컴활 커리큘럼',
+    eyebrow: '대한상공회의소 컴퓨터활용능력',
+    summary:
+      '컴활 1급과 2급 필기 범위를 함께 보여주되, 개별 색인은 실제 카드가 준비된 컴퓨터 일반 001~059 토픽부터 엽니다. 준비 중인 범위는 얇은 페이지로 만들지 않습니다.',
+    links: [
+      { href: '/curriculum/comhwal-1', label: '컴활 1급 필기 범위' },
+      { href: '/curriculum/comhwal-2', label: '컴활 2급 필기 범위' },
+      { href: '/faq/comhwal', label: '컴활 자주 묻는 질문' },
+      { href: '/topics/comhwal/computer-general/001', label: '컴퓨터 일반 001 보기' },
+    ],
+  },
+  {
+    group: 'core',
+    path: '/curriculum/comhwal-1',
+    changefreq: 'weekly',
+    priority: '0.85',
+    title: '컴활 1급 필기 학습사이트 · 시험범위 커리큘럼 — QuestDP',
+    description:
+      '컴활 1급 필기 3과목인 컴퓨터 일반, 스프레드시트 일반, 데이터베이스 일반을 토픽별 로드맵으로 정리했습니다.',
+    h1: '컴활 1급 필기 커리큘럼',
+    eyebrow: '컴퓨터활용능력 1급',
+    summary:
+      '컴활 1급 필기는 60문항 60분, 컴퓨터 일반·스프레드시트 일반·데이터베이스 일반 3과목입니다. QuestDP는 먼저 컴퓨터 일반 실콘텐츠를 공개하고 나머지 과목은 로드맵으로 안내합니다.',
+    links: [
+      { href: '/curriculum/comhwal', label: '컴활 전체 범위' },
+      { href: '/curriculum/comhwal-2', label: '컴활 2급 범위' },
+      { href: '/faq/comhwal', label: '컴활 FAQ' },
+      { href: '/blog/comhwal-1급-vs-2급', label: '컴활 1급 vs 2급' },
+    ],
+  },
+  {
+    group: 'core',
+    path: '/curriculum/comhwal-2',
+    changefreq: 'weekly',
+    priority: '0.85',
+    title: '컴활 2급 필기 학습사이트 · 시험범위 커리큘럼 — QuestDP',
+    description:
+      '컴활 2급 필기 2과목인 컴퓨터 일반과 스프레드시트 일반을 초보자 기준 토픽 로드맵으로 정리했습니다.',
+    h1: '컴활 2급 필기 커리큘럼',
+    eyebrow: '컴퓨터활용능력 2급',
+    summary:
+      '컴활 2급 필기는 40문항 40분, 컴퓨터 일반과 스프레드시트 일반 2과목입니다. 컴퓨터 일반 공통 토픽부터 짧은 카드와 체크포인트 문제로 학습할 수 있습니다.',
+    links: [
+      { href: '/curriculum/comhwal', label: '컴활 전체 범위' },
+      { href: '/curriculum/comhwal-1', label: '컴활 1급 범위' },
+      { href: '/faq/comhwal', label: '컴활 FAQ' },
+      { href: '/blog/comhwal-필기-비전공자-공부법', label: '컴활 비전공자 공부법' },
+    ],
+  },
+  {
+    group: 'core',
     path: '/faq/adsp',
     changefreq: 'monthly',
     priority: '0.8',
@@ -179,19 +241,38 @@ const CORE_ROUTES = [
   },
   {
     group: 'core',
+    path: '/faq/comhwal',
+    changefreq: 'monthly',
+    priority: '0.8',
+    title: '컴활 학습사이트 FAQ — 1급·2급 필기 시험범위·문항 수·공부법',
+    description:
+      '컴활 1급·2급 필기 차이, 컴퓨터활용능력 문항 수와 시험 시간, 합격 기준, 비전공자 공부법에 대한 QuestDP FAQ입니다.',
+    h1: '컴활 FAQ',
+    eyebrow: '컴퓨터활용능력 질문 모음',
+    summary:
+      '컴활을 처음 준비하는 사람이 자주 묻는 1급·2급 차이, 필기 문항 수, 합격 기준, 컴퓨터 일반 우선순위를 한 번에 확인할 수 있습니다.',
+    links: [
+      { href: '/curriculum/comhwal', label: '컴활 커리큘럼' },
+      { href: '/blog/comhwal-1급-vs-2급', label: '컴활 1급 vs 2급' },
+      { href: '/blog/comhwal-필기-비전공자-공부법', label: '컴활 비전공자 공부법' },
+    ],
+  },
+  {
+    group: 'core',
     path: '/glossary',
     changefreq: 'monthly',
     priority: '0.8',
-    title: 'ADsP·SQLD 용어 사전 — QuestDP',
+    title: 'ADsP·SQLD·컴활 용어 사전 — QuestDP',
     description:
-      'ADsP와 SQLD 시험에 자주 등장하는 데이터 분석, SQL, 모델링 용어를 초보자 기준으로 정리한 QuestDP 용어 사전입니다.',
-    h1: 'ADsP·SQLD 용어 사전',
+      'ADsP, SQLD, 컴활 시험에 자주 등장하는 데이터 분석, SQL, 모델링, 컴퓨터 일반 용어를 초보자 기준으로 정리한 QuestDP 용어 사전입니다.',
+    h1: 'ADsP·SQLD·컴활 용어 사전',
     eyebrow: 'Glossary',
     summary:
       '시험 문제를 읽을 때 막히기 쉬운 개념어를 짧은 설명과 함께 정리합니다. 커리큘럼과 블로그에서 다시 연결되는 보조 학습 페이지입니다.',
     links: [
       { href: '/curriculum/adsp', label: 'ADsP 개념 보기' },
       { href: '/curriculum/sqld', label: 'SQLD 개념 보기' },
+      { href: '/curriculum/comhwal', label: '컴활 개념 보기' },
     ],
   },
   {
@@ -199,10 +280,10 @@ const CORE_ROUTES = [
     path: '/blog',
     changefreq: 'weekly',
     priority: '0.85',
-    title: 'ADsP·SQLD 공부법 블로그 — QuestDP',
+    title: 'ADsP·SQLD·컴활 공부법 블로그 — QuestDP',
     description:
-      'ADsP 공부법, SQLD 공부법, 비전공자 학습 순서, 기출문제 복습 전략을 정리한 QuestDP 블로그입니다.',
-    h1: 'ADsP·SQLD 공부법 블로그',
+      'ADsP 공부법, SQLD 공부법, 컴활 필기 공부법, 비전공자 학습 순서와 복습 전략을 정리한 QuestDP 블로그입니다.',
+    h1: 'ADsP·SQLD·컴활 공부법 블로그',
     eyebrow: 'Blog',
     summary:
       '시험 범위 정리, 독학 로드맵, 기출 복습 순서처럼 검색자가 실제로 궁금해하는 주제를 QuestDP 관점으로 정리합니다.',
@@ -211,6 +292,7 @@ const CORE_ROUTES = [
       { href: '/study-method', label: '학습 원리' },
       { href: '/curriculum/adsp', label: 'ADsP 커리큘럼' },
       { href: '/curriculum/sqld', label: 'SQLD 커리큘럼' },
+      { href: '/curriculum/comhwal', label: '컴활 커리큘럼' },
     ],
   },
   {
@@ -218,9 +300,9 @@ const CORE_ROUTES = [
     path: '/pricing',
     changefreq: 'monthly',
     priority: '0.9',
-    title: 'QuestDP 요금제 — ADsP·SQLD 게임형 학습사이트',
+    title: 'QuestDP 요금제 — ADsP·SQLD·컴활 게임형 학습사이트',
     description:
-      'ADsP·SQLD 게임형 학습사이트 QuestDP의 무료 플랜, 오픈 베타 쿠폰, 프리미엄 이용 안내를 확인하세요.',
+      'ADsP·SQLD·컴활 게임형 학습사이트 QuestDP의 무료 플랜, 오픈 베타 쿠폰, 프리미엄 이용 안내를 확인하세요.',
     h1: 'QuestDP 요금제',
     eyebrow: 'Pricing',
     summary:
@@ -237,7 +319,7 @@ const CORE_ROUTES = [
     priority: '0.5',
     title: '고객문의 — QuestDP',
     description:
-      'QuestDP 고객문의 페이지. 결제·환불, 계정·로그인, ADsP·SQLD 학습 및 문제 오류를 이메일로 문의할 수 있습니다.',
+      'QuestDP 고객문의 페이지. 결제·환불, 계정·로그인, ADsP·SQLD·컴활 학습 및 문제 오류를 이메일로 문의할 수 있습니다.',
     h1: 'QuestDP 고객문의',
     eyebrow: 'Support',
     summary:
@@ -253,9 +335,9 @@ const CORE_ROUTES = [
     path: '/about',
     changefreq: 'monthly',
     priority: '0.8',
-    title: 'QuestDP 소개 — ADsP·SQLD 게임형 학습사이트',
+    title: 'QuestDP 소개 — ADsP·SQLD·컴활 게임형 학습사이트',
     description:
-      'QuestDP는 한국 ADsP·SQLD 자격증 학습을 우주 탐험 RPG와 마이크로 러닝 방식으로 재구성한 학습사이트입니다.',
+      'QuestDP는 한국 ADsP·SQLD·컴활 자격증 학습을 우주 탐험 RPG와 마이크로 러닝 방식으로 재구성한 학습사이트입니다.',
     h1: 'QuestDP 소개',
     eyebrow: 'About',
     summary:
@@ -312,10 +394,11 @@ export function getSeoRouteManifest() {
   const core = CORE_ROUTES.map(normalizeRoute);
   const blogPosts = collectBlogRoutes();
   const lessons = collectLessonRoutes();
-  const all = [...core, ...blogPosts, ...lessons];
+  const topics = collectComhwalTopicRoutes();
+  const all = [...core, ...blogPosts, ...lessons, ...topics];
   assertUniquePaths(all);
   assertNoQuizPaths(all);
-  return { core, blog: blogPosts, lessons, all };
+  return { core, blog: blogPosts, lessons, topics, all };
 }
 
 export function canonicalForPath(routePath) {
@@ -363,6 +446,7 @@ function collectBlogRoutes() {
           { href: '/study-method', label: 'QuestDP 공부법' },
           { href: '/curriculum/adsp', label: 'ADsP 커리큘럼' },
           { href: '/curriculum/sqld', label: 'SQLD 커리큘럼' },
+          { href: '/curriculum/comhwal', label: '컴활 커리큘럼' },
         ],
         jsonLd: [
           {
@@ -386,6 +470,127 @@ function collectBlogRoutes() {
       });
     })
     .filter(Boolean);
+}
+
+function collectComhwalTopicRoutes() {
+  if (!fs.existsSync(COMHWAL_CONCEPT_FILE)) return [];
+  const src = fs.readFileSync(COMHWAL_CONCEPT_FILE, 'utf8');
+  const topicChunks = extractTopLevelObjectsFromArrayAfterMarker(
+    src,
+    'const COMPUTER_GENERAL_TOPICS',
+  );
+  const topics = topicChunks
+    .map((chunk) => {
+      const id = readStringProp(chunk, 'id');
+      const section = readStringProp(chunk, 'section');
+      const title = readStringProp(chunk, 'title');
+      const cardsArray = extractArrayAfterProperty(chunk, 'cards');
+      const cards = cardsArray
+        ? extractTopLevelObjectLiterals(cardsArray)
+            .map((cardChunk) => ({
+              title: readStringProp(cardChunk, 'title'),
+              body: readStringProp(cardChunk, 'body'),
+              correct: readStringProp(cardChunk, 'correct'),
+              questionPrompt: readStringProp(cardChunk, 'questionPrompt'),
+              explanation: readStringProp(cardChunk, 'explanation'),
+            }))
+            .filter((card) => card.title && card.body)
+        : [];
+      if (!id || !title || cards.length === 0) return null;
+      return { id, section, title, cards };
+    })
+    .filter(Boolean);
+
+  return topics.map((topic, index) => {
+    const path = `/topics/comhwal/computer-general/${topic.id}`;
+    const summary = truncate(
+      `${topic.cards.slice(0, 2).map((card) => card.body).join(' ')} 컴활 필기 컴퓨터 일반 ${topic.id} ${topic.title}를 초보자용 개념 카드와 체크포인트 문제로 정리했습니다.`,
+      180,
+    );
+    const questions = topic.cards
+      .filter((card) => card.correct)
+      .slice(0, 5)
+      .map((card) => ({
+        '@type': 'Question',
+        name:
+          card.questionPrompt ||
+          `${topic.title}에서 방금 배운 핵심은 무엇인가요?`,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: card.correct,
+        },
+        text: card.explanation || card.body,
+      }));
+    const links = [
+      { href: '/curriculum/comhwal', label: '컴활 커리큘럼' },
+      { href: '/faq/comhwal', label: '컴활 FAQ' },
+      { href: '/blog/comhwal-컴퓨터-일반-우선순위', label: '컴퓨터 일반 우선순위' },
+    ];
+    if (topics[index - 1]) {
+      links.push({
+        href: `/topics/comhwal/computer-general/${topics[index - 1].id}`,
+        label: `이전 토픽 ${topics[index - 1].id}`,
+      });
+    }
+    if (topics[index + 1]) {
+      links.push({
+        href: `/topics/comhwal/computer-general/${topics[index + 1].id}`,
+        label: `다음 토픽 ${topics[index + 1].id}`,
+      });
+    }
+
+    return normalizeRoute({
+      group: 'topics',
+      path,
+      changefreq: 'monthly',
+      priority: '0.72',
+      title: `${topic.title} — 컴활 컴퓨터 일반 개념 카드 | QuestDP`,
+      description: summary,
+      h1: `${topic.title} — 컴활 컴퓨터 일반`,
+      eyebrow: `컴퓨터활용능력 필기 · 컴퓨터 일반 · ${topic.section || '컴퓨터 일반'} · ${topic.id}`,
+      summary,
+      type: 'article',
+      links,
+      jsonLd: [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'LearningResource',
+          name: `${topic.title} 컴활 개념 카드`,
+          description: summary,
+          url: canonicalForPath(path),
+          inLanguage: 'ko-KR',
+          learningResourceType: 'Concept overview',
+          teaches: [topic.title, '컴활 컴퓨터 일반', topic.section].filter(Boolean),
+          educationalLevel: '컴퓨터활용능력 필기',
+          provider: { '@type': 'Organization', name: 'QuestDP', url: SITE_ORIGIN },
+          isAccessibleForFree: true,
+          hasPart: topic.cards.slice(0, 12).map((card, cardIndex) => ({
+            '@type': 'CreativeWork',
+            position: cardIndex + 1,
+            name: card.title,
+            text: card.body,
+          })),
+        },
+        {
+          '@context': 'https://schema.org',
+          '@type': 'Quiz',
+          name: `${topic.title} 체크포인트 문제`,
+          about: topic.title,
+          inLanguage: 'ko-KR',
+          educationalLevel: '컴퓨터활용능력 필기',
+          assesses: `${topic.id} ${topic.title}`,
+          provider: { '@type': 'Organization', name: 'QuestDP', url: SITE_ORIGIN },
+          hasPart: questions,
+        },
+        breadcrumbJsonLd([
+          ['홈', '/'],
+          ['컴활 커리큘럼', '/curriculum/comhwal'],
+          ['컴퓨터 일반', '/curriculum/comhwal'],
+          [topic.title, path],
+        ]),
+      ],
+    });
+  });
 }
 
 function collectLessonRoutes() {
@@ -758,6 +963,7 @@ if (process.argv[1] === __filename) {
     core: manifest.core.length,
     blog: manifest.blog.length,
     lessons: manifest.lessons.length,
+    topics: manifest.topics.length,
     total: manifest.all.length,
   }, null, 2));
 }

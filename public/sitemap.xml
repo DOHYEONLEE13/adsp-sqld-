@@ -9,4 +9,7 @@
   <sitemap>
     <loc>https://quest-dp.com/sitemap-lessons.xml</loc>
   </sitemap>
+  <sitemap>
+    <loc>https://quest-dp.com/sitemap-topics.xml</loc>
+  </sitemap>
 </sitemapindex>

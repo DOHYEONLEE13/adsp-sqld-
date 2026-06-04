@@ -18,7 +18,7 @@ const OG_IMAGE = 'https://quest-dp.com/og/questdp-method.png';
 const METHOD_STEPS = [
   {
     title: '개념을 작게 자른다',
-    body: 'ADsP 251개, SQLD 65개 학습 스텝으로 시험범위를 나누고 한 스텝마다 한 가지 판단만 익힙니다.',
+    body: 'ADsP·SQLD·컴활 시험범위를 토픽과 카드 단위로 나누고 한 번에 한 가지 판단만 익힙니다.',
     icon: Route,
     color: '#67e8f9',
   },
@@ -55,16 +55,22 @@ const SUBJECT_ROWS = [
     structure: '2개 과목 · 50개 개념 스텝',
     useCase: 'JOIN, 서브쿼리, 정규화처럼 헷갈리는 단위를 반복 풀이',
   },
+  {
+    subject: '컴활',
+    focus: '컴퓨터 일반, 스프레드시트 일반, 데이터베이스 일반',
+    structure: '1급 3과목 · 2급 2과목 · 컴퓨터 일반 001~059 실콘텐츠 공개',
+    useCase: '컴퓨터 노베이스가 낯선 용어를 장면과 확인 문제로 연결',
+  },
 ] as const;
 
 const FAQS = [
   {
-    q: 'QuestDP는 일반 ADsP·SQLD 학습사이트와 무엇이 다른가요?',
+    q: 'QuestDP는 일반 ADsP·SQLD·컴활 학습사이트와 무엇이 다른가요?',
     a: '긴 요약을 읽고 끝내는 방식이 아니라, 개념 스텝과 문제 풀이를 붙여 둔 게임형 학습사이트입니다. 사용자는 로드맵을 따라가며 개념을 보고, 바로 문제를 풀고, 약점 복습으로 다시 돌아옵니다.',
   },
   {
     q: '게임형이어도 시험 대비에 충분한가요?',
-    a: '게임 요소는 보상을 위한 장식이 아니라 학습 순서를 유지하기 위한 장치입니다. 커리큘럼은 ADsP·SQLD 시험범위를 기준으로 나뉘고, 문제 풀이와 해설은 실제 시험 판단을 연습하는 데 초점을 둡니다.',
+    a: '게임 요소는 보상을 위한 장식이 아니라 학습 순서를 유지하기 위한 장치입니다. 커리큘럼은 ADsP·SQLD·컴활 시험범위를 기준으로 나뉘고, 문제 풀이와 해설은 실제 시험 판단을 연습하는 데 초점을 둡니다.',
   },
   {
     q: '약점은 어떻게 고르나요?',
@@ -153,7 +159,7 @@ const FEATURE_IMAGES = [
 
 export default function StudyMethodPage() {
   const seoDescription =
-    'QuestDP가 ADsP·SQLD를 게임형 학습사이트로 설계한 방식. 개념 스텝, 즉시 문제풀이, 약점 점수, 망각곡선 기반 Leitner 복습 큐로 시험범위를 학습하는 원리를 정리했습니다.';
+    'QuestDP가 ADsP·SQLD·컴활을 게임형 학습사이트로 설계한 방식. 개념 스텝, 즉시 문제풀이, 약점 점수, 망각곡선 기반 Leitner 복습 큐로 시험범위를 학습하는 원리를 정리했습니다.';
   const featureImageObjects = FEATURE_IMAGES.map((image) => ({
     '@type': 'ImageObject',
     name: image.title,
@@ -183,7 +189,7 @@ export default function StudyMethodPage() {
     },
     associatedMedia: featureImageObjects,
     datePublished: '2026-05-21',
-    dateModified: '2026-05-21',
+    dateModified: '2026-06-04',
     author: { '@type': 'Organization', name: 'QuestDP', url: 'https://quest-dp.com' },
     publisher: {
       '@type': 'Organization',
@@ -191,7 +197,7 @@ export default function StudyMethodPage() {
       logo: { '@type': 'ImageObject', url: 'https://quest-dp.com/logo/questdp-mark.png' },
     },
     mainEntityOfPage: { '@type': 'WebPage', '@id': CANONICAL },
-    about: ['ADsP 학습사이트', 'SQLD 학습사이트', 'ADsP·SQLD 게임형 학습사이트', '게임형 학습', '약점 복습', '망각곡선 복습', 'Leitner SRS'],
+    about: ['ADsP 학습사이트', 'SQLD 학습사이트', '컴활 학습사이트', 'ADsP·SQLD·컴활 게임형 학습사이트', '게임형 학습', '약점 복습', '망각곡선 복습', 'Leitner SRS'],
   };
 
   const faqJsonLd = {
@@ -214,7 +220,7 @@ export default function StudyMethodPage() {
   };
 
   useSeoMeta({
-    title: 'QuestDP 학습 원리 — ADsP·SQLD 게임형 학습사이트 설계',
+    title: 'QuestDP 학습 원리 — ADsP·SQLD·컴활 게임형 학습사이트 설계',
     description: seoDescription,
     canonical: CANONICAL,
     ogType: 'article',
@@ -245,12 +251,12 @@ export default function StudyMethodPage() {
             Study Method
           </div>
           <h1 className="kr-heading mb-4 max-w-[860px] text-[32px] leading-[1.12] md:text-[48px] lg:text-[58px]">
-            ADsP·SQLD를 게임처럼 풀어도 시험 공부가 되도록 만든 원리
+            ADsP·SQLD·컴활을 게임처럼 풀어도 시험 공부가 되도록 만든 원리
           </h1>
           <p className="kr-body max-w-[720px] text-[15px] leading-[1.75] text-cream/76 md:text-[17px]">
             QuestDP는 단순히 문제에 점수를 붙인 앱이 아닙니다. 시험범위를 작게 자르고,
             방금 본 개념을 바로 문제로 확인하고, 약점 점수와 망각곡선 복습으로 다시 등장하도록 만든
-            ADsP·SQLD 게임형 학습사이트입니다.
+            ADsP·SQLD·컴활 게임형 학습사이트입니다.
           </p>
         </header>
 
@@ -309,7 +315,7 @@ export default function StudyMethodPage() {
 
         <section aria-labelledby="subject-fit" className="mb-14">
           <p className="kr-num mb-2 text-[11px] uppercase tracking-widest text-cream/50">
-            ADsP · SQLD
+            ADsP · SQLD · 컴활
           </p>
           <h2 id="subject-fit" className="kr-heading mb-4 text-[24px] md:text-[30px]">
             두 시험은 같은 방식으로 보지 않습니다
@@ -391,7 +397,7 @@ export default function StudyMethodPage() {
           <p className="kr-body max-w-[760px] text-[14.5px] leading-[1.8] text-cream/78 md:text-[16px]">
             같은 정답이라도 오래 걸린 문제는 시험장에서 다시 흔들릴 수 있습니다. QuestDP는
             오답 가능성, 풀이 시간 초과, 최근 복습 여부를 함께 보고 약점 노드를 만듭니다.
-            그래서 ADsP 게임·SQLD 게임 화면에서 오늘 다시 풀어야 할 부분이 자연스럽게
+            그래서 ADsP 게임·SQLD 게임·컴활 게임 화면에서 오늘 다시 풀어야 할 부분이 자연스럽게
             앞으로 올라옵니다.
           </p>
         </section>
@@ -419,7 +425,7 @@ export default function StudyMethodPage() {
           </h2>
           <p className="kr-body mb-5 max-w-[680px] text-[14px] leading-[1.75] text-cream/70">
             시험범위 전체를 확인한 뒤 시작하면 어디까지 공부했는지 더 잘 보입니다.
-            ADsP와 SQLD 커리큘럼 페이지에서 챕터, 토픽, 학습 스텝을 한 번에 볼 수 있습니다.
+            ADsP와 SQLD, 컴활 커리큘럼 페이지에서 챕터, 토픽, 학습 스텝을 한 번에 볼 수 있습니다.
           </p>
           <div className="flex flex-wrap gap-3">
             <a
@@ -435,6 +441,13 @@ export default function StudyMethodPage() {
               className="rounded-full border border-purple-300/35 px-5 py-3 text-[12px] font-semibold uppercase tracking-widest text-purple-200 transition hover:bg-purple-300/10"
             >
               SQLD 커리큘럼
+            </a>
+            <a
+              href="/curriculum/comhwal"
+              onClick={(e) => handleNavClick(e, '/curriculum/comhwal')}
+              className="rounded-full border border-lime-300/35 px-5 py-3 text-[12px] font-semibold uppercase tracking-widest text-lime-200 transition hover:bg-lime-300/10"
+            >
+              컴활 커리큘럼
             </a>
           </div>
         </section>

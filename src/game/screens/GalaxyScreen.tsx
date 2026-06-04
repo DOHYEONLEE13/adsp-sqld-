@@ -83,7 +83,7 @@ const WARP_DURATION_MS = 900;
  *  v3: 과목별 액센트 — ADSP 시안/블루, SQLD 퍼플 (CLAUDE.md 색 토큰과 일치).
  *  default ACCENT (주황) 는 일일 미션 등 과목 무관 영역에만 사용. */
 const ACCENT = '#FD802E';
-const BG = '#010828';
+const BG = 'var(--game-star-bg)';
 const FG = '#FFFFFF';
 const FG_SOFT = 'rgba(255,255,255,0.72)';
 const FG_DIM = 'rgba(255,255,255,0.5)';
@@ -582,8 +582,7 @@ export default function GalaxyScreen({
         <div
           className="absolute inset-0"
           style={{
-            background:
-              'linear-gradient(180deg, rgba(1,8,40,0.55) 0%, rgba(1,8,40,0.62) 50%, rgba(1,8,40,0.78) 100%)',
+            background: 'var(--game-ambient-media-overlay-blur)',
           }}
           aria-hidden
         />

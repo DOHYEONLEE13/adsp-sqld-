@@ -574,8 +574,8 @@ function Leaderboard({
       className="liquid-glass rounded-[24px] p-5 md:p-6"
       aria-label="친구 리더보드"
       style={{
-        background: 'rgba(10,18,48,0.78)',
-        border: '1px solid rgba(239,244,255,0.16)',
+        background: 'var(--game-panel-bg)',
+        border: '1px solid var(--game-panel-border)',
       }}
     >
       <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">

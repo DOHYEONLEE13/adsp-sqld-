@@ -138,10 +138,10 @@ export function MobileTopBar({ subject, customSubject }: TopProps) {
     <div
       className="fixed top-0 left-0 right-0 z-30"
       style={{
-        background: 'rgba(20,32,46,0.92)',
+        background: 'var(--game-chrome-top)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
-        borderBottom: '1px solid rgba(239,244,255,0.06)',
+        borderBottom: '1px solid var(--game-chrome-border)',
       }}
     >
       <div
@@ -319,7 +319,7 @@ export function MobileTopBar({ subject, customSubject }: TopProps) {
           role="status"
           className="absolute left-1/2 -translate-x-1/2 top-full mt-2 px-3 py-2 rounded-lg kr-body text-[12px]"
           style={{
-            background: 'rgba(20,32,46,0.96)',
+            background: 'var(--game-panel-bg)',
             color: '#FFB020',
             border: '1px solid rgba(255,176,32,0.4)',
             boxShadow: '0 4px 14px rgba(0,0,0,0.4)',
@@ -410,10 +410,10 @@ export function MobileBottomNav({
     <nav
       className="fixed bottom-0 left-0 right-0 z-30"
       style={{
-        background: 'rgba(1,8,40,0.96)',
+        background: 'var(--game-chrome-bottom)',
         backdropFilter: 'blur(12px)',
         WebkitBackdropFilter: 'blur(12px)',
-        borderTop: '1px solid rgba(209,248,67,0.09)',
+        borderTop: '1px solid var(--game-chrome-border)',
       }}
     >
       {/*

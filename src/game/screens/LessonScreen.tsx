@@ -474,9 +474,8 @@ export default function LessonScreen({
       <div
         className="sticky top-0 z-30 backdrop-blur-md"
         style={{
-          background:
-            'linear-gradient(180deg, rgba(1,8,40,0.92) 0%, rgba(1,8,40,0.78) 100%)',
-          borderBottom: '1px solid rgba(239,244,255,0.08)',
+          background: 'var(--game-chrome-top)',
+          borderBottom: '1px solid var(--game-chrome-border)',
         }}
       >
         <div className="mx-auto max-w-[760px] lg:max-w-[1000px] xl:max-w-[1180px] px-5 md:px-8 lg:px-12 xl:px-16 py-3 md:py-4">

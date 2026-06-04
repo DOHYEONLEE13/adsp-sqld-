@@ -34,11 +34,11 @@ export default function GlobalAmbientBg() {
   const isCssStars = theme.kind === 'css';
   const overlayBackground = isCssStars
     ? state.blur
-      ? 'linear-gradient(180deg, rgba(1,8,40,0.28) 0%, rgba(1,8,40,0.42) 52%, rgba(1,8,40,0.58) 100%)'
-      : 'linear-gradient(180deg, rgba(1,8,40,0.16) 0%, rgba(1,8,40,0.26) 52%, rgba(1,8,40,0.38) 100%)'
+      ? 'var(--game-ambient-css-overlay-blur)'
+      : 'var(--game-ambient-css-overlay)'
     : state.blur
-      ? 'linear-gradient(180deg, rgba(1,8,40,0.45) 0%, rgba(1,8,40,0.58) 50%, rgba(1,8,40,0.72) 100%)'
-      : 'linear-gradient(180deg, rgba(1,8,40,0.28) 0%, rgba(1,8,40,0.38) 50%, rgba(1,8,40,0.50) 100%)';
+      ? 'var(--game-ambient-media-overlay-blur)'
+      : 'var(--game-ambient-media-overlay)';
 
   if (!state.active) {
     return null;

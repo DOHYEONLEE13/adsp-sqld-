@@ -58,8 +58,7 @@ export default function ScreenShell({
             aria-hidden
             className="pointer-events-none absolute inset-0 -z-10"
             style={{
-              background:
-                'radial-gradient(ellipse at 50% 35%, rgba(1,8,40,0.25) 0%, rgba(1,8,40,0.75) 55%, rgba(1,8,40,0.95) 100%)',
+              background: 'var(--game-screen-image-overlay)',
             }}
           />
         </>

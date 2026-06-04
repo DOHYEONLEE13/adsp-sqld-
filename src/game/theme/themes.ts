@@ -81,7 +81,7 @@ const STARS_CSS_BG = [
   'radial-gradient(ellipse 70% 38% at 48% 58%, rgba(132,184,255,0.26), transparent 74%)',
   'radial-gradient(ellipse 42% 28% at 72% 26%, rgba(192,132,252,0.12), transparent 72%)',
   // 베이스 navy vignette
-  'radial-gradient(ellipse 100% 100% at 50% 50%, #111b3f 0%, #081035 55%, #030817 100%)',
+  'radial-gradient(ellipse 100% 100% at 50% 50%, var(--game-star-core) 0%, var(--game-star-mid) 55%, var(--game-star-edge) 100%)',
 ].join(', ');
 
 const STARS_CSS_SIZE = '90px 90px, 180px 180px, 100% 100%, 100% 100%, 100% 100%';
@@ -108,7 +108,7 @@ export const THEMES: Theme[] = [
     background: STARS_CSS_BG,
     backgroundSize: STARS_CSS_SIZE,
     backgroundRepeat: STARS_CSS_REPEAT,
-    backgroundColor: '#050b22',
+    backgroundColor: 'var(--game-star-bg)',
     preview: {
       kind: 'css',
       background: STARS_CSS_BG,

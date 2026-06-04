@@ -1,6 +1,6 @@
 const APP_MODE_SESSION_KEY = 'questdp.appMode';
 const APP_MODE_CLASS = 'questdp-app-mode';
-const APP_MODE_THEME_COLOR = '#010828';
+const APP_MODE_THEME_COLOR = '#081642';
 
 function canUseSessionStorage(): boolean {
   return typeof window !== 'undefined' && typeof window.sessionStorage !== 'undefined';

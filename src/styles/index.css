@@ -51,6 +51,23 @@
   --accent-adsp: #67e8f9;
   --accent-sqld: #c084fc;
 
+  /* Shared game palette. Web game and /app game read the same values. */
+  --game-star-bg: #081642;
+  --game-star-core: #1a2d68;
+  --game-star-mid: #0d1d54;
+  --game-star-edge: #071236;
+  --game-chrome-top: rgba(9, 19, 52, 0.84);
+  --game-chrome-bottom: rgba(5, 12, 36, 0.86);
+  --game-chrome-border: rgba(239, 244, 255, 0.11);
+  --game-panel-bg: rgba(10, 19, 52, 0.70);
+  --game-panel-border: rgba(239, 244, 255, 0.16);
+  --game-glass-bg: rgba(10, 18, 48, 0.54);
+  --game-ambient-css-overlay: linear-gradient(180deg, rgba(7, 22, 61, 0.04) 0%, rgba(7, 22, 61, 0.10) 52%, rgba(7, 22, 61, 0.20) 100%);
+  --game-ambient-css-overlay-blur: linear-gradient(180deg, rgba(7, 22, 61, 0.10) 0%, rgba(7, 22, 61, 0.20) 52%, rgba(7, 22, 61, 0.34) 100%);
+  --game-ambient-media-overlay: linear-gradient(180deg, rgba(7, 22, 61, 0.12) 0%, rgba(7, 22, 61, 0.20) 50%, rgba(7, 22, 61, 0.34) 100%);
+  --game-ambient-media-overlay-blur: linear-gradient(180deg, rgba(7, 22, 61, 0.22) 0%, rgba(7, 22, 61, 0.34) 50%, rgba(7, 22, 61, 0.50) 100%);
+  --game-screen-image-overlay: radial-gradient(ellipse at 50% 35%, rgba(7, 22, 61, 0.16) 0%, rgba(7, 22, 61, 0.44) 55%, rgba(7, 22, 61, 0.70) 100%);
+
   /* 기본값은 ADsP. 화면 루트에서 data-subject="sqld" 를 걸어 오버라이드. */
   --subject-accent: var(--accent-adsp);
 }
@@ -222,7 +239,7 @@ button {
  * (이전: blur 4px + rgba(255,255,255,0.01) → 거의 투명해서 가독성↓)
  */
 .liquid-glass {
-  background: rgba(8, 14, 36, 0.62);
+  background: var(--game-glass-bg);
   -webkit-backdrop-filter: blur(16px) saturate(120%);
   backdrop-filter: blur(16px) saturate(120%);
   border: 1px solid rgba(239, 244, 255, 0.10);

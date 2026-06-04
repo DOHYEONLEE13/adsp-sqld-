@@ -9,7 +9,7 @@
  * 다른 화면(Planet, Zone, Lesson, Stats…)은 기존 톤 유지 — phase 2+ 에서 확장.
  */
 
-import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import {
   ArrowLeft,
   ArrowRight,
@@ -42,7 +42,7 @@ import TopBar from '@/game/lesson/TopBar';
 import OptionsPanel from '@/game/lesson/OptionsPanel';
 import FeedbackSheet from '@/game/lesson/FeedbackSheet';
 import type { QuesPose } from '@/components/mascot/types';
-import type { ProgressStore } from '../storage';
+import { recordSingleAnswer, type ProgressStore } from '../storage';
 import VideoBg from '@/components/ui/VideoBg';
 import { VIDEO_POSTERS, VIDEO_URLS } from '@/data/site';
 import { useMyProfile } from '@/data/profile';
@@ -104,6 +104,7 @@ const COMHWAL_MASCOT_POSES: QuesPose[] = [
   'think',
   'lightbulb',
 ];
+const COMHWAL_CARD_ID_RE = /^comhwal-(\d)-(\d{3})-c(\d{2})$/;
 
 /** 과목별 액센트. */
 const SUBJECT_ACCENT: Record<Subject, string> = {
@@ -1833,6 +1834,12 @@ function ComhwalConceptQuestionPanel({
       />
     </div>
   );
+}
+
+function getComhwalStepKey(card: ComhwalConceptCard): string | null {
+  const match = COMHWAL_CARD_ID_RE.exec(card.id);
+  if (!match) return null;
+  return `comhwal-${match[1]}-${match[2]}-s${Number(match[3])}`;
 }
 
 type ComhwalVisualModel = {
@@ -3906,6 +3913,8 @@ function ExpansionConceptStudyScreen({
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({});
   const [showQuestion, setShowQuestion] = useState(false);
   const [showQuestionIntro, setShowQuestionIntro] = useState(false);
+  const [xpToast, setXpToast] = useState<{ amount: number; key: number } | null>(null);
+  const questionStartedAtRef = useRef(Date.now());
   const activeCard = cards[activeIndex];
   const isLastCard = activeIndex >= cards.length - 1;
   const activeQuestion = activeCard?.question;
@@ -3997,6 +4006,7 @@ function ExpansionConceptStudyScreen({
 
     if (isQuestionIntroMode) {
       setShowQuestionIntro(false);
+      questionStartedAtRef.current = Date.now();
       setShowQuestion(true);
       return;
     }
@@ -4007,6 +4017,28 @@ function ExpansionConceptStudyScreen({
     }
 
     goNextCard();
+  };
+
+  const handleSelectAnswer = (choiceIndex: number) => {
+    if (!activeCard || !activeQuestion || selectedAnswer !== undefined) return;
+    const correct = choiceIndex === activeQuestion.answerIndex;
+    const timeMs = Math.max(0, Date.now() - questionStartedAtRef.current);
+    const xp = recordSingleAnswer(
+      activeQuestion.id,
+      correct,
+      timeMs,
+      getComhwalStepKey(activeCard),
+      choiceIndex,
+      null,
+    );
+    setSelectedAnswers((answers) => ({
+      ...answers,
+      [activeCard.id]: choiceIndex,
+    }));
+    if (xp > 0) {
+      setXpToast({ amount: xp, key: Date.now() });
+      window.setTimeout(() => setXpToast(null), 1800);
+    }
   };
 
   const speechText = activeCard
@@ -4034,6 +4066,30 @@ function ExpansionConceptStudyScreen({
       style={{ '--subject-accent': subject.accent } as CSSProperties}
     >
       <PageAmbientBg />
+      {xpToast ? (
+        <div
+          key={xpToast.key}
+          className="fixed top-[18%] left-1/2 -translate-x-1/2 z-[60] pointer-events-none"
+          style={{
+            animation: 'xpToastRise 1.8s cubic-bezier(0.18, 0.9, 0.4, 1) forwards',
+          }}
+        >
+          <div
+            className="kr-heading px-5 py-3 rounded-full"
+            style={{
+              background: 'linear-gradient(135deg, #FFB020 0%, #FD802E 100%)',
+              color: '#0a0f1f',
+              boxShadow:
+                '0 18px 48px -8px rgba(253,128,46,0.6), 0 0 0 2px rgba(255,255,255,0.18) inset',
+              fontSize: 22,
+              letterSpacing: '0.04em',
+              textShadow: '0 1px 0 rgba(255,255,255,0.25)',
+            }}
+          >
+            +{xpToast.amount} XP
+          </div>
+        </div>
+      ) : null}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"
@@ -4119,12 +4175,7 @@ function ExpansionConceptStudyScreen({
                 key={activeQuestion.id}
                 question={activeQuestion}
                 selectedAnswer={selectedAnswer}
-                onSelectAnswer={(choiceIndex) =>
-                  setSelectedAnswers((answers) => ({
-                    ...answers,
-                    [activeCard.id]: choiceIndex,
-                  }))
-                }
+                onSelectAnswer={handleSelectAnswer}
               />
             </>
           ) : activeCard ? (

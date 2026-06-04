@@ -37,6 +37,13 @@ const FORBIDDEN_TEXT_PATTERNS = [
   '다음과 같이',
 ];
 
+function expectedServerAnswerIndex(questionId: string): number {
+  const match = /^comhwal-([123])-(\d{3})-q(\d{2})$/.exec(questionId);
+  if (!match) throw new Error(`Invalid COMHWAL question id: ${questionId}`);
+  const topicBase = match[1] === '1' ? 1 : match[1] === '2' ? 60 : 107;
+  return ((Number(match[2]) - topicBase) + (Number(match[3]) - 1)) % 4;
+}
+
 describe('COMHWAL concept card structure', () => {
   it('keeps every section at 5 cards or fewer', () => {
     for (const chapter of COMHWAL_CONCEPT_CHAPTERS) {
@@ -95,6 +102,16 @@ describe('COMHWAL concept card structure', () => {
       for (const choice of card.question.choices) {
         expect(choice.trim().length).toBeGreaterThan(0);
       }
+    }
+  });
+
+  it('keeps COMHWAL answer indexes aligned with the server RPC formula', () => {
+    for (const card of listComhwalCards()) {
+      if (!card.question) continue;
+
+      expect(card.question.answerIndex).toBe(
+        expectedServerAnswerIndex(card.question.id),
+      );
     }
   });
 

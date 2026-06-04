@@ -14,6 +14,7 @@ import {
   ArrowLeft,
   ArrowRight,
   BarChart3,
+  Check,
   ChevronLeft,
   ChevronRight,
   Info,
@@ -46,6 +47,7 @@ import { recordSingleAnswer, type ProgressStore } from '../storage';
 import VideoBg from '@/components/ui/VideoBg';
 import { VIDEO_POSTERS, VIDEO_URLS } from '@/data/site';
 import { useMyProfile } from '@/data/profile';
+import { hasEverSolved } from '../progressPredicates';
 import NicknameOnboarding from './NicknameOnboarding';
 import StudyPlanBanner from '../studyPlan/StudyPlanBanner';
 import OnboardingPromptBanner from '../studyPlan/OnboardingPromptBanner';
@@ -501,6 +503,7 @@ export default function GalaxyScreen({
         subject={expansionSubject}
         variant={variant}
         planet={planet}
+        progress={progress}
         onBack={() =>
           setView({
             kind: 'expansionPlanets',
@@ -1514,6 +1517,7 @@ function ExpansionOutlineScreen({
   subject,
   variant,
   planet,
+  progress,
   onBack,
   onSubjectBack,
   onSelectTopic,
@@ -1521,6 +1525,7 @@ function ExpansionOutlineScreen({
   subject: ExpansionSubjectConfig;
   variant: ExpansionVariant;
   planet: ExpansionPlanet;
+  progress: ProgressStore;
   onBack: () => void;
   onSubjectBack: () => void;
   onSelectTopic: (topicId: string) => void;
@@ -1622,6 +1627,7 @@ function ExpansionOutlineScreen({
               planetKey={planet.key}
               topics={section.topics}
               accent={subject.accent}
+              progress={progress}
               onSelectTopic={onSelectTopic}
             />
           ))}
@@ -1637,6 +1643,7 @@ function ExpansionOutlineSection({
   planetKey,
   topics,
   accent,
+  progress,
   onSelectTopic,
 }: {
   index: number;
@@ -1644,6 +1651,7 @@ function ExpansionOutlineSection({
   planetKey: string;
   topics: ExpansionPlanet['sections'][number]['topics'];
   accent: string;
+  progress: ProgressStore;
   onSelectTopic: (topicId: string) => void;
 }) {
   return (
@@ -1686,6 +1694,7 @@ function ExpansionOutlineSection({
             topicId={topic.id}
             title={topic.title}
             accent={accent}
+            progress={progress}
             isLast={topicIndex === topics.length - 1}
             onSelectTopic={onSelectTopic}
           />
@@ -1701,6 +1710,7 @@ function ExpansionOutlineNode({
   topicId,
   title,
   accent,
+  progress,
   isLast,
   onSelectTopic,
 }: {
@@ -1709,10 +1719,25 @@ function ExpansionOutlineNode({
   topicId: string;
   title: string;
   accent: string;
+  progress: ProgressStore;
   isLast: boolean;
   onSelectTopic: (topicId: string) => void;
 }) {
-  const cardCount = getComhwalTopicCards(planetKey, topicId).length;
+  const cards = getComhwalTopicCards(planetKey, topicId);
+  const cardCount = cards.length;
+  const questionCards = cards.filter((card) => card.question);
+  const completedQuestionCount = questionCards.reduce((count, card) => {
+    const questionId = card.question?.id;
+    if (!questionId) return count;
+    return count + (hasEverSolved(progress.questionStats[questionId]) ? 1 : 0);
+  }, 0);
+  const attempted = questionCards.some((card) => {
+    const questionId = card.question?.id;
+    if (!questionId) return false;
+    return (progress.questionStats[questionId]?.attempts ?? 0) > 0;
+  });
+  const completed =
+    questionCards.length > 0 && completedQuestionCount === questionCards.length;
   const isReady = cardCount > 0;
 
   return (
@@ -1730,22 +1755,40 @@ function ExpansionOutlineNode({
           aria-hidden
           className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full md:h-12 md:w-12"
           style={{
-            background: 'var(--game-node-bg)',
-            border: '1.5px solid var(--game-node-border)',
-            color: 'var(--game-node-text)',
-            boxShadow: 'var(--game-node-shadow)',
-            textShadow: '0 1px 2px rgba(0,0,0,0.5)',
+            background: completed
+              ? 'var(--game-node-complete-bg)'
+              : attempted
+                ? 'var(--game-node-bg-strong)'
+                : 'var(--game-node-bg)',
+            border: completed
+              ? '2px solid var(--game-node-border)'
+              : attempted
+                ? '2px solid var(--game-node-border)'
+                : '1.5px solid var(--game-node-border)',
+            color: completed
+              ? 'var(--game-node-complete-text)'
+              : 'var(--game-node-text)',
+            boxShadow: completed
+              ? 'var(--game-node-shadow-strong)'
+              : 'var(--game-node-shadow)',
+            textShadow: completed ? 'none' : '0 1px 2px rgba(0,0,0,0.5)',
           }}
         >
-          <span className="kr-heading text-[13px] leading-none tabular-nums">
-            {n}
-          </span>
+          {completed ? (
+            <Check size={18} strokeWidth={3} />
+          ) : (
+            <span className="kr-heading text-[13px] leading-none tabular-nums">
+              {n}
+            </span>
+          )}
         </span>
         {!isLast ? (
           <div
             className="my-1 w-px flex-1"
             style={{
-              background: 'rgba(239,244,255,0.30)',
+              background: completed
+                ? 'linear-gradient(180deg, rgba(94,237,223,0.72), rgba(94,237,223,0.24))'
+                : 'rgba(239,244,255,0.30)',
               minHeight: 28,
             }}
             aria-hidden
@@ -1757,7 +1800,7 @@ function ExpansionOutlineNode({
         <h3
           className="kr-body text-[13px] font-medium leading-[1.4] tracking-[-0.005em] transition md:text-[14px]"
           style={{
-            color: 'var(--cream)',
+            color: completed ? 'rgba(239,244,255,0.9)' : 'var(--cream)',
             textShadow:
               '0 1px 3px rgba(1,8,40,0.7), 0 0 1px rgba(0,0,0,0.4)',
           }}
@@ -1777,6 +1820,31 @@ function ExpansionOutlineNode({
           >
             NO. {topicId}
           </span>
+          {isReady && questionCards.length > 0 ? (
+            <>
+              <span style={{ color: 'rgba(239,244,255,0.4)' }}>·</span>
+              {completed ? (
+                <span
+                  className="inline-flex items-center gap-1 kr-heading text-[9px] uppercase tracking-widest"
+                  style={{ color: 'var(--game-nav-active)' }}
+                >
+                  <Check size={10} strokeWidth={3} />
+                  완료
+                </span>
+              ) : (
+                <span
+                  className="kr-num uppercase tracking-widest text-[9px]"
+                  style={{
+                    color: attempted
+                      ? 'rgba(239,244,255,0.86)'
+                      : 'rgba(239,244,255,0.58)',
+                  }}
+                >
+                  확인 {completedQuestionCount}/{questionCards.length}
+                </span>
+              )}
+            </>
+          ) : null}
           <span style={{ color: 'rgba(239,244,255,0.4)' }}>·</span>
           <span style={{ color: isReady ? 'rgba(239,244,255,0.78)' : 'rgba(239,244,255,0.7)' }}>
             {isReady ? `개념 카드 ${cardCount}장` : '개념 준비 중'}

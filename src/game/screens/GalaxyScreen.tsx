@@ -9,7 +9,7 @@
  * 다른 화면(Planet, Zone, Lesson, Stats…)은 기존 톤 유지 — phase 2+ 에서 확장.
  */
 
-import { useEffect, useMemo, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
 import {
   ArrowLeft,
   ArrowRight,
@@ -66,6 +66,7 @@ import {
   hasComhwalTopicCards,
   type ComhwalConceptCard,
 } from '@/data/comhwal/concepts';
+import { getComhwalExpansionVisualModel } from '../comhwalVisualModels';
 
 interface Props {
   initialExpansionSubject?: ExpansionSubjectId;
@@ -1600,6 +1601,8 @@ type ComhwalVisualModel = {
   lead: string;
   flow: string[];
   chips: string[];
+  pattern?: string;
+  kind?: string;
   mode?:
     | 'manager'
     | 'windows'
@@ -1680,93 +1683,7 @@ function getComhwalVisualModel(card: ComhwalConceptCard): ComhwalVisualModel {
       break;
   }
 
-  const topicNumber = Number(card.topicId);
-
-  if (topicNumber >= 60 && topicNumber <= 64) {
-    return {
-      eyebrow: 'SHEET GRID',
-      title: card.title,
-      lead: '엑셀은 행과 열이 만나는 칸을 따라 값을 넣고 계산해.',
-      flow: ['열 A·B·C', '셀 A1', '행 1·2·3'],
-      chips: card.keyPoints.slice(0, 3),
-      mode: 'sheet-grid',
-    };
-  }
-
-  if (topicNumber >= 72 && topicNumber <= 85) {
-    return {
-      eyebrow: 'FORMULA FLOW',
-      title: card.title,
-      lead: '값을 수식에 넣으면 엑셀이 계산해서 결과 셀에 보여 줘.',
-      flow: ['입력값', '수식·함수', '결과'],
-      chips: card.keyPoints.slice(0, 3),
-      mode: 'formula',
-    };
-  }
-
-  if (topicNumber >= 86 && topicNumber <= 91) {
-    return {
-      eyebrow: 'OUTPUT VIEW',
-      title: card.title,
-      lead: '표의 숫자를 사람이 보기 쉬운 그림이나 인쇄 화면으로 바꿔.',
-      flow: ['원본 표', '차트·페이지', '보기 좋은 결과'],
-      chips: card.keyPoints.slice(0, 3),
-      mode: 'chart',
-    };
-  }
-
-  if (topicNumber >= 107 && topicNumber <= 122) {
-    return {
-      eyebrow: 'TABLE MAP',
-      title: card.title,
-      lead: '데이터베이스는 표를 만들고, 키로 행을 찾고, 표끼리 연결해.',
-      flow: ['테이블', '키', '관계'],
-      chips: card.keyPoints.slice(0, 3),
-      mode: 'database-table',
-    };
-  }
-
-  if (topicNumber >= 123 && topicNumber <= 131) {
-    return {
-      eyebrow: 'QUERY FLOW',
-      title: card.title,
-      lead: '질의는 원본 표에서 조건에 맞는 데이터만 꺼내 결과표로 보여 줘.',
-      flow: ['원본 표', '조건·질의', '결과표'],
-      chips: card.keyPoints.slice(0, 3),
-      mode: 'formula',
-    };
-  }
-
-  if (topicNumber >= 132 && topicNumber <= 147) {
-    return {
-      eyebrow: 'ACCESS SCREEN',
-      title: card.title,
-      lead: '폼은 입력 화면, 보고서는 출력 화면처럼 역할을 나눠 보면 쉬워.',
-      flow: ['원본 데이터', '화면 구성', '입력·출력'],
-      chips: card.keyPoints.slice(0, 3),
-      mode: 'cards',
-    };
-  }
-
-  if (topicNumber >= 148 && topicNumber <= 152) {
-    return {
-      eyebrow: 'AUTO FLOW',
-      title: card.title,
-      lead: '매크로와 코드는 반복 작업을 정해진 순서대로 자동 실행해.',
-      flow: ['이벤트', '명령 실행', '자동 처리'],
-      chips: card.keyPoints.slice(0, 3),
-      mode: 'formula',
-    };
-  }
-
-  return {
-    eyebrow: 'VISUAL SUMMARY',
-    title: card.title,
-    lead: card.body,
-    flow: card.keyPoints.slice(0, 3),
-    chips: card.keyPoints.slice(0, 3),
-    mode: 'cards',
-  };
+  return getComhwalExpansionVisualModel(card);
 }
 
 function ComhwalFlowNode({
@@ -1979,6 +1896,925 @@ function ComhwalDatabaseDiagram({ accent }: { accent: string }) {
   );
 }
 
+function ComhwalDiagramFrame({
+  accent,
+  children,
+}: {
+  accent: string;
+  children: ReactNode;
+}) {
+  return (
+    <div
+      className="mt-4 overflow-hidden rounded-[22px] border p-3"
+      style={{
+        borderColor: 'rgba(239,244,255,0.16)',
+        background:
+          'radial-gradient(circle at 22% 0%, rgba(239,244,255,0.12), transparent 42%), rgba(1,8,40,0.28)',
+        boxShadow: `inset 0 1px 0 rgba(255,255,255,0.08), 0 18px 38px color-mix(in srgb, ${accent} 10%, transparent)`,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function ComhwalMiniCell({
+  children,
+  accent,
+  active = false,
+  className = '',
+}: {
+  children?: React.ReactNode;
+  accent: string;
+  active?: boolean;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`flex min-h-[34px] items-center justify-center rounded-xl border px-2 text-center kr-heading text-[11px] leading-tight ${className}`}
+      style={{
+        borderColor: active ? accent : 'rgba(239,244,255,0.14)',
+        color: active ? '#07121f' : 'rgba(239,244,255,0.82)',
+        background: active
+          ? `linear-gradient(180deg, ${accent}, color-mix(in srgb, ${accent} 72%, #010828))`
+          : 'rgba(239,244,255,0.06)',
+        boxShadow: active
+          ? `0 0 18px color-mix(in srgb, ${accent} 32%, transparent)`
+          : 'none',
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function ComhwalVisualFlow({
+  model,
+  accent,
+}: {
+  model: ComhwalVisualModel;
+  accent: string;
+}) {
+  return (
+    <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-stretch gap-2">
+      {model.flow.slice(0, 3).map((item, index) => (
+        <div key={`${item}-${index}`} className="contents">
+          <ComhwalFlowNode label={item} accent={accent} active={index === 1} />
+          {index < 2 ? (
+            <div className="flex items-center justify-center">
+              <ArrowRight size={16} strokeWidth={2.5} style={{ color: accent }} />
+            </div>
+          ) : null}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ComhwalSheetPattern({
+  model,
+  accent,
+}: {
+  model: ComhwalVisualModel;
+  accent: string;
+}) {
+  const pattern = model.pattern ?? '';
+
+  if (pattern.includes('tabs')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="rounded-2xl border border-cream/15 bg-cream/[0.04] p-3">
+          <div className="mb-3 flex items-center gap-1.5">
+            {['Book', 'Sheet1', 'Sheet2'].map((label, index) => (
+              <span
+                key={label}
+                className="rounded-t-xl border px-3 py-1.5 kr-num text-[10px]"
+                style={{
+                  borderColor: index === 1 ? accent : 'rgba(239,244,255,0.14)',
+                  background: index === 1 ? accent : 'rgba(239,244,255,0.06)',
+                  color: index === 1 ? '#07121f' : 'rgba(239,244,255,0.72)',
+                }}
+              >
+                {label}
+              </span>
+            ))}
+          </div>
+          <div className="grid grid-cols-4 gap-1.5">
+            {Array.from({ length: 12 }).map((_, index) => (
+              <ComhwalMiniCell key={index} accent={accent} active={index === 5}>
+                {index === 5 ? 'B2' : ''}
+              </ComhwalMiniCell>
+            ))}
+          </div>
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.includes('input-bar')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="space-y-3">
+          <div className="grid grid-cols-[70px_1fr] gap-2">
+            <ComhwalMiniCell accent={accent} active>A1</ComhwalMiniCell>
+            <div className="rounded-xl border border-cream/15 bg-cream/[0.06] px-3 py-2 kr-num text-[12px] text-cream/80">
+              =SUM(B2:B5)
+            </div>
+          </div>
+          <div className="grid grid-cols-4 gap-1.5">
+            {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
+              <ComhwalMiniCell key={index} accent={accent} active={index === 0}>
+                {index === 0 ? '결과' : index + 1}
+              </ComhwalMiniCell>
+            ))}
+          </div>
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.includes('format') || pattern.includes('custom')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+          <ComhwalMiniCell accent={accent}>12000</ComhwalMiniCell>
+          <ArrowRight size={18} style={{ color: accent }} />
+          <div className="space-y-2">
+            {['#,##0', '0.00%', 'yyyy-mm-dd'].map((label, index) => (
+              <ComhwalMiniCell key={label} accent={accent} active={index === 0}>
+                {label}
+              </ComhwalMiniCell>
+            ))}
+          </div>
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.includes('fill-series')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-5 items-center gap-2">
+          {['1', '2', '3', '4'].map((label, index) => (
+            <ComhwalMiniCell key={label} accent={accent} active={index === 0}>
+              {label}
+            </ComhwalMiniCell>
+          ))}
+          <div className="flex items-center justify-center">
+            <span className="h-5 w-5 rounded-full border-2" style={{ borderColor: accent }} />
+          </div>
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.includes('find-lens')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-[1fr_88px] gap-3">
+          <div className="rounded-2xl border border-cream/15 bg-cream/[0.04] p-2">
+            <div className="mb-2 rounded-xl border border-cream/15 px-3 py-2 kr-body text-[11px] text-cream/70">
+              Ctrl + F
+            </div>
+            <div className="grid grid-cols-3 gap-1.5">
+              {Array.from({ length: 9 }).map((_, index) => (
+                <ComhwalMiniCell key={index} accent={accent} active={index === 4}>
+                  {index === 4 ? '찾음' : ''}
+                </ComhwalMiniCell>
+              ))}
+            </div>
+          </div>
+          <div className="relative flex items-center justify-center">
+            <span className="h-14 w-14 rounded-full border-4" style={{ borderColor: accent }} />
+            <span
+              className="absolute bottom-7 right-4 h-8 w-1.5 rotate-[-42deg] rounded-full"
+              style={{ background: accent }}
+            />
+          </div>
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.includes('pointer-routes')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-[1fr_92px] gap-3">
+          <div className="grid grid-cols-4 gap-1.5">
+            {Array.from({ length: 12 }).map((_, index) => (
+              <ComhwalMiniCell key={index} accent={accent} active={index === 6}>
+                {index === 6 ? 'C2' : ''}
+              </ComhwalMiniCell>
+            ))}
+          </div>
+          <div className="grid grid-cols-3 grid-rows-3 gap-1.5">
+            {['', '↑', '', '←', '셀', '→', '', '↓', ''].map((label, index) => (
+              <ComhwalMiniCell key={`${label}-${index}`} accent={accent} active={label === '셀'}>
+                {label}
+              </ComhwalMiniCell>
+            ))}
+          </div>
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.includes('options-panel') || pattern.includes('protect-lock')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-[112px_1fr] gap-3">
+          <div className="rounded-2xl border border-cream/15 bg-cream/[0.06] p-2">
+            {model.flow.map((item, index) => (
+              <div
+                key={item}
+                className="mb-1.5 rounded-xl px-2 py-1.5 kr-heading text-[10px] last:mb-0"
+                style={{
+                  background: index === 1 ? accent : 'rgba(239,244,255,0.08)',
+                  color: index === 1 ? '#07121f' : 'rgba(239,244,255,0.74)',
+                }}
+              >
+                {item}
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center justify-center rounded-2xl border border-cream/15 bg-cream/[0.035]">
+            <span
+              className="relative h-16 w-14 rounded-b-2xl rounded-t-md border-4"
+              style={{ borderColor: accent }}
+            >
+              <span
+                className="absolute -top-8 left-1/2 h-9 w-9 -translate-x-1/2 rounded-t-full border-4 border-b-0"
+                style={{ borderColor: accent }}
+              />
+            </span>
+          </div>
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.includes('edit-before-after')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+          <ComhwalMiniCell accent={accent}>old</ComhwalMiniCell>
+          <ArrowRight size={18} style={{ color: accent }} />
+          <ComhwalMiniCell accent={accent} active>new</ComhwalMiniCell>
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.includes('conditional-heatmap')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-5 gap-1.5">
+          {[12, 38, 64, 82, 95, 22, 58, 73, 40, 88].map((value, index) => (
+            <div
+              key={`${value}-${index}`}
+              className="flex min-h-[32px] items-center justify-center rounded-xl kr-num text-[10px]"
+              style={{
+                color: value > 70 ? '#07121f' : 'rgba(239,244,255,0.72)',
+                background:
+                  value > 70
+                    ? accent
+                    : value > 45
+                      ? `color-mix(in srgb, ${accent} 34%, rgba(239,244,255,0.08))`
+                      : 'rgba(239,244,255,0.06)',
+              }}
+            >
+              {value}
+            </div>
+          ))}
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  return (
+    <ComhwalDiagramFrame accent={accent}>
+      <div className="grid grid-cols-4 gap-1.5">
+        {['', 'A', 'B', 'C', '1', 'A1', '', '', '2', '', '', '', '3', '', '', ''].map(
+          (label, index) => (
+            <ComhwalMiniCell
+              key={`${label}-${index}`}
+              accent={accent}
+              active={label === 'A1'}
+              className={!label || ['A', 'B', 'C', '1', '2', '3'].includes(label) ? 'opacity-90' : ''}
+            >
+              {label}
+            </ComhwalMiniCell>
+          ),
+        )}
+      </div>
+    </ComhwalDiagramFrame>
+  );
+}
+
+function ComhwalFormulaPattern({
+  model,
+  accent,
+}: {
+  model: ComhwalVisualModel;
+  accent: string;
+}) {
+  const pattern = model.pattern ?? '';
+
+  if (pattern.includes('error-tags')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-3 gap-2">
+          {['#DIV/0!', '#VALUE!', '#N/A'].map((label, index) => (
+            <ComhwalMiniCell key={label} accent={accent} active={index === 1}>
+              {label}
+            </ComhwalMiniCell>
+          ))}
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.includes('reference') || pattern.includes('named-range')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-[1fr_92px] gap-3">
+          <div className="grid grid-cols-4 gap-1.5">
+            {['A1', 'B1', '$A$1', '이름', 'A2', 'B2', 'A3', 'B3'].map((label, index) => (
+              <ComhwalMiniCell key={`${label}-${index}`} accent={accent} active={index === 2 || index === 3}>
+                {label}
+              </ComhwalMiniCell>
+            ))}
+          </div>
+          <div className="flex flex-col justify-center gap-2">
+            <ComhwalMiniCell accent={accent}>이동</ComhwalMiniCell>
+            <ComhwalMiniCell accent={accent} active>고정</ComhwalMiniCell>
+          </div>
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.includes('text') || pattern.includes('date') || pattern.includes('finance')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-2">
+          {model.flow.map((item, index) => (
+            <div key={item} className="contents">
+              <ComhwalMiniCell accent={accent} active={index === 1}>{item}</ComhwalMiniCell>
+              {index < 2 ? <ArrowRight size={16} style={{ color: accent }} /> : null}
+            </div>
+          ))}
+        </div>
+        <div className="mt-3 h-2 rounded-full bg-cream/10">
+          <div className="h-2 w-2/3 rounded-full" style={{ background: accent }} />
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.includes('logic') || pattern.includes('info')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-[1fr_1fr] gap-2">
+          <ComhwalMiniCell accent={accent} active>{model.flow[0]}</ComhwalMiniCell>
+          <div className="grid gap-2">
+            <ComhwalMiniCell accent={accent}>TRUE</ComhwalMiniCell>
+            <ComhwalMiniCell accent={accent}>FALSE</ComhwalMiniCell>
+          </div>
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.includes('lookup') || pattern.includes('database-criteria')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-[82px_1fr] gap-3">
+          <ComhwalMiniCell accent={accent} active>{model.flow[0]}</ComhwalMiniCell>
+          <div className="grid grid-cols-3 gap-1.5">
+            {['키', '이름', '값', 'A01', '사과', '300', 'B02', '배', '500'].map((label, index) => (
+              <ComhwalMiniCell key={`${label}-${index}`} accent={accent} active={index === 5}>
+                {label}
+              </ComhwalMiniCell>
+            ))}
+          </div>
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.includes('array')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-3 gap-1.5">
+          {Array.from({ length: 9 }).map((_, index) => (
+            <ComhwalMiniCell key={index} accent={accent} active={[0, 4, 8].includes(index)}>
+              {index + 1}
+            </ComhwalMiniCell>
+          ))}
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  return (
+    <ComhwalDiagramFrame accent={accent}>
+      <div className="rounded-2xl border border-cream/15 bg-cream/[0.04] p-3">
+        <ComhwalVisualFlow model={model} accent={accent} />
+        <div
+          className="mt-3 rounded-2xl border px-3 py-2 kr-num text-[12px] text-cream/82"
+          style={{ borderColor: 'rgba(239,244,255,0.14)', background: 'rgba(239,244,255,0.06)' }}
+        >
+          = {model.flow[1]}({model.flow[0]}) {'->'} {model.flow[2]}
+        </div>
+      </div>
+    </ComhwalDiagramFrame>
+  );
+}
+
+function ComhwalAnalysisPattern({
+  model,
+  accent,
+}: {
+  model: ComhwalVisualModel;
+  accent: string;
+}) {
+  const pattern = model.pattern ?? '';
+
+  if (pattern.startsWith('chart-')) {
+    const bars = pattern.includes('type') ? [72, 42, 72] : pattern.includes('edit') ? [44, 74, 58, 88] : [38, 64, 86, 52];
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-[1fr_92px] gap-3">
+          <div className="flex h-[112px] items-end gap-2 rounded-2xl border border-cream/15 bg-cream/[0.04] px-4 py-3">
+            {bars.map((height, index) => (
+              <span
+                key={`${height}-${index}`}
+                className="flex-1 rounded-t-xl"
+                style={{
+                  height: `${height}%`,
+                  background: index === 2 ? accent : 'rgba(239,244,255,0.34)',
+                }}
+              />
+            ))}
+          </div>
+          <div className="grid gap-2">
+            {model.flow.map((item, index) => (
+              <ComhwalMiniCell key={item} accent={accent} active={index === 1}>{item}</ComhwalMiniCell>
+            ))}
+          </div>
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.startsWith('print-') || pattern.includes('freeze')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="mx-auto grid max-w-[260px] grid-cols-[74px_1fr] gap-3">
+          <div className="rounded-2xl border border-cream/15 bg-cream/[0.08] p-2">
+            <div className="h-3 rounded bg-cream/35" />
+            <div className="mt-2 grid grid-cols-2 gap-1">
+              {Array.from({ length: 8 }).map((_, index) => (
+                <span key={index} className="h-3 rounded bg-cream/15" />
+              ))}
+            </div>
+          </div>
+          <div className="space-y-2">
+            {model.flow.map((item, index) => (
+              <ComhwalMiniCell key={item} accent={accent} active={index === 1}>{item}</ComhwalMiniCell>
+            ))}
+          </div>
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.startsWith('analysis-pivot') || pattern.startsWith('analysis-data-table')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-4 gap-1.5">
+          {['필드', '1월', '2월', '합계', 'A', '12', '18', '30', 'B', '22', '16', '38'].map((label, index) => (
+            <ComhwalMiniCell key={`${label}-${index}`} accent={accent} active={index === 0 || index === 7}>
+              {label}
+            </ComhwalMiniCell>
+          ))}
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.startsWith('macro-') || pattern.startsWith('vba-')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-2">
+          {model.flow.map((item, index) => (
+            <div key={item} className="contents">
+              <ComhwalMiniCell accent={accent} active={index === 1}>{item}</ComhwalMiniCell>
+              {index < 2 ? <ArrowRight size={16} style={{ color: accent }} /> : null}
+            </div>
+          ))}
+        </div>
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          {['Sub', 'If', 'Next'].map((label, index) => (
+            <ComhwalMiniCell key={label} accent={accent} active={index === 0}>{label}</ComhwalMiniCell>
+          ))}
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  return (
+    <ComhwalDiagramFrame accent={accent}>
+      <ComhwalVisualFlow model={model} accent={accent} />
+    </ComhwalDiagramFrame>
+  );
+}
+
+function ComhwalDatabasePattern({
+  model,
+  accent,
+}: {
+  model: ComhwalVisualModel;
+  accent: string;
+}) {
+  const pattern = model.pattern ?? '';
+
+  if (pattern.includes('erd') || pattern.includes('relationship') || pattern.includes('integrity')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-[1fr_70px_1fr] items-center gap-2">
+          {['고객', '주문'].map((title, index) => (
+            <div key={title} className="rounded-2xl border border-cream/15 bg-cream/[0.04] p-2">
+              <ComhwalMiniCell accent={accent} active={index === 0}>{title}</ComhwalMiniCell>
+              <div className="mt-1.5 grid gap-1">
+                {['ID', index === 0 ? '이름' : '고객ID'].map((row) => (
+                  <span key={row} className="rounded-lg bg-cream/[0.08] px-2 py-1 kr-num text-[10px] text-cream/62">
+                    {row}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+          <div className="-order-none flex items-center justify-center">
+            <span className="h-px w-full" style={{ background: accent }} />
+          </div>
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.includes('key') || pattern.includes('index')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-3 gap-2">
+          {model.flow.map((item, index) => (
+            <div key={item} className="relative">
+              <ComhwalMiniCell accent={accent} active={index === 1}>{item}</ComhwalMiniCell>
+              {index === 1 ? (
+                <span className="absolute -right-1 -top-1 h-4 w-4 rounded-full" style={{ background: accent }} />
+              ) : null}
+            </div>
+          ))}
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.includes('normalization')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+          <div className="grid grid-cols-2 gap-1.5">
+            {['고객', '주문', '고객', '주문'].map((label, index) => (
+              <ComhwalMiniCell key={`${label}-${index}`} accent={accent} active={index === 0}>{label}</ComhwalMiniCell>
+            ))}
+          </div>
+          <ArrowRight size={16} style={{ color: accent }} />
+          <div className="grid gap-1.5">
+            <ComhwalMiniCell accent={accent} active>고객 표</ComhwalMiniCell>
+            <ComhwalMiniCell accent={accent}>주문 표</ComhwalMiniCell>
+          </div>
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.includes('mask') || pattern.includes('validation') || pattern.includes('lookup')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-[1fr_92px] gap-3">
+          <div className="rounded-2xl border border-cream/15 bg-cream/[0.04] p-2">
+            <div className="mb-2 rounded-xl bg-cream/[0.08] px-3 py-2 kr-num text-[11px] text-cream/72">
+              000-0000
+            </div>
+            <div className="grid grid-cols-2 gap-1.5">
+              {['허용', '거절', '목록', '저장'].map((label, index) => (
+                <ComhwalMiniCell key={label} accent={accent} active={index === 0}>{label}</ComhwalMiniCell>
+              ))}
+            </div>
+          </div>
+          <ComhwalMiniCell accent={accent} active>{model.flow[2]}</ComhwalMiniCell>
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.includes('import') || pattern.includes('export')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+          <ComhwalMiniCell accent={accent}>{pattern.includes('import') ? 'Excel/CSV' : 'Access'}</ComhwalMiniCell>
+          <ArrowRight size={18} style={{ color: accent }} />
+          <ComhwalMiniCell accent={accent} active>{pattern.includes('import') ? 'Access' : 'Excel/PDF'}</ComhwalMiniCell>
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  return (
+    <ComhwalDiagramFrame accent={accent}>
+      <div className="grid grid-cols-[84px_1fr] gap-3">
+        <div className="flex flex-col items-center justify-center gap-1">
+          <span
+            className="h-10 w-20 rounded-[50%] border-2"
+            style={{ borderColor: accent, background: 'rgba(239,244,255,0.07)' }}
+          />
+          <span className="-mt-6 h-16 w-20 rounded-b-2xl border-x-2 border-b-2" style={{ borderColor: accent }} />
+        </div>
+        <div className="grid gap-2">
+          {model.flow.map((item, index) => (
+            <ComhwalMiniCell key={item} accent={accent} active={index === 1}>{item}</ComhwalMiniCell>
+          ))}
+        </div>
+      </div>
+    </ComhwalDiagramFrame>
+  );
+}
+
+function ComhwalQueryPattern({
+  model,
+  accent,
+}: {
+  model: ComhwalVisualModel;
+  accent: string;
+}) {
+  const pattern = model.pattern ?? '';
+
+  if (pattern.includes('join')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+          <ComhwalMiniCell accent={accent}>Table A</ComhwalMiniCell>
+          <div className="rounded-full border px-3 py-2 kr-num text-[11px]" style={{ borderColor: accent, color: accent }}>
+            JOIN
+          </div>
+          <ComhwalMiniCell accent={accent} active>Table B</ComhwalMiniCell>
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.includes('subquery')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="rounded-2xl border border-cream/15 p-3">
+          <ComhwalMiniCell accent={accent} active>바깥 SELECT</ComhwalMiniCell>
+          <div className="mx-auto my-2 h-5 w-px" style={{ background: accent }} />
+          <div className="mx-auto max-w-[210px] rounded-2xl border border-cream/15 bg-cream/[0.05] p-2">
+            <ComhwalMiniCell accent={accent}>안쪽 SELECT</ComhwalMiniCell>
+          </div>
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.includes('action')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-[1fr_86px] gap-3">
+          <ComhwalVisualFlow model={model} accent={accent} />
+          <div className="flex items-center justify-center rounded-2xl border border-cream/15 bg-cream/[0.04] kr-heading text-[28px]" style={{ color: accent }}>
+            !
+          </div>
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.includes('crosstab') || pattern.includes('group')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-3 gap-1.5">
+          {['', '1월', '2월', 'A', '12', '16', 'B', '20', '18'].map((label, index) => (
+            <ComhwalMiniCell key={`${label}-${index}`} accent={accent} active={index === 4}>
+              {label}
+            </ComhwalMiniCell>
+          ))}
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  return (
+    <ComhwalDiagramFrame accent={accent}>
+      <div className="rounded-2xl border border-cream/15 bg-cream/[0.04] p-3">
+        <div className="grid grid-cols-3 gap-2">
+          {model.flow.map((item, index) => (
+            <ComhwalMiniCell key={item} accent={accent} active={index === 1}>{item}</ComhwalMiniCell>
+          ))}
+        </div>
+        <div className="mt-3 rounded-xl bg-cream/[0.07] px-3 py-2 kr-num text-[11px] text-cream/70">
+          SELECT field FROM table WHERE condition
+        </div>
+      </div>
+    </ComhwalDiagramFrame>
+  );
+}
+
+function ComhwalFormReportPattern({
+  model,
+  accent,
+}: {
+  model: ComhwalVisualModel;
+  accent: string;
+}) {
+  const pattern = model.pattern ?? '';
+  const isReport = pattern.startsWith('report-');
+
+  if (pattern.includes('wizard')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-3 gap-2">
+          {['1', '2', '3'].map((step, index) => (
+            <div key={step} className="rounded-2xl border border-cream/15 bg-cream/[0.04] p-2">
+              <ComhwalMiniCell accent={accent} active={index === 1}>{step}</ComhwalMiniCell>
+              <div className="mt-2 h-2 rounded bg-cream/15" />
+            </div>
+          ))}
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.includes('palette') || pattern.includes('properties') || pattern.includes('format')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-[86px_1fr] gap-3">
+          <div className="grid gap-1.5">
+            {['Aa', '□', 'Btn'].map((item, index) => (
+              <ComhwalMiniCell key={item} accent={accent} active={index === 1}>{item}</ComhwalMiniCell>
+            ))}
+          </div>
+          <div className="rounded-2xl border border-cream/15 bg-cream/[0.04] p-2">
+            {model.flow.map((item, index) => (
+              <ComhwalMiniCell key={item} accent={accent} active={index === 1} className="mb-1.5 last:mb-0">
+                {item}
+              </ComhwalMiniCell>
+            ))}
+          </div>
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  if (pattern.includes('subform')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="rounded-2xl border border-cream/15 bg-cream/[0.04] p-3">
+          <ComhwalMiniCell accent={accent} active>기본 폼</ComhwalMiniCell>
+          <div className="mt-3 rounded-2xl border border-cream/15 bg-cream/[0.05] p-2">
+            <ComhwalMiniCell accent={accent}>하위 폼</ComhwalMiniCell>
+          </div>
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  return (
+    <ComhwalDiagramFrame accent={accent}>
+      <div
+        className={`mx-auto max-w-[280px] rounded-2xl border p-3 ${isReport ? 'bg-cream/[0.08]' : 'bg-cream/[0.04]'}`}
+        style={{ borderColor: 'rgba(239,244,255,0.16)' }}
+      >
+        <div className="mb-2 rounded-xl px-3 py-2 kr-heading text-[11px]" style={{ background: accent, color: '#07121f' }}>
+          {isReport ? 'REPORT' : 'FORM'}
+        </div>
+        <div className="space-y-1.5">
+          {model.flow.map((item, index) => (
+            <ComhwalMiniCell key={item} accent={accent} active={index === 1}>
+              {item}
+            </ComhwalMiniCell>
+          ))}
+        </div>
+      </div>
+    </ComhwalDiagramFrame>
+  );
+}
+
+function ComhwalAutomationPattern({
+  model,
+  accent,
+}: {
+  model: ComhwalVisualModel;
+  accent: string;
+}) {
+  const pattern = model.pattern ?? '';
+
+  if (pattern.includes('radar') || pattern.includes('data-access')) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="relative mx-auto h-[132px] max-w-[280px]">
+          <div
+            className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full border-2"
+            style={{ borderColor: accent }}
+          />
+          {model.flow.map((item, index) => (
+            <div
+              key={item}
+              className="absolute rounded-2xl border px-3 py-2 kr-heading text-[10px]"
+              style={{
+                left: index === 0 ? 0 : index === 1 ? '50%' : 'auto',
+                right: index === 2 ? 0 : 'auto',
+                top: index === 1 ? 0 : 82,
+                transform: index === 1 ? 'translateX(-50%)' : undefined,
+                borderColor: index === 1 ? accent : 'rgba(239,244,255,0.16)',
+                background: index === 1 ? accent : 'rgba(239,244,255,0.07)',
+                color: index === 1 ? '#07121f' : 'rgba(239,244,255,0.76)',
+              }}
+            >
+              {item}
+            </div>
+          ))}
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  return (
+    <ComhwalDiagramFrame accent={accent}>
+      <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-2">
+        {model.flow.map((item, index) => (
+          <div key={item} className="contents">
+            <ComhwalMiniCell accent={accent} active={index === 1}>{item}</ComhwalMiniCell>
+            {index < 2 ? <ArrowRight size={16} style={{ color: accent }} /> : null}
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 grid grid-cols-3 gap-2">
+        {['OpenForm', 'RunQuery', 'SetValue'].map((label, index) => (
+          <ComhwalMiniCell key={label} accent={accent} active={index === 1}>{label}</ComhwalMiniCell>
+        ))}
+      </div>
+    </ComhwalDiagramFrame>
+  );
+}
+
+function ComhwalAdaptiveDiagram({
+  model,
+  accent,
+}: {
+  model: ComhwalVisualModel;
+  accent: string;
+}) {
+  const pattern = model.pattern ?? '';
+
+  if (pattern.startsWith('sheet-')) {
+    return <ComhwalSheetPattern model={model} accent={accent} />;
+  }
+  if (pattern.startsWith('formula-')) {
+    return <ComhwalFormulaPattern model={model} accent={accent} />;
+  }
+  if (
+    pattern.startsWith('chart-') ||
+    pattern.startsWith('print-') ||
+    pattern.startsWith('data-') ||
+    pattern.startsWith('analysis-') ||
+    pattern.startsWith('macro-') ||
+    pattern.startsWith('vba-')
+  ) {
+    return <ComhwalAnalysisPattern model={model} accent={accent} />;
+  }
+  if (pattern.startsWith('db-') || pattern.startsWith('table-')) {
+    return <ComhwalDatabasePattern model={model} accent={accent} />;
+  }
+  if (pattern.startsWith('query-')) {
+    return <ComhwalQueryPattern model={model} accent={accent} />;
+  }
+  if (pattern.startsWith('form-') || pattern.startsWith('report-')) {
+    return <ComhwalFormReportPattern model={model} accent={accent} />;
+  }
+  if (pattern.startsWith('automation-')) {
+    return <ComhwalAutomationPattern model={model} accent={accent} />;
+  }
+
+  return (
+    <ComhwalDiagramFrame accent={accent}>
+      <ComhwalVisualFlow model={model} accent={accent} />
+    </ComhwalDiagramFrame>
+  );
+}
+
 function ComhwalConceptVisualCard({
   card,
   accent,
@@ -1992,6 +2828,8 @@ function ComhwalConceptVisualCard({
     <figure
       className="w-full max-w-[440px]"
       aria-label={`${model.title} 그림 설명`}
+      data-comhwal-visual-pattern={model.pattern ?? model.mode ?? 'legacy'}
+      data-comhwal-visual-kind={model.kind ?? model.pattern ?? model.mode ?? 'legacy'}
     >
       <div
         className="overflow-hidden rounded-[24px] border p-4 md:p-5"
@@ -2025,7 +2863,9 @@ function ComhwalConceptVisualCard({
           </div>
         </div>
 
-        {model.mode === 'sheet-grid' ? (
+        {model.pattern ? (
+          <ComhwalAdaptiveDiagram model={model} accent={accent} />
+        ) : model.mode === 'sheet-grid' ? (
           <ComhwalMiniSpreadsheet accent={accent} />
         ) : model.mode === 'formula' ? (
           <ComhwalFormulaDiagram model={model} accent={accent} />

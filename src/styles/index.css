@@ -4,7 +4,8 @@
 
 /* ===== Base ===== */
 :root {
-  --bg: #010828;
+  --base: #010828;
+  --bg: var(--base);
   --cream: #EFF4FF;
   --neon: #D1F843;
   --neon-rgb: 209 248 67;

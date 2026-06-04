@@ -11,6 +11,43 @@ const REPO_ROOT = path.resolve(__dirname, '..');
 const LESSONS_ROOT = path.join(REPO_ROOT, 'src/data/lessons');
 const BLOG_FILE = path.join(REPO_ROOT, 'src/data/seo/blog.ts');
 const COMHWAL_CONCEPT_FILE = path.join(REPO_ROOT, 'src/data/comhwal/concepts.ts');
+const COMHWAL_EXPANSION_CONCEPT_FILE = path.join(
+  REPO_ROOT,
+  'src/data/comhwal/expansionConcepts.ts',
+);
+
+const COMHWAL_TOPIC_SOURCES = [
+  {
+    planetKey: 'computer-general',
+    planetLabel: '컴퓨터 일반',
+    sectionLabel: '컴활 컴퓨터 일반',
+    file: COMHWAL_CONCEPT_FILE,
+    marker: 'const COMPUTER_GENERAL_TOPICS',
+    priority: '0.72',
+    blogHref: '/blog/comhwal-컴퓨터-일반-우선순위',
+    blogLabel: '컴퓨터 일반 우선순위',
+  },
+  {
+    planetKey: 'spreadsheet-general',
+    planetLabel: '스프레드시트 일반',
+    sectionLabel: '컴활 스프레드시트 일반',
+    file: COMHWAL_EXPANSION_CONCEPT_FILE,
+    marker: 'export const SPREADSHEET_GENERAL_TOPICS',
+    priority: '0.70',
+    blogHref: '/blog/comhwal-7일-필기-플랜',
+    blogLabel: '컴활 7일 필기 플랜',
+  },
+  {
+    planetKey: 'database-general',
+    planetLabel: '데이터베이스 일반',
+    sectionLabel: '컴활 데이터베이스 일반',
+    file: COMHWAL_EXPANSION_CONCEPT_FILE,
+    marker: 'export const DATABASE_GENERAL_TOPICS',
+    priority: '0.68',
+    blogHref: '/blog/comhwal-필기에서-실기-전환법',
+    blogLabel: '필기에서 실기 전환법',
+  },
+];
 
 const SUBJECT_LABEL = {
   adsp: 'ADsP 데이터분석 준전문가',
@@ -473,13 +510,17 @@ function collectBlogRoutes() {
 }
 
 function collectComhwalTopicRoutes() {
-  if (!fs.existsSync(COMHWAL_CONCEPT_FILE)) return [];
-  const src = fs.readFileSync(COMHWAL_CONCEPT_FILE, 'utf8');
-  const topicChunks = extractTopLevelObjectsFromArrayAfterMarker(
-    src,
-    'const COMPUTER_GENERAL_TOPICS',
-  );
-  const topics = topicChunks
+  return COMHWAL_TOPIC_SOURCES.flatMap((source) => {
+    const topics = collectComhwalTopicSpecs(source);
+    return topics.map((topic, index) => buildComhwalTopicRoute(source, topics, topic, index));
+  });
+}
+
+function collectComhwalTopicSpecs(source) {
+  if (!fs.existsSync(source.file)) return [];
+  const src = fs.readFileSync(source.file, 'utf8');
+  const topicChunks = extractTopLevelObjectsFromArrayAfterMarker(src, source.marker);
+  const objectTopics = topicChunks
     .map((chunk) => {
       const id = readStringProp(chunk, 'id');
       const section = readStringProp(chunk, 'section');
@@ -500,96 +541,117 @@ function collectComhwalTopicRoutes() {
       return { id, section, title, cards };
     })
     .filter(Boolean);
+  if (objectTopics.length > 0) return objectTopics;
 
-  return topics.map((topic, index) => {
-    const path = `/topics/comhwal/computer-general/${topic.id}`;
-    const summary = truncate(
-      `${topic.cards.slice(0, 2).map((card) => card.body).join(' ')} 컴활 필기 컴퓨터 일반 ${topic.id} ${topic.title}를 초보자용 개념 카드와 체크포인트 문제로 정리했습니다.`,
-      180,
-    );
-    const questions = topic.cards
-      .filter((card) => card.correct)
-      .slice(0, 5)
-      .map((card) => ({
-        '@type': 'Question',
-        name:
-          card.questionPrompt ||
-          `${topic.title}에서 방금 배운 핵심은 무엇인가요?`,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: card.correct,
-        },
-        text: card.explanation || card.body,
-      }));
-    const links = [
-      { href: '/curriculum/comhwal', label: '컴활 커리큘럼' },
-      { href: '/faq/comhwal', label: '컴활 FAQ' },
-      { href: '/blog/comhwal-컴퓨터-일반-우선순위', label: '컴퓨터 일반 우선순위' },
-    ];
-    if (topics[index - 1]) {
-      links.push({
-        href: `/topics/comhwal/computer-general/${topics[index - 1].id}`,
-        label: `이전 토픽 ${topics[index - 1].id}`,
-      });
-    }
-    if (topics[index + 1]) {
-      links.push({
-        href: `/topics/comhwal/computer-general/${topics[index + 1].id}`,
-        label: `다음 토픽 ${topics[index + 1].id}`,
-      });
-    }
+  return extractTopicCallChunksAfterMarker(src, source.marker)
+    .map((chunk) => {
+      const cardsOpen = nextCodeChar(chunk, '[', 0);
+      if (cardsOpen < 0) return null;
+      const cardsClose = findMatching(chunk, cardsOpen, '[', ']');
+      const [id, section, title] = readStringLiterals(chunk.slice(0, cardsOpen));
+      const cards = extractTopLevelObjectLiterals(chunk.slice(cardsOpen + 1, cardsClose))
+        .map((cardChunk) => ({
+          title: readStringProp(cardChunk, 'title'),
+          body: readStringProp(cardChunk, 'body'),
+          correct: readStringProp(cardChunk, 'correct'),
+          questionPrompt: readStringProp(cardChunk, 'questionPrompt'),
+          explanation: readStringProp(cardChunk, 'explanation'),
+        }))
+        .filter((card) => card.title && card.body);
+      if (!id || !title || cards.length === 0) return null;
+      return { id, section, title, cards };
+    })
+    .filter(Boolean);
+}
 
-    return normalizeRoute({
-      group: 'topics',
-      path,
-      changefreq: 'monthly',
-      priority: '0.72',
-      title: `${topic.title} — 컴활 컴퓨터 일반 개념 카드 | QuestDP`,
-      description: summary,
-      h1: `${topic.title} — 컴활 컴퓨터 일반`,
-      eyebrow: `컴퓨터활용능력 필기 · 컴퓨터 일반 · ${topic.section || '컴퓨터 일반'} · ${topic.id}`,
-      summary,
-      type: 'article',
-      links,
-      jsonLd: [
-        {
-          '@context': 'https://schema.org',
-          '@type': 'LearningResource',
-          name: `${topic.title} 컴활 개념 카드`,
-          description: summary,
-          url: canonicalForPath(path),
-          inLanguage: 'ko-KR',
-          learningResourceType: 'Concept overview',
-          teaches: [topic.title, '컴활 컴퓨터 일반', topic.section].filter(Boolean),
-          educationalLevel: '컴퓨터활용능력 필기',
-          provider: { '@type': 'Organization', name: 'QuestDP', url: SITE_ORIGIN },
-          isAccessibleForFree: true,
-          hasPart: topic.cards.slice(0, 12).map((card, cardIndex) => ({
-            '@type': 'CreativeWork',
-            position: cardIndex + 1,
-            name: card.title,
-            text: card.body,
-          })),
-        },
-        {
-          '@context': 'https://schema.org',
-          '@type': 'Quiz',
-          name: `${topic.title} 체크포인트 문제`,
-          about: topic.title,
-          inLanguage: 'ko-KR',
-          educationalLevel: '컴퓨터활용능력 필기',
-          assesses: `${topic.id} ${topic.title}`,
-          provider: { '@type': 'Organization', name: 'QuestDP', url: SITE_ORIGIN },
-          hasPart: questions,
-        },
-        breadcrumbJsonLd([
-          ['홈', '/'],
-          ['컴활 커리큘럼', '/curriculum/comhwal'],
-          ['컴퓨터 일반', '/curriculum/comhwal'],
-          [topic.title, path],
-        ]),
-      ],
+function buildComhwalTopicRoute(source, topics, topic, index) {
+  const path = `/topics/comhwal/${source.planetKey}/${topic.id}`;
+  const summary = truncate(
+    `${topic.cards.slice(0, 2).map((card) => card.body).join(' ')} 컴활 필기 ${source.planetLabel} ${topic.id} ${topic.title}를 초보자용 개념 카드와 체크포인트 문제로 정리했습니다.`,
+    180,
+  );
+  const questions = topic.cards
+    .filter((card) => card.correct)
+    .slice(0, 5)
+    .map((card) => ({
+      '@type': 'Question',
+      name:
+        card.questionPrompt ||
+        `${topic.title}에서 방금 배운 핵심은 무엇인가요?`,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: card.correct,
+      },
+      text: card.explanation || card.body,
+    }));
+  const links = [
+    { href: '/curriculum/comhwal', label: '컴활 커리큘럼' },
+    { href: '/faq/comhwal', label: '컴활 FAQ' },
+    { href: source.blogHref, label: source.blogLabel },
+  ];
+  if (topics[index - 1]) {
+    links.push({
+      href: `/topics/comhwal/${source.planetKey}/${topics[index - 1].id}`,
+      label: `이전 토픽 ${topics[index - 1].id}`,
     });
+  }
+  if (topics[index + 1]) {
+    links.push({
+      href: `/topics/comhwal/${source.planetKey}/${topics[index + 1].id}`,
+      label: `다음 토픽 ${topics[index + 1].id}`,
+    });
+  }
+
+  return normalizeRoute({
+    group: 'topics',
+    path,
+    changefreq: 'monthly',
+    priority: source.priority,
+    title: `${topic.title} — ${source.sectionLabel} 개념 카드 | QuestDP`,
+    description: summary,
+    h1: `${topic.title} — ${source.sectionLabel}`,
+    eyebrow: `컴퓨터활용능력 필기 · ${source.planetLabel} · ${topic.section || source.planetLabel} · ${topic.id}`,
+    summary,
+    type: 'article',
+    links,
+    jsonLd: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'LearningResource',
+        name: `${topic.title} 컴활 개념 카드`,
+        description: summary,
+        url: canonicalForPath(path),
+        inLanguage: 'ko-KR',
+        learningResourceType: 'Concept overview',
+        teaches: [topic.title, source.sectionLabel, topic.section].filter(Boolean),
+        educationalLevel: '컴퓨터활용능력 필기',
+        provider: { '@type': 'Organization', name: 'QuestDP', url: SITE_ORIGIN },
+        isAccessibleForFree: true,
+        hasPart: topic.cards.slice(0, 12).map((card, cardIndex) => ({
+          '@type': 'CreativeWork',
+          position: cardIndex + 1,
+          name: card.title,
+          text: card.body,
+        })),
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Quiz',
+        name: `${topic.title} 체크포인트 문제`,
+        about: topic.title,
+        inLanguage: 'ko-KR',
+        educationalLevel: '컴퓨터활용능력 필기',
+        assesses: `${topic.id} ${topic.title}`,
+        provider: { '@type': 'Organization', name: 'QuestDP', url: SITE_ORIGIN },
+        hasPart: questions,
+      },
+      breadcrumbJsonLd([
+        ['홈', '/'],
+        ['컴활 커리큘럼', '/curriculum/comhwal'],
+        [source.planetLabel, '/curriculum/comhwal'],
+        [topic.title, path],
+      ]),
+    ],
   });
 }
 
@@ -763,6 +825,60 @@ function extractTopLevelObjectsFromArrayAfterMarker(src, marker) {
   const closeIndex = findMatching(src, openIndex, '[', ']');
   if (closeIndex < openIndex) return [];
   return extractTopLevelObjectLiterals(src.slice(openIndex + 1, closeIndex));
+}
+
+function extractTopicCallChunksAfterMarker(src, marker) {
+  const markerIndex = src.indexOf(marker);
+  if (markerIndex < 0) return [];
+  const equalsIndex = src.indexOf('=', markerIndex);
+  if (equalsIndex < 0) return [];
+  const openIndex = src.indexOf('[', equalsIndex);
+  if (openIndex < 0) return [];
+  const closeIndex = findMatching(src, openIndex, '[', ']');
+  if (closeIndex < openIndex) return [];
+
+  const arraySource = src.slice(openIndex + 1, closeIndex);
+  const chunks = [];
+  let i = 0;
+  while (i < arraySource.length) {
+    const callIndex = arraySource.indexOf('topic(', i);
+    if (callIndex < 0) break;
+    const openParen = arraySource.indexOf('(', callIndex);
+    const closeParen = findMatching(arraySource, openParen, '(', ')');
+    if (closeParen < openParen) break;
+    chunks.push(arraySource.slice(openParen + 1, closeParen));
+    i = closeParen + 1;
+  }
+  return chunks;
+}
+
+function readStringLiterals(src) {
+  const values = [];
+  let i = 0;
+  while (i < src.length) {
+    const quote = src[i];
+    if (quote !== "'" && quote !== '"') {
+      i++;
+      continue;
+    }
+    let out = '';
+    i++;
+    while (i < src.length) {
+      if (src[i] === '\\') {
+        out += src[i + 1] ?? '';
+        i += 2;
+        continue;
+      }
+      if (src[i] === quote) {
+        i++;
+        break;
+      }
+      out += src[i];
+      i++;
+    }
+    values.push(out);
+  }
+  return values;
 }
 
 function extractArrayAfterProperty(src, prop) {

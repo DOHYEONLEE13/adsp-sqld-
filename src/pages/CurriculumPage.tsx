@@ -276,7 +276,7 @@ export default function CurriculumPage({ subject }: Props) {
                 boxShadow: '0 8px 22px -6px rgba(253,128,46,0.55)',
               }}
             >
-              지금 학습하기
+              QuestDP 게임 섹션으로
               <ChevronRight size={14} strokeWidth={2.6} />
             </a>
             {alternateLinks(subject).map((link) => (

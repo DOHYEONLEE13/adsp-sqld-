@@ -19,14 +19,16 @@ export default function ComhwalTopicPage({ planetKey, topicId }: Props) {
   const meta = getComhwalTopicMeta(planetKey, topicId);
   const canonical = `https://quest-dp.com/topics/comhwal/${planetKey}/${topicId}/`;
   const title = topic?.title ?? '컴활 토픽';
+  const planetTitle = meta?.chapter.title ?? topic?.planetTitle ?? '컴활 필기';
+  const sectionTitle = meta?.section.title ?? topic?.sectionTitle ?? planetTitle;
   const hasContent = !!topic && cards.length > 0;
   const seoDescription = hasContent
-    ? `컴활 필기 컴퓨터 일반 ${topicId} ${title}를 초보자도 이해할 수 있게 짧은 개념 카드 ${cards.length}개와 체크포인트 문제로 정리했습니다.`
+    ? `컴활 필기 ${planetTitle} ${topicId} ${title}를 초보자도 이해할 수 있게 짧은 개념 카드 ${cards.length}개와 체크포인트 문제로 정리했습니다.`
     : '컴활 필기 토픽 페이지를 찾을 수 없습니다.';
 
   useSeoMeta({
     title: hasContent
-      ? `${title} — 컴활 컴퓨터 일반 개념 카드 | QuestDP`
+      ? `${title} — 컴활 ${planetTitle} 개념 카드 | QuestDP`
       : '컴활 토픽을 찾을 수 없어요 — QuestDP',
     description: seoDescription,
     canonical,
@@ -37,8 +39,8 @@ export default function ComhwalTopicPage({ planetKey, topicId }: Props) {
       ? buildJsonLd({
           cards,
           canonical,
-          planetTitle: meta?.chapter.title ?? '컴퓨터 일반',
-          sectionTitle: meta?.section.title ?? title,
+          planetTitle,
+          sectionTitle,
           title,
           topicId,
         })
@@ -77,7 +79,7 @@ export default function ComhwalTopicPage({ planetKey, topicId }: Props) {
             컴활 필기
           </a>
           <ChevronRight size={12} className="text-cream/30" />
-          <span className="text-[#A7E96A]">컴퓨터 일반</span>
+          <span className="text-[#A7E96A]">{planetTitle}</span>
           <ChevronRight size={12} className="text-cream/30" />
           <span className="text-cream/85">{topicId}</span>
         </nav>
@@ -85,7 +87,7 @@ export default function ComhwalTopicPage({ planetKey, topicId }: Props) {
         <header className="mb-10 border-b border-cream/10 pb-8">
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#A7E96A]/35 bg-[#A7E96A]/10 px-3 py-1.5 text-[11px] uppercase tracking-widest text-[#A7E96A]">
             <Sparkles size={13} strokeWidth={2.4} />
-            컴활 컴퓨터 일반
+            컴활 {planetTitle}
           </div>
           <h1 className="kr-heading mb-3 text-[28px] leading-[1.16] md:text-[38px] lg:text-[44px]">
             {title}
@@ -97,6 +99,24 @@ export default function ComhwalTopicPage({ planetKey, topicId }: Props) {
             <Stat label="토픽 번호" value={topicId} />
             <Stat label="개념 카드" value={`${cards.length}개`} />
             <Stat label="체크포인트" value={`${checkpointQuestions.length}개`} />
+          </div>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a
+              href="#/game/comhwal"
+              onClick={(event) => handleNavClick(event, '#/game/comhwal')}
+              className="inline-flex items-center gap-2 rounded-full bg-[#FD802E] px-5 py-3 text-[12px] uppercase tracking-widest text-[#010828] transition active:scale-95 md:text-[13px]"
+            >
+              QuestDP 게임 섹션으로
+              <ChevronRight size={14} strokeWidth={2.6} />
+            </a>
+            <a
+              href="/curriculum/comhwal"
+              onClick={(event) => handleNavClick(event, '/curriculum/comhwal')}
+              className="inline-flex items-center gap-2 rounded-full border border-cream/20 px-5 py-3 text-[12px] uppercase tracking-widest text-cream/76 transition hover:border-neon/40 hover:text-neon md:text-[13px]"
+            >
+              컴활 전체 범위
+              <ChevronRight size={14} strokeWidth={2.6} />
+            </a>
           </div>
         </header>
 
@@ -121,7 +141,7 @@ export default function ComhwalTopicPage({ planetKey, topicId }: Props) {
             다음 토픽으로 이어가기
           </h2>
           <p className="kr-body mb-5 max-w-[680px] text-[14px] leading-[1.75] text-cream/70">
-            컴활 컴퓨터 일반 001~059는 실제 카드가 준비된 토픽만 개별 페이지로 열립니다.
+            컴활 {planetTitle} 토픽은 실제 카드가 준비된 항목만 개별 페이지로 열립니다.
             전체 과목 구조와 1급·2급 차이는 커리큘럼에서 함께 확인하세요.
           </p>
           <div className="flex flex-wrap gap-3">

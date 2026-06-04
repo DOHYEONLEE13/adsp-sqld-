@@ -112,6 +112,9 @@ export default function BlogPostPage({ slug }: Props) {
     post.relatedSlugs
       ?.map((s) => ALL_BLOG_POSTS.find((p) => p.slug === s))
       .filter((p): p is BlogPost => !!p) ?? [];
+  const isComhwalPost = post.slug.startsWith('comhwal-');
+  const gameHref = isComhwalPost ? '#/game/comhwal' : '#/game';
+  const curriculumHref = isComhwalPost ? '/curriculum/comhwal' : '/study-method';
 
   return (
     <article className="relative min-h-screen isolate overflow-hidden bg-base text-cream">
@@ -154,6 +157,29 @@ export default function BlogPostPage({ slug }: Props) {
           <p className="kr-body text-[14.5px] md:text-[15.5px] text-cream/75 leading-[1.65]">
             {post.subtitle}
           </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a
+              href={gameHref}
+              onClick={(e) => handleNavClick(e, gameHref)}
+              className="kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full active:scale-95 transition"
+              style={{
+                background: '#FD802E',
+                color: '#010828',
+                boxShadow: '0 8px 22px -6px rgba(253,128,46,0.55)',
+              }}
+            >
+              {isComhwalPost ? '컴활 게임 섹션으로' : 'QuestDP 게임 섹션으로'}
+              <ChevronRight size={14} strokeWidth={2.6} />
+            </a>
+            <a
+              href={curriculumHref}
+              onClick={(e) => handleNavClick(e, curriculumHref)}
+              className="kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full border border-cream/20 hover:border-neon/40 hover:text-neon transition"
+            >
+              {isComhwalPost ? '컴활 커리큘럼' : '학습 원리'}
+              <ChevronRight size={14} strokeWidth={2.6} />
+            </a>
+          </div>
         </header>
 
         {/* Body */}

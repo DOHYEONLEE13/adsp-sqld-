@@ -373,12 +373,12 @@ export const COMHWAL_FAQ: SubjectFAQ = {
         {
           q: 'QuestDP 컴활 커리큘럼은 어디까지 공개되어 있나요?',
           a:
-            '전체 컴활 1급·2급 필기 로드맵은 /curriculum/comhwal 에서 확인할 수 있습니다. 개별 색인 페이지는 실제 카드가 있는 컴퓨터 일반 001~059 토픽부터 공개합니다.',
+            '전체 컴활 1급·2급 필기 로드맵은 /curriculum/comhwal 에서 확인할 수 있습니다. 개별 색인 페이지는 실제 카드가 있는 컴퓨터 일반·스프레드시트 일반·데이터베이스 일반 토픽만 공개합니다.',
         },
         {
           q: '컴활 컴퓨터 일반 토픽 페이지는 어떤 식으로 보나요?',
           a:
-            '예를 들어 /topics/comhwal/computer-general/001 에서 한글 Windows 10의 특징을 짧은 카드, 핵심 포인트, 즉시 확인 문제로 봅니다. 준비 중인 과목은 얇은 페이지를 만들지 않습니다.',
+            '예를 들어 /topics/comhwal/computer-general/001, /topics/comhwal/spreadsheet-general/060, /topics/comhwal/database-general/107 처럼 실제 카드가 있는 토픽은 짧은 카드, 핵심 포인트, 체크포인트 문제로 봅니다. 준비 중인 토픽은 얇은 페이지를 만들지 않습니다.',
         },
         {
           q: 'QuestDP는 컴활 기출문제를 그대로 싣나요?',

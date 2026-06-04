@@ -3,6 +3,7 @@ import Header from '@/components/layout/Header';
 import SocialIcons from '@/components/ui/SocialIcons';
 import VideoBg from '@/components/ui/VideoBg';
 import { HERO } from '@/data/site';
+import { handleNavClick } from '@/lib/navigate';
 
 export default function Hero() {
   return (
@@ -66,6 +67,13 @@ export default function Hero() {
                 className="liquid-glass kr-heading inline-flex items-center gap-2 uppercase tracking-widest text-[12px] md:text-[13px] px-6 py-4 rounded-full hover:bg-white/10 transition"
               >
                 모드 둘러보기
+              </a>
+              <a
+                href="/curriculum/comhwal"
+                onClick={(event) => handleNavClick(event, '/curriculum/comhwal')}
+                className="liquid-glass kr-heading inline-flex items-center gap-2 uppercase tracking-widest text-[12px] md:text-[13px] px-6 py-4 rounded-full hover:bg-white/10 transition"
+              >
+                컴활 커리큘럼
               </a>
             </div>
           </div>

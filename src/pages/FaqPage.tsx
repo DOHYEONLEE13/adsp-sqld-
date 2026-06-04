@@ -93,6 +93,28 @@ export default function FaqPage({ subject }: Props) {
           <p className="kr-body max-w-[700px] text-[14.5px] leading-[1.65] text-cream/75 md:text-[15.5px]">
             {data.metaDescription}
           </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a
+              href={gameHref(subject)}
+              onClick={(event) => handleNavClick(event, gameHref(subject))}
+              className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-[12px] uppercase tracking-widest text-[#010828] transition active:scale-95 md:text-[13px]"
+              style={{
+                background: '#FD802E',
+                boxShadow: '0 8px 22px -6px rgba(253,128,46,0.55)',
+              }}
+            >
+              QuestDP 게임 섹션으로
+              <ChevronRight size={14} strokeWidth={2.6} />
+            </a>
+            <a
+              href={curriculumHref(subject)}
+              onClick={(event) => handleNavClick(event, curriculumHref(subject))}
+              className="inline-flex items-center gap-2 rounded-full border border-cream/20 px-5 py-3 text-[12px] uppercase tracking-widest text-cream/76 transition hover:border-neon/40 hover:text-neon md:text-[13px]"
+            >
+              커리큘럼 보기
+              <ChevronRight size={14} strokeWidth={2.6} />
+            </a>
+          </div>
         </header>
 
         <div className="space-y-12">
@@ -193,6 +215,10 @@ export default function FaqPage({ subject }: Props) {
 
 function curriculumHref(subject: SeoFaqSubject): string {
   return subject === 'comhwal' ? '/curriculum/comhwal' : `/curriculum/${subject}`;
+}
+
+function gameHref(subject: SeoFaqSubject): string {
+  return subject === 'comhwal' ? '#/game/comhwal' : `#/game/${subject}`;
 }
 
 function alternateFaqLinks(subject: SeoFaqSubject): Array<{ href: string; label: string }> {

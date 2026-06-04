@@ -87,6 +87,33 @@ export default function BlogIndexPage() {
             ADsP·SQLD·컴활 자격증 합격에 필요한 핵심 가이드 모음. 비교·로드맵·가이드 카테고리별로
             정리된 코너스톤 콘텐츠 {ALL_BLOG_POSTS.length}편.
           </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <a
+              href="#/game/comhwal"
+              onClick={(e) => handleNavClick(e, '#/game/comhwal')}
+              className="kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full active:scale-95 transition"
+              style={{ background: '#FD802E', color: '#010828', boxShadow: '0 8px 22px -6px rgba(253,128,46,0.55)' }}
+            >
+              컴활 게임 섹션으로
+              <ChevronRight size={14} strokeWidth={2.6} />
+            </a>
+            <a
+              href="/curriculum/comhwal"
+              onClick={(e) => handleNavClick(e, '/curriculum/comhwal')}
+              className="kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full border border-cream/20 hover:border-neon/40 hover:text-neon transition"
+            >
+              컴활 커리큘럼
+              <ChevronRight size={14} strokeWidth={2.6} />
+            </a>
+            <a
+              href="/faq/comhwal"
+              onClick={(e) => handleNavClick(e, '/faq/comhwal')}
+              className="kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full border border-cream/20 hover:border-neon/40 hover:text-neon transition"
+            >
+              컴활 FAQ
+              <ChevronRight size={14} strokeWidth={2.6} />
+            </a>
+          </div>
         </header>
 
         {/* Category sections */}

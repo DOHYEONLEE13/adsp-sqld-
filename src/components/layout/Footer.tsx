@@ -31,7 +31,7 @@ export default function Footer() {
               </span>
             </a>
             <p className="kr-body text-[12px] leading-[1.65] text-cream/55">
-              {BRAND.tagline}. ADSP · SQLD 자격증을 게임으로 정복하는 학습
+              {BRAND.tagline}. ADSP · SQLD · 컴활 자격증을 게임으로 정복하는 학습
               플랫폼.
             </p>
           </div>
@@ -44,6 +44,8 @@ export default function Footer() {
                 { label: '소개', href: '/about' },
                 { label: '학습 원리', href: '/study-method' },
                 { label: '플레이', href: '#/game' },
+                { label: '컴활 커리큘럼', href: '/curriculum/comhwal' },
+                { label: '컴활 FAQ', href: '/faq/comhwal' },
                 { label: '요금제', href: '/pricing' },
               ]}
             />

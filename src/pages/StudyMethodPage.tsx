@@ -58,7 +58,7 @@ const SUBJECT_ROWS = [
   {
     subject: '컴활',
     focus: '컴퓨터 일반, 스프레드시트 일반, 데이터베이스 일반',
-    structure: '1급 3과목 · 2급 2과목 · 컴퓨터 일반 001~059 실콘텐츠 공개',
+    structure: '1급 3과목 · 2급 2과목 · 152개 토픽 카드',
     useCase: '컴퓨터 노베이스가 낯선 용어를 장면과 확인 문제로 연결',
   },
 ] as const;
@@ -258,6 +258,32 @@ export default function StudyMethodPage() {
             방금 본 개념을 바로 문제로 확인하고, 약점 점수와 망각곡선 복습으로 다시 등장하도록 만든
             ADsP·SQLD·컴활 게임형 학습사이트입니다.
           </p>
+          <div className="mt-7 flex flex-wrap gap-3">
+            <a
+              href="#/game/comhwal"
+              onClick={(e) => handleNavClick(e, '#/game/comhwal')}
+              className="inline-flex items-center gap-2 rounded-full bg-[#FD802E] px-5 py-3 text-[12px] font-semibold uppercase tracking-widest text-[#010828] transition active:scale-95"
+            >
+              컴활 게임 섹션으로
+              <ChevronRight size={14} strokeWidth={2.5} />
+            </a>
+            <a
+              href="/topics/comhwal/computer-general/001"
+              onClick={(e) => handleNavClick(e, '/topics/comhwal/computer-general/001')}
+              className="inline-flex items-center gap-2 rounded-full border border-lime-300/30 px-5 py-3 text-[12px] font-semibold uppercase tracking-widest text-lime-200 transition hover:bg-lime-300/10"
+            >
+              컴퓨터 일반 001
+              <ChevronRight size={14} strokeWidth={2.5} />
+            </a>
+            <a
+              href="/topics/comhwal/spreadsheet-general/060"
+              onClick={(e) => handleNavClick(e, '/topics/comhwal/spreadsheet-general/060')}
+              className="inline-flex items-center gap-2 rounded-full border border-lime-300/30 px-5 py-3 text-[12px] font-semibold uppercase tracking-widest text-lime-200 transition hover:bg-lime-300/10"
+            >
+              스프레드시트 060
+              <ChevronRight size={14} strokeWidth={2.5} />
+            </a>
+          </div>
         </header>
 
         <section aria-labelledby="method-loop" className="mb-14">
@@ -448,6 +474,13 @@ export default function StudyMethodPage() {
               className="rounded-full border border-lime-300/35 px-5 py-3 text-[12px] font-semibold uppercase tracking-widest text-lime-200 transition hover:bg-lime-300/10"
             >
               컴활 커리큘럼
+            </a>
+            <a
+              href="/faq/comhwal"
+              onClick={(e) => handleNavClick(e, '/faq/comhwal')}
+              className="rounded-full border border-lime-300/35 px-5 py-3 text-[12px] font-semibold uppercase tracking-widest text-lime-200 transition hover:bg-lime-300/10"
+            >
+              컴활 FAQ
             </a>
           </div>
         </section>

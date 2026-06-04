@@ -7,7 +7,6 @@ import {
   useState,
   useTransition,
 } from 'react';
-import Landing from './pages/Landing';
 import type { Subject } from './types/question';
 import {
   isSeoCurriculumSubject,
@@ -58,6 +57,7 @@ import { scrollPageTo } from './lib/pageScroll';
 //   결과: 게스트가 랜딩만 보면 GamePage·StatsPage·법적 페이지·관리자 페이지의
 //   chunk 가 모두 미다운로드. 첫 진입 번들 크기 ↓.
 //   AuthGuard / authGuard.ts 인프라는 유지 — Phase B premium 결제 게이트에서 재사용.
+const Landing = lazy(() => import('./pages/Landing'));
 const LegalPage = lazy(() => import('./pages/LegalPage'));
 const AdminPage = lazy(() => import('./pages/AdminPage'));
 const RedeemPage = lazy(() => import('./pages/RedeemPage'));
@@ -205,39 +205,44 @@ function getRoute(): RouteState {
   // 1. Path-based 라우트 우선 (legal pages + Tier 2 lesson — SEO indexable)
   const pathname = window.location.pathname;
   const initialHash = window.location.hash.replace(/^#/, '');
+  const appModeActive = isAppMode();
   if (isAppEntryPath(pathname) && !initialHash) {
     return { route: 'game' };
   }
-  if (pathname === '/about' || pathname === '/about/')
+  const allowPathRoutes = !appModeActive || isAppEntryPath(pathname);
+  if (!allowPathRoutes && !initialHash) {
+    return { route: 'game' };
+  }
+  if (allowPathRoutes && (pathname === '/about' || pathname === '/about/'))
     return { route: 'legal', legalSlug: 'about' };
-  if (pathname === '/privacy' || pathname === '/privacy/')
+  if (allowPathRoutes && (pathname === '/privacy' || pathname === '/privacy/'))
     return { route: 'legal', legalSlug: 'privacy' };
-  if (pathname === '/terms' || pathname === '/terms/')
+  if (allowPathRoutes && (pathname === '/terms' || pathname === '/terms/'))
     return { route: 'legal', legalSlug: 'terms' };
-  if (pathname === '/refund' || pathname === '/refund/')
+  if (allowPathRoutes && (pathname === '/refund' || pathname === '/refund/'))
     return { route: 'legal', legalSlug: 'refund' };
   // 요금제 — Toss 가맹점 심사 + SEO indexable URL
-  if (pathname === '/pricing' || pathname === '/pricing/')
+  if (allowPathRoutes && (pathname === '/pricing' || pathname === '/pricing/'))
     return { route: 'pricing' };
-  if (pathname === '/contact' || pathname === '/contact/')
+  if (allowPathRoutes && (pathname === '/contact' || pathname === '/contact/'))
     return { route: 'contact' };
-  if (pathname === '/study-method' || pathname === '/study-method/')
+  if (allowPathRoutes && (pathname === '/study-method' || pathname === '/study-method/'))
     return { route: 'study-method' };
   // Tier 2 — 정적 lesson SEO 페이지. `/lesson/:stepId`
-  if (pathname.startsWith('/lesson/')) {
+  if (allowPathRoutes && pathname.startsWith('/lesson/')) {
     const stepId = pathname.slice('/lesson/'.length);
     // stepId 안에 / 포함되면 잘라냄 (예방)
     const cleanId = stepId.split('/')[0];
     if (cleanId) return { route: 'lesson-static', lessonStepId: cleanId };
   }
   // Tier 2 — 정적 quiz SEO 페이지. `/quiz/:questionId`
-  if (pathname.startsWith('/quiz/')) {
+  if (allowPathRoutes && pathname.startsWith('/quiz/')) {
     const questionId = pathname.slice('/quiz/'.length);
     const cleanId = questionId.split('/')[0];
     if (cleanId) return { route: 'quiz-static', quizQuestionId: cleanId };
   }
   // Tier 2 — 컴활 실콘텐츠 토픽. `/topics/comhwal/computer-general/:topicId`
-  if (pathname.startsWith('/topics/comhwal/')) {
+  if (allowPathRoutes && pathname.startsWith('/topics/comhwal/')) {
     const parts = pathname.slice('/topics/comhwal/'.length).split('/').filter(Boolean);
     const [planetKey, topicId] = parts;
     if (planetKey && topicId) {
@@ -245,28 +250,28 @@ function getRoute(): RouteState {
     }
   }
   // Tier 2 — 커리큘럼 pillar 페이지. `/curriculum/adsp` · `/curriculum/sqld` · `/curriculum/comhwal`
-  if (pathname.startsWith('/curriculum/')) {
+  if (allowPathRoutes && pathname.startsWith('/curriculum/')) {
     const sub = pathname.slice('/curriculum/'.length).split('/')[0];
     if (isSeoCurriculumSubject(sub)) {
       return { route: 'curriculum', curriculumSubject: sub };
     }
   }
   // Tier 2 — FAQ. `/faq/adsp` · `/faq/sqld` · `/faq/comhwal`
-  if (pathname.startsWith('/faq/')) {
+  if (allowPathRoutes && pathname.startsWith('/faq/')) {
     const sub = pathname.slice('/faq/'.length).split('/')[0];
     if (isSeoFaqSubject(sub)) {
       return { route: 'faq', faqSubject: sub };
     }
   }
   // Tier 2 — 용어 사전. `/glossary`
-  if (pathname === '/glossary' || pathname === '/glossary/') {
+  if (allowPathRoutes && (pathname === '/glossary' || pathname === '/glossary/')) {
     return { route: 'glossary' };
   }
   // Tier 2 — 블로그 인덱스 + 포스트. `/blog`, `/blog/:slug`
-  if (pathname === '/blog' || pathname === '/blog/') {
+  if (allowPathRoutes && (pathname === '/blog' || pathname === '/blog/')) {
     return { route: 'blog-index' };
   }
-  if (pathname.startsWith('/blog/')) {
+  if (allowPathRoutes && pathname.startsWith('/blog/')) {
     const raw = pathname.slice('/blog/'.length).split('/')[0];
     if (raw) return { route: 'blog-post', blogSlug: raw };
   }
@@ -332,7 +337,7 @@ function getRoute(): RouteState {
     }
     return { route: 'game' };
   }
-  if (isAppMode()) {
+  if (appModeActive) {
     return { route: 'game' };
   }
   return { route: 'landing' };

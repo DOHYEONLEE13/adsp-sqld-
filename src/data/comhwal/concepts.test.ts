@@ -96,6 +96,32 @@ describe('COMHWAL concept card structure', () => {
     expect(questionIndexes).toEqual([2, 4, 6, 8]);
   });
 
+  it('reinforces every other topic with a short setup bubble before each question', () => {
+    for (const topicId of COMPUTER_GENERAL_TOPIC_IDS.filter((id) => id !== '001')) {
+      const cards = getComhwalTopicCards('computer-general', topicId);
+      const questionIndexes = cards
+        .map((card, index) => (card.question ? index : -1))
+        .filter((index) => index >= 0);
+
+      expect(
+        cards.length,
+        `topic ${topicId} should not stay as a thin one-card summary`,
+      ).toBeGreaterThanOrEqual(4);
+      expect(
+        questionIndexes.length,
+        `topic ${topicId} needs repeated checkpoint questions`,
+      ).toBeGreaterThanOrEqual(2);
+
+      for (const index of questionIndexes) {
+        expect(index, `topic ${topicId} asks too early`).toBeGreaterThan(0);
+        expect(
+          cards[index - 1].question,
+          `topic ${topicId} needs a setup bubble right before the checkpoint`,
+        ).toBeUndefined();
+      }
+    }
+  });
+
   it('keeps every computer-general dialogue copy short for speech bubbles', () => {
     for (const topicId of COMPUTER_GENERAL_TOPIC_IDS) {
       const cards = getComhwalTopicCards('computer-general', topicId);

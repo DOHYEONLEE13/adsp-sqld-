@@ -121,6 +121,36 @@ describe('COMHWAL concept card structure', () => {
     expect(questionIndexes).toEqual([2, 4, 6, 8]);
   });
 
+  it('keeps checkpoint questions tied to the concept that was just explained', () => {
+    const windowsCards = getComhwalTopicCards('computer-general', '001');
+
+    expect(windowsCards[2].question?.prompt).toBe(
+      '사람 부탁을 컴퓨터 일로 바꾸고, 앱·파일·장치까지 정리해 주는 것은?',
+    );
+    expect(windowsCards[2].question?.prompt).not.toContain('Windows 10');
+
+    const fileSystemCards = getComhwalTopicCards('computer-general', '002');
+    expect(fileSystemCards[1].question?.prompt).toBe(
+      '방금 본 "파일 시스템은 저장 규칙이야" 설명과 가장 가까운 것은?',
+    );
+    expect(fileSystemCards[3].question?.prompt).toBe(
+      '방금 본 "NTFS는 Windows에서 자주 나와" 설명과 가장 가까운 것은?',
+    );
+
+    for (const card of listComhwalCards()) {
+      if (!card.question) continue;
+
+      expect(
+        card.question.prompt,
+        `${card.id} should not ask from the broad topic title`,
+      ).not.toContain('에서 방금 배운 핵심');
+      expect(
+        card.question.prompt,
+        `${card.id} should not use the topic-level intro copy as a question`,
+      ).not.toContain('문제를 풀어보자');
+    }
+  });
+
   it('reinforces every other topic with a short setup bubble before each question', () => {
     for (const { planetKey, topicIds } of COMHWAL_PLANET_TOPIC_IDS) {
       for (const topicId of topicIds.filter((id) => id !== '001')) {

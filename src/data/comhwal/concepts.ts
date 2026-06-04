@@ -1890,7 +1890,7 @@ function buildQuestion(
     id: `${cardIdPrefix}-${topic.id}-q${String(cardIndex + 1).padStart(2, '0')}`,
     prompt:
       card.questionPrompt ??
-      `${topic.title}에서 방금 배운 핵심은 뭐야?`,
+      `방금 본 "${card.title}" 설명과 가장 가까운 것은?`,
     choices,
     answerIndex,
     explanation: card.explanation,

@@ -66,7 +66,10 @@ import {
   hasComhwalTopicCards,
   type ComhwalConceptCard,
 } from '@/data/comhwal/concepts';
-import { getComhwalExpansionVisualModel } from '../comhwalVisualModels';
+import {
+  getComhwalExpansionVisualModel,
+  type ComhwalVisualFocus,
+} from '../comhwalVisualModels';
 
 interface Props {
   initialExpansionSubject?: ExpansionSubjectId;
@@ -1525,6 +1528,20 @@ function ExpansionOutlineScreen({
     (sum, section) => sum + section.topics.length,
     0,
   );
+  const outlineTopics = planet.sections.flatMap((section) => section.topics);
+  const studyStats = outlineTopics.reduce(
+    (stats, topic) => {
+      const cards = getComhwalTopicCards(planet.key, topic.id);
+      const questionCount = cards.filter((card) => card.question).length;
+      return {
+        readyTopics: stats.readyTopics + (cards.length > 0 ? 1 : 0),
+        totalCards: stats.totalCards + cards.length,
+        totalQuestions: stats.totalQuestions + questionCount,
+      };
+    },
+    { readyTopics: 0, totalCards: 0, totalQuestions: 0 },
+  );
+  const isFullyReady = studyStats.readyTopics === totalTopics;
 
   return (
     <section className="relative min-h-screen isolate overflow-hidden text-cream">
@@ -1551,7 +1568,7 @@ function ExpansionOutlineScreen({
       />
 
       <div className="relative z-10 mx-auto min-h-screen w-full max-w-layout px-6 pb-28 pt-20 md:px-10 lg:px-16">
-        <header className="mb-8 max-w-[680px] md:mb-10">
+        <header className="mb-10 max-w-[680px] md:mb-12">
           <button
             type="button"
             onClick={onBack}
@@ -1562,19 +1579,18 @@ function ExpansionOutlineScreen({
             행성으로
           </button>
 
-          <div className="mb-3 flex items-center gap-2 kr-num text-[10px] uppercase tracking-widest text-cream/55">
-            <span>Galaxy</span>
+          <div className="mb-3 flex flex-wrap items-center gap-2 kr-heading text-[10px] uppercase tracking-widest text-cream/55">
+            <span style={{ color: subject.accent }}>{variant.shortLabel}</span>
             <span className="text-cream/30">›</span>
-            <span style={{ color: subject.accent }}>
-              {subject.routeLabel}
-            </span>
+            <span className="text-cream/70">{planet.subtitle}</span>
           </div>
 
           <h1 className="kr-heading text-[26px] uppercase leading-[1.12] tracking-[0.01em] drop-shadow-[0_2px_20px_rgba(0,0,0,0.75)] md:text-[36px] lg:text-[44px]">
             {planet.title}
           </h1>
           <p className="kr-body mt-3 max-w-xl text-[13px] leading-[1.65] text-cream/78 md:text-[14px]">
-            단원 목차를 먼저 열어뒀어요. 세부 개념과 문제는 이 순서로 붙일게요.
+            동그라미를 순서대로 눌러봐. 짧은 개념을 보고, 바로 한 문제로
+            이해했는지 확인해.
           </p>
 
           <div className="mt-4 flex items-center gap-2 kr-num text-[10px] uppercase tracking-widest text-cream/50">
@@ -1582,9 +1598,17 @@ function ExpansionOutlineScreen({
               {planet.sections.length}단원
             </span>
             <span className="text-cream/25">·</span>
-            <span>{totalTopics}개 목차</span>
+            <span>{totalTopics}개 토픽</span>
             <span className="text-cream/25">·</span>
-            <span>개념 준비 중</span>
+            <span>{studyStats.totalCards}개 카드</span>
+            <span className="text-cream/25">·</span>
+            <span>{studyStats.totalQuestions}개 확인 문제</span>
+            {!isFullyReady ? (
+              <>
+                <span className="text-cream/25">·</span>
+                <span>{studyStats.readyTopics}개 개념 열림</span>
+              </>
+            ) : null}
           </div>
         </header>
 
@@ -1819,6 +1843,8 @@ type ComhwalVisualModel = {
   chips: string[];
   pattern?: string;
   kind?: string;
+  focus?: ComhwalVisualFocus;
+  focusLabel?: string;
   mode?:
     | 'manager'
     | 'windows'
@@ -2138,30 +2164,118 @@ function ComhwalMiniCell({
   children,
   accent,
   active = false,
+  focus = false,
   className = '',
 }: {
   children?: React.ReactNode;
   accent: string;
   active?: boolean;
+  focus?: boolean;
   className?: string;
 }) {
   return (
     <div
-      className={`flex min-h-[34px] items-center justify-center rounded-xl border px-2 text-center kr-heading text-[11px] leading-tight ${className}`}
+      className={`relative flex min-h-[34px] items-center justify-center rounded-xl border px-2 text-center kr-heading text-[11px] leading-tight ${className}`}
       style={{
-        borderColor: active ? accent : 'rgba(239,244,255,0.14)',
-        color: active ? '#07121f' : 'rgba(239,244,255,0.82)',
+        borderColor: active || focus ? accent : 'rgba(239,244,255,0.14)',
+        borderWidth: focus && !active ? 2 : 1,
+        color: active ? '#07121f' : 'rgba(239,244,255,0.86)',
         background: active
           ? `linear-gradient(180deg, ${accent}, color-mix(in srgb, ${accent} 72%, #010828))`
-          : 'rgba(239,244,255,0.06)',
-        boxShadow: active
+          : focus
+            ? `linear-gradient(180deg, color-mix(in srgb, ${accent} 18%, rgba(239,244,255,0.08)), rgba(239,244,255,0.045))`
+            : 'rgba(239,244,255,0.06)',
+        boxShadow: active || focus
           ? `0 0 18px color-mix(in srgb, ${accent} 32%, transparent)`
           : 'none',
       }}
     >
       {children}
+      {focus && !active ? (
+        <span
+          aria-hidden
+          className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full"
+          style={{ background: accent, boxShadow: `0 0 10px ${accent}` }}
+        />
+      ) : null}
     </div>
   );
+}
+
+function hasComhwalFocus(
+  model: ComhwalVisualModel,
+  ...focuses: ComhwalVisualFocus[]
+) {
+  return model.focus ? focuses.includes(model.focus) : false;
+}
+
+function getComhwalFlowFocusIndex(model: ComhwalVisualModel) {
+  switch (model.focus) {
+    case 'ribbon':
+    case 'workbook':
+    case 'input-value':
+    case 'error':
+    case 'chart-data':
+    case 'table':
+    case 'select':
+    case 'form':
+    case 'report':
+    case 'event':
+      return 0;
+    case 'formula-bar':
+    case 'format':
+    case 'condition':
+    case 'absolute-reference':
+    case 'function':
+    case 'criteria':
+    case 'chart-element':
+    case 'page':
+    case 'sort':
+    case 'subtotal':
+    case 'pivot-field':
+    case 'dbms':
+    case 'key':
+    case 'relationship':
+    case 'where':
+    case 'order':
+    case 'group':
+    case 'join':
+    case 'property':
+    case 'control':
+    case 'macro':
+    case 'recordset':
+      return 1;
+    case 'sheet-tab':
+    case 'worksheet':
+    case 'cell':
+    case 'pointer':
+    case 'fill-handle':
+    case 'search':
+    case 'protect':
+    case 'result':
+    case 'lookup':
+    case 'chart-type':
+    case 'print':
+    case 'filter':
+    case 'external-data':
+    case 'scenario':
+    case 'goal-cell':
+    case 'deduplicate':
+    case 'foreign-key':
+    case 'integrity':
+    case 'import':
+    case 'export':
+    case 'subquery':
+    case 'action-query':
+    case 'parameter':
+    case 'subform':
+    case 'section':
+    case 'object':
+    case 'branch':
+      return 2;
+    default:
+      return 1;
+  }
 }
 
 function getComhwalPatternVariant(pattern?: string) {
@@ -2173,14 +2287,17 @@ function ComhwalPatternMotif({
   pattern,
   accent,
   labels,
+  activeIndex,
 }: {
   pattern?: string;
   accent: string;
   labels: string[];
+  activeIndex?: number;
 }) {
   const variant = getComhwalPatternVariant(pattern);
   const mode = variant % 6;
   const safeLabels = labels.length > 0 ? labels : ['입력', '처리', '결과'];
+  const focusIndex = activeIndex ?? variant % 3;
 
   if (mode === 0) {
     return (
@@ -2214,9 +2331,9 @@ function ComhwalPatternMotif({
               right: index === 2 ? 0 : 'auto',
               top: index === 1 ? 0 : 78,
               transform: index === 1 ? 'translateX(-50%)' : undefined,
-              borderColor: index === variant % 3 ? accent : 'rgba(239,244,255,0.16)',
-              background: index === variant % 3 ? accent : 'rgba(239,244,255,0.07)',
-              color: index === variant % 3 ? '#07121f' : 'rgba(239,244,255,0.76)',
+              borderColor: index === focusIndex ? accent : 'rgba(239,244,255,0.16)',
+              background: index === focusIndex ? accent : 'rgba(239,244,255,0.07)',
+              color: index === focusIndex ? '#07121f' : 'rgba(239,244,255,0.76)',
             }}
           >
             {label}
@@ -2236,9 +2353,9 @@ function ComhwalPatternMotif({
             style={{
               marginLeft: `${index * 18}px`,
               width: `calc(100% - ${index * 18}px)`,
-              borderColor: index === 1 ? accent : 'rgba(239,244,255,0.16)',
-              background: index === 1 ? accent : 'rgba(239,244,255,0.07)',
-              color: index === 1 ? '#07121f' : 'rgba(239,244,255,0.76)',
+              borderColor: index === focusIndex ? accent : 'rgba(239,244,255,0.16)',
+              background: index === focusIndex ? accent : 'rgba(239,244,255,0.07)',
+              color: index === focusIndex ? '#07121f' : 'rgba(239,244,255,0.76)',
             }}
           >
             {label}
@@ -2252,8 +2369,8 @@ function ComhwalPatternMotif({
     return (
       <div className="grid grid-cols-[1fr_76px_1fr] items-center gap-2">
         <div className="grid gap-1.5">
-          {safeLabels.slice(0, 2).map((label) => (
-            <ComhwalMiniCell key={label} accent={accent}>
+          {safeLabels.slice(0, 2).map((label, index) => (
+            <ComhwalMiniCell key={label} accent={accent} active={index === focusIndex}>
               {label}
             </ComhwalMiniCell>
           ))}
@@ -2261,12 +2378,16 @@ function ComhwalPatternMotif({
         <div className="flex items-center justify-center">
           <span
             className="flex h-14 w-14 items-center justify-center rounded-full border-2 kr-num text-[11px]"
-            style={{ borderColor: accent, color: accent }}
+            style={{
+              borderColor: accent,
+              color: focusIndex === 1 ? '#07121f' : accent,
+              background: focusIndex === 1 ? accent : 'rgba(1,8,40,0.18)',
+            }}
           >
             {variant % 100}
           </span>
         </div>
-        <ComhwalMiniCell accent={accent} active>
+        <ComhwalMiniCell accent={accent} active={focusIndex === 2}>
           {safeLabels[2] ?? safeLabels[0]}
         </ComhwalMiniCell>
       </div>
@@ -2283,7 +2404,7 @@ function ComhwalPatternMotif({
         </div>
         <div className="grid grid-cols-3 gap-2">
           {safeLabels.slice(0, 3).map((label, index) => (
-            <ComhwalMiniCell key={label} accent={accent} active={index === 1}>
+            <ComhwalMiniCell key={label} accent={accent} active={index === focusIndex}>
               {label}
             </ComhwalMiniCell>
           ))}
@@ -2296,7 +2417,7 @@ function ComhwalPatternMotif({
     <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-2">
       {safeLabels.slice(0, 3).map((label, index) => (
         <div key={label} className="contents">
-          <ComhwalMiniCell accent={accent} active={index === variant % 3}>
+          <ComhwalMiniCell accent={accent} active={index === focusIndex}>
             {label}
           </ComhwalMiniCell>
           {index < 2 ? (
@@ -2315,11 +2436,13 @@ function ComhwalVisualFlow({
   model: ComhwalVisualModel;
   accent: string;
 }) {
+  const focusIndex = getComhwalFlowFocusIndex(model);
+
   return (
     <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-stretch gap-2">
       {model.flow.slice(0, 3).map((item, index) => (
         <div key={`${item}-${index}`} className="contents">
-          <ComhwalFlowNode label={item} accent={accent} active={index === 1} />
+          <ComhwalFlowNode label={item} accent={accent} active={index === focusIndex} />
           {index < 2 ? (
             <div className="flex items-center justify-center">
               <ArrowRight size={16} strokeWidth={2.5} style={{ color: accent }} />
@@ -2341,6 +2464,7 @@ function ComhwalSheetPattern({
   const pattern = model.pattern ?? '';
 
   if (pattern.includes('tabs')) {
+    const tabFocus = hasComhwalFocus(model, 'sheet-tab', 'worksheet');
     return (
       <ComhwalDiagramFrame accent={accent}>
         <div className="rounded-2xl border border-cream/15 bg-cream/[0.04] p-3">
@@ -2350,9 +2474,18 @@ function ComhwalSheetPattern({
                 key={label}
                 className="rounded-t-xl border px-3 py-1.5 kr-num text-[10px]"
                 style={{
-                  borderColor: index === 1 ? accent : 'rgba(239,244,255,0.14)',
-                  background: index === 1 ? accent : 'rgba(239,244,255,0.06)',
-                  color: index === 1 ? '#07121f' : 'rgba(239,244,255,0.72)',
+                  borderColor:
+                    (tabFocus && index === 1) || (hasComhwalFocus(model, 'workbook') && index === 0)
+                      ? accent
+                      : 'rgba(239,244,255,0.14)',
+                  background:
+                    (tabFocus && index === 1) || (hasComhwalFocus(model, 'workbook') && index === 0)
+                      ? accent
+                      : 'rgba(239,244,255,0.06)',
+                  color:
+                    (tabFocus && index === 1) || (hasComhwalFocus(model, 'workbook') && index === 0)
+                      ? '#07121f'
+                      : 'rgba(239,244,255,0.72)',
                 }}
               >
                 {label}
@@ -2361,7 +2494,12 @@ function ComhwalSheetPattern({
           </div>
           <div className="grid grid-cols-4 gap-1.5">
             {Array.from({ length: 12 }).map((_, index) => (
-              <ComhwalMiniCell key={index} accent={accent} active={index === 5}>
+              <ComhwalMiniCell
+                key={index}
+                accent={accent}
+                active={hasComhwalFocus(model, 'cell') && index === 5}
+                focus={tabFocus && index === 9}
+              >
                 {index === 5 ? 'B2' : ''}
               </ComhwalMiniCell>
             ))}
@@ -2372,18 +2510,43 @@ function ComhwalSheetPattern({
   }
 
   if (pattern.includes('input-bar')) {
+    const formulaFocus = hasComhwalFocus(model, 'formula-bar', 'function');
+    const pointerFocus = hasComhwalFocus(model, 'pointer');
     return (
       <ComhwalDiagramFrame accent={accent}>
         <div className="space-y-3">
           <div className="grid grid-cols-[70px_1fr] gap-2">
-            <ComhwalMiniCell accent={accent} active>A1</ComhwalMiniCell>
-            <div className="rounded-xl border border-cream/15 bg-cream/[0.06] px-3 py-2 kr-num text-[12px] text-cream/80">
+            <ComhwalMiniCell accent={accent} active={hasComhwalFocus(model, 'cell')} focus={pointerFocus}>A1</ComhwalMiniCell>
+            <div
+              className="relative rounded-xl border px-3 py-2 kr-num text-[12px] text-cream/80"
+              style={{
+                borderColor: formulaFocus ? accent : 'rgba(239,244,255,0.15)',
+                background: formulaFocus
+                  ? `color-mix(in srgb, ${accent} 16%, rgba(239,244,255,0.06))`
+                  : 'rgba(239,244,255,0.06)',
+                boxShadow: formulaFocus
+                  ? `0 0 18px color-mix(in srgb, ${accent} 28%, transparent)`
+                  : 'none',
+              }}
+            >
               =SUM(B2:B5)
+              {formulaFocus ? (
+                <span
+                  aria-hidden
+                  className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full"
+                  style={{ background: accent, boxShadow: `0 0 10px ${accent}` }}
+                />
+              ) : null}
             </div>
           </div>
           <div className="grid grid-cols-4 gap-1.5">
             {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
-              <ComhwalMiniCell key={index} accent={accent} active={index === 0}>
+              <ComhwalMiniCell
+                key={index}
+                accent={accent}
+                active={hasComhwalFocus(model, 'result') && index === 0}
+                focus={hasComhwalFocus(model, 'input-value') && index > 0 && index < 4}
+              >
                 {index === 0 ? '결과' : index + 1}
               </ComhwalMiniCell>
             ))}
@@ -2397,11 +2560,16 @@ function ComhwalSheetPattern({
     return (
       <ComhwalDiagramFrame accent={accent}>
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-          <ComhwalMiniCell accent={accent}>12000</ComhwalMiniCell>
+          <ComhwalMiniCell accent={accent} focus={hasComhwalFocus(model, 'input-value')}>12000</ComhwalMiniCell>
           <ArrowRight size={18} style={{ color: accent }} />
           <div className="space-y-2">
             {['#,##0', '0.00%', 'yyyy-mm-dd'].map((label, index) => (
-              <ComhwalMiniCell key={label} accent={accent} active={index === 0}>
+              <ComhwalMiniCell
+                key={label}
+                accent={accent}
+                active={hasComhwalFocus(model, 'format') && index === 0}
+                focus={hasComhwalFocus(model, 'result') && index === 1}
+              >
                 {label}
               </ComhwalMiniCell>
             ))}
@@ -2416,12 +2584,26 @@ function ComhwalSheetPattern({
       <ComhwalDiagramFrame accent={accent}>
         <div className="grid grid-cols-5 items-center gap-2">
           {['1', '2', '3', '4'].map((label, index) => (
-            <ComhwalMiniCell key={label} accent={accent} active={index === 0}>
+            <ComhwalMiniCell
+              key={label}
+              accent={accent}
+              active={hasComhwalFocus(model, 'input-value') && index === 0}
+              focus={hasComhwalFocus(model, 'relative-reference') && index > 0}
+            >
               {label}
             </ComhwalMiniCell>
           ))}
           <div className="flex items-center justify-center">
-            <span className="h-5 w-5 rounded-full border-2" style={{ borderColor: accent }} />
+            <span
+              className="h-5 w-5 rounded-full border-2"
+              style={{
+                borderColor: accent,
+                background: hasComhwalFocus(model, 'fill-handle') ? accent : 'transparent',
+                boxShadow: hasComhwalFocus(model, 'fill-handle')
+                  ? `0 0 16px color-mix(in srgb, ${accent} 50%, transparent)`
+                  : 'none',
+              }}
+            />
           </div>
         </div>
       </ComhwalDiagramFrame>
@@ -2429,16 +2611,25 @@ function ComhwalSheetPattern({
   }
 
   if (pattern.includes('find-lens')) {
+    const searchFocus = hasComhwalFocus(model, 'search');
     return (
       <ComhwalDiagramFrame accent={accent}>
         <div className="grid grid-cols-[1fr_88px] gap-3">
           <div className="rounded-2xl border border-cream/15 bg-cream/[0.04] p-2">
-            <div className="mb-2 rounded-xl border border-cream/15 px-3 py-2 kr-body text-[11px] text-cream/70">
+            <div
+              className="mb-2 rounded-xl border px-3 py-2 kr-body text-[11px] text-cream/70"
+              style={{
+                borderColor: searchFocus ? accent : 'rgba(239,244,255,0.15)',
+                background: searchFocus
+                  ? `color-mix(in srgb, ${accent} 14%, rgba(239,244,255,0.06))`
+                  : 'transparent',
+              }}
+            >
               Ctrl + F
             </div>
             <div className="grid grid-cols-3 gap-1.5">
               {Array.from({ length: 9 }).map((_, index) => (
-                <ComhwalMiniCell key={index} accent={accent} active={index === 4}>
+                <ComhwalMiniCell key={index} accent={accent} active={index === 4 && searchFocus}>
                   {index === 4 ? '찾음' : ''}
                 </ComhwalMiniCell>
               ))}
@@ -2457,19 +2648,20 @@ function ComhwalSheetPattern({
   }
 
   if (pattern.includes('pointer-routes')) {
+    const pointerFocus = hasComhwalFocus(model, 'pointer');
     return (
       <ComhwalDiagramFrame accent={accent}>
         <div className="grid grid-cols-[1fr_92px] gap-3">
           <div className="grid grid-cols-4 gap-1.5">
             {Array.from({ length: 12 }).map((_, index) => (
-              <ComhwalMiniCell key={index} accent={accent} active={index === 6}>
+              <ComhwalMiniCell key={index} accent={accent} active={index === 6 && pointerFocus} focus={index === 6 && hasComhwalFocus(model, 'cell')}>
                 {index === 6 ? 'C2' : ''}
               </ComhwalMiniCell>
             ))}
           </div>
           <div className="grid grid-cols-3 grid-rows-3 gap-1.5">
             {['', '↑', '', '←', '셀', '→', '', '↓', ''].map((label, index) => (
-              <ComhwalMiniCell key={`${label}-${index}`} accent={accent} active={label === '셀'}>
+              <ComhwalMiniCell key={`${label}-${index}`} accent={accent} active={label === '셀' && pointerFocus}>
                 {label}
               </ComhwalMiniCell>
             ))}
@@ -2480,6 +2672,11 @@ function ComhwalSheetPattern({
   }
 
   if (pattern.includes('options-panel') || pattern.includes('protect-lock')) {
+    const focusIndex = hasComhwalFocus(model, 'option')
+      ? 1
+      : hasComhwalFocus(model, 'protect')
+        ? 2
+        : 0;
     return (
       <ComhwalDiagramFrame accent={accent}>
         <div className="grid grid-cols-[112px_1fr] gap-3">
@@ -2489,8 +2686,9 @@ function ComhwalSheetPattern({
                 key={item}
                 className="mb-1.5 rounded-xl px-2 py-1.5 kr-heading text-[10px] last:mb-0"
                 style={{
-                  background: index === 1 ? accent : 'rgba(239,244,255,0.08)',
-                  color: index === 1 ? '#07121f' : 'rgba(239,244,255,0.74)',
+                  border: index === focusIndex ? `1px solid ${accent}` : '1px solid transparent',
+                  background: index === focusIndex ? accent : 'rgba(239,244,255,0.08)',
+                  color: index === focusIndex ? '#07121f' : 'rgba(239,244,255,0.74)',
                 }}
               >
                 {item}
@@ -2500,7 +2698,12 @@ function ComhwalSheetPattern({
           <div className="flex items-center justify-center rounded-2xl border border-cream/15 bg-cream/[0.035]">
             <span
               className="relative h-16 w-14 rounded-b-2xl rounded-t-md border-4"
-              style={{ borderColor: accent }}
+              style={{
+                borderColor: accent,
+                background: hasComhwalFocus(model, 'protect')
+                  ? `color-mix(in srgb, ${accent} 18%, transparent)`
+                  : 'transparent',
+              }}
             >
               <span
                 className="absolute -top-8 left-1/2 h-9 w-9 -translate-x-1/2 rounded-t-full border-4 border-b-0"
@@ -2517,15 +2720,16 @@ function ComhwalSheetPattern({
     return (
       <ComhwalDiagramFrame accent={accent}>
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-          <ComhwalMiniCell accent={accent}>old</ComhwalMiniCell>
+          <ComhwalMiniCell accent={accent} focus={!hasComhwalFocus(model, 'edit')}>old</ComhwalMiniCell>
           <ArrowRight size={18} style={{ color: accent }} />
-          <ComhwalMiniCell accent={accent} active>new</ComhwalMiniCell>
+          <ComhwalMiniCell accent={accent} active={hasComhwalFocus(model, 'edit')}>new</ComhwalMiniCell>
         </div>
       </ComhwalDiagramFrame>
     );
   }
 
   if (pattern.includes('conditional-heatmap')) {
+    const conditionFocus = hasComhwalFocus(model, 'condition');
     return (
       <ComhwalDiagramFrame accent={accent}>
         <div className="grid grid-cols-5 gap-1.5">
@@ -2534,6 +2738,8 @@ function ComhwalSheetPattern({
               key={`${value}-${index}`}
               className="flex min-h-[32px] items-center justify-center rounded-xl kr-num text-[10px]"
               style={{
+                outline: conditionFocus && value > 70 ? `2px solid ${accent}` : 'none',
+                outlineOffset: 1,
                 color: value > 70 ? '#07121f' : 'rgba(239,244,255,0.72)',
                 background:
                   value > 70
@@ -2553,19 +2759,74 @@ function ComhwalSheetPattern({
 
   return (
     <ComhwalDiagramFrame accent={accent}>
-      <div className="grid grid-cols-4 gap-1.5">
-        {['', 'A', 'B', 'C', '1', 'A1', '', '', '2', '', '', '', '3', '', '', ''].map(
-          (label, index) => (
-            <ComhwalMiniCell
-              key={`${label}-${index}`}
-              accent={accent}
-              active={label === 'A1'}
-              className={!label || ['A', 'B', 'C', '1', '2', '3'].includes(label) ? 'opacity-90' : ''}
+      <div className="space-y-2">
+        <div
+          className="rounded-xl border px-3 py-2 kr-heading text-[10px]"
+          style={{
+            borderColor: hasComhwalFocus(model, 'ribbon') ? accent : 'rgba(239,244,255,0.14)',
+            background: hasComhwalFocus(model, 'ribbon')
+              ? `color-mix(in srgb, ${accent} 18%, rgba(239,244,255,0.06))`
+              : 'rgba(239,244,255,0.06)',
+            color: hasComhwalFocus(model, 'ribbon') ? 'rgba(239,244,255,0.96)' : 'rgba(239,244,255,0.68)',
+          }}
+        >
+          홈 · 삽입 · 수식
+        </div>
+        <div className="grid grid-cols-[74px_1fr] gap-2">
+          <ComhwalMiniCell accent={accent} focus={hasComhwalFocus(model, 'name-box')}>
+            A1
+          </ComhwalMiniCell>
+          <div
+            className="relative rounded-xl border px-3 py-2 kr-num text-[11px]"
+            style={{
+              borderColor: hasComhwalFocus(model, 'formula-bar') ? accent : 'rgba(239,244,255,0.14)',
+              background: hasComhwalFocus(model, 'formula-bar')
+                ? `color-mix(in srgb, ${accent} 16%, rgba(239,244,255,0.06))`
+                : 'rgba(239,244,255,0.055)',
+              color: 'rgba(239,244,255,0.78)',
+              boxShadow: hasComhwalFocus(model, 'formula-bar')
+                ? `0 0 18px color-mix(in srgb, ${accent} 28%, transparent)`
+                : 'none',
+            }}
+          >
+            fx  =A1
+          </div>
+        </div>
+        <div className="grid grid-cols-4 gap-1.5">
+          {['', 'A', 'B', 'C', '1', 'A1', '', '', '2', '', '', '', '3', '', '', ''].map(
+            (label, index) => {
+              const isHeader = !label || ['A', 'B', 'C', '1', '2', '3'].includes(label);
+              const isCell = label === 'A1';
+
+              return (
+                <ComhwalMiniCell
+                  key={`${label}-${index}`}
+                  accent={accent}
+                  active={isCell && hasComhwalFocus(model, 'cell')}
+                  focus={isCell && !hasComhwalFocus(model, 'cell')}
+                  className={isHeader ? 'opacity-90' : ''}
+                >
+                  {label}
+                </ComhwalMiniCell>
+              );
+            },
+          )}
+        </div>
+        <div className="flex gap-1.5">
+          {['Sheet1', 'Sheet2'].map((label, index) => (
+            <span
+              key={label}
+              className="rounded-t-xl border px-3 py-1.5 kr-num text-[10px]"
+              style={{
+                borderColor: hasComhwalFocus(model, 'sheet-tab') && index === 0 ? accent : 'rgba(239,244,255,0.14)',
+                background: hasComhwalFocus(model, 'sheet-tab') && index === 0 ? accent : 'rgba(239,244,255,0.06)',
+                color: hasComhwalFocus(model, 'sheet-tab') && index === 0 ? '#07121f' : 'rgba(239,244,255,0.72)',
+              }}
             >
               {label}
-            </ComhwalMiniCell>
-          ),
-        )}
+            </span>
+          ))}
+        </div>
       </div>
     </ComhwalDiagramFrame>
   );
@@ -2585,7 +2846,7 @@ function ComhwalFormulaPattern({
       <ComhwalDiagramFrame accent={accent}>
         <div className="grid grid-cols-3 gap-2">
           {['#DIV/0!', '#VALUE!', '#N/A'].map((label, index) => (
-            <ComhwalMiniCell key={label} accent={accent} active={index === 1}>
+            <ComhwalMiniCell key={label} accent={accent} active={hasComhwalFocus(model, 'error') && index === 1}>
               {label}
             </ComhwalMiniCell>
           ))}
@@ -2600,14 +2861,23 @@ function ComhwalFormulaPattern({
         <div className="grid grid-cols-[1fr_92px] gap-3">
           <div className="grid grid-cols-4 gap-1.5">
             {['A1', 'B1', '$A$1', '이름', 'A2', 'B2', 'A3', 'B3'].map((label, index) => (
-              <ComhwalMiniCell key={`${label}-${index}`} accent={accent} active={index === 2 || index === 3}>
+              <ComhwalMiniCell
+                key={`${label}-${index}`}
+                accent={accent}
+                active={
+                  (hasComhwalFocus(model, 'absolute-reference') && index === 2) ||
+                  (hasComhwalFocus(model, 'named-range') && index === 3) ||
+                  (hasComhwalFocus(model, 'relative-reference') && index === 0)
+                }
+                focus={hasComhwalFocus(model, 'cell') && index === 0}
+              >
                 {label}
               </ComhwalMiniCell>
             ))}
           </div>
           <div className="flex flex-col justify-center gap-2">
-            <ComhwalMiniCell accent={accent}>이동</ComhwalMiniCell>
-            <ComhwalMiniCell accent={accent} active>고정</ComhwalMiniCell>
+            <ComhwalMiniCell accent={accent} active={hasComhwalFocus(model, 'relative-reference')}>이동</ComhwalMiniCell>
+            <ComhwalMiniCell accent={accent} active={hasComhwalFocus(model, 'absolute-reference')}>고정</ComhwalMiniCell>
           </div>
         </div>
       </ComhwalDiagramFrame>
@@ -2615,12 +2885,13 @@ function ComhwalFormulaPattern({
   }
 
   if (pattern.includes('text') || pattern.includes('date') || pattern.includes('finance')) {
+    const focusIndex = getComhwalFlowFocusIndex(model);
     return (
       <ComhwalDiagramFrame accent={accent}>
         <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-2">
           {model.flow.map((item, index) => (
             <div key={item} className="contents">
-              <ComhwalMiniCell accent={accent} active={index === 1}>{item}</ComhwalMiniCell>
+              <ComhwalMiniCell accent={accent} active={index === focusIndex}>{item}</ComhwalMiniCell>
               {index < 2 ? <ArrowRight size={16} style={{ color: accent }} /> : null}
             </div>
           ))}
@@ -2636,10 +2907,10 @@ function ComhwalFormulaPattern({
     return (
       <ComhwalDiagramFrame accent={accent}>
         <div className="grid grid-cols-[1fr_1fr] gap-2">
-          <ComhwalMiniCell accent={accent} active>{model.flow[0]}</ComhwalMiniCell>
+          <ComhwalMiniCell accent={accent} active={hasComhwalFocus(model, 'condition')}>{model.flow[0]}</ComhwalMiniCell>
           <div className="grid gap-2">
-            <ComhwalMiniCell accent={accent}>TRUE</ComhwalMiniCell>
-            <ComhwalMiniCell accent={accent}>FALSE</ComhwalMiniCell>
+            <ComhwalMiniCell accent={accent} focus={hasComhwalFocus(model, 'result')}>TRUE</ComhwalMiniCell>
+            <ComhwalMiniCell accent={accent} focus={hasComhwalFocus(model, 'result')}>FALSE</ComhwalMiniCell>
           </div>
         </div>
       </ComhwalDiagramFrame>
@@ -2650,10 +2921,15 @@ function ComhwalFormulaPattern({
     return (
       <ComhwalDiagramFrame accent={accent}>
         <div className="grid grid-cols-[82px_1fr] gap-3">
-          <ComhwalMiniCell accent={accent} active>{model.flow[0]}</ComhwalMiniCell>
+          <ComhwalMiniCell accent={accent} active={hasComhwalFocus(model, 'lookup')}>{model.flow[0]}</ComhwalMiniCell>
           <div className="grid grid-cols-3 gap-1.5">
             {['키', '이름', '값', 'A01', '사과', '300', 'B02', '배', '500'].map((label, index) => (
-              <ComhwalMiniCell key={`${label}-${index}`} accent={accent} active={index === 5}>
+              <ComhwalMiniCell
+                key={`${label}-${index}`}
+                accent={accent}
+                active={(hasComhwalFocus(model, 'result') && index === 5) || (hasComhwalFocus(model, 'criteria') && index === 0)}
+                focus={hasComhwalFocus(model, 'lookup') && index === 3}
+              >
                 {label}
               </ComhwalMiniCell>
             ))}
@@ -2668,7 +2944,7 @@ function ComhwalFormulaPattern({
       <ComhwalDiagramFrame accent={accent}>
         <div className="grid grid-cols-3 gap-1.5">
           {Array.from({ length: 9 }).map((_, index) => (
-            <ComhwalMiniCell key={index} accent={accent} active={[0, 4, 8].includes(index)}>
+            <ComhwalMiniCell key={index} accent={accent} active={hasComhwalFocus(model, 'result') && [0, 4, 8].includes(index)} focus={hasComhwalFocus(model, 'input-value') && index < 3}>
               {index + 1}
             </ComhwalMiniCell>
           ))}
@@ -2703,6 +2979,7 @@ function ComhwalAnalysisPattern({
 
   if (pattern.startsWith('chart-')) {
     const bars = pattern.includes('type') ? [72, 42, 72] : pattern.includes('edit') ? [44, 74, 58, 88] : [38, 64, 86, 52];
+    const focusIndex = getComhwalFlowFocusIndex(model);
     return (
       <ComhwalDiagramFrame accent={accent}>
         <div className="grid grid-cols-[1fr_92px] gap-3">
@@ -2713,14 +2990,20 @@ function ComhwalAnalysisPattern({
                 className="flex-1 rounded-t-xl"
                 style={{
                   height: `${height}%`,
-                  background: index === 2 ? accent : 'rgba(239,244,255,0.34)',
+                  outline: hasComhwalFocus(model, 'chart-data') && index === 2 ? `2px solid ${accent}` : 'none',
+                  outlineOffset: 2,
+                  background:
+                    (hasComhwalFocus(model, 'chart-data') && index === 2) ||
+                    (hasComhwalFocus(model, 'chart-type') && index === 0)
+                      ? accent
+                      : 'rgba(239,244,255,0.34)',
                 }}
               />
             ))}
           </div>
           <div className="grid gap-2">
             {model.flow.map((item, index) => (
-              <ComhwalMiniCell key={item} accent={accent} active={index === 1}>{item}</ComhwalMiniCell>
+              <ComhwalMiniCell key={item} accent={accent} active={index === focusIndex}>{item}</ComhwalMiniCell>
             ))}
           </div>
         </div>
@@ -2732,11 +3015,27 @@ function ComhwalAnalysisPattern({
     return (
       <ComhwalDiagramFrame accent={accent}>
         <div className="mx-auto grid max-w-[260px] grid-cols-[74px_1fr] gap-3">
-          <div className="rounded-2xl border border-cream/15 bg-cream/[0.08] p-2">
-            <div className="h-3 rounded bg-cream/35" />
+          <div
+            className="rounded-2xl border bg-cream/[0.08] p-2"
+            style={{ borderColor: hasComhwalFocus(model, 'page', 'print') ? accent : 'rgba(239,244,255,0.15)' }}
+          >
+            <div
+              className="h-3 rounded"
+              style={{ background: hasComhwalFocus(model, 'freeze') ? accent : 'rgba(239,244,255,0.35)' }}
+            />
             <div className="mt-2 grid grid-cols-2 gap-1">
               {Array.from({ length: 8 }).map((_, index) => (
-                <span key={index} className="h-3 rounded bg-cream/15" />
+                <span
+                  key={index}
+                  className="h-3 rounded"
+                  style={{
+                    background:
+                      (hasComhwalFocus(model, 'print') && index > 3) ||
+                      (hasComhwalFocus(model, 'page') && index === 1)
+                        ? accent
+                        : 'rgba(239,244,255,0.15)',
+                  }}
+                />
               ))}
             </div>
           </div>
@@ -2755,7 +3054,15 @@ function ComhwalAnalysisPattern({
       <ComhwalDiagramFrame accent={accent}>
         <div className="grid grid-cols-4 gap-1.5">
           {['필드', '1월', '2월', '합계', 'A', '12', '18', '30', 'B', '22', '16', '38'].map((label, index) => (
-            <ComhwalMiniCell key={`${label}-${index}`} accent={accent} active={index === 0 || index === 7}>
+            <ComhwalMiniCell
+              key={`${label}-${index}`}
+              accent={accent}
+              active={
+                (hasComhwalFocus(model, 'pivot-field') && index === 0) ||
+                (hasComhwalFocus(model, 'result') && index === 7)
+              }
+              focus={hasComhwalFocus(model, 'filter') && index === 3}
+            >
               {label}
             </ComhwalMiniCell>
           ))}
@@ -2765,19 +3072,30 @@ function ComhwalAnalysisPattern({
   }
 
   if (pattern.startsWith('macro-') || pattern.startsWith('vba-')) {
+    const focusIndex = getComhwalFlowFocusIndex(model);
     return (
       <ComhwalDiagramFrame accent={accent}>
         <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-2">
           {model.flow.map((item, index) => (
             <div key={item} className="contents">
-              <ComhwalMiniCell accent={accent} active={index === 1}>{item}</ComhwalMiniCell>
+              <ComhwalMiniCell accent={accent} active={index === focusIndex}>{item}</ComhwalMiniCell>
               {index < 2 ? <ArrowRight size={16} style={{ color: accent }} /> : null}
             </div>
           ))}
         </div>
         <div className="mt-3 grid grid-cols-3 gap-2">
           {['Sub', 'If', 'Next'].map((label, index) => (
-            <ComhwalMiniCell key={label} accent={accent} active={index === 0}>{label}</ComhwalMiniCell>
+            <ComhwalMiniCell
+              key={label}
+              accent={accent}
+              active={
+                (hasComhwalFocus(model, 'vba') && index === 0) ||
+                (hasComhwalFocus(model, 'branch') && index === 1) ||
+                (hasComhwalFocus(model, 'macro') && index === 2)
+              }
+            >
+              {label}
+            </ComhwalMiniCell>
           ))}
         </div>
       </ComhwalDiagramFrame>
@@ -2806,10 +3124,26 @@ function ComhwalDatabasePattern({
         <div className="grid grid-cols-[1fr_70px_1fr] items-center gap-2">
           {['고객', '주문'].map((title, index) => (
             <div key={title} className="rounded-2xl border border-cream/15 bg-cream/[0.04] p-2">
-              <ComhwalMiniCell accent={accent} active={index === 0}>{title}</ComhwalMiniCell>
+              <ComhwalMiniCell accent={accent} active={hasComhwalFocus(model, 'table') && index === 0}>{title}</ComhwalMiniCell>
               <div className="mt-1.5 grid gap-1">
                 {['ID', index === 0 ? '이름' : '고객ID'].map((row) => (
-                  <span key={row} className="rounded-lg bg-cream/[0.08] px-2 py-1 kr-num text-[10px] text-cream/62">
+                  <span
+                    key={row}
+                    className="rounded-lg border px-2 py-1 kr-num text-[10px]"
+                    style={{
+                      borderColor:
+                        (hasComhwalFocus(model, 'key') && row === 'ID') ||
+                        (hasComhwalFocus(model, 'foreign-key', 'integrity') && row === '고객ID')
+                          ? accent
+                          : 'transparent',
+                      background:
+                        (hasComhwalFocus(model, 'key') && row === 'ID') ||
+                        (hasComhwalFocus(model, 'foreign-key', 'integrity') && row === '고객ID')
+                          ? `color-mix(in srgb, ${accent} 18%, rgba(239,244,255,0.08))`
+                          : 'rgba(239,244,255,0.08)',
+                      color: 'rgba(239,244,255,0.68)',
+                    }}
+                  >
                     {row}
                   </span>
                 ))}
@@ -2817,7 +3151,16 @@ function ComhwalDatabasePattern({
             </div>
           ))}
           <div className="-order-none flex items-center justify-center">
-            <span className="h-px w-full" style={{ background: accent }} />
+            <span
+              className="h-px w-full"
+              style={{
+                background: accent,
+                boxShadow: hasComhwalFocus(model, 'relationship', 'integrity')
+                  ? `0 0 14px ${accent}`
+                  : 'none',
+                height: hasComhwalFocus(model, 'relationship', 'integrity') ? 3 : 1,
+              }}
+            />
           </div>
         </div>
       </ComhwalDiagramFrame>
@@ -2830,8 +3173,17 @@ function ComhwalDatabasePattern({
         <div className="grid grid-cols-3 gap-2">
           {model.flow.map((item, index) => (
             <div key={item} className="relative">
-              <ComhwalMiniCell accent={accent} active={index === 1}>{item}</ComhwalMiniCell>
-              {index === 1 ? (
+              <ComhwalMiniCell
+                accent={accent}
+                active={
+                  (hasComhwalFocus(model, 'key') && index === 1) ||
+                  (hasComhwalFocus(model, 'foreign-key') && index === 2)
+                }
+                focus={hasComhwalFocus(model, 'record') && index === 0}
+              >
+                {item}
+              </ComhwalMiniCell>
+              {(hasComhwalFocus(model, 'key') && index === 1) || (hasComhwalFocus(model, 'foreign-key') && index === 2) ? (
                 <span className="absolute -right-1 -top-1 h-4 w-4 rounded-full" style={{ background: accent }} />
               ) : null}
             </div>
@@ -2847,13 +3199,13 @@ function ComhwalDatabasePattern({
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
           <div className="grid grid-cols-2 gap-1.5">
             {['고객', '주문', '고객', '주문'].map((label, index) => (
-              <ComhwalMiniCell key={`${label}-${index}`} accent={accent} active={index === 0}>{label}</ComhwalMiniCell>
+              <ComhwalMiniCell key={`${label}-${index}`} accent={accent} active={hasComhwalFocus(model, 'deduplicate') && index < 2}>{label}</ComhwalMiniCell>
             ))}
           </div>
           <ArrowRight size={16} style={{ color: accent }} />
           <div className="grid gap-1.5">
-            <ComhwalMiniCell accent={accent} active>고객 표</ComhwalMiniCell>
-            <ComhwalMiniCell accent={accent}>주문 표</ComhwalMiniCell>
+            <ComhwalMiniCell accent={accent} active={hasComhwalFocus(model, 'table')}>고객 표</ComhwalMiniCell>
+            <ComhwalMiniCell accent={accent} focus={hasComhwalFocus(model, 'relationship')}>주문 표</ComhwalMiniCell>
           </div>
         </div>
       </ComhwalDiagramFrame>
@@ -2861,6 +3213,7 @@ function ComhwalDatabasePattern({
   }
 
   if (pattern.includes('system-layers')) {
+    const focusIndex = hasComhwalFocus(model, 'dbms') ? 1 : getComhwalFlowFocusIndex(model);
     return (
       <ComhwalDiagramFrame accent={accent}>
         <div className="mx-auto max-w-[260px] space-y-2">
@@ -2870,9 +3223,9 @@ function ComhwalDatabasePattern({
               className="rounded-2xl border px-4 py-3 text-center kr-heading text-[11px]"
               style={{
                 transform: `translateX(${(index - 1) * 14}px)`,
-                borderColor: index === 1 ? accent : 'rgba(239,244,255,0.16)',
-                background: index === 1 ? accent : 'rgba(239,244,255,0.07)',
-                color: index === 1 ? '#07121f' : 'rgba(239,244,255,0.78)',
+                borderColor: index === focusIndex ? accent : 'rgba(239,244,255,0.16)',
+                background: index === focusIndex ? accent : 'rgba(239,244,255,0.07)',
+                color: index === focusIndex ? '#07121f' : 'rgba(239,244,255,0.78)',
               }}
             >
               {item}
@@ -2894,7 +3247,16 @@ function ComhwalDatabasePattern({
           <div className="grid grid-cols-3 gap-1.5">
             {['필드', '형식', '설명', 'ID', '숫자', '키', '이름', '텍스트', '값'].map(
               (label, index) => (
-                <ComhwalMiniCell key={`${label}-${index}`} accent={accent} active={index === 0 || index === 5}>
+                <ComhwalMiniCell
+                  key={`${label}-${index}`}
+                  accent={accent}
+                  active={
+                    (hasComhwalFocus(model, 'field') && index === 0) ||
+                    (hasComhwalFocus(model, 'key') && index === 5) ||
+                    (hasComhwalFocus(model, 'format') && index === 1)
+                  }
+                  focus={hasComhwalFocus(model, 'record') && [3, 4, 5].includes(index)}
+                >
                   {label}
                 </ComhwalMiniCell>
               ),
@@ -2902,7 +3264,7 @@ function ComhwalDatabasePattern({
           </div>
           <div className="grid gap-1.5">
             {model.flow.map((item, index) => (
-              <ComhwalMiniCell key={item} accent={accent} active={index === 1}>
+              <ComhwalMiniCell key={item} accent={accent} active={index === getComhwalFlowFocusIndex(model)}>
                 {item}
               </ComhwalMiniCell>
             ))}
@@ -2917,16 +3279,33 @@ function ComhwalDatabasePattern({
       <ComhwalDiagramFrame accent={accent}>
         <div className="grid grid-cols-[1fr_92px] gap-3">
           <div className="rounded-2xl border border-cream/15 bg-cream/[0.04] p-2">
-            <div className="mb-2 rounded-xl bg-cream/[0.08] px-3 py-2 kr-num text-[11px] text-cream/72">
+            <div
+              className="mb-2 rounded-xl border px-3 py-2 kr-num text-[11px] text-cream/72"
+              style={{
+                borderColor: hasComhwalFocus(model, 'format', 'condition') ? accent : 'transparent',
+                background: hasComhwalFocus(model, 'format', 'condition')
+                  ? `color-mix(in srgb, ${accent} 16%, rgba(239,244,255,0.08))`
+                  : 'rgba(239,244,255,0.08)',
+              }}
+            >
               000-0000
             </div>
             <div className="grid grid-cols-2 gap-1.5">
               {['허용', '거절', '목록', '저장'].map((label, index) => (
-                <ComhwalMiniCell key={label} accent={accent} active={index === 0}>{label}</ComhwalMiniCell>
+                <ComhwalMiniCell
+                  key={label}
+                  accent={accent}
+                  active={
+                    (hasComhwalFocus(model, 'condition') && index === 0) ||
+                    (hasComhwalFocus(model, 'lookup') && index === 2)
+                  }
+                >
+                  {label}
+                </ComhwalMiniCell>
               ))}
             </div>
           </div>
-          <ComhwalMiniCell accent={accent} active>{model.flow[2]}</ComhwalMiniCell>
+          <ComhwalMiniCell accent={accent} active={hasComhwalFocus(model, 'result') || hasComhwalFocus(model, 'lookup')}>{model.flow[2]}</ComhwalMiniCell>
         </div>
       </ComhwalDiagramFrame>
     );
@@ -2950,13 +3329,20 @@ function ComhwalDatabasePattern({
         <div className="flex flex-col items-center justify-center gap-1">
           <span
             className="h-10 w-20 rounded-[50%] border-2"
-            style={{ borderColor: accent, background: 'rgba(239,244,255,0.07)' }}
+            style={{
+              borderColor: accent,
+              background: hasComhwalFocus(model, 'data-store')
+                ? `color-mix(in srgb, ${accent} 18%, rgba(239,244,255,0.07))`
+                : 'rgba(239,244,255,0.07)',
+            }}
           />
           <span className="-mt-6 h-16 w-20 rounded-b-2xl border-x-2 border-b-2" style={{ borderColor: accent }} />
         </div>
         <div className="grid gap-2">
           {model.flow.map((item, index) => (
-            <ComhwalMiniCell key={item} accent={accent} active={index === 1}>{item}</ComhwalMiniCell>
+            <ComhwalMiniCell key={item} accent={accent} active={index === getComhwalFlowFocusIndex(model)}>
+              {item}
+            </ComhwalMiniCell>
           ))}
         </div>
       </div>
@@ -2974,14 +3360,24 @@ function ComhwalQueryPattern({
   const pattern = model.pattern ?? '';
 
   if (pattern.includes('join')) {
+    const joinFocus = hasComhwalFocus(model, 'join', 'relationship');
+    const tableFocus = hasComhwalFocus(model, 'table', 'select');
     return (
       <ComhwalDiagramFrame accent={accent}>
         <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-          <ComhwalMiniCell accent={accent}>Table A</ComhwalMiniCell>
-          <div className="rounded-full border px-3 py-2 kr-num text-[11px]" style={{ borderColor: accent, color: accent }}>
+          <ComhwalMiniCell accent={accent} focus={tableFocus}>Table A</ComhwalMiniCell>
+          <div
+            className="rounded-full border px-3 py-2 kr-num text-[11px]"
+            style={{
+              borderColor: accent,
+              color: joinFocus ? '#07121f' : accent,
+              background: joinFocus ? accent : 'rgba(1,8,40,0.26)',
+              boxShadow: joinFocus ? `0 0 18px color-mix(in srgb, ${accent} 36%, transparent)` : 'none',
+            }}
+          >
             JOIN
           </div>
-          <ComhwalMiniCell accent={accent} active>Table B</ComhwalMiniCell>
+          <ComhwalMiniCell accent={accent} focus={tableFocus}>Table B</ComhwalMiniCell>
         </div>
       </ComhwalDiagramFrame>
     );
@@ -2991,10 +3387,14 @@ function ComhwalQueryPattern({
     return (
       <ComhwalDiagramFrame accent={accent}>
         <div className="rounded-2xl border border-cream/15 p-3">
-          <ComhwalMiniCell accent={accent} active>바깥 SELECT</ComhwalMiniCell>
+          <ComhwalMiniCell accent={accent} active={hasComhwalFocus(model, 'select')} focus={hasComhwalFocus(model, 'where')}>
+            바깥 SELECT
+          </ComhwalMiniCell>
           <div className="mx-auto my-2 h-5 w-px" style={{ background: accent }} />
           <div className="mx-auto max-w-[210px] rounded-2xl border border-cream/15 bg-cream/[0.05] p-2">
-            <ComhwalMiniCell accent={accent}>안쪽 SELECT</ComhwalMiniCell>
+            <ComhwalMiniCell accent={accent} active={hasComhwalFocus(model, 'subquery')}>
+              안쪽 SELECT
+            </ComhwalMiniCell>
           </div>
         </div>
       </ComhwalDiagramFrame>
@@ -3006,7 +3406,19 @@ function ComhwalQueryPattern({
       <ComhwalDiagramFrame accent={accent}>
         <div className="grid grid-cols-[1fr_86px] gap-3">
           <ComhwalVisualFlow model={model} accent={accent} />
-          <div className="flex items-center justify-center rounded-2xl border border-cream/15 bg-cream/[0.04] kr-heading text-[28px]" style={{ color: accent }}>
+          <div
+            className="flex items-center justify-center rounded-2xl border kr-heading text-[28px]"
+            style={{
+              borderColor: hasComhwalFocus(model, 'action-query') ? accent : 'rgba(239,244,255,0.15)',
+              color: accent,
+              background: hasComhwalFocus(model, 'action-query')
+                ? `color-mix(in srgb, ${accent} 14%, rgba(239,244,255,0.04))`
+                : 'rgba(239,244,255,0.04)',
+              boxShadow: hasComhwalFocus(model, 'action-query')
+                ? `0 0 18px color-mix(in srgb, ${accent} 28%, transparent)`
+                : 'none',
+            }}
+          >
             !
           </div>
         </div>
@@ -3019,7 +3431,15 @@ function ComhwalQueryPattern({
       <ComhwalDiagramFrame accent={accent}>
         <div className="grid grid-cols-3 gap-1.5">
           {['', '1월', '2월', 'A', '12', '16', 'B', '20', '18'].map((label, index) => (
-            <ComhwalMiniCell key={`${label}-${index}`} accent={accent} active={index === 4}>
+            <ComhwalMiniCell
+              key={`${label}-${index}`}
+              accent={accent}
+              active={
+                (hasComhwalFocus(model, 'group') && [3, 6].includes(index)) ||
+                (hasComhwalFocus(model, 'parameter') && [1, 2].includes(index)) ||
+                (hasComhwalFocus(model, 'result') && index === 4)
+              }
+            >
               {label}
             </ComhwalMiniCell>
           ))}
@@ -3033,11 +3453,32 @@ function ComhwalQueryPattern({
       <div className="rounded-2xl border border-cream/15 bg-cream/[0.04] p-3">
         <div className="grid grid-cols-3 gap-2">
           {model.flow.map((item, index) => (
-            <ComhwalMiniCell key={item} accent={accent} active={index === 1}>{item}</ComhwalMiniCell>
+            <ComhwalMiniCell key={item} accent={accent} active={index === getComhwalFlowFocusIndex(model)}>
+              {item}
+            </ComhwalMiniCell>
           ))}
         </div>
-        <div className="mt-3 rounded-xl bg-cream/[0.07] px-3 py-2 kr-num text-[11px] text-cream/70">
-          SELECT field FROM table WHERE condition
+        <div className="mt-3 flex flex-wrap gap-1.5 rounded-xl bg-cream/[0.07] px-3 py-2 kr-num text-[11px] text-cream/70">
+          {[
+            ['SELECT', 'select'],
+            ['field', 'field'],
+            ['FROM table', 'table'],
+            ['WHERE', 'where'],
+            ['condition', 'condition'],
+            ['ORDER BY', 'order'],
+          ].map(([label, focus]) => (
+            <span
+              key={label}
+              className="rounded-lg border px-2 py-1"
+              style={{
+                borderColor: model.focus === focus ? accent : 'transparent',
+                color: model.focus === focus ? '#07121f' : 'rgba(239,244,255,0.72)',
+                background: model.focus === focus ? accent : 'rgba(239,244,255,0.04)',
+              }}
+            >
+              {label}
+            </span>
+          ))}
         </div>
       </div>
     </ComhwalDiagramFrame>
@@ -3055,13 +3496,26 @@ function ComhwalFormReportPattern({
   const isReport = pattern.startsWith('report-');
 
   if (pattern.includes('wizard')) {
+    const focusIndex = getComhwalFlowFocusIndex(model);
     return (
       <ComhwalDiagramFrame accent={accent}>
         <div className="grid grid-cols-3 gap-2">
           {['1', '2', '3'].map((step, index) => (
-            <div key={step} className="rounded-2xl border border-cream/15 bg-cream/[0.04] p-2">
-              <ComhwalMiniCell accent={accent} active={index === 1}>{step}</ComhwalMiniCell>
-              <div className="mt-2 h-2 rounded bg-cream/15" />
+            <div
+              key={step}
+              className="rounded-2xl border p-2"
+              style={{
+                borderColor: index === focusIndex ? accent : 'rgba(239,244,255,0.15)',
+                background: index === focusIndex
+                  ? `color-mix(in srgb, ${accent} 12%, rgba(239,244,255,0.04))`
+                  : 'rgba(239,244,255,0.04)',
+              }}
+            >
+              <ComhwalMiniCell accent={accent} active={index === focusIndex}>{step}</ComhwalMiniCell>
+              <div
+                className="mt-2 h-2 rounded"
+                style={{ background: index === focusIndex ? accent : 'rgba(239,244,255,0.15)' }}
+              />
             </div>
           ))}
         </div>
@@ -3075,12 +3529,24 @@ function ComhwalFormReportPattern({
         <div className="grid grid-cols-[86px_1fr] gap-3">
           <div className="grid gap-1.5">
             {['Aa', '□', 'Btn'].map((item, index) => (
-              <ComhwalMiniCell key={item} accent={accent} active={index === 1}>{item}</ComhwalMiniCell>
+              <ComhwalMiniCell
+                key={item}
+                accent={accent}
+                active={hasComhwalFocus(model, 'control') && index === 1}
+                focus={hasComhwalFocus(model, 'form') && index === 0}
+              >
+                {item}
+              </ComhwalMiniCell>
             ))}
           </div>
           <div className="rounded-2xl border border-cream/15 bg-cream/[0.04] p-2">
             {model.flow.map((item, index) => (
-              <ComhwalMiniCell key={item} accent={accent} active={index === 1} className="mb-1.5 last:mb-0">
+              <ComhwalMiniCell
+                key={item}
+                accent={accent}
+                active={index === getComhwalFlowFocusIndex(model)}
+                className="mb-1.5 last:mb-0"
+              >
                 {item}
               </ComhwalMiniCell>
             ))}
@@ -3094,9 +3560,13 @@ function ComhwalFormReportPattern({
     return (
       <ComhwalDiagramFrame accent={accent}>
         <div className="rounded-2xl border border-cream/15 bg-cream/[0.04] p-3">
-          <ComhwalMiniCell accent={accent} active>기본 폼</ComhwalMiniCell>
+          <ComhwalMiniCell accent={accent} active={hasComhwalFocus(model, 'form')}>
+            기본 폼
+          </ComhwalMiniCell>
           <div className="mt-3 rounded-2xl border border-cream/15 bg-cream/[0.05] p-2">
-            <ComhwalMiniCell accent={accent}>하위 폼</ComhwalMiniCell>
+            <ComhwalMiniCell accent={accent} active={hasComhwalFocus(model, 'subform')}>
+              하위 폼
+            </ComhwalMiniCell>
           </div>
         </div>
       </ComhwalDiagramFrame>
@@ -3107,12 +3577,43 @@ function ComhwalFormReportPattern({
     <ComhwalDiagramFrame accent={accent}>
       <div
         className={`mx-auto max-w-[280px] rounded-2xl border p-3 ${isReport ? 'bg-cream/[0.08]' : 'bg-cream/[0.04]'}`}
-        style={{ borderColor: 'rgba(239,244,255,0.16)' }}
+        style={{
+          borderColor: hasComhwalFocus(model, 'form', 'report') ? accent : 'rgba(239,244,255,0.16)',
+          boxShadow: hasComhwalFocus(model, 'form', 'report')
+            ? `0 0 18px color-mix(in srgb, ${accent} 22%, transparent)`
+            : 'none',
+        }}
       >
-        <div className="mb-2 rounded-xl px-3 py-2 kr-heading text-[11px]" style={{ background: accent, color: '#07121f' }}>
+        <div
+          className="mb-2 rounded-xl border px-3 py-2 kr-heading text-[11px]"
+          style={{
+            borderColor: accent,
+            background: hasComhwalFocus(model, 'form', 'report') ? accent : 'rgba(239,244,255,0.08)',
+            color: hasComhwalFocus(model, 'form', 'report') ? '#07121f' : 'rgba(239,244,255,0.82)',
+          }}
+        >
           {isReport ? 'REPORT' : 'FORM'}
         </div>
-        <ComhwalPatternMotif pattern={model.pattern} accent={accent} labels={model.flow} />
+        <div className="grid gap-1.5">
+          {['머리글', '본문', '바닥글'].map((section, index) => (
+            <ComhwalMiniCell
+              key={section}
+              accent={accent}
+              active={hasComhwalFocus(model, 'section') && index === 1}
+              focus={hasComhwalFocus(model, 'control', 'property') && index === 1}
+            >
+              {section}
+            </ComhwalMiniCell>
+          ))}
+        </div>
+        <div className="mt-3">
+          <ComhwalPatternMotif
+            pattern={model.pattern}
+            accent={accent}
+            labels={model.flow}
+            activeIndex={getComhwalFlowFocusIndex(model)}
+          />
+        </div>
       </div>
     </ComhwalDiagramFrame>
   );
@@ -3128,12 +3629,21 @@ function ComhwalAutomationPattern({
   const pattern = model.pattern ?? '';
 
   if (pattern.includes('radar') || pattern.includes('data-access')) {
+    const focusIndex = getComhwalFlowFocusIndex(model);
     return (
       <ComhwalDiagramFrame accent={accent}>
         <div className="relative mx-auto h-[132px] max-w-[280px]">
           <div
             className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full border-2"
-            style={{ borderColor: accent }}
+            style={{
+              borderColor: accent,
+              background: hasComhwalFocus(model, 'object', 'event', 'recordset')
+                ? `color-mix(in srgb, ${accent} 14%, rgba(239,244,255,0.04))`
+                : 'transparent',
+              boxShadow: hasComhwalFocus(model, 'object', 'event', 'recordset')
+                ? `0 0 18px color-mix(in srgb, ${accent} 26%, transparent)`
+                : 'none',
+            }}
           />
           {model.flow.map((item, index) => (
             <div
@@ -3144,9 +3654,9 @@ function ComhwalAutomationPattern({
                 right: index === 2 ? 0 : 'auto',
                 top: index === 1 ? 0 : 82,
                 transform: index === 1 ? 'translateX(-50%)' : undefined,
-                borderColor: index === 1 ? accent : 'rgba(239,244,255,0.16)',
-                background: index === 1 ? accent : 'rgba(239,244,255,0.07)',
-                color: index === 1 ? '#07121f' : 'rgba(239,244,255,0.76)',
+                borderColor: index === focusIndex ? accent : 'rgba(239,244,255,0.16)',
+                background: index === focusIndex ? accent : 'rgba(239,244,255,0.07)',
+                color: index === focusIndex ? '#07121f' : 'rgba(239,244,255,0.76)',
               }}
             >
               {item}
@@ -3162,13 +3672,20 @@ function ComhwalAutomationPattern({
       <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-2">
         {model.flow.map((item, index) => (
           <div key={item} className="contents">
-            <ComhwalMiniCell accent={accent} active={index === 1}>{item}</ComhwalMiniCell>
+            <ComhwalMiniCell accent={accent} active={index === getComhwalFlowFocusIndex(model)}>
+              {item}
+            </ComhwalMiniCell>
             {index < 2 ? <ArrowRight size={16} style={{ color: accent }} /> : null}
           </div>
         ))}
       </div>
       <div className="mt-3">
-        <ComhwalPatternMotif pattern={model.pattern} accent={accent} labels={['OpenForm', 'RunQuery', 'SetValue']} />
+        <ComhwalPatternMotif
+          pattern={model.pattern}
+          accent={accent}
+          labels={['OpenForm', 'RunQuery', 'SetValue']}
+          activeIndex={getComhwalFlowFocusIndex(model)}
+        />
       </div>
     </ComhwalDiagramFrame>
   );
@@ -3234,6 +3751,7 @@ function ComhwalConceptVisualCard({
       aria-label={`${model.title} 그림 설명`}
       data-comhwal-visual-pattern={model.pattern ?? model.mode ?? 'legacy'}
       data-comhwal-visual-kind={model.kind ?? model.pattern ?? model.mode ?? 'legacy'}
+      data-comhwal-visual-focus={model.focus ?? 'generic'}
     >
       <div
         className="overflow-hidden rounded-[24px] border p-4 md:p-5"
@@ -3389,10 +3907,6 @@ function ExpansionConceptStudyScreen({
   const [showQuestion, setShowQuestion] = useState(false);
   const [showQuestionIntro, setShowQuestionIntro] = useState(false);
   const activeCard = cards[activeIndex];
-  const topicTitle =
-    planet.sections
-      .flatMap((section) => section.topics)
-      .find((topic) => topic.id === topicId)?.title ?? activeCard?.title ?? '컴활 개념';
   const isLastCard = activeIndex >= cards.length - 1;
   const activeQuestion = activeCard?.question;
   const selectedAnswer = activeCard ? selectedAnswers[activeCard.id] : undefined;
@@ -3499,7 +4013,7 @@ function ExpansionConceptStudyScreen({
     ? isQuestionMode && activeQuestion
       ? activeQuestion.prompt
       : isQuestionIntroMode
-        ? `${topicTitle} 문제를 풀어보자!`
+        ? activeQuestion.prompt
       : activeCard.body
     : '아직 이 토픽의 개념 카드가 준비 중이야. 목차는 열어뒀고, 곧 ADSP·SQLD처럼 하나씩 붙일게.';
   const primaryLabel = isQuestionMode
@@ -3509,7 +4023,7 @@ function ExpansionConceptStudyScreen({
     : isQuestionIntroMode
       ? '문제 풀기'
     : activeQuestion
-      ? '묶어서 확인'
+      ? '문제로 확인'
       : cards.length === 0 || isLastCard
         ? '목차로'
         : '계속';

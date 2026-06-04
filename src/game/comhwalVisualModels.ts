@@ -4,6 +4,80 @@ type VisualProfile = {
   flow: readonly [string, string, string];
 };
 
+export type ComhwalVisualFocus =
+  | 'generic'
+  | 'cell'
+  | 'ribbon'
+  | 'formula-bar'
+  | 'name-box'
+  | 'sheet-tab'
+  | 'workbook'
+  | 'worksheet'
+  | 'input-value'
+  | 'pointer'
+  | 'format'
+  | 'fill-handle'
+  | 'search'
+  | 'option'
+  | 'edit'
+  | 'protect'
+  | 'condition'
+  | 'error'
+  | 'relative-reference'
+  | 'absolute-reference'
+  | 'named-range'
+  | 'function'
+  | 'argument'
+  | 'result'
+  | 'lookup'
+  | 'criteria'
+  | 'chart-data'
+  | 'chart-element'
+  | 'chart-type'
+  | 'freeze'
+  | 'page'
+  | 'print'
+  | 'sort'
+  | 'filter'
+  | 'external-data'
+  | 'subtotal'
+  | 'pivot-field'
+  | 'scenario'
+  | 'goal-cell'
+  | 'macro'
+  | 'vba'
+  | 'variable'
+  | 'branch'
+  | 'object'
+  | 'data-store'
+  | 'deduplicate'
+  | 'dbms'
+  | 'table'
+  | 'record'
+  | 'field'
+  | 'key'
+  | 'foreign-key'
+  | 'relationship'
+  | 'integrity'
+  | 'import'
+  | 'export'
+  | 'select'
+  | 'where'
+  | 'order'
+  | 'group'
+  | 'join'
+  | 'subquery'
+  | 'action-query'
+  | 'parameter'
+  | 'form'
+  | 'control'
+  | 'property'
+  | 'subform'
+  | 'report'
+  | 'section'
+  | 'event'
+  | 'recordset';
+
 export type ComhwalExpansionVisualModel = {
   eyebrow: string;
   title: string;
@@ -12,6 +86,8 @@ export type ComhwalExpansionVisualModel = {
   chips: string[];
   pattern: string;
   kind: string;
+  focus: ComhwalVisualFocus;
+  focusLabel: string;
 };
 
 export type ComhwalVisualCardInput = {
@@ -141,10 +217,175 @@ export const COMHWAL_SPREADSHEET_VISUAL_TOPIC_IDS = visualTopicIdsInRange(60, 10
 
 export const COMHWAL_DATABASE_VISUAL_TOPIC_IDS = visualTopicIdsInRange(107, 152);
 
+const FOCUS_LABELS: Record<ComhwalVisualFocus, string> = {
+  generic: '핵심',
+  cell: '셀',
+  ribbon: '리본',
+  'formula-bar': '수식 입력줄',
+  'name-box': '이름 상자',
+  'sheet-tab': '시트 탭',
+  workbook: '통합 문서',
+  worksheet: '워크시트',
+  'input-value': '입력값',
+  pointer: '셀 포인터',
+  format: '표시 형식',
+  'fill-handle': '채우기 핸들',
+  search: '찾기',
+  option: '옵션',
+  edit: '편집',
+  protect: '보호',
+  condition: '조건',
+  error: '오류',
+  'relative-reference': '상대 참조',
+  'absolute-reference': '절대 참조',
+  'named-range': '이름 범위',
+  function: '함수',
+  argument: '인수',
+  result: '결과',
+  lookup: '찾을 값',
+  criteria: '조건 범위',
+  'chart-data': '차트 데이터',
+  'chart-element': '차트 요소',
+  'chart-type': '차트 종류',
+  freeze: '틀 고정',
+  page: '페이지',
+  print: '인쇄',
+  sort: '정렬',
+  filter: '필터',
+  'external-data': '외부 데이터',
+  subtotal: '부분합',
+  'pivot-field': '피벗 필드',
+  scenario: '시나리오',
+  'goal-cell': '목표 셀',
+  macro: '매크로',
+  vba: 'VBA',
+  variable: '변수',
+  branch: '제어문',
+  object: '개체',
+  'data-store': '저장소',
+  deduplicate: '중복 감소',
+  dbms: 'DBMS',
+  table: '테이블',
+  record: '레코드',
+  field: '필드',
+  key: '기본키',
+  'foreign-key': '외래키',
+  relationship: '관계',
+  integrity: '무결성',
+  import: '가져오기',
+  export: '내보내기',
+  select: 'SELECT',
+  where: 'WHERE',
+  order: 'ORDER BY',
+  group: 'GROUP BY',
+  join: 'JOIN',
+  subquery: '하위 질의',
+  'action-query': '실행 질의',
+  parameter: '매개변수',
+  form: '폼',
+  control: '컨트롤',
+  property: '속성',
+  subform: '하위 폼',
+  report: '보고서',
+  section: '구역',
+  event: '이벤트',
+  recordset: 'Recordset',
+};
+
+const includesAny = (text: string, words: readonly string[]) =>
+  words.some((word) => text.includes(word));
+
+export function inferComhwalVisualFocus(
+  card: ComhwalVisualCardInput,
+): ComhwalVisualFocus {
+  const text = [card.title, card.body, ...card.keyPoints].join(' ');
+  const topicNumber = Number(card.topicId);
+  const isSpreadsheetTopic = topicNumber >= 60 && topicNumber <= 106;
+  const isDatabaseTopic = topicNumber >= 107 && topicNumber <= 152;
+
+  if (includesAny(text, ['수식 입력줄', '수식줄'])) return 'formula-bar';
+  if (includesAny(text, ['이름 상자'])) return 'name-box';
+  if (includesAny(text, ['리본'])) return 'ribbon';
+  if (includesAny(text, ['시트 탭', '탭 색', '시트 삽입', '이동과 복사'])) return 'sheet-tab';
+  if (includesAny(text, ['통합 문서'])) return 'workbook';
+  if (includesAny(text, ['워크시트'])) return 'worksheet';
+  if (includesAny(text, ['채우기 핸들', '오른쪽 아래 점', '끌어'])) return 'fill-handle';
+  if (includesAny(text, ['셀 포인터', 'Enter', 'Tab', '방향'])) return 'pointer';
+  if (includesAny(text, ['찾기', '검색'])) return 'search';
+  if (includesAny(text, ['옵션', '고급'])) return 'option';
+  if (includesAny(text, ['편집', '수정'])) return 'edit';
+  if (includesAny(text, ['보호', '공유', '권한'])) return 'protect';
+  if (isSpreadsheetTopic && includesAny(text, ['셀', 'A1', '주소'])) return 'cell';
+  if (includesAny(text, ['WHERE'])) return 'where';
+  if (includesAny(text, ['ORDER BY', 'ASC', 'DESC'])) return 'order';
+  if (includesAny(text, ['GROUP BY', 'HAVING', '묶어서'])) return 'group';
+  if (includesAny(text, ['JOIN', '다중 테이블'])) return 'join';
+  if (includesAny(text, ['하위 질의', '안쪽 질의'])) return 'subquery';
+  if (includesAny(text, ['실행 질의', '자료 변경', '삭제', '추가'])) return 'action-query';
+  if (includesAny(text, ['매개변수', '교차표'])) return 'parameter';
+  if (includesAny(text, ['SELECT', '선택 질의', '조회 질의'])) return 'select';
+  if (includesAny(text, ['조건 범위', 'criteria'])) return 'criteria';
+  if (includesAny(text, ['조건부', '조건을 걸', '조건 범위', '조건에 맞'])) return 'condition';
+  if (includesAny(text, ['오류', '#DIV', '#VALUE', '#N/A'])) return 'error';
+  if (includesAny(text, ['절대 참조', '$'])) return 'absolute-reference';
+  if (includesAny(text, ['상대 참조'])) return 'relative-reference';
+  if (includesAny(text, ['이름 정의', '이름 관리자', '범위에 이름'])) return 'named-range';
+  if (includesAny(text, ['인수'])) return 'argument';
+  if (includesAny(text, ['함수', 'SUM', 'AVERAGE'])) return 'function';
+  if (includesAny(text, ['결과', '돌려줘'])) return 'result';
+  if (includesAny(text, ['찾을 값', 'LOOKUP', '조회'])) return 'lookup';
+  if (includesAny(text, ['차트 요소', '축', '범례', '제목'])) return 'chart-element';
+  if (includesAny(text, ['차트 종류', '막대', '꺾은선', '원형'])) return 'chart-type';
+  if (includesAny(text, ['차트', '그림 비교'])) return 'chart-data';
+  if (includesAny(text, ['틀 고정', '보기 유지'])) return 'freeze';
+  if (includesAny(text, ['페이지', '용지', '여백'])) return 'page';
+  if (includesAny(text, ['인쇄', '미리 보기', '출력'])) return 'print';
+  if (includesAny(text, ['정렬', '오름차순', '내림차순'])) return 'sort';
+  if (includesAny(text, ['필터', '걸러'])) return 'filter';
+  if (includesAny(text, ['외부', '가져오기', '연결하기'])) return 'import';
+  if (includesAny(text, ['내보내기', 'PDF'])) return 'export';
+  if (includesAny(text, ['부분합'])) return 'subtotal';
+  if (includesAny(text, ['피벗', '필드 배치'])) return 'pivot-field';
+  if (includesAny(text, ['시나리오', '가정'])) return 'scenario';
+  if (includesAny(text, ['목표값', '바꿀 셀'])) return 'goal-cell';
+  if (includesAny(text, ['매크로'])) return 'macro';
+  if (includesAny(text, ['VBA', '프로시저'])) return 'vba';
+  if (includesAny(text, ['변수', '배열'])) return 'variable';
+  if (includesAny(text, ['제어문', '조건문', '반복문'])) return 'branch';
+  if (includesAny(text, ['개체', 'Application', 'Workbook'])) return 'object';
+
+  if (includesAny(text, ['중복', '불일치'])) return 'deduplicate';
+  if (includesAny(text, ['DBMS'])) return 'dbms';
+  if (includesAny(text, ['외래키'])) return 'foreign-key';
+  if (includesAny(text, ['기본키', '후보키', '키는', '키가'])) return 'key';
+  if (includesAny(text, ['참조 무결성', '무결성'])) return 'integrity';
+  if (includesAny(text, ['관계', '연결'])) return 'relationship';
+  if (isDatabaseTopic && includesAny(text, ['레코드', '행은'])) return 'record';
+  if (isDatabaseTopic && includesAny(text, ['필드', '열은'])) return 'field';
+  if (isDatabaseTopic && includesAny(text, ['테이블', '표로', '표 형태'])) return 'table';
+  if (isDatabaseTopic && includesAny(text, ['데이터베이스', '저장소', '창고'])) return 'data-store';
+
+  if (includesAny(text, ['하위 폼'])) return 'subform';
+  if (includesAny(text, ['컨트롤'])) return 'control';
+  if (includesAny(text, ['속성', '형식 탭', '데이터 탭'])) return 'property';
+  if (includesAny(text, ['폼'])) return 'form';
+  if (includesAny(text, ['보고서 구역', '머리글', '본문', '바닥글'])) return 'section';
+  if (includesAny(text, ['보고서'])) return 'report';
+  if (includesAny(text, ['이벤트'])) return 'event';
+  if (includesAny(text, ['Recordset', 'DAO', 'ADO'])) return 'recordset';
+
+  if (includesAny(text, ['형식', '표시 모양', '날짜'])) return 'format';
+  if (includesAny(text, ['값', '숫자', '문자', '수식'])) return 'input-value';
+  if (includesAny(text, ['셀', 'A1', '주소'])) return 'cell';
+
+  return 'generic';
+}
+
 export function getComhwalExpansionVisualModel(
   card: ComhwalVisualCardInput,
 ): ComhwalExpansionVisualModel {
   const profile = VISUAL_PROFILES_BY_TOPIC_ID[card.topicId];
+  const focus = inferComhwalVisualFocus(card);
 
   if (!profile) {
     return {
@@ -155,6 +396,8 @@ export function getComhwalExpansionVisualModel(
       chips: card.keyPoints.slice(0, 3),
       pattern: 'fallback-cards',
       kind: `fallback-${card.topicId}`,
+      focus,
+      focusLabel: FOCUS_LABELS[focus],
     };
   }
 
@@ -166,5 +409,7 @@ export function getComhwalExpansionVisualModel(
     chips: card.keyPoints.slice(0, 3),
     pattern: profile.pattern,
     kind: `${card.topicId}-${profile.pattern}`,
+    focus,
+    focusLabel: FOCUS_LABELS[focus],
   };
 }

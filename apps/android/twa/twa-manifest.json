@@ -1,8 +1,8 @@
 {
   "packageId": "com.questdp.app",
   "host": "quest-dp.com",
-  "name": "QuestDP",
-  "launcherName": "QuestDP",
+  "name": "퀘스트디피",
+  "launcherName": "퀘스트디피",
   "display": "standalone",
   "themeColor": "#081642",
   "themeColorDark": "#081642",
@@ -13,29 +13,29 @@
   "backgroundColor": "#081642",
   "enableNotifications": false,
   "startUrl": "/app/",
-  "iconUrl": "https://quest-dp.com/logo/questdp-mark.png",
-  "maskableIconUrl": "https://quest-dp.com/logo/questdp-mark.png",
+  "iconUrl": "https://quest-dp.com/logo/questdp-app-icon.png",
+  "maskableIconUrl": "https://quest-dp.com/logo/questdp-app-icon.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "./android.keystore",
     "alias": "questdp"
   },
-  "appVersionName": "1.0.0",
-  "appVersionCode": 1,
+  "appVersionName": "1.0.1",
+  "appVersionCode": 2,
   "shortcuts": [
     {
       "name": "학습 시작",
       "shortName": "학습",
       "url": "https://quest-dp.com/app/#/game",
-      "chosenIconUrl": "https://quest-dp.com/logo/questdp-mark.png",
-      "chosenMaskableIconUrl": "https://quest-dp.com/logo/questdp-mark.png"
+      "chosenIconUrl": "https://quest-dp.com/logo/questdp-app-icon.png",
+      "chosenMaskableIconUrl": "https://quest-dp.com/logo/questdp-app-icon.png"
     },
     {
       "name": "오늘의 퀘스트",
       "shortName": "퀘스트",
       "url": "https://quest-dp.com/app/#/quests",
-      "chosenIconUrl": "https://quest-dp.com/logo/questdp-mark.png",
-      "chosenMaskableIconUrl": "https://quest-dp.com/logo/questdp-mark.png"
+      "chosenIconUrl": "https://quest-dp.com/logo/questdp-app-icon.png",
+      "chosenMaskableIconUrl": "https://quest-dp.com/logo/questdp-app-icon.png"
     }
   ],
   "generatorApp": "unknown",
@@ -61,5 +61,5 @@
   "fileHandlers": [],
   "launchHandlerClientMode": "",
   "displayOverride": [],
-  "appVersion": "1.0.0"
+  "appVersion": "1.0.1"
 }

@@ -56,30 +56,30 @@ const STARS_CSS_BG = [
   // 작은 별 90px tile (8 점)
   `url("data:image/svg+xml;utf8,${encodeURIComponent(
     `<svg xmlns='http://www.w3.org/2000/svg' width='90' height='90'>
-      <circle cx='8' cy='12' r='0.7' fill='white' opacity='0.85'/>
-      <circle cx='34' cy='5' r='0.5' fill='white' opacity='0.7'/>
-      <circle cx='62' cy='18' r='0.6' fill='white' opacity='0.8'/>
-      <circle cx='80' cy='32' r='0.7' fill='%23dde8ff' opacity='0.9'/>
-      <circle cx='15' cy='44' r='0.5' fill='white' opacity='0.65'/>
-      <circle cx='48' cy='58' r='0.6' fill='white' opacity='0.78'/>
-      <circle cx='70' cy='70' r='0.5' fill='%23c8d8ff' opacity='0.7'/>
-      <circle cx='25' cy='82' r='0.7' fill='white' opacity='0.82'/>
+      <circle cx='8' cy='12' r='0.7' fill='white' opacity='0.42'/>
+      <circle cx='34' cy='5' r='0.5' fill='white' opacity='0.34'/>
+      <circle cx='62' cy='18' r='0.6' fill='white' opacity='0.38'/>
+      <circle cx='80' cy='32' r='0.7' fill='%23dde8ff' opacity='0.44'/>
+      <circle cx='15' cy='44' r='0.5' fill='white' opacity='0.32'/>
+      <circle cx='48' cy='58' r='0.6' fill='white' opacity='0.37'/>
+      <circle cx='70' cy='70' r='0.5' fill='%23c8d8ff' opacity='0.34'/>
+      <circle cx='25' cy='82' r='0.7' fill='white' opacity='0.40'/>
     </svg>`,
   )}")`,
   // 큰 별 180px tile (4 점 + halo)
   `url("data:image/svg+xml;utf8,${encodeURIComponent(
     `<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'>
-      <circle cx='30' cy='40' r='1.2' fill='white' opacity='0.95'/>
-      <circle cx='30' cy='40' r='2.4' fill='white' opacity='0.18'/>
-      <circle cx='130' cy='28' r='1' fill='%23dde8ff' opacity='0.9'/>
-      <circle cx='95' cy='110' r='1.4' fill='white' opacity='1'/>
-      <circle cx='95' cy='110' r='3' fill='white' opacity='0.18'/>
-      <circle cx='160' cy='150' r='1.1' fill='%23c8d8ff' opacity='0.85'/>
+      <circle cx='30' cy='40' r='1.2' fill='white' opacity='0.54'/>
+      <circle cx='30' cy='40' r='2.4' fill='white' opacity='0.06'/>
+      <circle cx='130' cy='28' r='1' fill='%23dde8ff' opacity='0.48'/>
+      <circle cx='95' cy='110' r='1.4' fill='white' opacity='0.58'/>
+      <circle cx='95' cy='110' r='3' fill='white' opacity='0.06'/>
+      <circle cx='160' cy='150' r='1.1' fill='%23c8d8ff' opacity='0.46'/>
     </svg>`,
   )}")`,
   // 은하수
-  'radial-gradient(ellipse 70% 38% at 48% 58%, rgba(132,184,255,0.26), transparent 74%)',
-  'radial-gradient(ellipse 42% 28% at 72% 26%, rgba(192,132,252,0.12), transparent 72%)',
+  'radial-gradient(ellipse 70% 38% at 48% 58%, rgba(132,184,255,0.12), transparent 74%)',
+  'radial-gradient(ellipse 42% 28% at 72% 26%, rgba(192,132,252,0.05), transparent 72%)',
   // 베이스 navy vignette
   'radial-gradient(ellipse 100% 100% at 50% 50%, var(--game-star-core) 0%, var(--game-star-mid) 55%, var(--game-star-edge) 100%)',
 ].join(', ');

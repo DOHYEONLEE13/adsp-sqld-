@@ -82,7 +82,7 @@ export default function GlobalAmbientBg() {
             backgroundSize: theme.backgroundSize,
             backgroundRepeat: theme.backgroundRepeat,
             backgroundPosition: theme.backgroundPosition,
-            filter: isCssStars ? 'brightness(1.14) saturate(1.08)' : undefined,
+            filter: isCssStars ? 'brightness(1.04) saturate(1.02)' : undefined,
           }}
         />
       )}

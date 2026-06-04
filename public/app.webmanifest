@@ -1,6 +1,6 @@
 {
-  "name": "QuestDP",
-  "short_name": "QuestDP",
+  "name": "퀘스트디피",
+  "short_name": "퀘스트디피",
   "description": "ADsP와 SQLD 자격증을 로드맵, 퀘스트, 약점 복습으로 학습하는 게임형 학습 앱",
   "lang": "ko",
   "start_url": "/app/",
@@ -11,19 +11,19 @@
   "scope": "/app/",
   "icons": [
     {
-      "src": "/logo/questdp-mark.png",
+      "src": "/logo/questdp-app-icon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/logo/questdp-mark.png",
+      "src": "/logo/questdp-app-icon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/logo/questdp-mark.png",
+      "src": "/logo/questdp-app-icon.png",
       "sizes": "1024x1024",
       "type": "image/png",
       "purpose": "any maskable"
@@ -36,7 +36,7 @@
       "url": "/app/#/game",
       "icons": [
         {
-          "src": "/logo/questdp-mark.png",
+          "src": "/logo/questdp-app-icon.png",
           "sizes": "192x192",
           "type": "image/png"
         }
@@ -48,7 +48,7 @@
       "url": "/app/#/quests",
       "icons": [
         {
-          "src": "/logo/questdp-mark.png",
+          "src": "/logo/questdp-app-icon.png",
           "sizes": "192x192",
           "type": "image/png"
         }

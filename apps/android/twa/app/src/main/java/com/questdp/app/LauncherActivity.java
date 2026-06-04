@@ -16,9 +16,13 @@
 package com.questdp.app;
 
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.widget.ImageView;
+
+import com.google.androidbrowserhelper.trusted.TwaLauncher;
 
 
 
@@ -27,6 +31,7 @@ public class LauncherActivity
 
 
     private static final String APP_ENTRY_PATH = "/app/";
+    private static final String CHROME_PACKAGE = "com.android.chrome";
 
 
 
@@ -42,6 +47,21 @@ public class LauncherActivity
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         }
+    }
+
+    @Override
+    protected TwaLauncher createTwaLauncher() {
+        try {
+            getPackageManager().getPackageInfo(CHROME_PACKAGE, 0);
+            return new TwaLauncher(this, CHROME_PACKAGE);
+        } catch (PackageManager.NameNotFoundException ignored) {
+            return super.createTwaLauncher();
+        }
+    }
+
+    @Override
+    protected ImageView.ScaleType getSplashImageScaleType() {
+        return ImageView.ScaleType.CENTER_CROP;
     }
 
     @Override

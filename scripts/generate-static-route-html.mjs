@@ -49,9 +49,11 @@ function routeHtml(baseTemplate, route) {
   html = setMetaByName(html, 'twitter:image', image);
   html = setCanonical(html, route.canonical);
   html = setImageSrc(html, image);
-  html = injectSnapshotStyle(html);
   html = injectStaticJsonLd(html, route);
-  html = setRootSnapshot(html, route);
+  if (route.path !== '/') {
+    html = injectSnapshotStyle(html);
+    html = setRootSnapshot(html, route);
+  }
   return html;
 }
 

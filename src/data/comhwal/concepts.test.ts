@@ -40,9 +40,25 @@ describe('COMHWAL concept card structure', () => {
     }
   });
 
-  it('gives every concept card an immediate question', () => {
+  it('uses checkpoint questions after short dialogue groups', () => {
+    for (const topicId of COMPUTER_GENERAL_TOPIC_IDS) {
+      const cards = getComhwalTopicCards('computer-general', topicId);
+      const questionCards = cards.filter((card) => card.question);
+
+      expect(
+        questionCards.length,
+        `topic ${topicId} needs at least one checkpoint question`,
+      ).toBeGreaterThanOrEqual(1);
+
+      if (cards.length > 1) {
+        expect(
+          cards[0].question,
+          `topic ${topicId} should not ask a question after the first speech bubble`,
+        ).toBeUndefined();
+      }
+    }
+
     for (const card of listComhwalCards()) {
-      expect(card.question, `${card.id} needs an immediate question`).toBeDefined();
       if (!card.question) continue;
 
       expect(card.question.id).toMatch(/^comhwal-\d-\d{3}-q\d{2}$/);
@@ -68,13 +84,16 @@ describe('COMHWAL concept card structure', () => {
     }
   });
 
-  it('splits Windows 10 features into multiple cards with immediate questions', () => {
+  it('splits Windows 10 features into dialogue groups before questions', () => {
     const cards = getComhwalTopicCards('computer-general', '001');
+    const questionIndexes = cards
+      .map((card, index) => (card.question ? index : -1))
+      .filter((index) => index >= 0);
 
     expect(cards.length).toBeGreaterThanOrEqual(5);
-    for (const card of cards) {
-      expect(card.question, `${card.id} needs an immediate question`).toBeDefined();
-    }
+    expect(cards[0].question).toBeUndefined();
+    expect(cards[1].question).toBeUndefined();
+    expect(questionIndexes).toEqual([2, 4, 6, 8]);
   });
 
   it('keeps every computer-general dialogue copy short for speech bubbles', () => {
@@ -85,9 +104,9 @@ describe('COMHWAL concept card structure', () => {
           Array.from(card.title).length,
           `${card.id} title is too long for the ADSP/SQLD-style progress list`,
         ).toBeLessThanOrEqual(28);
-      expect(
-        Array.from(card.body).length,
-        `${card.id} body is too long for the ADSP/SQLD-style dialogue flow`,
+        expect(
+          Array.from(card.body).length,
+          `${card.id} body is too long for the ADSP/SQLD-style dialogue flow`,
         ).toBeLessThanOrEqual(70);
       }
     }

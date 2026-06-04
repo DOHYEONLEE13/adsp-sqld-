@@ -18,6 +18,10 @@ interface Props {
   progress: number;
   /** 현재 step 안의 micro 진행률 0~1. 미지정 시 step 바 숨김. */
   stepProgress?: number;
+  /** 진행바 왼쪽에 보일 짧은 라벨. 예: 전체 */
+  progressLabel?: string;
+  /** 보조 진행바 왼쪽에 보일 짧은 라벨. 예: 챕터 */
+  stepProgressLabel?: string;
   /** 현재 step 의 quizId — 북마크 토글용 (questionId 단위). 없으면 버튼 숨김 (review step). */
   questionId?: string;
   /** 과목 색상 (북마크 활성 색). */
@@ -28,6 +32,8 @@ interface Props {
 export default function TopBar({
   progress,
   stepProgress,
+  progressLabel,
+  stepProgressLabel,
   questionId,
   accent,
   onExit,
@@ -55,13 +61,18 @@ export default function TopBar({
         <div className="flex-1 flex flex-col gap-1.5">
           {/* Chapter 진행률 — 메인 바 */}
           <div className="flex items-center gap-2">
+            {progressLabel ? (
+              <span className="kr-heading w-8 shrink-0 text-[10px] uppercase tracking-widest text-cream/55 md:w-10 md:text-[11px]">
+                {progressLabel}
+              </span>
+            ) : null}
             <div
               className="flex-1 h-3 md:h-3.5 rounded-full bg-white/10 relative overflow-hidden"
               role="progressbar"
               aria-valuenow={chapterPct}
               aria-valuemin={0}
               aria-valuemax={100}
-              aria-label={`챕터 진행률 ${chapterPct}%`}
+              aria-label={`${progressLabel ?? '챕터'} 진행률 ${chapterPct}%`}
             >
               <div
                 className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-500 ease-out"
@@ -98,13 +109,18 @@ export default function TopBar({
           {/* Step 진행률 — 얇은 보조 바 (현재 개념 안의 진척) */}
           {step !== null && (
             <div className="flex items-center gap-2">
+              {stepProgressLabel ? (
+                <span className="kr-heading w-8 shrink-0 text-[10px] uppercase tracking-widest text-cream/45 md:w-10 md:text-[11px]">
+                  {stepProgressLabel}
+                </span>
+              ) : null}
               <div
                 className="flex-1 h-1 rounded-full bg-white/6 relative overflow-hidden"
                 role="progressbar"
                 aria-valuenow={stepPct ?? 0}
                 aria-valuemin={0}
                 aria-valuemax={100}
-                aria-label={`현재 개념 진행률 ${stepPct}%`}
+                aria-label={`${stepProgressLabel ?? '현재 개념'} 진행률 ${stepPct}%`}
               >
                 <div
                   className="absolute inset-y-0 left-0 rounded-full transition-[width] duration-300 ease-out"

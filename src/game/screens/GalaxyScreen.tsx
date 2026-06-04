@@ -40,6 +40,7 @@ import Ques, { preloadMascotPoses } from '@/components/mascot/Ques';
 import SpeechBubble from '@/game/lesson/SpeechBubble';
 import TopBar from '@/game/lesson/TopBar';
 import OptionsPanel from '@/game/lesson/OptionsPanel';
+import FeedbackSheet from '@/game/lesson/FeedbackSheet';
 import type { QuesPose } from '@/components/mascot/types';
 import type { ProgressStore } from '../storage';
 import VideoBg from '@/components/ui/VideoBg';
@@ -1571,18 +1572,14 @@ function getComhwalConceptPose(
 
 function ComhwalConceptQuestionPanel({
   question,
-  accent,
   selectedAnswer,
   onSelectAnswer,
 }: {
   question: NonNullable<ComhwalConceptCard['question']>;
-  accent: string;
   selectedAnswer?: number;
   onSelectAnswer: (choiceIndex: number) => void;
 }) {
   const hasAnswered = selectedAnswer !== undefined;
-  const isCorrectAnswer =
-    selectedAnswer !== undefined ? selectedAnswer === question.answerIndex : false;
 
   return (
     <div className="mt-8 w-full max-w-[560px]">
@@ -1593,131 +1590,258 @@ function ComhwalConceptQuestionPanel({
         graded={hasAnswered}
         onChoose={onSelectAnswer}
       />
-
-      {hasAnswered ? (
-        <div
-          className="mt-4 rounded-2xl px-4 py-3"
-          style={{
-            background: isCorrectAnswer
-              ? `${accent}18`
-              : 'rgba(251,113,133,0.12)',
-            border: `1px solid ${
-              isCorrectAnswer ? `${accent}66` : 'rgba(251,113,133,0.36)'
-            }`,
-          }}
-        >
-          <p
-            className="kr-heading text-[13px]"
-            style={{ color: isCorrectAnswer ? accent : '#fb7185' }}
-          >
-            {isCorrectAnswer ? '좋아, 정확해!' : '다시 확인해볼까?'}
-          </p>
-          <p className="kr-body mt-1.5 text-[13px] leading-[1.65] text-cream/78">
-            {question.explanation}
-          </p>
-        </div>
-      ) : null}
     </div>
   );
 }
 
-function ComhwalConceptProgressList({
-  cards,
-  activeIndex,
+type ComhwalVisualModel = {
+  eyebrow: string;
+  title: string;
+  lead: string;
+  flow: string[];
+  chips: string[];
+  mode?: 'manager' | 'windows' | 'cards' | 'document';
+};
+
+function getComhwalVisualModel(card: ComhwalConceptCard): ComhwalVisualModel {
+  switch (card.visualHint) {
+    case 'windows-os-map':
+      return {
+        eyebrow: 'OS MAP',
+        title: '사람 말과 컴퓨터 일을 이어 줘',
+        lead: '운영체제가 가운데서 부품이 알아들을 말로 바꿔 줘.',
+        flow: ['사용자', '운영체제', '앱·파일·장치'],
+        chips: ['명령 전달', '자원 정리', '화면 표시'],
+        mode: 'windows',
+      };
+    case 'windows-os-role':
+      return {
+        eyebrow: 'OS ROLE',
+        title: '운영체제는 총관리자야',
+        lead: '앱, 파일, 장치가 서로 부딪히지 않게 순서와 자리를 정리해.',
+        flow: ['앱 실행', '파일 자리', '장치 연결'],
+        chips: ['순서 관리', '자리 배정', '충돌 방지'],
+        mode: 'manager',
+      };
+    case 'windows-app-file':
+      return {
+        eyebrow: 'FILE TO APP',
+        title: '파일을 누르면 맞는 앱으로 이어 줘',
+        lead: '문서 파일을 누르면 Windows가 열 앱을 찾아 연결해 줘.',
+        flow: ['문서 파일', 'Windows', '맞는 앱 실행'],
+        chips: ['파일 연결', '앱 실행', '사용자 대신 판단'],
+        mode: 'windows',
+      };
+    case 'gui-window-icons':
+      return {
+        eyebrow: 'GUI',
+        title: '글자 명령 대신 화면으로 조작해',
+        lead: '아이콘, 창, 버튼을 보고 마우스나 터치로 누르는 방식이야.',
+        flow: ['아이콘', '창', '마우스·터치'],
+        chips: ['눈으로 확인', '클릭', '드래그'],
+        mode: 'cards',
+      };
+    case 'multitasking-switch':
+      return {
+        eyebrow: 'MULTITASKING',
+        title: '여러 일을 번갈아 챙겨 줘',
+        lead: '문서, 음악, 브라우저를 함께 켜도 운영체제가 순서를 나눠 줘.',
+        flow: ['문서', '음악', '브라우저'],
+        chips: ['창 전환', '동시 실행', '순서 분배'],
+        mode: 'cards',
+      };
+    case 'plug-and-play-device':
+      return {
+        eyebrow: 'PLUG & PLAY',
+        title: '꽂으면 먼저 알아봐 줘',
+        lead: 'USB 같은 장치를 연결하면 Windows가 인식하고 쓸 준비를 도와줘.',
+        flow: ['장치 연결', '자동 인식', '사용 준비'],
+        chips: ['USB', '드라이버', '장치 관리자'],
+        mode: 'windows',
+      };
+    case 'ole-document-link':
+      return {
+        eyebrow: 'OLE',
+        title: '다른 앱 자료를 문서 안에 넣어',
+        lead: '워드 문서 안에 엑셀 차트처럼 다른 앱 자료를 함께 쓸 수 있어.',
+        flow: ['엑셀 차트', '문서 안에 포함', '같이 사용'],
+        chips: ['개체 연결', '개체 포함', '문서 활용'],
+        mode: 'document',
+      };
+    default:
+      return {
+        eyebrow: 'VISUAL SUMMARY',
+        title: card.title,
+        lead: card.body,
+        flow: card.keyPoints.slice(0, 3),
+        chips: card.keyPoints.slice(0, 3),
+        mode: 'cards',
+      };
+  }
+}
+
+function ComhwalFlowNode({
+  label,
   accent,
-  answeredCardIds,
-  currentStepProgress,
+  active = false,
 }: {
-  cards: ComhwalConceptCard[];
-  activeIndex: number;
+  label: string;
   accent: string;
-  answeredCardIds: Set<string>;
-  currentStepProgress: number;
+  active?: boolean;
 }) {
-  const currentPercent = Math.max(0, Math.min(100, Math.round(currentStepProgress * 100)));
+  return (
+    <div
+      className="relative flex min-h-[58px] min-w-0 flex-1 items-center justify-center rounded-2xl border px-2 text-center"
+      style={{
+        borderColor: active ? accent : 'rgba(239,244,255,0.18)',
+        background: active
+          ? `linear-gradient(180deg, color-mix(in srgb, ${accent} 28%, rgba(1,8,40,0.92)), rgba(1,8,40,0.78))`
+          : 'rgba(239,244,255,0.055)',
+        boxShadow: active ? `0 0 0 1px color-mix(in srgb, ${accent} 45%, transparent)` : 'none',
+      }}
+    >
+      <span className="kr-heading text-[12px] leading-snug text-cream md:text-[13px]">
+        {label}
+      </span>
+    </div>
+  );
+}
+
+function ComhwalConceptVisualCard({
+  card,
+  accent,
+}: {
+  card: ComhwalConceptCard;
+  accent: string;
+}) {
+  const model = getComhwalVisualModel(card);
 
   return (
-    <nav
-      className="w-full max-w-[420px]"
-      aria-label="개념 진행"
+    <figure
+      className="w-full max-w-[440px]"
+      aria-label={`${model.title} 그림 설명`}
     >
       <div
-        className="kr-num mb-3.5 text-[10px] uppercase tracking-[0.18em]"
-        style={{ color: 'rgba(239,244,255,0.45)' }}
+        className="overflow-hidden rounded-[24px] border p-4 md:p-5"
+        style={{
+          borderColor: 'rgba(239,244,255,0.48)',
+          background:
+            'linear-gradient(180deg, rgba(10,29,72,0.76), rgba(5,13,43,0.72))',
+        }}
       >
-        개념 진행 · {cards.length > 0 ? activeIndex + 1 : 0} / {cards.length}
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <p
+              className="kr-num text-[9px] uppercase tracking-[0.22em]"
+              style={{ color: accent }}
+            >
+              {model.eyebrow}
+            </p>
+            <h3 className="kr-heading mt-1 text-[18px] leading-tight text-cream md:text-[20px]">
+              {model.title}
+            </h3>
+          </div>
+          <div
+            className="hidden shrink-0 rounded-full border px-3 py-1 kr-num text-[10px] uppercase tracking-widest sm:inline-flex"
+            style={{
+              borderColor: 'rgba(239,244,255,0.18)',
+              color: 'rgba(239,244,255,0.7)',
+              background: 'rgba(1,8,40,0.34)',
+            }}
+          >
+            그림 요약
+          </div>
+        </div>
+
+        {model.mode === 'manager' ? (
+          <div
+            className="mt-4 rounded-[22px] border p-3"
+            style={{
+              borderColor: 'rgba(239,244,255,0.16)',
+              background: 'rgba(1,8,40,0.24)',
+            }}
+          >
+            <div className="grid grid-cols-3 gap-2">
+              {model.flow.map((item) => (
+                <ComhwalFlowNode key={item} label={item} accent={accent} />
+              ))}
+            </div>
+            <div className="my-2 grid grid-cols-3 items-center gap-2 px-3">
+              <span aria-hidden className="h-px" style={{ background: `linear-gradient(90deg, transparent, ${accent})` }} />
+              <span aria-hidden className="mx-auto h-7 w-px" style={{ background: accent }} />
+              <span aria-hidden className="h-px" style={{ background: `linear-gradient(90deg, ${accent}, transparent)` }} />
+            </div>
+            <div
+              className="mx-auto max-w-[220px] rounded-2xl border px-4 py-3 text-center"
+              style={{
+                borderColor: accent,
+                background:
+                  'radial-gradient(circle at 50% 0%, rgba(239,244,255,0.16), transparent 56%), rgba(1,8,40,0.88)',
+                boxShadow: `0 0 18px color-mix(in srgb, ${accent} 32%, transparent)`,
+              }}
+            >
+              <p className="kr-num text-[10px] uppercase tracking-widest" style={{ color: accent }}>
+                OS MANAGER
+              </p>
+              <p className="kr-heading mt-0.5 text-[15px] text-cream">운영체제</p>
+              <p className="kr-body mt-1 text-[11.5px] text-cream/62">
+                순서와 자리를 정리해
+              </p>
+            </div>
+          </div>
+        ) : model.mode === 'document' ? (
+          <div className="mt-4 rounded-[20px] border p-3" style={{ borderColor: 'rgba(239,244,255,0.16)', background: 'rgba(1,8,40,0.28)' }}>
+            <div className="mb-2 flex items-center gap-2">
+              <span className="h-2.5 w-2.5 rounded-full" style={{ background: accent }} />
+              <span className="kr-heading text-[12px] text-cream/70">문서</span>
+            </div>
+            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+              <ComhwalFlowNode label={model.flow[0]} accent={accent} />
+              <ArrowRight size={16} strokeWidth={2.5} style={{ color: accent }} />
+              <ComhwalFlowNode label={model.flow[1]} accent={accent} active />
+            </div>
+          </div>
+        ) : (
+          <div className="mt-4 grid grid-cols-[1fr_auto_1fr_auto_1fr] items-stretch gap-2">
+            {model.flow.slice(0, 3).map((item, index) => (
+              <div key={`${item}-${index}`} className="contents">
+                <ComhwalFlowNode label={item} accent={accent} active={index === 1} />
+                {index < 2 ? (
+                  <div className="flex items-center justify-center">
+                    <ArrowRight size={16} strokeWidth={2.5} style={{ color: accent }} />
+                  </div>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        )}
+
+        <p
+          className="kr-body mt-4 rounded-2xl border px-3 py-3 text-[12.5px] leading-relaxed text-cream/78 md:text-[13px]"
+          style={{
+            borderColor: 'rgba(239,244,255,0.12)',
+            background: 'rgba(1,8,40,0.34)',
+          }}
+        >
+          {model.lead}
+        </p>
+
+        <div className="mt-3 flex flex-wrap gap-2">
+          {model.chips.slice(0, 3).map((chip) => (
+            <span
+              key={chip}
+              className="rounded-full border px-3 py-1.5 kr-heading text-[10px] text-cream/80"
+              style={{
+                borderColor: 'rgba(239,244,255,0.14)',
+                background: `color-mix(in srgb, ${accent} 14%, rgba(1,8,40,0.42))`,
+              }}
+            >
+              {chip}
+            </span>
+          ))}
+        </div>
       </div>
-      <ol className="relative m-0 flex list-none flex-col gap-6 p-0 md:gap-5">
-        <span
-          aria-hidden
-          className="absolute bottom-3 left-[7px] top-3 z-0 w-px"
-          style={{ background: 'rgba(239,244,255,0.08)' }}
-        />
-        {cards.map((card, index) => {
-          const isActive = index === activeIndex;
-          const isPast = index < activeIndex;
-          const isDone = answeredCardIds.has(card.id) || isPast;
-          return (
-            <li
-              key={card.id}
-              className="relative flex items-center gap-3"
-              aria-current={isActive ? 'step' : undefined}
-            >
-            <span
-              aria-hidden
-              className="relative z-10 inline-flex shrink-0 items-center justify-center rounded-full transition-all"
-              style={{
-                width: isActive ? 16 : 14,
-                height: isActive ? 16 : 14,
-                border: isActive
-                  ? `2px solid ${accent}`
-                  : isDone || isPast
-                    ? '1.5px solid var(--neon-55)'
-                    : '1.5px solid rgba(239,244,255,0.22)',
-                background: isActive
-                  ? accent
-                  : 'linear-gradient(#010828, #010828) padding-box',
-                boxShadow: isActive
-                  ? `0 0 12px ${accent}, 0 0 0 3px rgba(1,8,40,1)`
-                  : '0 0 0 3px var(--base, #010828)',
-                color: isDone || isPast ? 'var(--neon)' : 'transparent',
-              }}
-            >
-              {isDone || isPast ? (
-                <span className="text-[9px] font-black leading-none">
-                  ✓
-                </span>
-              ) : null}
-            </span>
-
-            <span
-              title={card.title}
-              className="kr-body flex-1 text-[12.5px] leading-tight"
-              style={{
-                color: isActive
-                  ? accent
-                  : isDone || isPast
-                    ? 'rgba(239,244,255,0.85)'
-                    : 'rgba(239,244,255,0.5)',
-                fontWeight: isActive ? 700 : isDone || isPast ? 500 : 400,
-              }}
-            >
-              {card.title}
-            </span>
-
-            {isActive ? (
-              <span
-                className="kr-num shrink-0 tabular-nums text-[10px]"
-                style={{ color: accent }}
-              >
-                {currentPercent}%
-              </span>
-            ) : null}
-          </li>
-        );
-      })}
-      </ol>
-    </nav>
+    </figure>
   );
 }
 
@@ -1739,45 +1863,86 @@ function ExpansionConceptStudyScreen({
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({});
   const [showQuestion, setShowQuestion] = useState(false);
+  const [showQuestionIntro, setShowQuestionIntro] = useState(false);
   const activeCard = cards[activeIndex];
+  const topicTitle =
+    planet.sections
+      .flatMap((section) => section.topics)
+      .find((topic) => topic.id === topicId)?.title ?? activeCard?.title ?? '컴활 개념';
   const isLastCard = activeIndex >= cards.length - 1;
   const activeQuestion = activeCard?.question;
   const selectedAnswer = activeCard ? selectedAnswers[activeCard.id] : undefined;
   const isQuestionMode = showQuestion && !!activeQuestion;
-  const answeredCardIds = new Set(
-    Object.keys(selectedAnswers).filter((cardId) => selectedAnswers[cardId] !== undefined),
+  const isQuestionIntroMode = showQuestionIntro && !isQuestionMode && !!activeQuestion;
+  const isAnswered = selectedAnswer !== undefined;
+  const isCorrectAnswer =
+    !!activeQuestion && selectedAnswer !== undefined
+      ? selectedAnswer === activeQuestion.answerIndex
+      : false;
+  const clampProgress = (value: number) => Math.max(0, Math.min(1, value));
+  const currentCardProgress = isQuestionMode ? 1 : isQuestionIntroMode ? 0.78 : activeQuestion ? 0.55 : 1;
+  const topicProgress =
+    cards.length > 0
+      ? clampProgress((activeIndex + currentCardProgress) / cards.length)
+      : 0;
+  const topicEntries = planet.sections.flatMap((section) => section.topics);
+  const currentTopicIndex = Math.max(
+    0,
+    topicEntries.findIndex((topic) => topic.id === topicId),
+  );
+  const cardsBeforeCurrentTopic = topicEntries
+    .slice(0, currentTopicIndex)
+    .reduce(
+      (sum, topic) => sum + getComhwalTopicCards(planet.key, topic.id).length,
+      0,
+    );
+  const totalPlanetCards = topicEntries.reduce(
+    (sum, topic) => sum + getComhwalTopicCards(planet.key, topic.id).length,
+    0,
   );
   const lessonProgress =
-    cards.length > 0 ? (activeIndex + (isQuestionMode ? 1 : 0)) / cards.length : 0;
-  const stepProgress = isQuestionMode ? 1 : activeQuestion ? 0.55 : 1;
+    totalPlanetCards > 0
+      ? clampProgress((cardsBeforeCurrentTopic + activeIndex + currentCardProgress) / totalPlanetCards)
+      : topicProgress;
   const activePose: QuesPose =
     isQuestionMode && activeQuestion
       ? selectedAnswer === undefined
         ? 'think'
         : selectedAnswer === activeQuestion.answerIndex
-          ? 'happy'
+          ? 'celebrate'
           : 'sad'
+      : isQuestionIntroMode
+        ? 'think'
       : getComhwalConceptPose(activeCard, activeIndex, cards.length);
 
   useEffect(() => {
     setActiveIndex(0);
     setSelectedAnswers({});
     setShowQuestion(false);
+    setShowQuestionIntro(false);
   }, [planet.key, topicId]);
 
   useEffect(() => {
     setShowQuestion(false);
+    setShowQuestionIntro(false);
   }, [activeCard?.id]);
 
   const handlePrev = () => {
     if (isQuestionMode) {
       setShowQuestion(false);
+      setShowQuestionIntro(true);
+      return;
+    }
+    if (isQuestionIntroMode) {
+      setShowQuestionIntro(false);
       return;
     }
     setActiveIndex((index) => Math.max(0, index - 1));
   };
 
   const goNextCard = () => {
+    setShowQuestion(false);
+    setShowQuestionIntro(false);
     if (cards.length === 0 || isLastCard) {
       onBack();
       return;
@@ -1792,8 +1957,14 @@ function ExpansionConceptStudyScreen({
       return;
     }
 
-    if (activeQuestion) {
+    if (isQuestionIntroMode) {
+      setShowQuestionIntro(false);
       setShowQuestion(true);
+      return;
+    }
+
+    if (activeQuestion) {
+      setShowQuestionIntro(true);
       return;
     }
 
@@ -1803,14 +1974,18 @@ function ExpansionConceptStudyScreen({
   const speechText = activeCard
     ? isQuestionMode && activeQuestion
       ? activeQuestion.prompt
+      : isQuestionIntroMode
+        ? `${topicTitle} 문제를 풀어보자!`
       : activeCard.body
     : '아직 이 토픽의 개념 카드가 준비 중이야. 목차는 열어뒀고, 곧 ADSP·SQLD처럼 하나씩 붙일게.';
   const primaryLabel = isQuestionMode
     ? isLastCard
       ? '목차로'
       : '다음 카드'
-    : activeQuestion
+    : isQuestionIntroMode
       ? '문제 풀기'
+    : activeQuestion
+      ? '묶어서 확인'
       : cards.length === 0 || isLastCard
         ? '목차로'
         : '계속';
@@ -1830,24 +2005,16 @@ function ExpansionConceptStudyScreen({
       />
       <TopBar
         progress={lessonProgress}
-        stepProgress={stepProgress}
+        stepProgress={topicProgress}
+        progressLabel="전체"
+        stepProgressLabel="챕터"
         accent={subject.accent}
         onExit={onBack}
       />
 
       <main className="relative z-10 mx-auto flex-1 w-full max-w-[820px] px-5 pb-36 pt-6 md:px-8 lg:max-w-[1000px] lg:px-12 lg:pt-10 xl:max-w-[1180px] xl:px-16">
         <div className="mx-auto flex max-w-[760px] flex-col items-center">
-          {activeCard ? (
-            <ComhwalConceptProgressList
-              cards={cards}
-              activeIndex={activeIndex}
-              accent={subject.accent}
-              answeredCardIds={answeredCardIds}
-              currentStepProgress={stepProgress}
-            />
-          ) : null}
-
-          <div className={activeCard ? 'mt-8 flex justify-center' : 'flex justify-center'}>
+          <div className="flex justify-center">
             <Ques
               pose={activePose}
               character={COMHWAL_MASCOT_CHARACTER}
@@ -1860,47 +2027,70 @@ function ExpansionConceptStudyScreen({
             <SpeechBubble text={speechText} placement="top" />
           </div>
 
-          <div className="mt-7 flex items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={handlePrev}
-              disabled={!isQuestionMode && activeIndex === 0}
-              aria-label="이전 대사"
-              className="liquid-glass inline-flex items-center gap-1.5 rounded-full px-4 py-3 kr-heading text-[12px] uppercase tracking-widest transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-30 md:px-5 md:py-3.5 md:text-[13px]"
-            >
-              <ChevronLeft size={16} strokeWidth={2.7} />
-              이전
-            </button>
-            <button
-              type="button"
-              onClick={handleNext}
-              disabled={isQuestionMode && selectedAnswer === undefined}
-              className="inline-flex items-center gap-2 rounded-full px-6 py-3.5 kr-heading text-[13px] uppercase tracking-widest text-[#07121f] transition hover:-translate-y-0.5 active:translate-y-0 md:px-8 md:py-4 md:text-[14px]"
-              style={{
-                background:
-                  'linear-gradient(180deg, var(--subject-accent) 0%, color-mix(in srgb, var(--subject-accent) 70%, #010828) 100%)',
-                boxShadow:
-                  '0 6px 0 -2px rgba(0,0,0,0.5), 0 10px 22px -8px var(--subject-accent)',
-              }}
-            >
-              {primaryLabel}
-              <ChevronRight size={16} strokeWidth={2.7} />
-            </button>
-          </div>
+          {!isQuestionMode ? (
+            <div className="mt-7 flex items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={handlePrev}
+                disabled={activeIndex === 0}
+                aria-label="이전 대사"
+                className="liquid-glass inline-flex items-center gap-1.5 rounded-full px-4 py-3 kr-heading text-[12px] uppercase tracking-widest transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-30 md:px-5 md:py-3.5 md:text-[13px]"
+              >
+                <ChevronLeft size={16} strokeWidth={2.7} />
+                이전
+              </button>
+              <button
+                type="button"
+                onClick={handleNext}
+                className="inline-flex items-center gap-2 rounded-full px-6 py-3.5 kr-heading text-[13px] uppercase tracking-widest text-[#07121f] transition hover:-translate-y-0.5 active:translate-y-0 md:px-8 md:py-4 md:text-[14px]"
+                style={{
+                  background:
+                    'linear-gradient(180deg, var(--subject-accent) 0%, color-mix(in srgb, var(--subject-accent) 70%, #010828) 100%)',
+                  boxShadow:
+                    '0 6px 0 -2px rgba(0,0,0,0.5), 0 10px 22px -8px var(--subject-accent)',
+                }}
+              >
+                {primaryLabel}
+                <ChevronRight size={16} strokeWidth={2.7} />
+              </button>
+            </div>
+          ) : null}
+
+          {activeCard && !isQuestionMode && !isQuestionIntroMode ? (
+            <div className="mt-8 flex w-full flex-col items-center gap-4">
+              {activeCard.visualHint ? (
+                <ComhwalConceptVisualCard card={activeCard} accent={subject.accent} />
+              ) : null}
+            </div>
+          ) : null}
 
           {isQuestionMode && activeQuestion && activeCard ? (
-            <ComhwalConceptQuestionPanel
-              key={activeQuestion.id}
-              question={activeQuestion}
-              accent={subject.accent}
-              selectedAnswer={selectedAnswer}
-              onSelectAnswer={(choiceIndex) =>
-                setSelectedAnswers((answers) => ({
-                  ...answers,
-                  [activeCard.id]: choiceIndex,
-                }))
-              }
-            />
+            <>
+              <div className="mt-8 flex w-full max-w-[560px] justify-start">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowQuestion(false);
+                    setShowQuestionIntro(false);
+                  }}
+                  className="kr-heading uppercase tracking-widest rounded-full inline-flex items-center gap-1.5 transition liquid-glass hover:bg-white/10 text-[11px] md:text-[12px] px-3.5 py-2"
+                >
+                  <ChevronLeft size={13} strokeWidth={2.6} />
+                  개념 다시 보기
+                </button>
+              </div>
+              <ComhwalConceptQuestionPanel
+                key={activeQuestion.id}
+                question={activeQuestion}
+                selectedAnswer={selectedAnswer}
+                onSelectAnswer={(choiceIndex) =>
+                  setSelectedAnswers((answers) => ({
+                    ...answers,
+                    [activeCard.id]: choiceIndex,
+                  }))
+                }
+              />
+            </>
           ) : activeCard ? (
             null
           ) : (
@@ -1912,6 +2102,23 @@ function ExpansionConceptStudyScreen({
           )}
         </div>
       </main>
+
+      {isQuestionMode && activeQuestion && isAnswered ? (
+        <FeedbackSheet
+          correct={isCorrectAnswer}
+          explanation={activeQuestion.explanation}
+          correctAnswerText={
+            isCorrectAnswer ? undefined : activeQuestion.choices[activeQuestion.answerIndex]
+          }
+          ctaLabel={isLastCard ? '목차로' : '다음 개념'}
+          onContinue={goNextCard}
+          secondaryCtaLabel="개념 다시 보기"
+          onSecondary={() => {
+            setShowQuestion(false);
+            setShowQuestionIntro(false);
+          }}
+        />
+      ) : null}
     </section>
   );
 }

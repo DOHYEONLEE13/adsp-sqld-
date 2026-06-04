@@ -36,7 +36,10 @@ interface MicroCardSpec {
   keyPoints: string[];
   examTip: string;
   visualHint?: string;
+  questionCheckpoint?: boolean;
   correct: string;
+  wrongChoices?: string[];
+  questionPrompt?: string;
   explanation: string;
 }
 
@@ -54,67 +57,112 @@ const COMPUTER_GENERAL_TOPICS: TopicSpec[] = [
     title: '한글 Windows 10의 특징',
     cards: [
       {
-        title: 'Windows 10은 운영체제야',
-        body: 'Windows 10은 사람과 컴퓨터 사이를 이어 주는 운영체제야.',
-        keyPoints: ['사용자와 컴퓨터 사이를 이어줘', '앱 실행을 도와줘', '파일과 장치를 관리해'],
-        examTip: 'Windows 문제는 “사용자가 컴퓨터를 쉽게 쓰게 돕나?”부터 보면 쉬워.',
+        title: '컴퓨터는 혼자 못 알아들어',
+        body: '컴퓨터는 네가 누른 버튼의 뜻을 바로 몰라. 그래서 부탁을 바꿔 줄 친구가 필요해.',
+        keyPoints: ['컴퓨터는 클릭 뜻을 바로 몰라', '사람 말과 컴퓨터 일은 달라', '중간에서 바꿔 줄 친구가 필요해'],
+        examTip: '사용자 명령을 컴퓨터가 할 일로 바꿔 주는 장치를 먼저 떠올리면 쉬워.',
         visualHint: 'windows-os-map',
-        correct: '사용자와 컴퓨터 사이에서 앱, 파일, 장치 사용을 도와줘',
-        explanation: '운영체제는 사용자가 복잡한 명령을 몰라도 컴퓨터를 쓰게 도와줘.',
+        questionCheckpoint: false,
+        correct: '운영체제(OS)',
+        wrongChoices: ['모니터', '프린터', '전원 케이블'],
+        questionPrompt: '컴퓨터가 네 부탁을 바로 못 알아들을 때, 중간에서 바꿔 주는 것은?',
+        explanation: '컴퓨터는 사람의 클릭 뜻을 바로 모르기 때문에 운영체제(OS)가 중간에서 바꿔 줘.',
+      },
+      {
+        title: '운영체제는 중간 통역사야',
+        body: '운영체제(OS)는 사람 부탁을 컴퓨터가 할 일로 바꿔 줘. 그래서 앱을 누르면 실행되는 거야.',
+        keyPoints: ['운영체제(OS)는 중간 통역사야', '사람 부탁을 컴퓨터 일로 바꿔 줘', '앱 실행을 연결해 줘'],
+        examTip: '중간 통역사처럼 사용자 명령을 컴퓨터 일로 바꾸면 운영체제야.',
+        visualHint: 'windows-os-map',
+        questionCheckpoint: false,
+        correct: '운영체제(OS)',
+        wrongChoices: ['모니터', '프린터', '전원 케이블'],
+        questionPrompt: '컴퓨터와 사람 사이에서 부탁을 바꿔 주는 중간 통역사는?',
+        explanation: '운영체제(OS)는 사람 부탁을 컴퓨터가 처리할 일로 바꿔 주는 중간 통역사야.',
+      },
+      {
+        title: '운영체제는 총관리자야',
+        body: '운영체제는 총관리자(매니저)야. 앱, 파일, 장치가 서로 부딪히지 않게 순서와 자리를 정리해.',
+        keyPoints: ['앱 실행을 정리해', '파일 사용을 관리해', '장치 사용을 챙겨 줘'],
+        examTip: '운영체제가 없으면 사용자가 모든 부품에 직접 명령해야 해서 너무 어려워.',
+        visualHint: 'windows-os-role',
+        questionCheckpoint: true,
+        correct: '운영체제(OS)',
+        wrongChoices: ['모니터', '프린터', '전원 케이블'],
+        questionPrompt: '사람 부탁을 컴퓨터 일로 바꾸고, 앱·파일·장치까지 정리해 주는 것은?',
+        explanation: '운영체제(OS)는 중간 통역사이면서 총관리자야. 사람 부탁을 바꿔 주고 앱·파일·장치를 정리해.',
+      },
+      {
+        title: 'Windows 10은 운영체제 이름이야',
+        body: 'Windows 10은 운영체제의 한 이름이야. 창, 폴더, 설정 화면으로 컴퓨터를 쉽게 쓰게 해.',
+        keyPoints: ['Windows 10은 운영체제야', '창과 폴더로 조작해', '파일, 앱, 장치를 쉽게 쓰게 해'],
+        examTip: 'Windows 10 특징은 “컴퓨터를 쉽게 쓰게 해 주는 운영체제”로 잡으면 좋아.',
+        visualHint: 'windows-os-map',
+        questionCheckpoint: false,
+        correct: 'Windows 10은 컴퓨터 사용을 도와주는 운영체제야',
+        wrongChoices: ['엑셀에서 쓰는 함수 이름이야', '프린터 종이 크기 이름이야', '인터넷 주소 이름이야'],
+        questionPrompt: 'Windows 10을 가장 쉽게 설명하면?',
+        explanation: 'Windows 10은 운영체제 중 하나라서 파일, 앱, 장치 사용을 편하게 해 줘.',
       },
       {
         title: 'Windows는 파일과 앱을 이어 줘',
-        body: '문서 파일을 누르면 알맞은 앱을 열어 주는 식이야.',
+        body: '파일을 누르면 Windows가 알맞은 앱을 찾아 열어 줘. 복잡한 명령을 몰라도 돼.',
         keyPoints: ['파일을 열 앱을 연결해', '앱 실행을 도와줘', '사용자 조작을 쉽게 해'],
-        examTip: '파일을 열고 앱을 실행하는 장면은 운영체제 역할로 연결해.',
+        examTip: '파일을 열고 앱을 실행하는 장면은 Windows의 운영체제 역할로 연결해.',
         visualHint: 'windows-app-file',
-        correct: '문서 파일을 더블클릭하자 알맞은 앱이 열리는 상황이야',
+        questionCheckpoint: true,
+        correct: 'Windows가 파일에 맞는 앱을 찾아 실행해 줘',
+        wrongChoices: ['파일 이름을 무조건 바꿔 줘', '컴퓨터 전원을 대신 만들어 줘', '인터넷 속도를 항상 올려 줘'],
+        questionPrompt: '문서 파일을 눌렀을 때 알맞은 앱이 열리는 이유는?',
         explanation: '파일과 앱을 연결해서 실행 흐름을 만들어 주는 건 Windows의 역할이야.',
       },
       {
-        title: '장치도 Windows가 정리해 줘',
-        body: '프린터나 USB를 쓰게 해 주는 것도 Windows가 정리해.',
-        keyPoints: ['장치 사용을 도와줘', '컴퓨터 자원을 관리해', '사용자 편의를 높여줘'],
-        examTip: '장치 연결, 자원 관리, 사용자 편의가 보이면 Windows 특징으로 보면 돼.',
-        visualHint: 'windows-os-role',
-        correct: '프린터나 USB 같은 장치를 사용할 수 있게 도와줘',
-        explanation: 'Windows는 앱뿐 아니라 장치와 자원도 사용자가 쓰기 쉽게 관리해.',
-      },
-      {
         title: 'GUI는 화면으로 조작해',
-        body: 'GUI는 아이콘과 창을 보며 마우스나 터치로 조작하는 방식이야.',
+        body: 'GUI는 그림 버튼과 창을 보며 조작하는 방식이야. 폴더 그림을 누르면 폴더가 열려.',
         keyPoints: ['그래픽 화면으로 조작해', '아이콘과 창을 사용해', '마우스와 터치가 중심이야'],
         examTip: '아이콘, 창, 메뉴, 마우스 조작이 나오면 GUI를 떠올려.',
         visualHint: 'gui-window-icons',
+        questionCheckpoint: false,
         correct: '아이콘과 창을 보며 마우스나 터치로 조작할 수 있어',
+        wrongChoices: ['검은 화면에 글자 명령만 입력해', '파일을 저장하는 보안 규칙이야', '컴퓨터 전원을 공급하는 선이야'],
+        questionPrompt: '아이콘과 창을 보며 마우스나 터치로 조작하는 방식은?',
         explanation: 'GUI는 글자 명령만 치는 방식보다 화면을 보며 조작하는 쪽이야.',
       },
       {
         title: '멀티태스킹은 여러 일을 함께 해',
-        body: '문서 작성과 음악 재생을 같이 하는 게 멀티태스킹이야.',
+        body: '음악을 틀어 놓고 문서도 쓰는 것처럼 여러 일을 함께 하는 거야.',
         keyPoints: ['여러 앱을 동시에 실행해', '창 전환을 도와줘', 'CPU 시간을 나눠 써'],
         examTip: '선점형은 운영체제가 CPU 사용 순서를 주도하는 쪽이야.',
         visualHint: 'multitasking-switch',
+        questionCheckpoint: true,
         correct: '문서 작성 중 음악 재생과 브라우저 실행을 함께 하는 기능이야',
+        wrongChoices: ['한 번에 앱 하나만 꼭 써야 해', '파일을 휴지통으로 보내는 기능이야', '새 장치를 자동 인식하는 기능이야'],
+        questionPrompt: '음악을 틀어 놓고 문서도 쓰는 상황은 어떤 기능과 가까워?',
         explanation: '여러 작업을 동시에 다루는 특징은 멀티태스킹이야.',
       },
       {
         title: 'Plug & Play는 꽂으면 알아봐',
-        body: 'USB를 꽂았을 때 자동으로 알아보려는 기능이 Plug & Play야.',
+        body: '새 장치를 꽂으면 Windows가 알아보고 쓸 준비를 도와주는 기능이야.',
         keyPoints: ['장치를 자동 인식해', '드라이버 설정을 도와줘', 'USB와 프린터 예시로 나와'],
         examTip: '새 장치 연결 뒤 자동 인식 흐름이면 Plug & Play를 떠올려.',
         visualHint: 'plug-and-play-device',
-        correct: '새 장치를 연결했을 때 Windows가 자동 인식을 시도해',
+        questionCheckpoint: false,
+        correct: '새 USB를 꽂으면 Windows가 자동 인식을 시도해',
+        wrongChoices: ['문서 안에 다른 앱 자료를 넣어', '아이콘을 보고 조작하는 방식이야', '여러 앱을 동시에 쓰는 기능이야'],
+        questionPrompt: '새 USB를 꽂았을 때 Windows가 자동으로 알아보는 기능은?',
         explanation: 'Plug & Play는 장치를 연결하면 사용할 준비를 돕는 기능이야.',
       },
       {
         title: 'OLE는 다른 앱 자료를 넣어',
-        body: '워드 문서 안에 엑셀 차트를 넣는 장면을 떠올리면 쉬워.',
+        body: '워드 문서 안에 엑셀 차트처럼 다른 앱 자료를 넣어 쓰는 기능이야.',
         keyPoints: ['개체 연결과 포함이야', '다른 앱 자료를 문서에 넣어', '원본 연결 여부가 중요해'],
         examTip: '서로 다른 프로그램 자료를 한 문서에서 쓰면 OLE 쪽으로 보면 돼.',
         visualHint: 'ole-document-link',
-        correct: '워드 문서 안에 엑셀 차트를 연결하거나 포함하는 기능이야',
-        explanation: 'OLE는 다른 앱에서 만든 자료를 문서 안에 연결하거나 포함해.',
+        questionCheckpoint: true,
+        correct: 'Plug & Play는 장치 자동 인식, OLE는 다른 앱 자료 넣기야',
+        wrongChoices: ['Plug & Play는 문서 차트 연결, OLE는 장치 자동 인식이야', '둘 다 여러 앱을 동시에 실행하는 기능이야', '둘 다 아이콘과 창으로 조작하는 방식이야'],
+        questionPrompt: 'Plug & Play와 OLE를 바르게 연결한 것은?',
+        explanation: 'Plug & Play는 새 장치를 꽂았을 때 자동 인식하는 쪽이고, OLE는 다른 앱 자료를 문서에 넣는 쪽이야.',
       },
     ],
   },
@@ -1520,8 +1568,20 @@ const questionChoicePool = COMPUTER_GENERAL_TOPICS.flatMap((topic) =>
   topic.cards.map((card) => card.correct),
 );
 
-function pickQuestionChoices(correct: string, seed: number): { choices: string[]; answerIndex: number } {
+function pickQuestionChoices(
+  correct: string,
+  seed: number,
+  preferredWrongs: string[] = [],
+): { choices: string[]; answerIndex: number } {
   const wrongs: string[] = [];
+
+  for (const candidate of preferredWrongs) {
+    if (candidate !== correct && !wrongs.includes(candidate)) {
+      wrongs.push(candidate);
+    }
+    if (wrongs.length >= 3) break;
+  }
+
   let cursor = (seed * 7 + 3) % questionChoicePool.length;
 
   while (wrongs.length < 3) {
@@ -1547,18 +1607,32 @@ function buildQuestion(
   const { choices, answerIndex } = pickQuestionChoices(
     card.correct,
     topicIndex + cardIndex,
+    card.wrongChoices,
   );
 
   return {
     id: `comhwal-1-${topic.id}-q${String(cardIndex + 1).padStart(2, '0')}`,
     prompt:
-      cardIndex === 0
+      card.questionPrompt ??
+      (cardIndex === 0
         ? `${topic.title}에서 방금 배운 핵심은 무엇일까?`
-        : `${topic.title}의 시험 포인트로 가장 알맞은 것은?`,
+        : `${topic.title}의 시험 포인트로 가장 알맞은 것은?`),
     choices,
     answerIndex,
     explanation: card.explanation,
   };
+}
+
+function shouldAttachQuestion(topic: TopicSpec, cardIndex: number): boolean {
+  const hasExplicitCheckpoints = topic.cards.some(
+    (card) => card.questionCheckpoint !== undefined,
+  );
+
+  if (hasExplicitCheckpoints) {
+    return topic.cards[cardIndex]?.questionCheckpoint === true;
+  }
+
+  return cardIndex === topic.cards.length - 1;
 }
 
 function buildComputerGeneralSections(): ComhwalSection[] {
@@ -1571,7 +1645,9 @@ function buildComputerGeneralSections(): ComhwalSection[] {
       keyPoints: card.keyPoints,
       examTip: card.examTip,
       visualHint: card.visualHint,
-      question: buildQuestion(topic, card, topicIndex, cardIndex),
+      question: shouldAttachQuestion(topic, cardIndex)
+        ? buildQuestion(topic, card, topicIndex, cardIndex)
+        : undefined,
     }));
 
     const sections: ComhwalSection[] = [];

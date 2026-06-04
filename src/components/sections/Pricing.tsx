@@ -11,7 +11,7 @@ import { PRICING_PLANS } from '@/data/pricing';
 import { cx } from '@/lib/utils';
 import type { PricingPlan } from '@/types/site';
 
-const BETA_COUPON_CODE = 'QDP-BETA-MAY31';
+const BETA_COUPON_CODE = 'QDP-PROMO-78ALGJR8';
 
 function fallbackCopyText(text: string): boolean {
   if (typeof document === 'undefined') return false;
@@ -339,7 +339,7 @@ function BetaCouponModal({ onClose }: { onClose: () => void }) {
           </div>
 
           <p className="kr-body mt-5 text-[13.5px] leading-[1.72] text-cream/66">
-            현재 2026년 5월 31일까지 오픈 베타로 무료 운영 중입니다. 아래 쿠폰 코드를 등록하시면 오픈 베타 무료 이용권을 제공받아 프리미엄 기능을 바로 이용할 수 있습니다.
+            현재 2026년 6월 30일까지 오픈 베타로 무료 운영 중입니다. 아래 쿠폰 코드를 등록하시면 오픈 베타 무료 이용권을 제공받아 프리미엄 기능을 바로 이용할 수 있습니다.
           </p>
         </div>
 

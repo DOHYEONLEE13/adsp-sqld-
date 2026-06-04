@@ -1,5 +1,5 @@
 # QuestDP — robots.txt
-# 한국 ADsP·SQLD 자격증 학습 SaaS
+# 한국 ADsP·SQLD·컴활 자격증 학습 SaaS
 
 User-agent: *
 Allow: /

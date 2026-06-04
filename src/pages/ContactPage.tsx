@@ -46,7 +46,7 @@ export default function ContactPage() {
   const [copied, setCopied] = useState(false);
 
   const seoDescription =
-    'QuestDP 고객문의 페이지. 결제·환불, 계정·로그인, ADsP·SQLD 학습 및 문제 오류를 이메일로 문의할 수 있습니다.';
+    'QuestDP 고객문의 페이지. 결제·환불, 계정·로그인, ADsP·SQLD·컴활 학습 및 문제 오류를 이메일로 문의할 수 있습니다.';
 
   useSeoMeta({
     title: '고객문의 — QuestDP',

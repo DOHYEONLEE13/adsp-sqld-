@@ -22,9 +22,9 @@ const SEO_META: Record<
   { title: string; description: string }
 > = {
   about: {
-    title: 'QuestDP 소개 — ADSP·SQLD 자격증 학습 RPG | QuestDP',
+    title: 'QuestDP 소개 — ADSP·SQLD·컴활 자격증 학습 RPG | QuestDP',
     description:
-      '한국 ADsP·SQLD 자격증을 우주 탐험 RPG 로 재구성한 학습 SaaS. 토리·셀리 마스코트와 마이크로러닝, AI 약점 분석으로 게임처럼 합격.',
+      '한국 ADsP·SQLD·컴활 자격증을 우주 탐험 RPG 로 재구성한 학습 SaaS. 토리·셀리 마스코트와 마이크로러닝, AI 약점 분석으로 게임처럼 합격.',
   },
   privacy: {
     title: '개인정보 처리방침 | QuestDP',

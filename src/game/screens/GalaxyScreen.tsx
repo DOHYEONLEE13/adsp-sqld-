@@ -1600,7 +1600,15 @@ type ComhwalVisualModel = {
   lead: string;
   flow: string[];
   chips: string[];
-  mode?: 'manager' | 'windows' | 'cards' | 'document';
+  mode?:
+    | 'manager'
+    | 'windows'
+    | 'cards'
+    | 'document'
+    | 'sheet-grid'
+    | 'formula'
+    | 'chart'
+    | 'database-table';
 };
 
 function getComhwalVisualModel(card: ComhwalConceptCard): ComhwalVisualModel {
@@ -1669,15 +1677,96 @@ function getComhwalVisualModel(card: ComhwalConceptCard): ComhwalVisualModel {
         mode: 'document',
       };
     default:
-      return {
-        eyebrow: 'VISUAL SUMMARY',
-        title: card.title,
-        lead: card.body,
-        flow: card.keyPoints.slice(0, 3),
-        chips: card.keyPoints.slice(0, 3),
-        mode: 'cards',
-      };
+      break;
   }
+
+  const topicNumber = Number(card.topicId);
+
+  if (topicNumber >= 60 && topicNumber <= 64) {
+    return {
+      eyebrow: 'SHEET GRID',
+      title: card.title,
+      lead: '엑셀은 행과 열이 만나는 칸을 따라 값을 넣고 계산해.',
+      flow: ['열 A·B·C', '셀 A1', '행 1·2·3'],
+      chips: card.keyPoints.slice(0, 3),
+      mode: 'sheet-grid',
+    };
+  }
+
+  if (topicNumber >= 72 && topicNumber <= 85) {
+    return {
+      eyebrow: 'FORMULA FLOW',
+      title: card.title,
+      lead: '값을 수식에 넣으면 엑셀이 계산해서 결과 셀에 보여 줘.',
+      flow: ['입력값', '수식·함수', '결과'],
+      chips: card.keyPoints.slice(0, 3),
+      mode: 'formula',
+    };
+  }
+
+  if (topicNumber >= 86 && topicNumber <= 91) {
+    return {
+      eyebrow: 'OUTPUT VIEW',
+      title: card.title,
+      lead: '표의 숫자를 사람이 보기 쉬운 그림이나 인쇄 화면으로 바꿔.',
+      flow: ['원본 표', '차트·페이지', '보기 좋은 결과'],
+      chips: card.keyPoints.slice(0, 3),
+      mode: 'chart',
+    };
+  }
+
+  if (topicNumber >= 107 && topicNumber <= 122) {
+    return {
+      eyebrow: 'TABLE MAP',
+      title: card.title,
+      lead: '데이터베이스는 표를 만들고, 키로 행을 찾고, 표끼리 연결해.',
+      flow: ['테이블', '키', '관계'],
+      chips: card.keyPoints.slice(0, 3),
+      mode: 'database-table',
+    };
+  }
+
+  if (topicNumber >= 123 && topicNumber <= 131) {
+    return {
+      eyebrow: 'QUERY FLOW',
+      title: card.title,
+      lead: '질의는 원본 표에서 조건에 맞는 데이터만 꺼내 결과표로 보여 줘.',
+      flow: ['원본 표', '조건·질의', '결과표'],
+      chips: card.keyPoints.slice(0, 3),
+      mode: 'formula',
+    };
+  }
+
+  if (topicNumber >= 132 && topicNumber <= 147) {
+    return {
+      eyebrow: 'ACCESS SCREEN',
+      title: card.title,
+      lead: '폼은 입력 화면, 보고서는 출력 화면처럼 역할을 나눠 보면 쉬워.',
+      flow: ['원본 데이터', '화면 구성', '입력·출력'],
+      chips: card.keyPoints.slice(0, 3),
+      mode: 'cards',
+    };
+  }
+
+  if (topicNumber >= 148 && topicNumber <= 152) {
+    return {
+      eyebrow: 'AUTO FLOW',
+      title: card.title,
+      lead: '매크로와 코드는 반복 작업을 정해진 순서대로 자동 실행해.',
+      flow: ['이벤트', '명령 실행', '자동 처리'],
+      chips: card.keyPoints.slice(0, 3),
+      mode: 'formula',
+    };
+  }
+
+  return {
+    eyebrow: 'VISUAL SUMMARY',
+    title: card.title,
+    lead: card.body,
+    flow: card.keyPoints.slice(0, 3),
+    chips: card.keyPoints.slice(0, 3),
+    mode: 'cards',
+  };
 }
 
 function ComhwalFlowNode({
@@ -1703,6 +1792,189 @@ function ComhwalFlowNode({
       <span className="kr-heading text-[12px] leading-snug text-cream md:text-[13px]">
         {label}
       </span>
+    </div>
+  );
+}
+
+function ComhwalMiniSpreadsheet({ accent }: { accent: string }) {
+  const rows = [
+    ['', 'A', 'B', 'C'],
+    ['1', '셀 A1', '', ''],
+    ['2', '', '', ''],
+    ['3', '', '', ''],
+  ];
+
+  return (
+    <div
+      className="mt-4 rounded-[22px] border p-3"
+      style={{
+        borderColor: 'rgba(239,244,255,0.16)',
+        background: 'rgba(1,8,40,0.28)',
+      }}
+    >
+      <div
+        className="grid grid-cols-4 overflow-hidden rounded-2xl border text-center"
+        style={{ borderColor: 'rgba(239,244,255,0.16)' }}
+      >
+        {rows.flatMap((row, rowIndex) =>
+          row.map((cell, colIndex) => {
+            const isHeader = rowIndex === 0 || colIndex === 0;
+            const isActive = rowIndex === 1 && colIndex === 1;
+
+            return (
+              <div
+                key={`${rowIndex}-${colIndex}`}
+                className="flex min-h-[38px] items-center justify-center border-r border-b px-1 kr-heading text-[11px] last:border-r-0"
+                style={{
+                  borderColor: 'rgba(239,244,255,0.12)',
+                  color: isActive ? '#07121f' : 'rgba(239,244,255,0.82)',
+                  background: isActive
+                    ? `linear-gradient(180deg, ${accent}, color-mix(in srgb, ${accent} 74%, #010828))`
+                    : isHeader
+                      ? 'rgba(239,244,255,0.12)'
+                      : 'rgba(239,244,255,0.045)',
+                }}
+              >
+                {cell || (isHeader ? '' : '·')}
+              </div>
+            );
+          }),
+        )}
+      </div>
+      <p className="kr-body mt-3 text-center text-[11.5px] text-cream/62">
+        열 문자와 행 번호가 만나 한 칸 주소가 돼
+      </p>
+    </div>
+  );
+}
+
+function ComhwalFormulaDiagram({
+  model,
+  accent,
+}: {
+  model: ComhwalVisualModel;
+  accent: string;
+}) {
+  return (
+    <div
+      className="mt-4 rounded-[22px] border p-3"
+      style={{
+        borderColor: 'rgba(239,244,255,0.16)',
+        background: 'rgba(1,8,40,0.28)',
+      }}
+    >
+      <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-stretch gap-2">
+        {model.flow.slice(0, 3).map((item, index) => (
+          <div key={`${item}-${index}`} className="contents">
+            <ComhwalFlowNode label={item} accent={accent} active={index === 1} />
+            {index < 2 ? (
+              <div className="flex items-center justify-center">
+                <ArrowRight size={16} strokeWidth={2.5} style={{ color: accent }} />
+              </div>
+            ) : null}
+          </div>
+        ))}
+      </div>
+      <div
+        className="mt-3 rounded-2xl border px-3 py-2 kr-num text-[12px] text-cream/82"
+        style={{
+          borderColor: 'rgba(239,244,255,0.14)',
+          background: 'rgba(239,244,255,0.06)',
+        }}
+      >
+        = {model.flow[1]}({model.flow[0]}) → {model.flow[2]}
+      </div>
+    </div>
+  );
+}
+
+function ComhwalChartDiagram({ accent }: { accent: string }) {
+  const bars = [54, 78, 38, 66];
+
+  return (
+    <div
+      className="mt-4 rounded-[22px] border p-3"
+      style={{
+        borderColor: 'rgba(239,244,255,0.16)',
+        background: 'rgba(1,8,40,0.28)',
+      }}
+    >
+      <div
+        className="flex h-[118px] items-end justify-center gap-4 rounded-2xl border px-5 py-4"
+        style={{
+          borderColor: 'rgba(239,244,255,0.12)',
+          background:
+            'linear-gradient(180deg, rgba(239,244,255,0.08), rgba(239,244,255,0.025))',
+        }}
+      >
+        {bars.map((height, index) => (
+          <div key={`${height}-${index}`} className="flex h-full flex-1 items-end justify-center">
+            <span
+              className="w-full max-w-[34px] rounded-t-xl"
+              style={{
+                height: `${height}%`,
+                background: index === 1 ? accent : 'rgba(239,244,255,0.34)',
+                boxShadow:
+                  index === 1
+                    ? `0 0 18px color-mix(in srgb, ${accent} 35%, transparent)`
+                    : 'none',
+              }}
+            />
+          </div>
+        ))}
+      </div>
+      <p className="kr-body mt-3 text-center text-[11.5px] text-cream/62">
+        숫자 차이를 막대 높이로 바로 비교해
+      </p>
+    </div>
+  );
+}
+
+function ComhwalDatabaseDiagram({ accent }: { accent: string }) {
+  return (
+    <div
+      className="mt-4 rounded-[22px] border p-3"
+      style={{
+        borderColor: 'rgba(239,244,255,0.16)',
+        background: 'rgba(1,8,40,0.28)',
+      }}
+    >
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+        {['고객 테이블', '주문 테이블'].map((title, index) => (
+          <div
+            key={title}
+            className="overflow-hidden rounded-2xl border"
+            style={{
+              borderColor: index === 0 ? accent : 'rgba(239,244,255,0.2)',
+            }}
+          >
+            <div
+              className="px-3 py-2 kr-heading text-[11px] text-cream/90"
+              style={{
+                background:
+                  index === 0
+                    ? `color-mix(in srgb, ${accent} 26%, rgba(1,8,40,0.8))`
+                    : 'rgba(239,244,255,0.08)',
+              }}
+            >
+              {title}
+            </div>
+            {['ID', '이름', index === 0 ? '등급' : '고객ID'].map((row) => (
+              <div
+                key={row}
+                className="border-t px-3 py-1.5 kr-body text-[11px] text-cream/68"
+                style={{ borderColor: 'rgba(239,244,255,0.1)' }}
+              >
+                {row}
+              </div>
+            ))}
+          </div>
+        ))}
+        <ArrowRight size={16} strokeWidth={2.5} style={{ color: accent }} />
+      </div>
+      <p className="kr-body mt-3 text-center text-[11.5px] text-cream/62">
+        공통 키가 두 테이블을 이어 줘
+      </p>
     </div>
   );
 }
@@ -1753,7 +2025,15 @@ function ComhwalConceptVisualCard({
           </div>
         </div>
 
-        {model.mode === 'manager' ? (
+        {model.mode === 'sheet-grid' ? (
+          <ComhwalMiniSpreadsheet accent={accent} />
+        ) : model.mode === 'formula' ? (
+          <ComhwalFormulaDiagram model={model} accent={accent} />
+        ) : model.mode === 'chart' ? (
+          <ComhwalChartDiagram accent={accent} />
+        ) : model.mode === 'database-table' ? (
+          <ComhwalDatabaseDiagram accent={accent} />
+        ) : model.mode === 'manager' ? (
           <div
             className="mt-4 rounded-[22px] border p-3"
             style={{
@@ -2058,9 +2338,7 @@ function ExpansionConceptStudyScreen({
 
           {activeCard && !isQuestionMode && !isQuestionIntroMode ? (
             <div className="mt-8 flex w-full flex-col items-center gap-4">
-              {activeCard.visualHint ? (
-                <ComhwalConceptVisualCard card={activeCard} accent={subject.accent} />
-              ) : null}
+              <ComhwalConceptVisualCard card={activeCard} accent={subject.accent} />
             </div>
           ) : null}
 

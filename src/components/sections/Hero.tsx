@@ -38,7 +38,7 @@ export default function Hero() {
         </div>
 
         <div className="flex-1 flex items-end lg:items-center pt-20 relative">
-          <div className="relative max-w-[780px] lg:ml-32">
+          <div className="relative max-w-[780px] lg:ml-32 lg:translate-y-28 xl:translate-y-32 2xl:translate-y-36">
             <h1 className="kr-heading uppercase leading-[1.05] sm:leading-[1] text-[40px] sm:text-[60px] md:text-[75px] lg:text-[90px]">
               {HERO.headingLines.map((line, i) => (
                 <span key={i} className="block">

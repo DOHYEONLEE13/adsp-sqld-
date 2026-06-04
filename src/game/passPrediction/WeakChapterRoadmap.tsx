@@ -219,6 +219,7 @@ export default function WeakChapterRoadmap({
                   style={{
                     background: nodeBackground(accuracyForVisual),
                     boxShadow: nodeShadow(accuracyForVisual),
+                    border: '1px solid var(--game-node-border)',
                   }}
                 >
                   <span
@@ -235,8 +236,8 @@ export default function WeakChapterRoadmap({
                     style={{
                       fontSize: 14,
                       fontWeight: 700,
-                      color: '#1a1f33',
-                      textShadow: '0 1px 0 rgba(255,255,255,0.25)',
+                      color: 'var(--game-node-text)',
+                      textShadow: '0 1px 2px rgba(0,0,0,0.55)',
                     }}
                   >
                     {e.rank}
@@ -261,9 +262,9 @@ export default function WeakChapterRoadmap({
                       <span
                         className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full"
                         style={{
-                          background: 'rgba(239,244,255,0.055)',
+                          background: 'var(--game-pill-bg)',
                           color: 'rgba(239,244,255,0.64)',
-                          border: '1px solid rgba(239,244,255,0.10)',
+                          border: '1px solid var(--game-pill-border)',
                         }}
                       >
                         <Check size={10} strokeWidth={2.8} aria-hidden />
@@ -273,9 +274,9 @@ export default function WeakChapterRoadmap({
                       <span
                         className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full"
                         style={{
-                          background: 'rgba(239,244,255,0.055)',
+                          background: 'var(--game-pill-bg)',
                           color: 'rgba(239,244,255,0.64)',
-                          border: '1px solid rgba(239,244,255,0.10)',
+                          border: '1px solid var(--game-pill-border)',
                         }}
                       >
                         <BarChart3 size={10} strokeWidth={2.4} aria-hidden />
@@ -287,7 +288,8 @@ export default function WeakChapterRoadmap({
                         className="px-1.5 py-0.5 rounded-full"
                         style={{
                           color: 'rgba(239,244,255,0.68)',
-                          background: 'rgba(239,244,255,0.055)',
+                          background: 'var(--game-pill-bg)',
+                          border: '1px solid rgba(111,255,232,0.16)',
                         }}
                       >
                         {Math.round(e.accuracy * 100)}% · {e.attempt_count}Q
@@ -338,22 +340,15 @@ export default function WeakChapterRoadmap({
 
 /** 정답률 → 노드 배경 (radial gradient). 낮을수록 빨강. */
 function nodeBackground(accuracy: number): string {
-  const color = nodeColor(accuracy);
-  return `radial-gradient(circle at 32% 24%, ${color}e0 0%, ${color}c2 48%, ${color}99 100%)`;
+  if (accuracy < 0.4) return 'var(--game-node-bg-strong)';
+  return 'var(--game-node-bg)';
 }
 
 function nodeShadow(accuracy: number): string {
-  const color = nodeColor(accuracy);
-  return `0 4px 0 -1px rgba(0,0,0,0.42), 0 12px 28px -12px ${color}66`;
+  if (accuracy < 0.4) return 'var(--game-node-shadow-strong)';
+  return 'var(--game-node-shadow)';
 }
 
-function nodeColor(_accuracy: number): string {
-  const accuracy = _accuracy;
-  return '#94a3b8';
-  if (accuracy < 0.4) return '#fca5a5'; // 빨강 (약점 강함)
-  if (accuracy < 0.65) return '#fdba74'; // 주황
-  return '#fcd34d'; // 노랑
-}
 
 /**
  * chapter_id → 운영 lesson 의 (subject, chapter, topic) 분해.

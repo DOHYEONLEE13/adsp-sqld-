@@ -1355,11 +1355,11 @@ function ExpansionChapterPath({
         <path
           d={d}
           fill="none"
-          stroke={`${accent}88`}
+          stroke="rgba(94,237,223,0.54)"
           strokeWidth={2.5}
           strokeDasharray="2 7"
           strokeLinecap="round"
-          style={{ filter: `drop-shadow(0 0 8px ${accent}66)` }}
+          style={{ filter: 'drop-shadow(0 0 8px rgba(94,237,223,0.36))' }}
         />
       </svg>
 
@@ -1411,6 +1411,7 @@ function ExpansionChapterNode({
   containerW: number;
   onSelect: (planetKey: string) => void;
 }) {
+  void accent;
   const ringSize = NODE + 12;
   const r = (ringSize - 4) / 2;
   const titleW = Math.min(containerW - 40, 260);
@@ -1436,7 +1437,7 @@ function ExpansionChapterNode({
             cy={ringSize / 2}
             r={r}
             fill="none"
-            stroke="rgba(239, 244, 255, 0.22)"
+            stroke="var(--game-node-ring)"
             strokeWidth={3}
           />
         </svg>
@@ -1448,17 +1449,18 @@ function ExpansionChapterNode({
           className="absolute rounded-full inline-flex items-center justify-center transition-transform duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-neon"
           style={{
             inset: 6,
-            background: `radial-gradient(circle at 32% 24%, ${accent} 0%, ${accent}d8 38%, ${accent}99 78%, ${accent}66 100%)`,
-            boxShadow: `0 4px 0 -1px rgba(0,0,0,0.42), 0 12px 28px -10px ${accent}aa`,
+            background: 'var(--game-node-bg-strong)',
+            border: '1px solid var(--game-node-border)',
+            boxShadow: 'var(--game-node-shadow-strong)',
           }}
         >
           <span
             aria-hidden
             className="absolute inset-1 rounded-full pointer-events-none"
             style={{
-              border: '1px solid rgba(255,255,255,0.55)',
+              border: '1px solid rgba(111,255,232,0.32)',
               boxShadow:
-                'inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -2px 6px rgba(0,0,0,0.22)',
+                'inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -2px 6px rgba(0,0,0,0.22)',
             }}
           />
           <span
@@ -1466,8 +1468,8 @@ function ExpansionChapterNode({
             style={{
               fontSize: NODE * 0.36,
               fontWeight: 600,
-              color: '#1a1f33',
-              textShadow: '0 1px 0 rgba(255,255,255,0.25)',
+              color: 'var(--game-node-text)',
+              textShadow: '0 1px 2px rgba(0,0,0,0.55)',
             }}
           >
             {chapter}
@@ -1703,12 +1705,10 @@ function ExpansionOutlineNode({
           aria-hidden
           className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full md:h-12 md:w-12"
           style={{
-            background:
-              'linear-gradient(180deg, rgba(239,244,255,0.16), rgba(239,244,255,0.07))',
-            border: '1.5px solid rgba(239,244,255,0.48)',
-            color: 'rgba(239,244,255,0.96)',
-            boxShadow:
-              'inset 0 1px 0 rgba(255,255,255,0.14), 0 8px 18px -16px rgba(239,244,255,0.42)',
+            background: 'var(--game-node-bg)',
+            border: '1.5px solid var(--game-node-border)',
+            color: 'var(--game-node-text)',
+            boxShadow: 'var(--game-node-shadow)',
             textShadow: '0 1px 2px rgba(0,0,0,0.5)',
           }}
         >

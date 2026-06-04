@@ -22,7 +22,6 @@ import type { MascotCharacter, QuesPose } from '@/components/mascot/types';
 import { usePassSnapshot } from './passSync';
 import ProfileSyncSkeleton from '@/components/profile/ProfileSyncSkeleton';
 import {
-  PASS_TIER_VISUAL,
   PASS_TIER_ORDER,
   type PassTier,
 } from '@/types/passes';
@@ -586,8 +585,8 @@ function Leaderboard({
         <div
           className="inline-flex items-center gap-0.5 p-1 rounded-full"
           style={{
-            background: 'rgba(239,244,255,0.075)',
-            border: '1px solid rgba(239,244,255,0.13)',
+            background: 'var(--game-pill-bg)',
+            border: '1px solid var(--game-pill-border)',
           }}
           role="tablist"
           aria-label="정렬 기준"
@@ -605,8 +604,8 @@ function Leaderboard({
                 title={SORT_LABEL[k]}
                 className="kr-num text-[10.5px] uppercase tracking-widest inline-flex items-center gap-1 px-2 py-1.5 rounded-full transition active:scale-[0.97]"
                 style={{
-                  background: active ? 'var(--neon-18)' : 'transparent',
-                  color: active ? 'var(--neon)' : 'rgba(239,244,255,0.66)',
+                  background: active ? 'rgba(94,237,223,0.16)' : 'transparent',
+                  color: active ? 'var(--game-nav-active)' : 'rgba(239,244,255,0.66)',
                 }}
               >
                 <Icon
@@ -627,13 +626,13 @@ function Leaderboard({
             key={row.tag}
             className="rounded-[14px] px-4 py-3 flex items-center gap-3 relative overflow-hidden"
             style={{
-              background: row.isMe
-                ? 'linear-gradient(180deg, rgba(209,248,67,0.115), rgba(239,244,255,0.055))'
-                : 'linear-gradient(180deg, rgba(239,244,255,0.075), rgba(239,244,255,0.035))',
-              border: row.isMe
-                ? '1px solid rgba(209,248,67,0.42)'
-                : '1px solid rgba(239,244,255,0.13)',
-              boxShadow: row.isMe
+              background: row.isMe || idx === 0
+                ? 'var(--game-row-bg-active)'
+                : 'var(--game-row-bg)',
+              border: row.isMe || idx === 0
+                ? '1px solid var(--game-row-border-active)'
+                : '1px solid var(--game-row-border)',
+              boxShadow: row.isMe || idx === 0
                 ? 'inset 0 1px 0 rgba(255,255,255,0.10), 0 8px 20px rgba(0,0,0,0.20)'
                 : 'inset 0 1px 0 rgba(255,255,255,0.07)',
             }}
@@ -644,9 +643,9 @@ function Leaderboard({
               className="absolute left-0 top-0 bottom-0"
               style={{
                 width: 4,
-                background: PASS_TIER_VISUAL[row.passTier].color,
-                opacity: row.passTier === 'bronze' ? 0.3 : 0.85,
-                boxShadow: row.passTier !== 'bronze' ? `0 0 8px ${PASS_TIER_VISUAL[row.passTier].glow}` : undefined,
+                background: 'linear-gradient(180deg, rgba(94,237,223,0.78), rgba(94,237,223,0.10))',
+                opacity: row.isMe || idx === 0 ? 0.9 : 0.38,
+                boxShadow: row.isMe || idx === 0 ? '0 0 10px rgba(94,237,223,0.35)' : undefined,
               }}
             />
             <span
@@ -654,14 +653,19 @@ function Leaderboard({
               style={{
                 background:
                   idx === 0
-                    ? 'linear-gradient(180deg, #FFD66B, #FFB020)'
-                    : idx === 1
-                      ? 'linear-gradient(180deg, rgba(255,255,255,0.96), rgba(203,213,225,0.88))'
-                      : idx === 2
-                        ? 'linear-gradient(180deg, #D79B62, #A8642E)'
-                        : 'rgba(239,244,255,0.18)',
-                color:
-                  idx <= 2 ? '#010828' : 'rgba(239,244,255,0.7)',
+                    ? 'var(--game-node-complete-bg)'
+                    : idx <= 2
+                      ? 'var(--game-node-bg-strong)'
+                      : 'var(--game-node-bg)',
+                border: idx === 0
+                  ? '1px solid var(--game-node-border)'
+                  : '1px solid rgba(111,255,232,0.22)',
+                color: idx === 0
+                  ? 'var(--game-node-complete-text)'
+                  : 'var(--game-node-text)',
+                boxShadow: idx === 0
+                  ? 'var(--game-node-shadow-strong)'
+                  : 'var(--game-node-shadow)',
               }}
             >
               {idx + 1}
@@ -672,11 +676,11 @@ function Leaderboard({
               className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full overflow-hidden"
               style={{
                 background: row.isMe
-                  ? 'rgba(209,248,67,0.16)'
-                  : 'rgba(239,244,255,0.10)',
+                  ? 'var(--game-node-bg-strong)'
+                  : 'var(--game-node-bg)',
                 border: row.isMe
-                  ? '1.5px solid rgba(209,248,67,0.50)'
-                  : '1.5px solid rgba(239,244,255,0.20)',
+                  ? '1.5px solid var(--game-node-border)'
+                  : '1.5px solid rgba(111,255,232,0.22)',
               }}
             >
               <Ques
@@ -694,7 +698,7 @@ function Leaderboard({
                 {row.isMe ? (
                   <span
                     className="kr-num text-[9px] uppercase tracking-widest px-2 py-0.5 rounded-full shrink-0"
-                    style={{ background: 'var(--cta-primary)', color: 'var(--cta-text)' }}
+                    style={{ background: 'var(--game-node-complete-bg)', color: 'var(--game-node-complete-text)' }}
                   >
                     나
                   </span>

@@ -13,19 +13,15 @@ import type { Subject } from '@/types/question';
 
 const SUBJECT_VISUAL: Record<
   'adsp' | 'sqld',
-  { label: string; color: string; bg: string; border: string }
+  { label: string; color: string }
 > = {
   adsp: {
     label: 'ADsP',
     color: '#67e8f9',
-    bg: 'rgba(103,232,249,0.12)',
-    border: 'rgba(103,232,249,0.5)',
   },
   sqld: {
     label: 'SQLD',
     color: '#c084fc',
-    bg: 'rgba(192,132,252,0.14)',
-    border: 'rgba(192,132,252,0.5)',
   },
 };
 
@@ -46,8 +42,8 @@ export default function SubjectBadge({ subject, onClick, size = 'sm' }: Props) {
       className={`kr-num ${fontSize} tabular-nums uppercase tracking-[0.12em] ${padding} rounded-full inline-flex items-center`}
       style={{
         color: v.color,
-        background: v.bg,
-        border: `1px solid ${v.border}`,
+        background: 'var(--game-pill-bg)',
+        border: '1px solid var(--game-pill-border)',
         fontWeight: 700,
       }}
     >

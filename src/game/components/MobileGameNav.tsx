@@ -225,9 +225,9 @@ export function MobileTopBar({ subject, customSubject }: TopProps) {
             className="kr-num shrink-0 inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold leading-none transition active:scale-95"
             style={{
               color: customSubject.accent,
-              background: `${customSubject.accent}1c`,
-              border: `1px solid ${customSubject.accent}66`,
-              boxShadow: `0 0 12px ${customSubject.accent}22, inset 0 1px 0 rgba(255,255,255,0.12)`,
+              background: 'var(--game-pill-bg)',
+              border: '1px solid var(--game-pill-border)',
+              boxShadow: '0 0 12px rgba(94,237,223,0.16), inset 0 1px 0 rgba(255,255,255,0.12)',
               letterSpacing: '0.08em',
             }}
           >
@@ -361,15 +361,13 @@ function AppPlanPill({ plan }: { plan: 'FREE' | 'PRO' | 'MAX' }) {
       aria-label={`현재 요금제 ${plan}. 요금제 안내 열기`}
       className="kr-num shrink-0 inline-flex items-center rounded-full px-2 py-1 text-[9px] font-bold leading-none transition active:scale-95"
       style={{
-        color: isPaid ? 'rgba(239,244,255,0.92)' : 'rgba(239,244,255,0.72)',
-        background: isPaid
-          ? 'linear-gradient(180deg, rgba(39,54,35,0.96), rgba(22,34,28,0.96))'
-          : 'rgba(239,244,255,0.055)',
+        color: isPaid ? 'var(--game-nav-active)' : 'rgba(239,244,255,0.72)',
+        background: 'var(--game-pill-bg)',
         border: isPaid
-          ? '1px solid rgba(209,248,67,0.42)'
-          : '1px solid rgba(239,244,255,0.13)',
+          ? '1px solid var(--game-pill-border)'
+          : '1px solid rgba(111,255,232,0.16)',
         boxShadow: isPaid
-          ? 'inset 0 1px 0 rgba(255,255,255,0.10), 0 4px 12px rgba(0,0,0,0.22)'
+          ? '0 0 12px rgba(94,237,223,0.16), inset 0 1px 0 rgba(255,255,255,0.10)'
           : 'none',
         letterSpacing: '0.08em',
       }}
@@ -518,6 +516,7 @@ function Tab({
   onClick?: () => void;
 }) {
   const isActive = tab === active;
+  void accent;
   return (
     <button
       type="button"
@@ -526,7 +525,7 @@ function Tab({
       aria-current={isActive ? 'page' : undefined}
       className="relative flex flex-col items-center justify-center py-2.5 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-0"
       style={{
-        color: isActive ? accent : 'rgba(239,244,255,0.42)',
+        color: isActive ? 'var(--game-nav-active)' : 'rgba(239,244,255,0.42)',
       }}
     >
       {/* 아이콘 영역 — 3D pill 배경 + spring */}
@@ -553,10 +552,10 @@ function Tab({
             style={{
               background: `
                 radial-gradient(circle at 50% 0%, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0) 55%),
-                linear-gradient(180deg, ${accent}30 0%, ${accent}1a 100%)
+                linear-gradient(180deg, rgba(94,237,223,0.22) 0%, rgba(94,237,223,0.12) 100%)
               `,
               boxShadow: `
-                0 0 14px ${accent}55,
+                0 0 14px rgba(94,237,223,0.42),
                 inset 0 1px 0 rgba(255,255,255,0.12),
                 inset 0 -2px 0 rgba(0,0,0,0.18)
               `,
@@ -575,7 +574,7 @@ function Tab({
           size={26}
           className="relative z-10"
           style={{
-            filter: isActive ? `drop-shadow(0 1px 2px ${accent}66)` : 'none',
+            filter: isActive ? 'drop-shadow(0 1px 2px rgba(94,237,223,0.44))' : 'none',
           }}
         />
       </motion.span>

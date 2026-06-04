@@ -237,11 +237,11 @@ function ChapterPath({
         <path
           d={d}
           fill="none"
-          stroke={`${accent}88`}
+          stroke="rgba(94,237,223,0.54)"
           strokeWidth={2.5}
           strokeDasharray="2 7"
           strokeLinecap="round"
-          style={{ filter: `drop-shadow(0 0 8px ${accent}66)` }}
+          style={{ filter: 'drop-shadow(0 0 8px rgba(94,237,223,0.36))' }}
         />
       </svg>
 
@@ -316,6 +316,7 @@ function ChapterNode({
   containerW,
   onClick,
 }: ChapterNodeProps) {
+  void accent;
   // 진도 링 — 노드 주변을 감싸는 얇은 원.
   const ringSize = NODE + 12;
   const r = (ringSize - 4) / 2;
@@ -356,7 +357,7 @@ function ChapterNode({
               cy={ringSize / 2}
               r={r}
               fill="none"
-              stroke={accent}
+              stroke="var(--game-nav-active)"
               strokeWidth={3}
               strokeDasharray={circ}
               strokeDashoffset={circ * (1 - ratio)}
@@ -364,7 +365,7 @@ function ChapterNode({
               transform={`rotate(-90 ${ringSize / 2} ${ringSize / 2})`}
               style={{
                 transition: 'stroke-dashoffset 0.6s ease-out',
-                filter: `drop-shadow(0 0 6px ${accent}cc)`,
+                filter: 'drop-shadow(0 0 6px rgba(94,237,223,0.72))',
               }}
             />
           ) : null}
@@ -379,11 +380,14 @@ function ChapterNode({
           style={{
             inset: 6,
             background: disabled
-              ? `radial-gradient(circle at 32% 26%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 50%), #2a3346`
-              : `radial-gradient(circle at 32% 24%, ${accent} 0%, ${accent}d8 38%, ${accent}99 78%, ${accent}66 100%)`,
+              ? 'linear-gradient(180deg, rgba(13,27,66,0.74), rgba(8,18,48,0.76))'
+              : 'var(--game-node-bg-strong)',
+            border: disabled
+              ? '1px solid rgba(111,255,232,0.12)'
+              : '1px solid var(--game-node-border)',
             boxShadow: disabled
               ? '0 4px 0 -1px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)'
-              : `0 4px 0 -1px rgba(0,0,0,0.42), 0 12px 28px -10px ${accent}aa`,
+              : 'var(--game-node-shadow-strong)',
             opacity: disabled ? 0.55 : 1,
           }}
           aria-label={`Chapter ${chapter} ${title}${
@@ -397,7 +401,7 @@ function ChapterNode({
             style={{
               border: disabled
                 ? '1px solid rgba(255,255,255,0.06)'
-                : `1px solid rgba(255,255,255,0.55)`,
+                : '1px solid rgba(111,255,232,0.32)',
               boxShadow: disabled
                 ? 'inset 0 1px 0 rgba(255,255,255,0.04), inset 0 -2px 4px rgba(0,0,0,0.25)'
                 : 'inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -2px 6px rgba(0,0,0,0.22)',
@@ -408,10 +412,10 @@ function ChapterNode({
             style={{
               fontSize: NODE * 0.36,
               fontWeight: 600,
-              color: disabled ? 'rgba(255,255,255,0.6)' : '#1a1f33',
+              color: disabled ? 'rgba(255,255,255,0.6)' : 'var(--game-node-text)',
               textShadow: disabled
                 ? 'none'
-                : '0 1px 0 rgba(255,255,255,0.25)',
+                : '0 1px 2px rgba(0,0,0,0.55)',
             }}
           >
             {chapter}

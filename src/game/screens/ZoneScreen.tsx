@@ -57,7 +57,6 @@ import {
 import { getStudyMode } from '../studyMode';
 import { loadOnboardingResult } from '../onboarding/onboardingStorage';
 import PassTabs from '@/components/passes/PassTabs';
-import { PASS_TIER_VISUAL } from '@/types/passes';
 
 const SUBJECT_ACCENT: Record<Subject, string> = {
   adsp: '#67e8f9',
@@ -208,9 +207,7 @@ export default function ZoneScreen({
   );
 
   // 선택된 회독에 따라 path 색조 변환
-  const passTier = selectedPass === 1 ? 'bronze' : selectedPass === 2 ? 'gold' : 'master';
-  const passColor = PASS_TIER_VISUAL[passTier].color;
-  const pathAccent = selectedPass === 1 ? accent : passColor;
+  const pathAccent = '#5eeddf';
 
   // onStart 호출 시 자동으로 selectedPass 주입
   const onStartWithPass = (p: StartParams) =>
@@ -696,8 +693,8 @@ function SqldChapterGuide({
               key={lesson.topic}
               className="min-w-[132px] flex-1 rounded-[12px] border px-2.5 py-2 md:min-w-[160px] md:px-3"
               style={{
-                background: 'rgba(239,244,255,0.035)',
-                borderColor: 'rgba(239,244,255,0.10)',
+                background: 'var(--game-row-bg)',
+                borderColor: 'var(--game-row-border)',
                 boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.045)',
               }}
             >
@@ -706,8 +703,8 @@ function SqldChapterGuide({
                   className="inline-flex size-6 shrink-0 items-center justify-center rounded-full"
                   style={{
                     color: accent,
-                    background: `${accent}12`,
-                    border: `1px solid ${accent}24`,
+                    background: 'var(--game-node-bg)',
+                    border: '1px solid var(--game-node-border)',
                   }}
                 >
                   {meta.icon}
@@ -726,8 +723,8 @@ function SqldChapterGuide({
                       className="h-full rounded-full transition-[width]"
                       style={{
                         width: `${pct}%`,
-                        background: accent,
-                        boxShadow: `0 0 8px ${accent}55`,
+                        background: 'var(--game-nav-active)',
+                        boxShadow: '0 0 8px rgba(94,237,223,0.35)',
                       }}
                     />
                   </div>
@@ -835,7 +832,7 @@ function TopicSection({
           </span>
           <h3
             className="kr-heading text-[17px] md:text-[19px] uppercase tracking-[0.01em]"
-            style={lessonCompleted ? { color: '#FFD66B' } : undefined}
+            style={lessonCompleted ? { color: 'var(--game-nav-active)' } : undefined}
           >
             {topic}
           </h3>
@@ -844,11 +841,10 @@ function TopicSection({
             <span
               className="kr-heading inline-flex items-center gap-1 text-[9px] uppercase tracking-widest px-2 py-0.5 rounded-full"
               style={{
-                color: '#FFD66B',
-                background:
-                  'linear-gradient(135deg, rgba(255,214,107,0.18), rgba(255,176,32,0.12))',
-                border: '1px solid rgba(255,214,107,0.45)',
-                boxShadow: '0 0 12px -2px rgba(255,214,107,0.35)',
+                color: 'var(--game-nav-active)',
+                background: 'var(--game-pill-bg)',
+                border: '1px solid var(--game-pill-border)',
+                boxShadow: '0 0 12px -2px rgba(94,237,223,0.35)',
               }}
             >
               <Check size={9} strokeWidth={3} />
@@ -867,7 +863,7 @@ function TopicSection({
             className="kr-body text-[11px] tabular-nums ml-auto"
             style={{
               color: lessonCompleted
-                ? 'rgba(255,214,107,0.75)'
+                ? 'rgba(94,237,223,0.78)'
                 : 'rgba(239,244,255,0.5)',
             }}
           >
@@ -885,7 +881,7 @@ function TopicSection({
           className="h-px mt-3"
           style={{
             background: lessonCompleted
-              ? 'linear-gradient(90deg, rgba(255,214,107,0.55), rgba(255,176,32,0.15))'
+              ? 'linear-gradient(90deg, rgba(94,237,223,0.50), rgba(94,237,223,0.12))'
               : `${accent}33`,
           }}
           aria-hidden
@@ -1000,31 +996,31 @@ function StepNode({
             // 잠금 step 도 어두운 별 사진 배경 위에서 보이도록 살짝 어두운 backdrop
             // 추가 (transparent → rgba(1,8,40,0.45)). 활성 step 은 그대로 transparent.
             background: completed
-              ? `linear-gradient(180deg, ${accent} 0%, ${accent}dc 100%)`
+              ? 'var(--game-node-complete-bg)'
               : locked
-                ? 'rgba(22,34,70,0.78)'
+                ? 'linear-gradient(180deg, rgba(13,27,66,0.74), rgba(8,18,48,0.76))'
                 : attempted
-                  ? `linear-gradient(180deg, ${accent}3d, rgba(239,244,255,0.10))`
-                  : 'linear-gradient(180deg, rgba(239,244,255,0.16), rgba(239,244,255,0.07))',
+                  ? 'var(--game-node-bg-strong)'
+                  : 'var(--game-node-bg)',
             border: completed
-              ? `2px solid ${accent}`
+              ? '2px solid var(--game-node-border)'
               : attempted
-                ? `2px solid ${accent}cc`
+                ? '2px solid var(--game-node-border)'
                 : locked
-                  ? '1.5px solid rgba(239,244,255,0.36)'
-                  : `1.5px solid rgba(239,244,255,0.48)`,
+                  ? '1.5px solid rgba(111,255,232,0.16)'
+                  : '1.5px solid var(--game-node-border)',
             color: completed
-              ? '#010828'
+              ? 'var(--game-node-complete-text)'
               : locked
-                ? 'rgba(239,244,255,0.82)'
-                : 'rgba(239,244,255,0.96)',
+                ? 'rgba(239,244,255,0.72)'
+                : 'var(--game-node-text)',
             // 0.55 → 0.7 — 잠금 표현 유지하되 가독성 ↑
             opacity: locked && !completed ? 0.84 : 1,
             boxShadow: completed
-              ? `0 0 0 4px ${accent}26, 0 10px 28px -14px ${accent}, inset 0 1px 0 rgba(255,255,255,0.22)`
+              ? 'var(--game-node-shadow-strong)'
               : attempted
-                ? `0 0 0 3px ${accent}1f, inset 0 1px 0 rgba(255,255,255,0.14)`
-                : 'inset 0 1px 0 rgba(255,255,255,0.14), 0 8px 18px -16px rgba(239,244,255,0.42)',
+                ? 'var(--game-node-shadow)'
+                : 'var(--game-node-shadow)',
             // 별 사진 배경의 밝은 영역에서도 동그라미 안 글자/Lock 아이콘이 묻히지 않게
             textShadow:
               completed
@@ -1047,7 +1043,7 @@ function StepNode({
             className="w-px flex-1 my-1"
             style={{
               background: completed
-                ? `linear-gradient(180deg, ${accent}99, ${accent}40)`
+                ? 'linear-gradient(180deg, rgba(94,237,223,0.72), rgba(94,237,223,0.24))'
                 : 'rgba(239,244,255,0.30)',
               minHeight: 28,
             }}
@@ -1085,7 +1081,7 @@ function StepNode({
           }}
         >
           {completed ? (
-            <span style={{ color: accent }}>✓ 완료</span>
+            <span style={{ color: 'var(--game-nav-active)' }}>✓ 완료</span>
           ) : attempted ? (
             <span style={{ color: 'rgba(239,244,255,0.85)' }}>진행 중</span>
           ) : locked ? (
@@ -1217,10 +1213,8 @@ function MockExamSlotCard({
   onStart,
   onReview,
 }: SlotCardProps) {
-  const gold = '#fbbf24';
-  const finalRed = '#f97316';
-  const accent = slot.isFinal ? finalRed : gold;
-  const tinted = slot.isFinal ? '#fff7ed' : '#fef3c7';
+  const accent = '#5eeddf';
+  const tinted = 'rgba(239,244,255,0.92)';
   const wrongCount = progress.wrongQuestionIds.length;
   const acc = Math.round(progress.bestAccuracy * 100);
 
@@ -1229,11 +1223,11 @@ function MockExamSlotCard({
       className="liquid-glass rounded-[20px] px-4 py-4 md:px-5 md:py-5"
       style={{
         border: slot.isFinal
-          ? `2px solid ${accent}80`
-          : `1.5px solid ${accent}55`,
+          ? '2px solid var(--game-row-border-active)'
+          : '1.5px solid var(--game-row-border)',
         boxShadow: slot.isFinal
-          ? `0 8px 28px -10px ${accent}aa`
-          : `0 4px 18px -10px ${accent}80`,
+          ? '0 8px 28px -10px rgba(94,237,223,0.42)'
+          : '0 4px 18px -10px rgba(94,237,223,0.30)',
       }}
     >
       <div className="flex items-center gap-3 md:gap-4">
@@ -1242,9 +1236,16 @@ function MockExamSlotCard({
           aria-hidden
           className="relative shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-full inline-flex items-center justify-center"
           style={{
-            background: `radial-gradient(circle at 32% 24%, ${accent} 0%, ${accent}d8 38%, ${accent}99 78%, ${accent}66 100%)`,
-            boxShadow: `0 4px 0 -1px rgba(0,0,0,0.42), 0 10px 24px -10px ${accent}aa`,
-            color: '#1a1300',
+            background: slot.isFinal
+              ? 'var(--game-node-complete-bg)'
+              : 'var(--game-node-bg-strong)',
+            border: '1px solid var(--game-node-border)',
+            boxShadow: slot.isFinal
+              ? 'var(--game-node-shadow-strong)'
+              : 'var(--game-node-shadow)',
+            color: slot.isFinal
+              ? 'var(--game-node-complete-text)'
+              : 'var(--game-node-text)',
           }}
         >
           {/* 안쪽 림 — 메달의 입체감 */}
@@ -1252,8 +1253,8 @@ function MockExamSlotCard({
             aria-hidden
             className="absolute inset-1 rounded-full pointer-events-none"
             style={{
-              border: `1px solid ${slot.isFinal ? '#fff7ed' : '#fef3c7'}55`,
-              boxShadow: `inset 0 1px 0 rgba(255,255,255,0.45), inset 0 -2px 4px rgba(0,0,0,0.18)`,
+              border: '1px solid rgba(111,255,232,0.32)',
+              boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -2px 4px rgba(0,0,0,0.18)',
             }}
           />
           {slot.isFinal ? (

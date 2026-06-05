@@ -1,13 +1,34 @@
 import { useEffect, useState } from 'react';
-import { X } from 'lucide-react';
+import { CheckCircle2, X } from 'lucide-react';
 
 const BILLING_EVENT = 'questdp:app-billing-request';
 
+interface BillingNoticeState {
+  ok: boolean;
+  message: string;
+  expiresAt?: string;
+}
+
 export default function AppBillingNotice() {
   const [open, setOpen] = useState(false);
+  const [notice, setNotice] = useState<BillingNoticeState>({
+    ok: false,
+    message:
+      'Google Play 앱에서는 프리미엄 구매가 Google Play 결제로 연결되어야 해요.',
+  });
 
   useEffect(() => {
-    const show = () => setOpen(true);
+    const show = (event: Event) => {
+      const detail = (event as CustomEvent<Partial<BillingNoticeState>>).detail;
+      setNotice({
+        ok: detail?.ok === true,
+        message:
+          detail?.message ||
+          'Google Play 결제를 사용할 수 없어요. 잠시 후 다시 시도해 주세요.',
+        expiresAt: detail?.expiresAt,
+      });
+      setOpen(true);
+    };
     window.addEventListener(BILLING_EVENT, show);
     return () => window.removeEventListener(BILLING_EVENT, show);
   }, []);
@@ -39,31 +60,43 @@ export default function AppBillingNotice() {
         <p className="kr-num text-[10px] uppercase tracking-[0.2em] text-cream/45">
           Google Play Billing
         </p>
+        {notice.ok ? (
+          <div className="mt-4 inline-flex h-11 w-11 items-center justify-center rounded-full bg-[rgba(125,216,80,0.14)] text-[var(--cta-primary)]">
+            <CheckCircle2 size={22} strokeWidth={2.4} />
+          </div>
+        ) : null}
         <h2
           id="app-billing-title"
           className="kr-heading mt-2 pr-8 text-[21px] font-black leading-[1.25] text-cream"
         >
-          앱 결제를 준비하고 있어요
+          {notice.ok ? '프리미엄이 활성화됐어요' : '앱 결제를 확인해 주세요'}
         </h2>
         <p className="kr-body mt-4 text-[13px] leading-[1.65] text-cream/68">
-          Google Play 앱에서는 프리미엄 구매가 Google Play 결제로 연결되어야 해요.
-          결제 연동이 끝나면 이 화면에서 바로 이용권을 구매할 수 있게 만들겠습니다.
+          {notice.message}
         </p>
-        <p className="kr-body mt-3 text-[12.5px] leading-[1.6] text-cream/52">
-          이미 쿠폰을 받은 경우에는 쿠폰 등록으로 프리미엄 기능을 사용할 수 있어요.
-        </p>
+        {notice.expiresAt ? (
+          <p className="kr-body mt-3 text-[12.5px] leading-[1.6] text-cream/52">
+            만료 예정: {new Date(notice.expiresAt).toLocaleDateString('ko-KR')}
+          </p>
+        ) : (
+          <p className="kr-body mt-3 text-[12.5px] leading-[1.6] text-cream/52">
+            이미 쿠폰을 받은 경우에는 쿠폰 등록으로 프리미엄 기능을 사용할 수 있어요.
+          </p>
+        )}
 
         <div className="mt-5 flex flex-col gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              setOpen(false);
-              window.location.hash = '/redeem';
-            }}
-            className="kr-body h-11 rounded-full bg-cream text-[13px] font-bold text-base transition active:scale-[0.98]"
-          >
-            쿠폰 등록하기
-          </button>
+          {!notice.ok ? (
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                window.location.hash = '/redeem';
+              }}
+              className="kr-body h-11 rounded-full bg-cream text-[13px] font-bold text-base transition active:scale-[0.98]"
+            >
+              쿠폰 등록하기
+            </button>
+          ) : null}
           <button
             type="button"
             onClick={() => setOpen(false)}

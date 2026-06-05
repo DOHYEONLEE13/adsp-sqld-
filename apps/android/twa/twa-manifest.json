@@ -20,8 +20,8 @@
     "path": "./android.keystore",
     "alias": "questdp"
   },
-  "appVersionName": "1.0.1",
-  "appVersionCode": 2,
+  "appVersionName": "1.0.2",
+  "appVersionCode": 3,
   "shortcuts": [
     {
       "name": "학습 시작",
@@ -40,7 +40,11 @@
   ],
   "generatorApp": "unknown",
   "fallbackType": "customtabs",
-  "features": {},
+  "features": {
+    "playBilling": {
+      "enabled": true
+    }
+  },
   "alphaDependencies": {
     "enabled": false
   },
@@ -52,7 +56,7 @@
   "orientation": "portrait",
   "fingerprints": [
     {
-      "value": "8D:0E:83:4E:DA:0F:F7:32:1D:B4:9A:4B:2F:E3:58:BB:5B:2D:83:04:C4:B0:04:76:98:3D:63:E4:8B:42:32:10"
+      "value": "3D:B4:6E:42:9B:38:96:D7:35:EB:5F:EE:61:10:0B:DC:54:14:FF:D0:60:CD:DB:C6:51:72:BF:6C:E6:7F:F5:14"
     }
   ],
   "additionalTrustedOrigins": [],
@@ -61,5 +65,5 @@
   "fileHandlers": [],
   "launchHandlerClientMode": "",
   "displayOverride": [],
-  "appVersion": "1.0.1"
+  "appVersion": "1.0.2"
 }

@@ -104,7 +104,31 @@ export function openWebOrAppPremiumEntry(): void {
   if (typeof window === 'undefined') return;
 
   if (isAppMode()) {
-    window.dispatchEvent(new CustomEvent('questdp:app-billing-request'));
+    void import('@/lib/playBilling')
+      .then(({ requestPlayPremiumSubscription }) => requestPlayPremiumSubscription())
+      .then((result) => {
+        if (result.reason === 'cancelled') return;
+        window.dispatchEvent(
+          new CustomEvent('questdp:app-billing-request', {
+            detail: result,
+          }),
+        );
+      })
+      .catch((error: unknown) => {
+        const message =
+          error instanceof Error
+            ? error.message
+            : 'Google Play 결제를 시작하지 못했어요.';
+        window.dispatchEvent(
+          new CustomEvent('questdp:app-billing-request', {
+            detail: {
+              ok: false,
+              reason: 'error',
+              message,
+            },
+          }),
+        );
+      });
     return;
   }
 

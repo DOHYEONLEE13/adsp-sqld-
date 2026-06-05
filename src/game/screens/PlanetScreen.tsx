@@ -24,7 +24,7 @@
  * 화면에서 이미 노출되므로 여기서는 "탐사 경로" 에만 집중.
  */
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { ArrowLeft, Flame } from 'lucide-react';
 import { SUBJECT_SCHEMAS } from '@/data/subjects';
 import type { Subject } from '@/types/question';
@@ -195,7 +195,7 @@ function ChapterPath({
   const NODE = 78; // 3D 노드 지름
   const TITLE_GAP = 74; // 노드 아래 타이틀·메타 블록 공간
   const NODE_GAP = 42; // 타이틀 끝 ~ 다음 노드 사이 여백
-  const GAP_Y = NODE + TITLE_GAP + NODE_GAP; // 노드 중심 간 거리 = 194
+  const GAP_Y = NODE + TITLE_GAP + NODE_GAP; // 노드 중심 간 거리
   const PAD_Y = 28;
   const OFFSET_X = Math.min(W * 0.11, 46); // 완만한 지그재그
   const CENTER = W / 2;
@@ -232,17 +232,27 @@ function ChapterPath({
       <svg
         width="100%"
         height={totalH}
+        viewBox={`0 0 ${W} ${totalH}`}
+        preserveAspectRatio="xMidYMin meet"
         className="absolute inset-0 pointer-events-none"
       >
         <path
           d={d}
           fill="none"
-          stroke={`color-mix(in srgb, ${accent} 54%, transparent)`}
-          strokeWidth={2.5}
-          strokeDasharray="2 7"
+          stroke={`color-mix(in srgb, ${accent} 8%, transparent)`}
+          strokeWidth={7}
+          strokeLinecap="round"
+          opacity={0.65}
+        />
+        <path
+          d={d}
+          fill="none"
+          stroke={`color-mix(in srgb, ${accent} 34%, transparent)`}
+          strokeWidth={2}
+          strokeDasharray="1 11"
           strokeLinecap="round"
           style={{
-            filter: `drop-shadow(0 0 8px color-mix(in srgb, ${accent} 36%, transparent))`,
+            filter: `drop-shadow(0 0 5px color-mix(in srgb, ${accent} 18%, transparent))`,
           }}
         />
       </svg>
@@ -319,24 +329,18 @@ function ChapterNode({
   onClick,
 }: ChapterNodeProps) {
   // 진도 링 — 노드 주변을 감싸는 얇은 원.
-  const ringSize = NODE + 12;
-  const r = (ringSize - 4) / 2;
-  const circ = 2 * Math.PI * r;
+  const ringSize = NODE + 18;
+  const buttonInset = (ringSize - NODE) / 2;
+  const trackR = (ringSize - 6) / 2;
+  const orbitR = (ringSize - 16) / 2;
+  const circ = 2 * Math.PI * trackR;
   const ratio = solvedRatio(agg);
 
-  const titleW = Math.min(containerW - 40, 260);
-  const nodeBackground = disabled
-    ? `linear-gradient(180deg, color-mix(in srgb, ${accent} 10%, rgba(13,27,66,0.74) 90%), rgba(8,18,48,0.76))`
-    : `radial-gradient(circle at 35% 25%, rgba(255,255,255,0.18), transparent 34%), linear-gradient(145deg, color-mix(in srgb, ${accent} 46%, #0b2a50 54%), color-mix(in srgb, ${accent} 28%, #071737 72%))`;
-  const nodeBorder = disabled
-    ? `1px solid color-mix(in srgb, ${accent} 18%, transparent)`
-    : `1px solid color-mix(in srgb, ${accent} 66%, transparent)`;
-  const nodeShadow = disabled
-    ? '0 4px 0 -1px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)'
-    : `0 0 0 3px color-mix(in srgb, ${accent} 12%, transparent), 0 0 24px -10px ${accent}, inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -5px 10px rgba(1,8,40,0.36)`;
-  const nodeTextColor = disabled
-    ? 'rgba(255,255,255,0.6)'
-    : `color-mix(in srgb, ${accent} 82%, white 18%)`;
+  const titleW = Math.min(containerW - 32, 280);
+  const nodeStyle = {
+    inset: buttonInset,
+    '--roadmap-accent': accent,
+  } as CSSProperties;
 
   return (
     <>
@@ -359,26 +363,36 @@ function ChapterNode({
           <circle
             cx={ringSize / 2}
             cy={ringSize / 2}
-            r={r}
+            r={trackR}
             fill="none"
-            stroke={`color-mix(in srgb, ${accent} 26%, rgba(239,244,255,0.14))`}
-            strokeWidth={3}
+            stroke={`color-mix(in srgb, ${accent} 22%, rgba(239,244,255,0.14))`}
+            strokeWidth={2}
+          />
+          <circle
+            cx={ringSize / 2}
+            cy={ringSize / 2}
+            r={orbitR}
+            fill="none"
+            stroke={`color-mix(in srgb, ${accent} 22%, transparent)`}
+            strokeWidth={1.25}
+            strokeDasharray="3 10"
+            strokeLinecap="round"
           />
           {!disabled && ratio > 0 ? (
             <circle
               cx={ringSize / 2}
               cy={ringSize / 2}
-              r={r}
+              r={trackR}
               fill="none"
-              stroke={accent}
-              strokeWidth={3}
+              stroke={`color-mix(in srgb, ${accent} 58%, rgba(239,244,255,0.18))`}
+              strokeWidth={2.75}
               strokeDasharray={circ}
               strokeDashoffset={circ * (1 - ratio)}
               strokeLinecap="round"
               transform={`rotate(-90 ${ringSize / 2} ${ringSize / 2})`}
               style={{
                 transition: 'stroke-dashoffset 0.6s ease-out',
-                filter: `drop-shadow(0 0 6px color-mix(in srgb, ${accent} 72%, transparent))`,
+                filter: `drop-shadow(0 0 4px color-mix(in srgb, ${accent} 22%, transparent))`,
               }}
             />
           ) : null}
@@ -389,40 +403,18 @@ function ChapterNode({
           type="button"
           onClick={onClick}
           disabled={disabled}
-          className="absolute rounded-full inline-flex items-center justify-center transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-neon"
-          style={{
-            inset: 6,
-            background: nodeBackground,
-            border: nodeBorder,
-            boxShadow: nodeShadow,
-            opacity: disabled ? 0.55 : 1,
-          }}
+          className={`absolute qd-roadmap-orb rounded-full inline-flex items-center justify-center transition-transform duration-150 hover:-translate-y-1 active:translate-y-0 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-neon${
+            disabled ? ' qd-roadmap-orb--disabled' : ''
+          }`}
+          style={nodeStyle}
           aria-label={`Chapter ${chapter} ${title}${
             disabled ? ' (준비중)' : ''
           }`}
         >
-          {/* 안쪽 림 — 메달의 입체감 */}
           <span
-            aria-hidden
-            className="absolute inset-1 rounded-full pointer-events-none"
+            className="qd-roadmap-orb__number kr-num leading-none relative"
             style={{
-              border: disabled
-                ? '1px solid rgba(255,255,255,0.06)'
-                : `1px solid color-mix(in srgb, ${accent} 38%, transparent)`,
-              boxShadow: disabled
-                ? 'inset 0 1px 0 rgba(255,255,255,0.04), inset 0 -2px 4px rgba(0,0,0,0.25)'
-                : 'inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -2px 6px rgba(0,0,0,0.22)',
-            }}
-          />
-          <span
-            className="kr-num leading-none relative"
-            style={{
-              fontSize: NODE * 0.36,
-              fontWeight: 600,
-              color: nodeTextColor,
-              textShadow: disabled
-                ? 'none'
-                : '0 1px 2px rgba(0,0,0,0.55)',
+              fontSize: NODE * 0.38,
             }}
           >
             {chapter}
@@ -441,7 +433,7 @@ function ChapterNode({
         }}
       >
         <h3
-          className="kr-body font-semibold text-[14px] md:text-[15px] leading-[1.25] tracking-[-0.005em] truncate w-full"
+          className="kr-body font-bold text-[14px] md:text-[15px] leading-[1.2] truncate w-full"
           style={{
             color: disabled ? 'rgba(239,244,255,0.55)' : 'var(--cream)',
             textShadow: '0 1px 10px rgba(0,0,0,0.8)',

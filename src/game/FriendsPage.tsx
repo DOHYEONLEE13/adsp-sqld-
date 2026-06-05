@@ -632,13 +632,13 @@ function Leaderboard({
             className="rounded-[14px] px-4 py-3 flex items-center gap-3 relative overflow-hidden"
             style={{
               background: row.isMe || idx === 0
-                ? `linear-gradient(180deg, color-mix(in srgb, ${accent} 18%, rgba(17,51,82,0.76)) 0%, rgba(10,26,62,0.74) 100%)`
+                ? `linear-gradient(180deg, color-mix(in srgb, ${accent} 10%, rgba(12,28,66,0.76)) 0%, rgba(8,18,48,0.72) 100%)`
                 : `linear-gradient(180deg, color-mix(in srgb, ${accent} 8%, rgba(12,28,66,0.74)) 0%, rgba(8,18,48,0.70) 100%)`,
               border: row.isMe || idx === 0
-                ? `1px solid color-mix(in srgb, ${accent} 52%, transparent)`
+                ? `1px solid color-mix(in srgb, ${accent} 28%, transparent)`
                 : `1px solid color-mix(in srgb, ${accent} 22%, transparent)`,
               boxShadow: row.isMe || idx === 0
-                ? `inset 0 1px 0 rgba(255,255,255,0.10), 0 8px 20px rgba(0,0,0,0.20), 0 0 18px color-mix(in srgb, ${accent} 16%, transparent)`
+                ? 'inset 0 1px 0 rgba(255,255,255,0.10)'
                 : 'inset 0 1px 0 rgba(255,255,255,0.07)',
             }}
           >
@@ -649,10 +649,8 @@ function Leaderboard({
               style={{
                 width: 4,
                 background: `linear-gradient(180deg, color-mix(in srgb, ${accent} 78%, transparent), color-mix(in srgb, ${accent} 10%, transparent))`,
-                opacity: row.isMe || idx === 0 ? 0.9 : 0.38,
-                boxShadow: row.isMe || idx === 0
-                  ? `0 0 10px color-mix(in srgb, ${accent} 35%, transparent)`
-                  : undefined,
+                opacity: row.isMe || idx === 0 ? 0.48 : 0.38,
+                boxShadow: undefined,
               }}
             />
             <span
@@ -660,7 +658,7 @@ function Leaderboard({
               style={{
                 background:
                   idx === 0
-                    ? `linear-gradient(180deg, ${accent}, color-mix(in srgb, ${accent} 74%, #010828))`
+                    ? `linear-gradient(180deg, color-mix(in srgb, ${accent} 32%, rgba(16,35,82,0.94)), rgba(9,21,58,0.90))`
                     : idx <= 2
                       ? `linear-gradient(180deg, color-mix(in srgb, ${accent} 28%, rgba(16,35,82,0.94)), rgba(9,21,58,0.90))`
                       : `linear-gradient(180deg, color-mix(in srgb, ${accent} 14%, rgba(16,35,82,0.90)), rgba(9,21,58,0.88))`,
@@ -668,11 +666,11 @@ function Leaderboard({
                   ? `1px solid color-mix(in srgb, ${accent} 62%, transparent)`
                   : `1px solid color-mix(in srgb, ${accent} 30%, transparent)`,
                 color: idx === 0
-                  ? '#07121f'
+                  ? 'var(--game-node-text)'
                   : 'var(--game-node-text)',
                 boxShadow: idx === 0
-                  ? `0 0 0 3px color-mix(in srgb, ${accent} 15%, transparent), 0 10px 24px -12px color-mix(in srgb, ${accent} 68%, transparent), inset 0 1px 0 rgba(255,255,255,0.22)`
-                  : `0 10px 24px -16px color-mix(in srgb, ${accent} 46%, transparent), inset 0 1px 0 rgba(255,255,255,0.14)`,
+                  ? 'inset 0 1px 0 rgba(255,255,255,0.22)'
+                  : 'inset 0 1px 0 rgba(255,255,255,0.14)',
               }}
             >
               {idx + 1}

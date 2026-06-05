@@ -1463,12 +1463,20 @@ function ExpansionChapterPath({
         <path
           d={d}
           fill="none"
-          stroke={`color-mix(in srgb, ${accent} 54%, transparent)`}
-          strokeWidth={2.5}
-          strokeDasharray="2 7"
+          stroke={`color-mix(in srgb, ${accent} 8%, transparent)`}
+          strokeWidth={7}
+          strokeLinecap="round"
+          opacity={0.65}
+        />
+        <path
+          d={d}
+          fill="none"
+          stroke={`color-mix(in srgb, ${accent} 34%, transparent)`}
+          strokeWidth={2}
+          strokeDasharray="1 11"
           strokeLinecap="round"
           style={{
-            filter: `drop-shadow(0 0 8px color-mix(in srgb, ${accent} 36%, transparent))`,
+            filter: `drop-shadow(0 0 5px color-mix(in srgb, ${accent} 18%, transparent))`,
           }}
         />
       </svg>
@@ -1524,17 +1532,15 @@ function ExpansionChapterNode({
   containerW: number;
   onSelect: (planetKey: string) => void;
 }) {
-  const ringSize = NODE + 12;
-  const r = (ringSize - 4) / 2;
-  const titleW = Math.min(containerW - 40, 260);
-  const nodeBackground = isResumeTarget
-    ? `radial-gradient(circle at 35% 25%, rgba(255,255,255,0.24), transparent 34%), linear-gradient(145deg, color-mix(in srgb, ${accent} 74%, white 6%), color-mix(in srgb, ${accent} 48%, #06152e 52%))`
-    : `radial-gradient(circle at 35% 25%, rgba(255,255,255,0.18), transparent 34%), linear-gradient(145deg, color-mix(in srgb, ${accent} 46%, #0b2a50 54%), color-mix(in srgb, ${accent} 28%, #071737 72%))`;
-  const nodeBorder = `1px solid color-mix(in srgb, ${accent} 66%, transparent)`;
-  const nodeShadow = isResumeTarget
-    ? `0 0 0 4px color-mix(in srgb, ${accent} 18%, transparent), 0 0 30px -7px ${accent}, inset 0 1px 0 rgba(255,255,255,0.24), inset 0 -5px 10px rgba(1,8,40,0.34)`
-    : `0 0 0 3px color-mix(in srgb, ${accent} 12%, transparent), 0 0 24px -10px ${accent}, inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -5px 10px rgba(1,8,40,0.36)`;
-  const nodeTextColor = `color-mix(in srgb, ${accent} 82%, white 18%)`;
+  const ringSize = NODE + 18;
+  const buttonInset = (ringSize - NODE) / 2;
+  const trackR = (ringSize - 6) / 2;
+  const orbitR = (ringSize - 16) / 2;
+  const titleW = Math.min(containerW - 32, 280);
+  const nodeStyle = {
+    inset: buttonInset,
+    '--roadmap-accent': accent,
+  } as CSSProperties;
 
   return (
     <>
@@ -1555,10 +1561,20 @@ function ExpansionChapterNode({
           <circle
             cx={ringSize / 2}
             cy={ringSize / 2}
-            r={r}
+            r={trackR}
             fill="none"
-            stroke={`color-mix(in srgb, ${accent} 34%, transparent)`}
-            strokeWidth={3}
+            stroke={`color-mix(in srgb, ${accent} 22%, rgba(239,244,255,0.14))`}
+            strokeWidth={2}
+          />
+          <circle
+            cx={ringSize / 2}
+            cy={ringSize / 2}
+            r={orbitR}
+            fill="none"
+            stroke={`color-mix(in srgb, ${accent} 22%, transparent)`}
+            strokeWidth={1.25}
+            strokeDasharray="3 10"
+            strokeLinecap="round"
           />
         </svg>
 
@@ -1566,32 +1582,15 @@ function ExpansionChapterNode({
           type="button"
           onClick={() => onSelect(planetKey)}
           aria-label={`${title} 과목${isResumeTarget ? ' (학습 복귀 — 여기서부터)' : ''}`}
-          className={`absolute rounded-full inline-flex items-center justify-center transition-transform duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-neon${
-            isResumeTarget ? ' qd-pulse-ring qd-pulse-ring-resume' : ''
+          className={`absolute qd-roadmap-orb rounded-full inline-flex items-center justify-center transition-transform duration-150 hover:-translate-y-1 active:translate-y-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-neon${
+            isResumeTarget ? ' qd-roadmap-orb--resume' : ''
           }`}
-          style={{
-            inset: 6,
-            background: nodeBackground,
-            border: nodeBorder,
-            boxShadow: nodeShadow,
-          }}
+          style={nodeStyle}
         >
           <span
-            aria-hidden
-            className="absolute inset-1 rounded-full pointer-events-none"
+            className="qd-roadmap-orb__number kr-num leading-none relative"
             style={{
-              border: `1px solid color-mix(in srgb, ${accent} 38%, transparent)`,
-              boxShadow:
-                'inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -2px 6px rgba(0,0,0,0.22)',
-            }}
-          />
-          <span
-            className="kr-num leading-none relative"
-            style={{
-              fontSize: NODE * 0.36,
-              fontWeight: 600,
-              color: nodeTextColor,
-              textShadow: '0 1px 2px rgba(0,0,0,0.55)',
+              fontSize: NODE * 0.38,
             }}
           >
             {chapter}
@@ -1609,7 +1608,7 @@ function ExpansionChapterNode({
         }}
       >
         <h3
-          className="kr-body font-semibold text-[14px] md:text-[15px] leading-[1.25] tracking-[-0.005em] truncate w-full"
+          className="kr-body font-bold text-[14px] md:text-[15px] leading-[1.2] truncate w-full"
           style={{
             color: 'var(--cream)',
             textShadow: '0 1px 10px rgba(0,0,0,0.8)',

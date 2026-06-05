@@ -1858,6 +1858,19 @@ function ExpansionOutlineNode({
   const completed =
     questionCards.length > 0 && completedQuestionCount === questionCards.length;
   const isReady = cardCount > 0;
+  const nodeBackground = completed
+    ? `linear-gradient(180deg, ${accent} 0%, color-mix(in srgb, ${accent} 76%, #010828) 100%)`
+    : attempted
+      ? `linear-gradient(180deg, color-mix(in srgb, ${accent} 30%, rgba(16,35,82,0.94)) 0%, rgba(9,21,58,0.92) 100%)`
+      : `linear-gradient(180deg, color-mix(in srgb, ${accent} 16%, rgba(16,35,82,0.90)) 0%, rgba(9,21,58,0.90) 100%)`;
+  const nodeBorder = completed || attempted
+    ? `2px solid color-mix(in srgb, ${accent} 68%, transparent)`
+    : `1.5px solid color-mix(in srgb, ${accent} 44%, transparent)`;
+  const nodeShadow = completed
+    ? `0 0 0 3px color-mix(in srgb, ${accent} 16%, transparent), 0 14px 34px -16px color-mix(in srgb, ${accent} 70%, transparent), inset 0 1px 0 rgba(255,255,255,0.22)`
+    : attempted
+      ? `0 0 0 3px color-mix(in srgb, ${accent} 12%, transparent), 0 12px 30px -16px color-mix(in srgb, ${accent} 58%, transparent), inset 0 1px 0 rgba(255,255,255,0.16)`
+      : `0 10px 28px -16px color-mix(in srgb, ${accent} 48%, transparent), inset 0 1px 0 rgba(255,255,255,0.14)`;
 
   return (
     <button
@@ -1878,22 +1891,12 @@ function ExpansionOutlineNode({
             isResumeTarget ? ' qd-pulse-ring qd-pulse-ring-resume' : ''
           }`}
           style={{
-            background: completed
-              ? 'var(--game-node-complete-bg)'
-              : attempted
-                ? 'var(--game-node-bg-strong)'
-                : 'var(--game-node-bg)',
-            border: completed
-              ? '2px solid var(--game-node-border)'
-              : attempted
-                ? '2px solid var(--game-node-border)'
-                : '1.5px solid var(--game-node-border)',
+            background: nodeBackground,
+            border: nodeBorder,
             color: completed
-              ? 'var(--game-node-complete-text)'
+              ? '#07121f'
               : 'var(--game-node-text)',
-            boxShadow: completed
-              ? 'var(--game-node-shadow-strong)'
-              : 'var(--game-node-shadow)',
+            boxShadow: nodeShadow,
             textShadow: completed ? 'none' : '0 1px 2px rgba(0,0,0,0.5)',
           }}
         >
@@ -1910,7 +1913,7 @@ function ExpansionOutlineNode({
             className="my-1 w-px flex-1"
             style={{
               background: completed
-                ? 'linear-gradient(180deg, rgba(94,237,223,0.72), rgba(94,237,223,0.24))'
+                ? `linear-gradient(180deg, color-mix(in srgb, ${accent} 72%, transparent), color-mix(in srgb, ${accent} 24%, transparent))`
                 : 'rgba(239,244,255,0.30)',
               minHeight: 28,
             }}
@@ -1949,7 +1952,7 @@ function ExpansionOutlineNode({
               {completed ? (
                 <span
                   className="inline-flex items-center gap-1 kr-heading text-[9px] uppercase tracking-widest"
-                  style={{ color: 'var(--game-nav-active)' }}
+                  style={{ color: accent }}
                 >
                   <Check size={10} strokeWidth={3} />
                   완료

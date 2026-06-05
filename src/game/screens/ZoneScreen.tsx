@@ -207,7 +207,7 @@ export default function ZoneScreen({
   );
 
   // 선택된 회독에 따라 path 색조 변환
-  const pathAccent = '#5eeddf';
+  const pathAccent = accent;
 
   // onStart 호출 시 자동으로 selectedPass 주입
   const onStartWithPass = (p: StartParams) =>
@@ -531,6 +531,7 @@ export default function ZoneScreen({
             {/* ─── 분기: 챕터 모의고사 (4 슬롯) ─── */}
             {total > 0 ? (
               <ChapterMockExamPath
+                accent={accent}
                 slots={getMockSlots(chapter)}
                 getSlotProgress={(slot) =>
                   getMockProgress(subject, chapter, slot.label, progress)
@@ -693,9 +694,9 @@ function SqldChapterGuide({
               key={lesson.topic}
               className="min-w-[132px] flex-1 rounded-[12px] border px-2.5 py-2 md:min-w-[160px] md:px-3"
               style={{
-                background: 'var(--game-row-bg)',
-                borderColor: 'var(--game-row-border)',
-                boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.045)',
+                background: `linear-gradient(145deg, color-mix(in srgb, ${accent} 9%, rgba(7,18,50,0.88)), rgba(4,14,42,0.78))`,
+                borderColor: `color-mix(in srgb, ${accent} 28%, transparent)`,
+                boxShadow: `inset 0 1px 0 rgba(255,255,255,0.045), 0 8px 22px -18px ${accent}`,
               }}
             >
               <div className="flex items-center gap-2">
@@ -703,8 +704,9 @@ function SqldChapterGuide({
                   className="inline-flex size-6 shrink-0 items-center justify-center rounded-full"
                   style={{
                     color: accent,
-                    background: 'var(--game-node-bg)',
-                    border: '1px solid var(--game-node-border)',
+                    background: `color-mix(in srgb, ${accent} 16%, rgba(8,18,48,0.88))`,
+                    border: `1px solid color-mix(in srgb, ${accent} 46%, transparent)`,
+                    boxShadow: `0 0 14px -8px ${accent}`,
                   }}
                 >
                   {meta.icon}
@@ -723,8 +725,8 @@ function SqldChapterGuide({
                       className="h-full rounded-full transition-[width]"
                       style={{
                         width: `${pct}%`,
-                        background: 'var(--game-nav-active)',
-                        boxShadow: '0 0 8px rgba(94,237,223,0.35)',
+                        background: accent,
+                        boxShadow: `0 0 8px color-mix(in srgb, ${accent} 55%, transparent)`,
                       }}
                     />
                   </div>
@@ -832,7 +834,7 @@ function TopicSection({
           </span>
           <h3
             className="kr-heading text-[17px] md:text-[19px] uppercase tracking-[0.01em]"
-            style={lessonCompleted ? { color: 'var(--game-nav-active)' } : undefined}
+            style={lessonCompleted ? { color: accent } : undefined}
           >
             {topic}
           </h3>
@@ -841,10 +843,10 @@ function TopicSection({
             <span
               className="kr-heading inline-flex items-center gap-1 text-[9px] uppercase tracking-widest px-2 py-0.5 rounded-full"
               style={{
-                color: 'var(--game-nav-active)',
-                background: 'var(--game-pill-bg)',
-                border: '1px solid var(--game-pill-border)',
-                boxShadow: '0 0 12px -2px rgba(94,237,223,0.35)',
+                color: accent,
+                background: `color-mix(in srgb, ${accent} 14%, transparent)`,
+                border: `1px solid color-mix(in srgb, ${accent} 34%, transparent)`,
+                boxShadow: `0 0 12px -2px color-mix(in srgb, ${accent} 35%, transparent)`,
               }}
             >
               <Check size={9} strokeWidth={3} />
@@ -863,7 +865,7 @@ function TopicSection({
             className="kr-body text-[11px] tabular-nums ml-auto"
             style={{
               color: lessonCompleted
-                ? 'rgba(94,237,223,0.78)'
+                ? `color-mix(in srgb, ${accent} 78%, rgba(239,244,255,0.35))`
                 : 'rgba(239,244,255,0.5)',
             }}
           >
@@ -881,7 +883,7 @@ function TopicSection({
           className="h-px mt-3"
           style={{
             background: lessonCompleted
-              ? 'linear-gradient(90deg, rgba(94,237,223,0.50), rgba(94,237,223,0.12))'
+              ? `linear-gradient(90deg, color-mix(in srgb, ${accent} 50%, transparent), color-mix(in srgb, ${accent} 12%, transparent))`
               : `${accent}33`,
           }}
           aria-hidden
@@ -974,6 +976,30 @@ function StepNode({
 }: StepNodeProps) {
   const pulseLabel = pulseReason === 'resume' ? '여기서 시작' : '여기 풀기';
   const pulseA11y = pulseReason === 'resume' ? '학습 복귀 — 여기서부터' : '약점 — 여기서부터';
+  const nodeBackground = completed
+    ? `linear-gradient(145deg, color-mix(in srgb, ${accent} 92%, white 8%) 0%, color-mix(in srgb, ${accent} 68%, #041b2a 32%) 100%)`
+    : locked
+      ? `linear-gradient(180deg, color-mix(in srgb, ${accent} 12%, rgba(13,27,66,0.78) 88%), rgba(8,18,48,0.78))`
+      : attempted
+        ? `radial-gradient(circle at 34% 24%, rgba(255,255,255,0.20), transparent 34%), linear-gradient(145deg, color-mix(in srgb, ${accent} 32%, #0d2351 68%), #071737)`
+        : `linear-gradient(145deg, color-mix(in srgb, ${accent} 22%, #0a214a 78%), rgba(5,17,48,0.88))`;
+  const nodeBorder = completed
+    ? `2px solid color-mix(in srgb, ${accent} 82%, white 10%)`
+    : attempted
+      ? `2px solid color-mix(in srgb, ${accent} 66%, transparent)`
+      : locked
+        ? `1.5px solid color-mix(in srgb, ${accent} 24%, transparent)`
+        : `1.5px solid color-mix(in srgb, ${accent} 56%, transparent)`;
+  const nodeShadow = completed
+    ? `0 0 0 1px color-mix(in srgb, ${accent} 18%, transparent), 0 0 24px -7px ${accent}, inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -5px 8px rgba(1,8,40,0.25)`
+    : attempted
+      ? `0 0 0 1px color-mix(in srgb, ${accent} 10%, transparent), 0 0 18px -10px ${accent}, inset 0 1px 0 rgba(255,255,255,0.14), inset 0 -4px 7px rgba(1,8,40,0.32)`
+      : `0 0 0 1px color-mix(in srgb, ${accent} 8%, transparent), 0 0 16px -11px ${accent}, inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -4px 7px rgba(1,8,40,0.34)`;
+  const nodeColor = completed
+    ? '#06101f'
+    : locked
+      ? 'rgba(239,244,255,0.72)'
+      : `color-mix(in srgb, ${accent} 88%, white 12%)`;
   return (
     <div
       className="flex"
@@ -995,32 +1021,12 @@ function StepNode({
           style={{
             // 잠금 step 도 어두운 별 사진 배경 위에서 보이도록 살짝 어두운 backdrop
             // 추가 (transparent → rgba(1,8,40,0.45)). 활성 step 은 그대로 transparent.
-            background: completed
-              ? 'var(--game-node-complete-bg)'
-              : locked
-                ? 'linear-gradient(180deg, rgba(13,27,66,0.74), rgba(8,18,48,0.76))'
-                : attempted
-                  ? 'var(--game-node-bg-strong)'
-                  : 'var(--game-node-bg)',
-            border: completed
-              ? '2px solid var(--game-node-border)'
-              : attempted
-                ? '2px solid var(--game-node-border)'
-                : locked
-                  ? '1.5px solid rgba(111,255,232,0.16)'
-                  : '1.5px solid var(--game-node-border)',
-            color: completed
-              ? 'var(--game-node-complete-text)'
-              : locked
-                ? 'rgba(239,244,255,0.72)'
-                : 'var(--game-node-text)',
+            background: nodeBackground,
+            border: nodeBorder,
+            color: nodeColor,
             // 0.55 → 0.7 — 잠금 표현 유지하되 가독성 ↑
             opacity: locked && !completed ? 0.84 : 1,
-            boxShadow: completed
-              ? 'var(--game-node-shadow-strong)'
-              : attempted
-                ? 'var(--game-node-shadow)'
-                : 'var(--game-node-shadow)',
+            boxShadow: nodeShadow,
             // 별 사진 배경의 밝은 영역에서도 동그라미 안 글자/Lock 아이콘이 묻히지 않게
             textShadow:
               completed
@@ -1043,7 +1049,7 @@ function StepNode({
             className="w-px flex-1 my-1"
             style={{
               background: completed
-                ? 'linear-gradient(180deg, rgba(94,237,223,0.72), rgba(94,237,223,0.24))'
+                ? `linear-gradient(180deg, color-mix(in srgb, ${accent} 72%, transparent), color-mix(in srgb, ${accent} 24%, transparent))`
                 : 'rgba(239,244,255,0.30)',
               minHeight: 28,
             }}
@@ -1081,7 +1087,7 @@ function StepNode({
           }}
         >
           {completed ? (
-            <span style={{ color: 'var(--game-nav-active)' }}>✓ 완료</span>
+            <span style={{ color: accent }}>✓ 완료</span>
           ) : attempted ? (
             <span style={{ color: 'rgba(239,244,255,0.85)' }}>진행 중</span>
           ) : locked ? (
@@ -1136,6 +1142,7 @@ function StepNode({
 // ================================================================
 
 interface MockPathProps {
+  accent: string;
   slots: MockExamSlot[];
   getSlotProgress: (slot: MockExamSlot) => MockExamProgress;
   onStart: (slot: MockExamSlot) => void;
@@ -1143,6 +1150,7 @@ interface MockPathProps {
 }
 
 function ChapterMockExamPath({
+  accent,
   slots,
   getSlotProgress,
   onStart,
@@ -1189,6 +1197,7 @@ function ChapterMockExamPath({
         {slots.map((slot) => (
           <MockExamSlotCard
             key={slot.label}
+            accent={accent}
             slot={slot}
             progress={getSlotProgress(slot)}
             onStart={() => onStart(slot)}
@@ -1201,6 +1210,7 @@ function ChapterMockExamPath({
 }
 
 interface SlotCardProps {
+  accent: string;
   slot: MockExamSlot;
   progress: MockExamProgress;
   onStart: () => void;
@@ -1208,12 +1218,12 @@ interface SlotCardProps {
 }
 
 function MockExamSlotCard({
+  accent,
   slot,
   progress,
   onStart,
   onReview,
 }: SlotCardProps) {
-  const accent = '#5eeddf';
   const tinted = 'rgba(239,244,255,0.92)';
   const wrongCount = progress.wrongQuestionIds.length;
   const acc = Math.round(progress.bestAccuracy * 100);
@@ -1223,11 +1233,11 @@ function MockExamSlotCard({
       className="liquid-glass rounded-[20px] px-4 py-4 md:px-5 md:py-5"
       style={{
         border: slot.isFinal
-          ? '2px solid var(--game-row-border-active)'
-          : '1.5px solid var(--game-row-border)',
+          ? `2px solid color-mix(in srgb, ${accent} 62%, transparent)`
+          : `1.5px solid color-mix(in srgb, ${accent} 30%, transparent)`,
         boxShadow: slot.isFinal
-          ? '0 8px 28px -10px rgba(94,237,223,0.42)'
-          : '0 4px 18px -10px rgba(94,237,223,0.30)',
+          ? `0 8px 28px -10px color-mix(in srgb, ${accent} 48%, transparent)`
+          : `0 4px 18px -10px color-mix(in srgb, ${accent} 32%, transparent)`,
       }}
     >
       <div className="flex items-center gap-3 md:gap-4">
@@ -1237,15 +1247,15 @@ function MockExamSlotCard({
           className="relative shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-full inline-flex items-center justify-center"
           style={{
             background: slot.isFinal
-              ? 'var(--game-node-complete-bg)'
-              : 'var(--game-node-bg-strong)',
-            border: '1px solid var(--game-node-border)',
+              ? `linear-gradient(145deg, color-mix(in srgb, ${accent} 92%, white 8%), color-mix(in srgb, ${accent} 68%, #041b2a 32%))`
+              : `linear-gradient(145deg, color-mix(in srgb, ${accent} 32%, #0d2351 68%), #071737)`,
+            border: `1px solid color-mix(in srgb, ${accent} 66%, transparent)`,
             boxShadow: slot.isFinal
-              ? 'var(--game-node-shadow-strong)'
-              : 'var(--game-node-shadow)',
+              ? `0 0 24px -7px ${accent}, inset 0 1px 0 rgba(255,255,255,0.30), inset 0 -5px 8px rgba(1,8,40,0.25)`
+              : `0 0 18px -10px ${accent}, inset 0 1px 0 rgba(255,255,255,0.14), inset 0 -4px 7px rgba(1,8,40,0.32)`,
             color: slot.isFinal
-              ? 'var(--game-node-complete-text)'
-              : 'var(--game-node-text)',
+              ? '#06101f'
+              : `color-mix(in srgb, ${accent} 88%, white 12%)`,
           }}
         >
           {/* 안쪽 림 — 메달의 입체감 */}
@@ -1253,7 +1263,7 @@ function MockExamSlotCard({
             aria-hidden
             className="absolute inset-1 rounded-full pointer-events-none"
             style={{
-              border: '1px solid rgba(111,255,232,0.32)',
+              border: `1px solid color-mix(in srgb, ${accent} 38%, transparent)`,
               boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -2px 4px rgba(0,0,0,0.18)',
             }}
           />

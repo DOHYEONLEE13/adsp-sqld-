@@ -44,33 +44,23 @@ import {
   openWebOrAppPremiumEntry,
   refreshAppSurface,
 } from '@/lib/appMode';
+import {
+  CORE_SUBJECT_ACCENT,
+  getLastLearnContext,
+  readLastLearnHash,
+  rememberCurrentLearnHash,
+} from '../learningContext';
 
-const SUBJECT_ACCENT: Record<Subject, string> = {
-  adsp: '#67e8f9',
-  sqld: '#c084fc',
-};
+const SUBJECT_ACCENT: Record<Subject, string> = CORE_SUBJECT_ACCENT;
 
-const LAST_LEARN_HASH_KEY = 'questdp:last-learn-hash:v1';
-
-function readLastLearnHash(): string {
-  if (typeof window === 'undefined') return '/game';
-  try {
-    const saved = window.localStorage.getItem(LAST_LEARN_HASH_KEY);
-    return saved?.startsWith('/game') ? saved : '/game';
-  } catch {
-    return '/game';
-  }
+function resolveBottomNavAccent(accent: string): string {
+  return accent.toLowerCase() === SUBJECT_ACCENT.adsp.toLowerCase()
+    ? 'var(--game-nav-active)'
+    : accent;
 }
 
-function rememberLastLearnHash() {
-  if (typeof window === 'undefined') return;
-  const hash = window.location.hash.replace(/^#/, '') || '/game';
-  if (!hash.startsWith('/game')) return;
-  try {
-    window.localStorage.setItem(LAST_LEARN_HASH_KEY, hash);
-  } catch {
-    // localStorage can be unavailable in some embedded browsers.
-  }
+function inferBottomNavAccent(activeSubject?: Subject): string {
+  return getLastLearnContext(activeSubject)?.accent ?? SUBJECT_ACCENT.adsp;
 }
 
 // ---------------------------------------------------------------- Top Bar
@@ -106,11 +96,26 @@ export function MobileTopBar({ subject, customSubject }: TopProps) {
     progress.activeSubject ??
     onboardingSubject ??
     null;
+  const lastLearnContext = getLastLearnContext(activeSubject);
+  const inferredCustomSubject =
+    !subject && !customSubject && lastLearnContext?.kind === 'expansion'
+      ? {
+          id: lastLearnContext.subjectId,
+          label: lastLearnContext.label,
+          accent: lastLearnContext.accent,
+        }
+      : undefined;
+  const effectiveCustomSubject = customSubject ?? inferredCustomSubject;
+  const effectiveSubject: Subject | null = effectiveCustomSubject
+    ? null
+    : activeSubject;
   const [switcherOpen, setSwitcherOpen] = useState(false);
   const [toastSubject, setToastSubject] = useState<Subject | null>(null);
 
   const handleShare = async () => {
-    const subj = customSubject?.label ?? (subject ? subject.toUpperCase() : 'QuestDP');
+    const subj =
+      effectiveCustomSubject?.label ??
+      (effectiveSubject ? effectiveSubject.toUpperCase() : 'QuestDP');
     const text = `QuestDP — ${subj} 진도\n레벨 ${stats.level} · XP ${stats.totalXp}\n나도 도전해봐!`;
     const shareData = { title: 'QuestDP 진도', text, url: window.location.href };
     try {
@@ -218,24 +223,24 @@ export function MobileTopBar({ subject, customSubject }: TopProps) {
           })()}
         </button>
         {/* 과목 배지 — 클릭 시 SubjectSwitcher. 활성 과목 없으면 미노출. */}
-        {customSubject ? (
+        {effectiveCustomSubject ? (
           <button
             type="button"
             onClick={() => setSwitcherOpen(true)}
             className="kr-num shrink-0 inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold leading-none transition active:scale-95"
             style={{
-              color: customSubject.accent,
+              color: effectiveCustomSubject.accent,
               background: 'var(--game-pill-bg)',
               border: '1px solid var(--game-pill-border)',
               boxShadow: '0 0 12px rgba(94,237,223,0.16), inset 0 1px 0 rgba(255,255,255,0.12)',
               letterSpacing: '0.08em',
             }}
           >
-            {customSubject.label}
+            {effectiveCustomSubject.label}
           </button>
-        ) : activeSubject ? (
+        ) : effectiveSubject ? (
           <SubjectBadge
-            subject={activeSubject}
+            subject={effectiveSubject}
             onClick={() => setSwitcherOpen(true)}
           />
         ) : null}
@@ -331,8 +336,8 @@ export function MobileTopBar({ subject, customSubject }: TopProps) {
       {/* 과목 전환 모달 */}
       {switcherOpen ? (
         <SubjectSwitcher
-          current={customSubject ? null : activeSubject}
-          currentExpansion={customSubject?.id ?? null}
+          current={effectiveCustomSubject ? null : activeSubject}
+          currentExpansion={effectiveCustomSubject?.id ?? null}
           onClose={() => setSwitcherOpen(false)}
           onSwitched={(newSubject) => {
             setToastSubject(newSubject);
@@ -398,10 +403,13 @@ export function MobileBottomNav({
   active,
   onLearn,
   onQuests,
-  accent = SUBJECT_ACCENT.adsp,
+  accent,
 }: BottomProps) {
+  const progress = useProgress();
+  const navAccent = accent ?? inferBottomNavAccent(progress.activeSubject);
+
   useEffect(() => {
-    if (active === 'learn') rememberLastLearnHash();
+    if (active === 'learn') rememberCurrentLearnHash();
   }, [active]);
 
   return (
@@ -423,7 +431,7 @@ export function MobileBottomNav({
         <Tab
           tab="learn"
           active={active}
-          accent={accent}
+          accent={navAccent}
           Icon={BookTabIcon}
           label="학습"
           onClick={() => {
@@ -437,7 +445,7 @@ export function MobileBottomNav({
         <Tab
           tab="quests"
           active={active}
-          accent={accent}
+          accent={navAccent}
           Icon={FlagTabIcon}
           label="퀘스트"
           onClick={() => {
@@ -451,7 +459,7 @@ export function MobileBottomNav({
         <Tab
           tab="weakness"
           active={active}
-          accent={accent}
+          accent={navAccent}
           Icon={FlameTabIcon}
           label="나의 약점"
           onClick={() => {
@@ -461,7 +469,7 @@ export function MobileBottomNav({
         <Tab
           tab="trophy"
           active={active}
-          accent={accent}
+          accent={navAccent}
           Icon={TrophyTabIcon}
           label="친구"
           onClick={() => {
@@ -471,7 +479,7 @@ export function MobileBottomNav({
         <Tab
           tab="profile"
           active={active}
-          accent={accent}
+          accent={navAccent}
           Icon={UserTabIcon}
           label="프로필"
           onClick={() => {
@@ -494,7 +502,7 @@ export function MobileBottomNav({
  * Press: whileTap scale 0.92 (CSS active 보다 GPU 가속 spring).
  * Spring 톤: stiffness 400 / damping 17 — EnergyBlockModal·Ques 와 통일.
  *
- * 색상은 prop accent — 과목 톤 (adsp 청록 / sqld 보라) 자동 반영.
+ * 색상은 prop accent — 과목 톤 (adsp 청록 / sqld 보라 / 확장 과목) 자동 반영.
  */
 function Tab({
   tab,
@@ -516,7 +524,7 @@ function Tab({
   onClick?: () => void;
 }) {
   const isActive = tab === active;
-  void accent;
+  const activeAccent = resolveBottomNavAccent(accent || SUBJECT_ACCENT.adsp);
   return (
     <button
       type="button"
@@ -525,7 +533,7 @@ function Tab({
       aria-current={isActive ? 'page' : undefined}
       className="relative flex flex-col items-center justify-center py-2.5 select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-0"
       style={{
-        color: isActive ? 'var(--game-nav-active)' : 'rgba(239,244,255,0.42)',
+        color: isActive ? activeAccent : 'rgba(239,244,255,0.42)',
       }}
     >
       {/* 아이콘 영역 — 3D pill 배경 + spring */}
@@ -552,10 +560,14 @@ function Tab({
             style={{
               background: `
                 radial-gradient(circle at 50% 0%, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0) 55%),
-                linear-gradient(180deg, rgba(94,237,223,0.22) 0%, rgba(94,237,223,0.12) 100%)
+                linear-gradient(
+                  180deg,
+                  color-mix(in srgb, ${activeAccent} 22%, transparent) 0%,
+                  color-mix(in srgb, ${activeAccent} 12%, transparent) 100%
+                )
               `,
               boxShadow: `
-                0 0 14px rgba(94,237,223,0.42),
+                0 0 14px color-mix(in srgb, ${activeAccent} 42%, transparent),
                 inset 0 1px 0 rgba(255,255,255,0.12),
                 inset 0 -2px 0 rgba(0,0,0,0.18)
               `,
@@ -574,7 +586,9 @@ function Tab({
           size={26}
           className="relative z-10"
           style={{
-            filter: isActive ? 'drop-shadow(0 1px 2px rgba(94,237,223,0.44))' : 'none',
+            filter: isActive
+              ? `drop-shadow(0 1px 2px color-mix(in srgb, ${activeAccent} 44%, transparent))`
+              : 'none',
           }}
         />
       </motion.span>

@@ -107,10 +107,10 @@ export async function requestPlayPremiumSubscription(): Promise<PlayBillingResul
     ],
     {
       total: {
-        label: details?.title || '퀘스트디피 프리미엄',
+        label: details?.title || 'Total',
         amount: {
-          currency: details?.price.currency || 'KRW',
-          value: details?.price.value || '0',
+          currency: 'USD',
+          value: '0',
         },
       },
     },
@@ -121,13 +121,16 @@ export async function requestPlayPremiumSubscription(): Promise<PlayBillingResul
     response = await request.show();
   } catch (error) {
     const name = error instanceof DOMException ? error.name : '';
+    const detailMessage = error instanceof Error ? error.message : '';
     return {
       ok: false,
       reason: name === 'AbortError' ? 'cancelled' : 'error',
       message:
         name === 'AbortError'
           ? '구매가 취소됐어요.'
-          : 'Google Play 결제창을 열지 못했어요.',
+          : detailMessage
+            ? `Google Play 결제창을 열지 못했어요. (${name || 'Error'}: ${detailMessage})`
+            : 'Google Play 결제창을 열지 못했어요.',
     };
   }
 

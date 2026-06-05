@@ -20,7 +20,11 @@ import {
   useMyProfile,
 } from '@/data/profile';
 import ProfileSyncSkeleton from '@/components/profile/ProfileSyncSkeleton';
-import type { MascotCharacter, QuesPose } from '@/components/mascot/types';
+import {
+  MASCOT_CHARACTERS,
+  type MascotCharacter,
+  type QuesPose,
+} from '@/components/mascot/types';
 
 // 2026-05-08 — 캐릭터/포즈 잠금/구매 시스템 폐기. 모두 자유 사용.
 // PurchaseConfirmModal 컴포넌트는 향후 재사용 위해 보존 (다른 구매 흐름에 활용 가능).
@@ -122,7 +126,7 @@ export default function ProfileCustomizer() {
   const CHAR_LABEL: Record<MascotCharacter, string> = {
     tori: '토리 (ADSP)',
     selli: '셀리 (SQLD)',
-    comhwal: '컴활',
+    harry: '해리 (컴활)',
   };
 
   // 닉네임 미설정 — 빈 값이거나 자동 생성된 태그 그대로면 "미설정" 으로 본다.
@@ -367,7 +371,7 @@ function CharacterTabs({
 }: CharacterTabsProps) {
   return (
     <div className="flex flex-wrap items-center gap-2 mb-3">
-      {(['tori', 'selli'] as const).map((c) => {
+      {MASCOT_CHARACTERS.map((c) => {
         const isActive = c === draftCharacter;
         return (
           <button

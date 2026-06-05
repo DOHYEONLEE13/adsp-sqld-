@@ -4,6 +4,7 @@
  * 캐릭터:
  *   - `tori` (기본, ADSP): public/mascot/ques-<pose>.png
  *   - `selli` (SQLD): public/mascot/selli-<pose>.png
+ *   - `harry` (컴활): public/mascot/comhwal-<pose>.png
  *
  * props.pose 가 바뀌면 AnimatePresence 로 크로스페이드. 'idle' 포즈에선 CSS
  * 호흡 애니메이션이 자동으로 붙는다. 'sleep' 포즈는 위에 Z 파티클 오버레이.
@@ -20,7 +21,7 @@ import SleepZOverlay from './SleepZOverlay';
 const PREFIX_BY_CHARACTER: Record<MascotCharacter, string> = {
   tori: 'ques',
   selli: 'selli',
-  comhwal: 'comhwal',
+  harry: 'comhwal',
 };
 
 const FAST_WIDTHS = [160, 320, 480] as const;

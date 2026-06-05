@@ -13,7 +13,10 @@
 
 import { DEFAULT_AVATAR_POSE, isValidTag, normalizeTag } from './profile';
 import type { MascotCharacter, QuesPose } from '@/components/mascot/types';
-import { DEFAULT_CHARACTER } from '@/components/mascot/types';
+import {
+  DEFAULT_CHARACTER,
+  normalizeMascotCharacter,
+} from '@/components/mascot/types';
 import { getSupabase, onAuthStateChange } from '@/lib/supabase';
 import { waitForSession } from '@/lib/auth/waitForSession';
 
@@ -75,7 +78,7 @@ export function listFriends(): FriendEntry[] {
     // 구버전(저장 시점에 avatarPose 가 없던) 대응 — 기본 포즈로 폴백.
     ...f,
     avatarPose: f.avatarPose ?? DEFAULT_AVATAR_POSE,
-    avatarCharacter: f.avatarCharacter ?? DEFAULT_CHARACTER,
+    avatarCharacter: normalizeMascotCharacter(f.avatarCharacter),
   }));
   // XP 내림차순 — 리더보드 정렬.
   sorted.sort((a, b) => b.totalXp - a.totalXp);
@@ -317,11 +320,7 @@ async function pullFromSupabase(): Promise<void> {
     const tier: T = validTiers.includes(f.pass_tier as T)
       ? (f.pass_tier as T)
       : 'bronze';
-    const validChars = ['tori', 'selli', 'comhwal'] as const;
-    type C = (typeof validChars)[number];
-    const character: C = validChars.includes(f.avatar_character as C)
-      ? (f.avatar_character as C)
-      : DEFAULT_CHARACTER;
+    const character = normalizeMascotCharacter(f.avatar_character);
     return [
       {
         tag: f.tag,

@@ -97,7 +97,7 @@ const LINE = 'rgba(255,255,255,0.22)';
 const LAST_LEARN_HASH_KEY = 'questdp:last-learn-hash:v1';
 const LAST_EXPANSION_VIEW_KEY = 'questdp:last-expansion-view:v1';
 const LAST_EXPANSION_RESUME_KEY = 'questdp:last-expansion-resume:v1';
-const COMHWAL_MASCOT_CHARACTER = 'comhwal' as const;
+const COMHWAL_MASCOT_CHARACTER = 'harry' as const;
 const COMHWAL_MASCOT_POSES: QuesPose[] = [
   'idle',
   'happy',

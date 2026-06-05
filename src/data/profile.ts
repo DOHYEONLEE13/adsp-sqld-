@@ -14,7 +14,11 @@
 
 import { useSyncExternalStore } from 'react';
 import type { MascotCharacter, QuesPose } from '@/components/mascot/types';
-import { DEFAULT_CHARACTER } from '@/components/mascot/types';
+import {
+  DEFAULT_CHARACTER,
+  MASCOT_CHARACTERS,
+  normalizeMascotCharacter,
+} from '@/components/mascot/types';
 import { getSupabase, onAuthStateChange } from '@/lib/supabase';
 import { waitForSession } from '@/lib/auth/waitForSession';
 import { getAuthSnapshot, subscribeAuthSession } from '@/lib/auth/sessionStore';
@@ -39,6 +43,10 @@ export const AVATAR_POSES: ReadonlyArray<QuesPose> = [
 ];
 
 export const DEFAULT_AVATAR_POSE: QuesPose = 'wave';
+const ALL_MASCOT_CHARACTERS: MascotCharacter[] = [...MASCOT_CHARACTERS];
+const DEFAULT_UNLOCKED_POSES: string[] = MASCOT_CHARACTERS.map(
+  (character) => `${character}-wave`,
+);
 
 export interface MyProfile {
   /**
@@ -207,9 +215,9 @@ export function getMyProfile(): MyProfile {
       tag: '',
       displayName: stored?.displayName ?? '',
       avatarPose: stored?.avatarPose ?? DEFAULT_AVATAR_POSE,
-      avatarCharacter: stored?.avatarCharacter ?? DEFAULT_CHARACTER,
-      unlockedCharacters: ['tori', 'selli'],
-      unlockedPoses: stored?.unlockedPoses ?? GUEST_ALL_POSES,
+      avatarCharacter: normalizeMascotCharacter(stored?.avatarCharacter),
+      unlockedCharacters: ALL_MASCOT_CHARACTERS,
+      unlockedPoses: GUEST_ALL_POSES,
       serverTotalXp: 0,
       isAuthenticated: false,
       isAdmin: false,
@@ -229,8 +237,8 @@ export function getMyProfile(): MyProfile {
       tag: syncDone ? stored.tag : '',
       displayName: syncDone ? stored.displayName : '',
       avatarPose: stored.avatarPose ?? DEFAULT_AVATAR_POSE,
-      avatarCharacter: stored.avatarCharacter ?? DEFAULT_CHARACTER,
-      unlockedCharacters: ['tori', 'selli'],
+      avatarCharacter: normalizeMascotCharacter(stored.avatarCharacter),
+      unlockedCharacters: ALL_MASCOT_CHARACTERS,
       unlockedPoses,
       serverTotalXp: stored.serverTotalXp ?? 0,
       isAuthenticated: true,
@@ -246,7 +254,7 @@ export function getMyProfile(): MyProfile {
     displayName: '',
     avatarPose: DEFAULT_AVATAR_POSE,
     avatarCharacter: DEFAULT_CHARACTER,
-    unlockedCharacters: ['tori', 'selli'],
+    unlockedCharacters: ALL_MASCOT_CHARACTERS,
     unlockedPoses: GUEST_ALL_POSES,
     serverTotalXp: 0,
     isAuthenticated: true,
@@ -261,9 +269,7 @@ export function getMyProfile(): MyProfile {
  * 게스트 / 옛 캐시 fallback — 모든 (캐릭터, 포즈) 조합. 16 entry.
  * 게스트는 구매 시스템 외 자유 사용.
  */
-const GUEST_ALL_POSES: string[] = (
-  ['tori', 'selli'] as const
-).flatMap((c) =>
+const GUEST_ALL_POSES: string[] = MASCOT_CHARACTERS.flatMap((c) =>
   AVATAR_POSES.map((p) => `${c}-${p}`),
 );
 
@@ -290,7 +296,7 @@ export function setDisplayName(name: string): { ok: boolean; reason?: string } {
         displayName: trimmed,
         avatarPose: DEFAULT_AVATAR_POSE,
         avatarCharacter: DEFAULT_CHARACTER,
-        unlockedCharacters: ['tori', 'selli'],
+        unlockedCharacters: ALL_MASCOT_CHARACTERS,
         createdAt: Date.now(),
       });
       notify();
@@ -324,7 +330,7 @@ export function setAvatarPose(pose: QuesPose): { ok: boolean; reason?: string } 
         displayName: '',
         avatarPose: pose,
         avatarCharacter: DEFAULT_CHARACTER,
-        unlockedCharacters: ['tori', 'selli'],
+        unlockedCharacters: ALL_MASCOT_CHARACTERS,
         createdAt: Date.now(),
       });
       notify();
@@ -360,7 +366,7 @@ export function setAvatarCharacter(
         displayName: '',
         avatarPose: DEFAULT_AVATAR_POSE,
         avatarCharacter: character,
-        unlockedCharacters: ['tori', 'selli'],
+        unlockedCharacters: ALL_MASCOT_CHARACTERS,
         createdAt: Date.now(),
       });
       notify();
@@ -572,13 +578,13 @@ async function pullFromSupabase(): Promise<void> {
       const role: 'user' | 'admin' =
         row.role === 'admin' ? 'admin' : 'user';
       // unlocked_characters — 항상 ['tori', 'selli'] (캐릭터 잠금 폐기, backward-compat 보존)
-      const unlocked: MascotCharacter[] = ['tori', 'selli'];
+      const unlocked: MascotCharacter[] = ALL_MASCOT_CHARACTERS;
       // server 의 unlocked_poses 를 string[] 로 안전 normalize.
       // 컬럼 미존재 (마이그 0026 미적용) 시 default ['tori-wave', 'selli-wave'].
       const rawUnlockedPoses = row.unlocked_poses;
       const unlockedPoses: string[] = Array.isArray(rawUnlockedPoses)
         ? rawUnlockedPoses.filter((p): p is string => typeof p === 'string')
-        : ['tori-wave', 'selli-wave'];
+        : DEFAULT_UNLOCKED_POSES;
       // 2026-05-08 — server 측 사용 가능 XP = total_xp + lesson_xp 합산.
       // total_xp = quest 세션 XP (record_session/bump_progress)
       // lesson_xp = lesson step 정답 XP (recordSingleAnswer → pushProgressMeta)
@@ -595,14 +601,13 @@ async function pullFromSupabase(): Promise<void> {
         tag: row.tag,
         displayName: row.display_name ?? '',
         avatarPose: (row.avatar_pose as QuesPose) ?? DEFAULT_AVATAR_POSE,
-        avatarCharacter:
-          (row.avatar_character as MascotCharacter) ?? DEFAULT_CHARACTER,
+        avatarCharacter: normalizeMascotCharacter(row.avatar_character),
         role,
         unlockedCharacters: unlocked,
         unlockedPoses:
           unlockedPoses.length > 0
             ? unlockedPoses
-            : ['tori-wave', 'selli-wave'],
+            : DEFAULT_UNLOCKED_POSES,
         serverTotalXp,
         createdAt:
           local?.createdAt ?? Date.parse(row.created_at) ?? Date.now(),

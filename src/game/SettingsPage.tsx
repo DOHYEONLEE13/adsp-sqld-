@@ -13,7 +13,6 @@ import {
   LogOut,
   Palette,
   RefreshCw,
-  ShieldCheck,
   UserRound,
   type LucideIcon,
 } from 'lucide-react';
@@ -33,9 +32,9 @@ import {
 } from '@/lib/supabase';
 import {
   isAppMode,
-  openWebOrAppPremiumEntry,
   refreshAppSurface,
 } from '@/lib/appMode';
+import { PremiumPlanPanel } from '@/components/PremiumPlanModal';
 import {
   daysUntil,
   getAllExamDates,
@@ -173,9 +172,7 @@ export default function SettingsPage({ onExit, embedded = false }: Props) {
 
       {activeSection === 'account' ? <AuthCard /> : null}
 
-      {activeSection === 'plan' ? (
-        <PlanSection planLabel={planLabel} />
-      ) : null}
+      {activeSection === 'plan' ? <PlanSection /> : null}
 
       {activeSection === 'theme' ? <ThemePicker /> : null}
 
@@ -373,43 +370,8 @@ function SettingsRow({
   );
 }
 
-function PlanSection({ planLabel }: { planLabel: string }) {
-  return (
-    <section
-      className="rounded-[18px] p-5"
-      style={{
-        background: 'rgba(239,244,255,0.075)',
-        border: '1px solid rgba(239,244,255,0.10)',
-      }}
-    >
-      <div className="flex items-center gap-3">
-        <span
-          className="inline-flex h-9 w-9 items-center justify-center rounded-full"
-          style={{
-            background: 'rgba(239,244,255,0.08)',
-            border: '1px solid rgba(239,244,255,0.12)',
-          }}
-        >
-          <ShieldCheck size={18} strokeWidth={2.3} className="text-cream/82" />
-        </span>
-        <div>
-          <p className="kr-heading text-[16px] font-black text-cream">
-            현재 요금제 {planLabel}
-          </p>
-          <p className="kr-body mt-1 text-[12px] font-medium text-cream/52">
-            앱 결제는 Google Play를 통해 처리됩니다.
-          </p>
-        </div>
-      </div>
-      <button
-        type="button"
-        onClick={openWebOrAppPremiumEntry}
-        className="kr-body mt-5 h-11 w-full rounded-full bg-cream text-[13px] font-black text-base transition active:scale-[0.98]"
-      >
-        요금제 보기
-      </button>
-    </section>
-  );
+function PlanSection() {
+  return <PremiumPlanPanel embedded />;
 }
 
 

@@ -1,6 +1,7 @@
 const APP_MODE_SESSION_KEY = 'questdp.appMode';
 const APP_MODE_CLASS = 'questdp-app-mode';
 const APP_MODE_THEME_COLOR = '#081642';
+export const PREMIUM_PLAN_EVENT = 'questdp:premium-plan-open';
 
 function canUseSessionStorage(): boolean {
   return typeof window !== 'undefined' && typeof window.sessionStorage !== 'undefined';
@@ -102,9 +103,13 @@ export function refreshAppSurface(): void {
 
 export function openWebOrAppPremiumEntry(): void {
   if (typeof window === 'undefined') return;
+  window.dispatchEvent(new CustomEvent(PREMIUM_PLAN_EVENT));
+}
 
+export async function requestWebOrAppPremiumPurchase(): Promise<void> {
+  if (typeof window === 'undefined') return;
   if (isAppMode()) {
-    void import('@/lib/playBilling')
+    await import('@/lib/playBilling')
       .then(({ requestPlayPremiumSubscription }) => requestPlayPremiumSubscription())
       .then((result) => {
         if (result.reason === 'cancelled') return;

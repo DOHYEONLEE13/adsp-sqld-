@@ -575,10 +575,6 @@ function Leaderboard({
     <section
       className="liquid-glass rounded-[24px] p-5 md:p-6"
       aria-label="친구 리더보드"
-      style={{
-        background: `linear-gradient(180deg, color-mix(in srgb, ${accent} 10%, rgba(10,19,52,0.76)) 0%, rgba(10,19,52,0.68) 100%)`,
-        border: `1px solid color-mix(in srgb, ${accent} 34%, rgba(239,244,255,0.10))`,
-      }}
     >
       <div className="flex items-center justify-between mb-4 gap-2 flex-wrap">
         <h2 className="kr-heading text-[13px] uppercase tracking-widest text-cream/70 inline-flex items-center gap-2">
@@ -588,8 +584,8 @@ function Leaderboard({
         <div
           className="inline-flex items-center gap-0.5 p-1 rounded-full"
           style={{
-            background: `color-mix(in srgb, ${accent} 10%, rgba(11,28,65,0.72))`,
-            border: `1px solid color-mix(in srgb, ${accent} 32%, rgba(239,244,255,0.10))`,
+            background: 'rgba(239,244,255,0.04)',
+            border: '1px solid rgba(239,244,255,0.12)',
           }}
           role="tablist"
           aria-label="정렬 기준"
@@ -608,9 +604,9 @@ function Leaderboard({
                 className="kr-num text-[10.5px] uppercase tracking-widest inline-flex items-center gap-1 px-2 py-1.5 rounded-full transition active:scale-[0.97]"
                 style={{
                   background: active
-                    ? `color-mix(in srgb, ${accent} 18%, transparent)`
+                    ? 'rgba(239,244,255,0.10)'
                     : 'transparent',
-                  color: active ? accent : 'rgba(239,244,255,0.66)',
+                  color: active ? 'var(--cream)' : 'rgba(239,244,255,0.66)',
                 }}
               >
                 <Icon
@@ -632,11 +628,11 @@ function Leaderboard({
             className="rounded-[14px] px-4 py-3 flex items-center gap-3 relative overflow-hidden"
             style={{
               background: row.isMe || idx === 0
-                ? `linear-gradient(180deg, color-mix(in srgb, ${accent} 10%, rgba(12,28,66,0.76)) 0%, rgba(8,18,48,0.72) 100%)`
-                : `linear-gradient(180deg, color-mix(in srgb, ${accent} 8%, rgba(12,28,66,0.74)) 0%, rgba(8,18,48,0.70) 100%)`,
+                ? 'rgba(239,244,255,0.06)'
+                : 'rgba(239,244,255,0.04)',
               border: row.isMe || idx === 0
-                ? `1px solid color-mix(in srgb, ${accent} 28%, transparent)`
-                : `1px solid color-mix(in srgb, ${accent} 22%, transparent)`,
+                ? '1px solid rgba(239,244,255,0.16)'
+                : '1px solid rgba(239,244,255,0.11)',
               boxShadow: row.isMe || idx === 0
                 ? 'inset 0 1px 0 rgba(255,255,255,0.10)'
                 : 'inset 0 1px 0 rgba(255,255,255,0.07)',
@@ -648,8 +644,8 @@ function Leaderboard({
               className="absolute left-0 top-0 bottom-0"
               style={{
                 width: 4,
-                background: `linear-gradient(180deg, color-mix(in srgb, ${accent} 78%, transparent), color-mix(in srgb, ${accent} 10%, transparent))`,
-                opacity: row.isMe || idx === 0 ? 0.48 : 0.38,
+                background: 'linear-gradient(180deg, rgba(239,244,255,0.28), rgba(239,244,255,0.05))',
+                opacity: row.isMe || idx === 0 ? 0.65 : 0.42,
                 boxShadow: undefined,
               }}
             />
@@ -658,13 +654,13 @@ function Leaderboard({
               style={{
                 background:
                   idx === 0
-                    ? `linear-gradient(180deg, color-mix(in srgb, ${accent} 32%, rgba(16,35,82,0.94)), rgba(9,21,58,0.90))`
+                    ? 'linear-gradient(180deg, rgba(239,244,255,0.14), rgba(9,21,58,0.90))'
                     : idx <= 2
-                      ? `linear-gradient(180deg, color-mix(in srgb, ${accent} 28%, rgba(16,35,82,0.94)), rgba(9,21,58,0.90))`
-                      : `linear-gradient(180deg, color-mix(in srgb, ${accent} 14%, rgba(16,35,82,0.90)), rgba(9,21,58,0.88))`,
+                      ? 'linear-gradient(180deg, rgba(239,244,255,0.12), rgba(9,21,58,0.90))'
+                      : 'linear-gradient(180deg, rgba(239,244,255,0.08), rgba(9,21,58,0.88))',
                 border: idx === 0
-                  ? `1px solid color-mix(in srgb, ${accent} 62%, transparent)`
-                  : `1px solid color-mix(in srgb, ${accent} 30%, transparent)`,
+                  ? '1px solid rgba(239,244,255,0.28)'
+                  : '1px solid rgba(239,244,255,0.18)',
                 color: idx === 0
                   ? 'var(--game-node-text)'
                   : 'var(--game-node-text)',
@@ -678,20 +674,12 @@ function Leaderboard({
             {/* 아바타 — 친구가 고른 Ques 포즈 */}
             <span
               aria-hidden
-              className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-full overflow-hidden"
-              style={{
-                background: row.isMe
-                  ? `linear-gradient(180deg, color-mix(in srgb, ${accent} 28%, rgba(16,35,82,0.94)), rgba(9,21,58,0.90))`
-                  : `linear-gradient(180deg, color-mix(in srgb, ${accent} 12%, rgba(16,35,82,0.90)), rgba(9,21,58,0.88))`,
-                border: row.isMe
-                  ? `1.5px solid color-mix(in srgb, ${accent} 48%, transparent)`
-                  : `1.5px solid color-mix(in srgb, ${accent} 24%, transparent)`,
-              }}
+              className="shrink-0 inline-flex h-10 w-10 items-center justify-center overflow-visible"
             >
               <Ques
                 pose={row.avatarPose}
                 character={row.avatarCharacter}
-                size={36}
+                size={42}
                 animated={false}
               />
             </span>

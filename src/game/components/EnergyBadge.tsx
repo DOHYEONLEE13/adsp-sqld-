@@ -75,7 +75,7 @@ function CountedBadge({
   size: 'sm' | 'md';
   compact: boolean;
 }) {
-  const showTimer = !compact && state.energy < CAP;
+  const showTimer = state.energy < CAP;
   const [now, setNow] = useState<number>(() => Date.now());
   // 충전 상점 모달 — XP 구매 + 광고 시청 통합 진입점.
   const [shopOpen, setShopOpen] = useState(false);
@@ -133,7 +133,7 @@ function CountedBadge({
           className="kr-num tabular-nums"
           style={{
             color: 'rgba(239,244,255,0.55)',
-            fontSize: size === 'sm' ? 10 : 11,
+            fontSize: compact ? 9.5 : size === 'sm' ? 10 : 11,
             lineHeight: 1,
             letterSpacing: '0.02em',
           }}
@@ -156,7 +156,7 @@ function CountedBadge({
             : `에너지 ${state.energy}, 충전 상점 열기`
         }
         title={title}
-        className="inline-flex items-center gap-1.5 transition active:scale-95 hover:opacity-80"
+        className={`inline-flex shrink-0 items-center ${compact ? 'gap-1' : 'gap-1.5'} transition active:scale-95 hover:opacity-80`}
       >
         {inner}
       </button>

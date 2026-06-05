@@ -12,7 +12,6 @@
  * - ⚡ level — 현재 레벨
  */
 
-import { RefreshCw, Settings as SettingsIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useEffect, useState, type ComponentType } from 'react';
 import {
@@ -26,7 +25,6 @@ import {
 import type { Subject } from '@/types/question';
 import { useProgress } from '../useProgress';
 import { computePlayerStats } from '../rpg';
-import { useEnergy } from '../energy';
 import EnergyBadge from './EnergyBadge';
 import Ques from '@/components/mascot/Ques';
 import { useMyProfile } from '@/data/profile';
@@ -41,9 +39,8 @@ import { loadOnboardingResult } from '../onboarding/onboardingStorage';
 import { isCoreExamSubject } from '@/types/learning';
 import {
   isAppMode,
-  openWebOrAppPremiumEntry,
-  refreshAppSurface,
 } from '@/lib/appMode';
+import { openSettingsDrawer } from '@/lib/settingsDrawer';
 import {
   CORE_SUBJECT_ACCENT,
   getLastLearnContext,
@@ -81,7 +78,6 @@ export function MobileTopBar({ subject, customSubject }: TopProps) {
   const stats = computePlayerStats(progress);
   const [shareOpen, setShareOpen] = useState(false);
   const appMode = isAppMode();
-  const energy = useEnergy();
   // 방안 S (2026-05-07) — useMyProfile (useSyncExternalStore) 로 race condition 해소.
   // 이전 useState + subscribeProfile 패턴은 first render 와 listener 부착 race 로 stale stuck.
   const profile = useMyProfile();
@@ -244,7 +240,6 @@ export function MobileTopBar({ subject, customSubject }: TopProps) {
             onClick={() => setSwitcherOpen(true)}
           />
         ) : null}
-        {appMode ? <AppPlanPill plan={energy.isPremium || energy.isAdmin ? 'MAX' : 'FREE'} /> : null}
         </div>
         <div className={`flex items-center ${appMode ? 'gap-2' : 'gap-3 md:gap-4'}`}>
           {/* 순서: XP · 에너지 · 설정 (가장 오른쪽 끝). PlanTag 는 사용자 결정으로 제거. */}
@@ -282,40 +277,31 @@ export function MobileTopBar({ subject, customSubject }: TopProps) {
             </span>
           </button>
           <EnergyBadge size="sm" compact={appMode} />
-          {appMode ? (
-            <button
-              type="button"
-              onClick={refreshAppSurface}
-              aria-label="앱 새로고침"
-              className="inline-flex items-center justify-center w-8 h-8 rounded-full transition active:scale-95 hover:opacity-80"
-              style={{
-                background: 'rgba(239,244,255,0.06)',
-                border: '1px solid rgba(239,244,255,0.18)',
-                color: 'rgba(239,244,255,0.85)',
-              }}
-            >
-              <RefreshCw size={15} strokeWidth={2.2} />
-            </button>
-          ) : null}
           <button
             type="button"
-            onClick={() => {
-              if (typeof window !== 'undefined') {
-                window.location.hash = '/settings';
-              }
-            }}
+            onClick={openSettingsDrawer}
             aria-label="설정 열기"
-            className="inline-flex items-center justify-center rounded-full transition active:scale-95 hover:opacity-80 w-8 h-8"
+            className="inline-flex items-center justify-center rounded-[11px] transition active:scale-95 hover:opacity-80 w-8 h-8"
             style={{
-              background: 'rgba(239,244,255,0.06)',
-              border: '1px solid rgba(239,244,255,0.18)',
+              background: 'rgba(239,244,255,0.045)',
+              border: '0',
+              boxShadow: 'none',
             }}
           >
-              <SettingsIcon
-              size={16}
-              strokeWidth={2.2}
-              style={{ color: 'rgba(239,244,255,0.85)' }}
-            />
+            <span className="flex h-4 w-5 flex-col justify-center gap-[3px]" aria-hidden="true">
+              <span
+                className="block h-[3px] w-5 rounded-full"
+                style={{ background: 'rgba(239,244,255,0.78)' }}
+              />
+              <span
+                className="block h-[3px] w-5 rounded-full"
+                style={{ background: 'rgba(239,244,255,0.78)' }}
+              />
+              <span
+                className="block h-[3px] w-3.5 rounded-full"
+                style={{ background: 'rgba(239,244,255,0.78)' }}
+              />
+            </span>
           </button>
         </div>
       </div>
@@ -354,31 +340,6 @@ export function MobileTopBar({ subject, customSubject }: TopProps) {
         />
       ) : null}
     </div>
-  );
-}
-
-function AppPlanPill({ plan }: { plan: 'FREE' | 'PRO' | 'MAX' }) {
-  const isPaid = plan !== 'FREE';
-  return (
-    <button
-      type="button"
-      onClick={openWebOrAppPremiumEntry}
-      aria-label={`현재 요금제 ${plan}. 요금제 안내 열기`}
-      className="kr-num shrink-0 inline-flex items-center rounded-full px-2 py-1 text-[9px] font-bold leading-none transition active:scale-95"
-      style={{
-        color: isPaid ? 'var(--game-nav-active)' : 'rgba(239,244,255,0.72)',
-        background: 'var(--game-pill-bg)',
-        border: isPaid
-          ? '1px solid var(--game-pill-border)'
-          : '1px solid rgba(111,255,232,0.16)',
-        boxShadow: isPaid
-          ? '0 0 12px rgba(94,237,223,0.16), inset 0 1px 0 rgba(255,255,255,0.10)'
-          : 'none',
-        letterSpacing: '0.08em',
-      }}
-    >
-      {plan}
-    </button>
   );
 }
 

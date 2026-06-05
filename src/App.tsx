@@ -35,6 +35,8 @@ import { onAuthStateChange } from './lib/supabase';
 import { consumePendingAuthRedirect } from './lib/authGuard';
 import TierUpgradeToast from './components/passes/TierUpgradeToast';
 import AppBillingNotice from './components/AppBillingNotice';
+import PremiumPlanModal from './components/PremiumPlanModal';
+import SettingsDrawer from './components/SettingsDrawer';
 import OfflineBanner from './components/sync/OfflineBanner';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ToastProvider } from './components/ui/Toast';
@@ -786,6 +788,8 @@ export default function App() {
           <Suspense fallback={ROUTE_FALLBACK}>{renderRoute()}</Suspense>
         </ErrorBoundary>
       </div>
+      <SettingsDrawer />
+      <PremiumPlanModal />
       <AppBillingNotice />
       <TierUpgradeToast />
       <GuestDiscardToast />

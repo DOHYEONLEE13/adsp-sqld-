@@ -1,32 +1,51 @@
 /**
  * SettingsPage — 설정 모음 (#/settings).
  *
- * MobileTopBar 의 ⚙ 기어 아이콘 클릭 시 진입. 프로필(StatsPage) 에서 분리한 4 섹션:
- *   1) 로그인/계정 (AuthCard)
- *   2) 배경 테마 — 변경 버튼 → ThemePicker 모달
- *   3) 시험일 (D-day) — ADsP/SQLD 두 카드
- *   4) Danger Zone — 진행 기록 초기화
+ * MobileTopBar 의 설정 메뉴 클릭 시 진입.
+ * 설정 홈 목록에서 계정, 요금제, 배경 테마, 시험일 상세 섹션으로 이동한다.
  */
 
-import { useState } from 'react';
-import { CalendarClock, Palette, RefreshCcw, Trash2 } from 'lucide-react';
+import { useMemo, useState, type ReactNode } from 'react';
+import {
+  CalendarClock,
+  ChevronRight,
+  CreditCard,
+  LogOut,
+  Palette,
+  RefreshCw,
+  ShieldCheck,
+  UserRound,
+  type LucideIcon,
+} from 'lucide-react';
 import type { Subject } from '@/types/question';
 import ScreenShell from './components/ScreenShell';
 import { MobileTopBar, MobileBottomNav } from './components/MobileGameNav';
 import PageAmbientBg from './components/PageAmbientBg';
 import AuthCard from './components/AuthCard';
-import ThemePickerModal from './components/ThemePickerModal';
+import ThemePicker from './components/ThemePicker';
 import { useTheme } from './theme/useTheme';
+import { useEnergy } from './energy';
+import { useAuthSession } from '@/lib/auth/sessionStore';
+import {
+  isSupabaseConfigured,
+  signInWithOAuth,
+  signOut,
+} from '@/lib/supabase';
+import {
+  isAppMode,
+  openWebOrAppPremiumEntry,
+  refreshAppSurface,
+} from '@/lib/appMode';
 import {
   daysUntil,
   getAllExamDates,
   getUpcomingPresets,
   setExamDate,
 } from './examDate';
-import { resetProgress } from './storage';
 
 interface Props {
   onExit: () => void;
+  embedded?: boolean;
 }
 
 const SUBJECT_LABEL: Record<Subject, string> = {
@@ -34,11 +53,63 @@ const SUBJECT_LABEL: Record<Subject, string> = {
   sqld: 'SQLD',
 };
 
-export default function SettingsPage({ onExit }: Props) {
+type SettingsSection = 'home' | 'account' | 'plan' | 'theme' | 'exams';
+
+interface SectionMeta {
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+}
+
+const SECTION_META: Record<SettingsSection, SectionMeta> = {
+  home: {
+    eyebrow: 'Settings',
+    title: '설정',
+    subtitle: '계정·요금제·테마·시험일 관리.',
+  },
+  account: {
+    eyebrow: 'Account',
+    title: '계정',
+    subtitle: '로그인과 동기화 상태를 관리합니다.',
+  },
+  plan: {
+    eyebrow: 'Plan',
+    title: '요금제',
+    subtitle: '현재 플랜과 업그레이드를 확인합니다.',
+  },
+  theme: {
+    eyebrow: 'Theme',
+    title: '배경 테마',
+    subtitle: '앱 전체 배경 스타일을 선택합니다.',
+  },
+  exams: {
+    eyebrow: 'Exam Dates',
+    title: '시험일',
+    subtitle: '자격증별 D-Day를 설정합니다.',
+  },
+};
+
+export default function SettingsPage({ onExit, embedded = false }: Props) {
   const [examDates, setExamDatesState] = useState(() => getAllExamDates());
-  const [confirmReset, setConfirmReset] = useState(false);
-  const [themeModalOpen, setThemeModalOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<SettingsSection>('home');
   const currentTheme = useTheme();
+  const energy = useEnergy();
+  const auth = useAuthSession();
+  const [switchingAccount, setSwitchingAccount] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  const meta = SECTION_META[activeSection];
+  const appMode = isAppMode();
+  const planLabel = energy.isPremium || energy.isAdmin ? 'MAX' : 'Free';
+  const isSignedIn = Boolean(auth.session?.user.email);
+  const accountLabel =
+    auth.session?.user.email ?? (auth.status === 'checking' ? '확인 중' : '로그인 필요');
+  const examSummary = useMemo(() => {
+    const configured = (['adsp', 'sqld'] as const).filter(
+      (subject) => !!examDates[subject],
+    ).length;
+    return configured > 0 ? `${configured}개 설정됨` : '미설정';
+  }, [examDates]);
 
   const handleExamDateChange = (subject: Subject, ymd: string) => {
     setExamDate(subject, ymd || null);
@@ -47,115 +118,300 @@ export default function SettingsPage({ onExit }: Props) {
 
   return (
     <ScreenShell
-      eyebrow="Settings"
-      title="설정"
-      subtitle="계정·배경 테마·시험일·진행 기록 관리."
-      onExit={onExit}
-      exitLabel="돌아가기"
-      ambient={<PageAmbientBg />}
+      eyebrow={meta.eyebrow}
+      title={meta.title}
+      subtitle={meta.subtitle}
+      onExit={activeSection === 'home' ? onExit : () => setActiveSection('home')}
+      exitLabel={activeSection === 'home' ? (embedded ? '닫기' : '돌아가기') : '설정으로'}
+      ambient={embedded ? null : <PageAmbientBg />}
+      transparentBg={embedded}
+      compact={embedded}
     >
-      <MobileTopBar />
-      <div className="md:hidden h-14" aria-hidden />
+      {embedded ? null : <MobileTopBar />}
+      {embedded ? null : <div className="md:hidden h-14" aria-hidden />}
 
-      {/* (1) 계정 — 게스트 모드 안내 + Google 로그인 */}
-      <AuthCard />
-
-      {/* (2) 배경 테마 — 변경 버튼 → 모달 */}
-      <section className="liquid-glass rounded-[20px] px-4 py-4 md:px-5 md:py-5 mb-6 mt-6">
-        <div className="flex items-center gap-2 mb-3">
-          <Palette
-            size={14}
-            strokeWidth={2.4}
-            style={{ color: 'var(--neon)' }}
-          />
-          <h3 className="kr-heading uppercase text-[11px] tracking-widest text-cream/85">
-            배경 테마
-          </h3>
-        </div>
-        <p className="kr-body text-[12px] text-cream/60 leading-[1.55] mb-3">
-          현재 테마: <span className="kr-body text-cream/90">{currentTheme.label}</span>
-        </p>
-        <button
-          type="button"
-          onClick={() => setThemeModalOpen(true)}
-          className="kr-num text-[12.5px] font-medium px-4 py-2.5 rounded-full inline-flex items-center justify-center gap-1.5 transition active:scale-[0.98] hover:bg-white/10"
-          style={{
-            background: 'var(--neon-10)',
-            color: 'var(--neon)',
-            border: '1px solid var(--neon-35)',
+      {activeSection === 'home' ? (
+        <SettingsHome
+          accountLabel={accountLabel}
+          planLabel={planLabel}
+          themeLabel={currentTheme.label}
+          examSummary={examSummary}
+          switchingAccount={switchingAccount}
+          loggingOut={loggingOut}
+          canLogout={isSignedIn}
+          onSwitchAccount={async () => {
+            if (switchingAccount || !isSupabaseConfigured()) return;
+            setSwitchingAccount(true);
+            try {
+              await signOut();
+              const result = await signInWithOAuth('google');
+              if ((result as { error?: unknown })?.error) {
+                setSwitchingAccount(false);
+                window.alert('계정 전환을 시작하지 못했어요. 잠시 뒤 다시 시도해주세요.');
+              }
+            } catch {
+              setSwitchingAccount(false);
+              window.alert('계정 전환을 시작하지 못했어요. 잠시 뒤 다시 시도해주세요.');
+            }
           }}
-        >
-          배경 테마 변경하기
-        </button>
-      </section>
-
-      {/* (3) 시험일 (D-day) */}
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        {(['adsp', 'sqld'] as const).map((subject) => (
-          <DdayCard
-            key={subject}
-            subject={subject}
-            ymd={examDates[subject]}
-            onChange={(v) => handleExamDateChange(subject, v)}
-          />
-        ))}
-      </section>
-
-      {/* (4) Danger Zone */}
-      <section className="liquid-glass rounded-[24px] p-5 md:p-6 border border-red-400/20">
-        <h2 className="kr-heading text-[13px] uppercase tracking-widest text-red-400 mb-2 inline-flex items-center gap-2">
-          <Trash2 size={14} strokeWidth={2.4} />
-          Danger Zone
-        </h2>
-        <p className="kr-body text-[12px] text-cream/70 mb-4">
-          모든 진행 기록(풀이 통계, 세션 이력)을 삭제합니다. 되돌릴 수 없습니다.
-        </p>
-        {confirmReset ? (
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={() => {
-                resetProgress();
-                setConfirmReset(false);
-              }}
-              className="kr-heading uppercase tracking-widest text-[12px] px-5 py-3 rounded-full"
-              style={{
-                background: '#f87171',
-                color: '#010828',
-              }}
-            >
-              정말 삭제
-            </button>
-            <button
-              type="button"
-              onClick={() => setConfirmReset(false)}
-              className="liquid-glass kr-heading uppercase tracking-widest text-[12px] px-5 py-3 rounded-full hover:bg-white/10 transition"
-            >
-              취소
-            </button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => setConfirmReset(true)}
-            className="liquid-glass kr-heading uppercase tracking-widest text-[12px] px-5 py-3 rounded-full inline-flex items-center gap-2 hover:bg-white/10 transition"
-          >
-            <RefreshCcw size={14} strokeWidth={2.4} />
-            진행 기록 초기화
-          </button>
-        )}
-      </section>
-
-      <div className="md:hidden h-20" aria-hidden />
-      {/* 설정은 별도 화면 — 5개 탭 중 어느 것도 active 아님 */}
-      <MobileBottomNav />
-
-      {themeModalOpen ? (
-        <ThemePickerModal onClose={() => setThemeModalOpen(false)} />
+          onLogout={async () => {
+            if (loggingOut || !isSignedIn) return;
+            setLoggingOut(true);
+            try {
+              await signOut();
+            } catch {
+              window.alert('로그아웃에 실패했어요. 잠시 뒤 다시 시도해주세요.');
+            } finally {
+              setLoggingOut(false);
+            }
+          }}
+          showAppRefresh={appMode}
+          onRefreshApp={refreshAppSurface}
+          onOpen={setActiveSection}
+        />
       ) : null}
+
+      {activeSection === 'account' ? <AuthCard /> : null}
+
+      {activeSection === 'plan' ? (
+        <PlanSection planLabel={planLabel} />
+      ) : null}
+
+      {activeSection === 'theme' ? <ThemePicker /> : null}
+
+      {activeSection === 'exams' ? (
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          {(['adsp', 'sqld'] as const).map((subject) => (
+            <DdayCard
+              key={subject}
+              subject={subject}
+              ymd={examDates[subject]}
+              onChange={(v) => handleExamDateChange(subject, v)}
+            />
+          ))}
+        </section>
+      ) : null}
+
+      {embedded ? null : <div className="md:hidden h-20" aria-hidden />}
+      {/* 설정은 별도 화면 — 5개 탭 중 어느 것도 active 아님 */}
+      {embedded ? null : <MobileBottomNav />}
     </ScreenShell>
   );
 }
+
+function SettingsHome({
+  accountLabel,
+  planLabel,
+  themeLabel,
+  examSummary,
+  switchingAccount,
+  loggingOut,
+  canLogout,
+  onSwitchAccount,
+  onLogout,
+  showAppRefresh,
+  onRefreshApp,
+  onOpen,
+}: {
+  accountLabel: string;
+  planLabel: string;
+  themeLabel: string;
+  examSummary: string;
+  switchingAccount: boolean;
+  loggingOut: boolean;
+  canLogout: boolean;
+  onSwitchAccount: () => void;
+  onLogout: () => void;
+  showAppRefresh: boolean;
+  onRefreshApp: () => void;
+  onOpen: (section: SettingsSection) => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <section
+        className="rounded-[14px] px-4 py-4"
+        style={{
+          background: 'rgba(239,244,255,0.075)',
+          border: '1px solid rgba(239,244,255,0.08)',
+          boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06)',
+        }}
+      >
+        <div className="flex items-center justify-between gap-3">
+          <p className="kr-num min-w-0 truncate text-[13px] font-bold text-cream/90">
+            {accountLabel}
+          </p>
+          <span className="kr-num inline-flex h-[20px] min-w-[38px] shrink-0 items-center justify-center rounded-full bg-cream px-2 text-[10.5px] font-black leading-none text-[#010828]">
+            {planLabel}
+          </span>
+        </div>
+        <div className="mt-3 flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onSwitchAccount}
+            disabled={switchingAccount}
+            className="kr-body h-8 flex-1 rounded-full px-3 text-[11px] font-bold transition active:scale-[0.98] disabled:opacity-45"
+            style={{
+              background: 'rgba(239,244,255,0.08)',
+              border: '1px solid rgba(239,244,255,0.12)',
+              color: 'rgba(239,244,255,0.82)',
+            }}
+          >
+            {switchingAccount ? '전환 중' : '계정 전환하기'}
+          </button>
+          <button
+            type="button"
+            onClick={onLogout}
+            disabled={!canLogout || loggingOut}
+            className="kr-body inline-flex h-8 min-w-[86px] items-center justify-center gap-1.5 rounded-full px-3 text-[11px] font-bold transition active:scale-[0.98] disabled:opacity-40"
+            style={{
+              background: 'rgba(239,244,255,0.06)',
+              border: '1px solid rgba(239,244,255,0.12)',
+              color: 'rgba(239,244,255,0.78)',
+            }}
+          >
+            <LogOut size={12} strokeWidth={2.35} />
+            {loggingOut ? '처리 중' : '로그아웃'}
+          </button>
+        </div>
+      </section>
+
+      <SettingsGroup>
+        <SettingsRow
+          icon={UserRound}
+          title="계정"
+          value={accountLabel}
+          onClick={() => onOpen('account')}
+        />
+        <SettingsRow
+          icon={CreditCard}
+          title="요금제"
+          value={planLabel}
+          onClick={() => onOpen('plan')}
+        />
+      </SettingsGroup>
+
+      <SettingsGroup>
+        <SettingsRow
+          icon={Palette}
+          title="배경 테마"
+          value={themeLabel}
+          onClick={() => onOpen('theme')}
+        />
+        <SettingsRow
+          icon={CalendarClock}
+          title="시험일"
+          value={examSummary}
+          onClick={() => onOpen('exams')}
+        />
+      </SettingsGroup>
+
+      {showAppRefresh ? (
+        <SettingsGroup>
+          <SettingsRow
+            icon={RefreshCw}
+            title="앱 새로고침"
+            value="최신 상태로 다시 불러오기"
+            onClick={onRefreshApp}
+          />
+        </SettingsGroup>
+      ) : null}
+
+    </div>
+  );
+}
+
+function SettingsGroup({ children }: { children: ReactNode }) {
+  return (
+    <section
+      className="overflow-hidden rounded-[14px]"
+      style={{
+        background: 'rgba(239,244,255,0.075)',
+        border: '1px solid rgba(239,244,255,0.08)',
+      }}
+    >
+      {children}
+    </section>
+  );
+}
+
+function SettingsRow({
+  icon: Icon,
+  title,
+  value,
+  danger = false,
+  onClick,
+}: {
+  icon: LucideIcon;
+  title: string;
+  value?: string;
+  danger?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex w-full items-center gap-3 border-b border-cream/8 px-3.5 py-4 text-left transition active:scale-[0.995] last:border-b-0 hover:bg-cream/[0.035]"
+    >
+      <Icon
+        size={19}
+        strokeWidth={2.1}
+        className={danger ? 'text-red-300/80' : 'text-cream/82'}
+      />
+      <span className="min-w-0 flex-1">
+        <span className={`kr-body block text-[14px] font-bold ${danger ? 'text-red-200/90' : 'text-cream/90'}`}>
+          {title}
+        </span>
+        {value ? (
+          <span className="kr-body mt-0.5 block truncate text-[11.5px] font-medium text-cream/48">
+            {value}
+          </span>
+        ) : null}
+      </span>
+      <ChevronRight size={17} strokeWidth={2.2} className="shrink-0 text-cream/34" />
+    </button>
+  );
+}
+
+function PlanSection({ planLabel }: { planLabel: string }) {
+  return (
+    <section
+      className="rounded-[18px] p-5"
+      style={{
+        background: 'rgba(239,244,255,0.075)',
+        border: '1px solid rgba(239,244,255,0.10)',
+      }}
+    >
+      <div className="flex items-center gap-3">
+        <span
+          className="inline-flex h-9 w-9 items-center justify-center rounded-full"
+          style={{
+            background: 'rgba(239,244,255,0.08)',
+            border: '1px solid rgba(239,244,255,0.12)',
+          }}
+        >
+          <ShieldCheck size={18} strokeWidth={2.3} className="text-cream/82" />
+        </span>
+        <div>
+          <p className="kr-heading text-[16px] font-black text-cream">
+            현재 요금제 {planLabel}
+          </p>
+          <p className="kr-body mt-1 text-[12px] font-medium text-cream/52">
+            앱 결제는 Google Play를 통해 처리됩니다.
+          </p>
+        </div>
+      </div>
+      <button
+        type="button"
+        onClick={openWebOrAppPremiumEntry}
+        className="kr-body mt-5 h-11 w-full rounded-full bg-cream text-[13px] font-black text-base transition active:scale-[0.98]"
+      >
+        요금제 보기
+      </button>
+    </section>
+  );
+}
+
 
 // ─── DdayCard (StatsPage 에서 이전) ─────────────────────────────────
 

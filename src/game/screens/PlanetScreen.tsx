@@ -237,11 +237,13 @@ function ChapterPath({
         <path
           d={d}
           fill="none"
-          stroke="rgba(94,237,223,0.54)"
+          stroke={`color-mix(in srgb, ${accent} 54%, transparent)`}
           strokeWidth={2.5}
           strokeDasharray="2 7"
           strokeLinecap="round"
-          style={{ filter: 'drop-shadow(0 0 8px rgba(94,237,223,0.36))' }}
+          style={{
+            filter: `drop-shadow(0 0 8px color-mix(in srgb, ${accent} 36%, transparent))`,
+          }}
         />
       </svg>
 
@@ -316,7 +318,6 @@ function ChapterNode({
   containerW,
   onClick,
 }: ChapterNodeProps) {
-  void accent;
   // 진도 링 — 노드 주변을 감싸는 얇은 원.
   const ringSize = NODE + 12;
   const r = (ringSize - 4) / 2;
@@ -324,6 +325,18 @@ function ChapterNode({
   const ratio = solvedRatio(agg);
 
   const titleW = Math.min(containerW - 40, 260);
+  const nodeBackground = disabled
+    ? `linear-gradient(180deg, color-mix(in srgb, ${accent} 10%, rgba(13,27,66,0.74) 90%), rgba(8,18,48,0.76))`
+    : `radial-gradient(circle at 35% 25%, rgba(255,255,255,0.18), transparent 34%), linear-gradient(145deg, color-mix(in srgb, ${accent} 46%, #0b2a50 54%), color-mix(in srgb, ${accent} 28%, #071737 72%))`;
+  const nodeBorder = disabled
+    ? `1px solid color-mix(in srgb, ${accent} 18%, transparent)`
+    : `1px solid color-mix(in srgb, ${accent} 66%, transparent)`;
+  const nodeShadow = disabled
+    ? '0 4px 0 -1px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)'
+    : `0 0 0 3px color-mix(in srgb, ${accent} 12%, transparent), 0 0 24px -10px ${accent}, inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -5px 10px rgba(1,8,40,0.36)`;
+  const nodeTextColor = disabled
+    ? 'rgba(255,255,255,0.6)'
+    : `color-mix(in srgb, ${accent} 82%, white 18%)`;
 
   return (
     <>
@@ -348,7 +361,7 @@ function ChapterNode({
             cy={ringSize / 2}
             r={r}
             fill="none"
-            stroke="rgba(239, 244, 255, 0.22)"
+            stroke={`color-mix(in srgb, ${accent} 26%, rgba(239,244,255,0.14))`}
             strokeWidth={3}
           />
           {!disabled && ratio > 0 ? (
@@ -357,7 +370,7 @@ function ChapterNode({
               cy={ringSize / 2}
               r={r}
               fill="none"
-              stroke="var(--game-nav-active)"
+              stroke={accent}
               strokeWidth={3}
               strokeDasharray={circ}
               strokeDashoffset={circ * (1 - ratio)}
@@ -365,7 +378,7 @@ function ChapterNode({
               transform={`rotate(-90 ${ringSize / 2} ${ringSize / 2})`}
               style={{
                 transition: 'stroke-dashoffset 0.6s ease-out',
-                filter: 'drop-shadow(0 0 6px rgba(94,237,223,0.72))',
+                filter: `drop-shadow(0 0 6px color-mix(in srgb, ${accent} 72%, transparent))`,
               }}
             />
           ) : null}
@@ -379,15 +392,9 @@ function ChapterNode({
           className="absolute rounded-full inline-flex items-center justify-center transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-0 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-neon"
           style={{
             inset: 6,
-            background: disabled
-              ? 'linear-gradient(180deg, rgba(13,27,66,0.74), rgba(8,18,48,0.76))'
-              : 'var(--game-node-bg-strong)',
-            border: disabled
-              ? '1px solid rgba(111,255,232,0.12)'
-              : '1px solid var(--game-node-border)',
-            boxShadow: disabled
-              ? '0 4px 0 -1px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1)'
-              : 'var(--game-node-shadow-strong)',
+            background: nodeBackground,
+            border: nodeBorder,
+            boxShadow: nodeShadow,
             opacity: disabled ? 0.55 : 1,
           }}
           aria-label={`Chapter ${chapter} ${title}${
@@ -401,7 +408,7 @@ function ChapterNode({
             style={{
               border: disabled
                 ? '1px solid rgba(255,255,255,0.06)'
-                : '1px solid rgba(111,255,232,0.32)',
+                : `1px solid color-mix(in srgb, ${accent} 38%, transparent)`,
               boxShadow: disabled
                 ? 'inset 0 1px 0 rgba(255,255,255,0.04), inset 0 -2px 4px rgba(0,0,0,0.25)'
                 : 'inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -2px 6px rgba(0,0,0,0.22)',
@@ -412,7 +419,7 @@ function ChapterNode({
             style={{
               fontSize: NODE * 0.36,
               fontWeight: 600,
-              color: disabled ? 'rgba(255,255,255,0.6)' : 'var(--game-node-text)',
+              color: nodeTextColor,
               textShadow: disabled
                 ? 'none'
                 : '0 1px 2px rgba(0,0,0,0.55)',

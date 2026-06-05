@@ -1455,11 +1455,13 @@ function ExpansionChapterPath({
         <path
           d={d}
           fill="none"
-          stroke="rgba(94,237,223,0.54)"
+          stroke={`color-mix(in srgb, ${accent} 54%, transparent)`}
           strokeWidth={2.5}
           strokeDasharray="2 7"
           strokeLinecap="round"
-          style={{ filter: 'drop-shadow(0 0 8px rgba(94,237,223,0.36))' }}
+          style={{
+            filter: `drop-shadow(0 0 8px color-mix(in srgb, ${accent} 36%, transparent))`,
+          }}
         />
       </svg>
 
@@ -1517,6 +1519,14 @@ function ExpansionChapterNode({
   const ringSize = NODE + 12;
   const r = (ringSize - 4) / 2;
   const titleW = Math.min(containerW - 40, 260);
+  const nodeBackground = isResumeTarget
+    ? `radial-gradient(circle at 35% 25%, rgba(255,255,255,0.24), transparent 34%), linear-gradient(145deg, color-mix(in srgb, ${accent} 74%, white 6%), color-mix(in srgb, ${accent} 48%, #06152e 52%))`
+    : `radial-gradient(circle at 35% 25%, rgba(255,255,255,0.18), transparent 34%), linear-gradient(145deg, color-mix(in srgb, ${accent} 46%, #0b2a50 54%), color-mix(in srgb, ${accent} 28%, #071737 72%))`;
+  const nodeBorder = `1px solid color-mix(in srgb, ${accent} 66%, transparent)`;
+  const nodeShadow = isResumeTarget
+    ? `0 0 0 4px color-mix(in srgb, ${accent} 18%, transparent), 0 0 30px -7px ${accent}, inset 0 1px 0 rgba(255,255,255,0.24), inset 0 -5px 10px rgba(1,8,40,0.34)`
+    : `0 0 0 3px color-mix(in srgb, ${accent} 12%, transparent), 0 0 24px -10px ${accent}, inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -5px 10px rgba(1,8,40,0.36)`;
+  const nodeTextColor = `color-mix(in srgb, ${accent} 82%, white 18%)`;
 
   return (
     <>
@@ -1539,7 +1549,7 @@ function ExpansionChapterNode({
             cy={ringSize / 2}
             r={r}
             fill="none"
-            stroke="var(--game-node-ring)"
+            stroke={`color-mix(in srgb, ${accent} 34%, transparent)`}
             strokeWidth={3}
           />
         </svg>
@@ -1553,16 +1563,16 @@ function ExpansionChapterNode({
           }`}
           style={{
             inset: 6,
-            background: 'var(--game-node-bg-strong)',
-            border: '1px solid var(--game-node-border)',
-            boxShadow: 'var(--game-node-shadow-strong)',
+            background: nodeBackground,
+            border: nodeBorder,
+            boxShadow: nodeShadow,
           }}
         >
           <span
             aria-hidden
             className="absolute inset-1 rounded-full pointer-events-none"
             style={{
-              border: '1px solid rgba(111,255,232,0.32)',
+              border: `1px solid color-mix(in srgb, ${accent} 38%, transparent)`,
               boxShadow:
                 'inset 0 1px 0 rgba(255,255,255,0.18), inset 0 -2px 6px rgba(0,0,0,0.22)',
             }}
@@ -1572,7 +1582,7 @@ function ExpansionChapterNode({
             style={{
               fontSize: NODE * 0.36,
               fontWeight: 600,
-              color: 'var(--game-node-text)',
+              color: nodeTextColor,
               textShadow: '0 1px 2px rgba(0,0,0,0.55)',
             }}
           >

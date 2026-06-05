@@ -73,6 +73,7 @@ import {
   getComhwalExpansionVisualModel,
   type ComhwalVisualFocus,
 } from '../comhwalVisualModels';
+import { scrollElementIntoPageView } from '@/lib/pageScroll';
 
 interface Props {
   initialExpansionSubject?: ExpansionSubjectId;
@@ -123,6 +124,13 @@ const SUBJECT_ACCENT_RGB: Record<Subject, string> = {
 };
 
 /** 과목별 소개 문구. */
+function cssEscape(s: string): string {
+  if (typeof window !== 'undefined' && typeof window.CSS?.escape === 'function') {
+    return window.CSS.escape(s);
+  }
+  return s.replace(/(["\\])/g, '\\$1');
+}
+
 const SUBJECT_INTRO: Record<Subject, { tagline: string; description: string }> = {
   adsp: {
     tagline: '데이터 분석 준전문가',
@@ -1672,6 +1680,18 @@ function ExpansionOutlineScreen({
   );
   const isFullyReady = studyStats.readyTopics === totalTopics;
 
+  useEffect(() => {
+    if (!resumeTopicId) return;
+    const frame = window.requestAnimationFrame(() => {
+      const target = document.querySelector<HTMLElement>(
+        `[data-expansion-topic-id="${cssEscape(resumeTopicId)}"]`,
+      );
+      if (!target) return;
+      scrollElementIntoPageView(target, 88, 'smooth');
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [planet.key, resumeTopicId]);
+
   return (
     <section className="relative min-h-screen isolate overflow-hidden text-cream">
       <PageAmbientBg />
@@ -1885,6 +1905,8 @@ function ExpansionOutlineNode({
   return (
     <button
       type="button"
+      data-expansion-topic-id={topicId}
+      data-expansion-resume-target={isResumeTarget ? 'true' : undefined}
       className="group flex w-full text-left disabled:cursor-not-allowed disabled:opacity-60"
       disabled={!isReady}
       onClick={() => onSelectTopic(topicId)}

@@ -21,6 +21,7 @@ import {
   ListTodo,
   RotateCcw,
   Star,
+  Target,
   X,
 } from 'lucide-react';
 import { getSupabase, onAuthStateChange } from '@/lib/supabase';
@@ -95,6 +96,7 @@ const FG_DIM = 'rgba(255,255,255,0.5)';
 const LINE = 'rgba(255,255,255,0.22)';
 const LAST_LEARN_HASH_KEY = 'questdp:last-learn-hash:v1';
 const LAST_EXPANSION_VIEW_KEY = 'questdp:last-expansion-view:v1';
+const LAST_EXPANSION_RESUME_KEY = 'questdp:last-expansion-resume:v1';
 const COMHWAL_MASCOT_CHARACTER = 'comhwal' as const;
 const COMHWAL_MASCOT_POSES: QuesPose[] = [
   'idle',
@@ -152,12 +154,14 @@ type View =
       kind: 'expansionPlanets';
       subjectId: ExpansionSubjectId;
       variantId: ExpansionVariantId;
+      resumePlanetKey?: string;
     }
   | {
       kind: 'expansionOutline';
       subjectId: ExpansionSubjectId;
       variantId: ExpansionVariantId;
       planetKey: string;
+      resumeTopicId?: string;
     }
   | {
       kind: 'expansionConcept';
@@ -184,6 +188,11 @@ interface SavedExpansionView {
   planetKey?: string;
   topicId?: string;
 }
+
+type SavedExpansionResume = SavedExpansionView & {
+  planetKey: string;
+  topicId: string;
+};
 
 function preferredExpansionVariant(subjectId: ExpansionSubjectId) {
   const subject = EXPANSION_SUBJECTS[subjectId];
@@ -240,16 +249,56 @@ function readSavedExpansionView(subjectId: ExpansionSubjectId) {
   }
 }
 
+function isSavedExpansionResume(
+  saved: SavedExpansionView | null,
+): saved is SavedExpansionResume {
+  return !!saved?.planetKey && !!saved.topicId && isValidSavedExpansionView(saved);
+}
+
+function readSavedExpansionResume(subjectId: ExpansionSubjectId) {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = window.localStorage.getItem(LAST_EXPANSION_RESUME_KEY);
+    const saved = raw ? (JSON.parse(raw) as SavedExpansionView) : null;
+    if (saved?.subjectId === subjectId && isSavedExpansionResume(saved)) {
+      return saved;
+    }
+  } catch {
+    // Fall through to the legacy view key below.
+  }
+
+  const legacySaved = readSavedExpansionView(subjectId);
+  return isSavedExpansionResume(legacySaved) ? legacySaved : null;
+}
+
+function expansionResumeView(
+  subjectId: ExpansionSubjectId,
+  resume: SavedExpansionResume,
+): View {
+  return {
+    kind: 'expansionOutline',
+    subjectId,
+    variantId: resume.variantId,
+    planetKey: resume.planetKey,
+    resumeTopicId: resume.topicId,
+  };
+}
+
 function initialExpansionView(subjectId: ExpansionSubjectId): View {
+  const resume = readSavedExpansionResume(subjectId);
+  if (resume) {
+    return expansionResumeView(subjectId, resume);
+  }
+
   const saved = readSavedExpansionView(subjectId);
   const variantId = saved?.variantId ?? preferredExpansionVariant(subjectId);
   if (saved?.planetKey && saved.topicId) {
     return {
-      kind: 'expansionConcept',
+      kind: 'expansionOutline',
       subjectId,
       variantId,
       planetKey: saved.planetKey,
-      topicId: saved.topicId,
+      resumeTopicId: saved.topicId,
     };
   }
   if (saved?.planetKey) {
@@ -278,6 +327,12 @@ function replaceHashSilently(nextHash: string) {
 function rememberExpansionView(view: ExpansionView) {
   if (typeof window === 'undefined') return;
   const route = `/game/${view.subjectId}`;
+  const resumeTopicId =
+    view.kind === 'expansionConcept'
+      ? view.topicId
+      : view.kind === 'expansionOutline'
+        ? view.resumeTopicId
+        : undefined;
   const saved: SavedExpansionView = {
     subjectId: view.subjectId,
     variantId: view.variantId,
@@ -292,6 +347,20 @@ function rememberExpansionView(view: ExpansionView) {
       LAST_EXPANSION_VIEW_KEY,
       JSON.stringify(saved),
     );
+    if (
+      (view.kind === 'expansionConcept' || view.kind === 'expansionOutline') &&
+      resumeTopicId
+    ) {
+      window.localStorage.setItem(
+        LAST_EXPANSION_RESUME_KEY,
+        JSON.stringify({
+          subjectId: view.subjectId,
+          variantId: view.variantId,
+          planetKey: view.planetKey,
+          topicId: resumeTopicId,
+        } satisfies SavedExpansionResume),
+      );
+    }
   } catch {
     // Embedded/mobile webviews may occasionally block localStorage.
   }
@@ -350,11 +419,16 @@ export default function GalaxyScreen({
   useEffect(() => {
     if (view.kind !== 'expansionLaunching') return;
     const id = window.setTimeout(() => {
-      setView({
-        kind: 'expansionPlanets',
-        subjectId: view.subjectId,
-        variantId: view.variantId,
-      });
+      const resume = readSavedExpansionResume(view.subjectId);
+      setView(
+        resume && resume.variantId === view.variantId
+          ? expansionResumeView(view.subjectId, resume)
+          : {
+              kind: 'expansionPlanets',
+              subjectId: view.subjectId,
+              variantId: view.variantId,
+            },
+      );
     }, WARP_DURATION_MS);
     return () => window.clearTimeout(id);
   }, [view]);
@@ -452,10 +526,15 @@ export default function GalaxyScreen({
     const variant =
       expansionSubject.variants.find((item) => item.id === view.variantId) ??
       expansionSubject.variants[0];
+    const resume = readSavedExpansionResume(expansionSubject.id);
+    const resumePlanetKey =
+      view.resumePlanetKey ??
+      (resume?.variantId === variant.id ? resume.planetKey : undefined);
     return (
       <ExpansionPlanetScreen
         subject={expansionSubject}
         variant={variant}
+        resumePlanetKey={resumePlanetKey}
         onBack={() => setView({ kind: 'overview' })}
         onSelectPlanet={(planetKey) =>
           setView({
@@ -463,6 +542,10 @@ export default function GalaxyScreen({
             subjectId: expansionSubject.id,
             variantId: variant.id,
             planetKey,
+            ...(resume?.variantId === variant.id &&
+            resume.planetKey === planetKey
+              ? { resumeTopicId: resume.topicId }
+              : {}),
           })
         }
       />
@@ -485,6 +568,7 @@ export default function GalaxyScreen({
         <ExpansionPlanetScreen
           subject={expansionSubject}
           variant={variant}
+          resumePlanetKey={view.planetKey}
           onBack={() => setView({ kind: 'overview' })}
           onSelectPlanet={(planetKey) =>
             setView({
@@ -504,11 +588,13 @@ export default function GalaxyScreen({
         variant={variant}
         planet={planet}
         progress={progress}
+        resumeTopicId={view.resumeTopicId}
         onBack={() =>
           setView({
             kind: 'expansionPlanets',
             subjectId: expansionSubject.id,
             variantId: variant.id,
+            resumePlanetKey: planet.key,
           })
         }
         onSubjectBack={() => setView({ kind: 'overview' })}
@@ -541,6 +627,7 @@ export default function GalaxyScreen({
         <ExpansionPlanetScreen
           subject={expansionSubject}
           variant={variant}
+          resumePlanetKey={view.planetKey}
           onBack={() => setView({ kind: 'overview' })}
           onSelectPlanet={(planetKey) =>
             setView({
@@ -566,6 +653,7 @@ export default function GalaxyScreen({
             subjectId: expansionSubject.id,
             variantId: variant.id,
             planetKey: planet.key,
+            resumeTopicId: view.topicId,
           })
         }
         onSubjectBack={() => setView({ kind: 'overview' })}
@@ -1238,11 +1326,13 @@ function ExpansionSubjectInfoPanel({
 function ExpansionPlanetScreen({
   subject,
   variant,
+  resumePlanetKey,
   onBack,
   onSelectPlanet,
 }: {
   subject: ExpansionSubjectConfig;
   variant: ExpansionVariant;
+  resumePlanetKey?: string;
   onBack: () => void;
   onSelectPlanet: (planetKey: string) => void;
 }) {
@@ -1305,6 +1395,7 @@ function ExpansionPlanetScreen({
           <ExpansionChapterPath
             planets={planets}
             accent={subject.accent}
+            resumePlanetKey={resumePlanetKey}
             onSelectPlanet={onSelectPlanet}
           />
         </div>
@@ -1316,10 +1407,12 @@ function ExpansionPlanetScreen({
 function ExpansionChapterPath({
   planets,
   accent,
+  resumePlanetKey,
   onSelectPlanet,
 }: {
   planets: ExpansionPlanet[];
   accent: string;
+  resumePlanetKey?: string;
   onSelectPlanet: (planetKey: string) => void;
 }) {
   const W = 420;
@@ -1383,6 +1476,7 @@ function ExpansionChapterPath({
             0,
           )}개`}
           accent={accent}
+          isResumeTarget={node.planet.key === resumePlanetKey}
           NODE={NODE}
           TITLE_GAP={TITLE_GAP}
           containerW={W}
@@ -1401,6 +1495,7 @@ function ExpansionChapterNode({
   title,
   subtitle,
   accent,
+  isResumeTarget,
   NODE,
   TITLE_GAP,
   containerW,
@@ -1413,12 +1508,12 @@ function ExpansionChapterNode({
   title: string;
   subtitle: string;
   accent: string;
+  isResumeTarget: boolean;
   NODE: number;
   TITLE_GAP: number;
   containerW: number;
   onSelect: (planetKey: string) => void;
 }) {
-  void accent;
   const ringSize = NODE + 12;
   const r = (ringSize - 4) / 2;
   const titleW = Math.min(containerW - 40, 260);
@@ -1452,8 +1547,10 @@ function ExpansionChapterNode({
         <button
           type="button"
           onClick={() => onSelect(planetKey)}
-          aria-label={`${title} 과목`}
-          className="absolute rounded-full inline-flex items-center justify-center transition-transform duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-neon"
+          aria-label={`${title} 과목${isResumeTarget ? ' (학습 복귀 — 여기서부터)' : ''}`}
+          className={`absolute rounded-full inline-flex items-center justify-center transition-transform duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-neon${
+            isResumeTarget ? ' qd-pulse-ring qd-pulse-ring-resume' : ''
+          }`}
           style={{
             inset: 6,
             background: 'var(--game-node-bg-strong)',
@@ -1503,10 +1600,24 @@ function ExpansionChapterNode({
           {title}
         </h3>
         <div
-          className="kr-num text-[11px] text-cream/65 mt-1.5 inline-flex items-center gap-2"
+          className="kr-num text-[11px] text-cream/65 mt-1.5 inline-flex flex-wrap items-center justify-center gap-1.5"
           style={{ textShadow: '0 1px 6px rgba(0,0,0,0.7)' }}
         >
           <span>{subtitle}</span>
+          {isResumeTarget ? (
+            <span
+              className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 kr-heading text-[9px] uppercase tracking-widest"
+              style={{
+                color: accent,
+                background: `${accent}18`,
+                border: `1px solid ${accent}66`,
+                boxShadow: `0 6px 18px -14px ${accent}`,
+              }}
+            >
+              <Target size={9} strokeWidth={2.8} />
+              여기서 시작
+            </span>
+          ) : null}
         </div>
       </div>
     </>
@@ -1518,6 +1629,7 @@ function ExpansionOutlineScreen({
   variant,
   planet,
   progress,
+  resumeTopicId,
   onBack,
   onSubjectBack,
   onSelectTopic,
@@ -1526,6 +1638,7 @@ function ExpansionOutlineScreen({
   variant: ExpansionVariant;
   planet: ExpansionPlanet;
   progress: ProgressStore;
+  resumeTopicId?: string;
   onBack: () => void;
   onSubjectBack: () => void;
   onSelectTopic: (topicId: string) => void;
@@ -1628,6 +1741,7 @@ function ExpansionOutlineScreen({
               topics={section.topics}
               accent={subject.accent}
               progress={progress}
+              resumeTopicId={resumeTopicId}
               onSelectTopic={onSelectTopic}
             />
           ))}
@@ -1644,6 +1758,7 @@ function ExpansionOutlineSection({
   topics,
   accent,
   progress,
+  resumeTopicId,
   onSelectTopic,
 }: {
   index: number;
@@ -1652,6 +1767,7 @@ function ExpansionOutlineSection({
   topics: ExpansionPlanet['sections'][number]['topics'];
   accent: string;
   progress: ProgressStore;
+  resumeTopicId?: string;
   onSelectTopic: (topicId: string) => void;
 }) {
   return (
@@ -1695,6 +1811,7 @@ function ExpansionOutlineSection({
             title={topic.title}
             accent={accent}
             progress={progress}
+            isResumeTarget={topic.id === resumeTopicId}
             isLast={topicIndex === topics.length - 1}
             onSelectTopic={onSelectTopic}
           />
@@ -1711,6 +1828,7 @@ function ExpansionOutlineNode({
   title,
   accent,
   progress,
+  isResumeTarget,
   isLast,
   onSelectTopic,
 }: {
@@ -1720,6 +1838,7 @@ function ExpansionOutlineNode({
   title: string;
   accent: string;
   progress: ProgressStore;
+  isResumeTarget: boolean;
   isLast: boolean;
   onSelectTopic: (topicId: string) => void;
 }) {
@@ -1747,13 +1866,17 @@ function ExpansionOutlineNode({
       disabled={!isReady}
       onClick={() => onSelectTopic(topicId)}
       aria-label={
-        isReady ? `${title} 개념 카드 열기` : `${title} 개념 준비 중`
+        isReady
+          ? `${title} 개념 카드 열기${isResumeTarget ? ' (학습 복귀 — 여기서부터)' : ''}`
+          : `${title} 개념 준비 중`
       }
     >
       <div className="mr-4 flex flex-col items-center md:mr-5">
         <span
           aria-hidden
-          className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full md:h-12 md:w-12"
+          className={`relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full md:h-12 md:w-12${
+            isResumeTarget ? ' qd-pulse-ring qd-pulse-ring-resume' : ''
+          }`}
           style={{
             background: completed
               ? 'var(--game-node-complete-bg)'
@@ -1858,6 +1981,23 @@ function ExpansionOutlineNode({
               >
                 열기
                 <ChevronRight size={11} strokeWidth={2.4} />
+              </span>
+            </>
+          ) : null}
+          {isResumeTarget ? (
+            <>
+              <span style={{ color: 'rgba(239,244,255,0.4)' }}>·</span>
+              <span
+                className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 kr-heading text-[9px] uppercase tracking-widest"
+                style={{
+                  color: accent,
+                  background: `${accent}18`,
+                  border: `1px solid ${accent}66`,
+                  boxShadow: `0 6px 18px -14px ${accent}`,
+                }}
+              >
+                <Target size={9} strokeWidth={2.8} />
+                여기서 시작
               </span>
             </>
           ) : null}

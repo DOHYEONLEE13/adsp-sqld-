@@ -19,6 +19,7 @@ import {
   ChevronRight,
   Info,
   ListTodo,
+  Lock,
   RotateCcw,
   Star,
   Target,
@@ -43,8 +44,15 @@ import SpeechBubble from '@/game/lesson/SpeechBubble';
 import TopBar from '@/game/lesson/TopBar';
 import OptionsPanel from '@/game/lesson/OptionsPanel';
 import FeedbackSheet from '@/game/lesson/FeedbackSheet';
+import EnergyBlockModal from '../components/EnergyBlockModal';
 import type { QuesPose } from '@/components/mascot/types';
 import { recordSingleAnswer, type ProgressStore } from '../storage';
+import { consumeEnergy } from '../energy';
+import {
+  unlockStepOnServer,
+  useStepUnlocks,
+  type StepLockSnapshot,
+} from '../stepUnlocks';
 import VideoBg from '@/components/ui/VideoBg';
 import { VIDEO_POSTERS, VIDEO_URLS } from '@/data/site';
 import { useMyProfile } from '@/data/profile';
@@ -1678,6 +1686,48 @@ function ExpansionOutlineScreen({
     { readyTopics: 0, totalCards: 0, totalQuestions: 0 },
   );
   const isFullyReady = studyStats.readyTopics === totalTopics;
+  const lockSnap = useStepUnlocks();
+  const [energyBlock, setEnergyBlock] = useState<{ retryAfterSec: number } | null>(
+    null,
+  );
+  const [lockToast, setLockToast] = useState<string | null>(null);
+  const [openingTopicId, setOpeningTopicId] = useState<string | null>(null);
+
+  const handleSelectTopic = async ({
+    topicId,
+    locked,
+    ready,
+    visited,
+  }: {
+    topicId: string;
+    locked: boolean;
+    ready: boolean;
+    visited: boolean;
+  }) => {
+    if (!ready || openingTopicId) return;
+    if (locked) {
+      setLockToast('앞 개념을 먼저 완료해야 열 수 있어요.');
+      window.setTimeout(() => setLockToast(null), 2400);
+      return;
+    }
+    if (visited) {
+      onSelectTopic(topicId);
+      return;
+    }
+
+    setOpeningTopicId(topicId);
+    try {
+      const energyResult = await consumeEnergy(1);
+      if (!energyResult.ok) {
+        setEnergyBlock({ retryAfterSec: energyResult.retryAfterSec });
+        return;
+      }
+      await unlockStepOnServer(getComhwalTopicUnlockKey(planet.key, topicId));
+      onSelectTopic(topicId);
+    } finally {
+      setOpeningTopicId(null);
+    }
+  };
 
   useEffect(() => {
     if (!resumeTopicId) return;
@@ -1768,14 +1818,37 @@ function ExpansionOutlineScreen({
               title={section.title}
               planetKey={planet.key}
               topics={section.topics}
+              planetTopics={outlineTopics}
               accent={subject.accent}
               progress={progress}
+              lockSnap={lockSnap}
+              openingTopicId={openingTopicId}
               resumeTopicId={resumeTopicId}
-              onSelectTopic={onSelectTopic}
+              onSelectTopic={handleSelectTopic}
             />
           ))}
         </div>
       </div>
+      {energyBlock ? (
+        <EnergyBlockModal
+          retryAfterSec={energyBlock.retryAfterSec}
+          onClose={() => setEnergyBlock(null)}
+        />
+      ) : null}
+      {lockToast ? (
+        <div
+          role="status"
+          className="fixed top-20 left-1/2 z-40 -translate-x-1/2 rounded-full px-4 py-2.5 kr-num text-[12px] pointer-events-none"
+          style={{
+            background: 'rgba(20,32,46,0.96)',
+            color: 'var(--cream)',
+            border: '1px solid rgba(167,139,250,0.5)',
+            boxShadow: '0 4px 14px rgba(0,0,0,0.4)',
+          }}
+        >
+          잠금 {lockToast}
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -1785,8 +1858,11 @@ function ExpansionOutlineSection({
   title,
   planetKey,
   topics,
+  planetTopics,
   accent,
   progress,
+  lockSnap,
+  openingTopicId,
   resumeTopicId,
   onSelectTopic,
 }: {
@@ -1794,10 +1870,18 @@ function ExpansionOutlineSection({
   title: string;
   planetKey: string;
   topics: ExpansionPlanet['sections'][number]['topics'];
+  planetTopics: ExpansionPlanet['sections'][number]['topics'];
   accent: string;
   progress: ProgressStore;
+  lockSnap: StepLockSnapshot;
+  openingTopicId: string | null;
   resumeTopicId?: string;
-  onSelectTopic: (topicId: string) => void;
+  onSelectTopic: (args: {
+    topicId: string;
+    locked: boolean;
+    ready: boolean;
+    visited: boolean;
+  }) => void;
 }) {
   return (
     <section className="mt-2 md:mt-3" aria-label={title}>
@@ -1836,10 +1920,27 @@ function ExpansionOutlineSection({
             key={topic.id}
             n={topicIndex + 1}
             planetKey={planetKey}
+            previousTopicsComplete={
+              (() => {
+                const planetTopicIndex = planetTopics.findIndex(
+                  (item) => item.id === topic.id,
+                );
+                if (planetTopicIndex <= 0) return true;
+                return planetTopics
+                  .slice(0, planetTopicIndex)
+                  .every(
+                    (item) =>
+                      getComhwalTopicProgress(planetKey, item.id, progress)
+                        .completed,
+                  );
+              })()
+            }
             topicId={topic.id}
             title={topic.title}
             accent={accent}
             progress={progress}
+            lockSnap={lockSnap}
+            opening={openingTopicId === topic.id}
             isResumeTarget={topic.id === resumeTopicId}
             isLast={topicIndex === topics.length - 1}
             onSelectTopic={onSelectTopic}
@@ -1853,49 +1954,65 @@ function ExpansionOutlineSection({
 function ExpansionOutlineNode({
   n,
   planetKey,
+  previousTopicsComplete,
   topicId,
   title,
   accent,
   progress,
+  lockSnap,
+  opening,
   isResumeTarget,
   isLast,
   onSelectTopic,
 }: {
   n: number;
   planetKey: string;
+  previousTopicsComplete: boolean;
   topicId: string;
   title: string;
   accent: string;
   progress: ProgressStore;
+  lockSnap: StepLockSnapshot;
+  opening: boolean;
   isResumeTarget: boolean;
   isLast: boolean;
-  onSelectTopic: (topicId: string) => void;
+  onSelectTopic: (args: {
+    topicId: string;
+    locked: boolean;
+    ready: boolean;
+    visited: boolean;
+  }) => void;
 }) {
-  const cards = getComhwalTopicCards(planetKey, topicId);
-  const cardCount = cards.length;
-  const questionCards = cards.filter((card) => card.question);
-  const completedQuestionCount = questionCards.reduce((count, card) => {
-    const questionId = card.question?.id;
-    if (!questionId) return count;
-    return count + (hasEverSolved(progress.questionStats[questionId]) ? 1 : 0);
-  }, 0);
-  const attempted = questionCards.some((card) => {
-    const questionId = card.question?.id;
-    if (!questionId) return false;
-    return (progress.questionStats[questionId]?.attempts ?? 0) > 0;
-  });
-  const completed =
-    questionCards.length > 0 && completedQuestionCount === questionCards.length;
+  const {
+    cardCount,
+    questionCount,
+    completedQuestionCount,
+    attempted,
+    completed,
+  } = getComhwalTopicProgress(planetKey, topicId, progress);
+  const topicKey = getComhwalTopicUnlockKey(planetKey, topicId);
+  const visited =
+    !lockSnap.enforced ||
+    completed ||
+    attempted ||
+    lockSnap.unlockedSet.has(topicKey);
   const isReady = cardCount > 0;
-  const nodeBackground = completed
+  const locked = lockSnap.enforced && !completed && !previousTopicsComplete;
+  const nodeBackground = locked
+    ? 'linear-gradient(180deg, rgba(13,27,66,0.74), rgba(8,18,48,0.76))'
+    : completed
     ? `linear-gradient(180deg, ${accent} 0%, color-mix(in srgb, ${accent} 76%, #010828) 100%)`
     : attempted
       ? `linear-gradient(180deg, color-mix(in srgb, ${accent} 30%, rgba(16,35,82,0.94)) 0%, rgba(9,21,58,0.92) 100%)`
       : `linear-gradient(180deg, color-mix(in srgb, ${accent} 16%, rgba(16,35,82,0.90)) 0%, rgba(9,21,58,0.90) 100%)`;
-  const nodeBorder = completed || attempted
+  const nodeBorder = locked
+    ? '1.5px solid rgba(111,255,232,0.16)'
+    : completed || attempted
     ? `2px solid color-mix(in srgb, ${accent} 68%, transparent)`
     : `1.5px solid color-mix(in srgb, ${accent} 44%, transparent)`;
-  const nodeShadow = completed
+  const nodeShadow = locked
+    ? '0 10px 26px -18px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.08)'
+    : completed
     ? `0 0 0 3px color-mix(in srgb, ${accent} 16%, transparent), 0 14px 34px -16px color-mix(in srgb, ${accent} 70%, transparent), inset 0 1px 0 rgba(255,255,255,0.22)`
     : attempted
       ? `0 0 0 3px color-mix(in srgb, ${accent} 12%, transparent), 0 12px 30px -16px color-mix(in srgb, ${accent} 58%, transparent), inset 0 1px 0 rgba(255,255,255,0.16)`
@@ -1907,8 +2024,15 @@ function ExpansionOutlineNode({
       data-expansion-topic-id={topicId}
       data-expansion-resume-target={isResumeTarget ? 'true' : undefined}
       className="group flex w-full text-left disabled:cursor-not-allowed disabled:opacity-60"
-      disabled={!isReady}
-      onClick={() => onSelectTopic(topicId)}
+      disabled={!isReady || opening}
+      onClick={() =>
+        onSelectTopic({
+          topicId,
+          locked,
+          ready: isReady,
+          visited,
+        })
+      }
       aria-label={
         isReady
           ? `${title} 개념 카드 열기${isResumeTarget ? ' (학습 복귀 — 여기서부터)' : ''}`
@@ -1926,6 +2050,8 @@ function ExpansionOutlineNode({
             border: nodeBorder,
             color: completed
               ? '#07121f'
+              : locked
+                ? 'rgba(239,244,255,0.72)'
               : 'var(--game-node-text)',
             boxShadow: nodeShadow,
             textShadow: completed ? 'none' : '0 1px 2px rgba(0,0,0,0.5)',
@@ -1933,6 +2059,8 @@ function ExpansionOutlineNode({
         >
           {completed ? (
             <Check size={18} strokeWidth={3} />
+          ) : locked ? (
+            <Lock size={14} strokeWidth={2.4} />
           ) : (
             <span className="kr-heading text-[13px] leading-none tabular-nums">
               {n}
@@ -1973,10 +2101,22 @@ function ExpansionOutlineNode({
         >
           {completed ? (
             <span style={{ color: accent }}>✓ 완료</span>
+          ) : locked ? (
+            <span
+              className="inline-flex items-center gap-1"
+              style={{ color: 'rgba(239,244,255,0.62)' }}
+            >
+              <Lock size={9} strokeWidth={2.6} />
+              잠김
+            </span>
           ) : attempted ? (
-            <span style={{ color: 'rgba(239,244,255,0.85)' }}>진행 중</span>
+            <span style={{ color: 'rgba(239,244,255,0.85)' }}>
+              확인 {completedQuestionCount}/{questionCount}
+            </span>
+          ) : visited ? (
+            <span style={{ color: 'rgba(239,244,255,0.78)' }}>열림</span>
           ) : isReady ? (
-            <span style={{ color: 'rgba(239,244,255,0.7)' }}>시작 전</span>
+            <span style={{ color: accent }}>에너지 1</span>
           ) : (
             <span style={{ color: 'rgba(239,244,255,0.7)' }}>준비 중</span>
           )}
@@ -2048,6 +2188,40 @@ function getComhwalStepKey(card: ComhwalConceptCard): string | null {
   const match = COMHWAL_CARD_ID_RE.exec(card.id);
   if (!match) return null;
   return `comhwal-${match[1]}-${match[2]}-s${Number(match[3])}`;
+}
+
+function getComhwalTopicUnlockKey(planetKey: string, topicId: string): string {
+  return `comhwal-${planetKey}-${topicId}`;
+}
+
+function getComhwalTopicProgress(
+  planetKey: string,
+  topicId: string,
+  progress: ProgressStore,
+) {
+  const cards = getComhwalTopicCards(planetKey, topicId);
+  const questionCards = cards.filter((card) => card.question);
+  const completedQuestionCount = questionCards.reduce((count, card) => {
+    const questionId = card.question?.id;
+    if (!questionId) return count;
+    return count + (hasEverSolved(progress.questionStats[questionId]) ? 1 : 0);
+  }, 0);
+  const attempted = questionCards.some((card) => {
+    const questionId = card.question?.id;
+    if (!questionId) return false;
+    return (progress.questionStats[questionId]?.attempts ?? 0) > 0;
+  });
+
+  return {
+    cards,
+    cardCount: cards.length,
+    questionCount: questionCards.length,
+    completedQuestionCount,
+    attempted,
+    completed:
+      questionCards.length > 0 &&
+      completedQuestionCount === questionCards.length,
+  };
 }
 
 type ComhwalVisualModel = {

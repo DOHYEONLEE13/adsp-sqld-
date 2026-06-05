@@ -1940,53 +1940,19 @@ function ExpansionOutlineNode({
             textShadow: '0 1px 2px rgba(1,8,40,0.6)',
           }}
         >
-          <span
-            className="kr-num uppercase tracking-widest text-[9px]"
-            style={{ color: accent }}
-          >
-            NO. {topicId}
-          </span>
-          {isReady && questionCards.length > 0 ? (
-            <>
-              <span style={{ color: 'rgba(239,244,255,0.4)' }}>·</span>
-              {completed ? (
-                <span
-                  className="inline-flex items-center gap-1 kr-heading text-[9px] uppercase tracking-widest"
-                  style={{ color: accent }}
-                >
-                  <Check size={10} strokeWidth={3} />
-                  완료
-                </span>
-              ) : (
-                <span
-                  className="kr-num uppercase tracking-widest text-[9px]"
-                  style={{
-                    color: attempted
-                      ? 'rgba(239,244,255,0.86)'
-                      : 'rgba(239,244,255,0.58)',
-                  }}
-                >
-                  확인 {completedQuestionCount}/{questionCards.length}
-                </span>
-              )}
-            </>
-          ) : null}
+          {completed ? (
+            <span style={{ color: accent }}>✓ 완료</span>
+          ) : attempted ? (
+            <span style={{ color: 'rgba(239,244,255,0.85)' }}>진행 중</span>
+          ) : isReady ? (
+            <span style={{ color: 'rgba(239,244,255,0.7)' }}>시작 전</span>
+          ) : (
+            <span style={{ color: 'rgba(239,244,255,0.7)' }}>준비 중</span>
+          )}
           <span style={{ color: 'rgba(239,244,255,0.4)' }}>·</span>
-          <span style={{ color: isReady ? 'rgba(239,244,255,0.78)' : 'rgba(239,244,255,0.7)' }}>
-            {isReady ? `개념 카드 ${cardCount}장` : '개념 준비 중'}
+          <span className="kr-num uppercase tracking-widest text-[9px]">
+            STEP {n}
           </span>
-          {isReady ? (
-            <>
-              <span style={{ color: 'rgba(239,244,255,0.4)' }}>·</span>
-              <span
-                className="inline-flex items-center gap-1 kr-num text-[9px] uppercase tracking-widest"
-                style={{ color: accent }}
-              >
-                열기
-                <ChevronRight size={11} strokeWidth={2.4} />
-              </span>
-            </>
-          ) : null}
           {isResumeTarget ? (
             <>
               <span style={{ color: 'rgba(239,244,255,0.4)' }}>·</span>

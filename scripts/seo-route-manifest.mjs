@@ -112,8 +112,8 @@ const CORE_ROUTES = [
     title: 'QuestDP — ADsP·SQLD·컴활 자격증 학습사이트 | 게임형 문제풀이',
     description:
       'QuestDP는 ADsP·SQLD·컴활 자격증을 게임처럼 공부하는 학습사이트입니다. 로드맵과 퀘스트를 따라 개념을 익히고, 문제풀이와 약점 복습으로 시험을 준비하세요.',
-    h1: 'QuestDP',
-    eyebrow: 'ADsP · SQLD · 컴활 게임형 학습',
+    h1: 'ADSP, SQLD, 컴활까지 놀면서 합격!',
+    eyebrow: 'QuestDP · ADsP · SQLD · 컴활 게임형 학습',
     summary:
       'ADsP, SQLD, 컴활 시험 범위를 짧은 개념 스텝과 즉시 문제 풀이로 나누어 학습합니다. 로드맵, 약점 분석, 망각곡선 복습을 한 화면에서 이어갈 수 있습니다.',
     image: `${SITE_ORIGIN}/og/questdp-home.png`,

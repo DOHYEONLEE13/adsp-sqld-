@@ -2,7 +2,8 @@
 /**
  * Build-time SEO safety checks. Keeps quiz URLs out of the public SEO surface
  * and verifies that every sitemap URL has a matching static HTML file with its
- * own canonical. Non-root SEO pages also need a first-fetch H1 snapshot.
+ * own canonical. The root page needs a landing-like fallback body, and non-root
+ * SEO pages also need a first-fetch H1 snapshot.
  */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -57,7 +58,14 @@ for (const route of manifest.all) {
   if (route.path !== '/' && html.includes('<link rel="canonical" href="https://quest-dp.com/"')) {
     fail(`Root canonical leaked into ${route.path}`);
   }
-  if (route.path !== '/') {
+  if (route.path === '/') {
+    if (!html.includes('data-seo-home-fallback="true"')) {
+      fail('Missing home landing fallback body for /');
+    }
+    for (const keyword of ['ADSP 학습사이트', 'SQLD 학습사이트', '컴활 학습사이트']) {
+      if (!html.includes(keyword)) fail(`Home fallback is missing keyword: ${keyword}`);
+    }
+  } else {
     if (!html.includes(`<h1>${escapeHtml(route.h1)}</h1>`)) {
       fail(`Missing static H1 snapshot for ${route.path}`);
     }

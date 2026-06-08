@@ -50,7 +50,10 @@ function routeHtml(baseTemplate, route) {
   html = setCanonical(html, route.canonical);
   html = setImageSrc(html, image);
   html = injectStaticJsonLd(html, route);
-  if (route.path !== '/') {
+  if (route.path === '/') {
+    html = injectHomeFallbackStyle(html);
+    html = setRootHomeFallback(html, route);
+  } else {
     html = injectSnapshotStyle(html);
     html = setRootSnapshot(html, route);
   }
@@ -153,15 +156,106 @@ function injectSnapshotStyle(html) {
   return html.replace('</head>', `    ${style}\n  </head>`);
 }
 
+function injectHomeFallbackStyle(html) {
+  if (html.includes('data-seo-home-fallback-style')) return html;
+  const style = `<style data-seo-home-fallback-style>
+      .qdp-home-fallback{min-height:100vh;overflow:hidden;background:#010828;color:#eff4ff;font-family:'Noto Sans KR',system-ui,sans-serif;box-sizing:border-box}
+      .qdp-home-fallback *{box-sizing:border-box}
+      .qdp-home-fallback a{color:inherit}
+      .qdp-home-shell{position:relative;isolation:isolate;min-height:100vh;padding:20px}
+      .qdp-home-shell:before{content:"";position:absolute;inset:-18% -10% auto auto;width:46vw;min-width:320px;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(125,216,80,.28),rgba(253,128,46,.12) 42%,transparent 70%);filter:blur(18px);z-index:-1}
+      .qdp-home-shell:after{content:"";position:absolute;inset:auto auto -18% -16%;width:48vw;min-width:300px;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(103,232,249,.22),rgba(192,132,252,.12) 44%,transparent 72%);filter:blur(20px);z-index:-1}
+      .qdp-home-nav{display:flex;align-items:center;justify-content:space-between;gap:16px;max-width:1120px;margin:0 auto;padding:8px 0}
+      .qdp-home-logo{font-weight:900;letter-spacing:.08em;font-size:14px}
+      .qdp-home-login{border:1px solid rgba(239,244,255,.16);border-radius:999px;padding:9px 13px;text-decoration:none;color:rgba(239,244,255,.82);font-size:13px;font-weight:800;background:rgba(239,244,255,.05)}
+      .qdp-home-hero{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.08fr) minmax(280px,.92fr);gap:32px;align-items:center;padding:72px 0 46px}
+      .qdp-home-kicker{margin:0 0 14px;color:#7dd850;font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+      .qdp-home-title{margin:0;max-width:720px;font-size:clamp(44px,7vw,88px);line-height:.98;letter-spacing:0;font-weight:950}
+      .qdp-home-title span{display:block}
+      .qdp-home-lead{margin:24px 0 0;max-width:680px;color:rgba(239,244,255,.82);font-size:clamp(15px,2.4vw,18px);line-height:1.8}
+      .qdp-home-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+      .qdp-home-primary,.qdp-home-secondary{display:inline-flex;align-items:center;justify-content:center;min-height:46px;border-radius:999px;padding:0 18px;text-decoration:none;font-weight:900;font-size:14px}
+      .qdp-home-primary{background:#fd802e;color:#010828;box-shadow:0 14px 34px -18px rgba(253,128,46,.9)}
+      .qdp-home-secondary{border:1px solid rgba(239,244,255,.18);background:rgba(239,244,255,.06);color:#eff4ff}
+      .qdp-home-card{border:1px solid rgba(239,244,255,.14);border-radius:28px;background:linear-gradient(180deg,rgba(239,244,255,.09),rgba(239,244,255,.035));padding:22px;box-shadow:0 24px 80px -52px rgba(0,0,0,.88)}
+      .qdp-home-mascot{display:grid;place-items:center;min-height:220px;border-radius:22px;background:radial-gradient(circle at 50% 34%,rgba(239,244,255,.2),rgba(239,244,255,.04) 56%,rgba(1,8,40,.45));border:1px solid rgba(239,244,255,.12);font-weight:950;font-size:72px;color:#7dd850}
+      .qdp-home-card h2{margin:18px 0 8px;font-size:24px;line-height:1.2}
+      .qdp-home-card p{margin:0;color:rgba(239,244,255,.74);line-height:1.7;font-size:14px}
+      .qdp-home-grid{max-width:1120px;margin:0 auto 48px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+      .qdp-home-subject{border:1px solid rgba(239,244,255,.14);border-radius:20px;background:rgba(239,244,255,.045);padding:18px;text-decoration:none;min-height:150px}
+      .qdp-home-subject strong{display:block;margin-bottom:8px;font-size:20px}
+      .qdp-home-subject p{margin:0;color:rgba(239,244,255,.72);font-size:14px;line-height:1.65}
+      .qdp-home-proof{max-width:1120px;margin:0 auto 56px;border-top:1px solid rgba(239,244,255,.12);padding-top:22px;color:rgba(239,244,255,.7);font-size:13px;line-height:1.75}
+      .qdp-home-proof b{color:#eff4ff}
+      @media (max-width:820px){.qdp-home-shell{padding:16px}.qdp-home-hero{grid-template-columns:1fr;padding:46px 0 30px}.qdp-home-card{order:-1}.qdp-home-mascot{min-height:150px;font-size:54px}.qdp-home-grid{grid-template-columns:1fr}.qdp-home-title{font-size:clamp(42px,13vw,64px)}}
+    </style>`;
+  return html.replace('</head>', `    ${style}\n  </head>`);
+}
+
 function setRootSnapshot(html, route) {
   const snapshot = renderSnapshot(route);
+  return replaceRoot(html, snapshot);
+}
+
+function setRootHomeFallback(html, route) {
+  return replaceRoot(html, renderHomeFallback(route));
+}
+
+function replaceRoot(html, content) {
   if (/<div\s+id=["']root["']>\s*<\/div>/i.test(html)) {
-    return html.replace(/<div\s+id=["']root["']>\s*<\/div>/i, `<div id="root">\n${snapshot}\n    </div>`);
+    return html.replace(/<div\s+id=["']root["']>\s*<\/div>/i, `<div id="root">\n${content}\n    </div>`);
   }
   return html.replace(
     /<div\s+id=["']root["'][^>]*>[\s\S]*?<\/div>/i,
-    `<div id="root">\n${snapshot}\n    </div>`,
+    `<div id="root">\n${content}\n    </div>`,
   );
+}
+
+function renderHomeFallback(route) {
+  return `      <main class="qdp-home-fallback" data-seo-home-fallback="true">
+        <div class="qdp-home-shell">
+          <nav class="qdp-home-nav" aria-label="QuestDP 주요 이동">
+            <div class="qdp-home-logo">QUESTDP</div>
+            <a class="qdp-home-login" href="#/login">로그인</a>
+          </nav>
+          <section class="qdp-home-hero" aria-labelledby="qdp-home-title">
+            <div>
+              <p class="qdp-home-kicker">${escapeHtml(route.eyebrow || 'ADsP · SQLD · 컴활 게임형 학습')}</p>
+              <h1 id="qdp-home-title" class="qdp-home-title">
+                <span>ADSP, SQLD</span>
+                <span>컴활까지</span>
+                <span>놀면서 합격!</span>
+              </h1>
+              <p class="qdp-home-lead">ADSP 학습사이트, SQLD 학습사이트, 컴활 학습사이트를 찾고 있다면 QuestDP에서 개념부터 문제풀이까지 게임처럼 따라가면 돼요. 오늘 공부할 챕터와 약점이 한눈에 보입니다.</p>
+              <div class="qdp-home-actions">
+                <a class="qdp-home-primary" href="#/game">지금 플레이</a>
+                <a class="qdp-home-secondary" href="/study-method">학습 원리 보기</a>
+                <a class="qdp-home-secondary" href="/curriculum/comhwal">컴활 커리큘럼</a>
+              </div>
+            </div>
+            <aside class="qdp-home-card" aria-label="QuestDP 학습 흐름">
+              <div class="qdp-home-mascot">Q</div>
+              <h2>짧은 개념을 보고 바로 한 문제를 풀어요.</h2>
+              <p>로드맵, 약점 분석, 망각곡선 복습을 한 화면에서 이어가며 ADsP·SQLD·컴활 시험 범위를 작게 반복합니다.</p>
+            </aside>
+          </section>
+          <section class="qdp-home-grid" aria-label="자격증별 커리큘럼">
+            <a class="qdp-home-subject" href="/curriculum/adsp">
+              <strong>ADsP 커리큘럼</strong>
+              <p>데이터 이해, 분석 기획, 데이터 분석을 초보자용 개념 스텝과 기출형 복습으로 학습합니다.</p>
+            </a>
+            <a class="qdp-home-subject" href="/curriculum/sqld">
+              <strong>SQLD 커리큘럼</strong>
+              <p>데이터 모델링과 SQL 기본·활용을 JOIN, 서브쿼리, 윈도우 함수까지 단계별로 풉니다.</p>
+            </a>
+            <a class="qdp-home-subject" href="/curriculum/comhwal">
+              <strong>컴활 커리큘럼</strong>
+              <p>컴퓨터 일반, 스프레드시트 일반, 데이터베이스 일반을 실제 카드가 있는 토픽부터 학습합니다.</p>
+            </a>
+          </section>
+          <p class="qdp-home-proof"><b>QuestDP</b>는 ADsP·SQLD·컴활 자격증을 게임처럼 공부하는 학습사이트입니다. 개념 설명·문제·해설은 자체 제작 학습 콘텐츠이며, 문제풀이와 약점 복습으로 시험 준비 흐름을 이어갑니다.</p>
+        </div>
+      </main>`;
 }
 
 function renderSnapshot(route) {

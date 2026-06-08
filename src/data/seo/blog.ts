@@ -64,7 +64,7 @@ const POST_VS: BlogPost = {
   publishedAt: '2026-05-04',
   readingMinutes: 7,
   metaDescription:
-    'ADsP 와 SQLD, 어떤 자격증을 먼저 따야 할까? 출제범위 차이부터 진로별 우선순위, 두 자격증 동시 준비(쌍기사) 전략까지. 비전공자·취준생·실무자 케이스별 추천.',
+    'ADsP와 SQLD 중 무엇부터 시작할지 헷갈리는 사람을 위해 출제범위, 공부 부담, 진로별 선택 기준을 쉽게 비교합니다.',
   blocks: [
     {
       kind: 'p',
@@ -251,14 +251,14 @@ const POST_VS: BlogPost = {
 
 const POST_ROADMAP: BlogPost = {
   slug: 'adsp-2주-합격-로드맵',
-  title: 'ADsP 2주 합격 로드맵 — 비전공자도 가능한 14일 일정표',
-  subtitle: '하루 2시간씩 14일, 총 28시간으로 ADsP 합격선(60점)을 안정 통과하는 압축 학습 플랜.',
+  title: 'ADsP 2주 공부 순서 — 비전공자가 덜 헤매는 14일',
+  subtitle: '하루 2시간씩 본다고 했을 때, 1·2과목과 3과목을 어디까지 나눠 보면 좋은지 정리했습니다.',
   category: 'roadmap',
   primaryKeyword: 'ADsP 2주 합격',
   publishedAt: '2026-05-04',
   readingMinutes: 9,
   metaDescription:
-    'ADsP 데이터분석준전문가를 2주 만에 합격하는 압축 로드맵. 비전공자도 하루 2시간 × 14일 = 28시간으로 60점 합격선을 안정 통과하는 일별 일정표와 학습 우선순위.',
+    'ADsP를 2주 안에 준비해야 하는 비전공자를 위해 하루 2시간 기준 공부 순서, 과목별 우선순위, 마지막 기출 복습법을 안내합니다.',
   blocks: [
     {
       kind: 'p',
@@ -400,14 +400,14 @@ const POST_ROADMAP: BlogPost = {
 
 const POST_NORANGI: BlogPost = {
   slug: 'sqld-노랭이-vs-questdp',
-  title: 'SQLD 노랭이 vs QuestDP — 어떤 학습 도구가 합격에 유리할까',
-  subtitle: '시중 표준 문제집 "노랭이" 와 인터랙티브 학습 앱 QuestDP. 두 도구의 강점과 함께 쓰는 법.',
+  title: 'SQLD 노랭이와 QuestDP — 언제 무엇을 보면 좋을까',
+  subtitle: '문제량이 필요한 순간과 개념을 바로 확인해야 하는 순간을 나눠서 봅니다.',
   category: 'comparison',
   primaryKeyword: 'SQLD 노랭이',
   publishedAt: '2026-05-04',
   readingMinutes: 6,
   metaDescription:
-    'SQLD 노랭이("SQL 자격검정 실전문제집")와 QuestDP는 쓰는 타이밍이 다릅니다. 문제집과 마이크로 러닝 앱을 어떻게 나눠 쓰면 좋은지 정리.',
+    'SQLD 노랭이 문제집과 QuestDP를 경쟁시키기보다, 개념 첫 회독과 기출 반복에서 각각 언제 쓰면 좋은지 나눠 봅니다.',
   blocks: [
     {
       kind: 'p',
@@ -557,14 +557,14 @@ const POST_NORANGI: BlogPost = {
 
 const POST_NONMAJOR: BlogPost = {
   slug: 'adsp-비전공자-가이드',
-  title: '비전공자 ADsP 합격 가이드 — 통계·R 처음이라면 이 순서로',
-  subtitle: '문과·공대 비전공자가 ADsP 3과목 (통계·머신러닝)에서 무너지지 않는 단계별 학습 가이드.',
+  title: '비전공자 ADsP 공부법 — 통계·R이 처음이라면',
+  subtitle: '3과목에서 오래 멈추지 않도록, 먼저 볼 것과 나중에 볼 것을 나눠 봅니다.',
   category: 'guide',
   primaryKeyword: 'ADsP 비전공자',
   publishedAt: '2026-05-04',
   readingMinutes: 8,
   metaDescription:
-    '통계·R 을 한 번도 안 다뤄본 비전공자를 위한 ADsP 학습 순서. 3과목에서 막히지 않게 먼저 볼 것과 나중에 볼 것을 나눴습니다.',
+    '통계와 R을 처음 보는 비전공자를 위한 ADsP 공부 순서. 1·2과목으로 말문을 트고 3과목을 덜 막히게 보는 방법을 안내합니다.',
   blocks: [
     {
       kind: 'p',
@@ -733,14 +733,14 @@ const POST_NONMAJOR: BlogPost = {
 
 const POST_SQLD_WEEK: BlogPost = {
   slug: 'sqld-7일-압축-로드맵',
-  title: 'SQLD 7일 합격 — 짧고 굵게 끝내는 압축 로드맵',
-  subtitle: '시험까지 1주, 매일 3시간으로 SQL 개념·문법·기출까지 끝내는 7일 일정표.',
+  title: 'SQLD 7일 공부 순서 — 시험이 가까울 때 보는 플랜',
+  subtitle: '완벽한 정독 대신, SQL에서 점수가 빨리 나는 구간부터 먼저 확인합니다.',
   category: 'roadmap',
   primaryKeyword: 'SQLD 1주 합격',
   publishedAt: '2026-05-11',
   readingMinutes: 7,
   metaDescription:
-    '시험 1주 전에 SQLD 시작하셨나요? 매일 3시간 × 7일로 합격선(60점)을 노리는 압축 일정. 기출 우선·암기법 중심·과목별 시간배분까지.',
+    'SQLD 시험까지 1주 남았을 때 볼 공부 순서. 매일 3시간 기준으로 SQL 기본, JOIN, 서브쿼리, 기출 복습을 어떻게 나눌지 안내합니다.',
   blocks: [
     {
       kind: 'p',
@@ -891,14 +891,14 @@ const POST_SQLD_WEEK: BlogPost = {
 
 const POST_ADSP_SOLO_VS_LECTURE: BlogPost = {
   slug: 'adsp-독학-vs-인강',
-  title: 'ADSP 독학 vs 인강 — 비용·시간·합격률 실제 비교',
-  subtitle: '책으로 혼자 vs 패스트캠퍼스/인프런 강의. 둘의 비용·소요 시간·합격률을 정직하게 따져봅니다.',
+  title: 'ADsP 독학 vs 인강 — 처음이면 어디에 돈을 써야 할까',
+  subtitle: '책으로 혼자 가도 되는 사람과, 강의가 시간을 아껴주는 사람을 나눠 봅니다.',
   category: 'comparison',
   primaryKeyword: 'ADSP 독학 인강',
   publishedAt: '2026-05-11',
   readingMinutes: 6,
   metaDescription:
-    'ADSP 자격증, 독학과 인강 중 뭐가 나을까? 비용, 시간, 혼자 버틸 수 있는지까지 보고 상황별로 나눴습니다.',
+    'ADsP를 독학으로 할지 인강을 들을지 고민하는 사람을 위해 비용, 시간, 비전공자 상황별 선택 기준을 쉽게 비교합니다.',
   blocks: [
     {
       kind: 'p',

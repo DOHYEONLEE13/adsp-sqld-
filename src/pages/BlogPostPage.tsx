@@ -1,4 +1,4 @@
-/**
+﻿/**
  * BlogPostPage — Tier 2 SEO cornerstone 블로그 포스트.
  *
  * 라우트: `/blog/:slug` (slug 는 한국어 URL-encoded 가능)
@@ -112,15 +112,16 @@ export default function BlogPostPage({ slug }: Props) {
     post.relatedSlugs
       ?.map((s) => ALL_BLOG_POSTS.find((p) => p.slug === s))
       .filter((p): p is BlogPost => !!p) ?? [];
-  const isComhwalPost = post.slug.startsWith('comhwal-');
-  const theme = isComhwalPost ? 'comhwal' : 'dark';
-  const gameHref = isComhwalPost ? '#/game/comhwal' : '#/game';
-  const curriculumHref = isComhwalPost ? '/curriculum/comhwal' : '/study-method';
+  const usesStudyNoteTheme = true;
+  const theme = usesStudyNoteTheme ? 'comhwal' : 'dark';
+  const gameHref = gameHrefForPost(post.slug);
+  const curriculumHref = curriculumHrefForPost(post.slug);
+  const curriculumLabel = curriculumLabelForPost(post.slug);
 
   return (
     <article
       className={
-        isComhwalPost
+        usesStudyNoteTheme
           ? 'relative isolate min-h-screen overflow-hidden bg-[#f5f8ef] text-[#162015]'
           : 'relative min-h-screen isolate overflow-hidden bg-base text-cream'
       }
@@ -130,7 +131,7 @@ export default function BlogPostPage({ slug }: Props) {
           href="/blog"
           onClick={(e) => handleNavClick(e, '/blog')}
           className={
-            isComhwalPost
+            usesStudyNoteTheme
               ? 'mb-7 inline-flex items-center gap-2 text-[13px] font-bold text-[#52604d] transition hover:text-[#256d2f]'
               : 'inline-flex items-center gap-2 kr-heading uppercase text-[11px] tracking-widest text-cream/65 hover:text-neon transition mb-6'
           }
@@ -142,7 +143,7 @@ export default function BlogPostPage({ slug }: Props) {
         <nav
           aria-label="breadcrumb"
           className={
-            isComhwalPost
+            usesStudyNoteTheme
               ? 'mb-4 flex flex-wrap items-center gap-1.5 text-[12px] font-semibold text-[#697561]'
               : 'kr-num text-[11px] text-cream/55 mb-3 flex items-center gap-1.5 flex-wrap'
           }
@@ -150,26 +151,26 @@ export default function BlogPostPage({ slug }: Props) {
           <a
             href="/blog"
             onClick={(e) => handleNavClick(e, '/blog')}
-            className={isComhwalPost ? 'transition hover:text-[#256d2f]' : 'hover:text-neon transition'}
+            className={usesStudyNoteTheme ? 'transition hover:text-[#256d2f]' : 'hover:text-neon transition'}
           >
             블로그
           </a>
-          <ChevronRight size={12} className={isComhwalPost ? 'text-[#9aa58f]' : 'text-cream/30'} />
-          <span className={isComhwalPost ? 'text-[#33402f]' : 'text-cream/85'}>
+          <ChevronRight size={12} className={usesStudyNoteTheme ? 'text-[#9aa58f]' : 'text-cream/30'} />
+          <span className={usesStudyNoteTheme ? 'text-[#33402f]' : 'text-cream/85'}>
             {BLOG_CATEGORY_LABEL[post.category]}
           </span>
         </nav>
 
         {/* H1 */}
-        <header className={isComhwalPost ? 'mb-8 border-b border-[#d8e2ce] pb-6' : 'mb-8 pb-6 border-b border-cream/10'}>
+        <header className={usesStudyNoteTheme ? 'mb-8 border-b border-[#d8e2ce] pb-6' : 'mb-8 pb-6 border-b border-cream/10'}>
           <div
             className={
-              isComhwalPost
+              usesStudyNoteTheme
                 ? 'mb-2 inline-flex items-center gap-3 text-[12px] font-bold text-[#697561]'
                 : 'kr-num text-[10px] uppercase tracking-widest text-cream/55 mb-2 inline-flex items-center gap-3'
             }
           >
-            <span className={isComhwalPost ? 'text-[#256d2f]' : 'text-neon'}>
+            <span className={usesStudyNoteTheme ? 'text-[#256d2f]' : 'text-neon'}>
               {BLOG_CATEGORY_LABEL[post.category]}
             </span>
             <span>·</span>
@@ -180,12 +181,12 @@ export default function BlogPostPage({ slug }: Props) {
               {post.readingMinutes}분
             </span>
           </div>
-          <h1 className="kr-heading text-[28px] md:text-[36px] lg:text-[42px] leading-[1.2] mb-3">
+          <h1 className="kr-heading mb-3 text-[28px] leading-[1.2] [word-break:keep-all] md:text-[36px] lg:text-[42px]">
             {post.title}
           </h1>
           <p
             className={
-              isComhwalPost
+              usesStudyNoteTheme
                 ? 'kr-body text-[16px] leading-[1.75] text-[#4c5947]'
                 : 'kr-body text-[14.5px] md:text-[15.5px] text-cream/75 leading-[1.65]'
             }
@@ -197,7 +198,7 @@ export default function BlogPostPage({ slug }: Props) {
               href={gameHref}
               onClick={(e) => handleNavClick(e, gameHref)}
               className={
-                isComhwalPost
+                usesStudyNoteTheme
                   ? 'inline-flex items-center gap-2 rounded-full px-5 py-3 text-[14px] font-black text-[#162015] transition active:scale-95'
                   : 'kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full active:scale-95 transition'
               }
@@ -207,19 +208,19 @@ export default function BlogPostPage({ slug }: Props) {
                 boxShadow: '0 8px 22px -6px rgba(253,128,46,0.55)',
               }}
             >
-              {isComhwalPost ? '게임 화면에서 이어가기' : 'QuestDP 게임 섹션으로'}
+              {usesStudyNoteTheme ? '게임 화면에서 이어가기' : 'QuestDP 게임 섹션으로'}
               <ChevronRight size={14} strokeWidth={2.6} />
             </a>
             <a
               href={curriculumHref}
               onClick={(e) => handleNavClick(e, curriculumHref)}
               className={
-                isComhwalPost
+                usesStudyNoteTheme
                   ? 'inline-flex items-center gap-2 rounded-full border border-[#cbd9c1] px-5 py-3 text-[14px] font-bold text-[#33402f] transition hover:border-[#4d8a45] hover:text-[#256d2f]'
                   : 'kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full border border-cream/20 hover:border-neon/40 hover:text-neon transition'
               }
             >
-              {isComhwalPost ? '컴활 커리큘럼' : '학습 원리'}
+              {curriculumLabel}
               <ChevronRight size={14} strokeWidth={2.6} />
             </a>
           </div>
@@ -234,21 +235,21 @@ export default function BlogPostPage({ slug }: Props) {
 
         {/* FAQ section */}
         {post.faqs && post.faqs.length > 0 ? (
-          <section className={isComhwalPost ? 'mt-14 border-t border-[#d8e2ce] pt-8' : 'mt-14 pt-8 border-t border-cream/10'}>
+          <section className={usesStudyNoteTheme ? 'mt-14 border-t border-[#d8e2ce] pt-8' : 'mt-14 pt-8 border-t border-cream/10'}>
             <h2 className="kr-heading text-[20px] md:text-[24px] mb-5 inline-flex items-center gap-2">
-              <Sparkles size={18} className="text-neon" />
+              <Sparkles size={18} className={usesStudyNoteTheme ? 'text-[#256d2f]' : 'text-neon'} />
               자주 묻는 질문
             </h2>
             <ul className="space-y-4 list-none m-0 p-0">
               {post.faqs.map((it, i) => (
                 <li
                   key={i}
-                  className={isComhwalPost ? 'rounded-[8px] border border-[#d8e2ce] bg-white p-5' : 'rounded-[14px] p-5 border border-cream/10 bg-white/[0.02]'}
+                  className={usesStudyNoteTheme ? 'rounded-[8px] border border-[#d8e2ce] bg-white p-5' : 'rounded-[14px] p-5 border border-cream/10 bg-white/[0.02]'}
                 >
-                  <h3 className={isComhwalPost ? 'kr-heading mb-2 text-[15px] leading-[1.45] text-[#162015] md:text-[16px]' : 'kr-heading text-[14.5px] md:text-[15.5px] text-cream/95 mb-2 leading-[1.4]'}>
+                  <h3 className={usesStudyNoteTheme ? 'kr-heading mb-2 text-[15px] leading-[1.45] text-[#162015] md:text-[16px]' : 'kr-heading text-[14.5px] md:text-[15.5px] text-cream/95 mb-2 leading-[1.4]'}>
                     Q. {it.q}
                   </h3>
-                  <p className={isComhwalPost ? 'kr-body whitespace-pre-line text-[14px] leading-[1.75] text-[#4c5947]' : 'kr-body text-[13px] md:text-[13.5px] text-cream/80 leading-[1.7] whitespace-pre-line'}>
+                  <p className={usesStudyNoteTheme ? 'kr-body whitespace-pre-line text-[14px] leading-[1.75] text-[#4c5947]' : 'kr-body text-[13px] md:text-[13.5px] text-cream/80 leading-[1.7] whitespace-pre-line'}>
                     {it.a}
                   </p>
                 </li>
@@ -259,9 +260,9 @@ export default function BlogPostPage({ slug }: Props) {
 
         {/* Related */}
         {related.length > 0 ? (
-          <section className={isComhwalPost ? 'mt-14 border-t border-[#d8e2ce] pt-8' : 'mt-14 pt-8 border-t border-cream/10'}>
+          <section className={usesStudyNoteTheme ? 'mt-14 border-t border-[#d8e2ce] pt-8' : 'mt-14 pt-8 border-t border-cream/10'}>
             <h2 className="kr-heading text-[18px] md:text-[20px] mb-5 inline-flex items-center gap-2">
-              <BookOpen size={16} strokeWidth={2.4} className="text-cream/55" />
+              <BookOpen size={16} strokeWidth={2.4} className={usesStudyNoteTheme ? 'text-[#74806d]' : 'text-cream/55'} />
               이어서 읽기
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -272,15 +273,15 @@ export default function BlogPostPage({ slug }: Props) {
                     key={r.slug}
                     href={href}
                     onClick={(e) => handleNavClick(e, href)}
-                    className={isComhwalPost ? 'block rounded-[8px] border border-[#d8e2ce] bg-white p-4 transition hover:border-[#4d8a45]' : 'block rounded-[14px] p-4 border border-cream/10 hover:border-neon/40 hover:bg-white/[0.04] transition'}
+                    className={usesStudyNoteTheme ? 'block rounded-[8px] border border-[#d8e2ce] bg-white p-4 transition hover:border-[#4d8a45]' : 'block rounded-[14px] p-4 border border-cream/10 hover:border-neon/40 hover:bg-white/[0.04] transition'}
                   >
-                    <div className={isComhwalPost ? 'mb-1.5 text-[12px] font-bold text-[#74806d]' : 'kr-num text-[10px] uppercase tracking-widest text-cream/50 mb-1.5'}>
+                    <div className={usesStudyNoteTheme ? 'mb-1.5 text-[12px] font-bold text-[#74806d]' : 'kr-num text-[10px] uppercase tracking-widest text-cream/50 mb-1.5'}>
                       {BLOG_CATEGORY_LABEL[r.category]} · {r.readingMinutes}분
                     </div>
-                    <div className={isComhwalPost ? 'kr-heading mb-1 text-[14.5px] leading-[1.35] text-[#162015]' : 'kr-heading text-[14.5px] text-cream/95 leading-[1.35] mb-1'}>
+                    <div className={usesStudyNoteTheme ? 'kr-heading mb-1 text-[14.5px] leading-[1.35] text-[#162015]' : 'kr-heading text-[14.5px] text-cream/95 leading-[1.35] mb-1'}>
                       {r.title}
                     </div>
-                    <div className={isComhwalPost ? 'kr-body line-clamp-2 text-[12.5px] leading-[1.55] text-[#5e6b58]' : 'kr-body text-[12px] text-cream/60 leading-[1.5] line-clamp-2'}>
+                    <div className={usesStudyNoteTheme ? 'kr-body line-clamp-2 text-[12.5px] leading-[1.55] text-[#5e6b58]' : 'kr-body text-[12px] text-cream/60 leading-[1.5] line-clamp-2'}>
                       {r.subtitle}
                     </div>
                   </a>
@@ -291,16 +292,16 @@ export default function BlogPostPage({ slug }: Props) {
         ) : null}
 
         {/* Footer mini-CTA */}
-        <div className={isComhwalPost ? 'mt-12 border-t border-[#d8e2ce] pt-6 text-center' : 'mt-12 pt-6 border-t border-cream/10 text-center'}>
-          <p className={isComhwalPost ? 'kr-body mb-3 text-[12px] text-[#697561]' : 'kr-body text-[12px] text-cream/50 mb-3'}>
-            {isComhwalPost
+        <div className={usesStudyNoteTheme ? 'mt-12 border-t border-[#d8e2ce] pt-6 text-center' : 'mt-12 pt-6 border-t border-cream/10 text-center'}>
+          <p className={usesStudyNoteTheme ? 'kr-body mb-3 text-[12px] text-[#697561]' : 'kr-body text-[12px] text-cream/50 mb-3'}>
+            {usesStudyNoteTheme
               ? 'QuestDP — 처음 보는 자격증 용어를 짧은 카드와 문제로 익히는 학습 앱'
               : 'QuestDP — 한국 ADsP·SQLD·컴활 자격증을 우주 탐험 RPG 로 재구성'}
           </p>
           <a
             href="/about"
             onClick={(e) => handleNavClick(e, '/about')}
-            className={isComhwalPost ? 'text-[12px] font-bold text-[#52604d] transition hover:text-[#256d2f]' : 'kr-heading uppercase tracking-widest text-[11px] text-cream/65 hover:text-neon transition'}
+            className={usesStudyNoteTheme ? 'text-[12px] font-bold text-[#52604d] transition hover:text-[#256d2f]' : 'kr-heading uppercase tracking-widest text-[11px] text-cream/65 hover:text-neon transition'}
           >
             QuestDP 소개 →
           </a>
@@ -553,6 +554,24 @@ function InlineMd({
       })}
     </>
   );
+}
+
+function gameHrefForPost(slug: string): string {
+  if (slug.startsWith('sqld-')) return '#/game/sqld';
+  if (slug.startsWith('comhwal-')) return '#/game/comhwal';
+  return '#/game/adsp';
+}
+
+function curriculumHrefForPost(slug: string): string {
+  if (slug.startsWith('sqld-')) return '/curriculum/sqld';
+  if (slug.startsWith('comhwal-')) return '/curriculum/comhwal';
+  return '/curriculum/adsp';
+}
+
+function curriculumLabelForPost(slug: string): string {
+  if (slug.startsWith('sqld-')) return 'SQLD 커리큘럼';
+  if (slug.startsWith('comhwal-')) return '컴활 커리큘럼';
+  return 'ADsP 커리큘럼';
 }
 
 function NotFound() {

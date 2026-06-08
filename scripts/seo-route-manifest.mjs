@@ -156,11 +156,11 @@ const CORE_ROUTES = [
     priority: '0.9',
     title: 'ADsP 학습사이트 · KDATA 시험범위 커리큘럼 — QuestDP',
     description:
-      'KDATA ADsP 시험 범위, 과목별 핵심 개념, ADsP 기출문제 복습 흐름을 게임형 로드맵으로 정리한 커리큘럼입니다.',
-    h1: 'ADsP 커리큘럼',
+      'ADsP를 처음 준비할 때 1·2과목과 3과목을 어떻게 나눠 보면 덜 막히는지 안내합니다. 짧은 개념 스텝과 바로 푸는 문제로 시험 범위를 확인하세요.',
+    h1: 'ADsP, 3과목을 같은 방식으로 외우지 마세요',
     eyebrow: 'KDATA ADsP',
     summary:
-      '데이터 이해, 데이터 분석 기획, 데이터 분석 과목을 작은 개념 스텝으로 나누어 학습합니다. 각 스텝은 관련 문제와 연결되어 시험 범위를 순서대로 확인할 수 있습니다.',
+      'ADsP는 1·2과목에서 용어를 먼저 만들고, 3과목 통계·R·머신러닝을 자주 회전시키는 쪽이 덜 막힙니다. 긴 요약 대신 짧은 개념과 바로 푸는 문제로 나눠 보세요.',
     links: [
       { href: '/study-method', label: 'QuestDP 공부법' },
       { href: '/faq/adsp', label: 'ADsP 자주 묻는 질문' },
@@ -174,11 +174,11 @@ const CORE_ROUTES = [
     priority: '0.9',
     title: 'SQLD 학습사이트 · KDATA 시험범위 커리큘럼 — QuestDP',
     description:
-      'KDATA SQLD 시험 범위, 데이터 모델링, SQL 기본 및 활용, SQLD 기출문제 복습 흐름을 게임형 로드맵으로 정리했습니다.',
-    h1: 'SQLD 커리큘럼',
+      'SQLD를 처음 준비할 때 모델링과 SQL 기본·활용을 어떻게 나눠 보면 덜 막히는지 안내합니다. SELECT, JOIN, 서브쿼리, 윈도우 함수를 짧은 스텝으로 확인하세요.',
+    h1: 'SQLD, SQL부터 손에 잡히게 보세요',
     eyebrow: 'KDATA SQLD',
     summary:
-      '데이터 모델링의 이해와 SQL 기본 및 활용을 개념 스텝으로 나누고, JOIN, 서브쿼리, 윈도우 함수 같은 핵심 주제를 반복 학습합니다.',
+      'SQLD는 SQL 기본 및 활용 40문항이 점수를 크게 흔듭니다. 모델링은 큰 틀을 먼저 잡고, SELECT 실행 순서·JOIN·서브쿼리·윈도우 함수를 작은 문제로 자주 확인하세요.',
     links: [
       { href: '/study-method', label: 'QuestDP 공부법' },
       { href: '/faq/sqld', label: 'SQLD 자주 묻는 질문' },
@@ -249,11 +249,11 @@ const CORE_ROUTES = [
     priority: '0.8',
     title: 'ADsP 학습사이트 FAQ — 시험 범위·기출문제·공부법',
     description:
-      'ADsP 몇 문제, ADsP 시험 범위, ADsP 기출문제 공부법, 비전공자 학습 순서에 대한 QuestDP FAQ입니다.',
-    h1: 'ADsP FAQ',
+      'ADsP 문제 수, 시험 범위, 합격 기준, 비전공자 공부 순서와 기출 복습법을 처음 준비하는 사람 기준으로 짧게 답합니다.',
+    h1: 'ADsP 처음 준비할 때 자주 막히는 질문',
     eyebrow: 'ADsP 질문 모음',
     summary:
-      'ADsP를 처음 준비하는 사람이 자주 묻는 시험 범위, 문제 수, 공부 순서, 기출 복습 방법을 한 번에 확인할 수 있습니다.',
+      '통계부터 해야 할지, 기출부터 풀어야 할지 헷갈릴 때 먼저 보는 질문 모음입니다. 시험 구조와 공부 순서를 짧게 확인하세요.',
     links: [
       { href: '/curriculum/adsp', label: 'ADsP 커리큘럼' },
       { href: '/blog/adsp-비전공자-가이드', label: 'ADsP 비전공자 가이드' },
@@ -266,11 +266,11 @@ const CORE_ROUTES = [
     priority: '0.8',
     title: 'SQLD 학습사이트 FAQ — 시험 범위·기출문제·공부법',
     description:
-      'SQLD 몇 문제, SQLD 시험 범위, SQLD 기출문제 공부법, SQLD 합격률과 학습 순서에 대한 QuestDP FAQ입니다.',
-    h1: 'SQLD FAQ',
+      'SQLD 문제 수, 시험 범위, 합격 기준, SQL 공부 순서와 기출 복습법을 처음 준비하는 사람 기준으로 짧게 답합니다.',
+    h1: 'SQLD 처음 준비할 때 자주 막히는 질문',
     eyebrow: 'SQLD 질문 모음',
     summary:
-      'SQLD를 처음 준비하는 사람이 자주 묻는 시험 범위, 문제 수, SQL 우선순위, 기출 복습 방법을 한 번에 확인할 수 있습니다.',
+      'SQL 문법이 낯설 때 어디부터 봐야 하는지, 모델링과 SQL을 어떻게 나눠 공부할지 먼저 확인하는 질문 모음입니다.',
     links: [
       { href: '/curriculum/sqld', label: 'SQLD 커리큘럼' },
       { href: '/blog/sqld-노랭이-vs-questdp', label: 'SQLD 문제집 비교' },

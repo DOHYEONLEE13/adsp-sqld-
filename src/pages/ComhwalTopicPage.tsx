@@ -23,7 +23,7 @@ export default function ComhwalTopicPage({ planetKey, topicId }: Props) {
   const sectionTitle = meta?.section.title ?? topic?.sectionTitle ?? planetTitle;
   const hasContent = !!topic && cards.length > 0;
   const seoDescription = hasContent
-    ? `컴활 필기 ${planetTitle} ${topicId} ${title}를 초보자도 이해할 수 있게 짧은 개념 카드 ${cards.length}개와 체크포인트 문제로 정리했습니다.`
+    ? `${planetTitle} ${topicId}번, ${title}. 처음 보는 용어를 길게 붙잡지 않도록 개념 카드 ${cards.length}개와 바로 확인하는 문제로 나눴습니다.`
     : '컴활 필기 토픽 페이지를 찾을 수 없습니다.';
 
   useSeoMeta({
@@ -56,12 +56,12 @@ export default function ComhwalTopicPage({ planetKey, topicId }: Props) {
     .filter((question): question is NonNullable<ComhwalConceptCard['question']> => !!question);
 
   return (
-    <article className="relative isolate min-h-screen overflow-hidden bg-base text-cream">
+    <article className="relative isolate min-h-screen overflow-hidden bg-[#f5f8ef] text-[#162015]">
       <div className="relative z-10 mx-auto max-w-[820px] px-5 pb-16 pt-8 md:px-8 lg:max-w-[960px] lg:px-12">
         <a
           href="/curriculum/comhwal"
           onClick={(event) => handleNavClick(event, '/curriculum/comhwal')}
-          className="mb-6 inline-flex items-center gap-2 text-[11px] uppercase tracking-widest text-cream/65 transition hover:text-neon"
+          className="mb-7 inline-flex items-center gap-2 text-[13px] font-bold text-[#52604d] transition hover:text-[#256d2f]"
         >
           <ArrowLeft size={14} strokeWidth={2.4} />
           컴활 커리큘럼
@@ -69,30 +69,30 @@ export default function ComhwalTopicPage({ planetKey, topicId }: Props) {
 
         <nav
           aria-label="breadcrumb"
-          className="mb-3 flex flex-wrap items-center gap-1.5 text-[11px] text-cream/55"
+          className="mb-4 flex flex-wrap items-center gap-1.5 text-[12px] font-semibold text-[#697561]"
         >
           <a
             href="/curriculum/comhwal"
             onClick={(event) => handleNavClick(event, '/curriculum/comhwal')}
-            className="transition hover:text-neon"
+            className="transition hover:text-[#256d2f]"
           >
             컴활 필기
           </a>
-          <ChevronRight size={12} className="text-cream/30" />
-          <span className="text-[#A7E96A]">{planetTitle}</span>
-          <ChevronRight size={12} className="text-cream/30" />
-          <span className="text-cream/85">{topicId}</span>
+          <ChevronRight size={12} className="text-[#9aa58f]" />
+          <span className="text-[#256d2f]">{planetTitle}</span>
+          <ChevronRight size={12} className="text-[#9aa58f]" />
+          <span className="text-[#33402f]">{topicId}</span>
         </nav>
 
-        <header className="mb-10 border-b border-cream/10 pb-8">
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#A7E96A]/35 bg-[#A7E96A]/10 px-3 py-1.5 text-[11px] uppercase tracking-widest text-[#A7E96A]">
+        <header className="mb-10 border-b border-[#d8e2ce] pb-8">
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#cbd9c1] bg-white px-3 py-1.5 text-[12px] font-bold text-[#256d2f]">
             <Sparkles size={13} strokeWidth={2.4} />
-            컴활 {planetTitle}
+            {planetTitle} {topicId}
           </div>
           <h1 className="kr-heading mb-3 text-[28px] leading-[1.16] md:text-[38px] lg:text-[44px]">
             {title}
           </h1>
-          <p className="kr-body max-w-[700px] text-[15px] leading-[1.72] text-cream/76 md:text-[16px]">
+          <p className="kr-body max-w-[700px] text-[16px] leading-[1.75] text-[#4c5947]">
             {seoDescription}
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
@@ -104,15 +104,15 @@ export default function ComhwalTopicPage({ planetKey, topicId }: Props) {
             <a
               href="#/game/comhwal"
               onClick={(event) => handleNavClick(event, '#/game/comhwal')}
-              className="inline-flex items-center gap-2 rounded-full bg-[#FD802E] px-5 py-3 text-[12px] uppercase tracking-widest text-[#010828] transition active:scale-95 md:text-[13px]"
+              className="inline-flex items-center gap-2 rounded-full bg-[#FD802E] px-5 py-3 text-[14px] font-black text-[#162015] transition active:scale-95"
             >
-              QuestDP 게임 섹션으로
+              게임 화면에서 풀어보기
               <ChevronRight size={14} strokeWidth={2.6} />
             </a>
             <a
               href="/curriculum/comhwal"
               onClick={(event) => handleNavClick(event, '/curriculum/comhwal')}
-              className="inline-flex items-center gap-2 rounded-full border border-cream/20 px-5 py-3 text-[12px] uppercase tracking-widest text-cream/76 transition hover:border-neon/40 hover:text-neon md:text-[13px]"
+              className="inline-flex items-center gap-2 rounded-full border border-[#cbd9c1] px-5 py-3 text-[14px] font-bold text-[#33402f] transition hover:border-[#4d8a45] hover:text-[#256d2f]"
             >
               컴활 전체 범위
               <ChevronRight size={14} strokeWidth={2.6} />
@@ -120,13 +120,13 @@ export default function ComhwalTopicPage({ planetKey, topicId }: Props) {
           </div>
         </header>
 
-        <section className="mb-12 rounded-[18px] border border-[#A7E96A]/20 bg-[#A7E96A]/[0.055] p-5 md:p-6">
+        <section className="mb-12 rounded-[10px] border border-[#d8e2ce] bg-white p-5 shadow-[0_18px_60px_-45px_rgba(22,32,21,0.5)] md:p-6">
           <h2 className="kr-heading mb-2 text-[18px] md:text-[22px]">
-            먼저 이렇게 잡으면 쉬워요
+            먼저 이렇게 읽으면 덜 외워져요
           </h2>
-          <p className="kr-body text-[13.5px] leading-[1.75] text-cream/78 md:text-[14.5px]">
-            컴퓨터 노베이스라면 용어를 외우기 전에 “어떤 상황에서 쓰는 말인지”를 먼저 잡아야 합니다.
-            아래 카드는 한 개념을 짧게 보고 바로 선지 판단으로 이어가도록 만든 컴활 필기 학습 단위입니다.
+          <p className="kr-body text-[14px] leading-[1.75] text-[#53614f] md:text-[15px]">
+            용어를 뜻만 외우면 선지에서 금방 흔들립니다. 먼저 “어떤 화면이나 상황에서 쓰는 말인지”를 잡고,
+            바로 아래 문제로 맞게 이해했는지만 확인하세요.
           </p>
         </section>
 
@@ -136,19 +136,18 @@ export default function ComhwalTopicPage({ planetKey, topicId }: Props) {
           ))}
         </div>
 
-        <section className="mt-14 rounded-[20px] border border-cream/10 bg-white/[0.03] p-6 md:p-8">
+        <section className="mt-14 rounded-[10px] border border-[#d8e2ce] bg-[#162015] p-6 text-white md:p-8">
           <h2 className="kr-heading mb-2 text-[20px] md:text-[24px]">
             다음 토픽으로 이어가기
           </h2>
-          <p className="kr-body mb-5 max-w-[680px] text-[14px] leading-[1.75] text-cream/70">
-            컴활 {planetTitle} 토픽은 실제 카드가 준비된 항목만 개별 페이지로 열립니다.
-            전체 과목 구조와 1급·2급 차이는 커리큘럼에서 함께 확인하세요.
+          <p className="kr-body mb-5 max-w-[680px] text-[14px] leading-[1.75] text-white/72">
+            이 토픽이 잡혔다면 옆 토픽으로 넘어가도 됩니다. 전체 과목 구조와 1급·2급 차이는 커리큘럼에서 한 번에 확인하세요.
           </p>
           <div className="flex flex-wrap gap-3">
             <a
               href="/curriculum/comhwal"
               onClick={(event) => handleNavClick(event, '/curriculum/comhwal')}
-              className="inline-flex items-center gap-2 rounded-full bg-[#FD802E] px-5 py-3 text-[12px] uppercase tracking-widest text-[#010828] transition active:scale-95 md:text-[13px]"
+              className="inline-flex items-center gap-2 rounded-full bg-[#FD802E] px-5 py-3 text-[14px] font-black text-[#162015] transition active:scale-95"
             >
               컴활 전체 범위
               <ChevronRight size={14} strokeWidth={2.6} />
@@ -156,7 +155,7 @@ export default function ComhwalTopicPage({ planetKey, topicId }: Props) {
             <a
               href="/faq/comhwal"
               onClick={(event) => handleNavClick(event, '/faq/comhwal')}
-              className="inline-flex items-center gap-2 rounded-full border border-cream/20 px-5 py-3 text-[12px] uppercase tracking-widest transition hover:border-neon/40 hover:text-neon md:text-[13px]"
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-3 text-[14px] font-bold text-white/82 transition hover:border-[#A7E96A]/60 hover:text-[#A7E96A]"
             >
               컴활 FAQ
               <ChevronRight size={14} strokeWidth={2.6} />
@@ -164,7 +163,7 @@ export default function ComhwalTopicPage({ planetKey, topicId }: Props) {
             <a
               href="#/game/comhwal"
               onClick={(event) => handleNavClick(event, '#/game/comhwal')}
-              className="inline-flex items-center gap-2 rounded-full border border-cream/20 px-5 py-3 text-[12px] uppercase tracking-widest transition hover:border-neon/40 hover:text-neon md:text-[13px]"
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-3 text-[14px] font-bold text-white/82 transition hover:border-[#A7E96A]/60 hover:text-[#A7E96A]"
             >
               게임 화면으로
               <ChevronRight size={14} strokeWidth={2.6} />
@@ -178,20 +177,20 @@ export default function ComhwalTopicPage({ planetKey, topicId }: Props) {
 
 function ConceptCard({ card, index }: { card: ComhwalConceptCard; index: number }) {
   return (
-    <section className="rounded-[16px] border border-cream/10 bg-white/[0.025] p-5 md:p-6">
+    <section className="rounded-[10px] border border-[#d8e2ce] bg-white p-5 shadow-[0_12px_45px_-35px_rgba(22,32,21,0.45)] md:p-6">
       <div className="mb-3 flex items-start justify-between gap-4">
         <div>
-          <div className="mb-1 text-[10px] uppercase tracking-widest text-cream/45">
-            Card {String(index + 1).padStart(2, '0')}
+          <div className="mb-1 text-[12px] font-bold text-[#74806d]">
+            카드 {String(index + 1).padStart(2, '0')}
           </div>
-          <h2 className="kr-heading text-[18px] leading-[1.35] text-cream/95 md:text-[21px]">
+          <h2 className="kr-heading text-[18px] leading-[1.35] text-[#162015] md:text-[21px]">
             {card.title}
           </h2>
         </div>
-        <CheckCircle2 className="mt-1 shrink-0 text-[#A7E96A]" size={20} strokeWidth={2.4} />
+        <CheckCircle2 className="mt-1 shrink-0 text-[#256d2f]" size={20} strokeWidth={2.4} />
       </div>
 
-      <p className="kr-body mb-4 text-[14.5px] leading-[1.78] text-cream/82 md:text-[15.5px]">
+      <p className="kr-body mb-4 text-[14.5px] leading-[1.78] text-[#3e4a3a] md:text-[15.5px]">
         {card.body}
       </p>
 
@@ -199,7 +198,7 @@ function ConceptCard({ card, index }: { card: ComhwalConceptCard; index: number 
         {card.keyPoints.map((point) => (
           <li
             key={point}
-            className="rounded-[12px] border border-[#A7E96A]/18 bg-[#A7E96A]/[0.045] px-3 py-2 text-[12.5px] leading-[1.55] text-cream/78"
+            className="rounded-[8px] border border-[#d8e2ce] bg-[#f7faf3] px-3 py-2 text-[12.5px] leading-[1.55] text-[#53614f]"
           >
             {point}
           </li>
@@ -207,19 +206,19 @@ function ConceptCard({ card, index }: { card: ComhwalConceptCard; index: number 
       </ul>
 
       {card.examTip ? (
-        <p className="kr-body mb-4 rounded-[12px] border border-cream/10 bg-white/[0.025] px-4 py-3 text-[13px] leading-[1.7] text-cream/72">
-          <strong className="kr-heading mr-1 text-[#A7E96A]">시험 포인트</strong>
+        <p className="kr-body mb-4 rounded-[8px] border border-[#e0cdbb] bg-[#fff7ed] px-4 py-3 text-[13px] leading-[1.7] text-[#624b35]">
+          <strong className="kr-heading mr-1 text-[#256d2f]">시험 포인트</strong>
           {card.examTip}
         </p>
       ) : null}
 
       {card.question ? (
-        <div className="rounded-[14px] border border-cream/10 bg-base/35 p-4">
-          <h3 className="kr-heading mb-3 inline-flex items-center gap-2 text-[14px] text-cream/95">
+        <div className="rounded-[10px] border border-[#d8e2ce] bg-[#162015] p-4 text-white">
+          <h3 className="kr-heading mb-3 inline-flex items-center gap-2 text-[14px] text-white">
             <HelpCircle size={15} className="text-[#A7E96A]" strokeWidth={2.4} />
             체크포인트 문제
           </h3>
-          <p className="kr-body mb-3 text-[13.5px] leading-[1.7] text-cream/82">
+          <p className="kr-body mb-3 text-[13.5px] leading-[1.7] text-white/84">
             {card.question.prompt}
           </p>
           <ol className="m-0 list-none space-y-2 p-0">
@@ -235,7 +234,7 @@ function ConceptCard({ card, index }: { card: ComhwalConceptCard; index: number 
                   color:
                     choiceIndex === card.question?.answerIndex
                       ? '#A7E96A'
-                      : 'rgba(239,244,255,0.72)',
+                      : 'rgba(255,255,255,0.72)',
                   background:
                     choiceIndex === card.question?.answerIndex
                       ? 'rgba(167,233,106,0.08)'
@@ -246,7 +245,7 @@ function ConceptCard({ card, index }: { card: ComhwalConceptCard; index: number 
               </li>
             ))}
           </ol>
-          <p className="kr-body mt-3 text-[12.5px] leading-[1.7] text-cream/62">
+          <p className="kr-body mt-3 text-[12.5px] leading-[1.7] text-white/62">
             {card.question.explanation}
           </p>
         </div>
@@ -257,11 +256,11 @@ function ConceptCard({ card, index }: { card: ComhwalConceptCard; index: number 
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[12px] border border-[#A7E96A]/30 bg-white/[0.03] px-4 py-2.5">
-      <div className="mb-0.5 text-[10px] uppercase tracking-widest text-cream/55">
+    <div className="rounded-[8px] border border-[#d8e2ce] bg-white px-4 py-2.5">
+      <div className="mb-0.5 text-[12px] font-bold text-[#687662]">
         {label}
       </div>
-      <div className="kr-heading text-[18px] text-[#A7E96A] md:text-[20px]">{value}</div>
+      <div className="kr-heading text-[18px] text-[#1d2a1a] md:text-[20px]">{value}</div>
     </div>
   );
 }

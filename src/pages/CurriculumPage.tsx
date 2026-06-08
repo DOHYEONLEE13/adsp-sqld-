@@ -11,9 +11,9 @@ interface Props {
 const SUBJECT_ACCENT: Record<SeoCurriculumSubject, string> = {
   adsp: '#67e8f9',
   sqld: '#c084fc',
-  comhwal: '#A7E96A',
-  'comhwal-1': '#A7E96A',
-  'comhwal-2': '#A7E96A',
+  comhwal: '#256d2f',
+  'comhwal-1': '#256d2f',
+  'comhwal-2': '#256d2f',
 };
 
 const EXAM_FACTS: Record<
@@ -85,12 +85,20 @@ export default function CurriculumPage({ subject }: Props) {
   const curriculum = getCurriculum(subject);
   const accent = SUBJECT_ACCENT[subject];
   const facts = EXAM_FACTS[subject];
+  const isComhwal = subject.startsWith('comhwal');
   const label = curriculum.label;
   const canonical = `https://quest-dp.com/curriculum/${subject}/`;
   const seoTitle = `${label} 학습사이트 · 시험범위 커리큘럼 — QuestDP`;
   const seoDescription =
     `${facts.authority} 기준 ${facts.exam} 시험범위를 ${curriculum.totalChapters}개 과목 · ${curriculum.totalTopics}개 토픽으로 정리했습니다. ` +
     `${curriculum.isExpansion ? '컴활은 실제 카드가 있는 컴퓨터 일반 토픽부터 개별 학습 페이지를 공개합니다.' : `${curriculum.totalSteps}개 학습 스텝과 기출형 복습으로 이어집니다.`}`;
+  const introDescription = isComhwal
+    ? subject === 'comhwal-1'
+      ? '1급은 범위가 넓어서 처음부터 세 과목을 같은 무게로 들고 가면 금방 지칩니다. 공통 과목인 컴퓨터 일반으로 말문을 트고, 스프레드시트와 데이터베이스를 화면 감각에 맞춰 붙이는 순서로 보세요.'
+      : subject === 'comhwal-2'
+        ? '2급은 데이터베이스가 빠지는 대신 컴퓨터 일반과 스프레드시트에서 실수를 줄이는 싸움입니다. 낯선 용어를 먼저 풀어내고, 엑셀 화면에서 바로 떠올릴 수 있는 단어부터 쌓으면 훨씬 덜 막힙니다.'
+        : '컴활은 범위표만 보면 딱딱하지만, 실제로는 “컴퓨터 화면에서 자주 만나는 말”을 차례로 익히는 시험입니다. 1급과 2급의 차이를 먼저 확인하고, 지금 공개된 개념 카드부터 부담 없이 시작하세요.'
+    : seoDescription;
 
   const allItems = curriculum.isExpansion
     ? curriculum.chapters.flatMap((chapter) =>
@@ -165,12 +173,22 @@ export default function CurriculumPage({ subject }: Props) {
   });
 
   return (
-    <article className="relative isolate min-h-screen overflow-hidden bg-base text-cream">
+    <article
+      className={
+        isComhwal
+          ? 'relative isolate min-h-screen overflow-hidden bg-[#f5f8ef] text-[#162015]'
+          : 'relative isolate min-h-screen overflow-hidden bg-base text-cream'
+      }
+    >
       <div className="relative z-10 mx-auto max-w-[900px] px-5 pb-16 pt-8 md:px-8 lg:max-w-[1080px] lg:px-12">
         <a
           href="/"
           onClick={(event) => handleNavClick(event, '/')}
-          className="mb-6 inline-flex items-center gap-2 text-[11px] uppercase tracking-widest text-cream/65 transition hover:text-neon"
+          className={
+            isComhwal
+              ? 'mb-7 inline-flex items-center gap-2 text-[13px] font-bold text-[#52604d] transition hover:text-[#256d2f]'
+              : 'mb-6 inline-flex items-center gap-2 text-[11px] uppercase tracking-widest text-cream/65 transition hover:text-neon'
+          }
         >
           <ArrowLeft size={14} strokeWidth={2.4} />
           홈으로
@@ -178,52 +196,93 @@ export default function CurriculumPage({ subject }: Props) {
 
         <nav
           aria-label="breadcrumb"
-          className="mb-3 flex flex-wrap items-center gap-1.5 text-[11px] text-cream/55"
+          className={
+            isComhwal
+              ? 'mb-4 flex flex-wrap items-center gap-1.5 text-[12px] font-semibold text-[#697561]'
+              : 'mb-3 flex flex-wrap items-center gap-1.5 text-[11px] text-cream/55'
+          }
         >
           <span style={{ color: accent }}>{label}</span>
-          <ChevronRight size={12} className="text-cream/30" />
-          <span className="text-cream/85">시험범위 · 커리큘럼</span>
+          <ChevronRight size={12} className={isComhwal ? 'text-[#9aa58f]' : 'text-cream/30'} />
+          <span className={isComhwal ? 'text-[#33402f]' : 'text-cream/85'}>
+            시험범위 · 커리큘럼
+          </span>
         </nav>
 
-        <header className="mb-10 border-b border-cream/10 pb-8">
+        <header
+          className={
+            isComhwal
+              ? 'mb-10 border-b border-[#d8e2ce] pb-8'
+              : 'mb-10 border-b border-cream/10 pb-8'
+          }
+        >
           <h1 className="kr-heading mb-3 text-[28px] leading-[1.15] md:text-[40px] lg:text-[48px]">
-            {label} 시험범위
+            {isComhwal ? `${label}, 여기서부터 보면 덜 막혀요` : `${label} 시험범위`}
           </h1>
-          <p className="kr-body mb-5 max-w-[720px] text-[15px] leading-[1.65] text-cream/75 md:text-[16px]">
-            {seoDescription}
+          <p
+            className={
+              isComhwal
+                ? 'kr-body mb-6 max-w-[760px] text-[16px] leading-[1.75] text-[#4c5947] md:text-[17px]'
+                : 'kr-body mb-5 max-w-[720px] text-[15px] leading-[1.65] text-cream/75 md:text-[16px]'
+            }
+          >
+            {introDescription}
           </p>
           <div className="flex flex-wrap items-center gap-3 md:gap-4">
-            <Stat label="과목" value={curriculum.totalChapters} accent={accent} />
-            <Stat label="토픽" value={curriculum.totalTopics} accent={accent} />
+            <Stat label="과목" value={curriculum.totalChapters} accent={accent} light={isComhwal} />
+            <Stat label="토픽" value={curriculum.totalTopics} accent={accent} light={isComhwal} />
             <Stat
               label={curriculum.isExpansion ? '공개 토픽' : '학습 스텝'}
               value={curriculum.isExpansion ? curriculum.availableTopics : curriculum.totalSteps}
               accent={accent}
+              light={isComhwal}
             />
           </div>
         </header>
 
-        <section className="mb-12 rounded-[18px] border border-cream/10 bg-white/[0.03] p-5 md:p-6">
-          <div className="mb-2 text-[10px] uppercase tracking-widest text-cream/50">
-            공식 기준 요약
+        <section
+          className={
+            isComhwal
+              ? 'mb-12 rounded-[10px] border border-[#d8e2ce] bg-white p-5 shadow-[0_18px_60px_-45px_rgba(22,32,21,0.5)] md:p-6'
+              : 'mb-12 rounded-[18px] border border-cream/10 bg-white/[0.03] p-5 md:p-6'
+          }
+        >
+          <div
+            className={
+              isComhwal
+                ? 'mb-2 text-[13px] font-bold text-[#5c6b55]'
+                : 'mb-2 text-[10px] uppercase tracking-widest text-cream/50'
+            }
+          >
+            {isComhwal ? '시험장에서 실제로 만나는 구조' : '공식 기준 요약'}
           </div>
           <h2 className="kr-heading mb-4 text-[18px] md:text-[22px]">
             {facts.exam} 시험 구조
           </h2>
           <dl className="grid gap-3 md:grid-cols-2">
-            <Fact label="시행기관" value={facts.authority} accent={accent} />
-            <Fact label="문항 / 시간" value={facts.questions} accent={accent} />
-            <Fact label="합격 기준" value={facts.scoring} accent={accent} />
-            <Fact label="시험 범위" value={facts.scope} accent={accent} />
+            <Fact label="시행기관" value={facts.authority} accent={accent} light={isComhwal} />
+            <Fact label="문항 / 시간" value={facts.questions} accent={accent} light={isComhwal} />
+            <Fact label="합격 기준" value={facts.scoring} accent={accent} light={isComhwal} />
+            <Fact label="시험 범위" value={facts.scope} accent={accent} light={isComhwal} />
           </dl>
-          <p className="kr-body mt-4 text-[13.5px] leading-[1.7] text-cream/72">
+          <p
+            className={
+              isComhwal
+                ? 'kr-body mt-4 text-[14px] leading-[1.75] text-[#53614f]'
+                : 'kr-body mt-4 text-[13.5px] leading-[1.7] text-cream/72'
+            }
+          >
             {facts.strategy}
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
             <a
               href={faqHref(subject)}
               onClick={(event) => handleNavClick(event, faqHref(subject))}
-              className="inline-flex items-center gap-2 rounded-full border border-cream/18 px-4 py-2.5 text-[11px] uppercase tracking-widest text-cream/72 transition hover:border-neon/40 hover:text-neon"
+              className={
+                isComhwal
+                  ? 'inline-flex items-center gap-2 rounded-full border border-[#cbd9c1] px-4 py-2.5 text-[13px] font-bold text-[#33402f] transition hover:border-[#4d8a45] hover:text-[#256d2f]'
+                  : 'inline-flex items-center gap-2 rounded-full border border-cream/18 px-4 py-2.5 text-[11px] uppercase tracking-widest text-cream/72 transition hover:border-neon/40 hover:text-neon'
+              }
             >
               FAQ 보기
               <ChevronRight size={13} strokeWidth={2.5} />
@@ -232,7 +291,11 @@ export default function CurriculumPage({ subject }: Props) {
               href={facts.officialUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-cream/18 px-4 py-2.5 text-[11px] uppercase tracking-widest text-cream/72 transition hover:border-neon/40 hover:text-neon"
+              className={
+                isComhwal
+                  ? 'inline-flex items-center gap-2 rounded-full border border-[#cbd9c1] px-4 py-2.5 text-[13px] font-bold text-[#33402f] transition hover:border-[#4d8a45] hover:text-[#256d2f]'
+                  : 'inline-flex items-center gap-2 rounded-full border border-cream/18 px-4 py-2.5 text-[11px] uppercase tracking-widest text-cream/72 transition hover:border-neon/40 hover:text-neon'
+              }
             >
               공식 안내
               <ChevronRight size={13} strokeWidth={2.5} />
@@ -247,24 +310,34 @@ export default function CurriculumPage({ subject }: Props) {
               chapter={chapter}
               accent={accent}
               isExpansion={curriculum.isExpansion}
+              light={isComhwal}
             />
           ))}
         </div>
 
         <section
-          className="mt-14 rounded-[20px] p-6 md:p-8"
-          style={{
-            background: `linear-gradient(135deg, ${accent}1a 0%, var(--neon-08) 100%)`,
-            border: `1px solid ${accent}40`,
-          }}
+          className={
+            isComhwal
+              ? 'mt-14 rounded-[10px] border border-[#d8e2ce] bg-[#162015] p-6 text-white md:p-8'
+              : 'mt-14 rounded-[20px] p-6 md:p-8'
+          }
+          style={
+            isComhwal
+              ? undefined
+              : {
+                  background: `linear-gradient(135deg, ${accent}1a 0%, var(--neon-08) 100%)`,
+                  border: `1px solid ${accent}40`,
+                }
+          }
         >
           <h2 className="kr-heading mb-2 inline-flex items-center gap-2 text-[18px] md:text-[20px]">
             <Sparkles size={18} style={{ color: accent }} />
             로드맵에서 바로 학습하기
           </h2>
-          <p className="kr-body mb-5 text-[13px] leading-[1.65] text-cream/75 md:text-[14px]">
-            QuestDP의 우주 탐험 화면에서 커리큘럼을 게임처럼 따라가며 개념 카드, 즉시 문제풀이,
-            약점 복습을 한 흐름으로 이어갈 수 있습니다.
+          <p className="kr-body mb-5 text-[13px] leading-[1.65] text-white/75 md:text-[14px]">
+            {isComhwal
+              ? '커리큘럼을 훑었다면 이제 실제 카드로 넘어가세요. 한 번에 많이 외우기보다, 낯선 단어를 보고 바로 한 문제로 확인하는 흐름이 훨씬 오래 갑니다.'
+              : 'QuestDP의 우주 탐험 화면에서 커리큘럼을 게임처럼 따라가며 개념 카드, 즉시 문제풀이, 약점 복습을 한 흐름으로 이어갈 수 있습니다.'}
           </p>
           <div className="flex flex-wrap gap-3">
             <a
@@ -294,13 +367,19 @@ export default function CurriculumPage({ subject }: Props) {
         </section>
 
         <div className="mt-12 border-t border-cream/10 pt-6 text-center">
-          <p className="kr-body mb-3 text-[12px] text-cream/50">
-            QuestDP — ADsP·SQLD·컴활 자격증을 우주 탐험 RPG로 재구성
+          <p className={isComhwal ? 'kr-body mb-3 text-[12px] text-[#697561]' : 'kr-body mb-3 text-[12px] text-cream/50'}>
+            {isComhwal
+              ? 'QuestDP — 처음 보는 자격증 용어를 짧은 카드와 문제로 익히는 학습 앱'
+              : 'QuestDP — ADsP·SQLD·컴활 자격증을 우주 탐험 RPG로 재구성'}
           </p>
           <a
             href="/about"
             onClick={(event) => handleNavClick(event, '/about')}
-            className="text-[11px] uppercase tracking-widest text-cream/65 transition hover:text-neon"
+            className={
+              isComhwal
+                ? 'text-[12px] font-bold text-[#52604d] transition hover:text-[#256d2f]'
+                : 'text-[11px] uppercase tracking-widest text-cream/65 transition hover:text-neon'
+            }
           >
             QuestDP 소개 →
           </a>
@@ -310,30 +389,87 @@ export default function CurriculumPage({ subject }: Props) {
   );
 }
 
-function Stat({ label, value, accent }: { label: string; value: number; accent: string }) {
+function Stat({
+  label,
+  value,
+  accent,
+  light = false,
+}: {
+  label: string;
+  value: number;
+  accent: string;
+  light?: boolean;
+}) {
   return (
     <div
-      className="rounded-[12px] border px-4 py-2.5"
-      style={{ borderColor: `${accent}40`, background: 'rgba(255,255,255,0.03)' }}
+      className={light ? 'rounded-[8px] border px-4 py-2.5' : 'rounded-[12px] border px-4 py-2.5'}
+      style={{
+        borderColor: light ? '#d8e2ce' : `${accent}40`,
+        borderLeftColor: light ? accent : `${accent}40`,
+        borderLeftWidth: light ? 3 : 1,
+        background: light ? '#ffffff' : 'rgba(255,255,255,0.03)',
+      }}
     >
-      <div className="mb-0.5 text-[10px] uppercase tracking-widest text-cream/55">
+      <div
+        className={
+          light
+            ? 'mb-0.5 text-[12px] font-bold text-[#687662]'
+            : 'mb-0.5 text-[10px] uppercase tracking-widest text-cream/55'
+        }
+      >
         {label}
       </div>
-      <div className="kr-heading text-[20px] md:text-[22px]" style={{ color: accent }}>
+      <div
+        className={
+          light
+            ? 'kr-heading text-[20px] text-[#1d2a1a] md:text-[22px]'
+            : 'kr-heading text-[20px] md:text-[22px]'
+        }
+        style={light ? undefined : { color: accent }}
+      >
         {value}
       </div>
     </div>
   );
 }
 
-function Fact({ label, value, accent }: { label: string; value: string; accent: string }) {
+function Fact({
+  label,
+  value,
+  accent,
+  light = false,
+}: {
+  label: string;
+  value: string;
+  accent: string;
+  light?: boolean;
+}) {
   return (
-    <div className="rounded-[12px] border border-cream/8 bg-white/[0.025] px-4 py-3">
-      <dt className="mb-1 text-[10px] uppercase tracking-widest text-cream/45">
+    <div
+      className={
+        light
+          ? 'rounded-[8px] border border-[#e1e8d8] bg-[#f7faf3] px-4 py-3'
+          : 'rounded-[12px] border border-cream/8 bg-white/[0.025] px-4 py-3'
+      }
+      style={light ? { borderLeft: `3px solid ${accent}` } : undefined}
+    >
+      <dt
+        className={
+          light
+            ? 'mb-1 text-[12px] font-bold text-[#66745f]'
+            : 'mb-1 text-[10px] uppercase tracking-widest text-cream/45'
+        }
+      >
         {label}
       </dt>
-      <dd className="kr-body m-0 text-[13.5px] leading-[1.55] text-cream/84">
-        <span style={{ color: accent }}>{value}</span>
+      <dd
+        className={
+          light
+            ? 'kr-body m-0 text-[14px] font-semibold leading-[1.65] text-[#1f2a1d]'
+            : 'kr-body m-0 text-[13.5px] leading-[1.55] text-cream/84'
+        }
+      >
+        {light ? value : <span style={{ color: accent }}>{value}</span>}
       </dd>
     </div>
   );
@@ -343,24 +479,32 @@ function ChapterSection({
   chapter,
   accent,
   isExpansion,
+  light = false,
 }: {
   chapter: SubjectCurriculum['chapters'][number];
   accent: string;
   isExpansion: boolean;
+  light?: boolean;
 }) {
   return (
     <section>
       <header className="mb-5">
-        <div className="mb-1 text-[10px] uppercase tracking-widest text-cream/50">
-          Subject {chapter.chapter}
+        <div
+          className={
+            light
+              ? 'mb-1 text-[13px] font-bold text-[#67735f]'
+              : 'mb-1 text-[10px] uppercase tracking-widest text-cream/50'
+          }
+        >
+          {light ? `${chapter.chapter}과목` : `Subject ${chapter.chapter}`}
         </div>
         <h2 className="kr-heading mb-1.5 text-[22px] leading-[1.25] md:text-[28px]">
           {chapter.title}
         </h2>
         {chapter.subtitle ? (
-          <p className="kr-body mb-2 text-[13px] text-cream/58">{chapter.subtitle}</p>
+          <p className={light ? 'kr-body mb-2 text-[13px] text-[#67735f]' : 'kr-body mb-2 text-[13px] text-cream/58'}>{chapter.subtitle}</p>
         ) : null}
-        <div className="inline-flex items-center gap-3 text-[11px] text-cream/55">
+        <div className={light ? 'inline-flex items-center gap-3 text-[12px] font-semibold text-[#67735f]' : 'inline-flex items-center gap-3 text-[11px] text-cream/55'}>
           <span className="inline-flex items-center gap-1">
             <BookOpen size={11} strokeWidth={2.4} />
             토픽 {chapter.totalTopics}개
@@ -379,6 +523,7 @@ function ChapterSection({
             topic={topic}
             accent={accent}
             isExpansion={isExpansion}
+            light={light}
           />
         ))}
       </div>
@@ -390,18 +535,20 @@ function TopicGroup({
   topic,
   accent,
   isExpansion,
+  light = false,
 }: {
   topic: CurriculumTopic;
   accent: string;
   isExpansion: boolean;
+  light?: boolean;
 }) {
   if (isExpansion) {
-    return <ExpansionTopic topic={topic} accent={accent} />;
+    return <ExpansionTopic topic={topic} accent={accent} light={light} />;
   }
 
   if (topic.lessons.length === 0) {
     return (
-      <div className="rounded-[14px] border border-cream/10 bg-white/[0.02] p-4 md:p-5">
+      <div className={light ? 'rounded-[8px] border border-[#dbe5d2] bg-white p-4 md:p-5' : 'rounded-[14px] border border-cream/10 bg-white/[0.02] p-4 md:p-5'}>
         <h3 className="kr-heading mb-1 text-[15px] md:text-[16px]" style={{ color: accent }}>
           {topic.topic}
         </h3>
@@ -449,14 +596,28 @@ function TopicGroup({
   );
 }
 
-function ExpansionTopic({ topic, accent }: { topic: CurriculumTopic; accent: string }) {
+function ExpansionTopic({
+  topic,
+  accent,
+  light = false,
+}: {
+  topic: CurriculumTopic;
+  accent: string;
+  light?: boolean;
+}) {
   const previewSteps = topic.lessons.flatMap((lesson) => lesson.steps).slice(0, 3);
 
   return (
-    <div className="rounded-[14px] border border-cream/10 bg-white/[0.02] p-4 md:p-5">
+    <div
+      className={
+        light
+          ? 'rounded-[8px] border border-[#dbe5d2] bg-white p-4 shadow-[0_10px_35px_-30px_rgba(22,32,21,0.45)] md:p-5'
+          : 'rounded-[14px] border border-cream/10 bg-white/[0.02] p-4 md:p-5'
+      }
+    >
       <header className="mb-3 flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
         <div>
-          <div className="mb-1 text-[10px] uppercase tracking-widest text-cream/45">
+          <div className={light ? 'mb-1 text-[12px] font-bold text-[#74806d]' : 'mb-1 text-[10px] uppercase tracking-widest text-cream/45'}>
             {topic.topicId} · {topic.sectionTitle}
           </div>
           <h3 className="kr-heading text-[15px] md:text-[17px]" style={{ color: accent }}>
@@ -464,7 +625,7 @@ function ExpansionTopic({ topic, accent }: { topic: CurriculumTopic; accent: str
           </h3>
         </div>
         <span
-          className="w-fit rounded-full border px-3 py-1 text-[10px] uppercase tracking-widest"
+          className={light ? 'w-fit rounded-full border px-3 py-1 text-[12px] font-bold' : 'w-fit rounded-full border px-3 py-1 text-[10px] uppercase tracking-widest'}
           style={{ borderColor: `${accent}55`, color: topic.available ? accent : 'rgba(239,244,255,0.52)' }}
         >
           {topic.available ? `카드 ${topic.totalCards}개` : '로드맵 수록'}
@@ -475,7 +636,14 @@ function ExpansionTopic({ topic, accent }: { topic: CurriculumTopic; accent: str
         <>
           <ul className="mb-4 m-0 list-none space-y-1.5 p-0">
             {previewSteps.map((step) => (
-              <li key={step.id} className="kr-body text-[12.5px] leading-[1.55] text-cream/68">
+              <li
+                key={step.id}
+                className={
+                  light
+                    ? 'kr-body text-[13px] leading-[1.6] text-[#53614f]'
+                    : 'kr-body text-[12.5px] leading-[1.55] text-cream/68'
+                }
+              >
                 {step.title}
               </li>
             ))}
@@ -483,15 +651,25 @@ function ExpansionTopic({ topic, accent }: { topic: CurriculumTopic; accent: str
           <a
             href={topic.href}
             onClick={(event) => handleNavClick(event, topic.href!)}
-            className="inline-flex items-center gap-2 rounded-full border border-cream/18 px-4 py-2.5 text-[11px] uppercase tracking-widest text-cream/74 transition hover:border-neon/40 hover:text-neon"
+            className={
+              light
+                ? 'inline-flex items-center gap-2 rounded-full border border-[#cbd9c1] px-4 py-2.5 text-[13px] font-bold text-[#33402f] transition hover:border-[#4d8a45] hover:text-[#256d2f]'
+                : 'inline-flex items-center gap-2 rounded-full border border-cream/18 px-4 py-2.5 text-[11px] uppercase tracking-widest text-cream/74 transition hover:border-neon/40 hover:text-neon'
+            }
           >
             개념 카드 보기
             <ChevronRight size={13} strokeWidth={2.5} />
           </a>
         </>
       ) : (
-        <p className="kr-body text-[12.5px] leading-[1.6] text-cream/55">
-          전체 시험범위에는 포함되어 있으며, 개별 색인 페이지는 실제 학습 카드가 준비되는 순서대로 엽니다.
+        <p
+          className={
+            light
+              ? 'kr-body text-[13px] leading-[1.6] text-[#66745f]'
+              : 'kr-body text-[12.5px] leading-[1.6] text-cream/55'
+          }
+        >
+          전체 범위에는 들어가지만, 아직 얇은 미리보기 페이지로 열지 않았습니다. 실제 카드가 준비된 토픽부터 연결합니다.
         </p>
       )}
     </div>

@@ -113,16 +113,27 @@ export default function BlogPostPage({ slug }: Props) {
       ?.map((s) => ALL_BLOG_POSTS.find((p) => p.slug === s))
       .filter((p): p is BlogPost => !!p) ?? [];
   const isComhwalPost = post.slug.startsWith('comhwal-');
+  const theme = isComhwalPost ? 'comhwal' : 'dark';
   const gameHref = isComhwalPost ? '#/game/comhwal' : '#/game';
   const curriculumHref = isComhwalPost ? '/curriculum/comhwal' : '/study-method';
 
   return (
-    <article className="relative min-h-screen isolate overflow-hidden bg-base text-cream">
+    <article
+      className={
+        isComhwalPost
+          ? 'relative isolate min-h-screen overflow-hidden bg-[#f5f8ef] text-[#162015]'
+          : 'relative min-h-screen isolate overflow-hidden bg-base text-cream'
+      }
+    >
       <div className="relative z-10 max-w-[760px] lg:max-w-[860px] mx-auto px-5 md:px-8 lg:px-12 pt-8 pb-16">
         <a
           href="/blog"
           onClick={(e) => handleNavClick(e, '/blog')}
-          className="inline-flex items-center gap-2 kr-heading uppercase text-[11px] tracking-widest text-cream/65 hover:text-neon transition mb-6"
+          className={
+            isComhwalPost
+              ? 'mb-7 inline-flex items-center gap-2 text-[13px] font-bold text-[#52604d] transition hover:text-[#256d2f]'
+              : 'inline-flex items-center gap-2 kr-heading uppercase text-[11px] tracking-widest text-cream/65 hover:text-neon transition mb-6'
+          }
         >
           <ArrowLeft size={14} strokeWidth={2.4} />
           블로그 목록
@@ -130,19 +141,37 @@ export default function BlogPostPage({ slug }: Props) {
 
         <nav
           aria-label="breadcrumb"
-          className="kr-num text-[11px] text-cream/55 mb-3 flex items-center gap-1.5 flex-wrap"
+          className={
+            isComhwalPost
+              ? 'mb-4 flex flex-wrap items-center gap-1.5 text-[12px] font-semibold text-[#697561]'
+              : 'kr-num text-[11px] text-cream/55 mb-3 flex items-center gap-1.5 flex-wrap'
+          }
         >
-          <a href="/blog" onClick={(e) => handleNavClick(e, '/blog')} className="hover:text-neon transition">
+          <a
+            href="/blog"
+            onClick={(e) => handleNavClick(e, '/blog')}
+            className={isComhwalPost ? 'transition hover:text-[#256d2f]' : 'hover:text-neon transition'}
+          >
             블로그
           </a>
-          <ChevronRight size={12} className="text-cream/30" />
-          <span className="text-cream/85">{BLOG_CATEGORY_LABEL[post.category]}</span>
+          <ChevronRight size={12} className={isComhwalPost ? 'text-[#9aa58f]' : 'text-cream/30'} />
+          <span className={isComhwalPost ? 'text-[#33402f]' : 'text-cream/85'}>
+            {BLOG_CATEGORY_LABEL[post.category]}
+          </span>
         </nav>
 
         {/* H1 */}
-        <header className="mb-8 pb-6 border-b border-cream/10">
-          <div className="kr-num text-[10px] uppercase tracking-widest text-cream/55 mb-2 inline-flex items-center gap-3">
-            <span className="text-neon">{BLOG_CATEGORY_LABEL[post.category]}</span>
+        <header className={isComhwalPost ? 'mb-8 border-b border-[#d8e2ce] pb-6' : 'mb-8 pb-6 border-b border-cream/10'}>
+          <div
+            className={
+              isComhwalPost
+                ? 'mb-2 inline-flex items-center gap-3 text-[12px] font-bold text-[#697561]'
+                : 'kr-num text-[10px] uppercase tracking-widest text-cream/55 mb-2 inline-flex items-center gap-3'
+            }
+          >
+            <span className={isComhwalPost ? 'text-[#256d2f]' : 'text-neon'}>
+              {BLOG_CATEGORY_LABEL[post.category]}
+            </span>
             <span>·</span>
             <span>{post.publishedAt}</span>
             <span>·</span>
@@ -154,27 +183,41 @@ export default function BlogPostPage({ slug }: Props) {
           <h1 className="kr-heading text-[28px] md:text-[36px] lg:text-[42px] leading-[1.2] mb-3">
             {post.title}
           </h1>
-          <p className="kr-body text-[14.5px] md:text-[15.5px] text-cream/75 leading-[1.65]">
+          <p
+            className={
+              isComhwalPost
+                ? 'kr-body text-[16px] leading-[1.75] text-[#4c5947]'
+                : 'kr-body text-[14.5px] md:text-[15.5px] text-cream/75 leading-[1.65]'
+            }
+          >
             {post.subtitle}
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <a
               href={gameHref}
               onClick={(e) => handleNavClick(e, gameHref)}
-              className="kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full active:scale-95 transition"
+              className={
+                isComhwalPost
+                  ? 'inline-flex items-center gap-2 rounded-full px-5 py-3 text-[14px] font-black text-[#162015] transition active:scale-95'
+                  : 'kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full active:scale-95 transition'
+              }
               style={{
                 background: '#FD802E',
                 color: '#010828',
                 boxShadow: '0 8px 22px -6px rgba(253,128,46,0.55)',
               }}
             >
-              {isComhwalPost ? '컴활 게임 섹션으로' : 'QuestDP 게임 섹션으로'}
+              {isComhwalPost ? '게임 화면에서 이어가기' : 'QuestDP 게임 섹션으로'}
               <ChevronRight size={14} strokeWidth={2.6} />
             </a>
             <a
               href={curriculumHref}
               onClick={(e) => handleNavClick(e, curriculumHref)}
-              className="kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full border border-cream/20 hover:border-neon/40 hover:text-neon transition"
+              className={
+                isComhwalPost
+                  ? 'inline-flex items-center gap-2 rounded-full border border-[#cbd9c1] px-5 py-3 text-[14px] font-bold text-[#33402f] transition hover:border-[#4d8a45] hover:text-[#256d2f]'
+                  : 'kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full border border-cream/20 hover:border-neon/40 hover:text-neon transition'
+              }
             >
               {isComhwalPost ? '컴활 커리큘럼' : '학습 원리'}
               <ChevronRight size={14} strokeWidth={2.6} />
@@ -185,13 +228,13 @@ export default function BlogPostPage({ slug }: Props) {
         {/* Body */}
         <div className="space-y-5">
           {post.blocks.map((block, i) => (
-            <BlockRenderer key={i} block={block} />
+            <BlockRenderer key={i} block={block} theme={theme} />
           ))}
         </div>
 
         {/* FAQ section */}
         {post.faqs && post.faqs.length > 0 ? (
-          <section className="mt-14 pt-8 border-t border-cream/10">
+          <section className={isComhwalPost ? 'mt-14 border-t border-[#d8e2ce] pt-8' : 'mt-14 pt-8 border-t border-cream/10'}>
             <h2 className="kr-heading text-[20px] md:text-[24px] mb-5 inline-flex items-center gap-2">
               <Sparkles size={18} className="text-neon" />
               자주 묻는 질문
@@ -200,12 +243,12 @@ export default function BlogPostPage({ slug }: Props) {
               {post.faqs.map((it, i) => (
                 <li
                   key={i}
-                  className="rounded-[14px] p-5 border border-cream/10 bg-white/[0.02]"
+                  className={isComhwalPost ? 'rounded-[8px] border border-[#d8e2ce] bg-white p-5' : 'rounded-[14px] p-5 border border-cream/10 bg-white/[0.02]'}
                 >
-                  <h3 className="kr-heading text-[14.5px] md:text-[15.5px] text-cream/95 mb-2 leading-[1.4]">
+                  <h3 className={isComhwalPost ? 'kr-heading mb-2 text-[15px] leading-[1.45] text-[#162015] md:text-[16px]' : 'kr-heading text-[14.5px] md:text-[15.5px] text-cream/95 mb-2 leading-[1.4]'}>
                     Q. {it.q}
                   </h3>
-                  <p className="kr-body text-[13px] md:text-[13.5px] text-cream/80 leading-[1.7] whitespace-pre-line">
+                  <p className={isComhwalPost ? 'kr-body whitespace-pre-line text-[14px] leading-[1.75] text-[#4c5947]' : 'kr-body text-[13px] md:text-[13.5px] text-cream/80 leading-[1.7] whitespace-pre-line'}>
                     {it.a}
                   </p>
                 </li>
@@ -216,7 +259,7 @@ export default function BlogPostPage({ slug }: Props) {
 
         {/* Related */}
         {related.length > 0 ? (
-          <section className="mt-14 pt-8 border-t border-cream/10">
+          <section className={isComhwalPost ? 'mt-14 border-t border-[#d8e2ce] pt-8' : 'mt-14 pt-8 border-t border-cream/10'}>
             <h2 className="kr-heading text-[18px] md:text-[20px] mb-5 inline-flex items-center gap-2">
               <BookOpen size={16} strokeWidth={2.4} className="text-cream/55" />
               이어서 읽기
@@ -229,15 +272,15 @@ export default function BlogPostPage({ slug }: Props) {
                     key={r.slug}
                     href={href}
                     onClick={(e) => handleNavClick(e, href)}
-                    className="block rounded-[14px] p-4 border border-cream/10 hover:border-neon/40 hover:bg-white/[0.04] transition"
+                    className={isComhwalPost ? 'block rounded-[8px] border border-[#d8e2ce] bg-white p-4 transition hover:border-[#4d8a45]' : 'block rounded-[14px] p-4 border border-cream/10 hover:border-neon/40 hover:bg-white/[0.04] transition'}
                   >
-                    <div className="kr-num text-[10px] uppercase tracking-widest text-cream/50 mb-1.5">
+                    <div className={isComhwalPost ? 'mb-1.5 text-[12px] font-bold text-[#74806d]' : 'kr-num text-[10px] uppercase tracking-widest text-cream/50 mb-1.5'}>
                       {BLOG_CATEGORY_LABEL[r.category]} · {r.readingMinutes}분
                     </div>
-                    <div className="kr-heading text-[14.5px] text-cream/95 leading-[1.35] mb-1">
+                    <div className={isComhwalPost ? 'kr-heading mb-1 text-[14.5px] leading-[1.35] text-[#162015]' : 'kr-heading text-[14.5px] text-cream/95 leading-[1.35] mb-1'}>
                       {r.title}
                     </div>
-                    <div className="kr-body text-[12px] text-cream/60 leading-[1.5] line-clamp-2">
+                    <div className={isComhwalPost ? 'kr-body line-clamp-2 text-[12.5px] leading-[1.55] text-[#5e6b58]' : 'kr-body text-[12px] text-cream/60 leading-[1.5] line-clamp-2'}>
                       {r.subtitle}
                     </div>
                   </a>
@@ -248,14 +291,16 @@ export default function BlogPostPage({ slug }: Props) {
         ) : null}
 
         {/* Footer mini-CTA */}
-        <div className="mt-12 pt-6 border-t border-cream/10 text-center">
-          <p className="kr-body text-[12px] text-cream/50 mb-3">
-            QuestDP — 한국 ADsP·SQLD·컴활 자격증을 우주 탐험 RPG 로 재구성
+        <div className={isComhwalPost ? 'mt-12 border-t border-[#d8e2ce] pt-6 text-center' : 'mt-12 pt-6 border-t border-cream/10 text-center'}>
+          <p className={isComhwalPost ? 'kr-body mb-3 text-[12px] text-[#697561]' : 'kr-body text-[12px] text-cream/50 mb-3'}>
+            {isComhwalPost
+              ? 'QuestDP — 처음 보는 자격증 용어를 짧은 카드와 문제로 익히는 학습 앱'
+              : 'QuestDP — 한국 ADsP·SQLD·컴활 자격증을 우주 탐험 RPG 로 재구성'}
           </p>
           <a
             href="/about"
             onClick={(e) => handleNavClick(e, '/about')}
-            className="kr-heading uppercase tracking-widest text-[11px] text-cream/65 hover:text-neon transition"
+            className={isComhwalPost ? 'text-[12px] font-bold text-[#52604d] transition hover:text-[#256d2f]' : 'kr-heading uppercase tracking-widest text-[11px] text-cream/65 hover:text-neon transition'}
           >
             QuestDP 소개 →
           </a>
@@ -267,19 +312,26 @@ export default function BlogPostPage({ slug }: Props) {
 
 // ─── 보조 컴포넌트 ────────────────────────────────────────────
 
-function BlockRenderer({ block }: { block: BlogBlock }) {
+function BlockRenderer({
+  block,
+  theme = 'dark',
+}: {
+  block: BlogBlock;
+  theme?: 'dark' | 'comhwal';
+}) {
+  const light = theme === 'comhwal';
   switch (block.kind) {
     case 'p':
       return (
-        <p className="kr-body text-[15px] md:text-[16px] leading-[1.85] text-cream/90">
-          <InlineMd text={block.text} />
+        <p className={light ? 'kr-body text-[15.5px] leading-[1.9] text-[#2f3a2b] md:text-[16.5px]' : 'kr-body text-[15px] md:text-[16px] leading-[1.85] text-cream/90'}>
+          <InlineMd text={block.text} theme={theme} />
         </p>
       );
     case 'h2':
       return (
         <h2
           id={block.id}
-          className="kr-heading text-[22px] md:text-[26px] mt-10 mb-3 leading-[1.3] text-cream/95"
+          className={light ? 'kr-heading mt-10 mb-3 text-[22px] leading-[1.3] text-[#162015] md:text-[26px]' : 'kr-heading text-[22px] md:text-[26px] mt-10 mb-3 leading-[1.3] text-cream/95'}
         >
           {block.text}
         </h2>
@@ -288,27 +340,27 @@ function BlockRenderer({ block }: { block: BlogBlock }) {
       return (
         <h3
           id={block.id}
-          className="kr-heading text-[18px] md:text-[20px] mt-6 mb-2 leading-[1.35] text-cream/90"
+          className={light ? 'kr-heading mt-6 mb-2 text-[18px] leading-[1.35] text-[#253020] md:text-[20px]' : 'kr-heading text-[18px] md:text-[20px] mt-6 mb-2 leading-[1.35] text-cream/90'}
         >
           {block.text}
         </h3>
       );
     case 'ul':
       return (
-        <ul className="space-y-2 list-disc pl-6 marker:text-neon/70">
+        <ul className={light ? 'space-y-2 list-disc pl-6 marker:text-[#256d2f]' : 'space-y-2 list-disc pl-6 marker:text-neon/70'}>
           {block.items.map((it, i) => (
-            <li key={i} className="kr-body text-[14.5px] md:text-[15.5px] leading-[1.75] text-cream/85">
-              <InlineMd text={it} />
+            <li key={i} className={light ? 'kr-body text-[14.5px] leading-[1.8] text-[#3e4a3a] md:text-[15.5px]' : 'kr-body text-[14.5px] md:text-[15.5px] leading-[1.75] text-cream/85'}>
+              <InlineMd text={it} theme={theme} />
             </li>
           ))}
         </ul>
       );
     case 'ol':
       return (
-        <ol className="space-y-2 list-decimal pl-6 marker:text-neon/70 marker:kr-num">
+        <ol className={light ? 'space-y-2 list-decimal pl-6 marker:font-bold marker:text-[#256d2f]' : 'space-y-2 list-decimal pl-6 marker:text-neon/70 marker:kr-num'}>
           {block.items.map((it, i) => (
-            <li key={i} className="kr-body text-[14.5px] md:text-[15.5px] leading-[1.75] text-cream/85">
-              <InlineMd text={it} />
+            <li key={i} className={light ? 'kr-body text-[14.5px] leading-[1.8] text-[#3e4a3a] md:text-[15.5px]' : 'kr-body text-[14.5px] md:text-[15.5px] leading-[1.75] text-cream/85'}>
+              <InlineMd text={it} theme={theme} />
             </li>
           ))}
         </ol>
@@ -320,32 +372,41 @@ function BlockRenderer({ block }: { block: BlogBlock }) {
           : block.tone === 'warn'
             ? { bg: 'rgba(248,113,113,0.08)', border: 'rgba(248,113,113,0.4)', color: '#fca5a5' }
             : { bg: 'rgba(255,176,32,0.08)', border: 'rgba(255,176,32,0.4)', color: '#FFB020' };
+      const lightTone =
+        block.tone === 'tip'
+          ? { bg: '#ffffff', border: '#d8e2ce', color: '#256d2f' }
+          : block.tone === 'warn'
+            ? { bg: '#fff7ed', border: '#e0cdbb', color: '#9a4f1c' }
+            : { bg: '#fffdf5', border: '#e1d8b6', color: '#7c5f12' };
       return (
         <div
-          className="rounded-[14px] p-5"
-          style={{ background: tone.bg, border: `1px solid ${tone.border}` }}
+          className={light ? 'rounded-[8px] p-5' : 'rounded-[14px] p-5'}
+          style={{
+            background: light ? lightTone.bg : tone.bg,
+            border: `1px solid ${light ? lightTone.border : tone.border}`,
+          }}
         >
           {block.title ? (
-            <h3 className="kr-heading text-[14px] mb-2" style={{ color: tone.color }}>
+            <h3 className="kr-heading text-[14px] mb-2" style={{ color: light ? lightTone.color : tone.color }}>
               {block.title}
             </h3>
           ) : null}
-          <p className="kr-body text-[14px] leading-[1.7] text-cream/90">
-            <InlineMd text={block.body} />
+          <p className={light ? 'kr-body text-[14px] leading-[1.75] text-[#3e4a3a]' : 'kr-body text-[14px] leading-[1.7] text-cream/90'}>
+            <InlineMd text={block.body} theme={theme} />
           </p>
         </div>
       );
     }
     case 'table':
       return (
-        <div className="overflow-x-auto rounded-[14px] border border-cream/10">
+        <div className={light ? 'overflow-x-auto rounded-[8px] border border-[#d8e2ce] bg-white' : 'overflow-x-auto rounded-[14px] border border-cream/10'}>
           <table className="w-full kr-body text-[13px] md:text-[14px]">
             <thead>
               <tr>
                 {block.headers.map((h, i) => (
                   <th
                     key={i}
-                    className="px-3 py-2.5 text-left kr-heading text-[12.5px] text-cream/85 bg-white/[0.05]"
+                    className={light ? 'bg-[#edf5e7] px-3 py-2.5 text-left kr-heading text-[12.5px] text-[#253020]' : 'px-3 py-2.5 text-left kr-heading text-[12.5px] text-cream/85 bg-white/[0.05]'}
                   >
                     {h}
                   </th>
@@ -354,13 +415,13 @@ function BlockRenderer({ block }: { block: BlogBlock }) {
             </thead>
             <tbody>
               {block.rows.map((row, i) => (
-                <tr key={i} className="border-t border-cream/8">
+                <tr key={i} className={light ? 'border-t border-[#d8e2ce]' : 'border-t border-cream/8'}>
                   {row.map((cell, j) => (
                     <td
                       key={j}
-                      className="px-3 py-2.5 text-cream/85 align-top whitespace-pre-line"
+                      className={light ? 'whitespace-pre-line px-3 py-2.5 align-top text-[#3e4a3a]' : 'px-3 py-2.5 text-cream/85 align-top whitespace-pre-line'}
                     >
-                      <InlineMd text={cell} />
+                        <InlineMd text={cell} theme={theme} />
                     </td>
                   ))}
                 </tr>
@@ -371,12 +432,12 @@ function BlockRenderer({ block }: { block: BlogBlock }) {
       );
     case 'quote':
       return (
-        <blockquote className="border-l-4 border-neon/50 pl-4 py-1 italic text-cream/80">
+        <blockquote className={light ? 'border-l-4 border-[#256d2f] py-1 pl-4 italic text-[#3e4a3a]' : 'border-l-4 border-neon/50 pl-4 py-1 italic text-cream/80'}>
           <p className="kr-body text-[14.5px] leading-[1.7]">
-            <InlineMd text={block.text} />
+            <InlineMd text={block.text} theme={theme} />
           </p>
           {block.cite ? (
-            <cite className="kr-num text-[11px] text-cream/55 mt-2 block">— {block.cite}</cite>
+            <cite className={light ? 'mt-2 block text-[12px] text-[#697561]' : 'kr-num text-[11px] text-cream/55 mt-2 block'}>— {block.cite}</cite>
           ) : null}
         </blockquote>
       );
@@ -388,7 +449,7 @@ function BlockRenderer({ block }: { block: BlogBlock }) {
             onClick={(e) => {
               if (block.href.startsWith('/')) handleNavClick(e, block.href);
             }}
-            className="inline-flex items-center gap-2 kr-heading uppercase tracking-widest text-[12px] md:text-[13px] px-5 py-3 rounded-full active:scale-95 transition"
+            className={light ? 'inline-flex items-center gap-2 rounded-full px-5 py-3 text-[14px] font-black text-[#162015] transition active:scale-95' : 'inline-flex items-center gap-2 kr-heading uppercase tracking-widest text-[12px] md:text-[13px] px-5 py-3 rounded-full active:scale-95 transition'}
             style={{
               background: '#FD802E',
               color: '#010828',
@@ -409,7 +470,14 @@ function BlockRenderer({ block }: { block: BlogBlock }) {
  * 인라인 마크다운: **bold** 와 [text](href) 만 처리.
  * 다른 마크다운 문법은 의도적으로 무시 — 평문 위주 콘텐츠라 충분.
  */
-function InlineMd({ text }: { text: string }) {
+function InlineMd({
+  text,
+  theme = 'dark',
+}: {
+  text: string;
+  theme?: 'dark' | 'comhwal';
+}) {
+  const light = theme === 'comhwal';
   // 1. 토큰화: bold / link / plain
   type Token =
     | { type: 'bold'; text: string }
@@ -460,7 +528,7 @@ function InlineMd({ text }: { text: string }) {
       {tokens.map((t, idx) => {
         if (t.type === 'bold') {
           return (
-            <strong key={idx} className="kr-heading text-cream/95">
+            <strong key={idx} className={light ? 'kr-heading text-[#162015]' : 'kr-heading text-cream/95'}>
               {t.text}
             </strong>
           );
@@ -474,7 +542,7 @@ function InlineMd({ text }: { text: string }) {
               onClick={(e) => {
                 if (isInternal) handleNavClick(e, t.href);
               }}
-              className="text-neon hover:underline"
+              className={light ? 'font-bold text-[#256d2f] hover:underline' : 'text-neon hover:underline'}
               {...(isInternal ? {} : { target: '_blank', rel: 'noopener' })}
             >
               {t.text}

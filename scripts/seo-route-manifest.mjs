@@ -192,11 +192,11 @@ const CORE_ROUTES = [
     priority: '0.9',
     title: '컴활 학습사이트 · 컴퓨터활용능력 1급·2급 필기 커리큘럼 — QuestDP',
     description:
-      '대한상공회의소 컴퓨터활용능력 필기 시험범위, 컴활 1급·2급 차이, 컴퓨터 일반·스프레드시트·데이터베이스 로드맵을 정리했습니다.',
-    h1: '컴활 커리큘럼',
-    eyebrow: '대한상공회의소 컴퓨터활용능력',
+      '컴활 1급·2급 필기 범위를 처음 준비하는 사람 기준으로 풀어봅니다. 컴퓨터 일반, 스프레드시트, 데이터베이스를 어디서부터 보면 덜 막히는지 확인하세요.',
+    h1: '컴활, 여기서부터 보면 덜 막혀요',
+    eyebrow: '컴퓨터활용능력 필기',
     summary:
-      '컴활 1급과 2급 필기 범위를 함께 보여주되, 개별 색인은 실제 카드가 준비된 컴퓨터 일반 001~059 토픽부터 엽니다. 준비 중인 범위는 얇은 페이지로 만들지 않습니다.',
+      '범위표만 보면 딱딱하지만 실제로는 컴퓨터 화면에서 자주 만나는 말을 차례로 익히는 시험입니다. 1급과 2급의 차이를 먼저 보고, 공개된 개념 카드부터 시작하세요.',
     links: [
       { href: '/curriculum/comhwal-1', label: '컴활 1급 필기 범위' },
       { href: '/curriculum/comhwal-2', label: '컴활 2급 필기 범위' },
@@ -211,11 +211,11 @@ const CORE_ROUTES = [
     priority: '0.85',
     title: '컴활 1급 필기 학습사이트 · 시험범위 커리큘럼 — QuestDP',
     description:
-      '컴활 1급 필기 3과목인 컴퓨터 일반, 스프레드시트 일반, 데이터베이스 일반을 토픽별 로드맵으로 정리했습니다.',
-    h1: '컴활 1급 필기 커리큘럼',
+      '컴활 1급 필기 3과목을 처음부터 같은 무게로 들고 가지 않도록, 공통 과목부터 데이터베이스까지 이어지는 순서를 안내합니다.',
+    h1: '컴활 1급, 공통 과목부터 차근차근',
     eyebrow: '컴퓨터활용능력 1급',
     summary:
-      '컴활 1급 필기는 60문항 60분, 컴퓨터 일반·스프레드시트 일반·데이터베이스 일반 3과목입니다. QuestDP는 먼저 컴퓨터 일반 실콘텐츠를 공개하고 나머지 과목은 로드맵으로 안내합니다.',
+      '1급은 60문항 60분, 컴퓨터 일반·스프레드시트 일반·데이터베이스 일반 3과목입니다. 공통 용어로 말문을 트고, 스프레드시트와 데이터베이스를 화면 감각에 맞춰 붙이세요.',
     links: [
       { href: '/curriculum/comhwal', label: '컴활 전체 범위' },
       { href: '/curriculum/comhwal-2', label: '컴활 2급 범위' },
@@ -230,11 +230,11 @@ const CORE_ROUTES = [
     priority: '0.85',
     title: '컴활 2급 필기 학습사이트 · 시험범위 커리큘럼 — QuestDP',
     description:
-      '컴활 2급 필기 2과목인 컴퓨터 일반과 스프레드시트 일반을 초보자 기준 토픽 로드맵으로 정리했습니다.',
-    h1: '컴활 2급 필기 커리큘럼',
+      '컴활 2급 필기 2과목인 컴퓨터 일반과 스프레드시트 일반을 노베이스도 덜 막히는 순서로 안내합니다.',
+    h1: '컴활 2급, 용어부터 가볍게',
     eyebrow: '컴퓨터활용능력 2급',
     summary:
-      '컴활 2급 필기는 40문항 40분, 컴퓨터 일반과 스프레드시트 일반 2과목입니다. 컴퓨터 일반 공통 토픽부터 짧은 카드와 체크포인트 문제로 학습할 수 있습니다.',
+      '2급은 40문항 40분, 컴퓨터 일반과 스프레드시트 일반 2과목입니다. 데이터베이스가 빠지는 대신 기본 용어와 엑셀 화면 감각을 촘촘히 잡는 쪽이 효율적입니다.',
     links: [
       { href: '/curriculum/comhwal', label: '컴활 전체 범위' },
       { href: '/curriculum/comhwal-1', label: '컴활 1급 범위' },
@@ -283,11 +283,11 @@ const CORE_ROUTES = [
     priority: '0.8',
     title: '컴활 학습사이트 FAQ — 1급·2급 필기 시험범위·문항 수·공부법',
     description:
-      '컴활 1급·2급 필기 차이, 컴퓨터활용능력 문항 수와 시험 시간, 합격 기준, 비전공자 공부법에 대한 QuestDP FAQ입니다.',
-    h1: '컴활 FAQ',
-    eyebrow: '컴퓨터활용능력 질문 모음',
+      '컴활 1급·2급 차이, 필기 문항 수, 합격 기준, 노베이스 공부 순서를 처음 준비하는 사람 기준으로 짧게 답합니다.',
+    h1: '컴활 처음 시작할 때 자주 묻는 질문',
+    eyebrow: '컴퓨터활용능력 필기',
     summary:
-      '컴활을 처음 준비하는 사람이 자주 묻는 1급·2급 차이, 필기 문항 수, 합격 기준, 컴퓨터 일반 우선순위를 한 번에 확인할 수 있습니다.',
+      '1급과 2급 중 뭘 고를지, 필기는 몇 문제인지, 어디서부터 시작할지처럼 시작 전에 자주 걸리는 질문만 모았습니다.',
     links: [
       { href: '/curriculum/comhwal', label: '컴활 커리큘럼' },
       { href: '/blog/comhwal-1급-vs-2급', label: '컴활 1급 vs 2급' },
@@ -567,7 +567,7 @@ function collectComhwalTopicSpecs(source) {
 function buildComhwalTopicRoute(source, topics, topic, index) {
   const path = `/topics/comhwal/${source.planetKey}/${topic.id}`;
   const summary = truncate(
-    `${topic.cards.slice(0, 2).map((card) => card.body).join(' ')} 컴활 필기 ${source.planetLabel} ${topic.id} ${topic.title}를 초보자용 개념 카드와 체크포인트 문제로 정리했습니다.`,
+    `${topic.cards.slice(0, 2).map((card) => card.body).join(' ')} 컴활 필기 ${source.planetLabel} ${topic.id} ${topic.title}를 길게 외우지 않도록 짧은 카드와 바로 확인하는 문제로 나눴습니다.`,
     180,
   );
   const questions = topic.cards
@@ -609,8 +609,8 @@ function buildComhwalTopicRoute(source, topics, topic, index) {
     priority: source.priority,
     title: `${topic.title} — ${source.sectionLabel} 개념 카드 | QuestDP`,
     description: summary,
-    h1: `${topic.title} — ${source.sectionLabel}`,
-    eyebrow: `컴퓨터활용능력 필기 · ${source.planetLabel} · ${topic.section || source.planetLabel} · ${topic.id}`,
+    h1: `${topic.title}, 바로 이해하고 확인하기`,
+    eyebrow: `${source.planetLabel} ${topic.id}`,
     summary,
     type: 'article',
     links,

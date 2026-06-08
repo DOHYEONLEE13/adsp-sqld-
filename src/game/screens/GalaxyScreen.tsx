@@ -3956,14 +3956,16 @@ function ComhwalIconCard({
   compact?: boolean;
   muted?: boolean;
 }) {
+  const mutedAccentBorder = getComhwalMutedAccentBorder(accent);
+  const mutedAccentFill = getComhwalMutedAccentFill(accent);
   const borderColor = active
     ? muted
-      ? `color-mix(in srgb, ${accent} 48%, rgba(239,244,255,0.16))`
+      ? mutedAccentBorder
       : accent
     : 'rgba(239,244,255,0.14)';
   const cardBackground =
     active && muted
-      ? `linear-gradient(180deg, color-mix(in srgb, ${accent} 9%, rgba(12,30,67,0.92)), rgba(6,18,49,0.84))`
+      ? mutedAccentFill
       : active
         ? `linear-gradient(180deg, color-mix(in srgb, ${accent} 22%, rgba(239,244,255,0.08)), rgba(239,244,255,0.055))`
         : 'rgba(239,244,255,0.055)';
@@ -4009,6 +4011,14 @@ function ComhwalIconCard({
       ) : null}
     </div>
   );
+}
+
+function getComhwalMutedAccentBorder(accent: string) {
+  return `color-mix(in srgb, ${accent} 46%, rgba(239,244,255,0.14))`;
+}
+
+function getComhwalMutedAccentFill(accent: string) {
+  return `linear-gradient(180deg, color-mix(in srgb, ${accent} 12%, rgba(10,28,66,0.96)), rgba(5,17,47,0.94))`;
 }
 
 function ComhwalSettingsDiagram({
@@ -4070,8 +4080,8 @@ function ComhwalSettingsDiagram({
   const activeMenu = menuItems.find((item) => item.key === activeKey) ?? menuItems[0];
   const ActiveIcon = activeMenu.Icon;
   const panelCards = panelMap[activeKey] ?? panelMap.system;
-  const mutedAccentBorder = `color-mix(in srgb, ${accent} 46%, rgba(239,244,255,0.14))`;
-  const mutedAccentFill = `linear-gradient(180deg, color-mix(in srgb, ${accent} 12%, rgba(10,28,66,0.96)), rgba(5,17,47,0.94))`;
+  const mutedAccentBorder = getComhwalMutedAccentBorder(accent);
+  const mutedAccentFill = getComhwalMutedAccentFill(accent);
 
   return (
     <ComhwalDiagramFrame accent={accent}>
@@ -4232,7 +4242,14 @@ function ComhwalDesktopDiagram({
               {index === 1 ? (
                 item
               ) : (
-                <ComhwalIconCard label={item} Icon={index === 0 ? Keyboard : Check} accent={accent} active compact />
+                <ComhwalIconCard
+                  label={item}
+                  Icon={index === 0 ? Keyboard : Check}
+                  accent={accent}
+                  active
+                  compact
+                  muted
+                />
               )}
             </div>
           ))}
@@ -4260,7 +4277,14 @@ function ComhwalDesktopDiagram({
           ))}
         </div>
         <div className="absolute inset-x-3 bottom-3 flex items-center gap-2 rounded-2xl border border-cream/12 bg-[#020b25]/90 px-2 py-2">
-          <div className="rounded-xl px-2 py-1 kr-heading text-[10px]" style={{ background: accent, color: '#07121f' }}>
+          <div
+            className="rounded-xl border px-2 py-1 kr-heading text-[10px]"
+            style={{
+              borderColor: getComhwalMutedAccentBorder(accent),
+              background: getComhwalMutedAccentFill(accent),
+              color: 'rgba(239,244,255,0.88)',
+            }}
+          >
             시작
           </div>
           <div className="flex min-w-0 flex-1 items-center gap-1.5 rounded-xl bg-white/[0.08] px-2 py-1.5 kr-body text-[10.5px] font-bold text-cream/58">
@@ -4297,6 +4321,7 @@ function ComhwalDeviceToolsDiagram({
                 accent={accent}
                 active={index === 1}
                 compact
+                muted
               />
               {index < 2 ? <ArrowRight size={15} strokeWidth={2.5} style={{ color: accent }} /> : null}
             </div>
@@ -4309,8 +4334,9 @@ function ComhwalDeviceToolsDiagram({
             key={item}
             className="mb-1.5 h-7 rounded-xl px-3 py-1.5 kr-heading text-[10px] last:mb-0"
             style={{
-              background: index === 0 ? accent : 'rgba(239,244,255,0.06)',
-              color: index === 0 ? '#07121f' : 'rgba(239,244,255,0.66)',
+              border: index === 0 ? `1px solid ${getComhwalMutedAccentBorder(accent)}` : '1px solid transparent',
+              background: index === 0 ? getComhwalMutedAccentFill(accent) : 'rgba(239,244,255,0.06)',
+              color: index === 0 ? 'rgba(239,244,255,0.86)' : 'rgba(239,244,255,0.66)',
             }}
           >
             {item}
@@ -4342,7 +4368,14 @@ function ComhwalDataScaleDiagram({
               background: index === 1 ? `color-mix(in srgb, ${accent} 16%, rgba(255,255,255,0.05))` : 'rgba(255,255,255,0.045)',
             }}
           >
-            <span className="grid h-8 w-8 place-items-center rounded-xl kr-num text-[11px]" style={{ background: index === 1 ? accent : 'rgba(255,255,255,0.08)', color: index === 1 ? '#07121f' : 'rgba(239,244,255,0.62)' }}>
+            <span
+              className="grid h-8 w-8 place-items-center rounded-xl border kr-num text-[11px]"
+              style={{
+                borderColor: index === 1 ? getComhwalMutedAccentBorder(accent) : 'transparent',
+                background: index === 1 ? getComhwalMutedAccentFill(accent) : 'rgba(255,255,255,0.08)',
+                color: index === 1 ? accent : 'rgba(239,244,255,0.62)',
+              }}
+            >
               {index + 1}
             </span>
             <span className="kr-heading text-[12px] text-cream/82">{item}</span>
@@ -4390,13 +4423,13 @@ function ComhwalHardwareBoardDiagram({
               style={{
                 left: part.x,
                 top: part.y,
-                borderColor: isActive ? accent : 'rgba(239,244,255,0.14)',
-                background: isActive ? accent : 'rgba(1,8,40,0.72)',
-                color: isActive ? '#07121f' : 'rgba(239,244,255,0.76)',
-                boxShadow: isActive ? `0 0 18px color-mix(in srgb, ${accent} 38%, transparent)` : 'none',
+                borderColor: isActive ? getComhwalMutedAccentBorder(accent) : 'rgba(239,244,255,0.14)',
+                background: isActive ? getComhwalMutedAccentFill(accent) : 'rgba(1,8,40,0.72)',
+                color: isActive ? 'rgba(239,244,255,0.88)' : 'rgba(239,244,255,0.76)',
+                boxShadow: 'none',
               }}
             >
-              <Icon size={16} strokeWidth={2.4} />
+              <Icon size={16} strokeWidth={2.4} style={{ color: isActive ? accent : 'currentColor' }} />
               <span className="mt-1 kr-heading text-[10px]">{part.label}</span>
             </div>
           );
@@ -4421,9 +4454,9 @@ function ComhwalSoftwareLayersDiagram({
             key={item}
             className="rounded-2xl border px-4 py-3"
             style={{
-              borderColor: index === 1 ? accent : 'rgba(239,244,255,0.14)',
-              background: index === 1 ? accent : 'rgba(255,255,255,0.045)',
-              color: index === 1 ? '#07121f' : 'rgba(239,244,255,0.8)',
+              borderColor: index === 1 ? getComhwalMutedAccentBorder(accent) : 'rgba(239,244,255,0.14)',
+              background: index === 1 ? getComhwalMutedAccentFill(accent) : 'rgba(255,255,255,0.045)',
+              color: index === 1 ? 'rgba(239,244,255,0.88)' : 'rgba(239,244,255,0.8)',
               transform: `translateX(${Math.abs(index - 1) * 12}px)`,
             }}
           >
@@ -4465,13 +4498,13 @@ function ComhwalNetworkMapDiagram({
               style={{
                 left: node.x,
                 top: node.y,
-                borderColor: index === 1 ? accent : 'rgba(239,244,255,0.14)',
-                background: index === 1 ? accent : 'rgba(1,8,40,0.78)',
-                color: index === 1 ? '#07121f' : 'rgba(239,244,255,0.8)',
-                boxShadow: index === 1 ? `0 0 18px color-mix(in srgb, ${accent} 36%, transparent)` : 'none',
+                borderColor: index === 1 ? getComhwalMutedAccentBorder(accent) : 'rgba(239,244,255,0.14)',
+                background: index === 1 ? getComhwalMutedAccentFill(accent) : 'rgba(1,8,40,0.78)',
+                color: index === 1 ? 'rgba(239,244,255,0.88)' : 'rgba(239,244,255,0.8)',
+                boxShadow: 'none',
               }}
             >
-              <Icon size={17} strokeWidth={2.4} />
+              <Icon size={17} strokeWidth={2.4} style={{ color: index === 1 ? accent : 'currentColor' }} />
               <span className="mt-1 kr-heading text-[10px] leading-tight">{node.label}</span>
             </div>
           );
@@ -4514,6 +4547,7 @@ function ComhwalMediaBoardDiagram({
             accent={accent}
             active={index === 1}
             compact
+            muted
           />
         ))}
       </div>
@@ -4548,9 +4582,9 @@ function ComhwalSecurityShieldDiagram({
               key={item}
               className="rounded-2xl border px-3 py-2 kr-heading text-[11px]"
               style={{
-                borderColor: index === 1 ? accent : 'rgba(239,244,255,0.14)',
-                background: index === 1 ? accent : 'rgba(255,255,255,0.045)',
-                color: index === 1 ? '#07121f' : 'rgba(239,244,255,0.78)',
+                borderColor: index === 1 ? getComhwalMutedAccentBorder(accent) : 'rgba(239,244,255,0.14)',
+                background: index === 1 ? getComhwalMutedAccentFill(accent) : 'rgba(255,255,255,0.045)',
+                color: index === 1 ? 'rgba(239,244,255,0.88)' : 'rgba(239,244,255,0.78)',
               }}
             >
               {item}

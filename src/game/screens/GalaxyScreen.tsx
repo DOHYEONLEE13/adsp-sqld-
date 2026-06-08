@@ -11,19 +11,39 @@
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import {
+  AppWindow,
   ArrowLeft,
   ArrowRight,
   BarChart3,
+  BatteryCharging,
   Check,
   ChevronLeft,
   ChevronRight,
+  Cpu,
+  FileText,
+  Folder,
+  Globe2,
+  HardDrive,
   Info,
+  Keyboard,
   ListTodo,
   Lock,
+  Monitor,
+  MousePointer2,
+  Palette,
+  Printer,
   RotateCcw,
+  Search,
+  Settings,
+  ShieldCheck,
   Star,
   Target,
+  Trash2,
+  Volume2,
+  Wifi,
+  Wrench,
   X,
+  type LucideIcon,
 } from 'lucide-react';
 import { getSupabase, onAuthStateChange } from '@/lib/supabase';
 import { SUBJECT_SCHEMAS } from '@/data/subjects';
@@ -1513,6 +1533,159 @@ function ExpansionChapterPath({
   );
 }
 
+type GlbPlanetVariant = 'stylized-glb';
+type ProceduralPlanetVariant = 'aurora-ring' | 'ice-orbit' | 'violet-gas';
+type ThreePlanetVariant = GlbPlanetVariant | ProceduralPlanetVariant;
+
+const EXPANSION_PLANET_VARIANTS: Record<string, ThreePlanetVariant> = {
+  'computer-general': 'stylized-glb',
+  'spreadsheet-general': 'ice-orbit',
+  'database-general': 'violet-gas',
+};
+
+const COMHWAL_STYLIZED_PLANET_URL = '/models/comhwal/stylized_planet.glb';
+
+const THREE_PLANET_THEMES: Record<
+  ProceduralPlanetVariant,
+  {
+    material: string;
+    baseStops: Array<[number, string]>;
+    glowStops: Array<[number, string]>;
+    stormStops: Array<[number, string]>;
+    bands: Array<{ y: number; h: number; color: string }>;
+    shadeStops: Array<[number, string]>;
+    atmosphereColor: string;
+    atmosphereOpacity: number;
+    rotationY: number;
+    spin: number;
+    hasRing: boolean;
+    hasMoon?: boolean;
+    moonColor?: string;
+  }
+> = {
+  'aurora-ring': {
+    material: 'soft-baked-ring-v4',
+    baseStops: [
+      [0, '#e4fff8'],
+      [0.2, '#b9fff0'],
+      [0.42, '#7de7da'],
+      [0.64, '#6fcfd2'],
+      [0.82, '#6e8fd7'],
+      [1, '#5f58b7'],
+    ],
+    glowStops: [
+      [0, 'rgba(255, 255, 255, 0.46)'],
+      [0.32, 'rgba(216, 255, 247, 0.22)'],
+      [0.68, 'rgba(140, 234, 222, 0.08)'],
+      [1, 'rgba(255, 255, 255, 0)'],
+    ],
+    stormStops: [
+      [0, 'rgba(255, 255, 255, 0.5)'],
+      [0.42, 'rgba(236, 255, 250, 0.2)'],
+      [1, 'rgba(255, 255, 255, 0)'],
+    ],
+    bands: [
+      { y: 52, h: 14, color: 'rgba(243, 255, 251, 0.24)' },
+      { y: 78, h: 18, color: 'rgba(118, 247, 221, 0.18)' },
+      { y: 104, h: 19, color: 'rgba(134, 113, 226, 0.26)' },
+      { y: 132, h: 16, color: 'rgba(38, 30, 101, 0.22)' },
+    ],
+    shadeStops: [
+      [0, 'rgba(255,255,255,0)'],
+      [0.44, 'rgba(24, 38, 96, 0.04)'],
+      [0.72, 'rgba(26, 30, 92, 0.11)'],
+      [1, 'rgba(10, 12, 48, 0.18)'],
+    ],
+    atmosphereColor: '#9ffff1',
+    atmosphereOpacity: 0.18,
+    rotationY: -0.32,
+    spin: 0.34,
+    hasRing: true,
+  },
+  'ice-orbit': {
+    material: 'ice-orbit-v1',
+    baseStops: [
+      [0, '#f0fff7'],
+      [0.18, '#bafcff'],
+      [0.4, '#75e0ef'],
+      [0.62, '#3fa5d7'],
+      [0.8, '#2f69a7'],
+      [1, '#15365f'],
+    ],
+    glowStops: [
+      [0, 'rgba(255, 255, 255, 0.38)'],
+      [0.32, 'rgba(211, 252, 255, 0.18)'],
+      [0.72, 'rgba(109, 221, 246, 0.08)'],
+      [1, 'rgba(255, 255, 255, 0)'],
+    ],
+    stormStops: [
+      [0, 'rgba(255, 255, 255, 0.42)'],
+      [0.44, 'rgba(215, 255, 255, 0.18)'],
+      [1, 'rgba(255, 255, 255, 0)'],
+    ],
+    bands: [
+      { y: 44, h: 13, color: 'rgba(247, 255, 255, 0.26)' },
+      { y: 72, h: 16, color: 'rgba(154, 246, 255, 0.18)' },
+      { y: 118, h: 16, color: 'rgba(64, 125, 202, 0.2)' },
+      { y: 146, h: 10, color: 'rgba(20, 57, 108, 0.22)' },
+    ],
+    shadeStops: [
+      [0, 'rgba(255,255,255,0)'],
+      [0.5, 'rgba(24, 70, 112, 0.04)'],
+      [0.78, 'rgba(18, 57, 109, 0.13)'],
+      [1, 'rgba(8, 24, 64, 0.22)'],
+    ],
+    atmosphereColor: '#bdf7ff',
+    atmosphereOpacity: 0.16,
+    rotationY: 0.18,
+    spin: 0.26,
+    hasRing: false,
+    hasMoon: true,
+    moonColor: '#d9fbff',
+  },
+  'violet-gas': {
+    material: 'violet-gas-v1',
+    baseStops: [
+      [0, '#f0e5ff'],
+      [0.18, '#c8a8ff'],
+      [0.42, '#8c7df2'],
+      [0.62, '#5962c8'],
+      [0.82, '#353778'],
+      [1, '#191a44'],
+    ],
+    glowStops: [
+      [0, 'rgba(255, 255, 255, 0.3)'],
+      [0.34, 'rgba(221, 199, 255, 0.16)'],
+      [0.7, 'rgba(139, 126, 242, 0.08)'],
+      [1, 'rgba(255, 255, 255, 0)'],
+    ],
+    stormStops: [
+      [0, 'rgba(255, 255, 255, 0.34)'],
+      [0.45, 'rgba(226, 213, 255, 0.14)'],
+      [1, 'rgba(255, 255, 255, 0)'],
+    ],
+    bands: [
+      { y: 42, h: 15, color: 'rgba(248, 240, 255, 0.18)' },
+      { y: 68, h: 20, color: 'rgba(184, 152, 255, 0.22)' },
+      { y: 98, h: 18, color: 'rgba(77, 96, 205, 0.2)' },
+      { y: 130, h: 19, color: 'rgba(28, 26, 82, 0.28)' },
+    ],
+    shadeStops: [
+      [0, 'rgba(255,255,255,0)'],
+      [0.48, 'rgba(52, 38, 122, 0.04)'],
+      [0.74, 'rgba(38, 34, 111, 0.17)'],
+      [1, 'rgba(8, 8, 38, 0.34)'],
+    ],
+    atmosphereColor: '#d8b8ff',
+    atmosphereOpacity: 0.14,
+    rotationY: -0.08,
+    spin: 0.2,
+    hasRing: false,
+    hasMoon: true,
+    moonColor: '#b6a7ff',
+  },
+};
+
 function ExpansionChapterNode({
   planetKey,
   cx,
@@ -1545,6 +1718,8 @@ function ExpansionChapterNode({
   const trackR = (ringSize - 6) / 2;
   const orbitR = (ringSize - 16) / 2;
   const titleW = Math.min(containerW - 32, 280);
+  const planetVariant = EXPANSION_PLANET_VARIANTS[planetKey] ?? null;
+  const isPlanetNode = planetVariant !== null;
   const nodeStyle = {
     inset: buttonInset,
     '--roadmap-accent': accent,
@@ -1572,18 +1747,21 @@ function ExpansionChapterNode({
             r={trackR}
             fill="none"
             stroke={`color-mix(in srgb, ${accent} 22%, rgba(239,244,255,0.14))`}
-            strokeWidth={2}
+            strokeWidth={isPlanetNode ? 1.2 : 2}
+            opacity={isPlanetNode ? 0.4 : 1}
           />
-          <circle
-            cx={ringSize / 2}
-            cy={ringSize / 2}
-            r={orbitR}
-            fill="none"
-            stroke={`color-mix(in srgb, ${accent} 22%, transparent)`}
-            strokeWidth={1.25}
-            strokeDasharray="3 10"
-            strokeLinecap="round"
-          />
+          {!isPlanetNode ? (
+            <circle
+              cx={ringSize / 2}
+              cy={ringSize / 2}
+              r={orbitR}
+              fill="none"
+              stroke={`color-mix(in srgb, ${accent} 22%, transparent)`}
+              strokeWidth={1.25}
+              strokeDasharray="3 10"
+              strokeLinecap="round"
+            />
+          ) : null}
         </svg>
 
         <button
@@ -1592,9 +1770,18 @@ function ExpansionChapterNode({
           aria-label={`${title} 과목${isResumeTarget ? ' (학습 복귀 — 여기서부터)' : ''}`}
           className={`absolute qd-roadmap-orb rounded-full inline-flex items-center justify-center transition-transform duration-150 hover:-translate-y-1 active:translate-y-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-neon${
             isResumeTarget ? ' qd-roadmap-orb--resume' : ''
-          }`}
+          }${isPlanetNode ? ' qd-roadmap-orb--three-planet' : ''}`}
           style={nodeStyle}
         >
+          {planetVariant === 'stylized-glb' ? (
+            <StylizedPlanetModel key="stylized-glb-v1" accent={accent} />
+          ) : planetVariant ? (
+            <ThreePlanetNode
+              key={`${planetVariant}-v1`}
+              accent={accent}
+              variant={planetVariant}
+            />
+          ) : null}
           <span
             className="qd-roadmap-orb__number kr-num leading-none relative"
             style={{
@@ -1647,6 +1834,531 @@ function ExpansionChapterNode({
       </div>
     </>
   );
+}
+
+function StylizedPlanetModel({ accent }: { accent: string }) {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return undefined;
+
+    let disposed = false;
+    let animationFrame = 0;
+    let cleanupThree = () => {};
+    const reduceMotion =
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+
+    Promise.all([
+      import('three'),
+      import('three/examples/jsm/loaders/GLTFLoader.js'),
+    ])
+      .then(([THREE, { GLTFLoader }]) => {
+        if (disposed) return;
+
+        const renderer = new THREE.WebGLRenderer({
+          canvas,
+          alpha: true,
+          antialias: true,
+          preserveDrawingBuffer: true,
+          powerPreference: 'high-performance',
+        });
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        renderer.setClearColor(0x000000, 0);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 0.88;
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(29, 1, 0.1, 30);
+        camera.position.set(0, 0, 7.35);
+
+        const root = new THREE.Group();
+        root.rotation.set(-0.14, -0.3, 0.04);
+        scene.add(root);
+
+        const modelPivot = new THREE.Group();
+        root.add(modelPivot);
+
+        scene.add(new THREE.AmbientLight('#d5f7ff', 1.22));
+
+        const keyLight = new THREE.DirectionalLight('#ffffff', 1.35);
+        keyLight.position.set(-2.4, 2.8, 4.2);
+        scene.add(keyLight);
+
+        const fillLight = new THREE.DirectionalLight('#96ffe8', 0.78);
+        fillLight.position.set(2.4, -0.9, 3.4);
+        scene.add(fillLight);
+
+        const rimLight = new THREE.PointLight(accent, 1.9, 8);
+        rimLight.position.set(2.1, -1.3, 2.2);
+        scene.add(rimLight);
+
+        const disposeMaterial = (material: import('three').Material) => {
+          Object.values(material).forEach((value) => {
+            if (value && typeof value === 'object' && 'isTexture' in value) {
+              (value as import('three').Texture).dispose();
+            }
+          });
+          material.dispose();
+        };
+
+        const disposeObject = (object: import('three').Object3D) => {
+          const mesh = object as import('three').Mesh;
+          mesh.geometry?.dispose();
+          const material = mesh.material;
+          if (Array.isArray(material)) {
+            material.forEach((item) => disposeMaterial(item));
+          } else {
+            material && disposeMaterial(material);
+          }
+        };
+
+        const loader = new GLTFLoader();
+        canvas.dataset.planetAsset = COMHWAL_STYLIZED_PLANET_URL;
+        canvas.dataset.planetMaterial = 'stylized-planet-glb-loading';
+
+        loader.load(
+          COMHWAL_STYLIZED_PLANET_URL,
+          (gltf) => {
+            if (disposed) {
+              gltf.scene.traverse(disposeObject);
+              return;
+            }
+
+            const model = gltf.scene;
+            model.traverse((object) => {
+              const mesh = object as import('three').Mesh;
+              if (!mesh.isMesh) return;
+              mesh.frustumCulled = false;
+              const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+              materials.forEach((material) => {
+                if (!material) return;
+                if ('envMapIntensity' in material) {
+                  (material as import('three').MeshStandardMaterial).envMapIntensity = 0.5;
+                }
+                material.needsUpdate = true;
+              });
+            });
+
+            const bounds = new THREE.Box3().setFromObject(model);
+            const size = bounds.getSize(new THREE.Vector3());
+            const center = bounds.getCenter(new THREE.Vector3());
+            const maxAxis = Math.max(size.x, size.y, size.z) || 1;
+
+            model.position.sub(center);
+            model.scale.setScalar(2.95 / maxAxis);
+            model.rotation.set(0, 0, 0);
+            modelPivot.add(model);
+
+            canvas.dataset.planetReady = 'true';
+            canvas.dataset.planetMaterial = 'stylized-planet-glb-v1';
+            canvas.dataset.planetBounds = [
+              size.x.toFixed(2),
+              size.y.toFixed(2),
+              size.z.toFixed(2),
+            ].join(',');
+          },
+          undefined,
+          (error) => {
+            canvas.dataset.planetError = 'true';
+            console.warn('Failed to load stylized planet GLB', error);
+          },
+        );
+
+        const setSize = () => {
+          const rect = canvas.getBoundingClientRect();
+          const width = Math.max(1, Math.floor(rect.width));
+          const height = Math.max(1, Math.floor(rect.height));
+          renderer.setSize(width, height, false);
+          camera.aspect = width / height;
+          camera.updateProjectionMatrix();
+        };
+
+        const resizeObserver = new ResizeObserver(setSize);
+        resizeObserver.observe(canvas);
+        setSize();
+
+        let frames = 0;
+        const render = (time = 0) => {
+          if (disposed) return;
+
+          const seconds = time / 1000;
+          root.rotation.y = -0.3 + Math.sin(seconds * 0.6) * 0.045;
+          modelPivot.rotation.y = seconds * 0.28;
+          modelPivot.rotation.z = Math.sin(seconds * 0.72) * 0.018;
+
+          renderer.render(scene, camera);
+          frames += 1;
+          canvas.dataset.planetFrames = String(frames);
+
+          if (!reduceMotion) {
+            animationFrame = window.requestAnimationFrame(render);
+          }
+        };
+
+        render(0);
+
+        cleanupThree = () => {
+          window.cancelAnimationFrame(animationFrame);
+          resizeObserver.disconnect();
+          scene.traverse(disposeObject);
+          renderer.dispose();
+        };
+      })
+      .catch((error) => {
+        canvas.dataset.planetError = 'true';
+        console.warn('Failed to render stylized planet node', error);
+      });
+
+    return () => {
+      disposed = true;
+      cleanupThree();
+    };
+  }, [accent]);
+
+  return <canvas ref={canvasRef} className="qd-three-planet-canvas" aria-hidden="true" />;
+}
+
+function ThreePlanetNode({
+  accent,
+  variant,
+}: {
+  accent: string;
+  variant: ProceduralPlanetVariant;
+}) {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return undefined;
+
+    let disposed = false;
+    let animationFrame = 0;
+    let cleanupThree = () => {};
+    const reduceMotion =
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+
+    import('three')
+      .then((THREE) => {
+        if (disposed) return;
+        const theme = THREE_PLANET_THEMES[variant];
+
+        const renderer = new THREE.WebGLRenderer({
+          canvas,
+          alpha: true,
+          antialias: true,
+          preserveDrawingBuffer: true,
+          powerPreference: 'high-performance',
+        });
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        renderer.setClearColor(0x000000, 0);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(31, 1, 0.1, 20);
+        camera.position.set(0, 0, 7.15);
+
+        const planet = new THREE.Group();
+        planet.rotation.set(-0.08, theme.rotationY, 0.04);
+        scene.add(planet);
+
+        scene.add(new THREE.AmbientLight('#92c8ff', 1.02));
+
+        const keyLight = new THREE.DirectionalLight('#ffffff', 1.55);
+        keyLight.position.set(-2.4, 2.2, 4.4);
+        scene.add(keyLight);
+
+        const fillLight = new THREE.DirectionalLight('#8ef8e8', 0.78);
+        fillLight.position.set(2.6, -0.7, 3.2);
+        scene.add(fillLight);
+
+        const rimLight = new THREE.PointLight(accent, 1.45, 8);
+        rimLight.position.set(2.2, -1.4, 2.2);
+        scene.add(rimLight);
+
+        const textureCanvas = document.createElement('canvas');
+        textureCanvas.width = 384;
+        textureCanvas.height = 192;
+        const textureCtx = textureCanvas.getContext('2d');
+
+        if (textureCtx) {
+          const base = textureCtx.createLinearGradient(20, 8, 366, 186);
+          theme.baseStops.forEach(([stop, color]) => base.addColorStop(stop, color));
+          textureCtx.fillStyle = base;
+          textureCtx.fillRect(0, 0, textureCanvas.width, textureCanvas.height);
+
+          textureCtx.save();
+          textureCtx.globalCompositeOperation = 'screen';
+          const glowWash = textureCtx.createRadialGradient(114, 62, 8, 162, 82, 184);
+          theme.glowStops.forEach(([stop, color]) => glowWash.addColorStop(stop, color));
+          textureCtx.fillStyle = glowWash;
+          textureCtx.fillRect(0, 0, textureCanvas.width, textureCanvas.height);
+          textureCtx.restore();
+
+          const storm = textureCtx.createRadialGradient(92, 54, 4, 110, 60, 72);
+          theme.stormStops.forEach(([stop, color]) => storm.addColorStop(stop, color));
+          textureCtx.fillStyle = storm;
+          textureCtx.fillRect(0, 0, textureCanvas.width, textureCanvas.height);
+
+          textureCtx.save();
+          textureCtx.globalCompositeOperation = 'screen';
+          theme.bands.forEach((band, index) => {
+            textureCtx.translate(0, index === 0 ? 0 : 2);
+            textureCtx.rotate((-3 * Math.PI) / 180);
+            textureCtx.fillStyle = band.color;
+            textureCtx.fillRect(-24, band.y, textureCanvas.width + 64, band.h);
+            textureCtx.rotate((3 * Math.PI) / 180);
+          });
+          textureCtx.restore();
+
+          textureCtx.save();
+          textureCtx.globalCompositeOperation = 'screen';
+          const midtone = textureCtx.createLinearGradient(96, 0, 344, 0);
+          midtone.addColorStop(0, 'rgba(219, 255, 248, 0)');
+          midtone.addColorStop(0.35, 'rgba(198, 255, 244, 0.16)');
+          midtone.addColorStop(0.62, 'rgba(143, 237, 220, 0.13)');
+          midtone.addColorStop(1, 'rgba(116, 145, 228, 0.02)');
+          textureCtx.fillStyle = midtone;
+          textureCtx.fillRect(0, 0, textureCanvas.width, textureCanvas.height);
+          textureCtx.restore();
+
+          textureCtx.save();
+          textureCtx.globalCompositeOperation = 'multiply';
+          const shade = textureCtx.createRadialGradient(132, 72, 64, 264, 118, 270);
+          theme.shadeStops.forEach(([stop, color]) => shade.addColorStop(stop, color));
+          textureCtx.fillStyle = shade;
+          textureCtx.fillRect(0, 0, textureCanvas.width, textureCanvas.height);
+          textureCtx.restore();
+        }
+
+        const planetTexture = new THREE.CanvasTexture(textureCanvas);
+        planetTexture.colorSpace = THREE.SRGBColorSpace;
+        planetTexture.anisotropy = 4;
+
+        const accentColor = new THREE.Color(accent);
+        const sphere = new THREE.Mesh(
+          new THREE.SphereGeometry(1.08, 64, 40),
+          new THREE.MeshBasicMaterial({
+            map: planetTexture,
+          }),
+        );
+        sphere.renderOrder = 1;
+        planet.add(sphere);
+
+        const atmosphere = new THREE.Mesh(
+          new THREE.SphereGeometry(1.13, 48, 32),
+          new THREE.MeshBasicMaterial({
+            color: theme.atmosphereColor,
+            transparent: true,
+            opacity: theme.atmosphereOpacity,
+            side: THREE.BackSide,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+          }),
+        );
+        planet.add(atmosphere);
+
+        const ringGroup = new THREE.Group();
+        ringGroup.rotation.set(0, 0, -0.13);
+        if (theme.hasRing) planet.add(ringGroup);
+
+        const ringColor = accentColor.clone().lerp(new THREE.Color('#e4fff8'), 0.48);
+        const createRingArc = ({
+          start,
+          end,
+          z,
+          radiusX,
+          radiusY,
+          tubeRadius,
+          opacity,
+          depthTest,
+          renderOrder,
+          color,
+        }: {
+          start: number;
+          end: number;
+          z: number;
+          radiusX: number;
+          radiusY: number;
+          tubeRadius: number;
+          opacity: number;
+          depthTest: boolean;
+          renderOrder: number;
+          color: string | import('three').Color;
+        }) => {
+          const points: import('three').Vector3[] = [];
+          const segments = 76;
+          for (let i = 0; i <= segments; i += 1) {
+            const t = start + ((end - start) * i) / segments;
+            points.push(new THREE.Vector3(
+              Math.cos(t) * radiusX,
+              Math.sin(t) * radiusY - 0.04,
+              z,
+            ));
+          }
+          const curve = new THREE.CatmullRomCurve3(points);
+          const mesh = new THREE.Mesh(
+            new THREE.TubeGeometry(curve, segments, tubeRadius, 8, false),
+            new THREE.MeshBasicMaterial({
+              color,
+              transparent: true,
+              opacity,
+              depthTest,
+              depthWrite: false,
+            }),
+          );
+          mesh.renderOrder = renderOrder;
+          return mesh;
+        };
+
+        if (theme.hasRing) {
+          const backRing = createRingArc(
+            {
+              start: 0.04 * Math.PI,
+              end: 0.96 * Math.PI,
+              z: -0.34,
+              radiusX: 1.66,
+              radiusY: 0.34,
+              tubeRadius: 0.035,
+              opacity: 0.48,
+              depthTest: true,
+              renderOrder: 0,
+              color: '#b6d9d8',
+            },
+          );
+          ringGroup.add(backRing);
+
+          const backGlow = createRingArc(
+            {
+              start: 0.02 * Math.PI,
+              end: 0.98 * Math.PI,
+              z: -0.36,
+              radiusX: 1.88,
+              radiusY: 0.39,
+              tubeRadius: 0.012,
+              opacity: 0.22,
+              depthTest: true,
+              renderOrder: 0,
+              color: '#d8f8ef',
+            },
+          );
+          ringGroup.add(backGlow);
+
+          const frontRing = createRingArc(
+            {
+              start: 1.06 * Math.PI,
+              end: 1.94 * Math.PI,
+              z: 0.36,
+              radiusX: 1.66,
+              radiusY: 0.34,
+              tubeRadius: 0.04,
+              opacity: 0.82,
+              depthTest: false,
+              renderOrder: 4,
+              color: ringColor,
+            },
+          );
+          ringGroup.add(frontRing);
+
+          const frontHighlight = createRingArc(
+            {
+              start: 1.1 * Math.PI,
+              end: 1.9 * Math.PI,
+              z: 0.39,
+              radiusX: 1.87,
+              radiusY: 0.39,
+              tubeRadius: 0.014,
+              opacity: 0.34,
+              depthTest: false,
+              renderOrder: 5,
+              color: '#f2fff7',
+            },
+          );
+          ringGroup.add(frontHighlight);
+        }
+
+        const moonGroup = new THREE.Group();
+        if (theme.hasMoon) {
+          const moon = new THREE.Mesh(
+            new THREE.SphereGeometry(0.14, 24, 16),
+            new THREE.MeshBasicMaterial({
+              color: theme.moonColor ?? '#e8fbff',
+              transparent: true,
+              opacity: 0.92,
+            }),
+          );
+          moon.position.set(1.58, -0.44, 0.62);
+          moonGroup.add(moon);
+          planet.add(moonGroup);
+        }
+
+        const setSize = () => {
+          const rect = canvas.getBoundingClientRect();
+          const width = Math.max(1, Math.floor(rect.width));
+          const height = Math.max(1, Math.floor(rect.height));
+          renderer.setSize(width, height, false);
+          camera.aspect = width / height;
+          camera.updateProjectionMatrix();
+        };
+
+        const resizeObserver = new ResizeObserver(setSize);
+        resizeObserver.observe(canvas);
+        setSize();
+
+        let frames = 0;
+        const render = (time = 0) => {
+          if (disposed) return;
+
+          const seconds = time / 1000;
+          sphere.rotation.y = seconds * theme.spin;
+          atmosphere.rotation.y = seconds * 0.18;
+          planet.rotation.y = theme.rotationY + Math.sin(seconds * 0.7) * 0.035;
+          ringGroup.rotation.z = -0.13 + Math.sin(seconds * 0.82) * 0.012;
+          moonGroup.rotation.z = seconds * 0.42;
+
+          renderer.render(scene, camera);
+          frames += 1;
+          canvas.dataset.planetReady = 'true';
+          canvas.dataset.planetMaterial = theme.material;
+          canvas.dataset.planetFrames = String(frames);
+
+          if (!reduceMotion) {
+            animationFrame = window.requestAnimationFrame(render);
+          }
+        };
+
+        render(0);
+
+        cleanupThree = () => {
+          window.cancelAnimationFrame(animationFrame);
+          resizeObserver.disconnect();
+          scene.traverse((object) => {
+            const mesh = object as import('three').Mesh;
+            mesh.geometry?.dispose();
+            const material = mesh.material;
+            if (Array.isArray(material)) {
+              material.forEach((item) => item.dispose());
+            } else {
+              material?.dispose();
+            }
+          });
+          planetTexture.dispose();
+          renderer.dispose();
+        };
+      })
+      .catch((error) => {
+        canvas.dataset.planetError = 'true';
+        console.warn('Failed to render Three.js planet node', error);
+      });
+
+    return () => {
+      disposed = true;
+      cleanupThree();
+    };
+  }, [accent, variant]);
+
+  return <canvas ref={canvasRef} className="qd-three-planet-canvas" aria-hidden="true" />;
 }
 
 function ExpansionOutlineScreen({
@@ -2234,6 +2946,7 @@ type ComhwalVisualModel = {
   kind?: string;
   focus?: ComhwalVisualFocus;
   focusLabel?: string;
+  visualHint?: string;
   mode?:
     | 'manager'
     | 'windows'
@@ -2314,7 +3027,343 @@ function getComhwalVisualModel(card: ComhwalConceptCard): ComhwalVisualModel {
       break;
   }
 
+  const computerVisual = getComhwalComputerVisualModel(card);
+  if (computerVisual) return computerVisual;
+
   return getComhwalExpansionVisualModel(card);
+}
+
+type ComhwalComputerVisualPreset = {
+  eyebrow: string;
+  title: string;
+  lead: string;
+  flow: [string, string, string];
+  chips?: string[];
+  pattern: string;
+};
+
+const COMHWAL_SETTINGS_VISUAL_PRESETS: Record<string, ComhwalComputerVisualPreset> = {
+  'settings-system': {
+    eyebrow: 'WINDOWS SETTINGS',
+    title: '시스템 설정은 컴퓨터 상태판',
+    lead: '왼쪽 설정 메뉴에서 [시스템]을 열면 화면, 소리, 저장 공간, 전원처럼 컴퓨터 기본 상태를 한곳에서 확인해.',
+    flow: ['설정 홈', '시스템', '화면·소리·전원'],
+    chips: ['디스플레이', '소리', '저장 공간', '전원'],
+    pattern: 'computer-settings-system',
+  },
+  'personalization-theme': {
+    eyebrow: 'WINDOWS SETTINGS',
+    title: '개인 설정은 화면 꾸미기',
+    lead: '배경, 색, 테마, 잠금 화면처럼 사용자가 보는 겉모습을 바꾸는 메뉴야.',
+    flow: ['설정 홈', '개인 설정', '배경·테마'],
+    chips: ['배경', '색', '테마'],
+    pattern: 'computer-settings-personalization',
+  },
+  'settings-apps': {
+    eyebrow: 'WINDOWS SETTINGS',
+    title: '앱 설정은 프로그램 관리',
+    lead: '설치된 앱을 확인하고 제거하거나, 파일을 열 기본 앱을 정하는 흐름으로 보면 돼.',
+    flow: ['설정 홈', '앱', '설치·기본 앱'],
+    chips: ['설치 앱', '앱 제거', '기본 앱'],
+    pattern: 'computer-settings-apps',
+  },
+  'settings-devices': {
+    eyebrow: 'WINDOWS SETTINGS',
+    title: '장치 설정은 연결 기기 관리',
+    lead: '프린터, 마우스, 키보드, 블루투스처럼 컴퓨터에 붙여 쓰는 장비를 다루는 메뉴야.',
+    flow: ['설정 홈', '장치', '프린터·마우스'],
+    chips: ['프린터', '마우스', '키보드'],
+    pattern: 'computer-settings-devices',
+  },
+  'update-security': {
+    eyebrow: 'WINDOWS SETTINGS',
+    title: '업데이트와 보안은 보호 센터',
+    lead: 'Windows를 최신 상태로 맞추고, 백업·복구처럼 문제가 생겼을 때 돌아올 길을 챙겨.',
+    flow: ['설정 홈', '업데이트 및 보안', '패치·복구'],
+    chips: ['업데이트', '보안 패치', '백업·복구'],
+    pattern: 'computer-settings-security',
+  },
+};
+
+const includesHint = (hint: string, hints: readonly string[]) => hints.includes(hint);
+
+function getComhwalComputerVisualModel(
+  card: ComhwalConceptCard,
+): ComhwalVisualModel | null {
+  const hint = card.visualHint;
+  if (!hint) return null;
+
+  const settingsPreset = COMHWAL_SETTINGS_VISUAL_PRESETS[hint];
+  if (settingsPreset) {
+    return {
+      ...settingsPreset,
+      chips: settingsPreset.chips ?? card.keyPoints.slice(0, 3),
+      kind: hint,
+      visualHint: hint,
+      focus: 'generic',
+    };
+  }
+
+  const base = (preset: ComhwalComputerVisualPreset): ComhwalVisualModel => ({
+    ...preset,
+    chips: preset.chips ?? card.keyPoints.slice(0, 3),
+    kind: hint,
+    visualHint: hint,
+    focus: 'generic',
+  });
+
+  if (
+    includesHint(hint, [
+      'file-system-shelves',
+      'ntfs-permission',
+      'folder-options-view',
+      'file-unit',
+      'file-folder-box',
+      'shortcut-arrow',
+      'recycle-bin-flow',
+    ])
+  ) {
+    return base({
+      eyebrow: 'FILE EXPLORER',
+      title: hint === 'recycle-bin-flow' ? '휴지통은 삭제 전 대기실' : '파일은 위치와 권한으로 찾아',
+      lead:
+        hint === 'shortcut-arrow'
+          ? '바로 가기는 원본으로 가는 작은 표지판이라, 표지판을 지워도 원본 자체와는 달라.'
+          : hint === 'recycle-bin-flow'
+            ? '삭제한 파일은 바로 사라지기 전에 휴지통에 잠시 머물 수 있어. 복원과 완전 삭제를 구분해.'
+            : card.body,
+      flow:
+        hint === 'shortcut-arrow'
+          ? ['바로 가기', '대상 경로', '원본 파일']
+          : hint === 'recycle-bin-flow'
+            ? ['삭제', '휴지통', '복원/비우기']
+            : ['저장 장치', '폴더', '파일'],
+      pattern: 'computer-file-explorer',
+    });
+  }
+
+  if (
+    includesHint(hint, [
+      'gui-window-icons',
+      'multitasking-switch',
+      'keyboard-shortcut',
+      'taskbar-map',
+      'task-view-windows',
+      'virtual-desktops',
+      'start-menu-map',
+      'search-box-map',
+      'windows-accessories',
+      'universal-app-devices',
+    ])
+  ) {
+    return base({
+      eyebrow: 'WINDOWS DESKTOP',
+      title:
+        hint === 'keyboard-shortcut'
+          ? '단축키는 손 빠른 조작'
+          : hint === 'search-box-map'
+            ? '검색 상자는 빠른 길찾기'
+            : '바탕화면은 조작 입구',
+      lead: card.body,
+      flow:
+        hint === 'keyboard-shortcut'
+          ? ['Ctrl', '+', '작업 실행']
+          : hint === 'search-box-map'
+            ? ['키워드', '검색', '파일·앱·설정']
+            : ['시작', '작업 표시줄', '창 전환'],
+      pattern: 'computer-desktop-controls',
+    });
+  }
+
+  if (
+    includesHint(hint, [
+      'plug-and-play-device',
+      'device-manager-tree',
+      'printer-device',
+      'print-queue',
+      'admin-tools',
+      'troubleshooter',
+    ])
+  ) {
+    return base({
+      eyebrow: 'DEVICE TOOLS',
+      title:
+        hint === 'print-queue'
+          ? '인쇄는 대기열을 거쳐'
+          : hint === 'troubleshooter'
+            ? '문제 해결은 자동 점검'
+            : '장치는 연결 상태로 관리해',
+      lead: card.body,
+      flow:
+        hint === 'print-queue'
+          ? ['인쇄 요청', '대기열', '출력/취소']
+          : hint === 'troubleshooter'
+            ? ['문제 발견', '자동 진단', '해결 안내']
+            : ['장치 연결', '상태 확인', '드라이버'],
+      pattern: 'computer-device-tools',
+    });
+  }
+
+  if (
+    includesHint(hint, [
+      'computer-classification-scale',
+      'data-unit-ladder',
+      'complement-bits',
+      'binary-representation',
+    ])
+  ) {
+    return base({
+      eyebrow: 'DATA SCALE',
+      title: hint === 'data-unit-ladder' ? '자료 단위는 계단처럼 커져' : '컴퓨터 값은 기준으로 나눠 봐',
+      lead: card.body,
+      flow:
+        hint === 'data-unit-ladder'
+          ? ['bit', 'Byte', 'KB·MB·GB']
+          : hint === 'binary-representation'
+            ? ['사람이 보는 값', '코드 변환', '0과 1']
+            : ['기준', '분류', '비교'],
+      pattern: 'computer-data-scale',
+    });
+  }
+
+  if (
+    includesHint(hint, [
+      'cpu-core',
+      'main-memory',
+      'ram-rom-compare',
+      'secondary-storage',
+      'output-devices',
+      'interrupt-signal',
+      'motherboard-map',
+      'bios-boot',
+      'raid-disks',
+      'system-management',
+      'hardware-upgrade',
+    ])
+  ) {
+    return base({
+      eyebrow: 'HARDWARE MAP',
+      title:
+        hint === 'cpu-core'
+          ? 'CPU는 계산과 지휘 중심'
+          : hint === 'main-memory' || hint === 'ram-rom-compare'
+            ? '주기억장치는 작업 공간'
+            : hint === 'secondary-storage' || hint === 'raid-disks'
+              ? '저장 장치는 오래 보관해'
+              : '부품은 역할과 연결로 이해해',
+      lead: card.body,
+      flow:
+        hint === 'cpu-core'
+          ? ['명령', 'CPU', '계산 결과']
+          : hint === 'main-memory' || hint === 'ram-rom-compare'
+            ? ['CPU', 'RAM/ROM', '작업 데이터']
+            : ['부품', '메인보드', '동작'],
+      pattern: 'computer-hardware-board',
+    });
+  }
+
+  if (
+    includesHint(hint, [
+      'software-vs-hardware',
+      'os-resource-manager',
+      'os-processing-modes',
+      'programming-language',
+      'html-css-js',
+    ])
+  ) {
+    return base({
+      eyebrow: 'SOFTWARE LAYERS',
+      title: hint === 'html-css-js' ? '웹은 구조·꾸밈·동작으로 나눠' : '소프트웨어는 하드웨어를 움직여',
+      lead: card.body,
+      flow:
+        hint === 'html-css-js'
+          ? ['HTML 구조', 'CSS 꾸밈', 'JS 동작']
+          : ['사용자 작업', '소프트웨어', '하드웨어'],
+      pattern: 'computer-software-layers',
+    });
+  }
+
+  if (
+    includesHint(hint, [
+      'network-status-card',
+      'network-types',
+      'network-topology',
+      'internet-global',
+      'ip-address',
+      'protocol-rules',
+      'internet-services',
+      'ict-services',
+    ])
+  ) {
+    return base({
+      eyebrow: 'NETWORK MAP',
+      title:
+        hint === 'ip-address'
+          ? 'IP 주소는 장치 주소'
+          : hint === 'protocol-rules'
+            ? '프로토콜은 통신 약속'
+            : '네트워크는 연결 범위와 길',
+      lead: card.body,
+      flow:
+        hint === 'ip-address'
+          ? ['장치', 'IP 주소', '데이터 도착']
+          : hint === 'protocol-rules'
+            ? ['규칙', '전송', '이해']
+            : ['내 컴퓨터', '네트워크', '인터넷'],
+      pattern: 'computer-network-map',
+    });
+  }
+
+  if (
+    includesHint(hint, [
+      'multimedia-media-types',
+      'media-software',
+      'bitmap-vector-compare',
+      'audio-video-formats',
+      'multimedia-use-cases',
+    ])
+  ) {
+    return base({
+      eyebrow: 'MEDIA BOARD',
+      title:
+        hint === 'bitmap-vector-compare'
+          ? '비트맵과 벡터는 저장 방식이 달라'
+          : '멀티미디어는 여러 매체를 섞어',
+      lead: card.body,
+      flow:
+        hint === 'bitmap-vector-compare'
+          ? ['픽셀', '도형 정보', '확대 차이']
+          : ['문자', '그림·소리', '영상'],
+      pattern: 'computer-media-board',
+    });
+  }
+
+  if (
+    includesHint(hint, [
+      'copyright-protection',
+      'malware-types',
+      'cia-triad',
+      'security-methods',
+    ])
+  ) {
+    return base({
+      eyebrow: 'SECURITY SHIELD',
+      title:
+        hint === 'cia-triad'
+          ? '보안 3요소는 CIA'
+          : hint === 'malware-types'
+            ? '악성 코드는 피해 방식이 달라'
+            : '보안은 접근과 변조를 막아',
+      lead: card.body,
+      flow:
+        hint === 'cia-triad'
+          ? ['기밀성', '무결성', '가용성']
+          : ['위협', '점검', '보호'],
+      pattern: 'computer-security-shield',
+    });
+  }
+
+  return null;
 }
 
 function ComhwalFlowNode({
@@ -2840,6 +3889,676 @@ function ComhwalVisualFlow({
         </div>
       ))}
     </div>
+  );
+}
+
+function ComhwalComputerPattern({
+  model,
+  accent,
+}: {
+  model: ComhwalVisualModel;
+  accent: string;
+}) {
+  const pattern = model.pattern ?? '';
+
+  if (pattern.startsWith('computer-settings-')) {
+    return <ComhwalSettingsDiagram model={model} accent={accent} />;
+  }
+  if (pattern === 'computer-file-explorer') {
+    return <ComhwalFileExplorerDiagram model={model} accent={accent} />;
+  }
+  if (pattern === 'computer-desktop-controls') {
+    return <ComhwalDesktopDiagram model={model} accent={accent} />;
+  }
+  if (pattern === 'computer-device-tools') {
+    return <ComhwalDeviceToolsDiagram model={model} accent={accent} />;
+  }
+  if (pattern === 'computer-data-scale') {
+    return <ComhwalDataScaleDiagram model={model} accent={accent} />;
+  }
+  if (pattern === 'computer-hardware-board') {
+    return <ComhwalHardwareBoardDiagram model={model} accent={accent} />;
+  }
+  if (pattern === 'computer-software-layers') {
+    return <ComhwalSoftwareLayersDiagram model={model} accent={accent} />;
+  }
+  if (pattern === 'computer-network-map') {
+    return <ComhwalNetworkMapDiagram model={model} accent={accent} />;
+  }
+  if (pattern === 'computer-media-board') {
+    return <ComhwalMediaBoardDiagram model={model} accent={accent} />;
+  }
+  if (pattern === 'computer-security-shield') {
+    return <ComhwalSecurityShieldDiagram model={model} accent={accent} />;
+  }
+
+  return (
+    <ComhwalDiagramFrame accent={accent}>
+      <ComhwalVisualFlow model={model} accent={accent} />
+    </ComhwalDiagramFrame>
+  );
+}
+
+function ComhwalIconCard({
+  label,
+  sub,
+  Icon,
+  accent,
+  active = false,
+  compact = false,
+  muted = false,
+}: {
+  label: string;
+  sub?: string;
+  Icon: LucideIcon;
+  accent: string;
+  active?: boolean;
+  compact?: boolean;
+  muted?: boolean;
+}) {
+  const borderColor = active
+    ? muted
+      ? `color-mix(in srgb, ${accent} 48%, rgba(239,244,255,0.16))`
+      : accent
+    : 'rgba(239,244,255,0.14)';
+  const cardBackground =
+    active && muted
+      ? `linear-gradient(180deg, color-mix(in srgb, ${accent} 9%, rgba(12,30,67,0.92)), rgba(6,18,49,0.84))`
+      : active
+        ? `linear-gradient(180deg, color-mix(in srgb, ${accent} 22%, rgba(239,244,255,0.08)), rgba(239,244,255,0.055))`
+        : 'rgba(239,244,255,0.055)';
+  const iconBackground =
+    active && muted
+      ? `linear-gradient(180deg, color-mix(in srgb, ${accent} 18%, rgba(9,26,60,0.96)), rgba(6,18,49,0.96))`
+      : active
+        ? accent
+        : 'rgba(1,8,40,0.34)';
+  const iconColor = active && muted ? accent : active ? '#07121f' : accent;
+
+  return (
+    <div
+      className={`relative min-w-0 rounded-2xl border ${compact ? 'p-2' : 'p-3'}`}
+      style={{
+        borderColor,
+        background: cardBackground,
+        boxShadow:
+          active && !muted
+            ? `0 0 18px color-mix(in srgb, ${accent} 30%, transparent)`
+            : 'none',
+      }}
+    >
+      <div className="flex items-center gap-2">
+        <span
+          className="grid h-8 w-8 shrink-0 place-items-center rounded-xl border"
+          style={{
+            borderColor,
+            background: iconBackground,
+            color: iconColor,
+          }}
+        >
+          <Icon size={16} strokeWidth={2.5} />
+        </span>
+        <span className="min-w-0 kr-heading text-[11px] leading-tight text-cream/88">
+          {label}
+        </span>
+      </div>
+      {sub ? (
+        <p className="mt-2 kr-body text-[10.5px] font-bold leading-snug text-cream/52">
+          {sub}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+function ComhwalSettingsDiagram({
+  model,
+  accent,
+}: {
+  model: ComhwalVisualModel;
+  accent: string;
+}) {
+  const pattern = model.pattern ?? '';
+  const activeKey = pattern.includes('personalization')
+    ? 'personalization'
+    : pattern.includes('apps')
+      ? 'apps'
+      : pattern.includes('devices')
+        ? 'devices'
+        : pattern.includes('security')
+          ? 'security'
+          : 'system';
+  const menuItems: Array<{ key: string; label: string; Icon: LucideIcon }> = [
+    { key: 'system', label: '시스템', Icon: Monitor },
+    { key: 'personalization', label: '개인 설정', Icon: Palette },
+    { key: 'apps', label: '앱', Icon: AppWindow },
+    { key: 'devices', label: '장치', Icon: MousePointer2 },
+    { key: 'security', label: '업데이트', Icon: ShieldCheck },
+  ];
+  const panelMap: Record<string, Array<{ label: string; sub: string; Icon: LucideIcon }>> = {
+    system: [
+      { label: '디스플레이', sub: '화면·해상도', Icon: Monitor },
+      { label: '소리', sub: '출력·볼륨', Icon: Volume2 },
+      { label: '저장 공간', sub: '디스크 상태', Icon: HardDrive },
+      { label: '전원', sub: '절전·배터리', Icon: BatteryCharging },
+    ],
+    personalization: [
+      { label: '배경', sub: '바탕화면', Icon: Monitor },
+      { label: '색', sub: '테마 색', Icon: Palette },
+      { label: '테마', sub: '화면 분위기', Icon: AppWindow },
+      { label: '잠금 화면', sub: '로그인 전 화면', Icon: Lock },
+    ],
+    apps: [
+      { label: '설치 앱', sub: '목록 확인', Icon: ListTodo },
+      { label: '앱 제거', sub: '프로그램 삭제', Icon: X },
+      { label: '기본 앱', sub: '파일 연결', Icon: AppWindow },
+      { label: '옵션 기능', sub: '추가 구성', Icon: Settings },
+    ],
+    devices: [
+      { label: '프린터', sub: '출력 장치', Icon: Printer },
+      { label: '마우스', sub: '포인터 조작', Icon: MousePointer2 },
+      { label: '키보드', sub: '입력 장치', Icon: Keyboard },
+      { label: '블루투스', sub: '무선 연결', Icon: Wifi },
+    ],
+    security: [
+      { label: 'Windows 업데이트', sub: '최신 상태', Icon: RotateCcw },
+      { label: '보안 패치', sub: '취약점 보완', Icon: ShieldCheck },
+      { label: '백업', sub: '되돌릴 준비', Icon: HardDrive },
+      { label: '복구', sub: '문제 후 복원', Icon: Wrench },
+    ],
+  };
+  const activeMenu = menuItems.find((item) => item.key === activeKey) ?? menuItems[0];
+  const ActiveIcon = activeMenu.Icon;
+  const panelCards = panelMap[activeKey] ?? panelMap.system;
+  const mutedAccentBorder = `color-mix(in srgb, ${accent} 46%, rgba(239,244,255,0.14))`;
+  const mutedAccentFill = `linear-gradient(180deg, color-mix(in srgb, ${accent} 12%, rgba(10,28,66,0.96)), rgba(5,17,47,0.94))`;
+
+  return (
+    <ComhwalDiagramFrame accent={accent}>
+      <div className="grid grid-cols-[94px_1fr] gap-3">
+        <div className="space-y-1.5 rounded-2xl border border-cream/10 bg-white/[0.035] p-1.5">
+          {menuItems.map((item) => {
+            const Icon = item.Icon;
+            const active = item.key === activeKey;
+            return (
+              <div
+                key={item.key}
+                className="flex min-h-[34px] items-center gap-1.5 rounded-xl border px-2 kr-heading text-[10px] leading-tight"
+                style={{
+                  borderColor: active ? mutedAccentBorder : 'transparent',
+                  background: active ? mutedAccentFill : 'transparent',
+                  color: active ? 'rgba(239,244,255,0.92)' : 'rgba(239,244,255,0.62)',
+                }}
+              >
+                <Icon
+                  size={13}
+                  strokeWidth={2.5}
+                  style={{ color: active ? accent : 'currentColor' }}
+                />
+                <span>{item.label}</span>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="min-w-0 rounded-2xl border border-cream/12 bg-[#07183b]/80 p-3">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex min-w-0 items-center gap-2">
+              <span
+                className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border"
+                style={{
+                  borderColor: mutedAccentBorder,
+                  background: mutedAccentFill,
+                  color: accent,
+                }}
+              >
+                <ActiveIcon size={18} strokeWidth={2.6} />
+              </span>
+              <div className="min-w-0">
+                <div className="kr-heading text-[15px] leading-none text-cream">
+                  {activeMenu.label}
+                </div>
+                <div className="mt-1 kr-body text-[10.5px] font-bold text-cream/48">
+                  Windows 설정 패널
+                </div>
+              </div>
+            </div>
+            <Settings size={17} strokeWidth={2.4} style={{ color: 'rgba(239,244,255,0.5)' }} />
+          </div>
+
+          <div className="mt-3 grid grid-cols-2 gap-2">
+            {panelCards.map((item) => (
+              <ComhwalIconCard
+                key={item.label}
+                label={item.label}
+                sub={item.sub}
+                Icon={item.Icon}
+                accent={accent}
+                active
+                compact
+                muted
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </ComhwalDiagramFrame>
+  );
+}
+
+function ComhwalFileExplorerDiagram({
+  model,
+  accent,
+}: {
+  model: ComhwalVisualModel;
+  accent: string;
+}) {
+  const hint = model.visualHint ?? '';
+  const isShortcut = hint === 'shortcut-arrow';
+  const isRecycle = hint === 'recycle-bin-flow';
+  const activeRows = isRecycle ? ['삭제 파일', '복원'] : isShortcut ? ['바로 가기', '원본'] : ['문서', '사진'];
+
+  return (
+    <ComhwalDiagramFrame accent={accent}>
+      <div className="grid grid-cols-[86px_1fr] gap-3">
+        <div className="rounded-2xl border border-cream/10 bg-white/[0.035] p-2">
+          {['내 PC', '문서', '다운로드'].map((item, index) => (
+            <div
+              key={item}
+              className="mb-1.5 flex items-center gap-1.5 rounded-xl px-2 py-1.5 kr-heading text-[10px] last:mb-0"
+              style={{
+                background: index === 1 ? `color-mix(in srgb, ${accent} 20%, rgba(255,255,255,0.04))` : 'transparent',
+                color: index === 1 ? 'rgba(239,244,255,0.92)' : 'rgba(239,244,255,0.52)',
+              }}
+            >
+              <Folder size={13} strokeWidth={2.4} style={{ color: index === 1 ? accent : 'currentColor' }} />
+              {item}
+            </div>
+          ))}
+        </div>
+        <div className="min-w-0 rounded-2xl border border-cream/12 bg-[#07183b]/78 p-3">
+          <div className="mb-3 flex items-center gap-2 rounded-xl border border-cream/10 bg-white/[0.045] px-3 py-2 kr-num text-[10px] text-cream/58">
+            <Folder size={13} style={{ color: accent }} />
+            C:\Users\QuestDP\문서
+          </div>
+          <div className="grid gap-1.5">
+            {[
+              { label: activeRows[0], Icon: isRecycle ? Trash2 : isShortcut ? ArrowRight : FileText },
+              { label: activeRows[1], Icon: isShortcut ? FileText : Folder },
+              { label: isRecycle ? '완전 삭제' : '권한·위치', Icon: isRecycle ? X : Lock },
+            ].map((row, index) => {
+              const Icon = row.Icon;
+              return (
+                <div
+                  key={row.label}
+                  className="flex items-center justify-between rounded-xl border px-3 py-2"
+                  style={{
+                    borderColor: index < 2 ? accent : 'rgba(239,244,255,0.12)',
+                    background: index < 2 ? `color-mix(in srgb, ${accent} 14%, rgba(255,255,255,0.04))` : 'rgba(255,255,255,0.035)',
+                  }}
+                >
+                  <span className="flex items-center gap-2 kr-heading text-[11px] text-cream/82">
+                    <Icon size={14} strokeWidth={2.4} style={{ color: index < 2 ? accent : 'rgba(239,244,255,0.46)' }} />
+                    {row.label}
+                  </span>
+                  {index === 0 ? <Check size={14} strokeWidth={2.8} style={{ color: accent }} /> : null}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </ComhwalDiagramFrame>
+  );
+}
+
+function ComhwalDesktopDiagram({
+  model,
+  accent,
+}: {
+  model: ComhwalVisualModel;
+  accent: string;
+}) {
+  const hint = model.visualHint ?? '';
+  const isKeyboard = hint === 'keyboard-shortcut';
+  const isSearch = hint === 'search-box-map';
+
+  if (isKeyboard) {
+    return (
+      <ComhwalDiagramFrame accent={accent}>
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+          {['Ctrl', '+', model.flow[2] ?? '작업 실행'].map((item, index) => (
+            <div key={`${item}-${index}`} className={index === 1 ? 'kr-heading text-center text-[18px]' : ''} style={{ color: index === 1 ? accent : undefined }}>
+              {index === 1 ? (
+                item
+              ) : (
+                <ComhwalIconCard label={item} Icon={index === 0 ? Keyboard : Check} accent={accent} active compact />
+              )}
+            </div>
+          ))}
+        </div>
+      </ComhwalDiagramFrame>
+    );
+  }
+
+  return (
+    <ComhwalDiagramFrame accent={accent}>
+      <div className="relative h-[150px] overflow-hidden rounded-2xl border border-cream/12 bg-[#07183b]/82 p-3">
+        <div className="grid grid-cols-3 gap-2">
+          {(isSearch ? ['파일', '앱', '설정'] : ['문서', '브라우저', '설정']).map((label, index) => (
+            <div
+              key={label}
+              className="rounded-2xl border p-2"
+              style={{
+                borderColor: index === 1 ? accent : 'rgba(239,244,255,0.12)',
+                background: index === 1 ? `color-mix(in srgb, ${accent} 14%, rgba(255,255,255,0.05))` : 'rgba(255,255,255,0.04)',
+              }}
+            >
+              <AppWindow size={16} strokeWidth={2.4} style={{ color: index === 1 ? accent : 'rgba(239,244,255,0.48)' }} />
+              <div className="mt-2 kr-heading text-[10px] text-cream/78">{label}</div>
+            </div>
+          ))}
+        </div>
+        <div className="absolute inset-x-3 bottom-3 flex items-center gap-2 rounded-2xl border border-cream/12 bg-[#020b25]/90 px-2 py-2">
+          <div className="rounded-xl px-2 py-1 kr-heading text-[10px]" style={{ background: accent, color: '#07121f' }}>
+            시작
+          </div>
+          <div className="flex min-w-0 flex-1 items-center gap-1.5 rounded-xl bg-white/[0.08] px-2 py-1.5 kr-body text-[10.5px] font-bold text-cream/58">
+            <Search size={12} strokeWidth={2.5} style={{ color: isSearch ? accent : 'currentColor' }} />
+            {isSearch ? '검색어로 빠르게 찾기' : '작업 표시줄'}
+          </div>
+          <MousePointer2 size={15} strokeWidth={2.5} style={{ color: accent }} />
+        </div>
+      </div>
+    </ComhwalDiagramFrame>
+  );
+}
+
+function ComhwalDeviceToolsDiagram({
+  model,
+  accent,
+}: {
+  model: ComhwalVisualModel;
+  accent: string;
+}) {
+  const hint = model.visualHint ?? '';
+  const isPrint = hint === 'print-queue' || hint === 'printer-device';
+
+  return (
+    <ComhwalDiagramFrame accent={accent}>
+      <div className="grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-2">
+        {model.flow.slice(0, 3).map((item, index) => {
+          const Icon = isPrint ? (index === 2 ? Printer : FileText) : index === 0 ? MousePointer2 : index === 1 ? Wrench : Check;
+          return (
+            <div key={item} className="contents">
+              <ComhwalIconCard
+                label={item}
+                Icon={Icon}
+                accent={accent}
+                active={index === 1}
+                compact
+              />
+              {index < 2 ? <ArrowRight size={15} strokeWidth={2.5} style={{ color: accent }} /> : null}
+            </div>
+          );
+        })}
+      </div>
+      <div className="mt-3 rounded-2xl border border-cream/10 bg-white/[0.04] p-2">
+        {(isPrint ? ['대기 중', '일시 중지', '취소 가능'] : ['상태 확인', '오류 표시', '해결 안내']).map((item, index) => (
+          <div
+            key={item}
+            className="mb-1.5 h-7 rounded-xl px-3 py-1.5 kr-heading text-[10px] last:mb-0"
+            style={{
+              background: index === 0 ? accent : 'rgba(239,244,255,0.06)',
+              color: index === 0 ? '#07121f' : 'rgba(239,244,255,0.66)',
+            }}
+          >
+            {item}
+          </div>
+        ))}
+      </div>
+    </ComhwalDiagramFrame>
+  );
+}
+
+function ComhwalDataScaleDiagram({
+  model,
+  accent,
+}: {
+  model: ComhwalVisualModel;
+  accent: string;
+}) {
+  return (
+    <ComhwalDiagramFrame accent={accent}>
+      <div className="space-y-2">
+        {model.flow.slice(0, 3).map((item, index) => (
+          <div
+            key={item}
+            className="grid grid-cols-[44px_1fr] items-center gap-3 rounded-2xl border px-3 py-2"
+            style={{
+              width: `calc(100% - ${(2 - index) * 22}px)`,
+              marginLeft: `${index * 22}px`,
+              borderColor: index === 1 ? accent : 'rgba(239,244,255,0.14)',
+              background: index === 1 ? `color-mix(in srgb, ${accent} 16%, rgba(255,255,255,0.05))` : 'rgba(255,255,255,0.045)',
+            }}
+          >
+            <span className="grid h-8 w-8 place-items-center rounded-xl kr-num text-[11px]" style={{ background: index === 1 ? accent : 'rgba(255,255,255,0.08)', color: index === 1 ? '#07121f' : 'rgba(239,244,255,0.62)' }}>
+              {index + 1}
+            </span>
+            <span className="kr-heading text-[12px] text-cream/82">{item}</span>
+          </div>
+        ))}
+      </div>
+    </ComhwalDiagramFrame>
+  );
+}
+
+function ComhwalHardwareBoardDiagram({
+  model,
+  accent,
+}: {
+  model: ComhwalVisualModel;
+  accent: string;
+}) {
+  const hint = model.visualHint ?? '';
+  const active = hint.includes('cpu')
+    ? 'CPU'
+    : hint.includes('memory') || hint.includes('ram')
+      ? 'RAM'
+      : hint.includes('storage') || hint.includes('raid')
+        ? 'SSD'
+        : 'BUS';
+
+  return (
+    <ComhwalDiagramFrame accent={accent}>
+      <div className="relative h-[156px] rounded-2xl border border-cream/12 bg-[#07183b]/82 p-3">
+        <div className="absolute left-1/2 top-1/2 h-px w-[72%] -translate-x-1/2" style={{ background: `linear-gradient(90deg, transparent, ${accent}, transparent)` }} />
+        <div className="absolute left-1/2 top-1/2 h-[74%] w-px -translate-y-1/2" style={{ background: `linear-gradient(180deg, transparent, ${accent}, transparent)` }} />
+        {[
+          { label: 'CPU', x: '50%', y: '50%', Icon: Cpu },
+          { label: 'RAM', x: '18%', y: '24%', Icon: HardDrive },
+          { label: 'SSD', x: '82%', y: '24%', Icon: HardDrive },
+          { label: '출력', x: '18%', y: '76%', Icon: Monitor },
+          { label: 'BUS', x: '82%', y: '76%', Icon: Settings },
+        ].map((part) => {
+          const Icon = part.Icon;
+          const isActive = part.label === active;
+          return (
+            <div
+              key={part.label}
+              className="absolute flex h-14 w-20 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-2xl border"
+              style={{
+                left: part.x,
+                top: part.y,
+                borderColor: isActive ? accent : 'rgba(239,244,255,0.14)',
+                background: isActive ? accent : 'rgba(1,8,40,0.72)',
+                color: isActive ? '#07121f' : 'rgba(239,244,255,0.76)',
+                boxShadow: isActive ? `0 0 18px color-mix(in srgb, ${accent} 38%, transparent)` : 'none',
+              }}
+            >
+              <Icon size={16} strokeWidth={2.4} />
+              <span className="mt-1 kr-heading text-[10px]">{part.label}</span>
+            </div>
+          );
+        })}
+      </div>
+    </ComhwalDiagramFrame>
+  );
+}
+
+function ComhwalSoftwareLayersDiagram({
+  model,
+  accent,
+}: {
+  model: ComhwalVisualModel;
+  accent: string;
+}) {
+  return (
+    <ComhwalDiagramFrame accent={accent}>
+      <div className="space-y-2">
+        {model.flow.slice(0, 3).map((item, index) => (
+          <div
+            key={item}
+            className="rounded-2xl border px-4 py-3"
+            style={{
+              borderColor: index === 1 ? accent : 'rgba(239,244,255,0.14)',
+              background: index === 1 ? accent : 'rgba(255,255,255,0.045)',
+              color: index === 1 ? '#07121f' : 'rgba(239,244,255,0.8)',
+              transform: `translateX(${Math.abs(index - 1) * 12}px)`,
+            }}
+          >
+            <div className="flex items-center justify-between gap-2">
+              <span className="kr-heading text-[12px]">{item}</span>
+              <span className="kr-num text-[10px] opacity-70">
+                {index === 0 ? 'request' : index === 1 ? 'translate' : 'run'}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </ComhwalDiagramFrame>
+  );
+}
+
+function ComhwalNetworkMapDiagram({
+  model,
+  accent,
+}: {
+  model: ComhwalVisualModel;
+  accent: string;
+}) {
+  return (
+    <ComhwalDiagramFrame accent={accent}>
+      <div className="relative mx-auto h-[150px] max-w-[300px]">
+        <div className="absolute left-[20%] top-[62%] h-px w-[60%]" style={{ background: accent }} />
+        <div className="absolute left-[50%] top-[22%] h-[42%] w-px" style={{ background: accent }} />
+        {[
+          { label: model.flow[0] ?? '내 컴퓨터', x: '18%', y: '64%', Icon: Monitor },
+          { label: model.flow[1] ?? '네트워크', x: '50%', y: '22%', Icon: Wifi },
+          { label: model.flow[2] ?? '인터넷', x: '82%', y: '64%', Icon: Globe2 },
+        ].map((node, index) => {
+          const Icon = node.Icon;
+          return (
+            <div
+              key={node.label}
+              className="absolute flex h-16 w-20 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-2xl border px-1 text-center"
+              style={{
+                left: node.x,
+                top: node.y,
+                borderColor: index === 1 ? accent : 'rgba(239,244,255,0.14)',
+                background: index === 1 ? accent : 'rgba(1,8,40,0.78)',
+                color: index === 1 ? '#07121f' : 'rgba(239,244,255,0.8)',
+                boxShadow: index === 1 ? `0 0 18px color-mix(in srgb, ${accent} 36%, transparent)` : 'none',
+              }}
+            >
+              <Icon size={17} strokeWidth={2.4} />
+              <span className="mt-1 kr-heading text-[10px] leading-tight">{node.label}</span>
+            </div>
+          );
+        })}
+      </div>
+    </ComhwalDiagramFrame>
+  );
+}
+
+function ComhwalMediaBoardDiagram({
+  model,
+  accent,
+}: {
+  model: ComhwalVisualModel;
+  accent: string;
+}) {
+  const hint = model.visualHint ?? '';
+  const cards =
+    hint === 'bitmap-vector-compare'
+      ? [
+          { label: '비트맵', sub: '픽셀 저장', Icon: Monitor },
+          { label: '벡터', sub: '도형 정보', Icon: Star },
+          { label: '확대', sub: '깨짐 차이', Icon: Search },
+        ]
+      : [
+          { label: '문자', sub: '읽는 정보', Icon: FileText },
+          { label: '그림', sub: '보는 정보', Icon: Monitor },
+          { label: '소리·영상', sub: '듣고 보는 정보', Icon: Volume2 },
+        ];
+
+  return (
+    <ComhwalDiagramFrame accent={accent}>
+      <div className="grid grid-cols-3 gap-2">
+        {cards.map((item, index) => (
+          <ComhwalIconCard
+            key={item.label}
+            label={item.label}
+            sub={item.sub}
+            Icon={item.Icon}
+            accent={accent}
+            active={index === 1}
+            compact
+          />
+        ))}
+      </div>
+    </ComhwalDiagramFrame>
+  );
+}
+
+function ComhwalSecurityShieldDiagram({
+  model,
+  accent,
+}: {
+  model: ComhwalVisualModel;
+  accent: string;
+}) {
+  return (
+    <ComhwalDiagramFrame accent={accent}>
+      <div className="grid grid-cols-[88px_1fr] gap-3">
+        <div
+          className="flex min-h-[132px] flex-col items-center justify-center rounded-[28px] border"
+          style={{
+            borderColor: accent,
+            background: `radial-gradient(circle at 50% 16%, color-mix(in srgb, ${accent} 22%, transparent), rgba(1,8,40,0.72))`,
+            color: accent,
+          }}
+        >
+          <ShieldCheck size={38} strokeWidth={2.1} />
+          <span className="mt-2 kr-num text-[10px] uppercase tracking-widest">protect</span>
+        </div>
+        <div className="grid gap-2">
+          {model.flow.slice(0, 3).map((item, index) => (
+            <div
+              key={item}
+              className="rounded-2xl border px-3 py-2 kr-heading text-[11px]"
+              style={{
+                borderColor: index === 1 ? accent : 'rgba(239,244,255,0.14)',
+                background: index === 1 ? accent : 'rgba(255,255,255,0.045)',
+                color: index === 1 ? '#07121f' : 'rgba(239,244,255,0.78)',
+              }}
+            >
+              {item}
+            </div>
+          ))}
+        </div>
+      </div>
+    </ComhwalDiagramFrame>
   );
 }
 
@@ -4089,6 +5808,9 @@ function ComhwalAdaptiveDiagram({
 }) {
   const pattern = model.pattern ?? '';
 
+  if (pattern.startsWith('computer-')) {
+    return <ComhwalComputerPattern model={model} accent={accent} />;
+  }
   if (pattern.startsWith('sheet-')) {
     return <ComhwalSheetPattern model={model} accent={accent} />;
   }

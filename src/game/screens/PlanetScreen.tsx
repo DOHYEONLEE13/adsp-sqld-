@@ -49,6 +49,11 @@ const SUBJECT_ACCENT: Record<Subject, string> = {
   sqld: '#c084fc',
 };
 
+const ADSP_PLANET_MODEL_URL = '/models/adsp/planet_art_3d_model.glb';
+const ADSP_CHAPTER_ONE_PLANET_MODEL_URL = '/models/adsp/ice__tile_texture.glb';
+const ADSP_CHAPTER_TWO_PLANET_MODEL_URL = '/models/adsp/alien_planet.glb';
+const ADSP_CHAPTER_THREE_PLANET_MODEL_URL = '/models/adsp/fractured_planet.glb';
+
 interface Props {
   subject: Subject;
   onSelectChapter: (chapter: number) => void;
@@ -273,6 +278,7 @@ function ChapterPath({
         return (
           <ChapterNode
             key={n.planet.chapter}
+            subject={subject}
             cx={n.cx}
             cy={n.cy}
             chapter={n.planet.chapter}
@@ -298,6 +304,7 @@ function ChapterPath({
 // ----------------------------------------------------------------
 
 interface ChapterNodeProps {
+  subject: Subject;
   cx: number;
   cy: number;
   chapter: number;
@@ -314,6 +321,7 @@ interface ChapterNodeProps {
 }
 
 function ChapterNode({
+  subject,
   cx,
   cy,
   chapter,
@@ -335,6 +343,7 @@ function ChapterNode({
   const orbitR = (ringSize - 16) / 2;
   const circ = 2 * Math.PI * trackR;
   const ratio = solvedRatio(agg);
+  const isAdspPlanetNode = subject === 'adsp';
 
   const titleW = Math.min(containerW - 32, 280);
   const nodeStyle = {
@@ -366,18 +375,21 @@ function ChapterNode({
             r={trackR}
             fill="none"
             stroke={`color-mix(in srgb, ${accent} 22%, rgba(239,244,255,0.14))`}
-            strokeWidth={2}
+            strokeWidth={isAdspPlanetNode ? 1.2 : 2}
+            opacity={isAdspPlanetNode ? 0.4 : 1}
           />
-          <circle
-            cx={ringSize / 2}
-            cy={ringSize / 2}
-            r={orbitR}
-            fill="none"
-            stroke={`color-mix(in srgb, ${accent} 22%, transparent)`}
-            strokeWidth={1.25}
-            strokeDasharray="3 10"
-            strokeLinecap="round"
-          />
+          {!isAdspPlanetNode ? (
+            <circle
+              cx={ringSize / 2}
+              cy={ringSize / 2}
+              r={orbitR}
+              fill="none"
+              stroke={`color-mix(in srgb, ${accent} 22%, transparent)`}
+              strokeWidth={1.25}
+              strokeDasharray="3 10"
+              strokeLinecap="round"
+            />
+          ) : null}
           {!disabled && ratio > 0 ? (
             <circle
               cx={ringSize / 2}
@@ -405,12 +417,15 @@ function ChapterNode({
           disabled={disabled}
           className={`absolute qd-roadmap-orb rounded-full inline-flex items-center justify-center transition-transform duration-150 hover:-translate-y-1 active:translate-y-0 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-neon${
             disabled ? ' qd-roadmap-orb--disabled' : ''
-          }`}
+          }${isAdspPlanetNode ? ' qd-roadmap-orb--three-planet' : ''}`}
           style={nodeStyle}
           aria-label={`Chapter ${chapter} ${title}${
             disabled ? ' (준비중)' : ''
           }`}
         >
+          {isAdspPlanetNode ? (
+            <AdspPlanetModel chapter={chapter} accent={accent} />
+          ) : null}
           <span
             className="qd-roadmap-orb__number kr-num leading-none relative"
             style={{
@@ -464,6 +479,240 @@ function ChapterNode({
       </div>
     </>
   );
+}
+
+function AdspPlanetModel({
+  chapter,
+  accent,
+}: {
+  chapter: number;
+  accent: string;
+}) {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return undefined;
+
+    const modelUrl =
+      chapter === 1
+        ? ADSP_CHAPTER_ONE_PLANET_MODEL_URL
+        : chapter === 2
+          ? ADSP_CHAPTER_TWO_PLANET_MODEL_URL
+          : chapter === 3
+            ? ADSP_CHAPTER_THREE_PLANET_MODEL_URL
+            : ADSP_PLANET_MODEL_URL;
+    const materialId =
+      chapter === 1
+        ? 'adsp-ice-tile-glb-v1'
+        : chapter === 2
+          ? 'adsp-alien-planet-glb-v1'
+          : chapter === 3
+            ? 'adsp-fractured-planet-glb-v1'
+            : 'adsp-planet-art-glb-v1';
+    const loadingMaterialId =
+      chapter === 1
+        ? 'adsp-ice-tile-glb-loading'
+        : chapter === 2
+          ? 'adsp-alien-planet-glb-loading'
+          : chapter === 3
+            ? 'adsp-fractured-planet-glb-loading'
+            : 'adsp-planet-glb-loading';
+    const modelScaleTarget =
+      chapter === 1 ? 2.18 : chapter === 2 ? 2.72 : chapter === 3 ? 2.96 : 2.9;
+    const modelLiftY = chapter === 1 ? 0.1 : 0;
+
+    let disposed = false;
+    let animationFrame = 0;
+    let cleanupThree = () => {};
+    const reduceMotion =
+      window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+
+    Promise.all([
+      import('three'),
+      import('three/examples/jsm/loaders/GLTFLoader.js'),
+    ])
+      .then(([THREE, { GLTFLoader }]) => {
+        if (disposed) return;
+
+        const renderer = new THREE.WebGLRenderer({
+          canvas,
+          alpha: true,
+          antialias: true,
+          preserveDrawingBuffer: true,
+          powerPreference: 'high-performance',
+        });
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+        renderer.setClearColor(0x000000, 0);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 0.98;
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(29, 1, 0.1, 30);
+        camera.position.set(0, 0, 7.35);
+
+        const root = new THREE.Group();
+        root.rotation.set(-0.1, -0.24 + chapter * 0.08, 0.02);
+        scene.add(root);
+
+        const modelPivot = new THREE.Group();
+        root.add(modelPivot);
+
+        scene.add(new THREE.AmbientLight('#d9fbff', 1.24));
+
+        const keyLight = new THREE.DirectionalLight('#ffffff', 1.36);
+        keyLight.position.set(-2.5, 2.5, 4.2);
+        scene.add(keyLight);
+
+        const fillLight = new THREE.DirectionalLight('#87fff0', 0.78);
+        fillLight.position.set(2.5, -0.8, 3.3);
+        scene.add(fillLight);
+
+        const rimLight = new THREE.PointLight(accent, 1.92, 8);
+        rimLight.position.set(2.2, -1.35, 2.2);
+        scene.add(rimLight);
+
+        const disposeMaterial = (material: import('three').Material) => {
+          Object.values(material).forEach((value) => {
+            if (value && typeof value === 'object' && 'isTexture' in value) {
+              (value as import('three').Texture).dispose();
+            }
+          });
+          material.dispose();
+        };
+
+        const disposeObject = (object: import('three').Object3D) => {
+          const mesh = object as import('three').Mesh;
+          mesh.geometry?.dispose();
+          const material = mesh.material;
+          if (Array.isArray(material)) {
+            material.forEach((item) => disposeMaterial(item));
+          } else {
+            material && disposeMaterial(material);
+          }
+        };
+
+        const loader = new GLTFLoader();
+        canvas.dataset.planetAsset = modelUrl;
+        canvas.dataset.planetChapter = String(chapter);
+        canvas.dataset.planetMaterial = loadingMaterialId;
+
+        loader.load(
+          modelUrl,
+          (gltf) => {
+            if (disposed) {
+              gltf.scene.traverse(disposeObject);
+              return;
+            }
+
+            const model = gltf.scene;
+            const removedMeshNames: string[] = [];
+            const meshesToRemove: import('three').Mesh[] = [];
+            model.traverse((object) => {
+              const mesh = object as import('three').Mesh;
+              if (!mesh.isMesh) return;
+              if (chapter === 1 && !mesh.name.toLowerCase().includes('sphere')) {
+                meshesToRemove.push(mesh);
+                removedMeshNames.push(mesh.name || '(unnamed mesh)');
+                return;
+              }
+              mesh.frustumCulled = false;
+              const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+              materials.forEach((material) => {
+                if (!material) return;
+                if ('envMapIntensity' in material) {
+                  (material as import('three').MeshStandardMaterial).envMapIntensity = 0.62;
+                }
+                material.needsUpdate = true;
+              });
+            });
+            meshesToRemove.forEach((mesh) => {
+              mesh.parent?.remove(mesh);
+              mesh.geometry?.dispose();
+            });
+
+            const bounds = new THREE.Box3().setFromObject(model);
+            const size = bounds.getSize(new THREE.Vector3());
+            const center = bounds.getCenter(new THREE.Vector3());
+            const maxAxis = Math.max(size.x, size.y, size.z) || 1;
+
+            model.position.sub(center);
+            model.position.y += modelLiftY;
+            model.scale.setScalar(modelScaleTarget / maxAxis);
+            model.rotation.set(0, 0, 0);
+            modelPivot.add(model);
+
+            canvas.dataset.planetReady = 'true';
+            canvas.dataset.planetMaterial = materialId;
+            canvas.dataset.planetRemovedMeshes = removedMeshNames.join(',');
+            canvas.dataset.planetScaleTarget = modelScaleTarget.toFixed(2);
+            canvas.dataset.planetLiftY = modelLiftY.toFixed(2);
+            canvas.dataset.planetBounds = [
+              size.x.toFixed(2),
+              size.y.toFixed(2),
+              size.z.toFixed(2),
+            ].join(',');
+          },
+          undefined,
+          (error) => {
+            canvas.dataset.planetError = 'true';
+            console.warn('Failed to load ADSP planet GLB', error);
+          },
+        );
+
+        const setSize = () => {
+          const rect = canvas.getBoundingClientRect();
+          const width = Math.max(1, Math.floor(rect.width));
+          const height = Math.max(1, Math.floor(rect.height));
+          renderer.setSize(width, height, false);
+          camera.aspect = width / height;
+          camera.updateProjectionMatrix();
+        };
+
+        const resizeObserver = new ResizeObserver(setSize);
+        resizeObserver.observe(canvas);
+        setSize();
+
+        let frames = 0;
+        const render = (time = 0) => {
+          if (disposed) return;
+
+          const seconds = time / 1000;
+          root.rotation.y = -0.24 + chapter * 0.08 + Math.sin(seconds * 0.62 + chapter) * 0.04;
+          modelPivot.rotation.y = seconds * (0.22 + chapter * 0.025);
+          modelPivot.rotation.z = Math.sin(seconds * 0.7 + chapter) * 0.016;
+
+          renderer.render(scene, camera);
+          frames += 1;
+          canvas.dataset.planetFrames = String(frames);
+
+          if (!reduceMotion) {
+            animationFrame = window.requestAnimationFrame(render);
+          }
+        };
+
+        render(0);
+
+        cleanupThree = () => {
+          window.cancelAnimationFrame(animationFrame);
+          resizeObserver.disconnect();
+          scene.traverse(disposeObject);
+          renderer.dispose();
+        };
+      })
+      .catch((error) => {
+        canvas.dataset.planetError = 'true';
+        console.warn('Failed to render ADSP planet node', error);
+      });
+
+    return () => {
+      disposed = true;
+      cleanupThree();
+    };
+  }, [accent, chapter]);
+
+  return <canvas ref={canvasRef} className="qd-three-planet-canvas" aria-hidden="true" />;
 }
 
 // ----------------------------------------------------------------

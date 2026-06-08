@@ -656,6 +656,40 @@ button {
   animation: none;
 }
 
+.qd-roadmap-orb--three-planet {
+  z-index: 1;
+  overflow: visible;
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.qd-roadmap-orb--three-planet::before,
+.qd-roadmap-orb--three-planet::after {
+  content: none;
+}
+
+.qd-three-planet-canvas {
+  position: absolute;
+  left: -58%;
+  top: -45%;
+  z-index: 0;
+  width: 216%;
+  height: 194%;
+  pointer-events: none;
+  filter:
+    drop-shadow(0 14px 18px rgba(1, 8, 40, 0.58))
+    drop-shadow(0 0 12px color-mix(in srgb, var(--roadmap-accent) 24%, transparent));
+}
+
+.qd-roadmap-orb--three-planet .qd-roadmap-orb__number {
+  z-index: 1;
+  color: rgba(239, 244, 255, 0.96);
+  text-shadow:
+    0 2px 4px rgba(1, 8, 40, 0.82),
+    0 0 12px rgba(239, 244, 255, 0.32);
+}
+
 .qd-roadmap-orb--disabled {
   background:
     radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.22), transparent 33%),

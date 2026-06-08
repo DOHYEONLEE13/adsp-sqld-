@@ -1448,7 +1448,7 @@ function ExpansionChapterPath({
     return { cx, cy, leftSide, planet, idx };
   });
 
-  const PATH_MARGIN = 8;
+  const PATH_MARGIN = 2;
   let d = '';
   for (let i = 1; i < nodes.length; i++) {
     const prev = nodes[i - 1];
@@ -1462,29 +1462,29 @@ function ExpansionChapterPath({
   return (
     <div className="relative w-full max-w-[480px]" style={{ height: totalH }}>
       <svg
-        width="100%"
+        width={W}
         height={totalH}
         viewBox={`0 0 ${W} ${totalH}`}
-        preserveAspectRatio="xMidYMin meet"
-        className="absolute inset-0 pointer-events-none"
+        className="absolute left-0 top-0 pointer-events-none"
       >
         <path
           d={d}
           fill="none"
-          stroke={`color-mix(in srgb, ${accent} 8%, transparent)`}
-          strokeWidth={7}
+          stroke={`color-mix(in srgb, ${accent} 12%, transparent)`}
+          strokeWidth={8}
           strokeLinecap="round"
-          opacity={0.65}
+          strokeLinejoin="round"
+          opacity={0.72}
         />
         <path
           d={d}
           fill="none"
-          stroke={`color-mix(in srgb, ${accent} 34%, transparent)`}
-          strokeWidth={2}
-          strokeDasharray="1 11"
+          stroke={`color-mix(in srgb, ${accent} 44%, transparent)`}
+          strokeWidth={2.5}
           strokeLinecap="round"
+          strokeLinejoin="round"
           style={{
-            filter: `drop-shadow(0 0 5px color-mix(in srgb, ${accent} 18%, transparent))`,
+            filter: `drop-shadow(0 0 4px color-mix(in srgb, ${accent} 16%, transparent))`,
           }}
         />
       </svg>

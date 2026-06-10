@@ -145,6 +145,23 @@ function injectSnapshotStyle(html) {
       .seo-snapshot__eyebrow{margin:0 0 10px;color:#6fff00;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
       .seo-snapshot h1{margin:0 0 14px;font-size:clamp(28px,5vw,48px);line-height:1.18}
       .seo-snapshot p{margin:0 0 18px;color:rgba(239,244,255,.82);font-size:16px;line-height:1.75}
+      .seo-snapshot__body{margin-top:24px;border-top:1px solid rgba(239,244,255,.12);padding-top:22px}
+      .seo-snapshot__body .seo-lead{font-size:17px;color:rgba(239,244,255,.9)}
+      .seo-snapshot__body h2{margin:30px 0 12px;font-size:24px;line-height:1.3}
+      .seo-snapshot__body h3{margin:22px 0 8px;font-size:18px;line-height:1.38}
+      .seo-snapshot__body section{margin-top:26px}
+      .seo-snapshot__body article{margin-top:18px}
+      .seo-snapshot__body ul,.seo-snapshot__body ol{margin:0 0 18px;padding-left:22px;color:rgba(239,244,255,.82);line-height:1.75}
+      .seo-snapshot__body li{margin:7px 0}
+      .seo-snapshot__body a{color:#a7e96a;text-underline-offset:3px}
+      .seo-snapshot__body table{width:100%;border-collapse:collapse;margin:14px 0 22px;color:rgba(239,244,255,.82);font-size:14px}
+      .seo-snapshot__body th,.seo-snapshot__body td{border:1px solid rgba(239,244,255,.14);padding:10px;text-align:left;vertical-align:top}
+      .seo-snapshot__body th{color:#eff4ff;background:rgba(239,244,255,.07)}
+      .seo-snapshot__body blockquote,.seo-snapshot__body .seo-callout,.seo-snapshot__body .seo-question-teaser{margin:18px 0;padding:16px;border:1px solid rgba(167,233,106,.24);border-radius:14px;background:rgba(167,233,106,.06)}
+      .seo-snapshot__body blockquote cite{display:block;margin-top:8px;color:rgba(239,244,255,.62);font-size:13px}
+      .seo-snapshot__body .seo-facts{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:10px 14px;margin:14px 0 20px;color:rgba(239,244,255,.84)}
+      .seo-snapshot__body .seo-facts dt{font-weight:800;color:#eff4ff}
+      .seo-snapshot__body .seo-facts dd{margin:0}
       .seo-snapshot__images{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:22px}
       .seo-snapshot__images figure{margin:0}
       .seo-snapshot__images img{display:block;width:100%;height:auto;border-radius:16px;border:1px solid rgba(239,244,255,.14);background:rgba(255,255,255,.04)}
@@ -273,11 +290,15 @@ function renderSnapshot(route) {
         `<figure><img src="${escapeHtml(image.url)}" alt="${escapeHtml(image.caption)}" loading="lazy" /><figcaption>${escapeHtml(image.title)} — ${escapeHtml(image.caption)}</figcaption></figure>`,
     )
     .join('\n          ');
+  const staticContent = route.staticContentHtml
+    ? `<div class="seo-snapshot__body">\n${route.staticContentHtml}\n          </div>`
+    : '';
   return `      <main class="seo-snapshot" data-seo-snapshot="true">
         <article class="seo-snapshot__card">
           ${route.eyebrow ? `<p class="seo-snapshot__eyebrow">${escapeHtml(route.eyebrow)}</p>` : ''}
           <h1>${escapeHtml(route.h1)}</h1>
           <p>${escapeHtml(route.summary || route.description)}</p>
+          ${staticContent}
           ${images ? `<div class="seo-snapshot__images">\n          ${images}\n          </div>` : ''}
           ${links ? `<nav class="seo-snapshot__links" aria-label="관련 페이지">\n          ${links}\n          </nav>` : ''}
           <p class="seo-snapshot__notice">${escapeHtml(CONTENT_PROTECTION_NOTICE)}</p>

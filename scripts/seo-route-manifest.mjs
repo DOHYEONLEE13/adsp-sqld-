@@ -10,6 +10,7 @@ const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '..');
 const LESSONS_ROOT = path.join(REPO_ROOT, 'src/data/lessons');
 const BLOG_FILE = path.join(REPO_ROOT, 'src/data/seo/blog.ts');
+const FAQ_FILE = path.join(REPO_ROOT, 'src/data/seo/faq.ts');
 const COMHWAL_CONCEPT_FILE = path.join(REPO_ROOT, 'src/data/comhwal/concepts.ts');
 const COMHWAL_EXPANSION_CONCEPT_FILE = path.join(
   REPO_ROOT,
@@ -53,6 +54,60 @@ const SUBJECT_LABEL = {
   adsp: 'ADsP 데이터분석 준전문가',
   sqld: 'SQLD SQL 개발자',
   comhwal: '컴퓨터활용능력 필기',
+};
+
+const CURRICULUM_FACTS = {
+  adsp: {
+    label: 'ADsP 데이터분석준전문가',
+    authority: 'KDATA 데이터자격검정',
+    exam: '데이터분석준전문가(ADsP)',
+    questions: '객관식 50문항 · 90분',
+    scoring: '총점 60점 이상 · 과목별 40% 미만 과락',
+    scope: '데이터 이해 10문항 · 데이터분석 기획 10문항 · 데이터분석 30문항',
+    strategy:
+      '1·2과목에서 데이터 분석의 말문을 먼저 열고, 3과목 데이터 분석은 R 기초, 통계, 가설검정, 머신러닝을 짧게 여러 번 회전시키는 쪽이 안정적입니다.',
+  },
+  sqld: {
+    label: 'SQLD SQL 개발자',
+    authority: 'KDATA 데이터자격검정',
+    exam: 'SQL 개발자(SQLD)',
+    questions: '객관식 50문항 · 90분',
+    scoring: '총점 60점 이상 · 과목별 40% 미만 과락',
+    scope: '데이터 모델링의 이해 10문항 · SQL 기본 및 활용 40문항',
+    strategy:
+      'SQLD는 2과목 SQL 기본 및 활용의 비중이 큽니다. 모델링은 큰 틀을 먼저 잡고 SELECT 실행 순서, JOIN, 서브쿼리, 윈도우 함수를 손으로 확인하는 흐름이 좋습니다.',
+  },
+  comhwal: {
+    label: '컴활 필기',
+    authority: '대한상공회의소 자격평가사업단',
+    exam: '컴퓨터활용능력 필기',
+    questions: '1급 60문항 · 60분 / 2급 40문항 · 40분',
+    scoring: '필기: 과목당 40점 이상 · 평균 60점 이상',
+    scope:
+      '1급: 컴퓨터 일반, 스프레드시트 일반, 데이터베이스 일반 / 2급: 컴퓨터 일반, 스프레드시트 일반',
+    strategy:
+      '컴활은 범위표보다 실제 화면의 말이 먼저입니다. 컴퓨터 일반으로 공통 단어를 만들고, 스프레드시트와 데이터베이스는 화면에서 만나는 기능 단위로 붙이는 편이 덜 막힙니다.',
+  },
+  'comhwal-1': {
+    label: '컴활 1급 필기',
+    authority: '대한상공회의소 자격평가사업단',
+    exam: '컴퓨터활용능력 1급 필기',
+    questions: '객관식 60문항 · 60분',
+    scoring: '필기: 과목당 40점 이상 · 평균 60점 이상',
+    scope: '컴퓨터 일반 · 스프레드시트 일반 · 데이터베이스 일반',
+    strategy:
+      '1급은 데이터베이스 일반까지 들어갑니다. 공통 과목인 컴퓨터 일반으로 말문을 트고, 스프레드시트와 데이터베이스는 실기 화면과 연결되는 단어부터 확장하세요.',
+  },
+  'comhwal-2': {
+    label: '컴활 2급 필기',
+    authority: '대한상공회의소 자격평가사업단',
+    exam: '컴퓨터활용능력 2급 필기',
+    questions: '객관식 40문항 · 40분',
+    scoring: '필기: 과목당 40점 이상 · 평균 60점 이상',
+    scope: '컴퓨터 일반 · 스프레드시트 일반',
+    strategy:
+      '2급은 데이터베이스 일반이 빠집니다. 컴퓨터 일반에서 용어를 정리하고, 스프레드시트 일반은 엑셀 화면에서 바로 떠올릴 수 있는 기능부터 반복하세요.',
+  },
 };
 
 const STUDY_METHOD_IMAGES = [
@@ -428,10 +483,12 @@ const CORE_ROUTES = [
 ];
 
 export function getSeoRouteManifest() {
-  const core = CORE_ROUTES.map(normalizeRoute);
   const blogPosts = collectBlogRoutes();
   const lessons = collectLessonRoutes();
   const topics = collectComhwalTopicRoutes();
+  const core = CORE_ROUTES.map((route) =>
+    normalizeRoute(enhanceCoreRoute(route, { blogPosts, lessons, topics })),
+  );
   const all = [...core, ...blogPosts, ...lessons, ...topics];
   assertUniquePaths(all);
   assertNoQuizPaths(all);
@@ -447,66 +504,550 @@ export function canonicalForPath(routePath) {
 }
 
 function collectBlogRoutes() {
+  return parseBlogPosts().map((post) => {
+    const summary = firstBlogParagraphs(post)
+      .slice(0, 2)
+      .join(' ') || post.subtitle || post.description;
+    const faqJsonLd = post.faqs.length
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: post.faqs.map((item) => ({
+            '@type': 'Question',
+            name: item.q,
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: item.a,
+            },
+          })),
+        }
+      : null;
+
+    return normalizeRoute({
+      group: 'blog',
+      path: `/blog/${post.slug}`,
+      changefreq: 'monthly',
+      priority: '0.8',
+      title: `${post.title} — QuestDP`,
+      description: post.description,
+      h1: post.title,
+      eyebrow: [categoryLabel(post.category), post.publishedAt].filter(Boolean).join(' · '),
+      summary,
+      image: `${SITE_ORIGIN}/og/blog-${post.slug}.png`,
+      type: 'article',
+      links: [
+        { href: '/blog', label: '블로그 목록' },
+        { href: '/study-method', label: 'QuestDP 공부법' },
+        { href: '/curriculum/adsp', label: 'ADsP 커리큘럼' },
+        { href: '/curriculum/sqld', label: 'SQLD 커리큘럼' },
+        { href: '/curriculum/comhwal', label: '컴활 커리큘럼' },
+      ],
+      minSeoTextChars: 1500,
+      staticContentHtml: renderBlogStaticContent(post),
+      jsonLd: [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'Article',
+          headline: post.title,
+          description: post.description,
+          inLanguage: 'ko-KR',
+          datePublished: post.publishedAt || undefined,
+          dateModified: post.updatedAt || post.publishedAt || undefined,
+          author: { '@type': 'Organization', name: 'QuestDP', url: SITE_ORIGIN },
+          publisher: { '@type': 'Organization', name: 'QuestDP' },
+          mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalForPath(`/blog/${post.slug}`) },
+          image: `${SITE_ORIGIN}/og/blog-${post.slug}.png`,
+          keywords: post.primaryKeyword || undefined,
+        },
+        ...(faqJsonLd ? [faqJsonLd] : []),
+        breadcrumbJsonLd([
+          ['홈', '/'],
+          ['블로그', '/blog'],
+          [post.title, `/blog/${post.slug}`],
+        ]),
+      ],
+    });
+  });
+}
+
+function parseBlogPosts() {
   if (!fs.existsSync(BLOG_FILE)) return [];
   const src = fs.readFileSync(BLOG_FILE, 'utf8');
-  const chunks = extractTypedObjectChunks(src, 'BlogPost');
-  return chunks
+  return extractTypedObjectChunks(src, 'BlogPost')
     .map((chunk) => {
       const slug = readStringProp(chunk, 'slug');
       const title = readStringProp(chunk, 'title');
-      const subtitle = readStringProp(chunk, 'subtitle');
-      const description = readStringProp(chunk, 'metaDescription') || subtitle;
-      const publishedAt = readStringProp(chunk, 'publishedAt');
-      const category = readStringProp(chunk, 'category');
       if (!slug || !title) return null;
-      const firstParagraphs = [...chunk.matchAll(/\btext:\s*(['"`])([\s\S]*?)\1/g)]
-        .map((m) => cleanText(m[2]))
-        .filter(Boolean)
-        .slice(0, 2);
-      const summary = firstParagraphs.length > 0
-        ? firstParagraphs.join(' ')
-        : subtitle || description;
-      return normalizeRoute({
-        group: 'blog',
-        path: `/blog/${slug}`,
-        changefreq: 'monthly',
-        priority: '0.8',
-        title: `${title} — QuestDP`,
-        description,
-        h1: title,
-        eyebrow: [categoryLabel(category), publishedAt].filter(Boolean).join(' · '),
-        summary,
-        image: `${SITE_ORIGIN}/og/blog-${slug}.png`,
-        type: 'article',
-        links: [
-          { href: '/blog', label: '블로그 목록' },
-          { href: '/study-method', label: 'QuestDP 공부법' },
-          { href: '/curriculum/adsp', label: 'ADsP 커리큘럼' },
-          { href: '/curriculum/sqld', label: 'SQLD 커리큘럼' },
-          { href: '/curriculum/comhwal', label: '컴활 커리큘럼' },
-        ],
-        jsonLd: [
-          {
-            '@context': 'https://schema.org',
-            '@type': 'Article',
-            headline: title,
-            description,
-            inLanguage: 'ko-KR',
-            datePublished: publishedAt || undefined,
-            author: { '@type': 'Organization', name: 'QuestDP', url: SITE_ORIGIN },
-            publisher: { '@type': 'Organization', name: 'QuestDP' },
-            mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalForPath(`/blog/${slug}`) },
-            image: `${SITE_ORIGIN}/og/blog-${slug}.png`,
-          },
-          breadcrumbJsonLd([
-            ['홈', '/'],
-            ['블로그', '/blog'],
-            [title, `/blog/${slug}`],
-          ]),
-        ],
-      });
+      const blocks = extractArrayAfterProperty(chunk, 'blocks')
+        ? extractTopLevelObjectLiterals(extractArrayAfterProperty(chunk, 'blocks'))
+            .map(parseBlogBlock)
+            .filter(Boolean)
+        : [];
+      const faqs = extractArrayAfterProperty(chunk, 'faqs')
+        ? extractTopLevelObjectLiterals(extractArrayAfterProperty(chunk, 'faqs'))
+            .map((faqChunk) => ({
+              q: cleanText(readStringProp(faqChunk, 'q')),
+              a: cleanText(readStringProp(faqChunk, 'a')),
+            }))
+            .filter((item) => item.q && item.a)
+        : [];
+      return {
+        slug,
+        title,
+        subtitle: cleanText(readStringProp(chunk, 'subtitle')),
+        category: readStringProp(chunk, 'category'),
+        primaryKeyword: cleanText(readStringProp(chunk, 'primaryKeyword')),
+        publishedAt: readStringProp(chunk, 'publishedAt'),
+        updatedAt: readStringProp(chunk, 'updatedAt'),
+        readingMinutes: readNumberProp(chunk, 'readingMinutes'),
+        description: cleanText(readStringProp(chunk, 'metaDescription')),
+        blocks,
+        faqs,
+        relatedSlugs: readStringArrayProp(chunk, 'relatedSlugs'),
+      };
     })
     .filter(Boolean);
+}
+
+function parseBlogBlock(blockChunk) {
+  const kind = readStringProp(blockChunk, 'kind');
+  if (!kind) return null;
+  if (kind === 'p' || kind === 'h2' || kind === 'h3' || kind === 'quote') {
+    return {
+      kind,
+      text: cleanText(readStringProp(blockChunk, 'text')),
+      cite: cleanText(readStringProp(blockChunk, 'cite')),
+    };
+  }
+  if (kind === 'callout') {
+    return {
+      kind,
+      title: cleanText(readStringProp(blockChunk, 'title')),
+      body: cleanText(readStringProp(blockChunk, 'body')),
+    };
+  }
+  if (kind === 'ul' || kind === 'ol') {
+    return {
+      kind,
+      items: readStringArrayProp(blockChunk, 'items').map(cleanText).filter(Boolean),
+    };
+  }
+  if (kind === 'table') {
+    return {
+      kind,
+      headers: readStringArrayProp(blockChunk, 'headers').map(cleanText),
+      rows: readTableRows(blockChunk).map((row) => row.map(cleanText)),
+    };
+  }
+  if (kind === 'cta') {
+    return {
+      kind,
+      label: cleanText(readStringProp(blockChunk, 'label')),
+      href: readStringProp(blockChunk, 'href'),
+    };
+  }
+  return null;
+}
+
+function firstBlogParagraphs(post) {
+  return post.blocks
+    .filter((block) => block.kind === 'p' || block.kind === 'callout')
+    .map((block) => cleanText(block.text || block.body))
+    .filter(Boolean);
+}
+
+function enhanceCoreRoute(route, context) {
+  if (route.path === '/blog') {
+    return {
+      ...route,
+      minSeoTextChars: 1500,
+      staticContentHtml: renderBlogIndexStaticContent(context.blogPosts),
+      jsonLd: [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'Blog',
+          name: 'QuestDP 공부법 블로그',
+          description: route.description,
+          url: canonicalForPath(route.path),
+          inLanguage: 'ko-KR',
+          publisher: { '@type': 'Organization', name: 'QuestDP', url: SITE_ORIGIN },
+          blogPost: context.blogPosts.slice(0, 12).map((post) => ({
+            '@type': 'BlogPosting',
+            headline: post.h1,
+            url: post.canonical,
+            description: post.description,
+          })),
+        },
+        breadcrumbJsonLd([
+          ['홈', '/'],
+          ['블로그', '/blog'],
+        ]),
+      ],
+    };
+  }
+
+  const faqSubject = route.path.match(/^\/faq\/(adsp|sqld|comhwal)$/)?.[1];
+  if (faqSubject) {
+    const faq = getFaqBySubject(faqSubject);
+    if (!faq) return route;
+    return {
+      ...route,
+      minSeoTextChars: 1500,
+      staticContentHtml: renderFaqStaticContent(faq),
+      jsonLd: [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: faq.groups.flatMap((group) =>
+            group.items.map((item) => ({
+              '@type': 'Question',
+              name: item.q,
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: item.a,
+              },
+            })),
+          ),
+        },
+        breadcrumbJsonLd([
+          ['홈', '/'],
+          [CURRICULUM_FACTS[faqSubject]?.label || faqSubject.toUpperCase(), faqSubject === 'comhwal' ? '/curriculum/comhwal' : `/curriculum/${faqSubject}`],
+          ['자주 묻는 질문', route.path],
+        ]),
+      ],
+    };
+  }
+
+  const curriculumSubject = route.path.match(/^\/curriculum\/(adsp|sqld|comhwal|comhwal-1|comhwal-2)$/)?.[1];
+  if (curriculumSubject) {
+    return {
+      ...route,
+      minSeoTextChars: 1500,
+      staticContentHtml: renderCurriculumStaticContent(curriculumSubject, context),
+      jsonLd: buildCurriculumJsonLd(curriculumSubject, route, context),
+    };
+  }
+
+  return route;
+}
+
+function getFaqBySubject(subject) {
+  if (!fs.existsSync(FAQ_FILE)) return null;
+  const src = fs.readFileSync(FAQ_FILE, 'utf8');
+  return extractTypedObjectChunks(src, 'SubjectFAQ')
+    .map((chunk) => {
+      const parsedSubject = readStringProp(chunk, 'subject');
+      const groupsArray = extractArrayAfterProperty(chunk, 'groups');
+      const groups = groupsArray
+        ? extractTopLevelObjectLiterals(groupsArray)
+            .map((groupChunk) => {
+              const itemsArray = extractArrayAfterProperty(groupChunk, 'items');
+              const items = itemsArray
+                ? extractTopLevelObjectLiterals(itemsArray)
+                    .map((itemChunk) => ({
+                      q: cleanText(readStringProp(itemChunk, 'q')),
+                      a: cleanText(readStringProp(itemChunk, 'a')),
+                    }))
+                    .filter((item) => item.q && item.a)
+                : [];
+              return {
+                heading: cleanText(readStringProp(groupChunk, 'heading')),
+                items,
+              };
+            })
+            .filter((group) => group.heading && group.items.length > 0)
+        : [];
+      return {
+        subject: parsedSubject,
+        title: cleanText(readStringProp(chunk, 'title')),
+        metaTitle: cleanText(readStringProp(chunk, 'metaTitle')),
+        metaDescription: cleanText(readStringProp(chunk, 'metaDescription')),
+        groups,
+      };
+    })
+    .find((faq) => faq.subject === subject) || null;
+}
+
+function renderBlogStaticContent(post) {
+  const parts = [];
+  if (post.subtitle) parts.push(`<p class="seo-lead">${escapeHtml(post.subtitle)}</p>`);
+  for (const block of post.blocks) {
+    parts.push(renderBlogBlock(block));
+  }
+  if (post.faqs.length > 0) {
+    parts.push('<section class="seo-static-section"><h2>자주 묻는 질문</h2>');
+    for (const faq of post.faqs) {
+      parts.push(
+        `<h3>Q. ${escapeHtml(faq.q)}</h3><p>${escapeHtml(faq.a)}</p>`,
+      );
+    }
+    parts.push('</section>');
+  }
+  return parts.filter(Boolean).join('\n');
+}
+
+function renderBlogBlock(block) {
+  if (block.kind === 'p') return `<p>${escapeHtml(block.text)}</p>`;
+  if (block.kind === 'h2') return `<h2>${escapeHtml(block.text)}</h2>`;
+  if (block.kind === 'h3') return `<h3>${escapeHtml(block.text)}</h3>`;
+  if (block.kind === 'quote') {
+    return `<blockquote>${escapeHtml(block.text)}${block.cite ? `<cite>${escapeHtml(block.cite)}</cite>` : ''}</blockquote>`;
+  }
+  if (block.kind === 'callout') {
+    return `<aside class="seo-callout">${block.title ? `<h3>${escapeHtml(block.title)}</h3>` : ''}<p>${escapeHtml(block.body)}</p></aside>`;
+  }
+  if (block.kind === 'ul' || block.kind === 'ol') {
+    const tag = block.kind;
+    const items = (block.items || []).map((item) => `<li>${escapeHtml(item)}</li>`).join('');
+    return `<${tag}>${items}</${tag}>`;
+  }
+  if (block.kind === 'table') {
+    return renderTable(block.headers || [], block.rows || []);
+  }
+  if (block.kind === 'cta' && block.href && block.label) {
+    return `<p><a href="${escapeHtml(encodeURI(block.href))}">${escapeHtml(block.label)}</a></p>`;
+  }
+  return '';
+}
+
+function renderBlogIndexStaticContent(blogPosts) {
+  const parts = [
+    '<section class="seo-static-section">',
+    '<h2>최근 공부법 글</h2>',
+    '<p>QuestDP 블로그는 ADsP, SQLD, 컴활을 처음 준비하는 사람이 실제로 검색하는 질문을 기준으로 정리합니다. 시험범위, 준비 순서, 비전공자 공부법, 회독 방식처럼 바로 판단이 필요한 주제부터 다룹니다.</p>',
+    '<ul>',
+  ];
+  for (const post of blogPosts) {
+    parts.push(
+      `<li><a href="${escapeHtml(encodeURI(post.path))}">${escapeHtml(post.h1)}</a> — ${escapeHtml(post.summary || post.description)}</li>`,
+    );
+  }
+  parts.push('</ul></section>');
+  parts.push(
+    '<section class="seo-static-section"><h2>읽는 순서</h2><p>자격증을 고르는 단계라면 ADsP와 SQLD 비교 글을 먼저 보고, 이미 과목을 골랐다면 각 커리큘럼과 FAQ로 넘어가세요. 컴활은 1급과 2급 차이를 확인한 뒤 컴퓨터 일반 토픽부터 읽으면 처음 보는 말이 덜 낯섭니다.</p></section>',
+  );
+  return parts.join('\n');
+}
+
+function renderFaqStaticContent(faq) {
+  const parts = [
+    `<p class="seo-lead">${escapeHtml(faq.metaDescription)}</p>`,
+  ];
+  for (const group of faq.groups) {
+    parts.push('<section class="seo-static-section">');
+    parts.push(`<h2>${escapeHtml(group.heading)}</h2>`);
+    for (const item of group.items) {
+      parts.push(`<h3>Q. ${escapeHtml(item.q)}</h3>`);
+      parts.push(`<p>${escapeHtml(item.a)}</p>`);
+    }
+    parts.push('</section>');
+  }
+  return parts.join('\n');
+}
+
+function renderCurriculumStaticContent(subject, context) {
+  const facts = CURRICULUM_FACTS[subject];
+  if (!facts) return '';
+  const parts = [
+    '<section class="seo-static-section">',
+    `<h2>${escapeHtml(facts.exam)} 시험 구조</h2>`,
+    '<dl class="seo-facts">',
+    `<dt>시행기관</dt><dd>${escapeHtml(facts.authority)}</dd>`,
+    `<dt>문항 / 시간</dt><dd>${escapeHtml(facts.questions)}</dd>`,
+    `<dt>합격 기준</dt><dd>${escapeHtml(facts.scoring)}</dd>`,
+    `<dt>시험 범위</dt><dd>${escapeHtml(facts.scope)}</dd>`,
+    '</dl>',
+    `<p>${escapeHtml(facts.strategy)}</p>`,
+    '</section>',
+  ];
+
+  if (subject === 'adsp' || subject === 'sqld') {
+    parts.push(renderCoreCurriculumSections(subject, context.lessons));
+  } else {
+    parts.push(renderComhwalCurriculumSections(subject, context.topics));
+  }
+
+  parts.push(
+    '<section class="seo-static-section"><h2>QuestDP에서 보는 방식</h2><p>긴 요약문을 한 번에 외우는 대신, 토픽을 작게 나누고 개념을 본 직후 바로 문제로 확인합니다. 공개 SEO 페이지는 시험범위와 개념 이해를 돕기 위한 본문 중심으로 두고, 실제 풀이 흐름은 게임 화면에서 이어가도록 분리합니다.</p></section>',
+  );
+
+  return parts.filter(Boolean).join('\n');
+}
+
+function renderCoreCurriculumSections(subject, lessons) {
+  const subjectLessons = lessons.filter((lesson) => lesson.seoSubject === subject);
+  const chapters = new Map();
+  for (const lesson of subjectLessons) {
+    const chapterKey = lesson.seoChapter || 0;
+    if (!chapters.has(chapterKey)) {
+      chapters.set(chapterKey, {
+        title: lesson.seoChapterTitle || `Chapter ${chapterKey}`,
+        topics: new Map(),
+      });
+    }
+    const chapter = chapters.get(chapterKey);
+    const topicKey = lesson.seoTopic || '기타';
+    if (!chapter.topics.has(topicKey)) chapter.topics.set(topicKey, []);
+    chapter.topics.get(topicKey).push(lesson);
+  }
+
+  const parts = [];
+  for (const [chapterNo, chapter] of [...chapters.entries()].sort((a, b) => a[0] - b[0])) {
+    parts.push('<section class="seo-static-section">');
+    parts.push(`<h2>${escapeHtml(chapterNo)}과목 ${escapeHtml(chapter.title)}</h2>`);
+    for (const [topic, steps] of chapter.topics) {
+      parts.push(`<h3>${escapeHtml(topic)}</h3>`);
+      parts.push('<ul>');
+      for (const step of steps) {
+        parts.push(
+          `<li><a href="${escapeHtml(encodeURI(step.path))}">${escapeHtml(step.h1)}</a> — ${escapeHtml(step.summary)}</li>`,
+        );
+      }
+      parts.push('</ul>');
+    }
+    parts.push('</section>');
+  }
+  return parts.join('\n');
+}
+
+function renderComhwalCurriculumSections(subject, topics) {
+  const allowedTopics = topics.filter((topic) => {
+    if (subject === 'comhwal-2') return topic.seoPlanetKey !== 'database-general';
+    return true;
+  });
+  const planets = new Map();
+  for (const topic of allowedTopics) {
+    const planetKey = topic.seoPlanetKey || 'comhwal';
+    if (!planets.has(planetKey)) {
+      planets.set(planetKey, {
+        label: topic.seoPlanetLabel || '컴활 필기',
+        topics: [],
+      });
+    }
+    planets.get(planetKey).topics.push(topic);
+  }
+
+  const parts = [];
+  for (const planet of planets.values()) {
+    parts.push('<section class="seo-static-section">');
+    parts.push(`<h2>${escapeHtml(planet.label)}</h2>`);
+    parts.push('<ul>');
+    for (const topic of planet.topics) {
+      const cardSummary = (topic.seoCardTitles || []).slice(0, 4).join(', ');
+      parts.push(
+        `<li><a href="${escapeHtml(encodeURI(topic.path))}">${escapeHtml(topic.seoTopicId)} ${escapeHtml(topic.seoTopicTitle)}</a> — ${escapeHtml(cardSummary || topic.summary)}</li>`,
+      );
+    }
+    parts.push('</ul>');
+    parts.push('</section>');
+  }
+  return parts.join('\n');
+}
+
+function buildCurriculumJsonLd(subject, route, context) {
+  const facts = CURRICULUM_FACTS[subject];
+  const items = subject === 'adsp' || subject === 'sqld'
+    ? context.lessons
+        .filter((lesson) => lesson.seoSubject === subject)
+        .map((lesson) => ({ name: lesson.h1, url: lesson.canonical }))
+    : context.topics
+        .filter((topic) => subject !== 'comhwal-2' || topic.seoPlanetKey !== 'database-general')
+        .map((topic) => ({ name: `${topic.seoTopicId} ${topic.seoTopicTitle}`, url: topic.canonical }));
+
+  return [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Course',
+      name: `${facts?.label || route.h1} 시험범위 커리큘럼`,
+      description: route.description,
+      provider: {
+        '@type': 'Organization',
+        name: 'QuestDP',
+        sameAs: SITE_ORIGIN,
+      },
+      inLanguage: 'ko-KR',
+      educationalLevel: facts?.label || route.h1,
+      isAccessibleForFree: true,
+      about: facts ? [facts.exam, facts.scope] : undefined,
+      hasCourseInstance: {
+        '@type': 'CourseInstance',
+        courseMode: 'online',
+      },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      itemListElement: items.slice(0, 100).map((item, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        url: item.url,
+        name: item.name,
+      })),
+    },
+    breadcrumbJsonLd([
+      ['홈', '/'],
+      [facts?.label || route.h1, route.path],
+      ['시험범위', route.path],
+    ]),
+  ];
+}
+
+function renderComhwalTopicStaticContent(source, topic) {
+  const parts = [
+    '<section class="seo-static-section">',
+    `<h2>${escapeHtml(source.sectionLabel)} ${escapeHtml(topic.id)}번 개념</h2>`,
+    `<p>이 페이지는 ${escapeHtml(topic.title)}를 처음 보는 사람도 화면이나 상황으로 떠올릴 수 있게 개념 카드 중심으로 정리합니다. 문제는 토픽당 1개 티저만 공개하고, 정답과 해설은 정적 HTML에 싣지 않습니다.</p>`,
+    '</section>',
+  ];
+
+  parts.push('<section class="seo-static-section">');
+  parts.push('<h2>개념 카드</h2>');
+  for (const [index, card] of topic.cards.entries()) {
+    parts.push(`<article class="seo-concept-card"><h3>${String(index + 1).padStart(2, '0')}. ${escapeHtml(card.title)}</h3>`);
+    parts.push(`<p>${escapeHtml(cleanText(card.body))}</p>`);
+    if (card.keyPoints?.length) {
+      parts.push('<ul>');
+      for (const point of card.keyPoints) parts.push(`<li>${escapeHtml(cleanText(point))}</li>`);
+      parts.push('</ul>');
+    }
+    if (card.examTip) {
+      parts.push(`<p><strong>시험 포인트</strong> ${escapeHtml(cleanText(card.examTip))}</p>`);
+    }
+    parts.push('</article>');
+  }
+  parts.push('</section>');
+
+  const teaserCard = topic.cards.find((card) => card.correct || card.questionPrompt);
+  if (teaserCard) {
+    parts.push('<section class="seo-question-teaser" data-seo-question-teaser="true">');
+    parts.push('<h2>체크포인트 문제 티저</h2>');
+    parts.push(`<p>${escapeHtml(teaserCard.questionPrompt || `${topic.title}에서 방금 배운 핵심은 무엇인가요?`)}</p>`);
+    const choices = buildQuestionTeaserChoices(teaserCard);
+    if (choices.length > 0) {
+      parts.push('<ol>');
+      for (const choice of choices) parts.push(`<li>${escapeHtml(cleanText(choice))}</li>`);
+      parts.push('</ol>');
+    }
+    parts.push('<p>정답과 해설은 공개 토픽 HTML에 넣지 않고, QuestDP 게임 화면에서 직접 풀면서 확인합니다.</p>');
+    parts.push('</section>');
+  }
+
+  return parts.join('\n');
+}
+
+function buildQuestionTeaserChoices(card) {
+  const choices = [card.correct, ...(card.wrongChoices || [])]
+    .map(cleanText)
+    .filter(Boolean);
+  if (choices.length <= 1) return choices;
+  const offset = Math.abs(hashString(`${card.title}:${card.questionPrompt}`)) % choices.length;
+  return choices.slice(offset).concat(choices.slice(0, offset));
+}
+
+function hashString(value) {
+  let hash = 0;
+  for (const ch of String(value)) hash = ((hash << 5) - hash + ch.codePointAt(0)) | 0;
+  return hash;
 }
 
 function collectComhwalTopicRoutes() {
@@ -531,7 +1072,10 @@ function collectComhwalTopicSpecs(source) {
             .map((cardChunk) => ({
               title: readStringProp(cardChunk, 'title'),
               body: readStringProp(cardChunk, 'body'),
+              keyPoints: readStringArrayProp(cardChunk, 'keyPoints'),
+              examTip: readStringProp(cardChunk, 'examTip'),
               correct: readStringProp(cardChunk, 'correct'),
+              wrongChoices: readStringArrayProp(cardChunk, 'wrongChoices'),
               questionPrompt: readStringProp(cardChunk, 'questionPrompt'),
               explanation: readStringProp(cardChunk, 'explanation'),
             }))
@@ -553,7 +1097,10 @@ function collectComhwalTopicSpecs(source) {
         .map((cardChunk) => ({
           title: readStringProp(cardChunk, 'title'),
           body: readStringProp(cardChunk, 'body'),
+          keyPoints: readStringArrayProp(cardChunk, 'keyPoints'),
+          examTip: readStringProp(cardChunk, 'examTip'),
           correct: readStringProp(cardChunk, 'correct'),
+          wrongChoices: readStringArrayProp(cardChunk, 'wrongChoices'),
           questionPrompt: readStringProp(cardChunk, 'questionPrompt'),
           explanation: readStringProp(cardChunk, 'explanation'),
         }))
@@ -570,19 +1117,18 @@ function buildComhwalTopicRoute(source, topics, topic, index) {
     `${topic.cards.slice(0, 2).map((card) => card.body).join(' ')} 컴활 필기 ${source.planetLabel} ${topic.id} ${topic.title}를 길게 외우지 않도록 짧은 카드와 바로 확인하는 문제로 나눴습니다.`,
     180,
   );
-  const questions = topic.cards
-    .filter((card) => card.correct)
-    .slice(0, 5)
+  const teaserQuestions = topic.cards
+    .filter((card) => card.correct || card.questionPrompt)
+    .slice(0, 1)
     .map((card) => ({
       '@type': 'Question',
       name:
         card.questionPrompt ||
         `${topic.title}에서 방금 배운 핵심은 무엇인가요?`,
-      acceptedAnswer: {
+      suggestedAnswer: buildQuestionTeaserChoices(card).map((choice) => ({
         '@type': 'Answer',
-        text: card.correct,
-      },
-      text: card.explanation || card.body,
+        text: choice,
+      })),
     }));
   const links = [
     { href: '/curriculum/comhwal', label: '컴활 커리큘럼' },
@@ -614,6 +1160,15 @@ function buildComhwalTopicRoute(source, topics, topic, index) {
     summary,
     type: 'article',
     links,
+    minSeoTextChars: 850,
+    staticContentHtml: renderComhwalTopicStaticContent(source, topic),
+    seoSubject: 'comhwal',
+    seoPlanetKey: source.planetKey,
+    seoPlanetLabel: source.planetLabel,
+    seoTopicId: topic.id,
+    seoTopicTitle: topic.title,
+    seoSectionTitle: topic.section,
+    seoCardTitles: topic.cards.map((card) => card.title),
     jsonLd: [
       {
         '@context': 'https://schema.org',
@@ -643,7 +1198,7 @@ function buildComhwalTopicRoute(source, topics, topic, index) {
         educationalLevel: '컴퓨터활용능력 필기',
         assesses: `${topic.id} ${topic.title}`,
         provider: { '@type': 'Organization', name: 'QuestDP', url: SITE_ORIGIN },
-        hasPart: questions,
+        hasPart: teaserQuestions,
       },
       breadcrumbJsonLd([
         ['홈', '/'],
@@ -707,6 +1262,12 @@ function collectLessonRoutes() {
           eyebrow: `${SUBJECT_LABEL[lesson.subject] || lesson.subject.toUpperCase()} · ${lesson.chapterTitle || `Chapter ${lesson.chapter}`} · ${lesson.topic}`,
           summary: step.description,
           type: 'article',
+          seoSubject: lesson.subject,
+          seoChapter: lesson.chapter,
+          seoChapterTitle: lesson.chapterTitle,
+          seoTopic: lesson.topic,
+          seoLessonTitle: lesson.title,
+          seoStepTitle: step.title,
           links: [
             { href: lesson.subject === 'sqld' ? '/curriculum/sqld' : '/curriculum/adsp', label: `${SUBJECT_LABEL[lesson.subject] || lesson.subject.toUpperCase()} 커리큘럼` },
             ...related,
@@ -914,6 +1475,32 @@ function readStringProp(src, prop) {
   return readStringLiteral(src, colon + 1);
 }
 
+function readStringArrayProp(src, prop) {
+  const arraySource = extractArrayAfterProperty(src, prop);
+  if (!arraySource) return [];
+  return readStringLiterals(arraySource);
+}
+
+function readTableRows(src) {
+  const rowsSource = extractArrayAfterProperty(src, 'rows');
+  if (!rowsSource) return [];
+  return extractTopLevelArrays(rowsSource).map(readStringLiterals);
+}
+
+function extractTopLevelArrays(arraySource) {
+  const out = [];
+  let i = 0;
+  while (i < arraySource.length) {
+    const openIndex = nextCodeChar(arraySource, '[', i);
+    if (openIndex < 0) break;
+    const closeIndex = findMatching(arraySource, openIndex, '[', ']');
+    if (closeIndex < openIndex) break;
+    out.push(arraySource.slice(openIndex + 1, closeIndex));
+    i = closeIndex + 1;
+  }
+  return out;
+}
+
 function firstStringAfterProp(src, prop) {
   const propIndex = findPropertyIndex(src, prop);
   if (propIndex < 0) return '';
@@ -1060,8 +1647,30 @@ function findMatching(src, openIndex, openChar, closeChar) {
   return -1;
 }
 
+function renderTable(headers, rows) {
+  if (headers.length === 0 && rows.length === 0) return '';
+  const head = headers.length
+    ? `<thead><tr>${headers.map((header) => `<th>${escapeHtml(header)}</th>`).join('')}</tr></thead>`
+    : '';
+  const body = rows.length
+    ? `<tbody>${rows
+        .map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`)
+        .join('')}</tbody>`
+    : '';
+  return `<table>${head}${body}</table>`;
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 function cleanText(value) {
   return String(value || '')
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '$1')
     .replace(/\[([^\]]+)\]/g, '$1')
     .replace(/\*\*([^*]+)\*\*/g, '$1')
     .replace(/\s+/g, ' ')

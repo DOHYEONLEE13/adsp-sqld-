@@ -54,6 +54,7 @@ export default function ComhwalTopicPage({ planetKey, topicId }: Props) {
   const checkpointQuestions = cards
     .map((card) => card.question)
     .filter((question): question is NonNullable<ComhwalConceptCard['question']> => !!question);
+  const teaserQuestion = checkpointQuestions[0];
 
   return (
     <article className="relative isolate min-h-screen overflow-hidden bg-[#f5f8ef] text-[#162015]">
@@ -98,7 +99,7 @@ export default function ComhwalTopicPage({ planetKey, topicId }: Props) {
           <div className="mt-5 flex flex-wrap gap-3">
             <Stat label="토픽 번호" value={topicId} />
             <Stat label="개념 카드" value={`${cards.length}개`} />
-            <Stat label="체크포인트" value={`${checkpointQuestions.length}개`} />
+            <Stat label="문제 티저" value={teaserQuestion ? '1개' : '0개'} />
           </div>
           <div className="mt-6 flex flex-wrap gap-3">
             <a
@@ -135,6 +136,10 @@ export default function ComhwalTopicPage({ planetKey, topicId }: Props) {
             <ConceptCard key={card.id} card={card} index={index} />
           ))}
         </div>
+
+        {teaserQuestion ? (
+          <QuestionTeaser question={teaserQuestion} />
+        ) : null}
 
         <section className="mt-14 rounded-[10px] border border-[#d8e2ce] bg-[#162015] p-6 text-white md:p-8">
           <h2 className="kr-heading mb-2 text-[20px] md:text-[24px]">
@@ -211,45 +216,37 @@ function ConceptCard({ card, index }: { card: ComhwalConceptCard; index: number 
           {card.examTip}
         </p>
       ) : null}
+    </section>
+  );
+}
 
-      {card.question ? (
-        <div className="rounded-[10px] border border-[#d8e2ce] bg-[#162015] p-4 text-white">
-          <h3 className="kr-heading mb-3 inline-flex items-center gap-2 text-[14px] text-white">
-            <HelpCircle size={15} className="text-[#A7E96A]" strokeWidth={2.4} />
-            체크포인트 문제
-          </h3>
-          <p className="kr-body mb-3 text-[13.5px] leading-[1.7] text-white/84">
-            {card.question.prompt}
-          </p>
-          <ol className="m-0 list-none space-y-2 p-0">
-            {card.question.choices.map((choice, choiceIndex) => (
-              <li
-                key={choice}
-                className="rounded-[10px] border px-3 py-2 text-[13px] leading-[1.55]"
-                style={{
-                  borderColor:
-                    choiceIndex === card.question?.answerIndex
-                      ? 'rgba(167,233,106,0.5)'
-                      : 'rgba(239,244,255,0.1)',
-                  color:
-                    choiceIndex === card.question?.answerIndex
-                      ? '#A7E96A'
-                      : 'rgba(255,255,255,0.72)',
-                  background:
-                    choiceIndex === card.question?.answerIndex
-                      ? 'rgba(167,233,106,0.08)'
-                      : 'rgba(255,255,255,0.02)',
-                }}
-              >
-                {choice}
-              </li>
-            ))}
-          </ol>
-          <p className="kr-body mt-3 text-[12.5px] leading-[1.7] text-white/62">
-            {card.question.explanation}
-          </p>
-        </div>
-      ) : null}
+function QuestionTeaser({
+  question,
+}: {
+  question: NonNullable<ComhwalConceptCard['question']>;
+}) {
+  return (
+    <section className="mt-10 rounded-[10px] border border-[#d8e2ce] bg-[#162015] p-5 text-white shadow-[0_18px_60px_-45px_rgba(22,32,21,0.5)] md:p-6">
+      <h2 className="kr-heading mb-3 inline-flex items-center gap-2 text-[18px] md:text-[22px]">
+        <HelpCircle size={18} className="text-[#A7E96A]" strokeWidth={2.4} />
+        체크포인트 문제 티저
+      </h2>
+      <p className="kr-body mb-4 text-[14px] leading-[1.75] text-white/84 md:text-[15px]">
+        {question.prompt}
+      </p>
+      <ol className="m-0 list-none space-y-2 p-0">
+        {question.choices.map((choice, choiceIndex) => (
+          <li
+            key={`${choice}-${choiceIndex}`}
+            className="rounded-[10px] border border-white/10 bg-white/[0.025] px-3 py-2 text-[13px] leading-[1.6] text-white/76"
+          >
+            {choice}
+          </li>
+        ))}
+      </ol>
+      <p className="kr-body mt-4 text-[12.5px] leading-[1.7] text-white/62 md:text-[13px]">
+        정답과 해설은 공개 토픽 페이지에 넣지 않습니다. 게임 화면에서 직접 풀고 바로 확인하세요.
+      </p>
     </section>
   );
 }
@@ -342,13 +339,9 @@ function buildJsonLd({
     educationalLevel: '컴퓨터활용능력 필기',
     assesses: `${topicId} ${title}`,
     provider: { '@type': 'Organization', name: 'QuestDP', url: 'https://quest-dp.com' },
-    hasPart: questions.slice(0, 8).map((question) => ({
+    hasPart: questions.slice(0, 1).map((question) => ({
       '@type': 'Question',
       name: question.prompt,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: question.choices[question.answerIndex],
-      },
       suggestedAnswer: question.choices.map((choice) => ({
         '@type': 'Answer',
         text: choice,

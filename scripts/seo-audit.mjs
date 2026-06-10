@@ -72,6 +72,23 @@ for (const route of manifest.all) {
     if (!html.includes('data-seo-snapshot="true"')) {
       fail(`Missing static body snapshot for ${route.path}`);
     }
+    if (route.minSeoTextChars) {
+      const textChars = countVisibleTextCodepoints(html);
+      if (textChars < route.minSeoTextChars) {
+        fail(
+          `Static body text is too short for ${route.path}: ${textChars} chars, expected at least ${route.minSeoTextChars} chars (Korean code points, not UTF-8 bytes)`,
+        );
+      }
+    }
+    if (route.path.startsWith('/topics/comhwal/')) {
+      if (html.includes('"acceptedAnswer"') || html.includes('acceptedAnswer')) {
+        fail(`Comhwal topic leaked acceptedAnswer JSON-LD: ${route.path}`);
+      }
+      const teaserCount = (html.match(/data-seo-question-teaser="true"/g) || []).length;
+      if (teaserCount > 1) {
+        fail(`Comhwal topic has more than one public question teaser: ${route.path}`);
+      }
+    }
   }
 }
 
@@ -119,6 +136,23 @@ function escapeHtml(value) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+function countVisibleTextCodepoints(html) {
+  const text = html
+    .replace(/<script\b[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style\b[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<noscript\b[\s\S]*?<\/noscript>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+  return Array.from(text).length;
 }
 
 function fail(message) {

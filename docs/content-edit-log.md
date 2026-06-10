@@ -1,5 +1,39 @@
 # QuestDP Content Edit Log
 
+## 2026-06-10 - COMHWAL Batch A 스프레드시트 일반 전체 재작성 완료
+
+- 스프레드시트 일반 060~106 중 보존 대상 070, 073, 076, 082를 제외한 43개 토픽의 저작 카드 86장을 재작성했다.
+- 모든 재작성 토픽은 서버 화이트리스트(q02/q04)에 맞춰 토픽당 카드 2장 구조를 유지했고, 직접 `questionPrompt`와 3개 오답 선택지를 넣었다.
+- 함수 계산형 문항은 Excel COM `Evaluate`로 실제 엑셀 결과를 재검산했다.
+- Batch 완료 검증: `npm test -- --run`, `npm run build`.
+
+## 2026-06-10 - COMHWAL Batch A-4 스프레드시트 097~106 재작성
+
+- 스프레드시트 일반 097~106의 20개 저작 카드를 시나리오, 목표값 찾기, 데이터 표, 통합, 매크로 생성/실행, VBA 기본, 변수/배열, 제어문, 엑셀 개체 중심으로 재작성했다.
+- 매크로/VBA 구간은 기능 이름 암기보다 실제 작업 장면, 확장자, 저장 위치, 개체·속성·메서드 구분으로 문제를 연결했다.
+- 함수 계산형 문항은 없는 단위라 Excel COM 결과값 검산 대상은 없었다.
+- 검증: `npx vitest run src/data/comhwal/concepts.test.ts src/game/comhwalVisualModels.test.ts`, `npm run typecheck`.
+
+## 2026-06-10 - COMHWAL Batch A-3 스프레드시트 086~096 재작성
+
+- 스프레드시트 일반 086~096의 22개 저작 카드를 차트 기초/편집/종류, 화면 보기, 페이지 설정, 인쇄, 정렬, 고급 필터, 외부 데이터, 부분합, 피벗 테이블 중심으로 재작성했다.
+- 각 토픽에 직접 `questionPrompt`와 같은 도메인의 오답 선택지를 넣어 넓은 fallback 문제가 나오지 않게 했다.
+- 함수 계산형 문항은 없는 단위라 Excel COM 결과값 검산 대상은 없었다.
+- 검증: `npx vitest run src/data/comhwal/concepts.test.ts src/game/comhwalVisualModels.test.ts`, `npm run typecheck`.
+
+## 2026-06-10 - COMHWAL Batch A-2 스프레드시트 071~085 재작성
+
+- 스프레드시트 일반 071, 072, 074, 075, 077, 078, 079, 080, 081, 083, 084, 085의 24개 저작 카드를 조건부 서식, 수식 오류, 이름 정의, 함수 기본, 수학/텍스트/날짜/논리/정보/DB/재무/배열 함수 중심으로 재작성했다.
+- 보존 대상 골드 스탠더드 토픽 073, 076, 082는 수정하지 않았고, 서버 화이트리스트(q02/q04)에 맞춰 토픽당 카드 2장 구조를 유지했다.
+- 계산형 함수 문항은 Excel COM `Evaluate`로 결과를 재검산했다. 특히 `ROUNDUP(-12.31,1)=-12.4`, `ROUNDDOWN(-12.39,1)=-12.3`, `ROUND(-12.35,1)=-12.4`, `INT(-3.2)=-4`, `MOD(-7,3)=2`를 확인했다.
+- 검증: `npx vitest run src/data/comhwal/concepts.test.ts src/game/comhwalVisualModels.test.ts`, `npm run typecheck`.
+
+## 2026-06-10 - COMHWAL Batch A-1 스프레드시트 060~069 재작성
+
+- 스프레드시트 일반 060~069의 20개 저작 카드를 화면 구성, 워크시트 한계, 입력 형식, 채우기 핸들, 찾기/바꾸기, 이동키, 고급 옵션, 셀 편집, 공유/보호 함정 중심으로 재작성했다.
+- 서버 화이트리스트(q02/q04)에 맞춰 토픽당 카드 2장 구조를 유지했고, 새 Supabase migration은 만들지 않았다.
+- 검증: `npx vitest run src/data/comhwal/concepts.test.ts src/game/comhwalVisualModels.test.ts`, `npm run typecheck`.
+
 ## 2026-06-09 - COMHWAL 1과목 Windows 개념 시각 요약 개선
 
 ### 사용자가 발견한 문제

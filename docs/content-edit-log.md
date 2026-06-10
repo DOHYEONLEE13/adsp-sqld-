@@ -1,5 +1,82 @@
 # QuestDP Content Edit Log
 
+## 2026-06-10 - COMHWAL Batch C 데이터베이스 일반 전체 재작성 완료
+
+- 데이터베이스 일반 107~152 중 보존 대상 110, 111을 제외한 44개 토픽의 저작 카드 88장에 직접 `questionPrompt`와 3개 오답 선택지를 추가했다.
+- 데이터베이스 개요, 테이블, 쿼리, 폼/컨트롤, 보고서, Access 매크로/VBA 개체를 직전 개념과 유기적으로 이어지는 Access 작업 장면 문제로 정리했다.
+- 함수 계산형 문항은 없는 배치라 Excel COM 결과값 검산 대상은 없었다.
+- Batch 완료 검증: 데이터베이스 107~152 조건 스캔, `npm test -- --run`, `npm run build`.
+
+## 2026-06-10 - COMHWAL Batch C-4 데이터베이스 144~152 재작성
+
+- 데이터베이스 일반 144~152의 18개 저작 카드에 직접 `questionPrompt`와 3개 오답 선택지를 추가했다.
+- 보고서 주요 속성, 정렬 및 그룹화, 보고서 종류, 계산 컨트롤/페이지 나누기, Access 매크로, 매크로 함수, 이벤트 프로시저, Access 개체, DAO/ADO와 Recordset을 자동화·출력 역할별 문제로 연결했다.
+- 함수 계산형 문항은 없는 단위라 Excel COM 결과값 검산 대상은 없었다.
+- 검증: 데이터베이스 144~152 조건 스캔, `npx vitest run src/data/comhwal/concepts.test.ts src/game/comhwalVisualModels.test.ts`, `npm run typecheck`.
+
+## 2026-06-10 - COMHWAL Batch C-3 데이터베이스 132~143 재작성
+
+- 데이터베이스 일반 132~143의 24개 저작 카드에 직접 `questionPrompt`와 3개 오답 선택지를 추가했다.
+- 폼의 개념/구성/자동 생성, 폼 형식·데이터 속성, 컨트롤, 하위 폼, 컨트롤 속성, 탭 순서·이벤트, 보고서 기본/구성/페이지 설정을 입력 화면과 출력물 관점으로 구분해 문제화했다.
+- 함수 계산형 문항은 없는 단위라 Excel COM 결과값 검산 대상은 없었다.
+- 검증: 데이터베이스 132~143 조건 스캔, `npx vitest run src/data/comhwal/concepts.test.ts src/game/comhwalVisualModels.test.ts`, `npm run typecheck`.
+
+## 2026-06-10 - COMHWAL Batch C-2 데이터베이스 120~131 재작성
+
+- 데이터베이스 일반 120~131의 24개 저작 카드에 직접 `questionPrompt`와 3개 오답 선택지를 추가했다.
+- 참조 무결성, 가져오기/연결하기/내보내기, SELECT/WHERE/ORDER BY/GROUP BY/HAVING, Access 함수, Like/In/Between, 하위 질의, 다중 테이블 질의, 실행 질의, 매개 변수/크로스탭 질의를 실제 Access 문제 흐름으로 연결했다.
+- 함수 계산형 문항은 없는 단위라 Excel COM 결과값 검산 대상은 없었다.
+- 검증: 데이터베이스 120~131 조건 스캔, `npx vitest run src/data/comhwal/concepts.test.ts src/game/comhwalVisualModels.test.ts`, `npm run typecheck`.
+
+## 2026-06-10 - COMHWAL Batch C-1 데이터베이스 107~119 재작성
+
+- 데이터베이스 일반 107, 108, 109, 112, 113, 114, 115, 116, 117, 118, 119의 22개 저작 카드에 직접 `questionPrompt`와 3개 오답 선택지를 추가했다.
+- 데이터베이스 개념, DBMS 구성, 관계형 테이블, ERD, 테이블 디자인, 데이터 형식, 입력 마스크, 유효성 검사, 조회 필드, 기본키/색인, 관계 설정을 Access 작업 장면 문제로 연결했다.
+- 보존 대상 110, 111은 수정하지 않았다. 함수 계산형 문항은 없는 단위라 Excel COM 결과값 검산 대상은 없었다.
+- 검증: 데이터베이스 107~119 조건 스캔, `npx vitest run src/data/comhwal/concepts.test.ts src/game/comhwalVisualModels.test.ts`, `npm run typecheck`.
+
+## 2026-06-10 - COMHWAL Batch B 컴퓨터 일반 전체 재작성 완료
+
+- 컴퓨터 일반 003~059 중 보존 대상 030, 047을 제외한 55개 토픽의 저작 카드 110장을 재작성했다.
+- 모든 재작성 토픽은 서버 화이트리스트(q02/q04)에 맞춰 토픽당 카드 2장 구조를 유지했고, 직접 `questionPrompt`와 3개 오답 선택지를 넣었다.
+- B-3 보수 계산 문항은 직접 재검산했고, 나머지 B 단위에는 Excel 함수 계산형 문항이 없어 Excel COM 검산 대상이 없었다.
+- Batch 완료 검증: 컴퓨터 일반 003~059 조건 스캔, `npm test -- --run`, `npm run build`.
+
+## 2026-06-10 - COMHWAL Batch B-5 컴퓨터 일반 053~059 재작성
+
+- 컴퓨터 일반 053~059의 14개 저작 카드를 멀티미디어 그래픽/오디오/비디오 데이터, 멀티미디어 활용, 저작권, 바이러스, 정보 보안 개요, 정보 보안 기법 중심으로 재작성했다.
+- 비트맵/벡터, 오디오/비디오 형식, CIA 3요소, 악성코드/보안 기법을 실제 예시 문제로 연결했다.
+- 함수 계산형 문항은 없는 단위라 Excel COM 결과값 검산 대상은 없었다.
+- 검증: `npx vitest run src/data/comhwal/concepts.test.ts src/game/comhwalVisualModels.test.ts`, `npm run typecheck`.
+
+## 2026-06-10 - COMHWAL Batch B-4 컴퓨터 일반 040~052 재작성
+
+- 컴퓨터 일반 040, 041, 042, 043, 044, 045, 046, 048, 049, 050, 051, 052의 24개 저작 카드를 운영체제, 운영 방식, 프로그래밍 언어, 웹 언어, 네트워크 운영 방식, 망 구성/장비, 인터넷 개요, 프로토콜, 인터넷 서비스, ICT, 멀티미디어, 멀티미디어 소프트웨어 중심으로 재작성했다.
+- 보존 대상 047은 수정하지 않았다.
+- 함수 계산형 문항은 없는 단위라 Excel COM 결과값 검산 대상은 없었다.
+- 검증: `npx vitest run src/data/comhwal/concepts.test.ts src/game/comhwalVisualModels.test.ts`, `npm run typecheck`.
+
+## 2026-06-10 - COMHWAL Batch B-3 컴퓨터 일반 027~039 재작성
+
+- 컴퓨터 일반 027, 028, 029, 031, 032, 033, 034, 035, 036, 037, 038, 039의 24개 저작 카드를 보수, 자료 표현, CPU, 보조기억장치, 출력장치, 인터럽트/채널, 메인보드, BIOS/펌웨어, RAID, 시스템 관리, 하드웨어 업그레이드, 소프트웨어 개요 중심으로 재작성했다.
+- 보존 대상 030은 수정하지 않았다.
+- 보수 계산형 문항은 `1010`의 1의 보수 `0101`, 2의 보수 `0101+1=0110` 흐름으로 재검산했다.
+- 검증: `npx vitest run src/data/comhwal/concepts.test.ts src/game/comhwalVisualModels.test.ts`, `npm run typecheck`.
+
+## 2026-06-10 - COMHWAL Batch B-2 컴퓨터 일반 015~026 재작성
+
+- 컴퓨터 일반 015~026의 24개 저작 카드를 개인 설정, 앱 설정, 장치, 업데이트 및 보안, 장치 관리자, 프린터, 문서 인쇄, Windows 관리 도구, 네트워크 설정, 문제 해결, 컴퓨터 분류, 자료 구성 단위 중심으로 재작성했다.
+- Windows 설정 메뉴별 역할과 하드웨어/네트워크 기본 개념을 실제 작업 장면 기반 문제로 연결했다.
+- 함수 계산형 문항은 없는 단위라 Excel COM 결과값 검산 대상은 없었다.
+- 검증: `npx vitest run src/data/comhwal/concepts.test.ts src/game/comhwalVisualModels.test.ts`, `npm run typecheck`.
+
+## 2026-06-10 - COMHWAL Batch B-1 컴퓨터 일반 003~014 재작성
+
+- 컴퓨터 일반 003~014의 24개 저작 카드를 바로 가기 키, 바로 가기 아이콘, 작업 표시줄, 작업 보기/가상 데스크톱, 시작 메뉴, 폴더 옵션, 파일/폴더, 검색, 휴지통, 보조프로그램, 유니버설 앱, 시스템 설정 중심으로 재작성했다.
+- 각 토픽에 직접 `questionPrompt`와 같은 Windows 도메인의 오답 선택지를 넣어 직전 개념 확인 문제로 이어지게 했다.
+- 함수 계산형 문항은 없는 단위라 Excel COM 결과값 검산 대상은 없었다.
+- 검증: `npx vitest run src/data/comhwal/concepts.test.ts src/game/comhwalVisualModels.test.ts`, `npm run typecheck`.
+
 ## 2026-06-10 - COMHWAL Batch A 스프레드시트 일반 전체 재작성 완료
 
 - 스프레드시트 일반 060~106 중 보존 대상 070, 073, 076, 082를 제외한 43개 토픽의 저작 카드 86장을 재작성했다.

@@ -6,8 +6,6 @@
  *      - 40 XP → +1 ⚡
  *      - 100 XP → +3 ⚡
  *      - 300 XP → +10 ⚡
- *   2) 광고 시청 → +5 ⚡ (기존 AdRewardModal 흐름 — 자식 모달로 띄움)
- *
  * 정책:
  *   - cap (10) 초과 시 구매 거부 ("에너지 가득").
  *   - XP 부족 시 구매 거부 ("XP 부족").
@@ -19,13 +17,11 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
-import { X, Zap, Check, AlertTriangle, Play, Crown, Sparkles } from 'lucide-react';
+import { X, Zap, Check, AlertTriangle, Crown, Sparkles } from 'lucide-react';
 import { openWebOrAppPremiumEntry } from '@/lib/appMode';
 import {
   useEnergy,
   ENERGY_CAP,
-  AD_REWARD,
-  AD_DAILY_CAP,
   isUnlimited,
   purchaseEnergyWithXp,
   type PurchaseResult,
@@ -33,7 +29,6 @@ import {
 import { useProgress } from '../useProgress';
 import { computePlayerStats } from '../rpg';
 import { spendXp } from '../storage';
-import AdRewardModal from './AdRewardModal';
 
 interface PurchaseTier {
   /** 카드 식별자 (storage key 아님 — UI 용). */
@@ -58,7 +53,6 @@ export default function EnergyShopModal({ onClose }: Props) {
   const energy = useEnergy();
   const progress = useProgress();
   const stats = computePlayerStats(progress);
-  const [adOpen, setAdOpen] = useState(false);
   /** 사용자가 선택한 티어 (확인 step 활성화 — 한 번 더 "구매하기" 눌러야 결제). */
   const [selectedTierId, setSelectedTierId] = useState<PurchaseTier['id'] | null>(null);
   /** 직전 구매 결과 — 토스트로 1.6 초 노출. */
@@ -70,11 +64,11 @@ export default function EnergyShopModal({ onClose }: Props) {
   // ESC 닫기.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && !adOpen) onClose();
+      if (e.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onClose, adOpen]);
+  }, [onClose]);
 
   const unlimited = isUnlimited(energy);
   const energyDisplay = unlimited ? '∞' : `${energy.energy}/${ENERGY_CAP}`;
@@ -381,32 +375,6 @@ export default function EnergyShopModal({ onClose }: Props) {
             <div className="flex-1 h-px bg-cream/10" />
           </div>
 
-          {/* 광고 시청 옵션 — 무료, 일일 한도 */}
-          <button
-            type="button"
-            onClick={() => setAdOpen(true)}
-            className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-2xl transition active:scale-[0.98] mb-3"
-            style={{
-              background: 'var(--neon-08)',
-              color: 'var(--neon)',
-              border: '1px solid var(--neon-35)',
-            }}
-          >
-            <Play size={14} fill="currentColor" strokeWidth={0} />
-            <span className="kr-num text-[13px] font-semibold">
-              광고 보고 +{AD_REWARD} ⚡
-            </span>
-            <span
-              className="kr-num text-[10px] px-1.5 py-0.5 rounded-full ml-1"
-              style={{
-                background: 'var(--neon-18)',
-                color: 'var(--neon)',
-              }}
-            >
-              무료 · 1/일
-            </span>
-          </button>
-
           {/* 프리미엄 hero 카드 — gold gradient, 가치 어필 */}
           <button
             type="button"
@@ -460,7 +428,7 @@ export default function EnergyShopModal({ onClose }: Props) {
                   </span>
                 </div>
                 <p className="kr-body text-[11.5px] text-cream/70 leading-tight">
-                  광고·XP 신경 X · 무제한 풀이
+                  에너지·대기시간 걱정 X · 무제한 풀이
                 </p>
               </div>
               <span
@@ -471,11 +439,6 @@ export default function EnergyShopModal({ onClose }: Props) {
               </span>
             </div>
           </button>
-
-          {/* 광고 한도 안내 — 작게 하단 */}
-          <p className="kr-body text-[10.5px] text-cream/40 leading-[1.5] mt-3 text-center">
-            광고는 1일 {AD_DAILY_CAP}회까지 가능
-          </p>
 
           {/* 토스트 */}
           {flash ? (
@@ -505,12 +468,6 @@ export default function EnergyShopModal({ onClose }: Props) {
         </div>
       </motion.div>
 
-      {/* 자식: 광고 모달 */}
-      {adOpen ? (
-        <AdRewardModal
-          onClose={() => setAdOpen(false)}
-        />
-      ) : null}
     </div>
   );
 

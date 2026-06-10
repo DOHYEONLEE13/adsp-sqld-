@@ -7,8 +7,7 @@
  * - "확인" 으로 닫기
  */
 
-import { useState } from 'react';
-import { Zap, X, Crown, PlayCircle } from 'lucide-react';
+import { Zap, X, Crown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { openWebOrAppPremiumEntry } from '@/lib/appMode';
 import Ques from '@/components/mascot/Ques';
@@ -18,8 +17,7 @@ import {
   type MascotCharacter,
 } from '@/components/mascot/types';
 import type { Subject } from '@/types/question';
-import { formatRetryAfter, AD_REWARD } from '../energy';
-import AdRewardModal from './AdRewardModal';
+import { formatRetryAfter } from '../energy';
 
 interface Props {
   retryAfterSec: number;
@@ -39,8 +37,6 @@ export default function EnergyBlockModal({
   const character: MascotCharacter = subject
     ? characterForSubject(subject)
     : DEFAULT_CHARACTER;
-  const [showAd, setShowAd] = useState(false);
-
   const handleUpgrade = () => {
     if (onUpgrade) {
       onUpgrade();
@@ -108,24 +104,10 @@ export default function EnergyBlockModal({
             .
           </p>
           <p className="kr-body text-[12.5px] text-cream/60 leading-[1.55]">
-            광고 1회 보면 ⚡ {AD_REWARD} 즉시 충전. 또는 프리미엄으로 무제한.
+            잠시 기다리거나 프리미엄으로 에너지 제한 없이 이어갈 수 있어요.
           </p>
 
           <div className="w-full mt-5 flex flex-col gap-2">
-            {/* 광고 보기 — primary CTA (즉시 가치, 무료) */}
-            <button
-              type="button"
-              onClick={() => setShowAd(true)}
-              className="w-full kr-num text-[13px] font-medium py-3 rounded-full inline-flex items-center justify-center gap-2 transition active:scale-[0.98]"
-              style={{
-                background: 'var(--cta-primary)',
-                color: 'var(--cta-text)',
-                boxShadow: '0 5px 14px -4px rgba(125,216,80,0.45)',
-              }}
-            >
-              <PlayCircle size={14} strokeWidth={2.4} />
-              광고 보고 ⚡ {AD_REWARD} 충전
-            </button>
             {/* 프리미엄 — secondary (장기 가치) */}
             <button
               type="button"
@@ -156,17 +138,6 @@ export default function EnergyBlockModal({
         </div>
       </motion.div>
 
-      {/* 광고 시청 모달 — 보상 완료 시 onClose 로 EnergyBlockModal 도 함께 닫음 */}
-      {showAd ? (
-        <AdRewardModal
-          subject={subject}
-          onClose={() => {
-            setShowAd(false);
-            // 보상이 들어왔으면 useEnergy 가 갱신됨 — 부모가 다시 시도하도록 모달 닫기
-            onClose();
-          }}
-        />
-      ) : null}
     </div>
   );
 }

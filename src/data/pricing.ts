@@ -26,7 +26,6 @@ export const PRICING_PLANS: PricingPlan[] = [
     features: [
       { text: '⚡ 10회 보유 — 새 step·모의고사 진입 시 1회 소모' },
       { text: '30분마다 ⚡ 1회 자동 충전 (최대 10회)' },
-      { text: '광고 시청 시 ⚡ +3 즉시 충전 (하루 1회)' },
       { text: 'XP 로 ⚡ 즉시 구매 가능 (40/100/300 XP 티어)' },
       { text: '로드맵 순차 진행 — 앞 단계 정답 처리 시 다음 잠금 해제' },
       { text: 'ADSP · SQLD 전체 커리큘럼 + 오답 복습 + 일일 미션 기본 제공' },

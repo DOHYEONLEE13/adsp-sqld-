@@ -77,7 +77,7 @@ function CountedBadge({
 }) {
   const showTimer = state.energy < CAP;
   const [now, setNow] = useState<number>(() => Date.now());
-  // 충전 상점 모달 — XP 구매 + 광고 시청 통합 진입점.
+  // 충전 상점 모달 — XP 구매 + 프리미엄 진입점.
   const [shopOpen, setShopOpen] = useState(false);
 
   // 1초 tick — 타이머 표시 시에만 활성
@@ -107,7 +107,7 @@ function CountedBadge({
     void refreshEnergy();
   }, [remainingMs, showTimer, state.energyUpdatedAt]);
 
-  // 항상 탭 가능 — 충전 상점 모달 (XP 구매 + 광고).
+  // 항상 탭 가능 — 충전 상점 모달 (XP 구매 + 프리미엄).
   const title =
     state.energy < CAP
       ? `⚡ ${state.energy}/${CAP} — 다음 회복 ${mm}:${String(ss).padStart(2, '0')} (탭 = 충전 상점)`

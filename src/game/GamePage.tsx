@@ -19,7 +19,6 @@ import {
 } from './session';
 import {
   clearActiveSubject,
-  getSnapshot,
   markDailyMissionStarted,
   recordSessionSummary,
   setActiveSubject,
@@ -214,20 +213,7 @@ export default function GamePage({
         passNumber: pending.passNumber ?? passNumberFor(pending.subject),
       };
     }
-    if (initialSubject) {
-      const resume = resolveLearningResume(initialSubject, getSnapshot());
-      if (resume) {
-        return {
-          kind: 'zone',
-          subject: resume.subject,
-          chapter: resume.chapter,
-          highlightTopic: resume.topic,
-          highlightStepIdx: resume.stepIdx,
-          highlightReason: 'resume',
-        };
-      }
-      return { kind: 'planet', subject: initialSubject };
-    }
+    if (initialSubject) return { kind: 'planet', subject: initialSubject };
     return { kind: 'galaxy' };
   });
   const [energyBlock, setEnergyBlock] = useState<{ retryAfterSec: number } | null>(
@@ -369,19 +355,7 @@ export default function GamePage({
 
   const goToPlanet = (subject: Subject) => {
     setActiveSubject(subject);
-    const resume = resolveLearningResume(subject, progress);
-    setScreen(
-      resume
-        ? {
-            kind: 'zone',
-            subject: resume.subject,
-            chapter: resume.chapter,
-            highlightTopic: resume.topic,
-            highlightStepIdx: resume.stepIdx,
-            highlightReason: 'resume',
-          }
-        : { kind: 'planet', subject },
-    );
+    setScreen({ kind: 'planet', subject });
   };
 
   /** 일반 세션 시작. ⚡ 1 소모. */
@@ -631,6 +605,7 @@ export default function GamePage({
       return (
         <PlanetScreen
           subject={screen.subject}
+          resumeChapter={resolveLearningResume(screen.subject, progress)?.chapter}
           onSelectChapter={(chapter) => {
             const resume = resolveChapterLearningResume(
               screen.subject,

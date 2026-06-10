@@ -308,23 +308,15 @@ function readSavedExpansionResume(subjectId: ExpansionSubjectId) {
   return isSavedExpansionResume(legacySaved) ? legacySaved : null;
 }
 
-function expansionResumeView(
-  subjectId: ExpansionSubjectId,
-  resume: SavedExpansionResume,
-): View {
-  return {
-    kind: 'expansionOutline',
-    subjectId,
-    variantId: resume.variantId,
-    planetKey: resume.planetKey,
-    resumeTopicId: resume.topicId,
-  };
-}
-
 function initialExpansionView(subjectId: ExpansionSubjectId): View {
   const resume = readSavedExpansionResume(subjectId);
   if (resume) {
-    return expansionResumeView(subjectId, resume);
+    return {
+      kind: 'expansionPlanets',
+      subjectId,
+      variantId: resume.variantId,
+      resumePlanetKey: resume.planetKey,
+    };
   }
 
   const saved = readSavedExpansionView(subjectId);
@@ -457,15 +449,15 @@ export default function GalaxyScreen({
     if (view.kind !== 'expansionLaunching') return;
     const id = window.setTimeout(() => {
       const resume = readSavedExpansionResume(view.subjectId);
-      setView(
-        resume && resume.variantId === view.variantId
-          ? expansionResumeView(view.subjectId, resume)
-          : {
-              kind: 'expansionPlanets',
-              subjectId: view.subjectId,
-              variantId: view.variantId,
-            },
-      );
+      setView({
+        kind: 'expansionPlanets',
+        subjectId: view.subjectId,
+        variantId: view.variantId,
+        resumePlanetKey:
+          resume && resume.variantId === view.variantId
+            ? resume.planetKey
+            : undefined,
+      });
     }, WARP_DURATION_MS);
     return () => window.clearTimeout(id);
   }, [view]);

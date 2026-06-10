@@ -25,7 +25,7 @@
  */
 
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { ArrowLeft, Flame } from 'lucide-react';
+import { ArrowLeft, Flame, Target } from 'lucide-react';
 import { SUBJECT_SCHEMAS } from '@/data/subjects';
 import type { Subject } from '@/types/question';
 import { getPlanets } from '../session';
@@ -58,12 +58,14 @@ const PLANET_VARIANT_BY_CHAPTER: Record<number, PlanetVariant> = {
 
 interface Props {
   subject: Subject;
+  resumeChapter?: number;
   onSelectChapter: (chapter: number) => void;
   onBack: () => void;
 }
 
 export default function PlanetScreen({
   subject,
+  resumeChapter,
   onSelectChapter,
   onBack,
 }: Props) {
@@ -136,6 +138,7 @@ export default function PlanetScreen({
             subject={subject}
             accent={accent}
             progress={progress}
+            resumeChapter={resumeChapter}
             onSelectChapter={onSelectChapter}
           />
         </div>
@@ -173,6 +176,7 @@ interface ChapterPathProps {
   subject: Subject;
   accent: string;
   progress: ProgressStore;
+  resumeChapter?: number;
   onSelectChapter: (chapter: number) => void;
 }
 
@@ -181,6 +185,7 @@ function ChapterPath({
   subject,
   accent,
   progress,
+  resumeChapter,
   onSelectChapter,
 }: ChapterPathProps) {
   // 검수 모드 변화에 즉시 반응 — questionCount 0 챕터도 클릭 허용.
@@ -289,6 +294,7 @@ function ChapterPath({
             accent={accent}
             weakCount={weakCount}
             disabled={disabled}
+            isResumeTarget={!disabled && n.planet.chapter === resumeChapter}
             NODE={NODE}
             TITLE_GAP={TITLE_GAP}
             containerW={W}
@@ -314,6 +320,7 @@ interface ChapterNodeProps {
   accent: string;
   weakCount: number;
   disabled: boolean;
+  isResumeTarget: boolean;
   NODE: number;
   TITLE_GAP: number;
   containerW: number;
@@ -330,6 +337,7 @@ function ChapterNode({
   accent,
   weakCount,
   disabled,
+  isResumeTarget,
   NODE,
   TITLE_GAP,
   containerW,
@@ -403,6 +411,8 @@ function ChapterNode({
           disabled={disabled}
           className={`absolute qd-roadmap-orb qd-roadmap-orb--three-planet rounded-full inline-flex items-center justify-center transition-transform duration-150 hover:-translate-y-1 active:translate-y-0 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-neon${
             disabled ? ' qd-roadmap-orb--disabled' : ''
+          }${
+            isResumeTarget ? ' qd-roadmap-orb--resume' : ''
           }`}
           style={nodeStyle}
           aria-label={`Chapter ${chapter} ${title}${
@@ -441,12 +451,26 @@ function ChapterNode({
           {title}
         </h3>
         <div
-          className="kr-num text-[11px] text-cream/65 mt-1.5 inline-flex items-center gap-2"
+          className="kr-num text-[11px] text-cream/65 mt-1.5 inline-flex flex-wrap items-center justify-center gap-1.5"
           style={{ textShadow: '0 1px 6px rgba(0,0,0,0.7)' }}
         >
           <span>토픽 {topicCount}</span>
           <span className="text-cream/30">·</span>
           <span>{disabled ? '준비중' : `${agg.solved}/${agg.total}`}</span>
+          {isResumeTarget ? (
+            <span
+              className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 kr-heading text-[9px] uppercase tracking-widest"
+              style={{
+                color: accent,
+                background: `color-mix(in srgb, ${accent} 14%, rgba(1,8,40,0.62))`,
+                border: `1px solid color-mix(in srgb, ${accent} 44%, transparent)`,
+                boxShadow: `0 6px 18px -14px ${accent}`,
+              }}
+            >
+              <Target size={9} strokeWidth={2.8} />
+              여기서 시작
+            </span>
+          ) : null}
           {weakCount > 0 ? (
             <span
               className="kr-num inline-flex items-center gap-1 text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded-full"

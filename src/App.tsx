@@ -584,7 +584,13 @@ export default function App() {
           <GamePage
           // key 로 deep-link 진입 변화 시 GamePage 재마운트.
           // ex) /game (chooser) ↔ /game/adsp 사이 이동 시 초기 화면이 갱신됨.
-          key={initialExpansionSubject ?? initialSubject ?? 'chooser'}
+          key={
+            initialExpansionSubject
+              ? `expansion:${initialExpansionSubject}`
+              : initialSubject
+                ? `subject:${initialSubject}`
+                : 'chooser'
+          }
           initialSubject={initialSubject}
           initialExpansionSubject={initialExpansionSubject}
           onExitToLanding={() => {

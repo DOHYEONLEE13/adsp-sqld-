@@ -669,17 +669,62 @@ button {
   content: none;
 }
 
-.qd-three-planet-canvas {
+/* PlanetOrb — 순수 SVG 행성 (GLB/three.js 대체).
+   행성 본체가 노드보다 살짝 크게 넘치고, 고리·위성·글로우는
+   overflow visible 로 바깥까지 뻗는다. */
+.qd-planet-orb {
   position: absolute;
-  left: -58%;
-  top: -45%;
+  left: -34%;
+  top: -34%;
   z-index: 0;
-  width: 216%;
-  height: 194%;
+  width: 168%;
+  height: 168%;
   pointer-events: none;
   filter:
-    drop-shadow(0 14px 18px rgba(1, 8, 40, 0.58))
-    drop-shadow(0 0 12px color-mix(in srgb, var(--roadmap-accent) 24%, transparent));
+    drop-shadow(0 12px 16px rgba(1, 8, 40, 0.55))
+    drop-shadow(0 0 10px color-mix(in srgb, var(--roadmap-accent) 22%, transparent));
+}
+
+.qd-roadmap-orb--disabled .qd-planet-orb {
+  filter: grayscale(0.7) opacity(0.55)
+    drop-shadow(0 12px 16px rgba(1, 8, 40, 0.55));
+}
+
+@keyframes qd-planet-drift {
+  from { transform: translateX(0); }
+  to { transform: translateX(-76px); }
+}
+
+@keyframes qd-planet-orbit {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes qd-planet-sway {
+  from { transform: translateX(-3.5px); }
+  to { transform: translateX(3.5px); }
+}
+
+.qd-planet-orb__drift {
+  animation: qd-planet-drift 34s linear infinite;
+}
+
+.qd-planet-orb__orbit {
+  animation: qd-planet-orbit 26s linear infinite;
+  transform-origin: 60px 60px;
+  transform-box: view-box;
+}
+
+.qd-planet-orb__sway {
+  animation: qd-planet-sway 12s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qd-planet-orb__drift,
+  .qd-planet-orb__orbit,
+  .qd-planet-orb__sway {
+    animation: none;
+  }
 }
 
 .qd-roadmap-orb--three-planet .qd-roadmap-orb__number {

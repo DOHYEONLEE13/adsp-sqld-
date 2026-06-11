@@ -62,10 +62,17 @@ export interface SessionRecord {
   passNumber?: number;
 }
 
+export interface PartReviewCompletion {
+  completedAt: number;
+  correctCount: number;
+  totalCount: number;
+}
+
 export interface ProgressStore {
   version: typeof SCHEMA_VERSION;
   questionStats: Record<string, QuestionStat>;
   sessions: SessionRecord[];
+  partReviewCompletions?: Record<string, PartReviewCompletion>;
   /** 마지막 Daily Mission 시작 epoch ms. UI 가 "오늘 완료" 를 계산. */
   lastDailyMissionAt?: number;
   /**
@@ -136,6 +143,7 @@ function loadStore(): ProgressStore {
       version: SCHEMA_VERSION,
       questionStats: parsed.questionStats ?? {},
       sessions: parsed.sessions ?? [],
+      partReviewCompletions: parsed.partReviewCompletions ?? {},
       lastDailyMissionAt: parsed.lastDailyMissionAt,
       activeSubject: parsed.activeSubject,
       lessonXp: parsed.lessonXp,
@@ -395,6 +403,32 @@ export function recordSingleAnswer(
     });
   }
   return xpAwarded;
+}
+
+export function markPartReviewCompleted(
+  reviewKey: string,
+  correctCount: number,
+  totalCount: number,
+): void {
+  if (!reviewKey) return;
+  const at = Date.now();
+  const safeTotal = Math.max(0, Math.floor(totalCount));
+  const safeCorrect = Math.max(
+    0,
+    Math.min(safeTotal, Math.floor(correctCount)),
+  );
+  commit({
+    ...current,
+    partReviewCompletions: {
+      ...(current.partReviewCompletions ?? {}),
+      [reviewKey]: {
+        completedAt: at,
+        correctCount: safeCorrect,
+        totalCount: safeTotal,
+      },
+    },
+    updatedAt: at,
+  });
 }
 
 /** 일일 퀘스트 3종 모두 완료 시 부여되는 보너스 XP. 같은 날 1회 한정. */

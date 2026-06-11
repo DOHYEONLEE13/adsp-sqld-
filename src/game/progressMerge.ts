@@ -174,6 +174,7 @@ export function mergeProgress(input: MergeInput): ProgressStore {
     version: local.version,
     questionStats: merged,
     sessions,
+    partReviewCompletions: local.partReviewCompletions ?? {},
     lastDailyMissionAt: lastDailyMissionAt > 0 ? lastDailyMissionAt : undefined,
     activeSubject,
     lessonXp,

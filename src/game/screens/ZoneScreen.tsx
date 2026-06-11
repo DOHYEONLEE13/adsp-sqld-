@@ -27,7 +27,12 @@ import {
   Trophy,
 } from 'lucide-react';
 import { SUBJECT_SCHEMAS } from '@/data/subjects';
-import { getLessonsInChapter } from '@/data/lessons';
+import {
+  getLessonQuizSteps,
+  getLessonsInChapter,
+  getPartReviewQuizIds,
+  isPartReviewStep,
+} from '@/data/lessons';
 import type { Subject } from '@/types/question';
 import type { FlowMode } from '../types';
 import { getZones, reviewPoolSize, type SamplingMode } from '../session';
@@ -62,13 +67,6 @@ const SUBJECT_ACCENT: Record<Subject, string> = {
   adsp: '#67e8f9',
   sqld: '#c084fc',
 };
-
-const ADSP_PART1_REVIEW_STEP_ID = 'adsp-1-1-s6-part1-wrapup';
-const ADSP_PART1_REVIEW_TOPIC = '데이터의 이해';
-
-function isChapterReviewStep(step: { id: string }): boolean {
-  return step.id === ADSP_PART1_REVIEW_STEP_ID;
-}
 
 /**
  * CSS attribute selector escape — querySelector 의 [data-x="..."] 안에 들어갈 값.
@@ -216,50 +214,58 @@ export default function ZoneScreen({
 
   // 선택된 회독에 따라 path 색조 변환
   const pathAccent = accent;
-  const adspPart1Review = useMemo(() => {
-    if (subject !== 'adsp' || chapter !== 1) return null;
-    const lesson = lessons.find((item) => item.topic === ADSP_PART1_REVIEW_TOPIC);
-    if (!lesson) return null;
-    const stepIdx = lesson.steps.findIndex(
-      (step) => step.id === ADSP_PART1_REVIEW_STEP_ID,
-    );
-    if (stepIdx < 0) return null;
-    const step = lesson.steps[stepIdx];
-    const reviewQuizIds = [step.quizId, ...(step.extraQuizIds ?? [])].filter(
-      (id): id is string => !!id,
-    );
-    const requiredSteps = lessons.flatMap((item) =>
-      item.id === lesson.id
-        ? item.steps.filter(
-            (candidate) => candidate.quizId && !isChapterReviewStep(candidate),
-          )
-        : [],
-    );
-    const premiumOpenAccess = !stepLockSnap.enforced;
-    const unlocked =
-      premiumOpenAccess ||
-      (requiredSteps.length > 0 &&
+  const partReviews = useMemo(() => {
+    const reviews = new Map<
+      string,
+      {
+        lesson: (typeof lessons)[number];
+        step: (typeof lessons)[number]['steps'][number];
+        stepIdx: number;
+        unlocked: boolean;
+        solvedCount: number;
+        totalCount: number;
+        completed: boolean;
+      }
+    >();
+
+    for (const lesson of lessons) {
+      const stepIdx = lesson.steps.findIndex(isPartReviewStep);
+      if (stepIdx < 0) continue;
+
+      const step = lesson.steps[stepIdx];
+      const reviewQuizIds = getPartReviewQuizIds(step);
+      const requiredSteps = getLessonQuizSteps(lesson);
+      if (reviewQuizIds.length === 0 || requiredSteps.length === 0) continue;
+
+      const premiumOpenAccess = !stepLockSnap.enforced;
+      const unlocked =
+        premiumOpenAccess ||
         requiredSteps.every((candidate) => {
           const stat = candidate.quizId
             ? progress.questionStats[candidate.quizId]
             : undefined;
           return hasEverSolved(stat);
-        }));
-    const solvedCount = reviewQuizIds.reduce((count, quizId) => {
-      const stat = progress.questionStats[quizId];
-      return count + (hasEverSolved(stat) ? 1 : 0);
-    }, 0);
+        });
+      const completion = progress.partReviewCompletions?.[step.id];
 
-    return {
-      lesson,
-      step,
-      stepIdx,
-      unlocked,
-      solvedCount,
-      totalCount: reviewQuizIds.length,
-      completed: reviewQuizIds.length > 0 && solvedCount === reviewQuizIds.length,
-    };
-  }, [chapter, lessons, progress.questionStats, stepLockSnap.enforced, subject]);
+      reviews.set(lesson.id, {
+        lesson,
+        step,
+        stepIdx,
+        unlocked,
+        solvedCount: completion?.correctCount ?? 0,
+        totalCount: completion?.totalCount ?? reviewQuizIds.length,
+        completed: !!completion,
+      });
+    }
+
+    return reviews;
+  }, [
+    lessons,
+    progress.partReviewCompletions,
+    progress.questionStats,
+    stepLockSnap.enforced,
+  ]);
 
   // onStart 호출 시 자동으로 selectedPass 주입
   const onStartWithPass = (p: StartParams) =>
@@ -543,6 +549,7 @@ export default function ZoneScreen({
             }
           >
             {lessons.map((lesson, lessonIdx) => {
+              const partReview = partReviews.get(lesson.id);
               const topicSection = (
                 <TopicSection
                   key={lesson.id}
@@ -581,7 +588,7 @@ export default function ZoneScreen({
                 />
               );
 
-              if (!adspPart1Review || lesson.id !== adspPart1Review.lesson.id) {
+              if (!partReview) {
                 return topicSection;
               }
 
@@ -590,20 +597,20 @@ export default function ZoneScreen({
                   {topicSection}
                   <ChapterReviewNode
                     accent={accent}
-                    title="Part 1 데이터의 이해 총 복습"
-                    subtitle="DIKW부터 기업 데이터베이스까지, 전체 흐름을 한 장 지도로 다시 묶어봐."
-                    completed={adspPart1Review.completed}
-                    locked={!adspPart1Review.unlocked}
-                    solvedCount={adspPart1Review.solvedCount}
-                    totalCount={adspPart1Review.totalCount}
+                    title={partReview.step.title}
+                    subtitle={`${lesson.topic}에서 배운 흐름을 한 장 지도로 다시 묶어봐.`}
+                    completed={partReview.completed}
+                    locked={!partReview.unlocked}
+                    solvedCount={partReview.solvedCount}
+                    totalCount={partReview.totalCount}
                     onClick={() => {
-                      if (!adspPart1Review.unlocked) {
-                        setLockToast('Part 1의 개념 문제를 모두 완료하면 총 복습이 열려요.');
+                      if (!partReview.unlocked) {
+                        setLockToast(`${lesson.topic}의 개념 문제를 모두 완료하면 총 복습이 열려요.`);
                         window.setTimeout(() => setLockToast(null), 2600);
                         return;
                       }
                       setActiveHighlight(null);
-                      onSelectStep(adspPart1Review.lesson.topic, adspPart1Review.stepIdx, 1);
+                      onSelectStep(partReview.lesson.topic, partReview.stepIdx, 1);
                     }}
                   />
                 </Fragment>
@@ -650,7 +657,7 @@ export default function ZoneScreen({
 
 type SqldChapterGuideLesson = {
   topic: string;
-  steps: { quizId?: string }[];
+  steps: { id: string; quizId?: string; group?: string }[];
 };
 
 function sqldPartGuide(chapter: number, topic: string, index: number) {
@@ -762,7 +769,9 @@ function SqldChapterGuide({
       <div className="flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {lessons.map((lesson, lessonIdx) => {
           const meta = sqldPartGuide(chapter, lesson.topic, lessonIdx + 1);
-          const quizSteps = lesson.steps.filter((step) => !!step.quizId);
+          const quizSteps = lesson.steps.filter(
+            (step) => !!step.quizId && !isPartReviewStep(step),
+          );
           const done = quizSteps.reduce((acc, step) => {
             const stat = step.quizId
               ? progress.questionStats[step.quizId]
@@ -826,7 +835,7 @@ interface TopicSectionProps {
   index: number;
   topic: string;
   lessonId: string;
-  steps: { id: string; title: string; quizId?: string }[];
+  steps: { id: string; title: string; quizId?: string; group?: string }[];
   accent: string;
   progress: ProgressStore;
   isWeak: boolean;
@@ -871,7 +880,7 @@ function TopicSection({
   void passNumber; // 향후 회독별 분기 필요 시 사용
   const stepsWithIdx = steps.map((s, i) => ({ ...s, _origIdx: i }));
   const visibleSteps = stepsWithIdx.filter(
-    (s) => !!s.quizId && !isChapterReviewStep(s),
+    (s) => !!s.quizId && !isPartReviewStep(s),
   );
 
   // ── 레슨 정복 여부 (CLAUDE.md P1 §5 — 토픽 노드 완료 표식) ──
@@ -1054,7 +1063,7 @@ function ChapterReviewNode({
   const gold = '#fbbf24';
   const nodeColor = completed ? gold : accent;
   const progressLabel =
-    totalCount > 0 ? `${solvedCount}/${totalCount} checks` : 'review';
+    totalCount > 0 ? `정답 ${solvedCount}/${totalCount}` : '복습';
 
   return (
     <section aria-label={title} className="relative">

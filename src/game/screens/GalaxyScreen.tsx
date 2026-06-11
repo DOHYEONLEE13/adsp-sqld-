@@ -32,6 +32,7 @@ import {
   MousePointer2,
   Palette,
   Printer,
+  RefreshCcw,
   RotateCcw,
   Search,
   Settings,
@@ -39,6 +40,7 @@ import {
   Star,
   Target,
   Trash2,
+  Trophy,
   Volume2,
   Wifi,
   Wrench,
@@ -67,7 +69,11 @@ import FeedbackSheet from '@/game/lesson/FeedbackSheet';
 import EnergyBlockModal from '../components/EnergyBlockModal';
 import PlanetOrb, { type PlanetVariant } from '../components/PlanetOrb';
 import type { QuesPose } from '@/components/mascot/types';
-import { recordSingleAnswer, type ProgressStore } from '../storage';
+import {
+  markPartReviewCompleted,
+  recordSingleAnswer,
+  type ProgressStore,
+} from '../storage';
 import { consumeEnergy } from '../energy';
 import {
   unlockStepOnServer,
@@ -95,7 +101,6 @@ import {
 } from '../expansionSubjects';
 import {
   getComhwalTopicCards,
-  hasComhwalTopicCards,
   type ComhwalConceptCard,
 } from '@/data/comhwal/concepts';
 import {
@@ -139,6 +144,100 @@ const COMHWAL_MASCOT_POSES: QuesPose[] = [
   'lightbulb',
 ];
 const COMHWAL_CARD_ID_RE = /^comhwal-(\d)-(\d{3})-c(\d{2})$/;
+const COMHWAL_PART_REVIEW_TOPIC_PREFIX = 'part-review:';
+const MAX_COMHWAL_PART_REVIEW_CARDS = 5;
+
+function getComhwalPartReviewTopicId(sectionKey: string): string {
+  return `${COMHWAL_PART_REVIEW_TOPIC_PREFIX}${sectionKey}`;
+}
+
+function getComhwalPartReviewCompletionKey(
+  planetKey: string,
+  topicId: string,
+): string {
+  return `comhwal:${planetKey}:${topicId}`;
+}
+
+function isComhwalPartReviewTopicId(topicId: string): boolean {
+  return topicId.startsWith(COMHWAL_PART_REVIEW_TOPIC_PREFIX);
+}
+
+function getComhwalPartReviewSectionKey(topicId: string): string | null {
+  return isComhwalPartReviewTopicId(topicId)
+    ? topicId.slice(COMHWAL_PART_REVIEW_TOPIC_PREFIX.length)
+    : null;
+}
+
+function pickEvenly<T>(items: T[], maxCount: number): T[] {
+  if (items.length <= maxCount) return items;
+  const selectedIndexes = new Set<number>();
+  for (let i = 0; i < maxCount; i++) {
+    selectedIndexes.add(Math.round(((items.length - 1) * i) / (maxCount - 1)));
+  }
+  for (let i = 0; selectedIndexes.size < maxCount && i < items.length; i++) {
+    selectedIndexes.add(i);
+  }
+  return Array.from(selectedIndexes)
+    .sort((a, b) => a - b)
+    .map((index) => items[index]);
+}
+
+function getComhwalPartReviewCards(
+  planetKey: string,
+  sectionKey: string,
+  topics: ExpansionPlanet['sections'][number]['topics'],
+): ComhwalConceptCard[] {
+  const topicEntries = topics
+    .map((topic) => ({
+      topic,
+      cards: getComhwalTopicCards(planetKey, topic.id),
+    }))
+    .filter((entry) => entry.cards.length > 0);
+  const picked = pickEvenly(
+    topicEntries,
+    Math.min(MAX_COMHWAL_PART_REVIEW_CARDS, topicEntries.length),
+  );
+
+  return picked.map((entry, index) => {
+    const source =
+      entry.cards.find((card) => card.question) ?? entry.cards[0];
+    return {
+      ...source,
+      id: `${COMHWAL_PART_REVIEW_TOPIC_PREFIX}${planetKey}:${sectionKey}:c${String(
+        index + 1,
+      ).padStart(2, '0')}`,
+      topicId: getComhwalPartReviewTopicId(sectionKey),
+      title: `${entry.topic.title} 핵심`,
+      body: source.body,
+      keyPoints: source.keyPoints,
+      examTip:
+        source.examTip ?? `${entry.topic.title}에서 자주 섞이는 표현을 다시 확인해.`,
+      visualHint: source.visualHint,
+      question: source.question,
+    };
+  });
+}
+
+function getExpansionTopicCards(
+  planet: ExpansionPlanet,
+  topicId: string,
+): ComhwalConceptCard[] {
+  const reviewSectionKey = getComhwalPartReviewSectionKey(topicId);
+  if (reviewSectionKey) {
+    const section = planet.sections.find((item) => item.key === reviewSectionKey);
+    return section
+      ? getComhwalPartReviewCards(planet.key, section.key, section.topics)
+      : [];
+  }
+  return getComhwalTopicCards(planet.key, topicId);
+}
+
+function hasExpansionTopicCards(planetKey: string, topicId: string): boolean {
+  const planet = EXPANSION_SUBJECTS.comhwal.planets.find(
+    (item) => item.key === planetKey,
+  );
+  return planet ? getExpansionTopicCards(planet, topicId).length > 0 : false;
+}
 
 /** 과목별 액센트. */
 const SUBJECT_ACCENT: Record<Subject, string> = {
@@ -271,7 +370,7 @@ function isValidSavedExpansionView(
   );
   if (!validPlanet) return false;
   if (!saved.topicId) return true;
-  return hasComhwalTopicCards(saved.planetKey, saved.topicId);
+  return hasExpansionTopicCards(saved.planetKey, saved.topicId);
 }
 
 function readSavedExpansionView(subjectId: ExpansionSubjectId) {
@@ -1843,6 +1942,8 @@ function ExpansionOutlineScreen({
               key={section.key}
               index={sectionIndex + 1}
               title={section.title}
+              sectionKey={section.key}
+              planet={planet}
               planetKey={planet.key}
               topics={section.topics}
               planetTopics={outlineTopics}
@@ -1883,6 +1984,8 @@ function ExpansionOutlineScreen({
 function ExpansionOutlineSection({
   index,
   title,
+  sectionKey,
+  planet,
   planetKey,
   topics,
   planetTopics,
@@ -1895,6 +1998,8 @@ function ExpansionOutlineSection({
 }: {
   index: number;
   title: string;
+  sectionKey: string;
+  planet: ExpansionPlanet;
   planetKey: string;
   topics: ExpansionPlanet['sections'][number]['topics'];
   planetTopics: ExpansionPlanet['sections'][number]['topics'];
@@ -1910,6 +2015,28 @@ function ExpansionOutlineSection({
     visited: boolean;
   }) => void;
 }) {
+  const reviewTopicId = getComhwalPartReviewTopicId(sectionKey);
+  const reviewCompletionKey = getComhwalPartReviewCompletionKey(
+    planet.key,
+    reviewTopicId,
+  );
+  const reviewCards = getComhwalPartReviewCards(planetKey, sectionKey, topics);
+  const reviewQuestionCount = reviewCards.filter((card) => card.question).length;
+  const topicProgresses = topics.map((topic) =>
+    getComhwalTopicProgress(planetKey, topic.id, progress),
+  );
+  const reviewCompletion = progress.partReviewCompletions?.[reviewCompletionKey];
+  const reviewAvailable =
+    reviewCards.length > 0 && topicProgresses.every((item) => item.cardCount > 0);
+  const sectionComplete =
+    topicProgresses.length > 0 && topicProgresses.every((item) => item.completed);
+  const reviewCompleted = !!reviewCompletion;
+  const reviewLocked = lockSnap.enforced && !reviewCompleted && !sectionComplete;
+  const reviewVisited =
+    !lockSnap.enforced ||
+    reviewCompleted ||
+    lockSnap.unlockedSet.has(getComhwalTopicUnlockKey(planet.key, reviewTopicId));
+
   return (
     <section className="mt-2 md:mt-3" aria-label={title}>
       <div className="mb-3">
@@ -1946,6 +2073,7 @@ function ExpansionOutlineSection({
           <ExpansionOutlineNode
             key={topic.id}
             n={topicIndex + 1}
+            variant="topic"
             planetKey={planetKey}
             previousTopicsComplete={
               (() => {
@@ -1973,17 +2101,198 @@ function ExpansionOutlineSection({
             onSelectTopic={onSelectTopic}
           />
         ))}
+        {reviewAvailable ? (
+          <ComhwalChapterReviewNode
+            title={`${title} 총 복습`}
+            subtitle={`${title}에서 배운 흐름을 한 장 지도로 다시 묶어봐.`}
+            accent={accent}
+            completed={reviewCompleted}
+            locked={reviewLocked}
+            solvedCount={reviewCompletion?.correctCount ?? 0}
+            totalCount={reviewCompletion?.totalCount ?? reviewQuestionCount}
+            opening={openingTopicId === reviewTopicId}
+            isResumeTarget={reviewTopicId === resumeTopicId}
+            topicId={reviewTopicId}
+            onClick={() =>
+              onSelectTopic({
+                topicId: reviewTopicId,
+                locked: reviewLocked,
+                ready: reviewAvailable,
+                visited: reviewVisited,
+              })
+            }
+          />
+        ) : null}
       </div>
+    </section>
+  );
+}
+
+function ComhwalChapterReviewNode({
+  title,
+  subtitle,
+  accent,
+  completed,
+  locked,
+  solvedCount,
+  totalCount,
+  opening,
+  isResumeTarget,
+  topicId,
+  onClick,
+}: {
+  title: string;
+  subtitle: string;
+  accent: string;
+  completed: boolean;
+  locked: boolean;
+  solvedCount: number;
+  totalCount: number;
+  opening: boolean;
+  isResumeTarget: boolean;
+  topicId: string;
+  onClick: () => void;
+}) {
+  const gold = '#fbbf24';
+  const nodeColor = completed ? gold : accent;
+  const progressLabel =
+    totalCount > 0 ? `정답 ${solvedCount}/${totalCount}` : '복습';
+
+  return (
+    <section
+      aria-label={title}
+      className="relative"
+      data-expansion-topic-id={topicId}
+      data-expansion-resume-target={isResumeTarget ? 'true' : undefined}
+    >
+      <div className="flex justify-center -mt-3 mb-3 md:mb-4" aria-hidden>
+        <svg width="66" height="42" viewBox="0 0 66 42" className="block">
+          <path
+            d="M 33 0 C 33 20, 33 22, 33 42"
+            fill="none"
+            stroke={locked ? 'rgba(239,244,255,0.26)' : `${nodeColor}99`}
+            strokeWidth="3"
+            strokeDasharray="3 8"
+            strokeLinecap="round"
+            style={{
+              filter: locked ? undefined : `drop-shadow(0 0 7px ${nodeColor}66)`,
+            }}
+          />
+        </svg>
+      </div>
+
+      <button
+        type="button"
+        onClick={onClick}
+        aria-disabled={locked}
+        disabled={opening}
+        className="group flex w-full items-center gap-3 rounded-[22px] border px-4 py-4 text-left transition active:scale-[0.99] disabled:cursor-wait disabled:opacity-70 md:gap-4 md:px-5 md:py-5"
+        style={{
+          borderColor: completed
+            ? `${gold}99`
+            : locked
+              ? 'rgba(239,244,255,0.14)'
+              : `color-mix(in srgb, ${accent} 48%, transparent)`,
+          background: completed
+            ? 'linear-gradient(145deg, rgba(72,49,12,0.72), rgba(6,18,44,0.92))'
+            : locked
+              ? 'linear-gradient(145deg, rgba(8,18,48,0.68), rgba(4,12,34,0.74))'
+              : `linear-gradient(145deg, color-mix(in srgb, ${accent} 16%, rgba(7,18,50,0.88)), rgba(4,14,42,0.84))`,
+          boxShadow: completed
+            ? `0 10px 34px -18px ${gold}, inset 0 1px 0 rgba(255,255,255,0.08)`
+            : locked
+              ? 'inset 0 1px 0 rgba(255,255,255,0.04)'
+              : `0 10px 30px -20px ${accent}, inset 0 1px 0 rgba(255,255,255,0.06)`,
+          opacity: locked && !completed ? 0.9 : 1,
+        }}
+      >
+        <span
+          className="relative grid h-14 w-14 shrink-0 place-items-center rounded-full border md:h-16 md:w-16"
+          style={{
+            borderColor: locked ? 'rgba(239,244,255,0.2)' : `${nodeColor}88`,
+            background: locked
+              ? 'rgba(255,255,255,0.035)'
+              : `radial-gradient(circle at 34% 24%, rgba(255,255,255,0.24), transparent 34%), linear-gradient(145deg, ${nodeColor}, color-mix(in srgb, ${nodeColor} 46%, #061326 54%))`,
+            color: completed
+              ? '#261701'
+              : locked
+                ? 'rgba(239,244,255,0.62)'
+                : '#061326',
+            boxShadow: locked
+              ? 'none'
+              : `0 0 28px -12px ${nodeColor}, inset 0 1px 0 rgba(255,255,255,0.32), inset 0 -7px 10px rgba(1,8,40,0.26)`,
+          }}
+        >
+          {completed ? (
+            <Check size={24} strokeWidth={3} />
+          ) : locked ? (
+            <Lock size={20} strokeWidth={2.5} />
+          ) : (
+            <Trophy size={24} strokeWidth={2.5} />
+          )}
+        </span>
+
+        <span className="min-w-0 flex-1">
+          <span
+            className="kr-heading block text-[10px] uppercase tracking-[0.18em]"
+            style={{ color: locked ? 'rgba(239,244,255,0.44)' : nodeColor }}
+          >
+            PART REVIEW
+          </span>
+          <span className="kr-heading mt-1 block text-[17px] leading-tight text-cream md:text-[20px]">
+            {title}
+          </span>
+          <span className="kr-body mt-1.5 block text-[12px] leading-[1.55] text-cream/62 md:text-[13px]">
+            {subtitle}
+          </span>
+          <span className="mt-3 flex flex-wrap items-center gap-2 kr-body text-[10.5px] text-cream/66">
+            <span
+              className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1"
+              style={{
+                borderColor: locked ? 'rgba(239,244,255,0.14)' : `${nodeColor}44`,
+                background: locked ? 'rgba(255,255,255,0.035)' : `${nodeColor}14`,
+                color: locked ? 'rgba(239,244,255,0.54)' : nodeColor,
+              }}
+            >
+              <RefreshCcw size={11} strokeWidth={2.6} />
+              {progressLabel}
+            </span>
+            <span>
+              {locked
+                ? '앞 개념을 모두 완료하면 열림'
+                : completed
+                  ? '총 복습 완료'
+                  : '전체 지도 + 종합 확인'}
+            </span>
+            {isResumeTarget ? (
+              <span
+                className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 kr-heading text-[9px] uppercase tracking-widest"
+                style={{
+                  color: nodeColor,
+                  background: `${nodeColor}18`,
+                  border: `1px solid ${nodeColor}66`,
+                }}
+              >
+                <Target size={9} strokeWidth={2.8} />
+                여기서 시작
+              </span>
+            ) : null}
+          </span>
+        </span>
+      </button>
     </section>
   );
 }
 
 function ExpansionOutlineNode({
   n,
+  variant = 'topic',
   planetKey,
   previousTopicsComplete,
   topicId,
   title,
+  cards,
+  reviewCompletionKey,
   accent,
   progress,
   lockSnap,
@@ -1993,10 +2302,13 @@ function ExpansionOutlineNode({
   onSelectTopic,
 }: {
   n: number;
+  variant?: 'topic' | 'review';
   planetKey: string;
   previousTopicsComplete: boolean;
   topicId: string;
   title: string;
+  cards?: ComhwalConceptCard[];
+  reviewCompletionKey?: string;
   accent: string;
   progress: ProgressStore;
   lockSnap: StepLockSnapshot;
@@ -2010,13 +2322,21 @@ function ExpansionOutlineNode({
     visited: boolean;
   }) => void;
 }) {
-  const {
-    cardCount,
-    questionCount,
-    completedQuestionCount,
-    attempted,
-    completed,
-  } = getComhwalTopicProgress(planetKey, topicId, progress);
+  const isReviewNode = variant === 'review';
+  const rawProgress = cards
+    ? summarizeComhwalCardsProgress(cards, progress)
+    : getComhwalTopicProgress(planetKey, topicId, progress);
+  const reviewCompletion =
+    isReviewNode && reviewCompletionKey
+      ? progress.partReviewCompletions?.[reviewCompletionKey]
+      : undefined;
+  const cardCount = rawProgress.cardCount;
+  const questionCount = rawProgress.questionCount;
+  const completedQuestionCount = isReviewNode
+    ? reviewCompletion?.correctCount ?? 0
+    : rawProgress.completedQuestionCount;
+  const attempted = isReviewNode ? !!reviewCompletion : rawProgress.attempted;
+  const completed = isReviewNode ? !!reviewCompletion : rawProgress.completed;
   const topicKey = getComhwalTopicUnlockKey(planetKey, topicId);
   const visited =
     !lockSnap.enforced ||
@@ -2062,7 +2382,7 @@ function ExpansionOutlineNode({
       }
       aria-label={
         isReady
-          ? `${title} 개념 카드 열기${isResumeTarget ? ' (학습 복귀 — 여기서부터)' : ''}`
+          ? `${title} ${isReviewNode ? '열기' : '개념 카드 열기'}${isResumeTarget ? ' (학습 복귀 — 여기서부터)' : ''}`
           : `${title} 개념 준비 중`
       }
     >
@@ -2088,6 +2408,8 @@ function ExpansionOutlineNode({
             <Check size={18} strokeWidth={3} />
           ) : locked ? (
             <Lock size={14} strokeWidth={2.4} />
+          ) : isReviewNode ? (
+            <RotateCcw size={15} strokeWidth={2.6} />
           ) : (
             <span className="kr-heading text-[13px] leading-none tabular-nums">
               {n}
@@ -2140,6 +2462,8 @@ function ExpansionOutlineNode({
             <span style={{ color: 'rgba(239,244,255,0.85)' }}>
               확인 {completedQuestionCount}/{questionCount}
             </span>
+          ) : isReviewNode ? (
+            <span style={{ color: accent }}>전체 다시 보기</span>
           ) : visited ? (
             <span style={{ color: 'rgba(239,244,255,0.78)' }}>열림</span>
           ) : isReady ? (
@@ -2149,7 +2473,7 @@ function ExpansionOutlineNode({
           )}
           <span style={{ color: 'rgba(239,244,255,0.4)' }}>·</span>
           <span className="kr-num uppercase tracking-widest text-[9px]">
-            STEP {n}
+            {isReviewNode ? 'PART REVIEW' : `STEP ${n}`}
           </span>
           {isResumeTarget ? (
             <>
@@ -2221,12 +2545,10 @@ function getComhwalTopicUnlockKey(planetKey: string, topicId: string): string {
   return `comhwal-${planetKey}-${topicId}`;
 }
 
-function getComhwalTopicProgress(
-  planetKey: string,
-  topicId: string,
+function summarizeComhwalCardsProgress(
+  cards: ComhwalConceptCard[],
   progress: ProgressStore,
 ) {
-  const cards = getComhwalTopicCards(planetKey, topicId);
   const questionCards = cards.filter((card) => card.question);
   const completedQuestionCount = questionCards.reduce((count, card) => {
     const questionId = card.question?.id;
@@ -2249,6 +2571,17 @@ function getComhwalTopicProgress(
       questionCards.length > 0 &&
       completedQuestionCount === questionCards.length,
   };
+}
+
+function getComhwalTopicProgress(
+  planetKey: string,
+  topicId: string,
+  progress: ProgressStore,
+) {
+  return summarizeComhwalCardsProgress(
+    getComhwalTopicCards(planetKey, topicId),
+    progress,
+  );
 }
 
 type ComhwalVisualModel = {
@@ -5347,6 +5680,417 @@ function ComhwalConceptVisualCard({
   );
 }
 
+function compactComhwalReviewText(text: string, maxLength = 42): string {
+  const compact = text.replace(/\s+/g, ' ').trim();
+  if (compact.length <= maxLength) return compact;
+  return `${compact.slice(0, maxLength - 1).trimEnd()}...`;
+}
+
+function ComhwalPartReviewMap({
+  title,
+  cards,
+  accent,
+  activeIndex,
+}: {
+  title: string;
+  cards: ComhwalConceptCard[];
+  accent: string;
+  activeIndex: number;
+}) {
+  const items = cards.map((card, index) => ({
+    no: String(index + 1).padStart(2, '0'),
+    title: card.title.replace(/\s*핵심$/, ''),
+    sub: compactComhwalReviewText(card.keyPoints[0] ?? card.body),
+  }));
+
+  return (
+    <figure
+      className="w-full max-w-[560px] overflow-hidden rounded-[24px] border p-4 md:p-5"
+      style={{
+        borderColor: `${accent}66`,
+        background:
+          'linear-gradient(180deg, rgba(8,25,67,0.86), rgba(3,12,38,0.9))',
+        boxShadow: `0 18px 48px -28px ${accent}, inset 0 1px 0 rgba(255,255,255,0.08)`,
+      }}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <div
+            className="kr-heading text-[10px] uppercase tracking-[0.18em]"
+            style={{ color: accent }}
+          >
+            PART REVIEW MAP
+          </div>
+          <figcaption className="kr-heading mt-1 text-[18px] leading-tight text-cream md:text-[21px]">
+            {title}
+          </figcaption>
+        </div>
+        <span
+          className="shrink-0 rounded-full border px-2.5 py-1 kr-num text-[10px] uppercase tracking-widest"
+          style={{
+            borderColor: `${accent}55`,
+            color: accent,
+            background: `${accent}14`,
+          }}
+        >
+          {items.length}개 흐름
+        </span>
+      </div>
+
+      <div className="mt-4 grid gap-2">
+        {items.map((item, index) => {
+          const active = activeIndex < 0 || activeIndex === index;
+          const dim = activeIndex >= 0 && !active;
+          return (
+            <div
+              key={item.no}
+              className="rounded-[18px] border px-3 py-3 transition-colors"
+              style={{
+                borderColor: active ? `${accent}88` : 'rgba(239,244,255,0.1)',
+                background: active
+                  ? `linear-gradient(135deg, ${accent}22, rgba(8,22,58,0.78))`
+                  : dim
+                    ? 'rgba(255,255,255,0.025)'
+                    : 'rgba(255,255,255,0.04)',
+                color: dim ? 'rgba(239,244,255,0.42)' : 'var(--cream)',
+                boxShadow: active ? `0 0 0 1px ${accent}22` : undefined,
+              }}
+            >
+              <div className="flex items-start gap-3">
+                <div
+                  className="grid h-9 w-9 shrink-0 place-items-center rounded-full border kr-num text-[10px] font-black"
+                  style={{
+                    borderColor: 'currentColor',
+                    background: 'rgba(1,8,40,0.24)',
+                  }}
+                >
+                  {item.no}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="kr-heading text-[14px] leading-tight">
+                    {item.title}
+                  </div>
+                  <div className="kr-body mt-1 text-[11px] font-bold leading-snug opacity-72">
+                    {item.sub}
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      <p className="kr-body mt-4 rounded-[18px] border border-cream/10 bg-black/16 px-3.5 py-3 text-[12px] font-bold leading-[1.65] text-cream/74">
+        제목을 먼저 이어 보고, 헷갈리는 항목은 아래 대표 문제에서 바로 확인해.
+      </p>
+    </figure>
+  );
+}
+
+function ComhwalPartReviewStudyScreen({
+  subject,
+  planet,
+  topicId,
+  onBack,
+}: {
+  subject: ExpansionSubjectConfig;
+  planet: ExpansionPlanet;
+  topicId: string;
+  onBack: () => void;
+}) {
+  const sectionKey = getComhwalPartReviewSectionKey(topicId);
+  const section = sectionKey
+    ? planet.sections.find((item) => item.key === sectionKey)
+    : undefined;
+  const cards = getExpansionTopicCards(planet, topicId);
+  const questionCards = cards.filter(
+    (
+      card,
+    ): card is ComhwalConceptCard & {
+      question: NonNullable<ComhwalConceptCard['question']>;
+    } => !!card.question,
+  );
+  const reviewTitle = `${section?.title ?? '컴활'} 총 복습`;
+  const reviewKey = getComhwalPartReviewCompletionKey(planet.key, topicId);
+  const [phase, setPhase] = useState<'narrate' | 'question' | 'feedback'>(
+    'narrate',
+  );
+  const [turnIdx, setTurnIdx] = useState(0);
+  const [quizIdx, setQuizIdx] = useState(0);
+  const [chosen, setChosen] = useState<number | null>(null);
+  const [correct, setCorrect] = useState<boolean | null>(null);
+  const [xpToast, setXpToast] = useState<{ amount: number; key: number } | null>(
+    null,
+  );
+  const correctCardIdsRef = useRef<Set<string>>(new Set());
+  const questionStartedAtRef = useRef(Date.now());
+  const turns: { pose: QuesPose; text: string }[] = [
+    {
+      pose: 'wave',
+      text: `${section?.title ?? '이 PART'} 전체를 한 번에 다시 묶어볼게.`,
+    },
+    {
+      pose: 'lightbulb',
+      text: '아래 지도에서 각 개념이 어떤 역할인지 먼저 잡아보자.',
+    },
+    {
+      pose: 'think',
+      text: `대표 문제 ${questionCards.length}개로 마무리 확인해보자.`,
+    },
+  ];
+  const activeQuestionCard = questionCards[quizIdx];
+  const activeQuestion = activeQuestionCard?.question;
+  const mapActiveIndex =
+    phase === 'narrate' && turnIdx > 0
+      ? Math.min(turnIdx - 1, Math.max(0, cards.length - 1))
+      : -1;
+  const totalUnits = Math.max(1, turns.length + questionCards.length);
+  const progressUnits =
+    phase === 'narrate'
+      ? turnIdx + 1
+      : turns.length + quizIdx + (phase === 'feedback' ? 1 : 0.45);
+  const reviewProgress = Math.min(1, progressUnits / totalUnits);
+  const stepProgress =
+    questionCards.length > 0
+      ? Math.min(
+          1,
+          (quizIdx + (phase === 'feedback' ? 1 : phase === 'question' ? 0.5 : 0)) /
+            questionCards.length,
+        )
+      : reviewProgress;
+  const speechText =
+    phase === 'narrate'
+      ? turns[Math.min(turnIdx, turns.length - 1)].text
+      : activeQuestion?.prompt ?? '대표 문제가 준비 중이야.';
+  const pose: QuesPose =
+    phase === 'narrate'
+      ? turns[Math.min(turnIdx, turns.length - 1)].pose
+      : phase === 'question'
+        ? 'think'
+        : correct
+          ? 'celebrate'
+          : 'sad';
+
+  useEffect(() => {
+    setPhase('narrate');
+    setTurnIdx(0);
+    setQuizIdx(0);
+    setChosen(null);
+    setCorrect(null);
+    correctCardIdsRef.current = new Set();
+  }, [planet.key, topicId]);
+
+  const goTop = () => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }
+  };
+
+  const handleNarrativeContinue = () => {
+    if (turnIdx < turns.length - 1) {
+      setTurnIdx((idx) => idx + 1);
+      return;
+    }
+    if (!activeQuestion) {
+      markPartReviewCompleted(reviewKey, 0, 0);
+      onBack();
+      return;
+    }
+    setChosen(null);
+    setCorrect(null);
+    questionStartedAtRef.current = Date.now();
+    setPhase('question');
+    goTop();
+  };
+
+  const handlePrev = () => {
+    if (phase === 'question') {
+      setPhase('narrate');
+      setTurnIdx(turns.length - 1);
+      return;
+    }
+    if (phase !== 'narrate' || turnIdx <= 0) return;
+    setTurnIdx((idx) => Math.max(0, idx - 1));
+  };
+
+  const handleChoose = (choiceIndex: number) => {
+    if (phase !== 'question' || !activeQuestion || !activeQuestionCard) return;
+    const ok = choiceIndex === activeQuestion.answerIndex;
+    setChosen(choiceIndex);
+    setCorrect(ok);
+    if (ok) correctCardIdsRef.current.add(activeQuestionCard.id);
+    const xp = recordSingleAnswer(
+      activeQuestion.id,
+      ok,
+      Math.max(0, Date.now() - questionStartedAtRef.current),
+      reviewKey,
+      choiceIndex,
+      null,
+    );
+    if (xp > 0) {
+      setXpToast({ amount: xp, key: Date.now() });
+      window.setTimeout(() => setXpToast(null), 1800);
+    }
+    setPhase('feedback');
+  };
+
+  const handleNextQuestion = () => {
+    if (quizIdx < questionCards.length - 1) {
+      setQuizIdx((idx) => idx + 1);
+      setChosen(null);
+      setCorrect(null);
+      questionStartedAtRef.current = Date.now();
+      setPhase('question');
+      goTop();
+      return;
+    }
+    markPartReviewCompleted(
+      reviewKey,
+      correctCardIdsRef.current.size,
+      questionCards.length,
+    );
+    onBack();
+  };
+
+  return (
+    <section
+      className="relative isolate flex min-h-screen flex-col overflow-hidden text-cream"
+      style={{ '--subject-accent': subject.accent } as CSSProperties}
+    >
+      <PageAmbientBg />
+      {xpToast ? (
+        <div
+          key={xpToast.key}
+          className="fixed top-[18%] left-1/2 -translate-x-1/2 z-[60] pointer-events-none"
+          style={{
+            animation: 'xpToastRise 1.8s cubic-bezier(0.18, 0.9, 0.4, 1) forwards',
+          }}
+        >
+          <div
+            className="kr-heading px-5 py-3 rounded-full"
+            style={{
+              background: 'linear-gradient(135deg, #FFB020 0%, #FD802E 100%)',
+              color: '#0a0f1f',
+              boxShadow:
+                '0 18px 48px -8px rgba(253,128,46,0.6), 0 0 0 2px rgba(255,255,255,0.18) inset',
+              fontSize: 22,
+              textShadow: '0 1px 0 rgba(255,255,255,0.25)',
+            }}
+          >
+            +{xpToast.amount} XP
+          </div>
+        </div>
+      ) : null}
+      <TopBar
+        progress={reviewProgress}
+        stepProgress={stepProgress}
+        progressLabel="전체"
+        stepProgressLabel="파트"
+        accent={subject.accent}
+        onExit={onBack}
+      />
+
+      <main className="relative z-10 mx-auto flex-1 w-full max-w-[820px] px-5 pb-36 pt-6 md:px-8 lg:max-w-[1000px] lg:px-12 lg:pt-10">
+        <div className="mx-auto flex max-w-[760px] flex-col items-center">
+          <div className="flex justify-center">
+            <Ques
+              pose={pose}
+              character={COMHWAL_MASCOT_CHARACTER}
+              size={152}
+              priority
+            />
+          </div>
+
+          <div className="mt-5 w-full">
+            <SpeechBubble text={speechText} placement="top" />
+          </div>
+
+          {phase === 'narrate' ? (
+            <>
+              <div className="mt-7 flex items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={handlePrev}
+                  disabled={turnIdx === 0}
+                  aria-label="이전 대사"
+                  className="liquid-glass inline-flex items-center gap-1.5 rounded-full px-4 py-3 kr-heading text-[12px] uppercase tracking-widest transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-30 md:px-5 md:py-3.5 md:text-[13px]"
+                >
+                  <ChevronLeft size={16} strokeWidth={2.7} />
+                  이전
+                </button>
+                <button
+                  type="button"
+                  onClick={handleNarrativeContinue}
+                  className="inline-flex items-center gap-2 rounded-full px-6 py-3.5 kr-heading text-[13px] uppercase tracking-widest text-[#07121f] transition hover:-translate-y-0.5 active:translate-y-0 md:px-8 md:py-4 md:text-[14px]"
+                  style={{
+                    background:
+                      'linear-gradient(180deg, var(--subject-accent) 0%, color-mix(in srgb, var(--subject-accent) 70%, #010828) 100%)',
+                    boxShadow:
+                      '0 6px 0 -2px rgba(0,0,0,0.5), 0 10px 22px -8px var(--subject-accent)',
+                  }}
+                >
+                  {turnIdx < turns.length - 1 ? '계속' : '문제 풀기'}
+                  <ChevronRight size={16} strokeWidth={2.7} />
+                </button>
+              </div>
+
+              <div className="mt-8 flex w-full flex-col items-center">
+                <ComhwalPartReviewMap
+                  title={reviewTitle}
+                  cards={cards}
+                  accent={subject.accent}
+                  activeIndex={mapActiveIndex}
+                />
+              </div>
+            </>
+          ) : null}
+
+          {(phase === 'question' || phase === 'feedback') &&
+          activeQuestion &&
+          activeQuestionCard ? (
+            <div className="mt-8 w-full max-w-[560px]">
+              <div className="mb-4 flex justify-start">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPhase('narrate');
+                    setTurnIdx(turns.length - 1);
+                  }}
+                  className="kr-heading uppercase tracking-widest rounded-full inline-flex items-center gap-1.5 transition liquid-glass hover:bg-white/10 text-[11px] md:text-[12px] px-3.5 py-2"
+                >
+                  <ChevronLeft size={13} strokeWidth={2.6} />
+                  전체 지도 다시 보기
+                </button>
+              </div>
+              <OptionsPanel
+                choices={activeQuestion.choices}
+                chosen={chosen}
+                correctIndex={phase === 'feedback' ? activeQuestion.answerIndex : null}
+                graded={phase === 'feedback'}
+                onChoose={handleChoose}
+              />
+            </div>
+          ) : null}
+        </div>
+      </main>
+
+      {phase === 'feedback' && activeQuestion && correct !== null ? (
+        <FeedbackSheet
+          correct={correct}
+          explanation={activeQuestion.explanation}
+          correctAnswerText={
+            correct ? undefined : activeQuestion.choices[activeQuestion.answerIndex]
+          }
+          ctaLabel={quizIdx < questionCards.length - 1 ? '다음 문제' : '목차로'}
+          onContinue={handleNextQuestion}
+          secondaryCtaLabel="목차로"
+          onSecondary={onBack}
+        />
+      ) : null}
+    </section>
+  );
+}
+
 function ExpansionConceptStudyScreen({
   subject,
   planet,
@@ -5361,7 +6105,8 @@ function ExpansionConceptStudyScreen({
   onBack: () => void;
   onSubjectBack: () => void;
 }) {
-  const cards = getComhwalTopicCards(planet.key, topicId);
+  const cards = getExpansionTopicCards(planet, topicId);
+  const isPartReviewTopic = isComhwalPartReviewTopicId(topicId);
   const [activeIndex, setActiveIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number>>({});
   const [showQuestion, setShowQuestion] = useState(false);
@@ -5386,12 +6131,9 @@ function ExpansionConceptStudyScreen({
       ? clampProgress((activeIndex + currentCardProgress) / cards.length)
       : 0;
   const topicEntries = planet.sections.flatMap((section) => section.topics);
-  const currentTopicIndex = Math.max(
-    0,
-    topicEntries.findIndex((topic) => topic.id === topicId),
-  );
+  const currentTopicIndex = topicEntries.findIndex((topic) => topic.id === topicId);
   const cardsBeforeCurrentTopic = topicEntries
-    .slice(0, currentTopicIndex)
+    .slice(0, Math.max(0, currentTopicIndex))
     .reduce(
       (sum, topic) => sum + getComhwalTopicCards(planet.key, topic.id).length,
       0,
@@ -5401,7 +6143,9 @@ function ExpansionConceptStudyScreen({
     0,
   );
   const lessonProgress =
-    totalPlanetCards > 0
+    isPartReviewTopic
+      ? topicProgress
+      : totalPlanetCards > 0
       ? clampProgress((cardsBeforeCurrentTopic + activeIndex + currentCardProgress) / totalPlanetCards)
       : topicProgress;
   const activePose: QuesPose =
@@ -5414,6 +6158,21 @@ function ExpansionConceptStudyScreen({
       : isQuestionIntroMode
         ? 'think'
       : getComhwalConceptPose(activeCard, activeIndex, cards.length);
+
+  const markComhwalPartReviewCompleted = () => {
+    if (!isPartReviewTopic) return;
+    const questionCards = cards.filter((card) => card.question);
+    const correctCount = questionCards.reduce((count, card) => {
+      const question = card.question;
+      if (!question) return count;
+      return count + (selectedAnswers[card.id] === question.answerIndex ? 1 : 0);
+    }, 0);
+    markPartReviewCompleted(
+      getComhwalPartReviewCompletionKey(planet.key, topicId),
+      correctCount,
+      questionCards.length,
+    );
+  };
 
   useEffect(() => {
     setActiveIndex(0);
@@ -5444,6 +6203,7 @@ function ExpansionConceptStudyScreen({
     setShowQuestion(false);
     setShowQuestionIntro(false);
     if (cards.length === 0 || isLastCard) {
+      markComhwalPartReviewCompleted();
       onBack();
       return;
     }
@@ -5678,6 +6438,17 @@ function ExpansionConceptScreen({
   onBack: () => void;
   onSubjectBack: () => void;
 }) {
+  if (isComhwalPartReviewTopicId(topicId)) {
+    return (
+      <ComhwalPartReviewStudyScreen
+        subject={subject}
+        planet={planet}
+        topicId={topicId}
+        onBack={onBack}
+      />
+    );
+  }
+
   return (
     <ExpansionConceptStudyScreen
       subject={subject}

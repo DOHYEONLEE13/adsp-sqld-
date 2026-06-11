@@ -14,6 +14,7 @@ import { SUBJECT_SCHEMAS } from '@/data/subjects';
 import { ADSP_LESSONS } from './adsp';
 import { SQLD_LESSONS } from './sqld';
 import type { Lesson, ChapterStepEntry } from './types';
+import { addPartReviewSteps } from './partReviews';
 
 // 타입 re-export (`@/data/lessons` 에서 직접 import 하던 호출측 모두 호환)
 export type {
@@ -30,8 +31,16 @@ export type {
   ConceptReminder,
   ChapterStepEntry,
 } from './types';
+export {
+  getLessonQuizSteps,
+  getPartReviewQuizIds,
+  isPartReviewStep,
+} from './partReviews';
 
-export const ALL_LESSONS: Lesson[] = [...ADSP_LESSONS, ...SQLD_LESSONS];
+export const ALL_LESSONS: Lesson[] = addPartReviewSteps([
+  ...ADSP_LESSONS,
+  ...SQLD_LESSONS,
+]);
 
 export function getLesson(
   subject: Subject,

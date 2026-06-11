@@ -11,7 +11,7 @@
  */
 
 import type { ProgressStore } from './storage';
-import { ALL_LESSONS } from '@/data/lessons';
+import { ALL_LESSONS, isPartReviewStep } from '@/data/lessons';
 import type { Subject } from '@/types/question';
 import { isDevUnlockStepsEnabled } from './stepUnlocks';
 import { hasEverSolved } from './progressPredicates';
@@ -33,6 +33,7 @@ export function isSubjectCompleted(
     if (lesson.subject !== subject) continue;
     for (const step of lesson.steps) {
       if (!step.quizId) continue; // review step skip
+      if (isPartReviewStep(step)) continue; // part review itself skip
       if (isFinaleStep(step)) continue; // finale 자체 skip
       const stat = progress.questionStats[step.quizId];
       if (!hasEverSolved(stat)) return false;

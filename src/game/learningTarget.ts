@@ -1,4 +1,4 @@
-import { ALL_LESSONS } from '@/data/lessons';
+import { ALL_LESSONS, isPartReviewStep } from '@/data/lessons';
 import type { Lesson, LessonStep } from '@/data/lessons';
 import { canonicalTopic } from '@/data/topicAlias';
 import { ALL_QUESTIONS } from '@/lib/questions';
@@ -30,6 +30,7 @@ function getStepIndex() {
   for (const lesson of ALL_LESSONS) {
     lesson.steps.forEach((step, stepIdx) => {
       if (!step.quizId) return;
+      if (isPartReviewStep(step)) return;
       if (step.id.endsWith('-review')) return;
       if (step.id.endsWith('-finale')) return;
       if (idx.has(step.quizId)) return;

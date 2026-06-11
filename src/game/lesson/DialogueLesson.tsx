@@ -45,8 +45,10 @@ import {
   getChapterSteps,
   getLesson,
   getQuizQuestion,
+  isPartReviewStep,
+  type LessonStep,
 } from '@/data/lessons';
-import { recordSingleAnswer } from '../storage';
+import { markPartReviewCompleted, recordSingleAnswer } from '../storage';
 import { recordReviewAttempt } from '../forgettingCurve';
 import { useProgress } from '../useProgress';
 import { consumeEnergy } from '../energy';
@@ -201,7 +203,9 @@ export default function DialogueLesson({
   // 단, 북마크 점프 (initialPhase='question') 인 경우엔 reminder 도 스킵 — 사용자가
   // [문제 풀이] 의도로 진입했으므로 곧장 quiz 화면이 자연스러움.
   const initialStep = lesson?.steps[initialStepIdx ?? 0];
-  const initialIsReview = initialStep?.id.endsWith('-review') ?? false;
+  const initialIsReview = initialStep
+    ? initialStep.id.endsWith('-review') && !isPartReviewStep(initialStep)
+    : false;
   const [showReminder, setShowReminder] = useState<boolean>(
     initialPhase === 'question' ? false : isReplay || initialIsReview,
   );
@@ -213,6 +217,7 @@ export default function DialogueLesson({
   const [correctStepIdxs, setCorrectStepIdxs] = useState<Set<number>>(
     () => new Set(),
   );
+  const partReviewCorrectQuizIdsRef = useRef<Set<string>>(new Set());
   /** 레슨 마지막 스텝 정답 시 축하 모달. */
   const [showCelebration, setShowCelebration] = useState(false);
 
@@ -223,6 +228,7 @@ export default function DialogueLesson({
     setChosen(null);
     setCorrect(null);
     setQuizIdx(0);
+    partReviewCorrectQuizIdsRef.current = new Set();
     setSimilarOpen(false); // 다음 step 진입 시 패널 자동 닫기 (안전망)
     // 새 step 이 review 면 reminder 카드 강제 노출. 그 외엔 isReplay 모드일 때만.
     const nextStep = lesson?.steps[stepIdx];
@@ -726,6 +732,10 @@ export default function DialogueLesson({
     if (step.id === 'adsp-3-4-s11') return 'adsp3Neural';
     return null;
   })();
+  const partReviewDiagramStep =
+    phase === 'narrate' && isPartReviewStep(step) && !adsp1DiagramMode
+      ? step
+      : null;
 
   // step.title 에서 trail 라벨 추출 — ' — ' 와 ' (' 앞부분만.
   // 예: 'DIKW ① 데이터 (Data) — raw 값' → 'DIKW ① 데이터'
@@ -836,6 +846,9 @@ export default function DialogueLesson({
     setChosen(idx);
     const ok = idx === quizQuestion.answerIndex;
     setCorrect(ok);
+    if (isPartReviewStep(step) && ok) {
+      partReviewCorrectQuizIdsRef.current.add(quizQuestion.id);
+    }
     const timeMs = Date.now() - startedAtRef.current;
     const xp = recordSingleAnswer(
       quizQuestion.id,
@@ -912,6 +925,15 @@ export default function DialogueLesson({
 
   const handleBackToZone = () => {
     onBack(stepIdx);
+  };
+
+  const markCurrentPartReviewCompleted = () => {
+    if (!isPartReviewStep(step)) return;
+    markPartReviewCompleted(
+      step.id,
+      partReviewCorrectQuizIdsRef.current.size,
+      stepQuizIds.length,
+    );
   };
 
   // === 렌더 ===
@@ -1256,6 +1278,14 @@ export default function DialogueLesson({
           <Adsp1ConceptDiagram mode={adsp1DiagramMode} stepId={step.id} turnIdx={turnIdx} />
         ) : null}
 
+        {partReviewDiagramStep ? (
+          <PartReviewConceptDiagram
+            step={partReviewDiagramStep}
+            subject={subject}
+            turnIdx={turnIdx}
+          />
+        ) : null}
+
         {/*
           Sub-step trail — 그룹 안 단계 (DIKW 5단계 등) 세로 배치.
           narrate 단계만 노출 (문제 풀 때는 선지가 우선이라 숨김).
@@ -1294,7 +1324,8 @@ export default function DialogueLesson({
         !sqld2BasicsDiagramMode &&
         !sqld2UsageDiagramMode &&
         !sqld2ManagementDiagramMode &&
-        !adsp1DiagramMode ? (
+        !adsp1DiagramMode &&
+        !partReviewDiagramStep ? (
           <nav
             aria-label={trailLabel}
             className="mt-10 max-w-[420px] mx-auto"
@@ -1527,15 +1558,24 @@ export default function DialogueLesson({
               onSecondary = handleBackToZone;
             } else if (hasNext) {
               ctaLabel = '다음 단계';
-              onContinue = handleNextStep;
+              onContinue = () => {
+                markCurrentPartReviewCompleted();
+                handleNextStep();
+              };
               secondaryCtaLabel = '← 돌아가기';
               onSecondary = handleBackToZone;
             } else if (isSingleStep) {
               ctaLabel = '존으로 돌아가기';
-              onContinue = handleBackToZone;
+              onContinue = () => {
+                markCurrentPartReviewCompleted();
+                handleBackToZone();
+              };
             } else {
               ctaLabel = '실전 세트로';
-              onContinue = handleNextStep;
+              onContinue = () => {
+                markCurrentPartReviewCompleted();
+                handleNextStep();
+              };
               secondaryCtaLabel = '← 돌아가기';
               onSecondary = handleBackToZone;
             }
@@ -3584,6 +3624,92 @@ function LearningVisualFrame({
         </div>
       </div>
     </motion.figure>
+  );
+}
+
+function reviewDiagramItems(step: LessonStep) {
+  const keyPoints = step.blocks.find((block) => block.kind === 'keypoints');
+  const rawItems =
+    keyPoints?.kind === 'keypoints' && keyPoints.items.length > 0
+      ? keyPoints.items
+      : step.blocks
+          .map((block) => {
+            if (block.kind === 'section') return block.title;
+            if (block.kind === 'callout') return block.title;
+            if (block.kind === 'example') return block.title ?? block.body;
+            if (block.kind === 'intro') return block.body;
+            if (block.kind === 'table') return block.title ?? block.headers.join(' · ');
+            return null;
+          })
+          .filter((item): item is string => !!item);
+
+  return rawItems.slice(0, 5).map((item, index) => {
+    const cleaned = item.replace(/^\d+\.\s*/, '').trim();
+    const [titlePart, ...rest] = cleaned.split(':');
+    return {
+      no: String(index + 1).padStart(2, '0'),
+      title: titlePart.trim() || cleaned,
+      sub: rest.join(':').trim() || '대표 개념을 다시 연결해',
+      tone: (['cyan', 'violet', 'lime', 'amber', 'cyan'] as VisualTone[])[index],
+    };
+  });
+}
+
+function PartReviewConceptDiagram({
+  step,
+  subject,
+  turnIdx,
+}: {
+  step: LessonStep;
+  subject: Subject;
+  turnIdx: number;
+}) {
+  const items = reviewDiagramItems(step);
+  const activeIndex = items.length > 0 ? Math.min(turnIdx, items.length - 1) : -1;
+
+  return (
+    <LearningVisualFrame
+      eyebrow={`${subject.toUpperCase()} PART REVIEW`}
+      title="흩어진 개념을 한 장 흐름도로 다시 묶기"
+      caption="밝게 켜진 카드부터 따라가며 큰 역할을 먼저 붙여. 세부 용어는 그다음에 연결하면 대표 문제를 풀 때 선지가 빠르게 정리돼."
+    >
+      <div className="grid gap-2">
+        {items.map((item, index) => {
+          const active = activeIndex < 0 || activeIndex === index;
+          const dim = activeIndex >= 0 && !active;
+          return (
+            <motion.div
+              key={item.no}
+              className={
+                'rounded-[18px] border px-3 py-3 transition-colors ' +
+                (active
+                  ? `${visualToneClass(item.tone)} shadow-[0_0_0_1px_rgba(103,232,249,0.14)]`
+                  : dim
+                    ? 'border-cream/8 bg-white/[0.025] text-cream/34'
+                    : 'border-cream/10 bg-white/[0.035] text-cream/68')
+              }
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.16, delay: index * 0.035 }}
+            >
+              <div className="flex items-start gap-3">
+                <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-current/25 bg-black/18 kr-num text-[10px] font-black">
+                  {item.no}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="kr-heading text-[14px] leading-tight text-cream">
+                    {item.title}
+                  </div>
+                  <div className="kr-body mt-1 text-[11px] font-bold leading-snug opacity-72">
+                    {item.sub}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+    </LearningVisualFrame>
   );
 }
 

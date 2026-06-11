@@ -234,6 +234,7 @@ export default function LessonScreen({
   const activeQuizId = stepQuizIds[activeQuizIdx];
   const quizQuestion = activeQuizId ? getQuizQuestion(activeQuizId) : null;
   const hasNextQuizInStep = activeQuizIdx < stepQuizIds.length - 1;
+  const nextQuizCtaLabel = subject === 'sqld' ? '다음 SQL 문제' : '다음 문제';
   const quizStateKey = `${stepIdx}:${activeQuizIdx}`;
   const savedQuiz = quizState[quizStateKey];
 
@@ -591,7 +592,7 @@ export default function LessonScreen({
                 )
               }
               label={
-                hasNextQuizInStep ? '다음 SQL 문제' : isLastStep
+                hasNextQuizInStep ? nextQuizCtaLabel : isLastStep
                   ? '실전 세트로 마무리'
                   : `다음 개념 — ${lesson.steps[stepIdx + 1]?.title ?? ''}`
               }

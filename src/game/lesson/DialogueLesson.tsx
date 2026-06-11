@@ -268,6 +268,8 @@ export default function DialogueLesson({
     ? isSqlOrderingQuestion(quizQuestion)
     : false;
   const hasNextQuizInStep = activeQuizIdx < stepQuizIds.length - 1;
+  const nextQuizCtaLabel =
+    subject === 'sqld' || isOrderingQuestion ? '다음 SQL 문제' : '다음 문제';
 
   // ── Sub-step group trail ─────────────────────────────────────────────
   // 명시적 step.group 우선. 없으면 id 의 `-s\d+` prefix 가 그룹 키.
@@ -643,6 +645,7 @@ export default function DialogueLesson({
   })();
   const adsp1DiagramMode: Adsp1DiagramMode | null = (() => {
     if (phase !== 'narrate') return null;
+    if (step.id === 'adsp-1-1-s6-part1-wrapup') return 'adsp1PartReview';
     if (step.id === 'adsp-1-1-s1') return 'dikw';
     if (step.id === 'adsp-1-1-s2') return 'dataClassification';
     if (step.id.startsWith('adsp-1-1-s2')) return 'dataTypeLens';
@@ -1516,7 +1519,7 @@ export default function DialogueLesson({
             let secondaryCtaLabel: string | undefined;
             let onSecondary: (() => void) | undefined;
             if (hasNextQuizInStep) {
-              ctaLabel = '다음 SQL 문제';
+              ctaLabel = nextQuizCtaLabel;
               onContinue = () => {
                 void handleNextQuestionInStep();
               };
@@ -4104,6 +4107,7 @@ type Adsp3DiagramMode =
   | 'adsp3Neural';
 
 type Adsp1DiagramMode =
+  | 'adsp1PartReview'
   | 'dikw'
   | 'dataClassification'
   | 'dataTypeLens'
@@ -4151,6 +4155,131 @@ function Adsp1ConceptDiagram({
 }) {
   if (mode.startsWith('adsp3')) {
     return <Adsp3ConceptDiagram mode={mode as Adsp3DiagramMode} stepId={stepId} />;
+  }
+
+  if (mode === 'adsp1PartReview') {
+    const stages: Array<{
+      no: string;
+      title: string;
+      sub: string;
+      chips: string[];
+      tone: VisualTone;
+    }> = [
+      {
+        no: '01',
+        title: '데이터가 의미가 됨',
+        sub: 'DIKW: Data → Information → Knowledge → Wisdom',
+        chips: ['데정지혜', '자료→판단', '맥락이 핵심'],
+        tone: 'cyan',
+      },
+      {
+        no: '02',
+        title: '데이터를 종류별로 나눔',
+        sub: '형태 · 표현 방식 · 분석 목적',
+        chips: ['정형·반정형·비정형', '정량·정성', '수치형·범주형'],
+        tone: 'violet',
+      },
+      {
+        no: '03',
+        title: '지식이 조직 안에서 순환함',
+        sub: '암묵지 · 형식지 · SECI',
+        chips: ['공동화', '표출화', '연결화', '내면화'],
+        tone: 'lime',
+      },
+      {
+        no: '04',
+        title: '저장소와 분석 기반을 구분함',
+        sub: 'DB · DW · DM · Data Lake · OLTP/OLAP',
+        chips: ['공용·통합·저장·변화', '분석 창고', '거래 vs 분석'],
+        tone: 'amber',
+      },
+      {
+        no: '05',
+        title: '기업 시스템의 역할을 구분함',
+        sub: 'DBMS · ERP · CRM · SCM · KMS · BI · BA',
+        chips: ['운영 통합', '고객·공급망', '보고·예측'],
+        tone: 'cyan',
+      },
+    ];
+    const activeIndex = Math.min(turnIdx, stages.length - 1);
+
+    return (
+      <LearningVisualFrame
+        eyebrow="PART 1 REVIEW MAP"
+        title="데이터의 이해는 의미와 저장 구조를 구분하는 연습이다"
+        caption="왼쪽부터 순서대로 보면 Part 1이 이어져. 데이터가 의미로 올라가고, 종류와 지식 변환을 거쳐, 조직의 저장소와 기업 시스템으로 활용돼."
+      >
+        <div className="space-y-3">
+          <div className="grid gap-2">
+            {stages.map((stage, index) => {
+              const active = activeIndex < 0 || activeIndex === index;
+              const dim = activeIndex >= 0 && !active;
+              return (
+                <motion.div
+                  key={stage.no}
+                  className={
+                    'rounded-[19px] border px-3 py-3 transition-colors ' +
+                    (active
+                      ? `${visualToneClass(stage.tone)} shadow-[0_0_0_1px_rgba(103,232,249,0.14)]`
+                      : dim
+                        ? 'border-cream/8 bg-white/[0.025] text-cream/34'
+                        : 'border-cream/10 bg-white/[0.035] text-cream/68')
+                  }
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.16, delay: index * 0.035 }}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-current/25 bg-black/18 kr-num text-[10px] font-black">
+                      {stage.no}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="kr-heading text-[15px] leading-tight text-cream">
+                        {stage.title}
+                      </div>
+                      <div className="kr-body mt-1 text-[11px] font-bold leading-snug opacity-72">
+                        {stage.sub}
+                      </div>
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {stage.chips.map((chip) => (
+                          <span
+                            key={chip}
+                            className="rounded-full border border-current/12 bg-[#020b24]/30 px-2 py-1 kr-body text-[10px] font-black leading-none opacity-74"
+                          >
+                            {chip}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          <div className="grid gap-2 sm:grid-cols-[1fr_24px_1fr] sm:items-center">
+            <div className="grid gap-2">
+              <VisualPill label="DW / DM" sub="분석용 창고 / 부서별 창고" tone="cyan" />
+              <VisualPill label="Data Lake" sub="원본을 먼저 담는 호수" tone="violet" />
+            </div>
+            <div className="hidden sm:block">
+              <ArrowStep />
+            </div>
+            <div className="grid gap-2">
+              <VisualPill label="OLTP / OLAP" sub="거래 처리 / 분석 처리" tone="lime" />
+              <VisualPill label="BI / BA" sub="보고서 / 예측·고급 분석" tone="amber" />
+            </div>
+          </div>
+
+          <div className="rounded-[18px] border border-[#d1f843]/18 bg-[#d1f843]/8 px-3 py-2.5">
+            <div className="kr-body text-[11.5px] font-bold leading-[1.55] text-cream/68">
+              마지막 확인: 약어를 외우기 전에 “무슨 일을 하는가”를 먼저 붙여. 저장소인지,
+              분석 창고인지, 거래 처리인지, 고객·공급망·지식 관리인지 구역이 잡히면 정답이 빨라져.
+            </div>
+          </div>
+        </div>
+      </LearningVisualFrame>
+    );
   }
 
   if (mode === 'dikw') {

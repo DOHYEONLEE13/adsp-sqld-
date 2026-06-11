@@ -10,7 +10,7 @@
  * Sololearn-스타일 path: 작은 원 노드 + 점선 connector. 3D bevel 없음.
  */
 
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { Fragment, useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
   ArrowLeft,
   BookOpen,
@@ -62,6 +62,13 @@ const SUBJECT_ACCENT: Record<Subject, string> = {
   adsp: '#67e8f9',
   sqld: '#c084fc',
 };
+
+const ADSP_PART1_REVIEW_STEP_ID = 'adsp-1-1-s6-part1-wrapup';
+const ADSP_PART1_REVIEW_TOPIC = '데이터의 이해';
+
+function isChapterReviewStep(step: { id: string }): boolean {
+  return step.id === ADSP_PART1_REVIEW_STEP_ID;
+}
 
 /**
  * CSS attribute selector escape — querySelector 의 [data-x="..."] 안에 들어갈 값.
@@ -137,6 +144,7 @@ export default function ZoneScreen({
     0,
   );
   const progress = useProgress();
+  const stepLockSnap = useStepUnlocks();
   const reviewCount = reviewPoolSize(subject, chapter, null);
   const accent = SUBJECT_ACCENT[subject];
   const hasSqldChapterGuide = subject === 'sqld' && (chapter === 1 || chapter === 2);
@@ -208,6 +216,50 @@ export default function ZoneScreen({
 
   // 선택된 회독에 따라 path 색조 변환
   const pathAccent = accent;
+  const adspPart1Review = useMemo(() => {
+    if (subject !== 'adsp' || chapter !== 1) return null;
+    const lesson = lessons.find((item) => item.topic === ADSP_PART1_REVIEW_TOPIC);
+    if (!lesson) return null;
+    const stepIdx = lesson.steps.findIndex(
+      (step) => step.id === ADSP_PART1_REVIEW_STEP_ID,
+    );
+    if (stepIdx < 0) return null;
+    const step = lesson.steps[stepIdx];
+    const reviewQuizIds = [step.quizId, ...(step.extraQuizIds ?? [])].filter(
+      (id): id is string => !!id,
+    );
+    const requiredSteps = lessons.flatMap((item) =>
+      item.id === lesson.id
+        ? item.steps.filter(
+            (candidate) => candidate.quizId && !isChapterReviewStep(candidate),
+          )
+        : [],
+    );
+    const premiumOpenAccess = !stepLockSnap.enforced;
+    const unlocked =
+      premiumOpenAccess ||
+      (requiredSteps.length > 0 &&
+        requiredSteps.every((candidate) => {
+          const stat = candidate.quizId
+            ? progress.questionStats[candidate.quizId]
+            : undefined;
+          return hasEverSolved(stat);
+        }));
+    const solvedCount = reviewQuizIds.reduce((count, quizId) => {
+      const stat = progress.questionStats[quizId];
+      return count + (hasEverSolved(stat) ? 1 : 0);
+    }, 0);
+
+    return {
+      lesson,
+      step,
+      stepIdx,
+      unlocked,
+      solvedCount,
+      totalCount: reviewQuizIds.length,
+      completed: reviewQuizIds.length > 0 && solvedCount === reviewQuizIds.length,
+    };
+  }, [chapter, lessons, progress.questionStats, stepLockSnap.enforced, subject]);
 
   // onStart 호출 시 자동으로 selectedPass 주입
   const onStartWithPass = (p: StartParams) =>
@@ -490,43 +542,73 @@ export default function ZoneScreen({
                 : 'flex flex-col gap-12 md:gap-14 mb-12'
             }
           >
-            {lessons.map((lesson, lessonIdx) => (
-              <TopicSection
-                key={lesson.id}
-                index={lessonIdx + 1}
-                topic={lesson.topic}
-                lessonId={lesson.id}
-                steps={lesson.steps}
-                accent={pathAccent}
-                progress={progress}
-                isWeak={(() => {
-                  const w = topicWeaknessOf(
-                    subject,
-                    chapter,
-                    lesson.topic,
-                    progress,
-                  );
-                  return w ? weaknessLevel(w) === 'weak' : false;
-                })()}
-                passNumber={selectedPass}
-                pulse={activeHighlight?.topic === lesson.topic}
-                pulseReason={activeHighlight?.reason ?? 'weakness'}
-                highlightStepIdx={
-                  activeHighlight?.topic === lesson.topic
-                    ? activeHighlight.stepIdx
-                    : undefined
-                }
-                onSelectStep={(stepIdx) => {
-                  // 사용자 인터랙션 발생 → 강조 즉시 페이드.
-                  setActiveHighlight(null);
-                  onSelectStep(lesson.topic, stepIdx, selectedPass);
-                }}
-                onLockedClick={() => {
-                  setLockToast('이전 단계를 먼저 끝내야 해');
-                  window.setTimeout(() => setLockToast(null), 2400);
-                }}
-              />
-            ))}
+            {lessons.map((lesson, lessonIdx) => {
+              const topicSection = (
+                <TopicSection
+                  key={lesson.id}
+                  index={lessonIdx + 1}
+                  topic={lesson.topic}
+                  lessonId={lesson.id}
+                  steps={lesson.steps}
+                  accent={pathAccent}
+                  progress={progress}
+                  isWeak={(() => {
+                    const w = topicWeaknessOf(
+                      subject,
+                      chapter,
+                      lesson.topic,
+                      progress,
+                    );
+                    return w ? weaknessLevel(w) === 'weak' : false;
+                  })()}
+                  passNumber={selectedPass}
+                  pulse={activeHighlight?.topic === lesson.topic}
+                  pulseReason={activeHighlight?.reason ?? 'weakness'}
+                  highlightStepIdx={
+                    activeHighlight?.topic === lesson.topic
+                      ? activeHighlight.stepIdx
+                      : undefined
+                  }
+                  onSelectStep={(stepIdx) => {
+                    // 사용자 인터랙션 발생 → 강조 즉시 페이드.
+                    setActiveHighlight(null);
+                    onSelectStep(lesson.topic, stepIdx, selectedPass);
+                  }}
+                  onLockedClick={() => {
+                    setLockToast('이전 단계를 먼저 끝내야 해');
+                    window.setTimeout(() => setLockToast(null), 2400);
+                  }}
+                />
+              );
+
+              if (!adspPart1Review || lesson.id !== adspPart1Review.lesson.id) {
+                return topicSection;
+              }
+
+              return (
+                <Fragment key={`${lesson.id}-with-review`}>
+                  {topicSection}
+                  <ChapterReviewNode
+                    accent={accent}
+                    title="Part 1 데이터의 이해 총 복습"
+                    subtitle="DIKW부터 기업 데이터베이스까지, 전체 흐름을 한 장 지도로 다시 묶어봐."
+                    completed={adspPart1Review.completed}
+                    locked={!adspPart1Review.unlocked}
+                    solvedCount={adspPart1Review.solvedCount}
+                    totalCount={adspPart1Review.totalCount}
+                    onClick={() => {
+                      if (!adspPart1Review.unlocked) {
+                        setLockToast('Part 1의 개념 문제를 모두 완료하면 총 복습이 열려요.');
+                        window.setTimeout(() => setLockToast(null), 2600);
+                        return;
+                      }
+                      setActiveHighlight(null);
+                      onSelectStep(adspPart1Review.lesson.topic, adspPart1Review.stepIdx, 1);
+                    }}
+                  />
+                </Fragment>
+              );
+            })}
 
             {/* ─── 분기: 챕터 모의고사 (4 슬롯) ─── */}
             {total > 0 ? (
@@ -788,7 +870,9 @@ function TopicSection({
   // _origIdx 보존 — onSelectStep 호출 시 lesson.steps 의 원본 index 전달용.
   void passNumber; // 향후 회독별 분기 필요 시 사용
   const stepsWithIdx = steps.map((s, i) => ({ ...s, _origIdx: i }));
-  const visibleSteps = stepsWithIdx.filter((s) => !!s.quizId);
+  const visibleSteps = stepsWithIdx.filter(
+    (s) => !!s.quizId && !isChapterReviewStep(s),
+  );
 
   // ── 레슨 정복 여부 (CLAUDE.md P1 §5 — 토픽 노드 완료 표식) ──
   // 한 번이라도 맞힌 visible step 은 "정복 완료"로 본다. 이후 복습 오답은 완료 진도를 지우지 않는다.
@@ -938,6 +1022,133 @@ function TopicSection({
           );
         })}
       </div>
+    </section>
+  );
+}
+
+// ================================================================
+// ChapterReviewNode — 챕터/파트 끝에 붙는 별도 총복습 노드
+// ================================================================
+
+interface ChapterReviewNodeProps {
+  accent: string;
+  title: string;
+  subtitle: string;
+  completed: boolean;
+  locked: boolean;
+  solvedCount: number;
+  totalCount: number;
+  onClick: () => void;
+}
+
+function ChapterReviewNode({
+  accent,
+  title,
+  subtitle,
+  completed,
+  locked,
+  solvedCount,
+  totalCount,
+  onClick,
+}: ChapterReviewNodeProps) {
+  const gold = '#fbbf24';
+  const nodeColor = completed ? gold : accent;
+  const progressLabel =
+    totalCount > 0 ? `${solvedCount}/${totalCount} checks` : 'review';
+
+  return (
+    <section aria-label={title} className="relative">
+      <div className="flex justify-center -mt-3 mb-3 md:mb-4" aria-hidden>
+        <svg width="66" height="42" viewBox="0 0 66 42" className="block">
+          <path
+            d="M 33 0 C 33 20, 33 22, 33 42"
+            fill="none"
+            stroke={locked ? 'rgba(239,244,255,0.26)' : `${nodeColor}99`}
+            strokeWidth="3"
+            strokeDasharray="3 8"
+            strokeLinecap="round"
+            style={{
+              filter: locked ? undefined : `drop-shadow(0 0 7px ${nodeColor}66)`,
+            }}
+          />
+        </svg>
+      </div>
+
+      <button
+        type="button"
+        onClick={onClick}
+        aria-disabled={locked}
+        className="group flex w-full items-center gap-3 rounded-[22px] border px-4 py-4 text-left transition active:scale-[0.99] md:gap-4 md:px-5 md:py-5"
+        style={{
+          borderColor: completed
+            ? `${gold}99`
+            : locked
+              ? 'rgba(239,244,255,0.14)'
+              : `color-mix(in srgb, ${accent} 48%, transparent)`,
+          background: completed
+            ? 'linear-gradient(145deg, rgba(72,49,12,0.72), rgba(6,18,44,0.92))'
+            : locked
+              ? 'linear-gradient(145deg, rgba(8,18,48,0.68), rgba(4,12,34,0.74))'
+              : `linear-gradient(145deg, color-mix(in srgb, ${accent} 16%, rgba(7,18,50,0.88)), rgba(4,14,42,0.84))`,
+          boxShadow: completed
+            ? `0 10px 34px -18px ${gold}, inset 0 1px 0 rgba(255,255,255,0.08)`
+            : locked
+              ? 'inset 0 1px 0 rgba(255,255,255,0.04)'
+              : `0 10px 30px -20px ${accent}, inset 0 1px 0 rgba(255,255,255,0.06)`,
+          opacity: locked && !completed ? 0.9 : 1,
+        }}
+      >
+        <span
+          className="relative grid h-14 w-14 shrink-0 place-items-center rounded-full border md:h-16 md:w-16"
+          style={{
+            borderColor: locked ? 'rgba(239,244,255,0.2)' : `${nodeColor}88`,
+            background: locked
+              ? 'rgba(255,255,255,0.035)'
+              : `radial-gradient(circle at 34% 24%, rgba(255,255,255,0.24), transparent 34%), linear-gradient(145deg, ${nodeColor}, color-mix(in srgb, ${nodeColor} 46%, #061326 54%))`,
+            color: completed ? '#261701' : locked ? 'rgba(239,244,255,0.62)' : '#061326',
+            boxShadow: locked
+              ? 'none'
+              : `0 0 28px -12px ${nodeColor}, inset 0 1px 0 rgba(255,255,255,0.32), inset 0 -7px 10px rgba(1,8,40,0.26)`,
+          }}
+        >
+          {completed ? (
+            <Check size={24} strokeWidth={3} />
+          ) : locked ? (
+            <Lock size={20} strokeWidth={2.5} />
+          ) : (
+            <Trophy size={24} strokeWidth={2.5} />
+          )}
+        </span>
+
+        <span className="min-w-0 flex-1">
+          <span
+            className="kr-heading block text-[10px] uppercase tracking-[0.18em]"
+            style={{ color: locked ? 'rgba(239,244,255,0.44)' : nodeColor }}
+          >
+            PART REVIEW
+          </span>
+          <span className="kr-heading mt-1 block text-[17px] leading-tight text-cream md:text-[20px]">
+            {title}
+          </span>
+          <span className="kr-body mt-1.5 block text-[12px] leading-[1.55] text-cream/62 md:text-[13px]">
+            {subtitle}
+          </span>
+          <span className="mt-3 flex flex-wrap items-center gap-2 kr-body text-[10.5px] text-cream/66">
+            <span
+              className="inline-flex items-center gap-1 rounded-full border px-2.5 py-1"
+              style={{
+                borderColor: locked ? 'rgba(239,244,255,0.14)' : `${nodeColor}44`,
+                background: locked ? 'rgba(255,255,255,0.035)' : `${nodeColor}14`,
+                color: locked ? 'rgba(239,244,255,0.54)' : nodeColor,
+              }}
+            >
+              <RefreshCcw size={11} strokeWidth={2.6} />
+              {progressLabel}
+            </span>
+            <span>{locked ? '앞 개념을 모두 완료하면 열림' : completed ? '총 복습 완료' : '전체 지도 + 종합 확인'}</span>
+          </span>
+        </span>
+      </button>
     </section>
   );
 }

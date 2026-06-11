@@ -2156,6 +2156,65 @@ const ADSP_1_1: Lesson = {
         },
       ],
     },
+    {
+      id: 'adsp-1-1-s6-part1-wrapup',
+      title: 'Part 1 데이터의 이해 총 복습',
+      quizId: 'adsp-1-1-cp-01-p2',
+      extraQuizIds: [
+        'adsp-1-1-cp-02-p2',
+        'adsp-1-1-cp-03-p2',
+        'adsp-1-1-cp-04-p2',
+        'adsp-1-1-cp-05-p2',
+      ],
+      group: 'adsp-1-part1-wrapup',
+      dialogue: [
+        {
+          pose: 'wave',
+          text: 'Part 1 데이터의 이해를 기업 데이터베이스까지 한 번에 묶어보자.',
+        },
+        {
+          pose: 'think',
+          text: '먼저 [데이터의 뜻] → [데이터 종류] → [지식 변환]까지 이어서 봐.',
+        },
+        {
+          pose: 'lightbulb',
+          text: '그다음 DW·DM·Lake·OLTP·OLAP은 저장·분석 방식으로 묶어.',
+        },
+        {
+          pose: 'think',
+          text: 'ERP·CRM·SCM·KMS·BI·BA는 조직에서 쓰는 기업 시스템으로 구분하면 돼.',
+        },
+        {
+          pose: 'happy',
+          text: '마지막으로 종합 문제 5개만 풀면 데이터의 이해 복습 완료!',
+        },
+      ],
+      blocks: [
+        {
+          kind: 'intro',
+          body:
+            '데이터의 이해 Part 1은 데이터가 의미로 올라가는 과정에서 시작해, 조직이 데이터를 저장하고 분석하며 업무 시스템으로 활용하는 흐름까지 이어져. DIKW, 데이터 분류, 암묵지·형식지, DB 특징, DW·DM·Data Lake, OLTP·OLAP, 기업 정보 시스템을 하나의 지도처럼 묶어 보면 훨씬 덜 헷갈린다.',
+        },
+        {
+          kind: 'keypoints',
+          title: '전체 지도',
+          items: [
+            '데이터의 뜻: DIKW로 데이터·정보·지식·지혜를 구분',
+            '데이터 종류: 정형·반정형·비정형, 정량·정성, 수치형·범주형',
+            '지식 변환: 암묵지·형식지와 SECI 순환',
+            '저장·분석 기반: DB 특징, DW·DM·Data Lake, OLTP·OLAP',
+            '기업 시스템: DBMS·ERP·CRM·SCM·KMS·BI·BA의 역할 구분',
+          ],
+        },
+        {
+          kind: 'callout',
+          tone: 'tip',
+          title: '복습할 때 보는 순서',
+          body:
+            '문제에서 낯선 약어가 나오면 먼저 역할을 붙여. 저장소인지, 분석 창고인지, 거래 처리인지, 의사결정 보고서인지, 고객·공급망·지식 관리 시스템인지 구역을 나누면 선지가 빠르게 정리된다.',
+        },
+      ],
+    },
   ],
 };
 

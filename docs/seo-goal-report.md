@@ -309,3 +309,51 @@ curl -I https://quest-dp.com/#/game
 ### 의뢰인 결정 대기
 
 - `/quiz/*`는 sitemap 0건 정책과 soft 404 최소화를 우선해 명시 rewrite에 넣지 않음. valid quiz URL을 직접 공유해야 한다면 별도 noindex 전략으로 다시 열어야 함.
+
+## Mission C: WebSite alternateName Cleanup
+
+### 변경 파일
+
+- `index.html`
+- `docs/seo-goal-report.md`
+
+### 핵심 Diff 요약
+
+- WebSite JSON-LD의 `alternateName`에서 키워드 나열을 제거.
+- 브랜드 별칭만 남김: `["퀘스트디피"]`.
+- Organization JSON-LD의 `alternateName: "퀘스트디피"`는 기존 그대로 유지.
+
+### 검증 출력
+
+```text
+Select-String -Path index.html -Pattern '"@type": "WebSite"|"alternateName"' -Context 0,4
+index.html:83:        "alternateName": "퀘스트디피",
+index.html:106:        "@type": "WebSite",
+index.html:108:        "alternateName": ["퀘스트디피"],
+```
+
+```text
+npm.cmd run typecheck
+> questdp@0.1.0 typecheck
+> tsc --noEmit
+```
+
+```text
+npm.cmd test -- --run
+
+RUN  v4.1.5 C:/Users/이도현/Desktop/.claude/worktrees/hardcore-shamir-47f5ab
+Test Files  38 passed (38)
+Tests  534 passed (534)
+```
+
+```text
+npm.cmd run build
+
+sitemap generated: total 262 URLs (core 17, blog 13, lessons 80, topics 152, quiz 0)
+static route HTML generated: 555 pages (core 18, blog 12, lessons 373, topics 152, quiz 0)
+seo audit passed: 555 static pages, 262 submitted URLs, 293 noindex pages, quiz 0
+```
+
+### 의뢰인 결정 대기
+
+- 없음.

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <title>PlanetOrb design harness</title>
+  <style>
+    body { background: #010828; margin: 0; padding: 56px; font-family: sans-serif; }
+    .grid { display: flex; flex-direction: column; gap: 64px; }
+    .row { display: flex; align-items: center; gap: 88px; }
+    .label { width: 90px; color: #eff4ff; font-weight: 700; font-size: 14px; }
+    .node {
+      position: relative; width: 78px; height: 78px; border-radius: 9999px;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .num {
+      position: relative; z-index: 1; color: rgba(239,244,255,0.96);
+      font-weight: 800; font-size: 30px;
+      text-shadow: 0 2px 4px rgba(1,8,40,0.82), 0 0 12px rgba(239,244,255,0.32);
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module">
+    import { createElement as h } from 'react';
+    import { createRoot } from 'react-dom/client';
+    import '/src/styles/index.css';
+    import PlanetOrb from '/src/game/components/PlanetOrb';
+
+    const subjects = [
+      ['ADSP', '#67e8f9'],
+      ['SQLD', '#c084fc'],
+      ['COMHWAL', '#A7E96A'],
+    ];
+    const variants = ['terra', 'ring', 'crater'];
+
+    const rows = subjects.map(([name, accent]) =>
+      h('div', { className: 'row', key: name },
+        h('div', { className: 'label' }, name),
+        ...variants.map((variant, i) =>
+          h('div', { className: 'node', style: { '--roadmap-accent': accent }, key: variant },
+            h(PlanetOrb, { accent, variant }),
+            h('span', { className: 'num' }, String(i + 1)),
+          ),
+        ),
+      ),
+    );
+
+    createRoot(document.getElementById('root')).render(
+      h('div', { className: 'grid' }, rows),
+    );
+  </script>
+</body>
+</html>

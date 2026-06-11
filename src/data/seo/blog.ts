@@ -43,8 +43,9 @@ export interface BlogPost {
   primaryKeyword: string;
   publishedAt: string;
   updatedAt?: string;
-  /** TODO: 의뢰인 확인 후 실명 또는 브랜드 표기 확정. */
+  /** 검수자 결정: 블로그 작성자는 실명 대신 브랜드 운영팀 표기를 유지한다. */
   author: string;
+  /** 기본 검수일은 일괄 기준일이며, 실제 재검수한 포스트만 개별 값으로 갱신한다. */
   reviewedAt: string;
   readingMinutes: number;
   /** OG · meta description. 160자 이내. */

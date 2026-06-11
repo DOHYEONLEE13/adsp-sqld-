@@ -103,7 +103,6 @@ const INDEXABLE_LESSON_STEP_IDS = new Set([
   'sqld-1-1-s10',
   'sqld-1-1-s2',
   'sqld-1-1-s3',
-  'sqld-1-1-s3d',
   'sqld-1-1-s4',
   'sqld-1-1-s4-req',
   'sqld-1-1-s5-kind',

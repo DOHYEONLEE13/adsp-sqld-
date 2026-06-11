@@ -358,6 +358,77 @@ seo audit passed: 555 static pages, 262 submitted URLs, 293 noindex pages, quiz 
 
 - 없음.
 
+## WAVE 1 검수 결과 반영
+
+검수자 결정 사항:
+
+- 블로그 작성자 표기는 `QuestDP 운영팀`으로 유지한다. 실명 전환 TODO는 닫음.
+- 작성자 약력·보유 자격 공개는 보류한다. About의 현재 서술처럼 실재 프로세스 기반 정보만 유지.
+- `reviewedAt` 기본값은 `2026-06-12` 일괄 기준으로 유지한다. 실제 재검수가 일어난 포스트만 개별 값을 갱신한다.
+- `/quiz/*`는 현행 유지: sitemap 0건, rewrite 제외, 404.
+
+## Mission A2: Lesson Whitelist Follow-up
+
+### 변경 파일
+
+- `scripts/seo-route-manifest.mjs`
+- `src/data/seo/blog.ts`
+- `docs/seo-goal-report.md`
+
+### 핵심 결정과 이유
+
+- `/lesson/sqld-1-1-s3d`(데이터 독립성)를 indexable whitelist에서 제외.
+- 사유: `/lesson/sqld-1-1-s3`가 ANSI/SPARC 3-스키마와 데이터 독립성을 함께 다루고 있어 검색 표면이 중복됨. 내부 카니벌라이제이션을 피하기 위해 더 넓은 개념 페이지만 유지.
+- 블로그 작성자 TODO 주석을 닫고, `reviewedAt` 운영 규칙을 코드 주석으로 남김.
+
+### 검증 출력
+
+```text
+node -e "import('./scripts/seo-route-manifest.mjs').then(m=>{const manifest=m.getSeoRouteManifest(); const lessons=manifest.lessons; console.log('lessons', lessons.length); console.log('indexable', lessons.filter(r=>r.indexable!==false).length); console.log('noindex', lessons.filter(r=>r.indexable===false).length); console.log('sqld-1-1-s3d indexable', lessons.find(r=>r.path==='/lesson/sqld-1-1-s3d')?.indexable !== false);})"
+lessons 373
+indexable 79
+noindex 294
+sqld-1-1-s3d indexable false
+```
+
+```text
+npm.cmd run typecheck
+> questdp@0.1.0 typecheck
+> tsc --noEmit
+```
+
+```text
+npm.cmd test -- --run
+
+RUN  v4.1.5 C:/Users/이도현/Desktop/.claude/worktrees/hardcore-shamir-47f5ab
+Test Files  38 passed (38)
+Tests  534 passed (534)
+```
+
+```text
+npm.cmd run build
+
+sitemap generated: total 261 URLs (core 17, blog 13, lessons 79, topics 152, quiz 0)
+static route HTML generated: 555 pages (core 18, blog 12, lessons 373, topics 152, quiz 0)
+seo audit passed: 555 static pages, 261 submitted URLs, 294 noindex pages, quiz 0
+```
+
+```text
+(Select-String -Path dist\sitemap-lessons.xml -Pattern '<loc>' -AllMatches).Matches.Count
+79
+
+(Get-ChildItem -Path dist\lesson -Recurse -Filter index.html | Select-String -Pattern 'name="robots" content="noindex"' -List | Measure-Object).Count
+294
+
+Select-String -Path dist\lesson\sqld-1-1-s3d\index.html -Pattern 'name="robots" content="noindex"|<link rel="canonical"'
+dist\lesson\sqld-1-1-s3d\index.html:56:    <link rel="canonical" href="https://quest-dp.com/lesson/sqld-1-1-s3d/" />
+dist\lesson\sqld-1-1-s3d\index.html:142:      <meta name="robots" content="noindex" />
+```
+
+### 사람 결정 대기
+
+- 없음.
+
 ## WAVE 1 검수 요청
 
 ### 로컬 커밋

@@ -56,6 +56,89 @@ const SUBJECT_LABEL = {
   comhwal: '컴퓨터활용능력 필기',
 };
 
+const INDEXABLE_LESSON_STEP_IDS = new Set([
+  'adsp-1-1-s1',
+  'adsp-1-1-s3-seci',
+  'adsp-1-1-s4-dm',
+  'adsp-1-1-s4-dw',
+  'adsp-1-1-s4-lake',
+  'adsp-1-1-s4-olap',
+  'adsp-1-1-s4-oltp',
+  'adsp-1-1-s5-crm',
+  'adsp-1-1-s5-dbms',
+  'adsp-1-1-s5-erp',
+  'adsp-1-1-s5-scm',
+  'adsp-1-2-s1-3v',
+  'adsp-1-2-s3',
+  'adsp-2-1-s1',
+  'adsp-2-1-s2-crisp',
+  'adsp-2-1-s2-kdd',
+  'adsp-2-1-s3',
+  'adsp-2-1-s4-agile',
+  'adsp-2-1-s4-waterfall',
+  'adsp-2-2-s1',
+  'adsp-2-2-s2',
+  'adsp-2-2-s3',
+  'adsp-2-2-s4',
+  'adsp-2-3-s4',
+  'adsp-2-3-s5',
+  'adsp-3-1-s2',
+  'adsp-3-1-s3',
+  'adsp-3-1-s4',
+  'adsp-3-2-s4',
+  'adsp-3-2-s5',
+  'adsp-3-2-s6',
+  'adsp-3-3-s1',
+  'adsp-3-3-s2',
+  'adsp-3-3-s4',
+  'adsp-3-3-s5',
+  'adsp-3-4-s1',
+  'adsp-3-4-s2',
+  'adsp-3-4-s3',
+  'adsp-3-4-s4',
+  'adsp-3-4-s5',
+  'sqld-1-1-s1',
+  'sqld-1-1-s10',
+  'sqld-1-1-s2',
+  'sqld-1-1-s3',
+  'sqld-1-1-s3d',
+  'sqld-1-1-s4',
+  'sqld-1-1-s4-req',
+  'sqld-1-1-s5-kind',
+  'sqld-1-1-s5-time',
+  'sqld-1-1-s6',
+  'sqld-1-1-s7',
+  'sqld-1-1-s7-cardinality',
+  'sqld-1-1-s7-erd-order',
+  'sqld-1-1-s8',
+  'sqld-1-1-s8-main',
+  'sqld-1-1-s9',
+  'sqld-1-2-s1',
+  'sqld-1-2-s2',
+  'sqld-1-2-s3',
+  'sqld-1-2-s3-bcnf',
+  'sqld-1-2-s4',
+  'sqld-1-2-s6',
+  'sqld-1-2-s6-acid',
+  'sqld-1-2-s7',
+  'sqld-1-2-s8',
+  'sqld-2-1-s10',
+  'sqld-2-1-s11',
+  'sqld-2-1-s12',
+  'sqld-2-1-s2',
+  'sqld-2-1-s3',
+  'sqld-2-1-s7',
+  'sqld-2-1-s9',
+  'sqld-2-2-s1',
+  'sqld-2-2-s10',
+  'sqld-2-2-s3',
+  'sqld-2-2-s4',
+  'sqld-2-2-s6',
+  'sqld-2-2-s7',
+  'sqld-2-2-s8',
+  'sqld-2-3-s5-ddl',
+]);
+
 const CURRICULUM_FACTS = {
   adsp: {
     label: 'ADsP 데이터분석준전문가',
@@ -1245,6 +1328,7 @@ function collectLessonRoutes() {
 
       for (let i = 0; i < steps.length; i++) {
         const step = steps[i];
+        const indexable = INDEXABLE_LESSON_STEP_IDS.has(step.id);
         const related = steps
           .filter((other) => other.id !== step.id)
           .slice(Math.max(0, i - 2), i)
@@ -1262,6 +1346,7 @@ function collectLessonRoutes() {
           eyebrow: `${SUBJECT_LABEL[lesson.subject] || lesson.subject.toUpperCase()} · ${lesson.chapterTitle || `Chapter ${lesson.chapter}`} · ${lesson.topic}`,
           summary: step.description,
           type: 'article',
+          indexable,
           seoSubject: lesson.subject,
           seoChapter: lesson.chapter,
           seoChapterTitle: lesson.chapterTitle,
@@ -1314,12 +1399,30 @@ function normalizeRoute(route) {
 }
 
 function makeStepDescription(stepChunk, lesson) {
-  const dialogue = firstStringAfterProp(stepChunk, 'text');
-  const introBody = firstStringAfterProp(stepChunk, 'body');
-  const base = dialogue || introBody || `${lesson.topic}의 핵심 개념을 짧게 배우고 바로 문제로 확인합니다.`;
+  const base =
+    firstLessonBlockDescription(stepChunk) ||
+    lesson.hook ||
+    `${lesson.topic}의 핵심 개념을 짧게 배우고 바로 문제로 확인합니다.`;
   const cleaned = cleanText(base);
   const subject = lesson.subject === 'sqld' ? 'SQLD' : 'ADsP';
   return truncate(`${cleaned} ${subject} ${lesson.topic} 개념을 QuestDP 레슨에서 단계별로 정리합니다.`, 158);
+}
+
+function firstLessonBlockDescription(stepChunk) {
+  const blocksArray = extractArrayAfterProperty(stepChunk, 'blocks');
+  if (!blocksArray) return '';
+  const blocks = extractTopLevelObjectLiterals(blocksArray);
+  const preferredKinds = ['intro', 'section', 'example', 'callout', 'keypoints'];
+  const block = blocks.find((candidate) => readStringProp(candidate, 'kind') === 'intro') ||
+    blocks.find((candidate) => preferredKinds.includes(readStringProp(candidate, 'kind'))) ||
+    blocks[0];
+  if (!block) return '';
+  return (
+    readStringProp(block, 'body') ||
+    readStringProp(block, 'text') ||
+    readStringArrayProp(block, 'items')[0] ||
+    ''
+  );
 }
 
 function breadcrumbJsonLd(items) {

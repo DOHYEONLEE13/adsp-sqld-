@@ -48,6 +48,7 @@ function routeHtml(baseTemplate, route) {
   html = setMetaByName(html, 'twitter:description', route.description);
   html = setMetaByName(html, 'twitter:image', image);
   html = setCanonical(html, route.canonical);
+  html = setRobots(html, route);
   html = setImageSrc(html, image);
   html = injectStaticJsonLd(html, route);
   if (route.path === '/') {
@@ -86,6 +87,15 @@ function setCanonical(html, canonical) {
   const tag = `<link rel="canonical" href="${escapeHtml(canonical)}" />`;
   const pattern = /<link\s+rel=["']canonical["'][^>]*>/i;
   return upsertHeadTag(html, pattern, tag);
+}
+
+function setRobots(html, route) {
+  const pattern = /<meta\s+name=["']robots["'][^>]*>/i;
+  if (route.indexable === false) {
+    const tag = '<meta name="robots" content="noindex" />';
+    return upsertHeadTag(html, pattern, tag);
+  }
+  return html.replace(pattern, '');
 }
 
 function setImageSrc(html, image) {

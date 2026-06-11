@@ -19,6 +19,9 @@ const REQUIRED_SITEMAPS = [
 
 const manifest = getSeoRouteManifest();
 const expectedRoutes = new Map(manifest.all.map((route) => [route.canonical, route]));
+const indexableRoutes = new Map(
+  manifest.all.filter(isIndexableRoute).map((route) => [route.canonical, route]),
+);
 
 assertFile(path.join(DIST_DIR, 'sitemap.xml'));
 const sitemapIndex = readDist('sitemap.xml');
@@ -42,8 +45,9 @@ for (const sitemap of REQUIRED_SITEMAPS) {
 const submittedSet = new Set(submittedLocs);
 for (const loc of submittedLocs) {
   if (!expectedRoutes.has(loc)) fail(`sitemap URL is not in SEO manifest: ${loc}`);
+  if (!indexableRoutes.has(loc)) fail(`noindex manifest URL leaked into sitemap: ${loc}`);
 }
-for (const [canonical] of expectedRoutes) {
+for (const [canonical] of indexableRoutes) {
   if (!submittedSet.has(canonical)) fail(`SEO manifest URL is missing from sitemaps: ${canonical}`);
 }
 
@@ -57,6 +61,16 @@ for (const route of manifest.all) {
   }
   if (route.path !== '/' && html.includes('<link rel="canonical" href="https://quest-dp.com/"')) {
     fail(`Root canonical leaked into ${route.path}`);
+  }
+  const hasNoindex = /<meta\s+name=["']robots["']\s+content=["']noindex["']\s*\/?>/i.test(html);
+  if (isIndexableRoute(route) && hasNoindex) {
+    fail(`Indexable route has noindex robots meta: ${route.path}`);
+  }
+  if (!isIndexableRoute(route) && !hasNoindex) {
+    fail(`Noindex manifest route is missing robots noindex meta: ${route.path}`);
+  }
+  if (isIndexableRoute(route) && route.path.startsWith('/lesson/') && /안녕|첫 시간이야/.test(route.description)) {
+    fail(`Lesson meta description still looks like dialogue text: ${route.path}`);
   }
   if (route.path === '/') {
     if (!html.includes('data-seo-home-fallback="true"')) {
@@ -101,7 +115,7 @@ for (const file of htmlFiles) {
 }
 
 console.log(
-  `seo audit passed: ${manifest.all.length} static pages, ${submittedLocs.length} submitted URLs, quiz 0`,
+  `seo audit passed: ${manifest.all.length} static pages, ${submittedLocs.length} submitted URLs, ${manifest.all.length - indexableRoutes.size} noindex pages, quiz 0`,
 );
 
 function readDist(fileName) {
@@ -128,6 +142,10 @@ function listIndexHtmlFiles(dir, out = []) {
 
 function assertFile(file) {
   if (!fs.existsSync(file)) fail(`Missing file: ${file}`);
+}
+
+function isIndexableRoute(route) {
+  return route.indexable !== false;
 }
 
 function escapeHtml(value) {

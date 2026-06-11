@@ -33,7 +33,7 @@ const groups = [
   {
     file: 'sitemap-lessons.xml',
     label: 'lessons',
-    routes: manifest.lessons,
+    routes: manifest.lessons.filter(isIndexableRoute),
   },
   {
     file: 'sitemap-topics.xml',
@@ -110,6 +110,10 @@ function renderImages(images = []) {
       '    </image:image>',
     ].filter(Boolean).join('\n'),
   );
+}
+
+function isIndexableRoute(route) {
+  return route.indexable !== false;
 }
 
 function xmlEscape(value) {

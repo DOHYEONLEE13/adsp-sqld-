@@ -35,6 +35,16 @@ if (/sitemap-quiz\.xml|\/quiz\//.test(sitemapIndex)) {
   fail('quiz sitemap or quiz URL leaked into sitemap.xml');
 }
 
+assertFile(path.join(DIST_DIR, 'rss.xml'));
+const rssXml = readDist('rss.xml');
+if (!/<rss\b[^>]*version=["']2\.0["'][^>]*>/i.test(rssXml)) {
+  fail('rss.xml is not RSS 2.0');
+}
+const rssItemCount = (rssXml.match(/<item>/g) || []).length;
+if (rssItemCount !== manifest.blog.length) {
+  fail(`rss.xml item count mismatch: ${rssItemCount}, expected ${manifest.blog.length}`);
+}
+
 const submittedLocs = [];
 for (const sitemap of REQUIRED_SITEMAPS) {
   const xml = readDist(sitemap);

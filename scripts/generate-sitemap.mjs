@@ -46,6 +46,7 @@ for (const group of groups) {
   writeXml(group.file, buildUrlset(group.routes, group.label));
 }
 writeXml('sitemap.xml', buildSitemapIndex(groups));
+writeXml('rss.xml', buildRssFeed(manifest.blog));
 
 const total = groups.reduce((sum, group) => sum + group.routes.length, 0);
 console.log(
@@ -96,6 +97,31 @@ function buildUrlset(routes, label) {
       ].join('\n'),
     ),
     '</urlset>',
+    '',
+  ].join('\n');
+}
+
+function buildRssFeed(blogRoutes) {
+  return [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<rss version="2.0">',
+    '  <channel>',
+    '    <title>QuestDP 공부법 블로그</title>',
+    `    <link>${SITE_ORIGIN}/blog/</link>`,
+    '    <description>ADsP, SQLD, 컴활 자격증을 처음 공부하는 사람을 위한 QuestDP 공부법 글 모음입니다.</description>',
+    '    <language>ko-KR</language>',
+    ...blogRoutes.map((route) =>
+      [
+        '    <item>',
+        `      <title>${xmlEscape(route.h1)}</title>`,
+        `      <link>${route.canonical}</link>`,
+        `      <guid isPermaLink="true">${route.canonical}</guid>`,
+        `      <description>${xmlEscape(route.description || route.summary)}</description>`,
+        '    </item>',
+      ].join('\n'),
+    ),
+    '  </channel>',
+    '</rss>',
     '',
   ].join('\n');
 }

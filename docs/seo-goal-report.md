@@ -358,6 +358,39 @@ seo audit passed: 555 static pages, 262 submitted URLs, 293 noindex pages, quiz 
 
 - 없음.
 
+## WAVE 1 검수 요청
+
+### 로컬 커밋
+
+```text
+HEAD seo(E): add blog rss feed
+ed1dc69 seo(D): add content review trust signals
+e8835df seo(C): simplify website alternate name
+74dab78 seo(B): remove catch-all soft 404 fallback
+9cee757 seo(A): redesign lesson index strategy
+```
+
+### 최종 검증 상태
+
+- 마지막 전체 검증은 Mission E에서 수행.
+- `npm.cmd run typecheck` 통과.
+- `npm.cmd test -- --run` 통과: 38 files / 534 tests.
+- `npm.cmd run build` 통과: `seo audit passed: 555 static pages, 262 submitted URLs, 293 noindex pages, quiz 0`.
+- push는 실행하지 않음.
+- WAVE 2는 시작하지 않음.
+
+### 사람 결정 대기 요약
+
+| 항목 | 결정 필요 |
+| --- | --- |
+| Mission A | 80개 lesson 색인 whitelist 중 제외할 항목이 있는지 검수 필요 |
+| Mission B | `/quiz/*`를 path 진입형으로 열어야 하는지, 아니면 현재처럼 sitemap 0건·rewrite 제외를 유지할지 결정 필요 |
+| Mission D | 블로그 작성자 표기: `QuestDP 운영팀` 유지 또는 실명 전환 |
+| Mission D | 작성자 약력 한 줄, 보유 자격·실무 경력 공개 가능 여부 |
+| Mission D | `reviewedAt`을 일괄 검수일로 둘지, 포스트별 실제 검수일로 관리할지 결정 필요 |
+
+검수 시작점 커밋 해시: `b2ed46c`.
+
 ## Mission D: About / E-E-A-T Signals
 
 ### 변경 파일
@@ -451,3 +484,60 @@ dist\curriculum\comhwal\index.html:1:...2026년 대한상공회의소 자격평�
 - 작성자 약력 한 줄을 공개할 수 있는지 확인 필요.
 - 운영자 또는 검수자의 보유 자격·실무 경력을 공개할 수 있는지 확인 필요.
 - `reviewedAt`을 이번 일괄 검수일로 유지할지, 포스트별 실제 검수 완료일로 별도 관리할지 결정 필요.
+
+## Mission E: RSS Feed
+
+### 변경 파일
+
+- `scripts/generate-sitemap.mjs`
+- `scripts/seo-audit.mjs`
+- `index.html`
+- `public/rss.xml`
+- `docs/seo-goal-report.md`
+
+### 핵심 Diff 요약
+
+- sitemap 생성 스크립트가 같은 SEO route manifest의 블로그 12편으로 `public/rss.xml`을 생성하도록 추가.
+- RSS는 RSS 2.0 형식이며, 전문 복제가 아니라 제목·요약·링크·permalink guid만 포함.
+- `index.html` head에 `<link rel="alternate" type="application/rss+xml" ...>` 추가.
+- `seo-audit.mjs`가 빌드 산출물 `dist/rss.xml` 존재, RSS 2.0 형식, item 12개를 검증하도록 확장.
+
+### 검증 출력
+
+```text
+npm.cmd run typecheck
+> questdp@0.1.0 typecheck
+> tsc --noEmit
+```
+
+```text
+npm.cmd test -- --run
+
+RUN  v4.1.5 C:/Users/이도현/Desktop/.claude/worktrees/hardcore-shamir-47f5ab
+Test Files  38 passed (38)
+Tests  534 passed (534)
+```
+
+```text
+npm.cmd run build
+
+sitemap generated: total 262 URLs (core 17, blog 13, lessons 80, topics 152, quiz 0)
+static route HTML generated: 555 pages (core 18, blog 12, lessons 373, topics 152, quiz 0)
+seo audit passed: 555 static pages, 262 submitted URLs, 293 noindex pages, quiz 0
+```
+
+```text
+(Select-String -Path dist\rss.xml -Pattern '<item>' -AllMatches).Matches.Count
+12
+
+Select-String -Path dist\rss.xml -Pattern '<rss version="2.0">|<title>QuestDP 공부법 블로그</title>'
+dist\rss.xml:2:<rss version="2.0">
+dist\rss.xml:4:    <title>QuestDP 공부법 블로그</title>
+
+Select-String -Path dist\index.html -Pattern 'application/rss\+xml|/rss.xml'
+dist\index.html:124:    <link rel="alternate" type="application/rss+xml" title="QuestDP 공부법 RSS" href="/rss.xml" />
+```
+
+### 의뢰인 결정 대기
+
+- 없음.

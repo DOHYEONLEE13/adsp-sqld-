@@ -105,6 +105,7 @@ export function useSeoMeta(meta: SeoMeta): void {
     // ── JSON-LD (선택) ───────────────────────────────────────
     let jsonLdEls: HTMLScriptElement[] = [];
     if (meta.jsonLd) {
+      removeStaticRouteJsonLd();
       const items = Array.isArray(meta.jsonLd) ? meta.jsonLd : [meta.jsonLd];
       jsonLdEls = items.map((data, i) => {
         const el = document.createElement('script');
@@ -167,6 +168,12 @@ function setLinkRel(rel: string, href: string): void {
     document.head.appendChild(el);
   }
   el.setAttribute('href', href);
+}
+
+function removeStaticRouteJsonLd(): void {
+  document
+    .querySelectorAll<HTMLScriptElement>('script[type="application/ld+json"][data-seo-static]')
+    .forEach((el) => el.parentNode?.removeChild(el));
 }
 
 /** 간단한 CSS selector escape. og:title 같은 ":" 포함 selector 안전 처리. */

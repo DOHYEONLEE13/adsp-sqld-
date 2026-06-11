@@ -64,6 +64,8 @@
 /glossary/           /glossary/index.html            200
 /blog                /blog/index.html                200
 /blog/               /blog/index.html                200
+/blog/comhwal-computer-general-priority   /blog/comhwal-%EC%BB%B4%ED%93%A8%ED%84%B0-%EC%9D%BC%EB%B0%98-%EC%9A%B0%EC%84%A0%EC%88%9C%EC%9C%84/   301
+/blog/comhwal-computer-general-priority/  /blog/comhwal-%EC%BB%B4%ED%93%A8%ED%84%B0-%EC%9D%BC%EB%B0%98-%EC%9A%B0%EC%84%A0%EC%88%9C%EC%9C%84/   301
 /blog/*              /blog/:splat/index.html         200
 /lesson/*            /lesson/:splat/index.html       200
 /curriculum/adsp     /curriculum/adsp/index.html     200

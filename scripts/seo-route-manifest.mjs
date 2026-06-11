@@ -16,6 +16,8 @@ const COMHWAL_EXPANSION_CONCEPT_FILE = path.join(
   REPO_ROOT,
   'src/data/comhwal/expansionConcepts.ts',
 );
+const BLOG_DEFAULT_AUTHOR = 'QuestDP 운영팀';
+const BLOG_DEFAULT_REVIEWED_AT = '2026-06-12';
 
 const COMHWAL_TOPIC_SOURCES = [
   {
@@ -190,6 +192,29 @@ const CURRICULUM_FACTS = {
     scope: '컴퓨터 일반 · 스프레드시트 일반',
     strategy:
       '2급은 데이터베이스 일반이 빠집니다. 컴퓨터 일반에서 용어를 정리하고, 스프레드시트 일반은 엑셀 화면에서 바로 떠올릴 수 있는 기능부터 반복하세요.',
+  },
+};
+
+const CURRICULUM_REVIEW = {
+  adsp: {
+    basis: '2026년 KDATA 데이터자격검정 시험범위',
+    reviewedAt: '2026-06-12',
+  },
+  sqld: {
+    basis: '2026년 KDATA 데이터자격검정 시험범위',
+    reviewedAt: '2026-06-12',
+  },
+  comhwal: {
+    basis: '2024년 변경 출제기준 및 2026년 대한상공회의소 자격평가사업단 안내',
+    reviewedAt: '2026-06-12',
+  },
+  'comhwal-1': {
+    basis: '2024년 변경 출제기준 및 2026년 대한상공회의소 자격평가사업단 안내',
+    reviewedAt: '2026-06-12',
+  },
+  'comhwal-2': {
+    basis: '2024년 변경 출제기준 및 2026년 대한상공회의소 자격평가사업단 안내',
+    reviewedAt: '2026-06-12',
   },
 };
 
@@ -635,8 +660,8 @@ function collectBlogRoutes() {
           description: post.description,
           inLanguage: 'ko-KR',
           datePublished: post.publishedAt || undefined,
-          dateModified: post.updatedAt || post.publishedAt || undefined,
-          author: { '@type': 'Organization', name: 'QuestDP', url: SITE_ORIGIN },
+          dateModified: post.reviewedAt || post.updatedAt || post.publishedAt || undefined,
+          author: { '@type': 'Organization', name: post.author || BLOG_DEFAULT_AUTHOR, url: `${SITE_ORIGIN}/about` },
           publisher: { '@type': 'Organization', name: 'QuestDP' },
           mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalForPath(`/blog/${post.slug}`) },
           image: `${SITE_ORIGIN}/og/blog-${post.slug}.png`,
@@ -656,7 +681,10 @@ function collectBlogRoutes() {
 function parseBlogPosts() {
   if (!fs.existsSync(BLOG_FILE)) return [];
   const src = fs.readFileSync(BLOG_FILE, 'utf8');
-  return extractTypedObjectChunks(src, 'BlogPost')
+  return [
+    ...extractTypedObjectChunks(src, 'BlogPost'),
+    ...extractTypedObjectChunks(src, 'BlogPostDraft'),
+  ]
     .map((chunk) => {
       const slug = readStringProp(chunk, 'slug');
       const title = readStringProp(chunk, 'title');
@@ -682,6 +710,8 @@ function parseBlogPosts() {
         primaryKeyword: cleanText(readStringProp(chunk, 'primaryKeyword')),
         publishedAt: readStringProp(chunk, 'publishedAt'),
         updatedAt: readStringProp(chunk, 'updatedAt'),
+        author: cleanText(readStringProp(chunk, 'author')) || BLOG_DEFAULT_AUTHOR,
+        reviewedAt: readStringProp(chunk, 'reviewedAt') || readStringProp(chunk, 'updatedAt') || BLOG_DEFAULT_REVIEWED_AT,
         readingMinutes: readNumberProp(chunk, 'readingMinutes'),
         description: cleanText(readStringProp(chunk, 'metaDescription')),
         blocks,
@@ -740,6 +770,29 @@ function firstBlogParagraphs(post) {
 }
 
 function enhanceCoreRoute(route, context) {
+  if (route.path === '/about') {
+    return {
+      ...route,
+      staticContentHtml: renderAboutStaticContent(),
+      jsonLd: [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'AboutPage',
+          name: route.h1,
+          description: route.description,
+          url: canonicalForPath(route.path),
+          inLanguage: 'ko-KR',
+          isPartOf: { '@type': 'WebSite', name: 'QuestDP', url: SITE_ORIGIN },
+          publisher: { '@type': 'Organization', name: 'QuestDP', url: SITE_ORIGIN },
+        },
+        breadcrumbJsonLd([
+          ['홈', '/'],
+          ['QuestDP 소개', '/about'],
+        ]),
+      ],
+    };
+  }
+
   if (route.path === '/blog') {
     return {
       ...route,
@@ -854,6 +907,9 @@ function getFaqBySubject(subject) {
 function renderBlogStaticContent(post) {
   const parts = [];
   if (post.subtitle) parts.push(`<p class="seo-lead">${escapeHtml(post.subtitle)}</p>`);
+  parts.push(
+    `<p class="seo-meta">작성 ${escapeHtml(post.publishedAt || '')} · 검수 ${escapeHtml(post.reviewedAt || '')} · ${escapeHtml(post.author || BLOG_DEFAULT_AUTHOR)}</p>`,
+  );
   for (const block of post.blocks) {
     parts.push(renderBlogBlock(block));
   }
@@ -867,6 +923,25 @@ function renderBlogStaticContent(post) {
     parts.push('</section>');
   }
   return parts.filter(Boolean).join('\n');
+}
+
+function renderAboutStaticContent() {
+  return [
+    '<section class="seo-static-section">',
+    '<h2>콘텐츠는 이렇게 만들고 검수합니다</h2>',
+    '<p>QuestDP의 개념 설명, 문제, 해설은 자체 제작 학습 콘텐츠입니다. 공개된 시험 범위를 초보자가 이해할 수 있는 순서로 다시 나누고, 문제는 앱 안에서 바로 확인할 수 있게 구성합니다.</p>',
+    '<ul>',
+    '<li>문제은행은 scripts/validate-questions.mjs의 M1~M6 검증을 통과해야 합니다. JSON/필수 필드, answerIndex 범위, 중복 보기, 정답 단서 노출, 해설 부족, id 중복을 확인합니다.</li>',
+    '<li>엑셀 함수 계산형 문항은 필요할 때 Excel COM Evaluate로 실제 엑셀 계산 결과를 재검산합니다.</li>',
+    '<li>콘텐츠 수정 이력은 docs/content-edit-log.md에 남겨 다음 검수자가 변경 이유와 검증 결과를 추적할 수 있게 합니다.</li>',
+    '<li>시험 범위 기준은 ADsP·SQLD는 KDATA 데이터자격검정, 컴활은 대한상공회의소 자격평가사업단 출제기준과 안내입니다.</li>',
+    '</ul>',
+    '</section>',
+    '<section class="seo-static-section">',
+    '<h2>대상 자격증</h2>',
+    '<p>QuestDP는 ADsP, SQLD, 컴퓨터활용능력 필기를 짧은 개념 스텝과 즉시 문제풀이로 나누어 학습하도록 설계한 사이트입니다. 실제 풀이 흐름은 게임 화면에서 이어지고, 공개 SEO 페이지는 시험 범위와 개념 이해를 돕기 위한 본문 중심으로 유지합니다.</p>',
+    '</section>',
+  ].join('\n');
 }
 
 function renderBlogBlock(block) {
@@ -953,6 +1028,13 @@ function renderCurriculumStaticContent(subject, context) {
   parts.push(
     '<section class="seo-static-section"><h2>QuestDP에서 보는 방식</h2><p>긴 요약문을 한 번에 외우는 대신, 토픽을 작게 나누고 개념을 본 직후 바로 문제로 확인합니다. 공개 SEO 페이지는 시험범위와 개념 이해를 돕기 위한 본문 중심으로 두고, 실제 풀이 흐름은 게임 화면에서 이어가도록 분리합니다.</p></section>',
   );
+
+  const review = CURRICULUM_REVIEW[subject];
+  if (review) {
+    parts.push(
+      `<p class="seo-meta">이 페이지는 ${escapeHtml(review.basis)} 기준, 최종 검수 ${escapeHtml(review.reviewedAt)}</p>`,
+    );
+  }
 
   return parts.filter(Boolean).join('\n');
 }

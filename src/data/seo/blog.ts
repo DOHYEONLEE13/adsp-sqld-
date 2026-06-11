@@ -43,6 +43,9 @@ export interface BlogPost {
   primaryKeyword: string;
   publishedAt: string;
   updatedAt?: string;
+  /** TODO: 의뢰인 확인 후 실명 또는 브랜드 표기 확정. */
+  author: string;
+  reviewedAt: string;
   readingMinutes: number;
   /** OG · meta description. 160자 이내. */
   metaDescription: string;
@@ -53,9 +56,23 @@ export interface BlogPost {
   relatedSlugs?: string[];
 }
 
+type BlogPostDraft = Omit<BlogPost, 'author' | 'reviewedAt'> &
+  Partial<Pick<BlogPost, 'author' | 'reviewedAt'>>;
+
+export const BLOG_DEFAULT_AUTHOR = 'QuestDP 운영팀';
+export const BLOG_DEFAULT_REVIEWED_AT = '2026-06-12';
+
+function finalizeBlogPost(post: BlogPostDraft): BlogPost {
+  return {
+    ...post,
+    author: post.author ?? BLOG_DEFAULT_AUTHOR,
+    reviewedAt: post.reviewedAt ?? post.updatedAt ?? BLOG_DEFAULT_REVIEWED_AT,
+  };
+}
+
 // ─── Post 1: ADsP vs SQLD 어떤 거 먼저? ─────────────────────
 
-const POST_VS: BlogPost = {
+const POST_VS: BlogPostDraft = {
   slug: 'adsp-vs-sqld-순서',
   title: 'ADsP vs SQLD — 어떤 거 먼저 따야 할까',
   subtitle: 'ADsP 와 SQLD 중 뭐부터 할지 헷갈린다면. 먼저 가도 좋은 쪽, 나중에 붙여도 되는 쪽을 나눠봤어요.',
@@ -249,7 +266,7 @@ const POST_VS: BlogPost = {
 
 // ─── Post 2: ADsP 2주 합격 로드맵 ─────────────────────────
 
-const POST_ROADMAP: BlogPost = {
+const POST_ROADMAP: BlogPostDraft = {
   slug: 'adsp-2주-합격-로드맵',
   title: 'ADsP 2주 공부 순서 — 비전공자가 덜 헤매는 14일',
   subtitle: '하루 2시간씩 본다고 했을 때, 1·2과목과 3과목을 어디까지 나눠 보면 좋은지 정리했습니다.',
@@ -398,7 +415,7 @@ const POST_ROADMAP: BlogPost = {
 
 // ─── Post 3: SQLD 노랭이 vs QuestDP ────────────────────────
 
-const POST_NORANGI: BlogPost = {
+const POST_NORANGI: BlogPostDraft = {
   slug: 'sqld-노랭이-vs-questdp',
   title: 'SQLD 노랭이와 QuestDP — 언제 무엇을 보면 좋을까',
   subtitle: '문제량이 필요한 순간과 개념을 바로 확인해야 하는 순간을 나눠서 봅니다.',
@@ -555,7 +572,7 @@ const POST_NORANGI: BlogPost = {
 
 // ─── Post 4: 비전공자 ADsP 가이드 ────────────────────────
 
-const POST_NONMAJOR: BlogPost = {
+const POST_NONMAJOR: BlogPostDraft = {
   slug: 'adsp-비전공자-가이드',
   title: '비전공자 ADsP 공부법 — 통계·R이 처음이라면',
   subtitle: '3과목에서 오래 멈추지 않도록, 먼저 볼 것과 나중에 볼 것을 나눠 봅니다.',
@@ -731,7 +748,7 @@ const POST_NONMAJOR: BlogPost = {
 
 // ─── Post 5: SQLD 7일 압축 합격 로드맵 ──────────────────────
 
-const POST_SQLD_WEEK: BlogPost = {
+const POST_SQLD_WEEK: BlogPostDraft = {
   slug: 'sqld-7일-압축-로드맵',
   title: 'SQLD 7일 공부 순서 — 시험이 가까울 때 보는 플랜',
   subtitle: '완벽한 정독 대신, SQL에서 점수가 빨리 나는 구간부터 먼저 확인합니다.',
@@ -889,7 +906,7 @@ const POST_SQLD_WEEK: BlogPost = {
 
 // ─── Post 6: ADSP 독학 vs 인강 ──────────────────────────────
 
-const POST_ADSP_SOLO_VS_LECTURE: BlogPost = {
+const POST_ADSP_SOLO_VS_LECTURE: BlogPostDraft = {
   slug: 'adsp-독학-vs-인강',
   title: 'ADsP 독학 vs 인강 — 처음이면 어디에 돈을 써야 할까',
   subtitle: '책으로 혼자 가도 되는 사람과, 강의가 시간을 아껴주는 사람을 나눠 봅니다.',
@@ -1057,7 +1074,7 @@ const POST_ADSP_SOLO_VS_LECTURE: BlogPost = {
 
 // ─── Post 7: 컴활 1급 vs 2급 ────────────────────────────────
 
-const POST_COMHWAL_GRADE: BlogPost = {
+const POST_COMHWAL_GRADE: BlogPostDraft = {
   slug: 'comhwal-1급-vs-2급',
   title: '컴활 1급 vs 2급 — 처음이면 어디부터 볼까',
   subtitle: '“일단 2급?” “바로 1급?”에서 멈춘 사람을 위해 과목 수, 부담감, 추천 상황만 딱 나눴습니다.',
@@ -1141,7 +1158,7 @@ const POST_COMHWAL_GRADE: BlogPost = {
 
 // ─── Post 8: 컴활 필기 비전공자 공부법 ───────────────────────
 
-const POST_COMHWAL_BEGINNER: BlogPost = {
+const POST_COMHWAL_BEGINNER: BlogPostDraft = {
   slug: 'comhwal-필기-비전공자-공부법',
   title: '컴활 필기 비전공자 공부법 — 용어부터 막히는 사람에게',
   subtitle: '문제를 많이 풀기 전에, 선지에 나오는 말을 “아는 화면”으로 바꾸는 순서부터 잡아봅니다.',
@@ -1222,7 +1239,7 @@ const POST_COMHWAL_BEGINNER: BlogPost = {
 
 // ─── Post 9: 컴퓨터 일반 우선순위 ────────────────────────────
 
-const POST_COMHWAL_COMPUTER_PRIORITY: BlogPost = {
+const POST_COMHWAL_COMPUTER_PRIORITY: BlogPostDraft = {
   slug: 'comhwal-컴퓨터-일반-우선순위',
   title: '컴활 컴퓨터 일반 우선순위 — 001~059를 덜 막히게 보는 법',
   subtitle: '전부 같은 무게로 외우지 말고, 화면이 떠오르는 구간부터 먼저 점수로 바꿔봅니다.',
@@ -1301,7 +1318,7 @@ const POST_COMHWAL_COMPUTER_PRIORITY: BlogPost = {
 
 // ─── Post 10: 컴활 필기에서 실기 전환법 ──────────────────────
 
-const POST_COMHWAL_PRACTICAL_SWITCH: BlogPost = {
+const POST_COMHWAL_PRACTICAL_SWITCH: BlogPostDraft = {
   slug: 'comhwal-필기에서-실기-전환법',
   title: '컴활 필기에서 실기 전환법 — 합격 후 바로 손으로 옮기는 순서',
   subtitle: '필기에서 외운 말을 엑셀·액세스 화면에서 바로 찾을 수 있게, 첫날 눌러볼 것부터 잡습니다.',
@@ -1386,7 +1403,7 @@ const POST_COMHWAL_PRACTICAL_SWITCH: BlogPost = {
 
 // ─── Post 11: 컴활 7일 필기 플랜 ────────────────────────────
 
-const POST_COMHWAL_SEVEN_DAY: BlogPost = {
+const POST_COMHWAL_SEVEN_DAY: BlogPostDraft = {
   slug: 'comhwal-7일-필기-플랜',
   title: '컴활 필기 7일 플랜 — 노베이스가 첫 바퀴 도는 순서',
   subtitle: '완벽하게 외우는 계획이 아니라, 처음 보는 말을 줄이고 오답을 덜 고르는 7일 루틴입니다.',
@@ -1461,7 +1478,7 @@ const POST_COMHWAL_SEVEN_DAY: BlogPost = {
 
 // ─── Post 12: 컴활 기출 복습법 ──────────────────────────────
 
-const POST_COMHWAL_PAST_REVIEW: BlogPost = {
+const POST_COMHWAL_PAST_REVIEW: BlogPostDraft = {
   slug: 'comhwal-기출-복습법',
   title: '컴활 기출 복습법 — 많이 푸는 것보다 다시 안 틀리는 법',
   subtitle: '회차 수를 늘리기 전에, 틀린 선지를 토픽과 개념 카드로 되돌리는 루틴을 만듭니다.',
@@ -1557,7 +1574,7 @@ export const ALL_BLOG_POSTS: BlogPost[] = [
   POST_NONMAJOR,
   POST_SQLD_WEEK,
   POST_ADSP_SOLO_VS_LECTURE,
-];
+].map(finalizeBlogPost);
 
 export function findPostBySlug(slug: string): BlogPost | undefined {
   // URL-encoded 한국어 슬러그도 매칭

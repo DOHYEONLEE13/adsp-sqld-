@@ -357,3 +357,97 @@ seo audit passed: 555 static pages, 262 submitted URLs, 293 noindex pages, quiz 
 ### 의뢰인 결정 대기
 
 - 없음.
+
+## Mission D: About / E-E-A-T Signals
+
+### 변경 파일
+
+- `src/data/legal.ts`
+- `src/data/seo/blog.ts`
+- `src/pages/BlogPostPage.tsx`
+- `src/pages/CurriculumPage.tsx`
+- `scripts/seo-route-manifest.mjs`
+- `docs/seo-goal-report.md`
+
+### 핵심 Diff 요약
+
+- About 페이지에 `콘텐츠는 이렇게 만들고 검수합니다` 섹션을 추가.
+- 검수 근거는 실제 운영 프로세스만 사용:
+  - `scripts/validate-questions.mjs`의 M1~M6 기계 검증.
+  - 엑셀 계산형 문항은 필요 시 Excel COM Evaluate 재검산.
+  - 수정 이력은 `docs/content-edit-log.md`로 관리.
+  - 시험 범위 기준은 ADSP·SQLD=KDATA, 컴활=대한상공회의소 자격평가사업단.
+- 블로그 데이터에 `author`, `reviewedAt` 필드를 추가하고 기본값을 `QuestDP 운영팀`, `2026-06-12`로 연결.
+- Blog Article JSON-LD의 `author`, `dateModified`와 화면 노출 메타를 실제 필드에 연결.
+- 커리큘럼 3종 및 컴활 세부 커리큘럼 하단에 출제기준·최종 검수일 한 줄을 노출.
+- 정적 HTML 스냅샷에도 About 본문, 블로그 작성·검수 메타, 커리큘럼 검수 문구가 포함되도록 manifest 생성 로직을 보강.
+
+### 검증 출력
+
+```text
+node -e "import('./scripts/seo-route-manifest.mjs').then(m=>{const manifest=m.buildSeoRouteManifest(); console.log({core:manifest.core.length,blog:manifest.blog.length,lessons:manifest.lessons.length,topics:manifest.topics.length,total:m.flattenSeoRoutes(manifest).length}); console.log(manifest.blog[0].author, manifest.blog[0].reviewedAt);})"
+{
+  core: 18,
+  blog: 12,
+  lessons: 373,
+  topics: 152,
+  total: 555
+}
+QuestDP 운영팀 2026-06-12
+```
+
+```text
+Select-String -Path src/data/legal.ts -Pattern '콘텐츠는 이렇게|M1~M6|Excel COM Evaluate'
+src\data\legal.ts:97:    heading: '콘텐츠는 이렇게 만들고 검수합니다',
+src\data\legal.ts:100:        '문제은행은 scripts/validate-questions.mjs의 M1~M6 규칙으로 JSON 구조, 정답 인덱스, 선택지 중복, 정답 단서, 해설 부족, ID 중복을 기계 검증합니다.',
+src\data\legal.ts:101:        '엑셀 함수·계산형 문항은 필요 시 Excel COM Evaluate로 재계산해 값이 맞는지 확인하고, 수정 이력은 docs/content-edit-log.md에 남깁니다.',
+```
+
+```text
+Select-String -Path src/pages/CurriculumPage.tsx -Pattern 'CURRICULUM_REVIEW|최종 검수'
+src\pages\CurriculumPage.tsx:24:const CURRICULUM_REVIEW: Record<string, { basis: string; reviewedAt: string }> = {
+src\pages\CurriculumPage.tsx:537:              이 페이지는 {review.basis} 기준, 최종 검수 {review.reviewedAt}
+```
+
+```text
+npm.cmd run typecheck
+> questdp@0.1.0 typecheck
+> tsc --noEmit
+```
+
+```text
+npm.cmd test -- --run
+
+RUN  v4.1.5 C:/Users/이도현/Desktop/.claude/worktrees/hardcore-shamir-47f5ab
+Test Files  38 passed (38)
+Tests  534 passed (534)
+```
+
+```text
+npm.cmd run build
+
+sitemap generated: total 262 URLs (core 17, blog 13, lessons 80, topics 152, quiz 0)
+static route HTML generated: 555 pages (core 18, blog 12, lessons 373, topics 152, quiz 0)
+seo audit passed: 555 static pages, 262 submitted URLs, 293 noindex pages, quiz 0
+```
+
+```text
+Select-String -Path dist/about/index.html -Pattern '콘텐츠는 이렇게|M1~M6|Excel COM Evaluate'
+dist\about\index.html:1:...콘텐츠는 이렇게 만들고 검수합니다...M1~M6...Excel COM Evaluate...
+
+Select-String -Path dist/blog/comhwal-1급-vs-2급/index.html -Pattern 'dateModified|QuestDP 운영팀|작성 2026-06-04'
+dist\blog\comhwal-1급-vs-2급\index.html:1:...dateModified":"2026-06-12"...QuestDP 운영팀...작성 2026-06-04 · 검수 2026-06-12...
+
+Select-String -Path dist/curriculum/adsp/index.html -Pattern 'KDATA 데이터자격검정 시험범위 기준, 최종 검수'
+dist\curriculum\adsp\index.html:1:...2026년 KDATA 데이터자격검정 시험범위 기준, 최종 검수 2026-06-12...
+
+Select-String -Path dist/curriculum/comhwal/index.html -Pattern '대한상공회의소 자격평가사업단 안내 기준, 최종 검수'
+dist\curriculum\comhwal\index.html:1:...2026년 대한상공회의소 자격평가사업단 안내 기준, 최종 검수 2026-06-12...
+```
+
+### 의뢰인 질문 목록
+
+- 블로그/Article 작성자 표기를 `QuestDP 운영팀`으로 유지할지, 운영자 실명으로 바꿀지 결정 필요.
+- 작성자 약력 한 줄을 공개할 수 있는지 확인 필요.
+- 운영자 또는 검수자의 보유 자격·실무 경력을 공개할 수 있는지 확인 필요.
+- `reviewedAt`을 이번 일괄 검수일로 유지할지, 포스트별 실제 검수 완료일로 별도 관리할지 결정 필요.

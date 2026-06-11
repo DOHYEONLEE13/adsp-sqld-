@@ -59,8 +59,8 @@ export default function BlogPostPage({ slug }: Props) {
           description: post.metaDescription,
           inLanguage: 'ko-KR',
           datePublished: post.publishedAt,
-          dateModified: post.updatedAt ?? post.publishedAt,
-          author: { '@type': 'Organization', name: 'QuestDP', url: 'https://quest-dp.com' },
+          dateModified: post.reviewedAt,
+          author: { '@type': 'Organization', name: post.author, url: 'https://quest-dp.com/about' },
           publisher: {
             '@type': 'Organization',
             name: 'QuestDP',
@@ -174,7 +174,11 @@ export default function BlogPostPage({ slug }: Props) {
               {BLOG_CATEGORY_LABEL[post.category]}
             </span>
             <span>·</span>
-            <span>{post.publishedAt}</span>
+            <span>작성 {post.publishedAt}</span>
+            <span>·</span>
+            <span>검수 {post.reviewedAt}</span>
+            <span>·</span>
+            <span>{post.author}</span>
             <span>·</span>
             <span className="inline-flex items-center gap-1">
               <Clock size={11} strokeWidth={2.4} />

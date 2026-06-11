@@ -29,7 +29,7 @@ export interface LegalDoc {
 const ABOUT_PAGE: LegalDoc = {
   slug: 'about',
   title: 'QuestDP 소개',
-  subtitle: 'ADSP · SQLD, 놀면서 합격하는 게임형 학습 플랫폼',
+  subtitle: 'ADSP · SQLD · 컴활, 짧은 개념과 즉시 문제풀이로 이어가는 학습 플랫폼',
   updatedAt: COMPANY.policyUpdatedAt,
   sections: [
     {
@@ -52,10 +52,21 @@ const ABOUT_PAGE: LegalDoc = {
       ],
     },
     {
+      heading: '콘텐츠는 이렇게 만들고 검수합니다',
+      body: [
+        'QuestDP의 개념 설명·문제·해설은 자체 제작 학습 콘텐츠입니다. 공개된 시험 범위를 초보자가 이해할 수 있는 순서로 다시 나누고, 문제는 앱 안에서 바로 확인할 수 있게 구성합니다.',
+        '문제은행은 scripts/validate-questions.mjs의 M1~M6 기계 검증을 통과해야 합니다. M1 JSON·필수 필드, M2 answerIndex 범위, M3 중복 보기·빈 보기, M4 정답 단서 노출, M5 해설 부족, M6 id 중복을 확인합니다.',
+        '엑셀 함수 계산형 문항은 필요할 때 Excel COM Evaluate로 실제 엑셀 계산 결과를 재검산합니다. 계산형 문항이 없는 배치는 그 사실을 수정 이력에 남깁니다.',
+        '콘텐츠 수정 이력은 docs/content-edit-log.md에 관리합니다. 어느 단위에서 무엇을 고쳤고 어떤 검증을 했는지 기록해 다음 검수자가 추적할 수 있게 합니다.',
+        '시험 범위 기준은 ADsP·SQLD는 KDATA 데이터자격검정, 컴활은 대한상공회의소 자격평가사업단 출제기준과 안내를 기준으로 삼습니다. 페이지별 기준연도와 최종 검수일은 커리큘럼 하단에 표시합니다.',
+      ],
+    },
+    {
       heading: '대상 자격증',
       body: [
         'ADSP — 데이터분석 준전문가. 데이터 가치 이해 + 분석 프로세스 + R 통계 + 데이터 마이닝. 한국데이터산업진흥원 시행, 합격률 60% 안팎.',
         'SQLD — SQL 개발자. 데이터 모델링 + SQL 기본·활용 + 관리 구문. 백엔드·BI·데이터 분석 직무 표준 진입 자격증.',
+        '컴활 — 컴퓨터활용능력 필기. 컴퓨터 일반, 스프레드시트 일반, 1급 데이터베이스 일반까지 화면에서 자주 만나는 말부터 익히는 자격증.',
       ],
     },
     {

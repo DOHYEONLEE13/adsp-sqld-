@@ -81,10 +81,34 @@ const EXAM_FACTS: Record<
   },
 };
 
+const CURRICULUM_REVIEW: Record<SeoCurriculumSubject, { basis: string; reviewedAt: string }> = {
+  adsp: {
+    basis: '2026년 KDATA 데이터자격검정 시험범위',
+    reviewedAt: '2026-06-12',
+  },
+  sqld: {
+    basis: '2026년 KDATA 데이터자격검정 시험범위',
+    reviewedAt: '2026-06-12',
+  },
+  comhwal: {
+    basis: '2024년 변경 출제기준 및 2026년 대한상공회의소 자격평가사업단 안내',
+    reviewedAt: '2026-06-12',
+  },
+  'comhwal-1': {
+    basis: '2024년 변경 출제기준 및 2026년 대한상공회의소 자격평가사업단 안내',
+    reviewedAt: '2026-06-12',
+  },
+  'comhwal-2': {
+    basis: '2024년 변경 출제기준 및 2026년 대한상공회의소 자격평가사업단 안내',
+    reviewedAt: '2026-06-12',
+  },
+};
+
 export default function CurriculumPage({ subject }: Props) {
   const curriculum = getCurriculum(subject);
   const accent = SUBJECT_ACCENT[subject];
   const facts = EXAM_FACTS[subject];
+  const review = CURRICULUM_REVIEW[subject];
   const usesStudyNoteTheme = true;
   const label = curriculum.label;
   const canonical = `https://quest-dp.com/curriculum/${subject}/`;
@@ -359,6 +383,9 @@ export default function CurriculumPage({ subject }: Props) {
         </section>
 
         <div className="mt-12 border-t border-[#d8e2ce] pt-6 text-center">
+          <p className="kr-body mb-2 text-[12px] leading-[1.65] text-[#697561]">
+            이 페이지는 {review.basis} 기준, 최종 검수 {review.reviewedAt}
+          </p>
           <p className="kr-body mb-3 text-[12px] text-[#697561]">
             {subject.startsWith('comhwal')
               ? 'QuestDP — 처음 보는 자격증 용어를 짧은 카드와 문제로 익히는 학습 앱'

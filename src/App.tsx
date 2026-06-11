@@ -181,6 +181,62 @@ function resetWindowScroll(): void {
   }, 80);
 }
 
+function resolveGamePathRoute(sub?: string): RouteState {
+  if (sub === 'adsp' || sub === 'sqld') {
+    return { route: 'game', initialSubject: sub };
+  }
+  if (isExpansionSubjectId(sub)) {
+    return { route: 'game', initialExpansionSubject: sub };
+  }
+
+  const active = getSnapshot().activeSubject;
+  if (active === 'adsp' || active === 'sqld') {
+    return { route: 'game', initialSubject: active };
+  }
+
+  try {
+    const raw = window.localStorage.getItem('questdp_onboarding_v4');
+    if (raw) {
+      const parsed = JSON.parse(raw) as { exams?: string[]; version?: number };
+      if (parsed?.version === 1) {
+        const ex = parsed.exams?.[0];
+        if (ex === 'adsp' || ex === 'sqld') {
+          return { route: 'game', initialSubject: ex };
+        }
+        if (isComhwalExam(ex)) {
+          return { route: 'game', initialExpansionSubject: 'comhwal' };
+        }
+      }
+    }
+  } catch {
+    /* silent fallback */
+  }
+
+  return { route: 'game' };
+}
+
+function getFunctionalPathRoute(pathname: string): RouteState | null {
+  const normalized = pathname.replace(/\/+$/, '') || '/';
+  if (normalized === '/admin') return { route: 'admin' };
+  if (normalized === '/redeem') return { route: 'redeem' };
+  if (normalized === '/refund-request') return { route: 'refund-request' };
+  if (normalized === '/payment/callback') return { route: 'payment-callback' };
+  if (normalized === '/login') return { route: 'login' };
+  if (normalized === '/onboarding') return { route: 'onboarding' };
+  if (normalized === '/study-plan') return { route: 'study-plan' };
+  if (normalized === '/weakness' || normalized === '/progress') return { route: 'weakness' };
+  if (normalized === '/quests') return { route: 'quests' };
+  if (normalized === '/friends') return { route: 'friends' };
+  if (normalized === '/stats') return { route: 'stats' };
+  if (normalized === '/settings') return { route: 'settings' };
+  if (normalized === '/bookmarks') return { route: 'bookmarks' };
+  if (normalized === '/game' || normalized.startsWith('/game/')) {
+    const [, sub] = normalized.split('/').filter(Boolean);
+    return resolveGamePathRoute(sub);
+  }
+  return null;
+}
+
 /**
  * 하이브리드 라우터 — Legal 4 페이지는 path, 그 외는 hash.
  *
@@ -214,6 +270,10 @@ function getRoute(): RouteState {
   const allowPathRoutes = !appModeActive || isAppEntryPath(pathname);
   if (!allowPathRoutes && !initialHash) {
     return { route: 'game' };
+  }
+  if (allowPathRoutes) {
+    const functionalPathRoute = getFunctionalPathRoute(pathname);
+    if (functionalPathRoute) return functionalPathRoute;
   }
   if (allowPathRoutes && (pathname === '/about' || pathname === '/about/'))
     return { route: 'legal', legalSlug: 'about' };
@@ -303,41 +363,7 @@ function getRoute(): RouteState {
   if (hash.startsWith('/login')) return { route: 'login' };
   if (hash.startsWith('/game')) {
     const parts = hash.split('/').filter(Boolean); // ['game'] or ['game', 'adsp']
-    const sub = parts[1];
-    if (sub === 'adsp' || sub === 'sqld') {
-      return { route: 'game', initialSubject: sub };
-    }
-    if (isExpansionSubjectId(sub)) {
-      return { route: 'game', initialExpansionSubject: sub };
-    }
-    // /game (no subject) — fallback 우선순위:
-    //  1) progressStore.activeSubject (사용자 명시 선택)
-    //  2) onboarding.exams[0] (onboarding 으로 이미 시험 선택)
-    //  → 둘 다 없으면 chooser 로 (게스트 또는 onboarding 미진행)
-    const active = getSnapshot().activeSubject;
-    if (active === 'adsp' || active === 'sqld') {
-      return { route: 'game', initialSubject: active };
-    }
-    // onboardingStorage 직접 import (작은 함수, lazy 영향 미미). cyclic 피하려면
-    // localStorage 직접 read 도 가능하나 helper 가 검증된 fallback 까지 처리.
-    try {
-      const raw = window.localStorage.getItem('questdp_onboarding_v4');
-      if (raw) {
-        const parsed = JSON.parse(raw) as { exams?: string[]; version?: number };
-        if (parsed?.version === 1) {
-          const ex = parsed.exams?.[0];
-          if (ex === 'adsp' || ex === 'sqld') {
-            return { route: 'game', initialSubject: ex };
-          }
-          if (isComhwalExam(ex)) {
-            return { route: 'game', initialExpansionSubject: 'comhwal' };
-          }
-        }
-      }
-    } catch {
-      /* silent fallback */
-    }
-    return { route: 'game' };
+    return resolveGamePathRoute(parts[1]);
   }
   if (appModeActive) {
     return { route: 'game' };

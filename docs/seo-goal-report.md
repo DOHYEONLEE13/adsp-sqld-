@@ -206,3 +206,106 @@ dist\lesson\adsp-1-1-s1-data\index.html:141:      <meta name="robots" content="n
 
 - 위 80개 화이트리스트에서 빼거나 추가할 레슨이 있으면 다음 배치 전에 조정 가능.
 - 현재 실제 SEO lesson 정적 페이지 수는 373개. 사용자가 처음 제시한 372개와 1개 차이가 있으나, 기준선 빌드와 manifest는 373개로 확인됨.
+
+## Mission B: Soft 404 Redirect Cleanup
+
+### 변경 파일
+
+- `src/App.tsx`
+- `public/_redirects`
+- `public/404.html`
+- `docs/seo-goal-report.md`
+
+### 기능해야 하는 Path Entry 목록
+
+정적 HTML 파일은 없지만 앱 화면으로 직접 진입해야 하는 경로:
+
+| 구분 | 경로 |
+|---|---|
+| 앱 셸 | `/app`, `/app/` |
+| 인증/관리 | `/login`, `/redeem`, `/refund-request`, `/payment/callback`, `/admin` |
+| 온보딩/플랜 | `/onboarding`, `/study-plan` |
+| 학습 앱 탭 | `/weakness`, `/progress`, `/quests`, `/friends`, `/stats`, `/settings`, `/bookmarks` |
+| 게임 path 진입 | `/game`, `/game/`, `/game/adsp`, `/game/sqld`, `/game/comhwal`, `/game/*` |
+
+정적 HTML이 이미 생성되는 SEO 경로는 기존 rewrite 유지: `/study-method`, `/pricing`, `/contact`, `/about`, `/privacy`, `/terms`, `/refund`, `/glossary`, `/blog`, `/lesson/*`, `/curriculum/*`, `/faq/*`, `/topics/comhwal/...`.
+
+해시 라우팅 영향: `/#/game`은 서버 요청 경로가 `/`이므로 catch-all 제거 영향을 받지 않음.
+
+### 핵심 Diff 요약
+
+- `public/_redirects`의 마지막 `/* /index.html 200` 제거.
+- 실제 앱 화면으로 열려야 하는 SPA path entry만 명시 200 rewrite로 추가.
+- `src/App.tsx`가 `/login`, `/redeem`, `/refund-request`, `/payment/callback`, `/admin`, `/game/...` 등 path entry를 직접 라우팅하도록 보강.
+- 루트에 `public/404.html` 추가. JS 없는 브랜드 404이며 `robots noindex`, 홈/커리큘럼/블로그 링크 포함.
+
+### 검증 출력
+
+```text
+npm.cmd run typecheck
+> questdp@0.1.0 typecheck
+> tsc --noEmit
+```
+
+```text
+npm.cmd test -- --run
+
+RUN  v4.1.5 C:/Users/이도현/Desktop/.claude/worktrees/hardcore-shamir-47f5ab
+Test Files  38 passed (38)
+Tests  534 passed (534)
+```
+
+```text
+npm.cmd run build
+
+sitemap generated: total 262 URLs (core 17, blog 13, lessons 80, topics 152, quiz 0)
+static route HTML generated: 555 pages (core 18, blog 12, lessons 373, topics 152, quiz 0)
+seo audit passed: 555 static pages, 262 submitted URLs, 293 noindex pages, quiz 0
+```
+
+```text
+if (Test-Path node_modules/.bin/wrangler.cmd) { 'local wrangler present' } else { 'local wrangler missing' }
+local wrangler missing
+
+Get-Command wrangler -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Source
+<no output, exit 1>
+
+Get-ChildItem dist -Filter 404.html | Select-Object -ExpandProperty FullName
+C:\Users\이도현\Desktop\.claude\worktrees\hardcore-shamir-47f5ab\dist\404.html
+```
+
+```text
+Select-String -Path dist/_redirects -Pattern '^/login|^/game|^/curriculum/adsp|/\*'
+dist\_redirects:15:/login              /index.html                    200
+dist\_redirects:16:/login/             /index.html                    200
+dist\_redirects:43:/game               /index.html                    200
+dist\_redirects:44:/game/              /index.html                    200
+dist\_redirects:45:/game/*             /index.html                    200
+dist\_redirects:67:/blog/*              /blog/:splat/index.html         200
+dist\_redirects:68:/lesson/*            /lesson/:splat/index.html       200
+dist\_redirects:69:/curriculum/adsp     /curriculum/adsp/index.html     200
+dist\_redirects:70:/curriculum/adsp/    /curriculum/adsp/index.html     200
+dist\_redirects:85:/topics/comhwal/computer-general/*  /topics/comhwal/computer-general/:splat/index.html  200
+```
+
+Wrangler 검증 상태: 로컬 설치와 전역 명령이 모두 없어 `npx wrangler pages dev dist` 기반 HTTP 상태 검증은 수행하지 못함. 네트워크 제한 상태에서 신규 설치를 시도하지 않음.
+
+### 배포 후 Curl 체크리스트
+
+```bash
+curl -I https://quest-dp.com/__definitely-missing-seo-test__
+# 기대: HTTP/2 404
+
+curl -I https://quest-dp.com/login
+# 기대: HTTP/2 200
+
+curl -I https://quest-dp.com/curriculum/adsp
+# 기대: HTTP/2 200
+
+curl -I https://quest-dp.com/#/game
+# 기대: HTTP/2 200, 해시 라우팅은 서버에 fragment가 전달되지 않으므로 루트 응답 확인
+```
+
+### 의뢰인 결정 대기
+
+- `/quiz/*`는 sitemap 0건 정책과 soft 404 최소화를 우선해 명시 rewrite에 넣지 않음. valid quiz URL을 직접 공유해야 한다면 별도 noindex 전략으로 다시 열어야 함.

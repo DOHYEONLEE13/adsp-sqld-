@@ -10,6 +10,40 @@
 /app                /index.html                    200
 /app/               /index.html                    200
 
+# Functional SPA path entries without generated static HTML.
+# These routes render real app screens, so they keep explicit 200 rewrites.
+/login              /index.html                    200
+/login/             /index.html                    200
+/redeem             /index.html                    200
+/redeem/            /index.html                    200
+/refund-request     /index.html                    200
+/refund-request/    /index.html                    200
+/payment/callback   /index.html                    200
+/payment/callback/  /index.html                    200
+/admin              /index.html                    200
+/admin/             /index.html                    200
+/onboarding         /index.html                    200
+/onboarding/        /index.html                    200
+/study-plan         /index.html                    200
+/study-plan/        /index.html                    200
+/weakness           /index.html                    200
+/weakness/          /index.html                    200
+/progress           /index.html                    200
+/progress/          /index.html                    200
+/quests             /index.html                    200
+/quests/            /index.html                    200
+/friends            /index.html                    200
+/friends/           /index.html                    200
+/stats              /index.html                    200
+/stats/             /index.html                    200
+/settings           /index.html                    200
+/settings/          /index.html                    200
+/bookmarks          /index.html                    200
+/bookmarks/         /index.html                    200
+/game               /index.html                    200
+/game/              /index.html                    200
+/game/*             /index.html                    200
+
 # SEO path routes — 빌드 후 생성되는 route별 HTML을 먼저 서빙.
 # Google의 첫 fetch 단계에서도 title/canonical/OG가 홈(`/`)으로 뭉치지 않게 한다.
 /study-method        /study-method/index.html        200
@@ -49,5 +83,3 @@
 /faq/comhwal         /faq/comhwal/index.html         200
 /faq/comhwal/        /faq/comhwal/index.html         200
 /topics/comhwal/computer-general/*  /topics/comhwal/computer-general/:splat/index.html  200
-
-/*    /index.html   200

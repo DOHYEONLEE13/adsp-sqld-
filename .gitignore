@@ -53,3 +53,9 @@ extract_pdf.py
 # 자동 생성 보고서 — 사용자 데이터 포함 (개인정보)
 reports/
 test-results/
+
+# 로컬 작업 산출물 — 레포 포함 금지
+.codex/
+question-bank/
+/qa-*.png
+/screenshot_*.png

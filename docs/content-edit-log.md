@@ -1,5 +1,12 @@
 # QuestDP Content Edit Log
 
+## 2026-06-10 - COMHWAL 중복 정답 및 048 오답 핫픽스
+
+- 토픽 015, 021, 031, 067의 둘째 확인 문제 정답이 첫째 확인 문제 정답과 같은 텍스트로 반복되던 부분을 하위 개념 정답으로 교체했다.
+- 048-q02의 오답 `휴지통`을 네트워크 도메인 오답 `라우터`로 교체했다.
+- 새 `quizId`나 `extraQuizIds`를 추가하지 않았고, 기존 로컬 컴활 개념 카드 문항 문구와 선택지만 조정했다.
+- 검증: 대상 토픽 정답 중복/048 오답 교체 스캔, `npx vitest run src/data/comhwal/concepts.test.ts src/game/comhwalVisualModels.test.ts`, `npm run typecheck`, `npm test -- --run`, `npm run build`.
+
 ## 2026-06-10 - COMHWAL Batch C 데이터베이스 일반 전체 재작성 완료
 
 - 데이터베이스 일반 107~152 중 보존 대상 110, 111을 제외한 44개 토픽의 저작 카드 88장에 직접 `questionPrompt`와 3개 오답 선택지를 추가했다.

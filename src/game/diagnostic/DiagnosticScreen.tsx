@@ -288,6 +288,7 @@ function DiagnosticInProgress({
             correctIndex={null}
             graded={false}
             onChoose={onAnswer}
+            shuffleKey={currentQuestion.question_id}
           />
         </div>
 

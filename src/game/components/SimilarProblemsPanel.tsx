@@ -221,6 +221,7 @@ export default function SimilarProblemsPanel({
             correctIndex={phase === 'feedback' ? current.answerIndex : null}
             graded={phase === 'feedback'}
             onChoose={handleChoose}
+            shuffleKey={current.id}
           />
 
           {/* 피드백 */}

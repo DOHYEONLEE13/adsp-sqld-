@@ -49,6 +49,7 @@ import SqlOrderingPanel, {
   isSqlOrderingQuestion,
   sqlOrderingCorrectAnswerText,
 } from '../lesson/SqlOrderingPanel';
+import { useShuffledChoices } from '../lesson/choiceShuffle';
 import GlossaryKeyword, { GLOSSARY_TERMS } from '../lesson/GlossaryKeyword';
 import { hasEverSolved } from '../progressPredicates';
 
@@ -929,6 +930,13 @@ interface QuizViewProps {
 
 function QuizView({ question, saved, onChoose }: QuizViewProps) {
   const isOrderingQuestion = isSqlOrderingQuestion(question);
+  const displayChoices = useShuffledChoices(question.choices, question.id);
+  const correctDisplayChoice = displayChoices.find(
+    (choice) => choice.originalIndex === question.answerIndex,
+  );
+  const correctAnswerLabel = correctDisplayChoice
+    ? `${correctDisplayChoice.displayIndex + 1}번`
+    : `${question.answerIndex + 1}번`;
 
   return (
     <div className={isOrderingQuestion ? 'space-y-2.5' : 'space-y-4'}>
@@ -976,9 +984,9 @@ function QuizView({ question, saved, onChoose }: QuizViewProps) {
         <SqlOrderingPanel question={question} saved={saved} onChoose={onChoose} />
       ) : (
         <div className="space-y-2.5">
-          {question.choices.map((c, i) => {
-            const isChosen = saved?.chosen === i;
-            const isAnswer = question.answerIndex === i;
+          {displayChoices.map(({ displayIndex, originalIndex, text }) => {
+            const isChosen = saved?.chosen === originalIndex;
+            const isAnswer = question.answerIndex === originalIndex;
             const revealed = !!saved;
             let state:
               | 'default'
@@ -995,10 +1003,10 @@ function QuizView({ question, saved, onChoose }: QuizViewProps) {
             const styles = choiceStyle(state);
             return (
               <button
-                key={i}
+                key={`${originalIndex}:${text}`}
                 type="button"
                 disabled={revealed}
-                onClick={() => onChoose(i)}
+                onClick={() => onChoose(originalIndex)}
                 className="w-full text-left rounded-[14px] p-4 md:p-5 transition-all disabled:cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-neon"
                 style={styles}
               >
@@ -1010,10 +1018,10 @@ function QuizView({ question, saved, onChoose }: QuizViewProps) {
                       color: 'inherit',
                     }}
                   >
-                    {i + 1}
+                    {displayIndex + 1}
                   </span>
                   <span className="kr-body text-[13.5px] md:text-[14.5px] leading-[1.6] flex-1 whitespace-pre-line">
-                    {c}
+                    {text}
                   </span>
                   {revealed && isAnswer ? (
                     <CheckCircle2 size={18} strokeWidth={2.4} className="shrink-0 text-neon" />
@@ -1054,7 +1062,7 @@ function QuizView({ question, saved, onChoose }: QuizViewProps) {
                 <XCircle size={12} strokeWidth={2.6} /> 오답 ·{' '}
                 {sqlOrderingCorrectAnswerText(question)
                   ? '정답 순서'
-                  : `정답은 ${question.answerIndex + 1}번`}
+                  : `정답은 ${correctAnswerLabel}`}
               </>
             )}
           </div>

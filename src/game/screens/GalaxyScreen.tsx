@@ -2530,6 +2530,7 @@ function ComhwalConceptQuestionPanel({
         correctIndex={hasAnswered ? question.answerIndex : null}
         graded={hasAnswered}
         onChoose={onSelectAnswer}
+        shuffleKey={question.id}
       />
     </div>
   );
@@ -6111,6 +6112,7 @@ function ComhwalPartReviewStudyScreen({
                 correctIndex={phase === 'feedback' ? activeQuestion.answerIndex : null}
                 graded={phase === 'feedback'}
                 onChoose={handleChoose}
+                shuffleKey={activeQuestion.id}
               />
             </div>
           ) : null}

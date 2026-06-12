@@ -1531,6 +1531,7 @@ export default function DialogueLesson({
                 }
                 graded={phase === 'feedback'}
                 onChoose={handleChoose}
+                shuffleKey={quizQuestion.id}
               />
             )}
           </div>

@@ -9,17 +9,21 @@
  *   revealed  : 선택 안 했지만 정답이었던 것 (오답 시 표시용) — 초록 테두리
  */
 
+import { useShuffledChoices } from './choiceShuffle';
+
 type State = 'idle' | 'selected' | 'correct' | 'wrong' | 'revealed';
 
 interface Props {
   choices: string[];
-  /** 유저가 선택한 인덱스 (아직 채점 안 됨). */
+  /** 유저가 선택한 원본 인덱스 (표시 순서가 섞여도 원본 choices 기준). */
   chosen: number | null;
-  /** 정답 인덱스. 채점 후에만 highlight 목적으로 사용. */
+  /** 원본 정답 인덱스. 채점 후에만 highlight 목적으로 사용. */
   correctIndex: number | null;
   /** 채점 완료 여부. */
   graded: boolean;
   onChoose: (idx: number) => void;
+  /** 문제 단위로 선택지 표시 순서를 안정적으로 섞기 위한 키. */
+  shuffleKey?: string | number;
 }
 
 export default function OptionsPanel({
@@ -28,26 +32,29 @@ export default function OptionsPanel({
   correctIndex,
   graded,
   onChoose,
+  shuffleKey,
 }: Props) {
+  const displayChoices = useShuffledChoices(choices, shuffleKey);
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-      {choices.map((choice, idx) => {
+      {displayChoices.map(({ label, originalIndex, text }) => {
         const state: State = !graded
-          ? idx === chosen
+          ? originalIndex === chosen
             ? 'selected'
             : 'idle'
-          : idx === correctIndex
+          : originalIndex === correctIndex
             ? 'correct'
-            : idx === chosen
+            : originalIndex === chosen
               ? 'wrong'
-              : correctIndex === idx
+              : correctIndex === originalIndex
                 ? 'revealed'
                 : 'idle';
         return (
           <button
-            key={idx}
+            key={`${originalIndex}:${text}`}
             type="button"
-            onClick={() => !graded && onChoose(idx)}
+            onClick={() => !graded && onChoose(originalIndex)}
             disabled={graded}
             className="text-left rounded-2xl px-4 py-4 md:px-5 md:py-5 lg:px-6 lg:py-6 kr-body text-[14px] md:text-[15px] lg:text-[17px] xl:text-[18px] leading-[1.55] transition-transform active:scale-[0.98] disabled:cursor-default"
             style={styleFor(state)}
@@ -59,9 +66,9 @@ export default function OptionsPanel({
                 color: badgeFg(state),
               }}
             >
-              {['A', 'B', 'C', 'D'][idx]}
+              {label}
             </span>
-            <span style={{ color: textFg(state) }}>{choice}</span>
+            <span style={{ color: textFg(state) }}>{text}</span>
           </button>
         );
       })}

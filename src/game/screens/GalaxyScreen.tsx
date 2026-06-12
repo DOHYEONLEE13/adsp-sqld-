@@ -5686,6 +5686,50 @@ function compactComhwalReviewText(text: string, maxLength = 42): string {
   return `${compact.slice(0, maxLength - 1).trimEnd()}...`;
 }
 
+function cleanComhwalReviewSentence(text: string): string {
+  return text.replace(/\s+/g, ' ').replace(/[.!?。！？]+$/u, '').trim();
+}
+
+function getComhwalReviewTitle(card: ComhwalConceptCard): string {
+  return card.title.replace(/\s*핵심$/, '');
+}
+
+function pickComhwalReviewClues(keyPoints: string[]): string[] {
+  const cleaned = keyPoints.map(cleanComhwalReviewSentence).filter(Boolean);
+  const completeClues = cleaned.filter((clue) => !/[고며서]$/u.test(clue));
+  return [
+    ...completeClues,
+    ...cleaned.filter((clue) => !completeClues.includes(clue)),
+  ]
+    .filter((clue, index, all) => all.indexOf(clue) === index)
+    .slice(0, 2);
+}
+
+function buildComhwalReviewNarration(
+  card: ComhwalConceptCard,
+  index: number,
+): string {
+  const no = String(index + 1).padStart(2, '0');
+  const title = getComhwalReviewTitle(card);
+  const concept = compactComhwalReviewText(
+    cleanComhwalReviewSentence(card.body),
+    64,
+  );
+  const clues = pickComhwalReviewClues(card.keyPoints);
+  const clueText =
+    clues.length > 0
+      ? ` 다시 볼 단서: ${clues.join(' · ')}.`
+      : '';
+  const examText = card.examTip
+    ? ` 문제에서는 ${compactComhwalReviewText(
+        cleanComhwalReviewSentence(card.examTip),
+        62,
+      )}.`
+    : '';
+
+  return `${no} ${title}. ${concept}. 이렇게 떠올려.${clueText}${examText}`;
+}
+
 function ComhwalPartReviewMap({
   title,
   cards,
@@ -5699,7 +5743,7 @@ function ComhwalPartReviewMap({
 }) {
   const items = cards.map((card, index) => ({
     no: String(index + 1).padStart(2, '0'),
-    title: card.title.replace(/\s*핵심$/, ''),
+    title: getComhwalReviewTitle(card),
     sub: compactComhwalReviewText(card.keyPoints[0] ?? card.body),
   }));
 
@@ -5825,22 +5869,15 @@ function ComhwalPartReviewStudyScreen({
   const correctCardIdsRef = useRef<Set<string>>(new Set());
   const questionStartedAtRef = useRef(Date.now());
   const reviewConceptTurns: { pose: QuesPose; text: string }[] = cards.map(
-    (card, index) => {
-      const title = card.title.replace(/\s*핵심$/, '');
-      const summary = compactComhwalReviewText(
-        card.keyPoints[0] ?? card.body,
-        48,
-      );
-      return {
-        pose: index % 2 === 0 ? 'lightbulb' : 'think',
-        text: `${String(index + 1).padStart(2, '0')} ${title}. ${summary}`,
-      };
-    },
+    (card, index) => ({
+      pose: index % 2 === 0 ? 'lightbulb' : 'think',
+      text: buildComhwalReviewNarration(card, index),
+    }),
   );
   const turns: { pose: QuesPose; text: string }[] = [
     {
       pose: 'wave',
-      text: `${section?.title ?? '이 PART'} 전체를 한 번에 다시 묶어볼게. 지도 ${cards.length}개를 순서대로 보고 대표 문제 ${questionCards.length}개로 확인하자.`,
+      text: `${section?.title ?? '이 PART'}를 요약노트처럼 다시 볼게. 뜻, 구분 단서, 문제에서 조심할 말을 차례로 떠올린 뒤 대표 문제 ${questionCards.length}개로 확인하자.`,
     },
     ...reviewConceptTurns,
   ];

@@ -633,7 +633,7 @@ export default function App() {
           initialExpansionSubject={initialExpansionSubject}
           onExitToLanding={() => {
             if (isAppMode()) {
-              window.history.replaceState({}, '', '/app/#/game');
+              window.history.replaceState({}, '', '/?app=1#/game');
               startTransition(() => setRouteState(getRoute()));
               return;
             }

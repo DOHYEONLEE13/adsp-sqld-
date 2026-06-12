@@ -11,6 +11,7 @@
           var isAppQuery = new URLSearchParams(location.search).get('app') === '1';
           var isAppSession = sessionStorage.getItem('questdp.appMode') === '1';
           if (isAppPath || isAppQuery || isAppSession) {
+            sessionStorage.setItem('questdp.appMode', '1');
             document.documentElement.classList.add('questdp-app-mode');
             var theme = document.querySelector('meta[name="theme-color"]');
             if (theme) theme.setAttribute('content', '#081642');

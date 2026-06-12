@@ -23,6 +23,7 @@ export function markAppModeFromLocation(): void {
 export function isAppMode(): boolean {
   if (typeof window === 'undefined') return false;
   if (isAppEntryPath(window.location.pathname)) return true;
+  if (new URLSearchParams(window.location.search).get('app') === '1') return true;
   if (!canUseSessionStorage()) return false;
   return window.sessionStorage.getItem(APP_MODE_SESSION_KEY) === '1';
 }

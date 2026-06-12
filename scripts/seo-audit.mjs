@@ -146,8 +146,16 @@ for (const route of manifest.all) {
 
 const htmlFiles = listIndexHtmlFiles(DIST_DIR);
 const expectedFiles = new Set(manifest.all.map((route) => path.normalize(htmlPathFor(route.path))));
+const allowedBridgeFiles = new Set([
+  path.normalize(path.join(DIST_DIR, 'app', 'index.html')),
+]);
 for (const file of htmlFiles) {
-  if (!expectedFiles.has(path.normalize(file))) {
+  const normalizedFile = path.normalize(file);
+  if (allowedBridgeFiles.has(normalizedFile)) {
+    assertAppBridgeHtml(file);
+    continue;
+  }
+  if (!expectedFiles.has(normalizedFile)) {
     fail(`Static HTML exists without sitemap manifest entry: ${path.relative(DIST_DIR, file)}`);
   }
 }
@@ -180,6 +188,16 @@ function listIndexHtmlFiles(dir, out = []) {
 
 function assertFile(file) {
   if (!fs.existsSync(file)) fail(`Missing file: ${file}`);
+}
+
+function assertAppBridgeHtml(file) {
+  const html = fs.readFileSync(file, 'utf8');
+  if (!/<meta\s+name=["']robots["']\s+content=["']noindex["']\s*\/?>/i.test(html)) {
+    fail(`App bridge HTML is missing robots noindex: ${path.relative(DIST_DIR, file)}`);
+  }
+  if (!html.includes('/?app=1#/game') || !html.includes('location.replace')) {
+    fail(`App bridge HTML is missing app-mode redirect: ${path.relative(DIST_DIR, file)}`);
+  }
 }
 
 function isIndexableRoute(route) {

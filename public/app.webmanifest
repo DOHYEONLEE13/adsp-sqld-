@@ -1,14 +1,14 @@
 {
   "name": "퀘스트디피",
   "short_name": "퀘스트디피",
-  "description": "ADsP와 SQLD 자격증을 로드맵, 퀘스트, 약점 복습으로 학습하는 게임형 학습 앱",
+  "description": "ADsP·SQLD·컴활 자격증을 로드맵, 퀘스트, 약점 복습으로 학습하는 게임형 학습 앱",
   "lang": "ko",
-  "start_url": "/app/",
+  "start_url": "/?app=1#/game",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#081642",
   "theme_color": "#081642",
-  "scope": "/app/",
+  "scope": "/",
   "icons": [
     {
       "src": "/logo/questdp-app-icon.png",
@@ -33,7 +33,7 @@
     {
       "name": "학습 시작",
       "short_name": "학습",
-      "url": "/app/#/game",
+      "url": "/?app=1#/game",
       "icons": [
         {
           "src": "/logo/questdp-app-icon.png",
@@ -45,7 +45,7 @@
     {
       "name": "오늘의 퀘스트",
       "short_name": "퀘스트",
-      "url": "/app/#/quests",
+      "url": "/?app=1#/quests",
       "icons": [
         {
           "src": "/logo/questdp-app-icon.png",

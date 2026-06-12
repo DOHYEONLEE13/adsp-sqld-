@@ -429,6 +429,75 @@ dist\lesson\sqld-1-1-s3d\index.html:142:      <meta name="robots" content="noind
 
 - 없음.
 
+## Mission F: Curriculum Exam Facts
+
+### 변경 파일
+
+- `src/pages/CurriculumPage.tsx`
+- `scripts/seo-route-manifest.mjs`
+- `docs/seo-goal-report.md`
+
+### 핵심 결정과 이유
+
+- 커리큘럼 3종 및 컴활 세부 커리큘럼에 `시험 사실` 섹션을 확장.
+- 포함 항목: 주관처, 시험 방식, 과목 구성, 문항 수와 시간, 합격 기준, 시험 범위, 응시 자격.
+- 일정·응시료는 직접 숫자로 기재하지 않고 공식 안내 링크로만 처리.
+- ADsP·SQLD 문항 유형은 단정하지 않고 `총 50문항 · 90분`으로 보수 표기. 컴활 필기 문항 수와 시간은 대한상공회의소 안내 기준으로 유지.
+- 공식 링크:
+  - ADsP: `https://www.dataq.or.kr/www/sub/a_06.do`
+  - SQLD: `https://www.dataq.or.kr/www/sub/a_04.do`
+  - 컴활: `https://license.korcham.net/co/examguide.do?cd=0103&mm=21`
+- 같은 시험 질문이 더 필요한 사용자는 `/faq/adsp`, `/faq/sqld`, `/faq/comhwal`로 이어지도록 기존 FAQ 링크를 유지.
+
+### 검증 출력
+
+```text
+npm.cmd run typecheck
+> questdp@0.1.0 typecheck
+> tsc --noEmit
+```
+
+```text
+npm.cmd test -- --run
+
+RUN  v4.1.5 C:/Users/이도현/Desktop/.claude/worktrees/hardcore-shamir-47f5ab
+Test Files  38 passed (38)
+Tests  534 passed (534)
+```
+
+```text
+npm.cmd run build
+
+sitemap generated: total 261 URLs (core 17, blog 13, lessons 79, topics 152, quiz 0)
+static route HTML generated: 555 pages (core 18, blog 12, lessons 373, topics 152, quiz 0)
+seo audit passed: 555 static pages, 261 submitted URLs, 294 noindex pages, quiz 0
+```
+
+```text
+Select-String -Path dist\curriculum\adsp\index.html -Pattern '시험 사실|시험 방식|과목 구성|응시 자격|공식 일정'
+dist\curriculum\adsp\index.html:186:<h2>데이터분석준전문가(ADsP) 시험 사실</h2>
+dist\curriculum\adsp\index.html:189:<dt>시험 방식</dt><dd>필기시험</dd>
+dist\curriculum\adsp\index.html:190:<dt>과목 구성</dt><dd>데이터 이해 · 데이터분석 기획 · 데이터분석</dd>
+dist\curriculum\adsp\index.html:194:<dt>응시 자격</dt><dd>제한 없음</dd>
+dist\curriculum\adsp\index.html:197:<p>시험 일정과 응시료는 회차별로 바뀔 수 있어 KDATA 공식 안내에서 확인하세요. <a href="https://www.dataq.or.kr/www/sub/a_06.do">공식 일정·응시료 확인</a></p>
+
+Select-String -Path dist\curriculum\sqld\index.html -Pattern '시험 사실|데이터 모델링의 이해 · SQL 기본 및 활용|응시 자격|dataq\.or\.kr'
+dist\curriculum\sqld\index.html:186:<h2>SQL 개발자(SQLD) 시험 사실</h2>
+dist\curriculum\sqld\index.html:190:<dt>과목 구성</dt><dd>데이터 모델링의 이해 · SQL 기본 및 활용</dd>
+dist\curriculum\sqld\index.html:194:<dt>응시 자격</dt><dd>제한 없음</dd>
+dist\curriculum\sqld\index.html:197:<p>시험 일정과 응시료는 회차별로 바뀔 수 있어 KDATA 공식 안내에서 확인하세요. <a href="https://www.dataq.or.kr/www/sub/a_04.do">공식 일정·응시료 확인</a></p>
+
+Select-String -Path dist\curriculum\comhwal\index.html -Pattern '시험 사실|1급 3과목 · 2급 2과목|응시 자격|license\.korcham\.net'
+dist\curriculum\comhwal\index.html:186:<h2>컴퓨터활용능력 필기 시험 사실</h2>
+dist\curriculum\comhwal\index.html:190:<dt>과목 구성</dt><dd>1급 3과목 · 2급 2과목</dd>
+dist\curriculum\comhwal\index.html:194:<dt>응시 자격</dt><dd>제한 없음</dd>
+dist\curriculum\comhwal\index.html:197:<p>상시시험 일정과 응시료는 지역·접수 시점에 따라 달라질 수 있어 대한상공회의소 공식 안내에서 확인하세요. <a href="https://license.korcham.net/co/examguide.do?cd=0103&amp;mm=21">공식 일정·응시료 확인</a></p>
+```
+
+### 사람 결정 대기
+
+- 없음. 일정·응시료처럼 바뀌는 값은 공식 링크 확인으로 처리.
+
 ## WAVE 1 검수 요청
 
 ### 로컬 커밋

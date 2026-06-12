@@ -21,63 +21,87 @@ const EXAM_FACTS: Record<
   {
     authority: string;
     exam: string;
+    method: string;
+    subjects: string;
     questions: string;
     scoring: string;
     scope: string;
+    eligibility: string;
     strategy: string;
     officialUrl: string;
+    officialNote: string;
   }
 > = {
   adsp: {
     authority: 'KDATA 데이터자격검정',
     exam: '데이터분석준전문가(ADsP)',
-    questions: '객관식 50문항 · 90분',
+    method: '필기시험',
+    subjects: '데이터 이해 · 데이터분석 기획 · 데이터분석',
+    questions: '총 50문항 · 90분',
     scoring: '총점 60점 이상 · 과목별 40% 미만 과락',
     scope: '데이터 이해 10문항 · 데이터분석 기획 10문항 · 데이터분석 30문항',
+    eligibility: '제한 없음',
     strategy:
       '3과목 데이터분석 비중이 가장 커서 R 기초, 통계, 가설검정, 머신러닝을 반복 루프로 묶는 것이 중요합니다.',
     officialUrl: 'https://www.dataq.or.kr/www/sub/a_06.do',
+    officialNote: '시험 일정과 응시료는 회차별로 바뀔 수 있어 KDATA 공식 안내에서 확인하세요.',
   },
   sqld: {
     authority: 'KDATA 데이터자격검정',
     exam: 'SQL 개발자(SQLD)',
-    questions: '객관식 50문항 · 90분',
+    method: '필기시험',
+    subjects: '데이터 모델링의 이해 · SQL 기본 및 활용',
+    questions: '총 50문항 · 90분',
     scoring: '총점 60점 이상 · 과목별 40% 미만 과락',
     scope: '데이터 모델링의 이해 10문항 · SQL 기본 및 활용 40문항',
+    eligibility: '제한 없음',
     strategy:
       '2과목 SQL 기본 및 활용 배점이 80점입니다. JOIN, 서브쿼리, 윈도우 함수, 관리 구문을 우선순위로 잡아야 합니다.',
     officialUrl: 'https://www.dataq.or.kr/www/sub/a_04.do',
+    officialNote: '시험 일정과 응시료는 회차별로 바뀔 수 있어 KDATA 공식 안내에서 확인하세요.',
   },
   comhwal: {
     authority: '대한상공회의소 자격평가사업단',
     exam: '컴퓨터활용능력 필기',
+    method: '필기 객관식 · 실기 컴퓨터 작업형',
+    subjects: '1급 3과목 · 2급 2과목',
     questions: '1급 60문항 · 60분 / 2급 40문항 · 40분',
     scoring: '필기: 과목당 40점 이상 · 평균 60점 이상',
     scope:
       '1급: 컴퓨터 일반, 스프레드시트 일반, 데이터베이스 일반 / 2급: 컴퓨터 일반, 스프레드시트 일반',
+    eligibility: '제한 없음',
     strategy:
       '컴퓨터 일반은 1급과 2급이 함께 보는 공통 출발점입니다. QuestDP는 실제 카드가 준비된 컴퓨터 일반 001~059부터 개별 토픽 색인을 엽니다.',
-    officialUrl: 'https://devm.korcham.net/co/examguide.do%3Fcd%3D01%26jmcd%3D0103',
+    officialUrl: 'https://license.korcham.net/co/examguide.do?cd=0103&mm=21',
+    officialNote: '상시시험 일정과 응시료는 지역·접수 시점에 따라 달라질 수 있어 대한상공회의소 공식 안내에서 확인하세요.',
   },
   'comhwal-1': {
     authority: '대한상공회의소 자격평가사업단',
     exam: '컴퓨터활용능력 1급 필기',
+    method: '필기 객관식 · 실기 컴퓨터 작업형',
+    subjects: '컴퓨터 일반 · 스프레드시트 일반 · 데이터베이스 일반',
     questions: '객관식 60문항 · 60분',
     scoring: '필기: 과목당 40점 이상 · 평균 60점 이상',
     scope: '컴퓨터 일반 · 스프레드시트 일반 · 데이터베이스 일반',
+    eligibility: '제한 없음',
     strategy:
       '컴활 1급은 데이터베이스 일반까지 포함됩니다. 먼저 컴퓨터 일반 공통 기반을 빠르게 끝내고, 스프레드시트와 데이터베이스는 실기 연결 개념으로 확장하세요.',
-    officialUrl: 'https://devm.korcham.net/co/examguide.do%3Fcd%3D01%26jmcd%3D0103',
+    officialUrl: 'https://license.korcham.net/co/examguide.do?cd=0103&mm=21',
+    officialNote: '상시시험 일정과 응시료는 지역·접수 시점에 따라 달라질 수 있어 대한상공회의소 공식 안내에서 확인하세요.',
   },
   'comhwal-2': {
     authority: '대한상공회의소 자격평가사업단',
     exam: '컴퓨터활용능력 2급 필기',
+    method: '필기 객관식 · 실기 컴퓨터 작업형',
+    subjects: '컴퓨터 일반 · 스프레드시트 일반',
     questions: '객관식 40문항 · 40분',
     scoring: '필기: 과목당 40점 이상 · 평균 60점 이상',
     scope: '컴퓨터 일반 · 스프레드시트 일반',
+    eligibility: '제한 없음',
     strategy:
       '컴활 2급은 데이터베이스 일반이 빠지므로 컴퓨터 일반과 스프레드시트 일반을 촘촘히 회전시키는 전략이 효율적입니다.',
-    officialUrl: 'https://devm.korcham.net/co/examguide.do%3Fcd%3D01%26jmcd%3D0103',
+    officialUrl: 'https://license.korcham.net/co/examguide.do?cd=0103&mm=21',
+    officialNote: '상시시험 일정과 응시료는 지역·접수 시점에 따라 달라질 수 있어 대한상공회의소 공식 안내에서 확인하세요.',
   },
 };
 
@@ -275,13 +299,16 @@ export default function CurriculumPage({ subject }: Props) {
             시험장에서 실제로 만나는 구조
           </div>
           <h2 className="kr-heading mb-4 text-[18px] md:text-[22px]">
-            {facts.exam} 시험 구조
+            {facts.exam} 시험 사실
           </h2>
           <dl className="grid gap-3 md:grid-cols-2">
             <Fact label="시행기관" value={facts.authority} accent={accent} light={usesStudyNoteTheme} />
+            <Fact label="시험 방식" value={facts.method} accent={accent} light={usesStudyNoteTheme} />
+            <Fact label="과목 구성" value={facts.subjects} accent={accent} light={usesStudyNoteTheme} />
             <Fact label="문항 / 시간" value={facts.questions} accent={accent} light={usesStudyNoteTheme} />
             <Fact label="합격 기준" value={facts.scoring} accent={accent} light={usesStudyNoteTheme} />
             <Fact label="시험 범위" value={facts.scope} accent={accent} light={usesStudyNoteTheme} />
+            <Fact label="응시 자격" value={facts.eligibility} accent={accent} light={usesStudyNoteTheme} />
           </dl>
           <p
             className={
@@ -291,6 +318,15 @@ export default function CurriculumPage({ subject }: Props) {
             }
           >
             {facts.strategy}
+          </p>
+          <p
+            className={
+              usesStudyNoteTheme
+                ? 'kr-body mt-2 text-[13px] leading-[1.7] text-[#697561]'
+                : 'kr-body mt-2 text-[12.5px] leading-[1.65] text-cream/58'
+            }
+          >
+            {facts.officialNote}
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
             <a
@@ -315,7 +351,7 @@ export default function CurriculumPage({ subject }: Props) {
                   : 'inline-flex items-center gap-2 rounded-full border border-cream/18 px-4 py-2.5 text-[11px] uppercase tracking-widest text-cream/72 transition hover:border-neon/40 hover:text-neon'
               }
             >
-              공식 안내
+              공식 일정·응시료 확인
               <ChevronRight size={13} strokeWidth={2.5} />
             </a>
           </div>

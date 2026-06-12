@@ -182,3 +182,34 @@ export async function deleteMyAccount(): Promise<{ ok: boolean; error?: string }
   }
   return { ok: true };
 }
+
+// ── Dev 전용 테스트 로그인 ────────────────────────────────────────────
+// 임베디드 Preview 는 외부 도메인 "페이지 이동"을 차단해 OAuth 가 불가능하다.
+// signInWithPassword 는 fetch 한 번이라 Preview 안에서도 동작한다.
+// 자격증명은 .env.development.local(gitignore, dev 모드 전용 로드)에만 두며,
+// 아래 분기는 prod 빌드에서 import.meta.env.DEV=false 로 접혀 제거된다.
+
+export const DEV_TEST_LOGIN_AVAILABLE: boolean = import.meta.env.DEV
+  ? Boolean(
+      import.meta.env.VITE_TEST_LOGIN_EMAIL &&
+        import.meta.env.VITE_TEST_LOGIN_PASSWORD,
+    )
+  : false;
+
+export async function signInWithDevTestAccount(): Promise<{
+  ok: boolean;
+  error?: string;
+}> {
+  if (!import.meta.env.DEV) return { ok: false, error: 'dev 모드 전용' };
+  const sb = getSupabase();
+  if (!sb) return { ok: false, error: 'Supabase 미설정' };
+  const email = import.meta.env.VITE_TEST_LOGIN_EMAIL as string | undefined;
+  const password = import.meta.env.VITE_TEST_LOGIN_PASSWORD as
+    | string
+    | undefined;
+  if (!email || !password) {
+    return { ok: false, error: 'VITE_TEST_LOGIN_* 미설정 (.env.development.local)' };
+  }
+  const { error } = await sb.auth.signInWithPassword({ email, password });
+  return error ? { ok: false, error: error.message } : { ok: true };
+}

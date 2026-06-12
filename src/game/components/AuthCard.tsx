@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { Cloud, CloudOff, LogIn, LogOut, Trash2 } from 'lucide-react';
 import {
+  DEV_TEST_LOGIN_AVAILABLE,
   deleteMyAccount,
   isSupabaseConfigured,
+  signInWithDevTestAccount,
   signInWithOAuth,
   signOut,
   type OAuthProvider,
@@ -30,6 +32,16 @@ export default function AuthCard() {
     if ((result as { error?: unknown })?.error) {
       setPendingAction(null);
       window.alert('로그인에 실패했어요. 잠시 뒤 다시 시도해주세요.');
+    }
+  };
+
+  const handleDevSignIn = async () => {
+    if (busy) return;
+    setPendingAction('sign-in');
+    const result = await signInWithDevTestAccount();
+    setPendingAction(null);
+    if (!result.ok) {
+      window.alert(`테스트 로그인 실패: ${result.error ?? '알 수 없는 오류'}`);
     }
   };
 
@@ -157,6 +169,22 @@ export default function AuthCard() {
           <p className="kr-body text-[11px] text-cream/50 mt-2 leading-[1.55]">
             새로고침 없이 로그인 직후 같은 기록으로 이어갑니다.
           </p>
+          {import.meta.env.DEV && DEV_TEST_LOGIN_AVAILABLE ? (
+            <button
+              type="button"
+              onClick={() => void handleDevSignIn()}
+              disabled={busy}
+              data-dev-test-login="true"
+              className="mt-2 w-full inline-flex items-center justify-center gap-1.5 kr-num text-[11px] uppercase tracking-widest py-2 rounded-full transition active:scale-[0.98] disabled:opacity-40"
+              style={{
+                background: 'rgba(239,244,255,0.05)',
+                border: '1px dashed rgba(239,244,255,0.25)',
+                color: 'rgba(239,244,255,0.7)',
+              }}
+            >
+              테스트 계정 로그인 (DEV 전용)
+            </button>
+          ) : null}
         </div>
       )}
     </section>

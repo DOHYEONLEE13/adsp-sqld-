@@ -119,6 +119,7 @@ export default function Landing() {
     <>
       <TextureOverlay />
       <Hero />
+      <HomeFactBlock />
       <About />
       <StudyMethodTeaser />
       <GameModes />
@@ -126,5 +127,42 @@ export default function Landing() {
       <CTA />
       <Footer />
     </>
+  );
+}
+
+function HomeFactBlock() {
+  const links = [
+    { href: '/curriculum/adsp', label: 'ADsP' },
+    { href: '/curriculum/sqld', label: 'SQLD' },
+    { href: '/curriculum/comhwal', label: '컴활' },
+  ];
+
+  return (
+    <section className="relative z-10 border-b border-cream/10 bg-[#010828] px-6 py-8 md:px-12 md:py-10">
+      <div className="mx-auto grid max-w-layout gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+        <div>
+          <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.22em] text-[#FD802E]">
+            QuestDP 는 무엇인가
+          </p>
+          <p className="kr-body max-w-[860px] text-[15px] leading-[1.8] text-cream/78 md:text-[16px]">
+            QuestDP는 ADsP, SQLD, 컴퓨터활용능력 필기를 처음 보는 사람도 따라갈 수 있게
+            시험 범위를 작은 개념 스텝과 바로 푸는 문제로 나눈 학습 사이트입니다. 공개
+            페이지는 시험 구조와 개념 흐름을 확인하는 용도로 두고, 실제 학습은 로드맵,
+            약점 분석, 망각곡선 복습이 이어지는 앱 화면에서 진행합니다.
+          </p>
+        </div>
+        <nav aria-label="과목 허브" className="flex flex-wrap gap-2 lg:justify-end">
+          {links.map((link) => (
+            <a
+              key={link.href}
+              href={link.href}
+              className="rounded-full border border-cream/15 px-4 py-2 text-[12px] font-bold text-cream/82 transition hover:border-[#FD802E]/70 hover:text-white"
+            >
+              {link.label} 커리큘럼
+            </a>
+          ))}
+        </nav>
+      </div>
+    </section>
   );
 }

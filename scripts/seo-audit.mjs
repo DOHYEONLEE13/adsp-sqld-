@@ -86,6 +86,14 @@ for (const route of manifest.all) {
     if (!html.includes('data-seo-home-fallback="true"')) {
       fail('Missing home landing fallback body for /');
     }
+    if (route.minSeoTextChars) {
+      const textChars = countVisibleTextCodepoints(html);
+      if (textChars < route.minSeoTextChars) {
+        fail(
+          `Home fallback text is too short: ${textChars} chars, expected at least ${route.minSeoTextChars} chars (Korean code points, not UTF-8 bytes)`,
+        );
+      }
+    }
     for (const keyword of ['ADSP 학습사이트', 'SQLD 학습사이트', '컴활 학습사이트']) {
       if (!html.includes(keyword)) fail(`Home fallback is missing keyword: ${keyword}`);
     }

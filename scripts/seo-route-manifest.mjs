@@ -304,6 +304,7 @@ const CORE_ROUTES = [
     summary:
       'ADsP, SQLD, 컴활 시험 범위를 짧은 개념 스텝과 즉시 문제 풀이로 나누어 학습합니다. 로드맵, 약점 분석, 망각곡선 복습을 한 화면에서 이어갈 수 있습니다.',
     image: `${SITE_ORIGIN}/og/questdp-home.png`,
+    minSeoTextChars: 1000,
     links: [
       { href: '/study-method', label: '학습 원리 보기' },
       { href: '/curriculum/adsp', label: 'ADsP 커리큘럼' },

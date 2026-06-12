@@ -204,6 +204,11 @@ function injectHomeFallbackStyle(html) {
       .qdp-home-primary,.qdp-home-secondary{display:inline-flex;align-items:center;justify-content:center;min-height:46px;border-radius:999px;padding:0 18px;text-decoration:none;font-weight:900;font-size:14px}
       .qdp-home-primary{background:#fd802e;color:#010828;box-shadow:0 14px 34px -18px rgba(253,128,46,.9)}
       .qdp-home-secondary{border:1px solid rgba(239,244,255,.18);background:rgba(239,244,255,.06);color:#eff4ff}
+      .qdp-home-fact{max-width:1120px;margin:0 auto 26px;border-top:1px solid rgba(239,244,255,.12);border-bottom:1px solid rgba(239,244,255,.12);padding:22px 0;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:22px;align-items:center}
+      .qdp-home-fact h2{margin:0 0 8px;color:#fd802e;font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+      .qdp-home-fact p{margin:0;max-width:850px;color:rgba(239,244,255,.78);font-size:15px;line-height:1.8}
+      .qdp-home-hubs{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+      .qdp-home-hubs a{border:1px solid rgba(239,244,255,.16);border-radius:999px;padding:9px 13px;text-decoration:none;color:rgba(239,244,255,.82);font-size:13px;font-weight:900;background:rgba(239,244,255,.045)}
       .qdp-home-card{border:1px solid rgba(239,244,255,.14);border-radius:28px;background:linear-gradient(180deg,rgba(239,244,255,.09),rgba(239,244,255,.035));padding:22px;box-shadow:0 24px 80px -52px rgba(0,0,0,.88)}
       .qdp-home-mascot{display:grid;place-items:center;min-height:220px;border-radius:22px;background:radial-gradient(circle at 50% 34%,rgba(239,244,255,.2),rgba(239,244,255,.04) 56%,rgba(1,8,40,.45));border:1px solid rgba(239,244,255,.12);font-weight:950;font-size:72px;color:#7dd850}
       .qdp-home-card h2{margin:18px 0 8px;font-size:24px;line-height:1.2}
@@ -214,7 +219,7 @@ function injectHomeFallbackStyle(html) {
       .qdp-home-subject p{margin:0;color:rgba(239,244,255,.72);font-size:14px;line-height:1.65}
       .qdp-home-proof{max-width:1120px;margin:0 auto 56px;border-top:1px solid rgba(239,244,255,.12);padding-top:22px;color:rgba(239,244,255,.7);font-size:13px;line-height:1.75}
       .qdp-home-proof b{color:#eff4ff}
-      @media (max-width:820px){.qdp-home-shell{padding:16px}.qdp-home-hero{grid-template-columns:1fr;padding:46px 0 30px}.qdp-home-card{order:-1}.qdp-home-mascot{min-height:150px;font-size:54px}.qdp-home-grid{grid-template-columns:1fr}.qdp-home-title{font-size:clamp(42px,13vw,64px)}}
+      @media (max-width:820px){.qdp-home-shell{padding:16px}.qdp-home-hero{grid-template-columns:1fr;padding:46px 0 30px}.qdp-home-fact{grid-template-columns:1fr}.qdp-home-hubs{justify-content:flex-start}.qdp-home-card{order:-1}.qdp-home-mascot{min-height:150px;font-size:54px}.qdp-home-grid{grid-template-columns:1fr}.qdp-home-title{font-size:clamp(42px,13vw,64px)}}
     </style>`;
   return html.replace('</head>', `    ${style}\n  </head>`);
 }
@@ -266,6 +271,17 @@ function renderHomeFallback(route) {
               <p>로드맵, 약점 분석, 망각곡선 복습을 한 화면에서 이어가며 ADsP·SQLD·컴활 시험 범위를 작게 반복합니다.</p>
             </aside>
           </section>
+          <section class="qdp-home-fact" aria-labelledby="qdp-home-fact-title">
+            <div>
+              <h2 id="qdp-home-fact-title">QuestDP 는 무엇인가</h2>
+              <p>QuestDP는 ADsP, SQLD, 컴퓨터활용능력 필기를 처음 보는 사람도 따라갈 수 있게 시험 범위를 작은 개념 스텝과 바로 푸는 문제로 나눈 학습 사이트입니다. 공개 페이지에서는 시험 구조, 커리큘럼, 자주 묻는 질문, 공부법을 확인하고, 실제 앱에서는 로드맵, 약점 분석, 망각곡선 복습을 이어갑니다.</p>
+            </div>
+            <div class="qdp-home-hubs" aria-label="과목 허브">
+              <a href="/curriculum/adsp">ADsP 커리큘럼</a>
+              <a href="/curriculum/sqld">SQLD 커리큘럼</a>
+              <a href="/curriculum/comhwal">컴활 커리큘럼</a>
+            </div>
+          </section>
           <section class="qdp-home-grid" aria-label="자격증별 커리큘럼">
             <a class="qdp-home-subject" href="/curriculum/adsp">
               <strong>ADsP 커리큘럼</strong>
@@ -280,7 +296,7 @@ function renderHomeFallback(route) {
               <p>컴퓨터 일반, 스프레드시트 일반, 데이터베이스 일반을 실제 카드가 있는 토픽부터 학습합니다.</p>
             </a>
           </section>
-          <p class="qdp-home-proof"><b>QuestDP</b>는 ADsP·SQLD·컴활 자격증을 게임처럼 공부하는 학습사이트입니다. 개념 설명·문제·해설은 자체 제작 학습 콘텐츠이며, 문제풀이와 약점 복습으로 시험 준비 흐름을 이어갑니다.</p>
+          <p class="qdp-home-proof"><b>QuestDP</b>는 ADsP·SQLD·컴활 자격증을 게임처럼 공부하는 학습사이트입니다. 개념 설명·문제·해설은 자체 제작 학습 콘텐츠이며, 공개 SEO 페이지는 색인을 위한 빈 껍데기가 아니라 사용자가 시험 범위와 공부 순서를 이해할 수 있는 본문을 우선합니다. ADsP는 데이터 이해, 데이터분석 기획, 데이터 분석을 짧은 스텝으로 나누고, SQLD는 데이터 모델링과 SQL 기본·활용을 문법 단위로 다시 꺼내 보게 합니다. 컴활은 1급과 2급 공통 출발점인 컴퓨터 일반부터 실제 카드가 있는 토픽을 공개합니다. 시험 일정과 응시료처럼 바뀌는 값은 공식 사이트 확인으로 남기고, QuestDP 안에서는 개념 학습, 문제풀이, 오답 복습, 약점 점검을 한 흐름으로 이어갑니다.</p>
         </div>
       </main>`;
 }

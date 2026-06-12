@@ -498,6 +498,64 @@ dist\curriculum\comhwal\index.html:197:<p>상시시험 일정과 응시료는 �
 
 - 없음. 일정·응시료처럼 바뀌는 값은 공식 링크 확인으로 처리.
 
+## Mission G: Home Fact Block
+
+### 변경 파일
+
+- `src/pages/Landing.tsx`
+- `scripts/generate-static-route-html.mjs`
+- `scripts/seo-route-manifest.mjs`
+- `scripts/seo-audit.mjs`
+- `docs/seo-goal-report.md`
+
+### 핵심 결정과 이유
+
+- 홈 hero 바로 아래에 `QuestDP 는 무엇인가` 팩트 블록을 추가.
+- 문장은 서비스 정의, 대상 자격증, 실제 학습 흐름만 짧게 설명하고 과장 표현을 넣지 않음.
+- ADsP·SQLD·컴활 커리큘럼 허브 링크를 같은 블록 안에 배치.
+- 정적 홈 fallback에도 같은 팩트 블록과 허브 링크를 추가.
+- `seo-audit`가 홈 fallback 본문을 1,000자 이상(코드포인트 기준, 바이트 아님)으로 검사하도록 확장.
+
+### 검증 출력
+
+```text
+npm.cmd run typecheck
+> questdp@0.1.0 typecheck
+> tsc --noEmit
+```
+
+```text
+npm.cmd test -- --run
+
+RUN  v4.1.5 C:/Users/이도현/Desktop/.claude/worktrees/hardcore-shamir-47f5ab
+Test Files  38 passed (38)
+Tests  534 passed (534)
+```
+
+```text
+npm.cmd run build
+
+sitemap generated: total 261 URLs (core 17, blog 13, lessons 79, topics 152, quiz 0)
+static route HTML generated: 555 pages (core 18, blog 12, lessons 373, topics 152, quiz 0)
+seo audit passed: 555 static pages, 261 submitted URLs, 294 noindex pages, quiz 0
+```
+
+```text
+node home visible text count
+1108
+
+Select-String -Path dist\index.html -Pattern 'QuestDP 는 무엇인가|ADsP 커리큘럼|SQLD 커리큘럼|컴활 커리큘럼|data-seo-home-fallback="true"'
+dist\index.html:182:      <main class="qdp-home-fallback" data-seo-home-fallback="true">
+dist\index.html:211:              <h2 id="qdp-home-fact-title">QuestDP 는 무엇인가</h2>
+dist\index.html:215:              <a href="/curriculum/adsp">ADsP 커리큘럼</a>
+dist\index.html:216:              <a href="/curriculum/sqld">SQLD 커리큘럼</a>
+dist\index.html:217:              <a href="/curriculum/comhwal">컴활 커리큘럼</a>
+```
+
+### 사람 결정 대기
+
+- 없음.
+
 ## WAVE 1 검수 요청
 
 ### 로컬 커밋

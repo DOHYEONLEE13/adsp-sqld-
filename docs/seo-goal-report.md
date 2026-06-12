@@ -358,6 +358,145 @@ seo audit passed: 555 static pages, 262 submitted URLs, 293 noindex pages, quiz 
 
 - 없음.
 
+## Mission J: Font Loading Optimization
+
+### 변경 파일
+
+- `index.html`
+- `docs/seo-goal-report.md`
+
+### 핵심 결정과 이유
+
+- Google Fonts 요청을 한 덩어리에서 세 덩어리로 분리.
+- `Noto Sans KR`은 한국어 본문·제목 기본 글꼴이므로 일반 stylesheet로 우선 로드 유지.
+- `Sora`, `Condiment`, `Gaegu`는 `media="print"` + `onload="this.media='all'"` 패턴으로 비차단 로드.
+- 모든 Google Fonts 요청에 `display=swap`을 유지해 FOIT를 피하고 FOUT를 허용.
+- `<noscript>` fallback을 추가해 JavaScript 비활성 환경에서도 Sora·장식 폰트 CSS가 로드되도록 처리.
+
+### 검증 출력
+
+```text
+npm.cmd run typecheck
+> questdp@0.1.0 typecheck
+> tsc --noEmit
+```
+
+```text
+npm.cmd test -- --run
+
+RUN  v4.1.5 C:/Users/이도현/Desktop/.claude/worktrees/hardcore-shamir-47f5ab
+Test Files  38 passed (38)
+Tests  534 passed (534)
+```
+
+```text
+npm.cmd run build
+
+sitemap generated: total 261 URLs (core 17, blog 13, lessons 79, topics 152, quiz 0)
+static route HTML generated: 558 pages (core 21, blog 12, lessons 373, topics 152, quiz 0)
+seo audit passed: 558 static pages, 261 submitted URLs, 297 noindex pages, quiz 0
+```
+
+```text
+Select-String -Path dist\index.html -Pattern 'fonts.googleapis.com/css2|media="print"|onload="this.media=''all''"|Noto\+Sans\+KR|Sora|Condiment|Gaegu'
+dist\index.html:130: href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap"
+dist\index.html:135: href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800&display=swap"
+dist\index.html:137: media="print"
+dist\index.html:138: onload="this.media='all'"
+dist\index.html:141: href="https://fonts.googleapis.com/css2?family=Condiment&family=Gaegu:wght@400;700&display=swap"
+dist\index.html:143: media="print"
+dist\index.html:144: onload="this.media='all'"
+dist\index.html:148: href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800&display=swap"
+dist\index.html:152: href="https://fonts.googleapis.com/css2?family=Condiment&family=Gaegu:wght@400;700&display=swap"
+```
+
+### 브라우저 확인
+
+로컬 `npm preview`와 Python background server는 이 Windows 실행 환경에서 `Access is denied`로 시작되지 않았다. 대신 in-app Browser 검증용 Node REPL 임시 정적 서버를 열어 `dist` 산출물을 같은 origin에서 서빙했고, 검증 후 서버는 종료 대상으로 남겼다. 브라우저 스크린샷은 도구 결과로 4장 캡처했다.
+
+```text
+landing
+url: http://127.0.0.1:64515/
+title: QuestDP — ADsP·SQLD·컴활 자격증 학습사이트 | 게임형 문제풀이
+h1: ADSP, SQLD컴활까지놀면서 합격!
+viewport: 431x809
+visibleTextChars: 2067
+fontLinks:
+- Noto Sans KR: media=""
+- Sora: media="all", onload="this.media='all'"
+- Condiment + Gaegu: media="all", onload="this.media='all'"
+```
+
+```text
+game route
+url: http://127.0.0.1:64515/game/comhwal#/onboarding
+text: 안녕! 나는 토리라고 해. 시작하기 전에 몇 가지만 물어볼게! 시작
+viewport: 431x809
+결과: 새 로컬 프로필이라 온보딩 화면으로 진입. 텍스트 깨짐·겹침 없음.
+```
+
+```text
+game route after local onboarding seed
+url: http://127.0.0.1:64599/game/comhwal#/login
+text: 권한 확인 중...
+viewport: 431x809
+결과: 임시 origin에는 로그인 세션이 없어 AuthGuard가 로그인 경로로 이동. 게임 진입 경로의 폰트 링크와 인증 화면 렌더는 정상.
+```
+
+```text
+blog
+url: http://127.0.0.1:64515/blog/comhwal-1%EA%B8%89-vs-2%EA%B8%89/
+title: 컴활 1급 vs 2급 — 처음이면 어디부터 볼까 — QuestDP
+h1: 컴활 1급 vs 2급 — 처음이면 어디부터 볼까
+viewport: 431x809
+visibleTextChars: 1446
+결과: 블로그 본문과 표가 모바일 폭에서 정상 렌더. 텍스트 깨짐·겹침 없음.
+```
+
+```text
+browser console error check
+consoleErrors: []
+```
+
+### 사람 결정 대기
+
+- PageSpeed Insights / Core Web Vitals 실측은 배포 후 프로덕션 URL에서 의뢰인이 확인.
+
+## WAVE 2 검수 요청
+
+### 로컬 커밋
+
+```text
+b62ee8c seo(I): add exam schedule hub templates
+33a2197 seo(H): expand glossary terms
+1fbb23c seo(G): add home fact block
+50df900 seo(F): add curriculum exam facts
+e76e4ce seo(A2): drop duplicated lesson from index whitelist
+```
+
+참고: `seo(J): optimize font loading`은 이 검수 요청 섹션을 포함하는 현재 미션 커밋이다.
+
+### 최종 검증 상태
+
+- `npm.cmd run typecheck` 통과.
+- `npm.cmd test -- --run` 통과: 38 files / 534 tests.
+- `npm.cmd run build` 통과: `seo audit passed: 558 static pages, 261 submitted URLs, 297 noindex pages, quiz 0`.
+- `/exams/*`는 정적 HTML 생성 + noindex 유지 + sitemap 제출 0건.
+- `/quiz/`는 전체 sitemap에서 0건 유지.
+- 폰트는 Noto Sans KR 우선 로드, Sora·Condiment·Gaegu 비차단 로드로 전환.
+- push는 실행하지 않음.
+
+### 사람 결정 대기 요약
+
+| 항목 | 결정 필요 |
+| --- | --- |
+| Mission I | ADsP 회차명·접수 기간·시험일·발표일 공식 값 입력 |
+| Mission I | SQLD 회차명·접수 기간·시험일·발표일 공식 값 입력 |
+| Mission I | 컴활 상시시험 정보를 어떤 단위로 공개할지 결정 후 공식 값 입력 |
+| Mission J | 배포 후 PageSpeed Insights / CLS 실측 |
+
+검수 시작점 커밋 해시: `f9c52b2`.
+
 ## Mission I: Exam Schedule Hub Templates
 
 ### 변경 파일

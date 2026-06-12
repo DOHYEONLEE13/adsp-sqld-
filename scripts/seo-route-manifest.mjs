@@ -12,6 +12,7 @@ const LESSONS_ROOT = path.join(REPO_ROOT, 'src/data/lessons');
 const BLOG_FILE = path.join(REPO_ROOT, 'src/data/seo/blog.ts');
 const FAQ_FILE = path.join(REPO_ROOT, 'src/data/seo/faq.ts');
 const GLOSSARY_FILE = path.join(REPO_ROOT, 'src/data/seo/glossary.ts');
+const EXAM_SCHEDULE_FILE = path.join(REPO_ROOT, 'src/data/seo/examSchedule.ts');
 const COMHWAL_CONCEPT_FILE = path.join(REPO_ROOT, 'src/data/comhwal/concepts.ts');
 const COMHWAL_EXPANSION_CONCEPT_FILE = path.join(
   REPO_ROOT,
@@ -621,7 +622,8 @@ export function getSeoRouteManifest() {
   const lessons = collectLessonRoutes();
   const topics = collectComhwalTopicRoutes();
   const glossaryTerms = parseGlossaryTerms();
-  const core = CORE_ROUTES.map((route) =>
+  const examRoutes = collectExamRoutes();
+  const core = [...CORE_ROUTES, ...examRoutes].map((route) =>
     normalizeRoute(enhanceCoreRoute(route, { blogPosts, lessons, topics, glossaryTerms })),
   );
   const all = [...core, ...blogPosts, ...lessons, ...topics];
@@ -636,6 +638,49 @@ export function canonicalForPath(routePath) {
     ? routePath.slice(0, -1)
     : routePath;
   return `${SITE_ORIGIN}${encodeURI(cleanPath)}/`;
+}
+
+function collectExamRoutes() {
+  return parseExamScheduleHubs().map((hub) => {
+    const indexable = hasPublishedExamSchedule(hub);
+    const curriculumPath = hub.subject === 'comhwal' ? '/curriculum/comhwal' : `/curriculum/${hub.subject}`;
+    return {
+      group: 'core',
+      path: `/exams/${hub.subject}`,
+      changefreq: indexable ? 'weekly' : 'monthly',
+      priority: indexable ? '0.72' : '0.1',
+      indexable,
+      title: `${hub.label} 시험 회차 허브 — QuestDP`,
+      description: hub.description,
+      h1: `${hub.label} 시험 회차 허브`,
+      eyebrow: 'Exam Hub',
+      summary: indexable
+        ? `${hub.examName} 회차별 접수기간, 시험일, 발표일을 공식 기준으로 정리합니다.`
+        : `${hub.examName} 회차 허브는 공식 일정 입력 전 템플릿 상태입니다. TODO 데이터가 남아 있어 sitemap에는 제출하지 않습니다.`,
+      links: [
+        { href: curriculumPath, label: `${hub.label} 커리큘럼` },
+        { href: hub.officialUrl, label: `${hub.sourceLabel} 공식 안내` },
+      ],
+      staticContentHtml: renderExamScheduleStaticContent(hub),
+      jsonLd: [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'WebPage',
+          name: `${hub.label} 시험 회차 허브`,
+          description: hub.description,
+          url: canonicalForPath(`/exams/${hub.subject}`),
+          inLanguage: 'ko-KR',
+          isAccessibleForFree: true,
+          about: hub.examName,
+        },
+        breadcrumbJsonLd([
+          ['홈', '/'],
+          [hub.label, curriculumPath],
+          ['시험 회차 허브', `/exams/${hub.subject}`],
+        ]),
+      ],
+    };
+  });
 }
 
 function collectBlogRoutes() {
@@ -976,6 +1021,78 @@ function parseGlossaryTerms() {
       relatedStepId: readStringProp(chunk, 'relatedStepId'),
     }))
     .filter((term) => term.slug && term.term && term.short && term.analogy && term.examPoint);
+}
+
+function parseExamScheduleHubs() {
+  if (!fs.existsSync(EXAM_SCHEDULE_FILE)) return [];
+  const src = fs.readFileSync(EXAM_SCHEDULE_FILE, 'utf8');
+  const root = extractObjectAfterMarker(src, 'export const EXAM_SCHEDULE_HUBS');
+  return ['adsp', 'sqld', 'comhwal']
+    .map((subject) => {
+      const chunk = extractObjectAfterProperty(root, subject);
+      if (!chunk) return null;
+      const roundsArray = extractArrayAfterProperty(chunk, 'rounds') || '';
+      const rounds = extractTopLevelObjectLiterals(roundsArray).map((roundChunk) => ({
+        round: cleanText(readStringProp(roundChunk, 'round')),
+        registrationPeriod: cleanText(readStringProp(roundChunk, 'registrationPeriod')),
+        examDate: cleanText(readStringProp(roundChunk, 'examDate')),
+        resultDate: cleanText(readStringProp(roundChunk, 'resultDate')),
+        note: cleanText(readStringProp(roundChunk, 'note')),
+      }));
+      return {
+        subject,
+        label: cleanText(readStringProp(chunk, 'label')),
+        examName: cleanText(readStringProp(chunk, 'examName')),
+        officialUrl: readStringProp(chunk, 'officialUrl'),
+        sourceLabel: cleanText(readStringProp(chunk, 'sourceLabel')),
+        description: cleanText(readStringProp(chunk, 'description')),
+        rounds,
+      };
+    })
+    .filter(Boolean);
+}
+
+function hasPublishedExamSchedule(hub) {
+  return hub.rounds.length > 0 && hub.rounds.every((round) =>
+    isScheduleValueFilled(round.round) &&
+    isScheduleValueFilled(round.registrationPeriod) &&
+    isScheduleValueFilled(round.examDate) &&
+    isScheduleValueFilled(round.resultDate),
+  );
+}
+
+function isScheduleValueFilled(value) {
+  return String(value || '').trim() !== '' && String(value || '').trim() !== 'TODO';
+}
+
+function renderExamScheduleStaticContent(hub) {
+  const rows = hub.rounds.map((round) =>
+    [
+      '<tr>',
+      `<td>${escapeHtml(round.round)}</td>`,
+      `<td>${escapeHtml(round.registrationPeriod)}</td>`,
+      `<td>${escapeHtml(round.examDate)}</td>`,
+      `<td>${escapeHtml(round.resultDate)}</td>`,
+      `<td>${escapeHtml(round.note || '-')}</td>`,
+      '</tr>',
+    ].join(''),
+  );
+  const isPublished = hasPublishedExamSchedule(hub);
+  return [
+    '<section class="seo-static-section">',
+    `<h2>${escapeHtml(hub.examName)} 회차 데이터 상태</h2>`,
+    `<p>${escapeHtml(hub.description)}</p>`,
+    '<table><thead><tr><th>회차</th><th>접수 기간</th><th>시험일</th><th>발표일</th><th>메모</th></tr></thead>',
+    `<tbody>${rows.join('')}</tbody></table>`,
+    isPublished
+      ? '<p>공식 일정 확인이 끝난 회차만 이 페이지에 게시합니다.</p>'
+      : '<p>현재 이 페이지는 일정 데이터가 TODO 상태라 검색엔진에 제출하지 않습니다.</p>',
+    '</section>',
+    '<section class="seo-static-section">',
+    '<h2>공식 확인 링크</h2>',
+    `<p>일정, 접수 기간, 발표일, 응시료는 ${escapeHtml(hub.sourceLabel)} 공식 사이트에서 확인한 뒤 입력합니다. <a href="${escapeHtml(hub.officialUrl)}">공식 사이트 확인</a></p>`,
+    '</section>',
+  ].join('\n');
 }
 
 function renderGlossaryStaticContent(terms) {
@@ -1683,6 +1800,30 @@ function extractTopLevelObjectsFromArrayAfterMarker(src, marker) {
   const closeIndex = findMatching(src, openIndex, '[', ']');
   if (closeIndex < openIndex) return [];
   return extractTopLevelObjectLiterals(src.slice(openIndex + 1, closeIndex));
+}
+
+function extractObjectAfterMarker(src, marker) {
+  const markerIndex = src.indexOf(marker);
+  if (markerIndex < 0) return '';
+  const equalsIndex = src.indexOf('=', markerIndex);
+  if (equalsIndex < 0) return '';
+  const openIndex = src.indexOf('{', equalsIndex);
+  if (openIndex < 0) return '';
+  const closeIndex = findMatching(src, openIndex, '{', '}');
+  if (closeIndex < openIndex) return '';
+  return src.slice(openIndex, closeIndex + 1);
+}
+
+function extractObjectAfterProperty(src, prop) {
+  const propIndex = findPropertyIndex(src, prop);
+  if (propIndex < 0) return '';
+  const colon = src.indexOf(':', propIndex);
+  if (colon < 0) return '';
+  const openIndex = src.indexOf('{', colon);
+  if (openIndex < 0) return '';
+  const closeIndex = findMatching(src, openIndex, '{', '}');
+  if (closeIndex < openIndex) return '';
+  return src.slice(openIndex, closeIndex + 1);
 }
 
 function extractTopicCallChunksAfterMarker(src, marker) {

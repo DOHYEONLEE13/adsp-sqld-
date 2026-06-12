@@ -135,6 +135,12 @@ for (const route of manifest.all) {
         fail(`Glossary DefinedTerm JSON-LD count mismatch: ${definedTermCount}, expected 50`);
       }
     }
+    if (route.path.startsWith('/exams/')) {
+      const hasTodoSchedule = /\bTODO\b/.test(html);
+      if (isIndexableRoute(route) && hasTodoSchedule) {
+        fail(`Indexable exam schedule page still contains TODO data: ${route.path}`);
+      }
+    }
   }
 }
 

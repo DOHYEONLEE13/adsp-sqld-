@@ -358,6 +358,103 @@ seo audit passed: 555 static pages, 262 submitted URLs, 293 noindex pages, quiz 
 
 - 없음.
 
+## Mission I: Exam Schedule Hub Templates
+
+### 변경 파일
+
+- `src/data/seo/examSchedule.ts`
+- `src/pages/ExamSchedulePage.tsx`
+- `src/App.tsx`
+- `scripts/seo-route-manifest.mjs`
+- `scripts/generate-sitemap.mjs`
+- `scripts/seo-audit.mjs`
+- `public/_redirects`
+- `docs/seo-goal-report.md`
+
+### 핵심 결정과 이유
+
+- `/exams/adsp`, `/exams/sqld`, `/exams/comhwal` 회차 허브 템플릿을 추가.
+- 일정·접수기간·발표일·응시료는 변동 값이므로 직접 추측하지 않음. 현재 모든 회차 필드는 `TODO` 상태.
+- `TODO`가 하나라도 남은 회차 허브는 `indexable=false`로 처리하고, 정적 HTML에는 `<meta name="robots" content="noindex" />`를 출력.
+- 정적 HTML 파일은 생성하지만 `sitemap-core.xml`에는 제출하지 않음.
+- `seo-audit`가 noindex URL의 sitemap 누출을 막고, indexable 회차 페이지에 `TODO`가 남으면 실패하도록 확장.
+- Cloudflare catch-all이 없으므로 `/exams/*` 직접 접근을 위해 `_redirects`에 정적 HTML rewrite를 명시.
+
+### 검증 출력
+
+```text
+node manifest exam check
+examRoutes 3
+/exams/adsp indexable=false priority=0.1
+/exams/sqld indexable=false priority=0.1
+/exams/comhwal indexable=false priority=0.1
+core 21
+all 558
+```
+
+```text
+npm.cmd run typecheck
+> questdp@0.1.0 typecheck
+> tsc --noEmit
+```
+
+```text
+npm.cmd test -- --run
+
+RUN  v4.1.5 C:/Users/이도현/Desktop/.claude/worktrees/hardcore-shamir-47f5ab
+Test Files  38 passed (38)
+Tests  534 passed (534)
+```
+
+```text
+npm.cmd run build
+
+sitemap generated: total 261 URLs (core 17, blog 13, lessons 79, topics 152, quiz 0)
+static route HTML generated: 558 pages (core 21, blog 12, lessons 373, topics 152, quiz 0)
+seo audit passed: 558 static pages, 261 submitted URLs, 297 noindex pages, quiz 0
+```
+
+```text
+(Select-String -Path dist\sitemap-core.xml -Pattern '/exams/' -AllMatches).Matches.Count
+0
+
+(Select-String -Path dist\sitemap.xml,dist\sitemap-core.xml,dist\sitemap-blog.xml,dist\sitemap-lessons.xml,dist\sitemap-topics.xml -Pattern '/quiz/' -AllMatches).Matches.Count
+0
+```
+
+```text
+Select-String -Path dist\exams\adsp\index.html,dist\exams\sqld\index.html,dist\exams\comhwal\index.html -Pattern 'name="robots" content="noindex"|TODO|시험 회차 허브|공식 사이트 확인' | Select-Object -First 30
+dist\exams\adsp\index.html:21:    <title>ADsP 시험 회차 허브 — QuestDP</title>
+dist\exams\adsp\index.html:142:      <meta name="robots" content="noindex" />
+dist\exams\adsp\index.html:183:          <p>데이터분석준전문가(ADsP) 회차 허브는 공식 일정 입력 전 템플릿 상태입니다. TODO 데이터가 남아 있어 sitemap에는 제출하지 않습니다.</p>
+dist\exams\adsp\index.html:189:<tbody><tr><td>TODO</td><td>TODO</td><td>TODO</td><td>TODO</td><td>KDATA 공식 일정 공지 확인 후 입력</td></tr></tbody></table>
+dist\exams\adsp\index.html:194:<p>일정, 접수 기간, 발표일, 응시료는 KDATA 데이터자격검정 공식 사이트에서 확인한 뒤 입력합니다. <a href="https://www.dataq.or.kr/www/sub/a_06.do">공식 사이트 확인</a></p>
+dist\exams\sqld\index.html:21:    <title>SQLD 시험 회차 허브 — QuestDP</title>
+dist\exams\sqld\index.html:142:      <meta name="robots" content="noindex" />
+dist\exams\sqld\index.html:183:          <p>SQL 개발자(SQLD) 회차 허브는 공식 일정 입력 전 템플릿 상태입니다. TODO 데이터가 남아 있어 sitemap에는 제출하지 않습니다.</p>
+dist\exams\sqld\index.html:189:<tbody><tr><td>TODO</td><td>TODO</td><td>TODO</td><td>TODO</td><td>KDATA 공식 일정 공지 확인 후 입력</td></tr></tbody></table>
+dist\exams\sqld\index.html:194:<p>일정, 접수 기간, 발표일, 응시료는 KDATA 데이터자격검정 공식 사이트에서 확인한 뒤 입력합니다. <a href="https://www.dataq.or.kr/www/sub/a_04.do">공식 사이트 확인</a></p>
+dist\exams\comhwal\index.html:21:    <title>컴활 시험 회차 허브 — QuestDP</title>
+dist\exams\comhwal\index.html:142:      <meta name="robots" content="noindex" />
+```
+
+```text
+Select-String -Path dist\_redirects -Pattern '^/exams'
+dist\_redirects:87:/exams/adsp          /exams/adsp/index.html          200
+dist\_redirects:88:/exams/adsp/         /exams/adsp/index.html          200
+dist\_redirects:89:/exams/sqld          /exams/sqld/index.html          200
+dist\_redirects:90:/exams/sqld/         /exams/sqld/index.html          200
+dist\_redirects:91:/exams/comhwal       /exams/comhwal/index.html       200
+dist\_redirects:92:/exams/comhwal/      /exams/comhwal/index.html       200
+```
+
+### 사람 결정 대기
+
+- ADsP 공식 회차명, 접수 기간, 시험일, 합격자 발표일 입력 필요.
+- SQLD 공식 회차명, 접수 기간, 시험일, 합격자 발표일 입력 필요.
+- 컴활은 지역·상시시험 기준으로 공개할 일정 단위를 정한 뒤 접수·시험·발표 정보를 입력해야 함.
+- 위 필드가 모두 채워진 과목만 sitemap 제출 대상으로 전환.
+
 ## WAVE 1 검수 결과 반영
 
 검수자 결정 사항:

@@ -20,14 +20,14 @@ const groups = [
   {
     file: 'sitemap-core.xml',
     label: 'core',
-    routes: manifest.core.filter((route) => route.path !== '/blog'),
+    routes: manifest.core.filter((route) => route.path !== '/blog' && isIndexableRoute(route)),
   },
   {
     file: 'sitemap-blog.xml',
     label: 'blog',
     routes: [
-      ...manifest.core.filter((route) => route.path === '/blog'),
-      ...manifest.blog,
+      ...manifest.core.filter((route) => route.path === '/blog' && isIndexableRoute(route)),
+      ...manifest.blog.filter(isIndexableRoute),
     ],
   },
   {
@@ -38,7 +38,7 @@ const groups = [
   {
     file: 'sitemap-topics.xml',
     label: 'topics',
-    routes: manifest.topics,
+    routes: manifest.topics.filter(isIndexableRoute),
   },
 ];
 

@@ -84,4 +84,10 @@
 /faq/sqld/           /faq/sqld/index.html            200
 /faq/comhwal         /faq/comhwal/index.html         200
 /faq/comhwal/        /faq/comhwal/index.html         200
+/exams/adsp          /exams/adsp/index.html          200
+/exams/adsp/         /exams/adsp/index.html          200
+/exams/sqld          /exams/sqld/index.html          200
+/exams/sqld/         /exams/sqld/index.html          200
+/exams/comhwal       /exams/comhwal/index.html       200
+/exams/comhwal/      /exams/comhwal/index.html       200
 /topics/comhwal/computer-general/*  /topics/comhwal/computer-general/:splat/index.html  200

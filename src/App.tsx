@@ -75,6 +75,7 @@ const CurriculumPage = lazy(() => import('./pages/CurriculumPage'));
 const FaqPage = lazy(() => import('./pages/FaqPage'));
 const ComhwalTopicPage = lazy(() => import('./pages/ComhwalTopicPage'));
 const GlossaryPage = lazy(() => import('./pages/GlossaryPage'));
+const ExamSchedulePage = lazy(() => import('./pages/ExamSchedulePage'));
 const BlogIndexPage = lazy(() => import('./pages/BlogIndexPage'));
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
 const GamePage = lazy(() => import('./game/GamePage'));
@@ -118,6 +119,7 @@ type Route =
   | 'faq'
   | 'comhwal-topic'
   | 'glossary'
+  | 'exam-schedule'
   | 'blog-index'
   | 'blog-post'
   | 'pricing'
@@ -142,6 +144,8 @@ interface RouteState {
   /** `/topics/comhwal/:planetKey/:topicId` — 실제 카드가 있는 컴활 토픽 SEO 페이지. */
   topicPlanetKey?: string;
   topicId?: string;
+  /** `/exams/:subject` — 시험 회차 허브 템플릿. */
+  examSubject?: 'adsp' | 'sqld' | 'comhwal';
   /** `/blog/:slug` — Tier 2 SEO 블로그 포스트. */
   blogSlug?: string;
 }
@@ -329,6 +333,13 @@ function getRoute(): RouteState {
   if (allowPathRoutes && (pathname === '/glossary' || pathname === '/glossary/')) {
     return { route: 'glossary' };
   }
+  // Tier 2 — 시험 회차 허브 템플릿. `/exams/adsp` · `/exams/sqld` · `/exams/comhwal`
+  if (allowPathRoutes && pathname.startsWith('/exams/')) {
+    const sub = pathname.slice('/exams/'.length).split('/')[0];
+    if (sub === 'adsp' || sub === 'sqld' || sub === 'comhwal') {
+      return { route: 'exam-schedule', examSubject: sub };
+    }
+  }
   // Tier 2 — 블로그 인덱스 + 포스트. `/blog`, `/blog/:slug`
   if (allowPathRoutes && (pathname === '/blog' || pathname === '/blog/')) {
     return { route: 'blog-index' };
@@ -397,6 +408,7 @@ export default function App() {
       faqSubject,
       topicPlanetKey,
       topicId,
+      examSubject,
       blogSlug,
     },
     setRouteState,
@@ -783,6 +795,10 @@ export default function App() {
 
     if (route === 'glossary') {
       return <GlossaryPage />;
+    }
+
+    if (route === 'exam-schedule' && examSubject) {
+      return <ExamSchedulePage subject={examSubject} />;
     }
 
     if (route === 'blog-index') {

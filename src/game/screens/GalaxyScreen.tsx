@@ -5824,19 +5824,25 @@ function ComhwalPartReviewStudyScreen({
   );
   const correctCardIdsRef = useRef<Set<string>>(new Set());
   const questionStartedAtRef = useRef(Date.now());
+  const reviewConceptTurns: { pose: QuesPose; text: string }[] = cards.map(
+    (card, index) => {
+      const title = card.title.replace(/\s*핵심$/, '');
+      const summary = compactComhwalReviewText(
+        card.keyPoints[0] ?? card.body,
+        48,
+      );
+      return {
+        pose: index % 2 === 0 ? 'lightbulb' : 'think',
+        text: `${String(index + 1).padStart(2, '0')} ${title}. ${summary}`,
+      };
+    },
+  );
   const turns: { pose: QuesPose; text: string }[] = [
     {
       pose: 'wave',
-      text: `${section?.title ?? '이 PART'} 전체를 한 번에 다시 묶어볼게.`,
+      text: `${section?.title ?? '이 PART'} 전체를 한 번에 다시 묶어볼게. 지도 ${cards.length}개를 순서대로 보고 대표 문제 ${questionCards.length}개로 확인하자.`,
     },
-    {
-      pose: 'lightbulb',
-      text: '아래 지도에서 각 개념이 어떤 역할인지 먼저 잡아보자.',
-    },
-    {
-      pose: 'think',
-      text: `대표 문제 ${questionCards.length}개로 마무리 확인해보자.`,
-    },
+    ...reviewConceptTurns,
   ];
   const activeQuestionCard = questionCards[quizIdx];
   const activeQuestion = activeQuestionCard?.question;

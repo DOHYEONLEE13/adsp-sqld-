@@ -3655,6 +3655,159 @@ function reviewDiagramItems(step: LessonStep) {
   });
 }
 
+const REVIEW_TONE_HEX: Record<VisualTone, string> = {
+  cyan: '#67e8f9',
+  lime: '#d1f843',
+  violet: '#c084fc',
+  amber: '#ffb020',
+  red: '#ff6b6b',
+  muted: '#8fa3c8',
+};
+
+/**
+ * Part 복습 공용 "여정 타임라인" — 로드맵 메타포를 복습 지도에 재사용.
+ * 좌측 스파인 위에 단계 노드가 놓이고, 지나온 구간은 톤 그라데이션으로
+ * 채워진다. 현재 단계만 칩이 펼쳐져 세로 길이를 절제하고, 지나온/다가올
+ * 단계도 읽을 수 있는 명도를 유지한다 (기존 text-cream/34 가독성 문제 해소).
+ */
+function ReviewJourneyStages({
+  stages,
+  activeIndex,
+}: {
+  stages: Array<{
+    no: string;
+    title: string;
+    sub: string;
+    chips?: string[];
+    tone: VisualTone;
+  }>;
+  activeIndex: number;
+}) {
+  const current = Math.max(0, Math.min(activeIndex, stages.length - 1));
+
+  return (
+    <div>
+      {stages.map((stage, index) => {
+        const state =
+          index === current ? 'active' : index < current ? 'done' : 'next';
+        const hex = REVIEW_TONE_HEX[stage.tone];
+        const nextHex =
+          index < stages.length - 1 ? REVIEW_TONE_HEX[stages[index + 1].tone] : hex;
+        return (
+          <div
+            key={stage.no}
+            className="grid grid-cols-[36px_minmax(0,1fr)] gap-x-3"
+          >
+            {/* 스파인 노드 + 커넥터 */}
+            <div className="flex flex-col items-center">
+              <motion.div
+                className="grid h-9 w-9 shrink-0 place-items-center rounded-full border kr-num text-[10px] font-black"
+                style={
+                  state === 'active'
+                    ? {
+                        borderColor: hex,
+                        background: `${hex}26`,
+                        color: 'var(--cream)',
+                        boxShadow: `0 0 0 3px ${hex}21, 0 0 16px ${hex}55`,
+                      }
+                    : state === 'done'
+                      ? {
+                          borderColor: `${hex}59`,
+                          background: `${hex}14`,
+                          color: hex,
+                        }
+                      : {
+                          borderColor: 'rgba(239,244,255,0.16)',
+                          background: 'rgba(2,11,36,0.55)',
+                          color: 'rgba(239,244,255,0.5)',
+                        }
+                }
+                initial={false}
+                animate={{ scale: state === 'active' ? 1.07 : 1 }}
+                transition={{ type: 'spring', stiffness: 420, damping: 26 }}
+              >
+                {state === 'done' ? <Check size={13} strokeWidth={3.2} /> : stage.no}
+              </motion.div>
+              {index < stages.length - 1 ? (
+                <div
+                  className="my-1 w-[2px] flex-1 rounded-full"
+                  style={
+                    index < current
+                      ? {
+                          background: `linear-gradient(180deg, ${hex}aa, ${nextHex}66)`,
+                          boxShadow: `0 0 6px ${hex}33`,
+                        }
+                      : { background: 'rgba(239,244,255,0.09)' }
+                  }
+                  aria-hidden
+                />
+              ) : null}
+            </div>
+
+            {/* 단계 카드 */}
+            <motion.div
+              className={
+                'mb-2 rounded-[18px] border px-3 py-2.5 transition-colors ' +
+                (state === 'active'
+                  ? visualToneClass(stage.tone)
+                  : state === 'done'
+                    ? 'border-cream/12 bg-white/[0.04] text-cream/75'
+                    : 'border-cream/8 bg-white/[0.02] text-cream/55')
+              }
+              style={
+                state === 'active'
+                  ? { boxShadow: `0 0 0 1px ${hex}2e, 0 12px 30px -20px ${hex}66` }
+                  : undefined
+              }
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.16, delay: index * 0.035 }}
+            >
+              <div
+                className={
+                  'kr-heading text-[14.5px] leading-tight ' +
+                  (state === 'next' ? 'text-cream/75' : 'text-cream')
+                }
+              >
+                {stage.title}
+              </div>
+              <div
+                className={
+                  'kr-body mt-0.5 text-[11px] font-bold leading-snug ' +
+                  (state === 'active'
+                    ? 'opacity-75'
+                    : state === 'done'
+                      ? 'text-cream/55'
+                      : 'text-cream/42')
+                }
+              >
+                {stage.sub}
+              </div>
+              {state === 'active' && stage.chips && stage.chips.length > 0 ? (
+                <motion.div
+                  className="mt-2 flex flex-wrap gap-1.5"
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.18, delay: 0.05 }}
+                >
+                  {stage.chips.map((chip) => (
+                    <span
+                      key={chip}
+                      className="rounded-full border border-current/14 bg-[#020b24]/40 px-2 py-1 kr-body text-[10px] font-black leading-none"
+                    >
+                      {chip}
+                    </span>
+                  ))}
+                </motion.div>
+              ) : null}
+            </motion.div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function PartReviewConceptDiagram({
   step,
   subject,
@@ -3665,7 +3818,8 @@ function PartReviewConceptDiagram({
   turnIdx: number;
 }) {
   const items = reviewDiagramItems(step);
-  const activeIndex = items.length > 0 ? Math.min(turnIdx, items.length - 1) : -1;
+  if (items.length === 0) return null;
+  const activeIndex = Math.min(turnIdx, items.length - 1);
 
   return (
     <LearningVisualFrame
@@ -3673,42 +3827,7 @@ function PartReviewConceptDiagram({
       title="흩어진 개념을 한 장 흐름도로 다시 묶기"
       caption="밝게 켜진 카드부터 따라가며 큰 역할을 먼저 붙여. 세부 용어는 그다음에 연결하면 대표 문제를 풀 때 선지가 빠르게 정리돼."
     >
-      <div className="grid gap-2">
-        {items.map((item, index) => {
-          const active = activeIndex < 0 || activeIndex === index;
-          const dim = activeIndex >= 0 && !active;
-          return (
-            <motion.div
-              key={item.no}
-              className={
-                'rounded-[18px] border px-3 py-3 transition-colors ' +
-                (active
-                  ? `${visualToneClass(item.tone)} shadow-[0_0_0_1px_rgba(103,232,249,0.14)]`
-                  : dim
-                    ? 'border-cream/8 bg-white/[0.025] text-cream/34'
-                    : 'border-cream/10 bg-white/[0.035] text-cream/68')
-              }
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.16, delay: index * 0.035 }}
-            >
-              <div className="flex items-start gap-3">
-                <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-current/25 bg-black/18 kr-num text-[10px] font-black">
-                  {item.no}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="kr-heading text-[14px] leading-tight text-cream">
-                    {item.title}
-                  </div>
-                  <div className="kr-body mt-1 text-[11px] font-bold leading-snug opacity-72">
-                    {item.sub}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          );
-        })}
-      </div>
+      <ReviewJourneyStages stages={items} activeIndex={activeIndex} />
     </LearningVisualFrame>
   );
 }
@@ -4327,6 +4446,12 @@ function Adsp1ConceptDiagram({
         tone: 'cyan',
       },
     ];
+    const compares: Array<{ label: string; sub: string; tone: VisualTone }> = [
+      { label: 'DW / DM', sub: '분석용 창고 / 부서별 창고', tone: 'cyan' },
+      { label: 'Data Lake', sub: '원본을 먼저 담는 호수', tone: 'violet' },
+      { label: 'OLTP / OLAP', sub: '거래 처리 / 분석 처리', tone: 'lime' },
+      { label: 'BI / BA', sub: '보고서 / 예측·고급 분석', tone: 'amber' },
+    ];
     const activeIndex = Math.min(turnIdx, stages.length - 1);
 
     return (
@@ -4336,69 +4461,33 @@ function Adsp1ConceptDiagram({
         caption="왼쪽부터 순서대로 보면 Part 1이 이어져. 데이터가 의미로 올라가고, 종류와 지식 변환을 거쳐, 조직의 저장소와 기업 시스템으로 활용돼."
       >
         <div className="space-y-3">
-          <div className="grid gap-2">
-            {stages.map((stage, index) => {
-              const active = activeIndex < 0 || activeIndex === index;
-              const dim = activeIndex >= 0 && !active;
-              return (
-                <motion.div
-                  key={stage.no}
-                  className={
-                    'rounded-[19px] border px-3 py-3 transition-colors ' +
-                    (active
-                      ? `${visualToneClass(stage.tone)} shadow-[0_0_0_1px_rgba(103,232,249,0.14)]`
-                      : dim
-                        ? 'border-cream/8 bg-white/[0.025] text-cream/34'
-                        : 'border-cream/10 bg-white/[0.035] text-cream/68')
-                  }
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.16, delay: index * 0.035 }}
+          <ReviewJourneyStages stages={stages} activeIndex={activeIndex} />
+
+          {/* 범례 — 흐름이 아니라 "구분 쌍"이므로 화살표 없이 2×2 그리드 */}
+          <div className="rounded-[18px] border border-cream/10 bg-[#020b24]/45 p-2.5">
+            <div className="mb-2 px-0.5 kr-num text-[9px] font-black uppercase tracking-[0.16em] text-cream/45">
+              자주 헷갈리는 4쌍 — 한 줄 구분
+            </div>
+            <div className="grid grid-cols-2 gap-1.5">
+              {compares.map((item) => (
+                <div
+                  key={item.label}
+                  className={`rounded-[14px] border px-2.5 py-2 ${visualToneClass(item.tone)}`}
                 >
-                  <div className="flex items-start gap-3">
-                    <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-current/25 bg-black/18 kr-num text-[10px] font-black">
-                      {stage.no}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="kr-heading text-[15px] leading-tight text-cream">
-                        {stage.title}
-                      </div>
-                      <div className="kr-body mt-1 text-[11px] font-bold leading-snug opacity-72">
-                        {stage.sub}
-                      </div>
-                      <div className="mt-2 flex flex-wrap gap-1.5">
-                        {stage.chips.map((chip) => (
-                          <span
-                            key={chip}
-                            className="rounded-full border border-current/12 bg-[#020b24]/30 px-2 py-1 kr-body text-[10px] font-black leading-none opacity-74"
-                          >
-                            {chip}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
+                  <div className="kr-heading text-[12px] leading-tight">
+                    {item.label}
                   </div>
-                </motion.div>
-              );
-            })}
-          </div>
-
-          <div className="grid gap-2 sm:grid-cols-[1fr_24px_1fr] sm:items-center">
-            <div className="grid gap-2">
-              <VisualPill label="DW / DM" sub="분석용 창고 / 부서별 창고" tone="cyan" />
-              <VisualPill label="Data Lake" sub="원본을 먼저 담는 호수" tone="violet" />
-            </div>
-            <div className="hidden sm:block">
-              <ArrowStep />
-            </div>
-            <div className="grid gap-2">
-              <VisualPill label="OLTP / OLAP" sub="거래 처리 / 분석 처리" tone="lime" />
-              <VisualPill label="BI / BA" sub="보고서 / 예측·고급 분석" tone="amber" />
+                  <div className="kr-body mt-0.5 text-[10px] font-bold leading-snug opacity-70">
+                    {item.sub}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="rounded-[18px] border border-[#d1f843]/18 bg-[#d1f843]/8 px-3 py-2.5">
-            <div className="kr-body text-[11.5px] font-bold leading-[1.55] text-cream/68">
+          <div className="flex items-start gap-2.5 rounded-[18px] border border-[#d1f843]/20 bg-[#d1f843]/8 px-3 py-2.5">
+            <BadgeCheck size={14} strokeWidth={2.6} className="mt-0.5 shrink-0 text-[#d1f843]/85" />
+            <div className="kr-body text-[11.5px] font-bold leading-[1.55] text-cream/70">
               마지막 확인: 약어를 외우기 전에 “무슨 일을 하는가”를 먼저 붙여. 저장소인지,
               분석 창고인지, 거래 처리인지, 고객·공급망·지식 관리인지 구역이 잡히면 정답이 빨라져.
             </div>

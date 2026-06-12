@@ -23,6 +23,7 @@ import { handleNavClick } from '@/lib/navigate';
 const SUBJECT_BADGE: Record<GlossaryTerm['subject'], { label: string; color: string }> = {
   adsp: { label: 'ADsP', color: '#67e8f9' },
   sqld: { label: 'SQLD', color: '#c084fc' },
+  comhwal: { label: '컴활', color: '#7dd850' },
   common: { label: '공통', color: 'var(--neon)' },
 };
 
@@ -40,9 +41,9 @@ export default function GlossaryPage() {
     return Array.from(map.entries());
   }, []);
 
-  const seoTitle = `데이터 분석·SQL 용어 사전 — ADsP·SQLD 핵심 ${GLOSSARY.length}개 용어`;
+  const seoTitle = `ADsP·SQLD·컴활 용어 사전 — 핵심 ${GLOSSARY.length}개 용어`;
   const seoDescription =
-    `DIKW · 정규화 · JOIN · 윈도우 함수까지 — ADsP·SQLD 자격증 시험 단골 용어 ${GLOSSARY.length}개의 정의와 활용을 한 곳에서. 관련 lesson 페이지로 바로 점프 가능.`;
+    `DIKW · 정규화 · JOIN · 윈도우 함수 · 절대 참조까지 — ADsP·SQLD·컴활 시험 단골 용어 ${GLOSSARY.length}개의 정의와 시험 포인트를 한 곳에서 봅니다.`;
 
   // DefinedTermSet JSON-LD
   const definedTermSet = {
@@ -55,6 +56,7 @@ export default function GlossaryPage() {
       name: t.term,
       alternateName: t.aliases ?? [],
       description: t.short,
+      termCode: t.slug,
       inDefinedTermSet: canonical,
       url: `${canonical}#${t.slug}`,
     })),
@@ -94,21 +96,22 @@ export default function GlossaryPage() {
           aria-label="breadcrumb"
           className="kr-num text-[11px] text-cream/55 mb-3 flex items-center gap-1.5 flex-wrap"
         >
-          <span className="text-cream/85">데이터 분석·SQL 용어 사전</span>
+          <span className="text-cream/85">ADsP·SQLD·컴활 용어 사전</span>
         </nav>
 
         {/* H1 */}
         <header className="mb-10 pb-8 border-b border-cream/10">
           <h1 className="kr-heading text-[28px] md:text-[40px] lg:text-[44px] leading-[1.15] mb-3">
-            데이터 분석·SQL 용어 사전
+            ADsP·SQLD·컴활 용어 사전
           </h1>
           <p className="kr-body text-[14.5px] md:text-[15.5px] text-cream/75 leading-[1.65] mb-5 max-w-[700px]">
-            ADsP·SQLD 자격증 시험에 자주 등장하는 핵심 용어 {GLOSSARY.length}개를 한 곳에 모았어요.
-            짧은 정의와 보충 설명, 그리고 관련 학습 페이지로 바로 점프할 수 있는 링크.
+            ADsP·SQLD·컴활 시험에 자주 등장하는 핵심 용어 {GLOSSARY.length}개를 한 곳에 모았어요.
+            정의, 쉬운 비유, 시험 포인트를 같은 순서로 읽을 수 있습니다.
           </p>
           <div className="flex items-center gap-2 flex-wrap">
             <Tag color="#67e8f9">ADsP</Tag>
             <Tag color="#c084fc">SQLD</Tag>
+            <Tag color="#7dd850">컴활</Tag>
             <Tag color="var(--neon)">공통</Tag>
           </div>
         </header>
@@ -248,9 +251,24 @@ function TermCard({ term }: { term: GlossaryTerm }) {
       <p className="kr-body text-[13.5px] md:text-[14px] text-cream/90 leading-[1.6] mb-2">
         {term.short}
       </p>
-      <p className="kr-body text-[12.5px] md:text-[13px] text-cream/65 leading-[1.65] mb-3 whitespace-pre-line">
-        {term.detail}
-      </p>
+      <dl className="mb-3 space-y-2">
+        <div>
+          <dt className="kr-num mb-0.5 text-[10px] uppercase tracking-widest text-cream/42">
+            쉬운 비유
+          </dt>
+          <dd className="kr-body m-0 text-[12.5px] md:text-[13px] text-cream/65 leading-[1.65]">
+            {term.analogy}
+          </dd>
+        </div>
+        <div>
+          <dt className="kr-num mb-0.5 text-[10px] uppercase tracking-widest text-cream/42">
+            시험 포인트
+          </dt>
+          <dd className="kr-body m-0 text-[12.5px] md:text-[13px] text-cream/68 leading-[1.65]">
+            {term.examPoint}
+          </dd>
+        </div>
+      </dl>
 
       {lessonHref ? (
         <a

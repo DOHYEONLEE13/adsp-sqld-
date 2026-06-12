@@ -11,6 +11,7 @@ const REPO_ROOT = path.resolve(__dirname, '..');
 const LESSONS_ROOT = path.join(REPO_ROOT, 'src/data/lessons');
 const BLOG_FILE = path.join(REPO_ROOT, 'src/data/seo/blog.ts');
 const FAQ_FILE = path.join(REPO_ROOT, 'src/data/seo/faq.ts');
+const GLOSSARY_FILE = path.join(REPO_ROOT, 'src/data/seo/glossary.ts');
 const COMHWAL_CONCEPT_FILE = path.join(REPO_ROOT, 'src/data/comhwal/concepts.ts');
 const COMHWAL_EXPANSION_CONCEPT_FILE = path.join(
   REPO_ROOT,
@@ -619,8 +620,9 @@ export function getSeoRouteManifest() {
   const blogPosts = collectBlogRoutes();
   const lessons = collectLessonRoutes();
   const topics = collectComhwalTopicRoutes();
+  const glossaryTerms = parseGlossaryTerms();
   const core = CORE_ROUTES.map((route) =>
-    normalizeRoute(enhanceCoreRoute(route, { blogPosts, lessons, topics })),
+    normalizeRoute(enhanceCoreRoute(route, { blogPosts, lessons, topics, glossaryTerms })),
   );
   const all = [...core, ...blogPosts, ...lessons, ...topics];
   assertUniquePaths(all);
@@ -847,6 +849,35 @@ function enhanceCoreRoute(route, context) {
     };
   }
 
+  if (route.path === '/glossary') {
+    return {
+      ...route,
+      minSeoTextChars: 2500,
+      staticContentHtml: renderGlossaryStaticContent(context.glossaryTerms),
+      jsonLd: [
+        {
+          '@context': 'https://schema.org',
+          '@type': 'DefinedTermSet',
+          name: 'QuestDP ADsP·SQLD·컴활 용어 사전',
+          url: canonicalForPath(route.path),
+          hasDefinedTerm: context.glossaryTerms.map((term) => ({
+            '@type': 'DefinedTerm',
+            name: term.term,
+            alternateName: term.aliases,
+            description: term.short,
+            termCode: term.slug,
+            inDefinedTermSet: canonicalForPath(route.path),
+            url: `${canonicalForPath(route.path)}#${term.slug}`,
+          })),
+        },
+        breadcrumbJsonLd([
+          ['홈', '/'],
+          ['용어 사전', '/glossary'],
+        ]),
+      ],
+    };
+  }
+
   const faqSubject = route.path.match(/^\/faq\/(adsp|sqld|comhwal)$/)?.[1];
   if (faqSubject) {
     const faq = getFaqBySubject(faqSubject);
@@ -927,6 +958,58 @@ function getFaqBySubject(subject) {
       };
     })
     .find((faq) => faq.subject === subject) || null;
+}
+
+function parseGlossaryTerms() {
+  if (!fs.existsSync(GLOSSARY_FILE)) return [];
+  const src = fs.readFileSync(GLOSSARY_FILE, 'utf8');
+  return extractTopLevelObjectsFromArrayAfterMarker(src, 'export const GLOSSARY')
+    .map((chunk) => ({
+      slug: readStringProp(chunk, 'slug'),
+      term: cleanText(readStringProp(chunk, 'term')),
+      aliases: readStringArrayProp(chunk, 'aliases').map(cleanText).filter(Boolean),
+      subject: readStringProp(chunk, 'subject'),
+      category: cleanText(readStringProp(chunk, 'category')),
+      short: cleanText(readStringProp(chunk, 'short')),
+      analogy: cleanText(readStringProp(chunk, 'analogy')),
+      examPoint: cleanText(readStringProp(chunk, 'examPoint')),
+      relatedStepId: readStringProp(chunk, 'relatedStepId'),
+    }))
+    .filter((term) => term.slug && term.term && term.short && term.analogy && term.examPoint);
+}
+
+function renderGlossaryStaticContent(terms) {
+  const parts = [
+    '<section class="seo-static-section">',
+    '<h2>용어를 읽는 순서</h2>',
+    '<p>각 용어는 정의, 쉬운 비유, 시험 포인트 순서로 정리했습니다. 처음 보는 단어는 정의만 외우지 말고 어떤 상황에서 쓰이는지까지 함께 확인하세요.</p>',
+    '</section>',
+  ];
+  const byCategory = new Map();
+  for (const term of terms) {
+    const list = byCategory.get(term.category) || [];
+    list.push(term);
+    byCategory.set(term.category, list);
+  }
+  for (const [category, categoryTerms] of byCategory) {
+    parts.push('<section class="seo-static-section">');
+    parts.push(`<h2>${escapeHtml(category)}</h2>`);
+    for (const term of categoryTerms) {
+      parts.push(
+        `<article id="${escapeHtml(term.slug)}" data-glossary-term="true">`,
+        `<h3>${escapeHtml(term.term)}</h3>`,
+        `<p><strong>정의</strong> ${escapeHtml(term.short)}</p>`,
+        `<p><strong>쉬운 비유</strong> ${escapeHtml(term.analogy)}</p>`,
+        `<p><strong>시험 포인트</strong> ${escapeHtml(term.examPoint)}</p>`,
+        term.relatedStepId
+          ? `<p><a href="/lesson/${escapeHtml(term.relatedStepId)}">관련 학습 페이지</a></p>`
+          : '',
+        '</article>',
+      );
+    }
+    parts.push('</section>');
+  }
+  return parts.filter(Boolean).join('\n');
 }
 
 function renderBlogStaticContent(post) {

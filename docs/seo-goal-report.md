@@ -429,6 +429,84 @@ dist\lesson\sqld-1-1-s3d\index.html:142:      <meta name="robots" content="noind
 
 - 없음.
 
+## Mission H: Glossary Expansion
+
+### 변경 파일
+
+- `src/data/seo/glossary.ts`
+- `src/pages/GlossaryPage.tsx`
+- `scripts/seo-route-manifest.mjs`
+- `scripts/seo-audit.mjs`
+- `docs/seo-goal-report.md`
+
+### 핵심 결정과 이유
+
+- 용어사전을 50개로 확장: ADsP 18개, SQLD 22개, 컴활 10개.
+- 각 용어를 `정의 1문장 → 쉬운 비유 1문장 → 시험 포인트 1문장` 구조로 통일.
+- 기존 레슨 데이터의 개념 범위를 참고하되, 용어사전 문장은 새로 작성.
+- Glossary 화면에 컴활 배지를 추가하고, 카드 본문도 정의/비유/시험 포인트 순서로 렌더.
+- 정적 HTML에도 `data-glossary-term="true"` 앵커 50개와 `DefinedTermSet` JSON-LD를 출력.
+- `seo-audit`에 `/glossary` 전용 검증 추가: 정적 용어 앵커 50개, DefinedTerm JSON-LD 50개.
+
+### 검증 출력
+
+```text
+node glossary data check
+terms 50
+missingFields 0
+subjectCounts {"adsp":18,"sqld":22,"comhwal":10}
+```
+
+```text
+node glossary related link check
+badRelatedLinks 0
+```
+
+```text
+npm.cmd run typecheck
+> questdp@0.1.0 typecheck
+> tsc --noEmit
+```
+
+```text
+npm.cmd test -- --run
+
+RUN  v4.1.5 C:/Users/이도현/Desktop/.claude/worktrees/hardcore-shamir-47f5ab
+Test Files  38 passed (38)
+Tests  534 passed (534)
+```
+
+```text
+npm.cmd run build
+
+sitemap generated: total 261 URLs (core 17, blog 13, lessons 79, topics 152, quiz 0)
+static route HTML generated: 555 pages (core 18, blog 12, lessons 373, topics 152, quiz 0)
+seo audit passed: 555 static pages, 261 submitted URLs, 294 noindex pages, quiz 0
+```
+
+```text
+(Select-String -Path dist\glossary\index.html -Pattern 'data-glossary-term="true"' -AllMatches).Matches.Count
+50
+
+(Select-String -Path dist\glossary\index.html -Pattern '"@type":"DefinedTerm"' -AllMatches).Matches.Count
+50
+
+Select-String -Path dist\glossary\index.html -Pattern 'DefinedTermSet|DIKW 피라미드|절대 참조|시험 포인트' | Select-Object -First 12
+dist\glossary\index.html:142:      <script type="application/ld+json" data-seo-static="0">{"@context":"https://schema.org","@type":"DefinedTermSet",...
+dist\glossary\index.html:186:<p>각 용어는 정의, 쉬운 비유, 시험 포인트 순서로 정리했습니다...
+dist\glossary\index.html:191:<h3>DIKW 피라미드</h3>
+dist\glossary\index.html:194:<p><strong>시험 포인트</strong> ADsP에서는 네 단계의 순서와 각 단계의 의미 차이를 구분하는 문제가 자주 나온다.</p>
+```
+
+### 개별 용어 URL 후보
+
+- 이번 범위에서는 `/glossary#dikw` 같은 앵커만 제공하고, `/glossary/dikw` 형태의 개별 URL은 만들지 않음.
+- 후보: DIKW 피라미드, 정규화, JOIN, 윈도우 함수, 절대 참조, 가설검정, PCA, 트랜잭션, NULL, 기본키.
+
+### 사람 결정 대기
+
+- 없음.
+
 ## Mission F: Curriculum Exam Facts
 
 ### 변경 파일

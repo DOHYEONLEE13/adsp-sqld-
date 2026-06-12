@@ -121,6 +121,20 @@ for (const route of manifest.all) {
         fail(`Comhwal topic has more than one public question teaser: ${route.path}`);
       }
     }
+    if (route.path === '/glossary') {
+      const termCount = (html.match(/data-glossary-term="true"/g) || []).length;
+      if (termCount !== 50) {
+        fail(`Glossary term count mismatch: ${termCount}, expected 50`);
+      }
+      if (!html.includes('"@type":"DefinedTermSet"') && !html.includes('"@type": "DefinedTermSet"')) {
+        fail('Glossary is missing DefinedTermSet JSON-LD');
+      }
+      const definedTermCount = (html.match(/"@type":"DefinedTerm"/g) || []).length
+        + (html.match(/"@type": "DefinedTerm"/g) || []).length;
+      if (definedTermCount !== 50) {
+        fail(`Glossary DefinedTerm JSON-LD count mismatch: ${definedTermCount}, expected 50`);
+      }
+    }
   }
 }
 

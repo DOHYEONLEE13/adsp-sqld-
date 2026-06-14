@@ -7,7 +7,8 @@
       "namespace": "android_app",
       "package_name": "com.questdp.app",
       "sha256_cert_fingerprints": [
-        "3D:B4:6E:42:9B:38:96:D7:35:EB:5F:EE:61:10:0B:DC:54:14:FF:D0:60:CD:DB:C6:51:72:BF:6C:E6:7F:F5:14"
+        "3D:B4:6E:42:9B:38:96:D7:35:EB:5F:EE:61:10:0B:DC:54:14:FF:D0:60:CD:DB:C6:51:72:BF:6C:E6:7F:F5:14",
+        "B7:A2:87:78:BB:0C:02:B3:D9:0F:BA:71:A8:7C:CC:E5:1F:0C:80:91:35:41:FC:61:11:92:50:30:A9:19:37:1A"
       ]
     }
   }

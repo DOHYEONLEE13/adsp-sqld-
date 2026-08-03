@@ -17,8 +17,8 @@
   "maskableIconUrl": "https://quest-dp.com/logo/questdp-app-icon.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "./android.keystore",
-    "alias": "questdp"
+    "path": "C:\\Users\\이도현\\Desktop\\QuestDP_Play_Upload_Key\\questdp-upload-key.jks",
+    "alias": "questdp-upload"
   },
   "appVersionName": "1.0.4",
   "appVersionCode": 5,

@@ -322,6 +322,18 @@ button {
   word-break: keep-all;
 }
 
+/*
+ * 그라디언트로 칠해지는 글자. background-image 는 인라인 style 로 주고
+ * clip/fill 은 반드시 이 클래스로 준다 — React 의 style 객체에 clip 계열을
+ * 넣으면 background 단축 속성과 뒤엉켜 조용히 무시되고, 글자 대신 사각형이
+ * 칠해진다 (홈 D-day 에서 실제로 발생).
+ */
+.gradient-text {
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 /**
  * 숫자·태그·레벨·짧은 영문 라벨용. Anton 의 굵은 condensed 톤이 과하게
  * 느껴지는 mixed-content 자리에 사용. tabular-nums 자동 적용.

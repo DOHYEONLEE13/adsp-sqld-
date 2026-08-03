@@ -180,6 +180,18 @@ export default function GamePage({
   onExitToLanding,
 }: Props) {
   const [screen, setScreen] = useState<GameScreen>(() => {
+    // 0순위: 오답 복습 직진 (홈 빠른메뉴 → 오답노트). `#/review` 는 라우트가 아니라
+    // 이 상태 머신 안의 화면이라, 외부에서 열려면 이 플래그를 경유해야 한다.
+    if (typeof window !== 'undefined') {
+      try {
+        if (window.sessionStorage.getItem('questdp.pendingReviewOpen')) {
+          window.sessionStorage.removeItem('questdp.pendingReviewOpen');
+          return { kind: 'review' };
+        }
+      } catch {
+        /* storage 접근 불가 — 일반 진입으로 계속 */
+      }
+    }
     // 1순위: ZoneScreen 직진 (나의 약점 탭 → 단원 노드 클릭)
     const pendingZone = consumePendingZoneOpen();
     if (pendingZone && pendingZone.subject === initialSubject) {

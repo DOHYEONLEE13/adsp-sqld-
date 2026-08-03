@@ -94,6 +94,8 @@ const StudyPlanRoute = lazy(() => import('./game/studyPlan/StudyPlanRoute'));
 const ProgressDashboard = lazy(
   () => import('./game/passPrediction/ProgressDashboard'),
 );
+// 스크롤 히어로 홈 (신규). 완성 후 하단 네비의 '나의 약점' 슬롯을 대체할 예정.
+const HomePage = lazy(() => import('./game/HomePage'));
 
 type Route =
   | 'landing'
@@ -101,6 +103,7 @@ type Route =
   | 'onboarding'
   | 'study-plan'
   | 'weakness'
+  | 'home'
   | 'stats'
   | 'settings'
   | 'bookmarks'
@@ -229,6 +232,7 @@ function getFunctionalPathRoute(pathname: string): RouteState | null {
   if (normalized === '/onboarding') return { route: 'onboarding' };
   if (normalized === '/study-plan') return { route: 'study-plan' };
   if (normalized === '/weakness' || normalized === '/progress') return { route: 'weakness' };
+  if (normalized === '/home') return { route: 'home' };
   if (normalized === '/quests') return { route: 'quests' };
   if (normalized === '/friends') return { route: 'friends' };
   if (normalized === '/stats') return { route: 'stats' };
@@ -360,6 +364,7 @@ function getRoute(): RouteState {
   if (hash.startsWith('/weakness') || hash.startsWith('/progress')) {
     return { route: 'weakness' };
   }
+  if (hash.startsWith('/home')) return { route: 'home' };
   if (hash.startsWith('/quests')) return { route: 'quests' };
   if (hash.startsWith('/friends')) return { route: 'friends' };
   if (hash.startsWith('/stats')) return { route: 'stats' };
@@ -594,6 +599,10 @@ export default function App() {
 
     if (route === 'study-plan') {
       return <StudyPlanRoute />;
+    }
+
+    if (route === 'home') {
+      return <HomePage />;
     }
 
     if (route === 'weakness') {

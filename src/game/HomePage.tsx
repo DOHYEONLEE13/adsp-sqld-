@@ -29,7 +29,9 @@ import {
 } from './learningContext';
 import type { Subject } from '@/types/question';
 
-const ROCKET_SRC = '/hero/rocket.png';
+// WebP. 원본 PNG 는 1.4MB 라 첫 화면 최대 요소가 모바일 데이터에서 늦게 떴다.
+// 재생성: node scripts/convert-to-webp.mjs <원본> public/hero/rocket.webp
+const ROCKET_SRC = '/hero/rocket.webp';
 
 /** hex accent 를 rgba 로 — 배경·테두리 틴트에 사용. */
 function tint(hex: string, alpha: number): string {

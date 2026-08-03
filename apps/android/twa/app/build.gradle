@@ -55,10 +55,10 @@ android {
     namespace "com.questdp.app"
     defaultConfig {
         applicationId "com.questdp.app"
-        minSdkVersion 21
-        targetSdkVersion 35
-        versionCode 4
-        versionName "1.0.3"
+        minSdkVersion 23
+        targetSdkVersion 36
+        versionCode 5
+        versionName "1.0.4"
 
         // The name for the application
         resValue "string", "appName", twaManifest.name
@@ -203,7 +203,7 @@ repositories {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-        implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.6.2'
-        implementation 'com.google.androidbrowserhelper:billing:1.1.0'
+        implementation 'com.google.androidbrowserhelper:androidbrowserhelper:2.7.2'
+        implementation 'com.google.androidbrowserhelper:billing:1.2.0'
 
 }

@@ -23,12 +23,14 @@ Implemented in this repository:
 - Debug AAB build succeeded:
   `apps/android/twa/app/build/outputs/bundle/debug/app-debug.aab`.
 
-Not production-ready yet:
+Shipped to Play (versionCode 4, `1.0.3`), so Digital Asset Links, Play signing, and the
+release `.aab` flow are all live. Signing uses `QuestDP_Play_Upload_Key/questdp-upload-key.jks`
+(kept outside the repo), not the `./android.keystore` path still named in `twa-manifest.json`.
 
-- Google Play Billing integration.
-- Digital Asset Links with a real Play signing SHA-256 fingerprint.
-- Signed release `.aab` for Play Console upload.
+Still open:
+
 - Connected emulator/device install test.
+- Purchase verification end-to-end against the `google-play-confirm` Edge Function.
 
 Android Studio is installed on this machine, but the default terminal still points to old Java 8.
 Use Android Studio's bundled JDK and SDK explicitly when building from PowerShell:
@@ -38,6 +40,25 @@ $env:JAVA_HOME='C:\Program Files\Android\Android Studio\jbr'
 $env:ANDROID_HOME="$env:LOCALAPPDATA\Android\Sdk"
 $env:ANDROID_SDK_ROOT=$env:ANDROID_HOME
 $env:Path="$env:JAVA_HOME\bin;$env:ANDROID_HOME\platform-tools;$env:Path"
+```
+
+## Play Requirement Floors
+
+Google Play enforces these as of 2026-08-31. Both were raised together in versionCode 5.
+
+| Setting | Value | Why |
+|---|---|---|
+| `com.android.billingclient:billing` | 8.3.0 | Play requires >= 8.0.0. Pulled transitively by `androidbrowserhelper:billing:1.2.0` — do not pin it directly. |
+| `targetSdkVersion` | 36 | Play requires Android 16 for updates. |
+| `minSdkVersion` | 23 | Forced floor: `androidbrowserhelper:billing:1.2.0` declares minSdk 23. Android 5.x is dropped. |
+
+`overrideLibrary` can silence the minSdk merge error, but it ships Billing 8 code onto
+devices lacking its APIs — the failure surfaces mid-purchase. Raise `minSdkVersion` instead.
+
+Verify the resolved billing version before any upload:
+
+```bash
+./gradlew -q app:dependencies --configuration releaseRuntimeClasspath | grep billingclient
 ```
 
 ## Recommended Packaging

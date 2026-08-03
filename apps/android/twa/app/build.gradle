@@ -50,6 +50,16 @@ def twaManifest = [
     orientation: 'portrait',
 ]
 
+def keystorePropsFile = rootProject.file('keystore.properties')
+def keystoreProps = null
+if (keystorePropsFile.exists()) {
+    keystoreProps = new Properties()
+    // Read as UTF-8, not the platform default: the keystore path contains Hangul.
+    // Strip a leading BOM in case the file was saved from Notepad.
+    def text = keystorePropsFile.getText('UTF-8').replaceFirst('^\\uFEFF', '')
+    keystoreProps.load(new StringReader(text))
+}
+
 android {
     compileSdkVersion 36
     namespace "com.questdp.app"
@@ -145,9 +155,25 @@ android {
 
 
     }
+    // Release signing reads from keystore.properties, which is gitignored and never
+    // committed. Without it the release build still succeeds, but comes out unsigned
+    // and Play Console will reject it.
+    signingConfigs {
+        release {
+            if (keystoreProps != null) {
+                storeFile file(keystoreProps['storeFile'])
+                storePassword keystoreProps['storePassword']
+                keyAlias keystoreProps['keyAlias']
+                keyPassword keystoreProps['keyPassword']
+            }
+        }
+    }
     buildTypes {
         release {
             minifyEnabled true
+            if (keystoreProps != null) {
+                signingConfig signingConfigs.release
+            }
         }
     }
     compileOptions {

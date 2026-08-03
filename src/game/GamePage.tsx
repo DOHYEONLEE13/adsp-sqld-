@@ -149,6 +149,32 @@ interface PendingZoneOpen {
   /** 강조 출처 문항 id. */
   highlightQuestionId?: string;
 }
+/**
+ * 오답 복습 직진 플래그 (홈 빠른메뉴 → 오답노트). `#/review` 는 라우트가 아니라
+ * 이 상태 머신 안의 화면이라, 외부에서 열려면 이 플래그를 경유해야 한다.
+ *
+ * pendingZone 과 똑같이 캐시를 둔다. StrictMode 는 useState 초기화 함수를 두 번
+ * 호출하므로, 캐시 없이 첫 호출에서 키를 지우면 두 번째 호출은 플래그를 못 찾고
+ * 엉뚱한 화면을 반환한다 (실제로 복습 대신 행성 화면이 떴다).
+ */
+let _pendingReviewCache: { value: boolean; at: number } | null = null;
+function consumePendingReviewOpen(): boolean {
+  if (_pendingReviewCache && Date.now() - _pendingReviewCache.at < PENDING_CACHE_WINDOW_MS) {
+    return _pendingReviewCache.value;
+  }
+  let value = false;
+  if (typeof window !== 'undefined') {
+    try {
+      value = !!window.sessionStorage.getItem('questdp.pendingReviewOpen');
+      if (value) window.sessionStorage.removeItem('questdp.pendingReviewOpen');
+    } catch {
+      /* storage 접근 불가 — 일반 진입으로 계속 */
+    }
+  }
+  _pendingReviewCache = { value, at: Date.now() };
+  return value;
+}
+
 let _pendingZoneCache: { value: PendingZoneOpen | null; at: number } | null = null;
 function consumePendingZoneOpen(): PendingZoneOpen | null {
   if (_pendingZoneCache && Date.now() - _pendingZoneCache.at < PENDING_CACHE_WINDOW_MS) {
@@ -182,16 +208,7 @@ export default function GamePage({
   const [screen, setScreen] = useState<GameScreen>(() => {
     // 0순위: 오답 복습 직진 (홈 빠른메뉴 → 오답노트). `#/review` 는 라우트가 아니라
     // 이 상태 머신 안의 화면이라, 외부에서 열려면 이 플래그를 경유해야 한다.
-    if (typeof window !== 'undefined') {
-      try {
-        if (window.sessionStorage.getItem('questdp.pendingReviewOpen')) {
-          window.sessionStorage.removeItem('questdp.pendingReviewOpen');
-          return { kind: 'review' };
-        }
-      } catch {
-        /* storage 접근 불가 — 일반 진입으로 계속 */
-      }
-    }
+    if (consumePendingReviewOpen()) return { kind: 'review' };
     // 1순위: ZoneScreen 직진 (나의 약점 탭 → 단원 노드 클릭)
     const pendingZone = consumePendingZoneOpen();
     if (pendingZone && pendingZone.subject === initialSubject) {

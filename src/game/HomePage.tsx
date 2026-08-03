@@ -12,15 +12,20 @@
  * 접근성: prefers-reduced-motion 이면 모든 스크롤 변환을 끄고 정적 배치로 떨어진다.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
-import { BookOpen, BarChart3, Target, Star, ChevronDown } from 'lucide-react';
+import {
+  BookOpen,
+  BarChart3,
+  Star,
+  ChevronDown,
+  ChevronRight,
+} from 'lucide-react';
 import { MobileBottomNav, MobileTopBar } from './components/MobileGameNav';
 import PageAmbientBg from './components/PageAmbientBg';
 import { useProgress } from './useProgress';
 import { computePlayerStats } from './rpg';
 import { useMyProfile } from '@/data/profile';
-import { getTodayQuests, completedCount } from './dailyQuests';
 import { getExamDate, daysUntil, getUpcomingPresets } from './examDate';
 import {
   readLastLearnHash,
@@ -28,6 +33,9 @@ import {
   CORE_SUBJECT_ACCENT,
 } from './learningContext';
 import type { Subject } from '@/types/question';
+import { getFullChapterAccuracies } from './passPrediction/chapterWeights';
+import { rankWeakChapters } from './passPrediction/weakChapterRanker';
+import { resolveLessonTarget } from './passPrediction/WeakChapterRoadmap';
 
 // WebP. 원본 PNG 는 1.4MB 라 첫 화면 최대 요소가 모바일 데이터에서 늦게 떴다.
 // 재생성: node scripts/convert-to-webp.mjs <원본> public/hero/rocket.webp
@@ -45,8 +53,6 @@ export default function HomePage() {
   const progress = useProgress();
   const profile = useMyProfile();
   const stats = computePlayerStats(progress);
-  const quests = getTodayQuests(progress);
-  const questsDone = completedCount(quests);
   const reduceMotion = useReducedMotion();
 
   // 과목 톤 — ADSP 청록 / SQLD 보라 / 컴활 연두. 확장 과목까지 한 번에 잡히도록
@@ -63,7 +69,39 @@ export default function HomePage() {
 
   // 확장 과목(컴활)은 EXAM_PRESETS 에 회차가 없어 D-day 를 만들 수 없다.
   // 코어 과목 날짜를 대신 보여주면 라벨과 어긋나므로 아예 감춘다.
+  // 약점 단원 TOP 4 — /weakness 화면과 같은 계산기를 그대로 쓴다.
+  // 확장 과목은 챕터 가중치 테이블이 없어 이 계산이 성립하지 않으므로 건너뛴다.
   const isExpansion = learnCtx?.kind === 'expansion';
+  const weakChapters = useMemo(
+    () =>
+      isExpansion
+        ? []
+        : rankWeakChapters(
+            getFullChapterAccuracies(progress.questionStats, subject),
+            4,
+          ),
+    [isExpansion, progress.questionStats, subject],
+  );
+
+  const openWeakChapter = (chapterId: string) => {
+    const target = resolveLessonTarget(subject, chapterId);
+    if (target) {
+      try {
+        window.sessionStorage.setItem(
+          'questdp.pendingZoneOpen',
+          JSON.stringify({
+            subject,
+            chapter: target.chapter,
+            highlightTopic: target.topic,
+          }),
+        );
+      } catch {
+        /* quota — 단원 강조 없이 학습 탭으로만 이동 */
+      }
+    }
+    window.location.hash = `/game/${subject}`;
+  };
+
   const examYmd = isExpansion ? undefined : getExamDate(subject);
   const dDay = isExpansion ? null : daysUntil(examYmd);
   const nextPreset = isExpansion ? null : getUpcomingPresets(subject)[0] ?? null;
@@ -96,13 +134,22 @@ export default function HomePage() {
   // 거기서 히어로 중앙까지 끌어올린 값이 시작 위치.
   // heroH * 0.11 만큼 더 내려서 D-day 숫자가 로켓 위로 드러나게 한다.
   const rocketStartY = heroH / 2 - vp.h / 2 + heroH * 0.11;
-  // 도착 위치. 너무 위로 붙이면 상단바와 카드 사이가 빈 띠처럼 보여서
-  // 살짝 내리고 (176) 정지 크기도 키워 그 영역을 로켓이 채우게 했다.
-  const rocketEndY = 176 - vp.h / 2;
-  const rocketX = useTransform(p, [0, 1], [0, vp.w * 0.3]);
+  // 도착 위치 — 헤드라인과 같은 띠의 오른쪽. 헤드라인은 왼쪽 정렬이라 가로로
+  // 겹치지 않고, 시안처럼 문구 옆에 로켓이 서 있는 구도가 된다.
+  // 더 내리면 아래 카드를 덮고, 더 키워도 카드를 덮는다.
+  const rocketEndY = 122 - vp.h / 2;
+  const rocketX = useTransform(p, [0, 1], [0, vp.w * 0.29]);
   const rocketY = useTransform(p, [0, 1], [rocketStartY, rocketEndY]);
-  const rocketScale = useTransform(p, [0, 1], [1, 0.42]);
+  const rocketScale = useTransform(p, [0, 1], [1, 0.3]);
   const rocketRotate = useTransform(p, [0, 1], [0, 14]);
+  // 비행이 끝난 뒤 더 내리면 사라진다. 계속 고정해두면 카드 위에 붕 뜬 채로
+  // 남아 자리를 못 찾은 것처럼 보인다 — 히어로가 로켓의 무대고, 본문에 들어서면
+  // 역할이 끝난 것으로 본다.
+  // 페이드는 스크롤 픽셀이 아니라 비행 진행도(p)에 묶는다. 픽셀로 잡으면 남은
+  // 스크롤 거리가 콘텐츠 길이에 따라 달라져, 짧은 사용자에게는 페이드가 끝나기
+  // 전에 스크롤이 끝나고 반투명 로켓이 카드 위에 걸린 채 남는다 (실측 0.3).
+  // 비행 막바지에 사라지므로, 헤드라인 옆에 서는 순간은 지나가듯 남는다.
+  const rocketFade = useTransform(p, [0.88, 1], [1, 0]);
 
   // D-day 숫자와 안내 문구는 로켓보다 빨리 사라진다.
   const ddayOpacity = useTransform(p, [0, 0.5], [1, 0]);
@@ -111,7 +158,13 @@ export default function HomePage() {
   // 모션을 끈 사용자에게는 변환 없이 히어로 중앙에 고정된 로켓만 보인다.
   const rocketStyle = reduceMotion
     ? { x: 0, y: rocketStartY, scale: 1, rotate: 0 }
-    : { x: rocketX, y: rocketY, scale: rocketScale, rotate: rocketRotate };
+    : {
+        x: rocketX,
+        y: rocketY,
+        scale: rocketScale,
+        rotate: rocketRotate,
+        opacity: rocketFade,
+      };
   const ddayStyle = reduceMotion ? { opacity: 1 } : { opacity: ddayOpacity };
   const hintStyle = reduceMotion ? { opacity: 1 } : { opacity: hintOpacity };
 
@@ -259,16 +312,36 @@ export default function HomePage() {
       </div>
 
       {/* ─── 카드 스택 ─────────────────────────────────────────────────── */}
-      <div className="relative z-10 mx-auto w-full max-w-[560px] px-4 pb-28">
+      {/*
+        min-h-screen 이 없으면 스크롤 끝에서 "뷰포트 높이 − 카드 높이" 만큼
+        위쪽에 구멍이 뚫린다 (카드가 한 화면을 못 채우므로). 그 구멍에 로켓만
+        떠 있어 화면이 깨져 보였다. 최소 한 화면을 차지하게 해서, 스크롤 끝에는
+        헤드라인이 로켓 옆에 오고 남는 여백은 마지막 카드 아래로 간다.
+        약점 목록이 들어오면 콘텐츠가 늘어 이 min-height 는 자연히 무의미해진다.
+      */}
+      <div
+        className="relative z-10 mx-auto w-full max-w-[560px] px-4 pb-24"
+        style={{ minHeight: vp.h - 56 }}
+      >
         {/*
-          카드가 아니라 맨몸 헤드라인 — 스크롤 후 우상단에 멈춘 로켓 왼쪽의
-          빈 공간을 이 문구가 채운다. 카드 테두리를 두르면 로켓과 경쟁해서
-          시선이 분산되므로 의도적으로 chrome 을 뺐다.
+          로켓 왼쪽에 서는 띠. D-day 는 히어로에만 둔다 — 여기까지 숫자를 넣으면
+          스크롤 도중 한 화면에 D-day 가 두 번 잡힌다. 카드 테두리도 두르지
+          않는다. 로켓과 나란히 서는 자리라 chrome 이 생기면 서로 시선을 뺏는다.
         */}
         <Reveal>
           <div className="pt-2 pb-1">
+            {/*
+              스트릭은 계속 오게 만드는 장치라 남기되, "연속 학습 N일째" 가
+              카드 한 장을 차지할 정보는 아니라 인사말 뒤에 붙였다. 화면 맨 아래
+              흐린 한 줄로 두면 사실상 아무도 보지 않는다.
+            */}
             <div className="kr-body text-[13px] text-cream/55">
               안녕하세요, {displayName}님
+              {stats.streakDays > 0 ? (
+                <span style={{ color: tint(accent, 0.85) }}>
+                  {' · '}연속 {stats.streakDays}일
+                </span>
+              ) : null}
             </div>
             <div className="kr-heading mt-1 text-[27px] leading-[1.25] text-cream">
               오늘도 합격에
@@ -279,38 +352,19 @@ export default function HomePage() {
             >
               한 발 더
             </div>
-          </div>
-        </Reveal>
-
-        <Reveal>
-          <Card>
-            <div className="kr-heading text-[12px] uppercase tracking-widest text-cream/55">
-              다음 시험 D-DAY
-            </div>
-            <div className="mt-1 flex items-baseline gap-3">
-              <span
-                className="kr-heading text-[34px] leading-none"
-                style={{ color: accent }}
-              >
-                {dDay !== null && dDay >= 0 ? `D-${dDay}` : '미설정'}
-              </span>
-              <span className="kr-num text-[12.5px] text-cream/60">
-                {examYmd ?? nextPreset?.display ?? '시험일을 골라주세요'}
-              </span>
-            </div>
             {dDay === null ? (
               <button
                 type="button"
                 onClick={() => {
                   window.location.hash = '/stats';
                 }}
-                className="kr-heading mt-3 w-full rounded-[12px] py-2.5 text-[13px] transition active:scale-[0.98]"
+                className="kr-heading mt-3 rounded-[12px] px-4 py-2 text-[13px] transition active:scale-[0.98]"
                 style={{ background: 'var(--cta-primary)', color: 'var(--base)' }}
               >
                 시험일 설정하기
               </button>
             ) : null}
-          </Card>
+          </div>
         </Reveal>
 
         <Reveal>
@@ -329,36 +383,110 @@ export default function HomePage() {
               >
                 <BookOpen size={22} style={{ color: accent }} />
               </span>
-              <span className="min-w-0 flex-1">
-                <span className="kr-body block text-[11.5px] text-cream/50">
-                  이어서 학습하기
-                </span>
-                <span className="kr-heading block truncate text-[15px] text-cream">
-                  {subject.toUpperCase()} 이어하기
-                </span>
+              <span className="kr-heading min-w-0 flex-1 truncate text-[15px] text-cream">
+                {subjectLabel} 이어하기
               </span>
-              <span
-                className="kr-heading shrink-0 rounded-[11px] px-3 py-2 text-[12.5px]"
-                style={{ border: `1px solid ${tint(accent, 0.4)}`, color: accent }}
-              >
-                바로가기
-              </span>
+              <ChevronRight
+                size={20}
+                strokeWidth={2.4}
+                className="shrink-0"
+                style={{ color: tint(accent, 0.75) }}
+              />
             </button>
           </Card>
         </Reveal>
 
+        {/*
+          약점 단원. 기존 /weakness 화면은 5 행이 전부 같은 크기라 무엇부터
+          해야 할지 안 보였다. 여기서는 1 순위만 크게 두고 나머지는 눌러서
+          접근만 되게 낮춘다.
+        */}
+        {weakChapters.length > 0 ? (
+          <Reveal>
+            <div className="mb-2 mt-5 flex items-baseline justify-between">
+              <span className="kr-heading text-[14px] text-cream">약점 단원</span>
+              <button
+                type="button"
+                onClick={() => {
+                  window.location.hash = '/weakness';
+                }}
+                className="kr-body text-[12px] text-cream/50 transition active:scale-95"
+              >
+                전체 보기
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => openWeakChapter(weakChapters[0].chapter_id)}
+              className="liquid-glass w-full rounded-[18px] px-4 py-4 text-left transition active:scale-[0.99]"
+              style={{ border: `1px solid ${tint(accent, 0.28)}` }}
+            >
+              <div className="flex items-center gap-3">
+                <span
+                  className="kr-heading inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[13px]"
+                  style={{ background: tint(accent, 0.18), color: accent }}
+                >
+                  1
+                </span>
+                <span className="kr-heading min-w-0 flex-1 truncate text-[16px] text-cream">
+                  {weakChapters[0].chapter_name}
+                </span>
+                <ChevronRight
+                  size={20}
+                  strokeWidth={2.4}
+                  className="shrink-0"
+                  style={{ color: tint(accent, 0.75) }}
+                />
+              </div>
+              <div className="mt-3 flex items-center gap-2.5">
+                <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
+                  <span
+                    className="block h-full rounded-full"
+                    style={{
+                      width: `${Math.round(weakChapters[0].accuracy * 100)}%`,
+                      background: accent,
+                    }}
+                  />
+                </span>
+                <span className="kr-num shrink-0 text-[12px] text-cream/60">
+                  {Math.round(weakChapters[0].accuracy * 100)}%
+                </span>
+              </div>
+            </button>
+
+            {weakChapters.slice(1).map((w) => (
+              <button
+                key={w.chapter_id}
+                type="button"
+                onClick={() => openWeakChapter(w.chapter_id)}
+                className="mt-2 flex w-full items-center gap-3 rounded-[14px] px-4 py-3 text-left transition active:scale-[0.99]"
+                style={{ background: 'rgba(255,255,255,0.035)' }}
+              >
+                <span className="kr-num w-4 shrink-0 text-[12px] text-cream/40">
+                  {w.rank}
+                </span>
+                <span className="kr-body min-w-0 flex-1 truncate text-[13.5px] text-cream/85">
+                  {w.chapter_name}
+                </span>
+                <span className="kr-num shrink-0 text-[12px] text-cream/50">
+                  {Math.round(w.accuracy * 100)}%
+                </span>
+              </button>
+            ))}
+          </Reveal>
+        ) : null}
+
         <Reveal>
           <div className="kr-heading mb-2 mt-5 text-[14px] text-cream">빠른 메뉴</div>
-          <div className="grid grid-cols-4 gap-2.5">
+          {/*
+            3 칸인 이유. '기출문제' 는 실제로는 학습 탭 첫 화면으로만 가서 다른
+            버튼과 구분이 안 됐고, '약점분석' 은 바로 위 약점 단원 목록과 같은
+            일을 한다. 눌러도 기대한 곳에 못 가는 칸을 남겨두느니 뺐다.
+          */}
+          <div className="grid grid-cols-3 gap-2.5">
             <QuickItem
               icon={<BookOpen size={20} style={{ color: '#A78BFA' }} />}
-              label="기출문제"
-              onClick={() => {
-                window.location.hash = '/game';
-              }}
-            />
-            <QuickItem
-              icon={<BarChart3 size={20} style={{ color: '#4ADE80' }} />}
               label="오답노트"
               onClick={() => {
                 try {
@@ -370,42 +498,22 @@ export default function HomePage() {
               }}
             />
             <QuickItem
-              icon={<Target size={20} style={{ color: '#38BDF8' }} />}
-              label="약점분석"
-              onClick={() => {
-                window.location.hash = '/weakness';
-              }}
-            />
-            <QuickItem
               icon={<Star size={20} style={{ color: '#FBBF24' }} />}
               label="즐겨찾기"
               onClick={() => {
                 window.location.hash = '/bookmarks';
               }}
             />
+            <QuickItem
+              icon={<BarChart3 size={20} style={{ color: '#4ADE80' }} />}
+              label="통계"
+              onClick={() => {
+                window.location.hash = '/stats';
+              }}
+            />
           </div>
         </Reveal>
 
-        <Reveal>
-          <Card>
-            <div className="flex items-center justify-between gap-3">
-              <div className="min-w-0">
-                <div className="kr-heading text-[14px] text-cream">
-                  연속 학습 {stats.streakDays}일째
-                </div>
-                <div className="kr-body mt-0.5 text-[12px] text-cream/55">
-                  꾸준함이 합격을 만듭니다
-                </div>
-              </div>
-              <span
-                className="kr-num shrink-0 rounded-full px-2.5 py-1 text-[12px]"
-                style={{ background: tint(accent, 0.12), color: accent }}
-              >
-                퀘스트 {questsDone}/{quests.length}
-              </span>
-            </div>
-          </Card>
-        </Reveal>
       </div>
 
       <MobileBottomNav active="learn" />

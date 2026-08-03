@@ -363,7 +363,11 @@ function nodeShadow(accuracy: number): string {
  *   예) `adsp-3-3` (정형 데이터 마이닝) 는 실제로 chapter 3 의 lesson[3] 이고,
  *       lesson[2] 는 `adsp-3-2` 분류의 "통계적 가설 검정" — index 추정이 깨짐.
  */
-function resolveLessonTarget(
+/**
+ * 약점 chapter_id → 진입할 lesson 좌표. 홈 화면의 약점 목록도 같은 규칙으로
+ * 이동해야 해서 export 한다 (양쪽에 따로 구현하면 매핑이 서서히 어긋난다).
+ */
+export function resolveLessonTarget(
   exam: Subject,
   chapterId: string,
 ): { chapter: number; topic: string } | null {

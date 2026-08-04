@@ -16,7 +16,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import {
   BookOpen,
-  BarChart3,
   Star,
   ChevronDown,
   ChevronRight,
@@ -480,11 +479,12 @@ export default function HomePage() {
         <Reveal>
           <div className="kr-heading mb-2 mt-5 text-[14px] text-cream">빠른 메뉴</div>
           {/*
-            3 칸인 이유. '기출문제' 는 실제로는 학습 탭 첫 화면으로만 가서 다른
-            버튼과 구분이 안 됐고, '약점분석' 은 바로 위 약점 단원 목록과 같은
-            일을 한다. 눌러도 기대한 곳에 못 가는 칸을 남겨두느니 뺐다.
+            2 칸인 이유. 여기 놓을 수 있는 건 하단 탭에 없는 화면뿐이다.
+            '통계' 는 프로필 탭과 같은 /stats 라 지웠고, '기출문제' 는 학습 탭
+            첫 화면으로만 가서 구분이 안 됐으며, '약점분석' 은 바로 위 약점 단원
+            목록과 같은 일을 했다. 탭으로 이미 닿는 곳을 여기 또 넣지 말 것.
           */}
-          <div className="grid grid-cols-3 gap-2.5">
+          <div className="grid grid-cols-2 gap-2.5">
             <QuickItem
               icon={<BookOpen size={20} style={{ color: '#A78BFA' }} />}
               label="오답노트"
@@ -502,13 +502,6 @@ export default function HomePage() {
               label="즐겨찾기"
               onClick={() => {
                 window.location.hash = '/bookmarks';
-              }}
-            />
-            <QuickItem
-              icon={<BarChart3 size={20} style={{ color: '#4ADE80' }} />}
-              label="통계"
-              onClick={() => {
-                window.location.hash = '/stats';
               }}
             />
           </div>

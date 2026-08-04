@@ -160,6 +160,7 @@ const TOP_RESET_ROUTES = new Set<Route>([
   'stats',
   'settings',
   'bookmarks',
+  'home',
 ]);
 
 function routeScrollKey(state: RouteState): string {

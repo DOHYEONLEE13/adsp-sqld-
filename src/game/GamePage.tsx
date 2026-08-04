@@ -49,6 +49,7 @@ import { retryProfileSync, useMyProfile } from '@/data/profile';
 import NicknameOnboarding from './screens/NicknameOnboarding';
 import { tryRecordPassCompletion } from './passSync';
 import AuthCard from './components/AuthCard';
+import { scrollPageTo } from '@/lib/pageScroll';
 import { useAuthSession } from '@/lib/auth/sessionStore';
 import {
   reserveQuestionSession,
@@ -341,6 +342,20 @@ export default function GamePage({
   useEffect(() => {
     if (initialSubject) setActiveSubject(initialSubject);
   }, [initialSubject]);
+
+  // 복습 화면은 홈 빠른메뉴에서 바로 들어오는데, 그때 홈에서 내려둔 스크롤이
+  // 그대로 남아 화면 중간이 먼저 보인다. `/game/{과목}` 은 학습 위치를 지키려고
+  // App 의 스크롤 리셋 대상에서 빠져 있고, 복습도 그 아래라 같이 묶인 탓.
+  // 학습 흐름의 위치 보존은 건드리지 않고 이 화면만 올린다.
+  useEffect(() => {
+    if (screen.kind !== 'review') return;
+    scrollPageTo({ top: 0, left: 0, behavior: 'auto' });
+    // 레이아웃이 한 프레임 뒤에 자리를 잡는 경우가 있어 한 번 더.
+    const raf = window.requestAnimationFrame(() =>
+      scrollPageTo({ top: 0, left: 0, behavior: 'auto' }),
+    );
+    return () => window.cancelAnimationFrame(raf);
+  }, [screen.kind]);
 
   /** 과목을 active 로 잠그고 planet 으로 전환 (chooser 에서 호출). */
   const showQuestionReservationError = (result: QuestionReservationResult) => {

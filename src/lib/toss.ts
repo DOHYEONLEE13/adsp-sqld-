@@ -21,10 +21,14 @@ const CLIENT_KEY = import.meta.env.VITE_TOSS_CLIENT_KEY as string | undefined;
 
 export type ProductCode = 'lifetime' | 'weekly' | 'monthly';
 
+/** 상점명 — 결제창 안내 문구·모달 표기에 사용. */
+export const SHOP_NAME = '퀘스트디피';
+
+/** 결제창 orderName 으로 그대로 전달되는 상품명. */
 export const PRODUCT_LABELS: Record<ProductCode, string> = {
-  lifetime: 'QuestDP 평생 이용권',
-  weekly: 'QuestDP 1주 이용권',
-  monthly: 'QuestDP 월 구독',
+  lifetime: '자격증 학습 이용권 (평생)',
+  weekly: '자격증 학습 이용권 (1주)',
+  monthly: '자격증 학습 이용권 (월 구독)',
 };
 
 export const PRODUCT_AMOUNTS: Record<ProductCode, number> = {
@@ -35,7 +39,13 @@ export const PRODUCT_AMOUNTS: Record<ProductCode, number> = {
 
 /** 환경에 토스 키가 설정돼 있는지. 미설정 시 결제 CTA 비활성화. */
 export function isTossConfigured(): boolean {
-  return Boolean(CLIENT_KEY && CLIENT_KEY.startsWith('test_ck_') || CLIENT_KEY?.startsWith('live_ck_'));
+  if (!CLIENT_KEY) return false;
+  return CLIENT_KEY.startsWith('test_ck_') || CLIENT_KEY.startsWith('live_ck_');
+}
+
+/** 테스트 키로 동작 중인지 — UI 에 "테스트 결제" 배지를 띄우는 데 사용. */
+export function isTossTestMode(): boolean {
+  return Boolean(CLIENT_KEY?.startsWith('test_ck_'));
 }
 
 /** 결제 요청 시 sessionStorage 에 보관 — callback 페이지가 검증·복원에 사용. */
@@ -94,10 +104,19 @@ function generateOrderId(productCode: ProductCode): string {
   return `qdp-${productCode}-${stamp}-${random}`;
 }
 
+/**
+ * 결제 수단. 생략하면 토스 **통합 결제창**이 열려 사용자가 카드·계좌이체·
+ * 가상계좌·휴대폰 중에서 직접 고른다 (요구사항: 수단 선택창 노출).
+ * 특정 수단으로 바로 진입시키고 싶을 때만 지정.
+ */
+export type TossPaymentMethod = '카드' | '계좌이체' | '가상계좌' | '휴대폰';
+
 interface RequestOpts {
   productCode: ProductCode;
-  customerEmail: string;
-  customerName: string; // 표시용 — 토스 결제창에 노출
+  /** 로그인 사용자의 이메일. 비로그인 테스트 시 생략 가능. */
+  customerEmail?: string;
+  customerName?: string; // 표시용 — 토스 결제창에 노출
+  method?: TossPaymentMethod;
 }
 
 /**
@@ -110,7 +129,7 @@ export async function requestPayment(opts: RequestOpts): Promise<void> {
   if (!CLIENT_KEY) {
     throw new Error('toss-client-key-missing');
   }
-  const { productCode, customerEmail, customerName } = opts;
+  const { productCode, customerEmail, customerName, method } = opts;
   const amount = PRODUCT_AMOUNTS[productCode];
   const orderId = generateOrderId(productCode);
 
@@ -130,14 +149,22 @@ export async function requestPayment(opts: RequestOpts): Promise<void> {
   const successUrl = `${origin}/#/payment/callback`;
   const failUrl = `${origin}/#/payment/callback?status=fail`;
 
-  // requestPayment 는 redirect 또는 throw — Promise resolve 되지 않음.
-  await tp.requestPayment('카드', {
+  const params = {
     amount,
     orderId,
     orderName: PRODUCT_LABELS[productCode],
-    customerEmail,
     customerName: customerName || '게스트',
     successUrl,
     failUrl,
-  });
+    // 빈 문자열을 넘기면 토스가 형식 오류로 거절 — 있을 때만 포함.
+    ...(customerEmail ? { customerEmail } : {}),
+  };
+
+  // requestPayment 는 redirect 또는 throw — Promise resolve 되지 않음.
+  // method 를 넘기지 않으면 수단 선택 UI 가 있는 통합 결제창이 열린다.
+  if (method) {
+    await tp.requestPayment(method, params);
+  } else {
+    await tp.requestPayment(params);
+  }
 }

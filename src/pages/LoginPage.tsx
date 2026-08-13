@@ -40,7 +40,7 @@ export default function LoginPage({ onBack }: Props) {
   useEffect(() => {
     if (auth.status !== 'authenticated') return;
     const restored = consumePendingAuthRedirect();
-    if (!restored) window.location.hash = '/game';
+    if (!restored) window.location.hash = '/home';
   }, [auth.status, auth.session?.user.id]);
 
   return (

@@ -3,7 +3,7 @@
   "short_name": "퀘스트디피",
   "description": "ADsP·SQLD·컴활 자격증을 로드맵, 퀘스트, 약점 복습으로 학습하는 게임형 학습 앱",
   "lang": "ko",
-  "start_url": "/app/#/game",
+  "start_url": "/app/#/home",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#081642",

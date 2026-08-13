@@ -14,19 +14,20 @@
         try {
           sessionStorage.setItem('questdp.appMode', '1');
         } catch (e) {}
-        var hash = location.hash && location.hash !== '#' ? location.hash : '#/game';
+        var hash = location.hash && location.hash !== '#' ? location.hash : '#/home';
+        if (hash.replace(/\/$/, '') === '#/game') hash = '#/home';
         var params = new URLSearchParams(location.search);
         var version = params.get('v');
         var target = '/?app=1' + (version ? '&v=' + encodeURIComponent(version) : '') + hash;
         location.replace(target);
       })();
     </script>
-    <meta http-equiv="refresh" content="0; url=/?app=1#/game" />
+    <meta http-equiv="refresh" content="0; url=/?app=1#/home" />
   </head>
   <body>
     <p>
       QuestDP 앱으로 이동 중입니다.
-      <a href="/?app=1#/game">학습 화면으로 이동</a>
+      <a href="/?app=1#/home">홈 화면으로 이동</a>
     </p>
   </body>
 </html>

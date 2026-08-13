@@ -393,6 +393,19 @@ function getRoute(): RouteState {
   return { route: 'landing' };
 }
 
+function getInitialRoute(): RouteState {
+  if (typeof window === 'undefined') return { route: 'landing' };
+
+  const initialHash = window.location.hash.replace(/^#/, '').replace(/\/$/, '');
+  if (initialHash === '/game') {
+    const url = new URL(window.location.href);
+    url.hash = '/home';
+    window.history.replaceState(window.history.state, '', url);
+  }
+
+  return getRoute();
+}
+
 /**
  * Suspense fallback — 의도적 null.
  *
@@ -423,7 +436,7 @@ export default function App() {
       blogSlug,
     },
     setRouteState,
-  ] = useState<RouteState>(() => getRoute());
+  ] = useState<RouteState>(() => getInitialRoute());
   const routeScrollKeyRef = useRef<string | null>(null);
 
   // ── useTransition 으로 끊김 완화 ────────────────────────────────────
@@ -665,7 +678,7 @@ export default function App() {
           initialExpansionSubject={initialExpansionSubject}
           onExitToLanding={() => {
             if (isAppMode()) {
-              window.history.replaceState({}, '', '/?app=1#/game');
+              window.history.replaceState({}, '', '/?app=1#/home');
               startTransition(() => setRouteState(getRoute()));
               return;
             }

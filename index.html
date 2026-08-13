@@ -7,6 +7,11 @@
     <script>
       (function () {
         try {
+          var initialHash = location.hash.replace(/^#/, '').replace(/\/$/, '');
+          if (initialHash === '/game') {
+            history.replaceState(history.state, '', location.pathname + location.search + '#/home');
+          }
+
           var isAppPath = location.pathname === '/app' || location.pathname === '/app/';
           var isAppQuery = new URLSearchParams(location.search).get('app') === '1';
           var isAppSession = sessionStorage.getItem('questdp.appMode') === '1';

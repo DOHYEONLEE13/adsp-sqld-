@@ -195,7 +195,7 @@ function assertAppBridgeHtml(file) {
   if (!/<meta\s+name=["']robots["']\s+content=["']noindex["']\s*\/?>/i.test(html)) {
     fail(`App bridge HTML is missing robots noindex: ${path.relative(DIST_DIR, file)}`);
   }
-  if (!html.includes('/?app=1#/game') || !html.includes('location.replace')) {
+  if (!html.includes('/?app=1#/home') || !html.includes('location.replace')) {
     fail(`App bridge HTML is missing app-mode redirect: ${path.relative(DIST_DIR, file)}`);
   }
 }

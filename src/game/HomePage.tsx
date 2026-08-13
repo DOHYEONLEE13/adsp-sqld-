@@ -5,28 +5,45 @@
  * 우상단으로 날아오르며 축소되고, D-day 숫자는 사라진다. "시험이 다가올수록
  * 발사에 가까워진다" 는 은유를 스크롤 제스처에 붙인 것.
  *
- * 히어로 높이는 100vh 가 아니라 72vh — 다음 카드가 화면 하단에 살짝 걸치게 해서
- * (a) 스크롤 가능하다는 신호를 주고 (b) 매 방문마다 스크롤해야 학습을 시작할 수
- * 있는 마찰을 없앤다. 첫인상은 강렬해도 21 번째 방문에선 장애물이 되기 때문.
+ * 첫 화면은 히어로가 뷰포트를 온전히 채운다. 다음 학습 영역은 첫 스크롤 뒤에
+ * 드러나고, 하단 안내가 히어로와 본문 사이의 전환을 알려준다.
  *
  * 접근성: prefers-reduced-motion 이면 모든 스크롤 변환을 끄고 정적 배치로 떨어진다.
  */
 
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
 import {
   BookOpen,
+  CalendarClock,
   Star,
   ChevronDown,
   ChevronRight,
+  Repeat2,
+  Sparkles,
+  X,
 } from 'lucide-react';
 import { MobileBottomNav, MobileTopBar } from './components/MobileGameNav';
 import PageAmbientBg from './components/PageAmbientBg';
 import { useProgress } from './useProgress';
 import { computePlayerStats } from './rpg';
 import { useMyProfile } from '@/data/profile';
-import { getExamDate, daysUntil, getUpcomingPresets } from './examDate';
 import {
+  ensureNearestUpcomingExamDate,
+  getExamDate,
+  daysUntil,
+  getUpcomingPresets,
+  setExamDate,
+  type ExamPreset,
+} from './examDate';
+import {
+  FirstEntrySubjectPicker,
+  type FirstEntrySubject,
+} from './onboarding/FirstEntryOnboarding';
+import {
+  LAST_EXPANSION_VIEW_KEY,
+  LAST_LEARN_HASH_KEY,
   readLastLearnHash,
   getLastLearnContext,
   CORE_SUBJECT_ACCENT,
@@ -35,6 +52,8 @@ import type { Subject } from '@/types/question';
 import { getFullChapterAccuracies } from './passPrediction/chapterWeights';
 import { rankWeakChapters } from './passPrediction/weakChapterRanker';
 import { resolveLessonTarget } from './passPrediction/WeakChapterRoadmap';
+import { loadStudyPlan } from './studyPlan/studyPlanStorage';
+import { setActiveSubject, setLearningSubject } from './storage';
 
 // WebP. 원본 PNG 는 1.4MB 라 첫 화면 최대 요소가 모바일 데이터에서 늦게 떴다.
 // 재생성: node scripts/convert-to-webp.mjs <원본> public/hero/rocket.webp
@@ -53,24 +72,31 @@ export default function HomePage() {
   const profile = useMyProfile();
   const stats = computePlayerStats(progress);
   const reduceMotion = useReducedMotion();
+  const [homeSubject, setHomeSubject] = useState<Subject | null>(null);
+  const [examPickerOpen, setExamPickerOpen] = useState(false);
+  const [subjectSwitcherOpen, setSubjectSwitcherOpen] = useState(false);
 
   // 과목 톤 — ADSP 청록 / SQLD 보라 / 컴활 연두. 확장 과목까지 한 번에 잡히도록
   // 상단바와 동일하게 learningContext 를 경유한다.
-  const fallbackSubject: Subject = progress.activeSubject ?? 'adsp';
+  const fallbackSubject: Subject = homeSubject ?? progress.activeSubject ?? 'adsp';
   const learnCtx = getLastLearnContext(fallbackSubject);
-  const accent = learnCtx?.accent ?? CORE_SUBJECT_ACCENT[fallbackSubject];
-  const subjectLabel = learnCtx?.label ?? fallbackSubject.toUpperCase();
+  const accent = homeSubject
+    ? CORE_SUBJECT_ACCENT[homeSubject]
+    : learnCtx?.accent ?? CORE_SUBJECT_ACCENT[fallbackSubject];
+  const subjectLabel = homeSubject
+    ? homeSubject.toUpperCase()
+    : learnCtx?.label ?? fallbackSubject.toUpperCase();
 
   // 색·라벨과 시험일이 서로 다른 과목을 가리키면 안 된다 (제목은 SQLD 인데
   // 날짜는 ADSP 것이 뜨는 문제). 시험 정보는 항상 이 subject 하나만 따른다.
   const subject: Subject =
-    learnCtx?.kind === 'core' ? learnCtx.subject : fallbackSubject;
+    homeSubject ?? (learnCtx?.kind === 'core' ? learnCtx.subject : fallbackSubject);
 
   // 확장 과목(컴활)은 EXAM_PRESETS 에 회차가 없어 D-day 를 만들 수 없다.
   // 코어 과목 날짜를 대신 보여주면 라벨과 어긋나므로 아예 감춘다.
   // 약점 단원 TOP 4 — /weakness 화면과 같은 계산기를 그대로 쓴다.
   // 확장 과목은 챕터 가중치 테이블이 없어 이 계산이 성립하지 않으므로 건너뛴다.
-  const isExpansion = learnCtx?.kind === 'expansion';
+  const isExpansion = !homeSubject && learnCtx?.kind === 'expansion';
   const weakChapters = useMemo(
     () =>
       isExpansion
@@ -101,9 +127,59 @@ export default function HomePage() {
     window.location.hash = `/game/${subject}`;
   };
 
-  const examYmd = isExpansion ? undefined : getExamDate(subject);
+  const [examYmdBySubject, setExamYmdBySubject] = useState(() => ({
+    adsp: getExamDate('adsp'),
+    sqld: getExamDate('sqld'),
+  }));
+  const examYmd = isExpansion ? undefined : examYmdBySubject[subject];
   const dDay = isExpansion ? null : daysUntil(examYmd);
   const nextPreset = isExpansion ? null : getUpcomingPresets(subject)[0] ?? null;
+
+  const refreshExamDates = () => {
+    setExamYmdBySubject({
+      adsp: getExamDate('adsp'),
+      sqld: getExamDate('sqld'),
+    });
+  };
+
+  const handleExamPick = (ymd: string | null) => {
+    if (isExpansion) return;
+    setExamDate(subject, ymd);
+    refreshExamDates();
+    setExamPickerOpen(false);
+    window.requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  };
+
+  const handleSubjectSwitched = (nextSubject: FirstEntrySubject) => {
+    setSubjectSwitcherOpen(false);
+
+    if (nextSubject === 'comhwal') {
+      setLearningSubject('comhwal');
+      try {
+        window.localStorage.setItem(LAST_LEARN_HASH_KEY, '/game/comhwal');
+        window.localStorage.setItem(
+          LAST_EXPANSION_VIEW_KEY,
+          JSON.stringify({ subjectId: 'comhwal', variantId: 'grade-1' }),
+        );
+      } catch {
+        /* localStorage 불가 — 컴활 화면 이동은 계속 진행 */
+      }
+      window.location.hash = '/game/comhwal';
+      return;
+    }
+
+    setActiveSubject(nextSubject);
+    setHomeSubject(nextSubject);
+    ensureNearestUpcomingExamDate(nextSubject);
+    try {
+      window.localStorage.setItem(LAST_LEARN_HASH_KEY, `/game/${nextSubject}`);
+    } catch {
+      /* localStorage 불가 — 현재 홈 표시만 전환 */
+    }
+    refreshExamDates();
+  };
 
   // 뷰포트 크기 — 스크롤 변환 거리 계산에 필요.
   const [vp, setVp] = useState({ w: 390, h: 844 });
@@ -114,13 +190,8 @@ export default function HomePage() {
     return () => window.removeEventListener('resize', sync);
   }, []);
 
-  // 히어로를 넉넉하게 잡아 D-day 와 로켓이 서로 숨 쉴 자리를 준다.
-  // 100vh 로 꽉 채우지 않는 건, 아래 카드가 살짝 걸쳐 보여야 "더 있다" 는
-  // 신호가 되고 매 방문마다 스크롤해야 하는 마찰이 없기 때문.
-  // 0.78 은 임의값이 아니다 — 남는 22% 에서 하단 네비(약 70px)를 빼면 헤드라인
-  // 두 줄이 잘리지 않고 들어간다. iPhone SE 같은 짧은 화면 기준으로 잡은 값이라
-  // 이보다 키우면 "한 발 더" 가 네비에 물린다.
-  const heroH = vp.h * 0.78;
+  // 첫 진입에서는 히어로만 보이도록 현재 뷰포트를 정확히 채운다.
+  const heroH = vp.h;
 
   // 스크롤 0 → 히어로 80% 지점에서 변환 완료. clamp 로 그 이후엔 고정.
   const { scrollY } = useScroll();
@@ -130,14 +201,25 @@ export default function HomePage() {
   // 스크롤해도 계속 보여야 하므로 fixed 로 띄우고 transform 만 준다
   // (translate/scale 은 컴포지터에서 처리돼 스크롤 중에도 프레임이 안 떨어짐).
   // 래퍼는 fixed inset-0 + flex center 라 기준점이 "뷰포트 중앙" 이다.
-  // 거기서 히어로 중앙까지 끌어올린 값이 시작 위치.
-  // heroH * 0.11 만큼 더 내려서 D-day 숫자가 로켓 위로 드러나게 한다.
-  const rocketStartY = heroH / 2 - vp.h / 2 + heroH * 0.11;
+  // 거기서 히어로 중앙까지 옮긴 값이 시작 위치.
+  const compactHero = vp.w < 768;
+  const rocketStartX = 0;
+  const rocketStartY =
+    heroH / 2 -
+    vp.h / 2 +
+    (compactHero ? Math.min(Math.max(vp.h * 0.085, 64), 80) : 0);
+  const rocketSize = compactHero
+    ? Math.min(vp.w * 0.89, vp.h * 0.44, 395)
+    : Math.min(vp.w * 0.88, 375);
+  const ddayLiftRatio = compactHero ? 0.225 : 0.15;
+  const ddayFontSize = compactHero
+    ? Math.min(vp.w * 0.36, vp.h * 0.18, 166)
+    : Math.min(vp.w * 0.42, 190);
   // 도착 위치 — 헤드라인과 같은 띠의 오른쪽. 헤드라인은 왼쪽 정렬이라 가로로
   // 겹치지 않고, 시안처럼 문구 옆에 로켓이 서 있는 구도가 된다.
   // 더 내리면 아래 카드를 덮고, 더 키워도 카드를 덮는다.
   const rocketEndY = 122 - vp.h / 2;
-  const rocketX = useTransform(p, [0, 1], [0, vp.w * 0.29]);
+  const rocketX = useTransform(p, [0, 1], [rocketStartX, vp.w * 0.29]);
   const rocketY = useTransform(p, [0, 1], [rocketStartY, rocketEndY]);
   const rocketScale = useTransform(p, [0, 1], [1, 0.3]);
   const rocketRotate = useTransform(p, [0, 1], [0, 14]);
@@ -156,7 +238,7 @@ export default function HomePage() {
 
   // 모션을 끈 사용자에게는 변환 없이 히어로 중앙에 고정된 로켓만 보인다.
   const rocketStyle = reduceMotion
-    ? { x: 0, y: rocketStartY, scale: 1, rotate: 0 }
+    ? { x: rocketStartX, y: rocketStartY, scale: 1, rotate: 0 }
     : {
         x: rocketX,
         y: rocketY,
@@ -187,6 +269,7 @@ export default function HomePage() {
     !profile.displayName || profile.displayName === profile.tag
       ? '탐험가'
       : profile.displayName;
+  const hasStudyPlan = loadStudyPlan() !== null;
 
   return (
     <section className="relative min-h-screen text-cream isolate overflow-x-hidden">
@@ -216,7 +299,7 @@ export default function HomePage() {
         {/* 로켓보다 위로 올려서 숫자가 가려지지 않게 한다. */}
         <motion.div
           aria-hidden
-          style={{ ...ddayStyle, y: -Math.round(heroH * 0.15) }}
+          style={{ ...ddayStyle, y: -Math.round(heroH * ddayLiftRatio) }}
           className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center"
         >
           {/*
@@ -234,7 +317,7 @@ export default function HomePage() {
                 })}
             className="kr-heading gradient-text select-none leading-none"
             style={{
-              fontSize: Math.min(vp.w * 0.42, 190),
+              fontSize: ddayFontSize,
               fontWeight: 800,
               letterSpacing: '-0.04em',
               backgroundImage: `linear-gradient(180deg, ${tint(accent, 0.95)} 0%, ${tint(
@@ -242,6 +325,7 @@ export default function HomePage() {
                 0.5,
               )} 58%, ${tint(accent, 0.2)} 100%)`,
               opacity: 0.92,
+              filter: 'drop-shadow(0 4px 14px rgba(1,8,40,0.35))',
             }}
           >
             {dDay !== null && dDay >= 0 ? `D-${dDay}` : 'D-?'}
@@ -280,7 +364,7 @@ export default function HomePage() {
                     },
                   })}
             >
-              <Rocket size={Math.min(vp.w * 0.82, 350)} />
+              <Rocket size={rocketSize} />
             </motion.div>
           </motion.div>
         </motion.div>
@@ -289,7 +373,7 @@ export default function HomePage() {
         <motion.div
           {...enter(1.15, 6)}
           style={hintStyle}
-          className="absolute inset-x-0 bottom-5 z-20 flex flex-col items-center gap-1"
+          className="absolute inset-x-0 bottom-[calc(104px+env(safe-area-inset-bottom))] z-20 flex flex-col items-center gap-1"
         >
           <span className="kr-body text-[12px] text-cream/50">스크롤하여 시작하기</span>
           <motion.span
@@ -354,9 +438,7 @@ export default function HomePage() {
             {dDay === null ? (
               <button
                 type="button"
-                onClick={() => {
-                  window.location.hash = '/stats';
-                }}
+                onClick={() => setExamPickerOpen(true)}
                 className="kr-heading mt-3 rounded-[12px] px-4 py-2 text-[13px] transition active:scale-[0.98]"
                 style={{ background: 'var(--cta-primary)', color: 'var(--base)' }}
               >
@@ -366,33 +448,101 @@ export default function HomePage() {
           </div>
         </Reveal>
 
+        {!isExpansion ? (
+          <Reveal>
+            <Card>
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="kr-heading text-[14px] text-cream">시험 준비</div>
+                  <p className="kr-body mt-1 text-[12px] leading-[1.55] text-cream/55">
+                    공부할 과목과 시험 날짜를 홈에서 바로 바꿀 수 있어요.
+                  </p>
+                </div>
+              </div>
+              <div className="mt-3 grid grid-cols-2 gap-2.5">
+                <ActionButton
+                  icon={<CalendarClock size={18} />}
+                  label="시험일 선택하기"
+                  accent={accent}
+                  onClick={() => setExamPickerOpen(true)}
+                />
+                <ActionButton
+                  icon={<Repeat2 size={18} />}
+                  label="과목 바꾸기"
+                  accent={accent}
+                  testId="home-subject-switch"
+                  onClick={() => setSubjectSwitcherOpen(true)}
+                />
+                <div className="col-span-2">
+                  <ActionButton
+                    icon={<Sparkles size={18} />}
+                    label={hasStudyPlan ? '맞춤 학습 계획 보기' : '맞춤 학습 계획 만들기'}
+                    accent={accent}
+                    testId="home-study-plan"
+                    onClick={() => {
+                      window.location.hash = hasStudyPlan
+                        ? '/study-plan'
+                        : '/study-plan/setup';
+                    }}
+                  />
+                </div>
+              </div>
+            </Card>
+          </Reveal>
+        ) : null}
+
         <Reveal>
-          <Card>
-            <div className="kr-heading text-[14px] text-cream">오늘의 학습</div>
+          <div
+            className="liquid-glass mt-3 overflow-hidden rounded-[22px] px-4 py-4"
+            style={{
+              border: `1px solid ${tint(accent, 0.3)}`,
+              background:
+                'linear-gradient(180deg, rgba(255,255,255,0.075) 0%, rgba(255,255,255,0.035) 100%)',
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div className="kr-heading text-[14px] text-cream">오늘의 학습</div>
+              <span className="kr-body text-[11px] text-cream/45">바로 이어서</span>
+            </div>
             <button
               type="button"
               onClick={() => {
                 window.location.hash = readLastLearnHash();
               }}
-              className="mt-3 flex w-full items-center gap-3 text-left transition active:scale-[0.99]"
+              className="mt-4 flex w-full items-center gap-3 text-left transition active:scale-[0.99]"
             >
               <span
-                className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px]"
-                style={{ background: tint(accent, 0.16) }}
+                className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-[18px]"
+                style={{
+                  background: `linear-gradient(180deg, ${tint(accent, 0.22)}, ${tint(
+                    accent,
+                    0.1,
+                  )})`,
+                  border: `1px solid ${tint(accent, 0.22)}`,
+                }}
               >
-                <BookOpen size={22} style={{ color: accent }} />
+                <BookOpen size={24} style={{ color: accent }} />
               </span>
-              <span className="kr-heading min-w-0 flex-1 truncate text-[15px] text-cream">
-                {subjectLabel} 이어하기
+              <span className="min-w-0 flex-1">
+                <span className="kr-body block text-[12px] text-cream/50">
+                  마지막으로 보던 곳
+                </span>
+                <span className="kr-heading mt-0.5 block truncate text-[16px] text-cream">
+                  {subjectLabel} 이어하기
+                </span>
               </span>
-              <ChevronRight
-                size={20}
-                strokeWidth={2.4}
-                className="shrink-0"
-                style={{ color: tint(accent, 0.75) }}
-              />
+              <span
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full"
+                style={{ background: tint(accent, 0.12) }}
+              >
+                <ChevronRight
+                  size={19}
+                  strokeWidth={2.6}
+                  style={{ color: tint(accent, 0.85) }}
+                />
+              </span>
             </button>
-          </Card>
+          </div>
         </Reveal>
 
         {/*
@@ -418,13 +568,26 @@ export default function HomePage() {
             <button
               type="button"
               onClick={() => openWeakChapter(weakChapters[0].chapter_id)}
-              className="liquid-glass w-full rounded-[18px] px-4 py-4 text-left transition active:scale-[0.99]"
-              style={{ border: `1px solid ${tint(accent, 0.28)}` }}
+              className="liquid-glass w-full rounded-[22px] px-4 py-4 text-left transition active:scale-[0.99]"
+              style={{
+                border: `1px solid ${tint(accent, 0.34)}`,
+                background: `linear-gradient(180deg, ${tint(
+                  accent,
+                  0.12,
+                )} 0%, rgba(255,255,255,0.035) 100%)`,
+              }}
             >
+              <div className="kr-body mb-2 text-[11px] text-cream/45">
+                먼저 보면 좋은 단원
+              </div>
               <div className="flex items-center gap-3">
                 <span
-                  className="kr-heading inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[13px]"
-                  style={{ background: tint(accent, 0.18), color: accent }}
+                  className="kr-heading inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[13px]"
+                  style={{
+                    background: tint(accent, 0.2),
+                    color: accent,
+                    border: `1px solid ${tint(accent, 0.28)}`,
+                  }}
                 >
                   1
                 </span>
@@ -454,25 +617,38 @@ export default function HomePage() {
               </div>
             </button>
 
-            {weakChapters.slice(1).map((w) => (
-              <button
-                key={w.chapter_id}
-                type="button"
-                onClick={() => openWeakChapter(w.chapter_id)}
-                className="mt-2 flex w-full items-center gap-3 rounded-[14px] px-4 py-3 text-left transition active:scale-[0.99]"
-                style={{ background: 'rgba(255,255,255,0.035)' }}
+            {weakChapters.length > 1 ? (
+              <div
+                className="mt-2 overflow-hidden rounded-[18px]"
+                style={{
+                  background: 'rgba(255,255,255,0.032)',
+                  border: '1px solid rgba(239,244,255,0.075)',
+                }}
               >
-                <span className="kr-num w-4 shrink-0 text-[12px] text-cream/40">
-                  {w.rank}
-                </span>
-                <span className="kr-body min-w-0 flex-1 truncate text-[13.5px] text-cream/85">
-                  {w.chapter_name}
-                </span>
-                <span className="kr-num shrink-0 text-[12px] text-cream/50">
-                  {Math.round(w.accuracy * 100)}%
-                </span>
-              </button>
-            ))}
+                {weakChapters.slice(1).map((w, idx) => (
+                  <button
+                    key={w.chapter_id}
+                    type="button"
+                    onClick={() => openWeakChapter(w.chapter_id)}
+                    className="flex w-full items-center gap-3 px-4 py-3 text-left transition active:scale-[0.99]"
+                    style={{
+                      borderTop:
+                        idx === 0 ? undefined : '1px solid rgba(239,244,255,0.055)',
+                    }}
+                  >
+                    <span className="kr-num w-4 shrink-0 text-[12px] text-cream/35">
+                      {w.rank}
+                    </span>
+                    <span className="kr-body min-w-0 flex-1 truncate text-[13.5px] text-cream/78">
+                      {w.chapter_name}
+                    </span>
+                    <span className="kr-num shrink-0 text-[12px] text-cream/45">
+                      {Math.round(w.accuracy * 100)}%
+                    </span>
+                  </button>
+                ))}
+              </div>
+            ) : null}
           </Reveal>
         ) : null}
 
@@ -486,7 +662,7 @@ export default function HomePage() {
           */}
           <div className="grid grid-cols-2 gap-2.5">
             <QuickItem
-              icon={<BookOpen size={20} style={{ color: '#A78BFA' }} />}
+              icon={<BookOpen size={21} style={{ color: '#A78BFA' }} />}
               label="오답노트"
               onClick={() => {
                 try {
@@ -498,7 +674,7 @@ export default function HomePage() {
               }}
             />
             <QuickItem
-              icon={<Star size={20} style={{ color: '#FBBF24' }} />}
+              icon={<Star size={21} style={{ color: '#FBBF24' }} />}
               label="즐겨찾기"
               onClick={() => {
                 window.location.hash = '/bookmarks';
@@ -509,7 +685,29 @@ export default function HomePage() {
 
       </div>
 
-      <MobileBottomNav active="learn" />
+      <MobileBottomNav active="home" />
+      {examPickerOpen && !isExpansion ? (
+        <ExamDatePickerModal
+          subject={subject}
+          accent={accent}
+          ymd={examYmd}
+          nextPreset={nextPreset}
+          onPick={handleExamPick}
+          onClose={() => setExamPickerOpen(false)}
+        />
+      ) : null}
+      {subjectSwitcherOpen && typeof document !== 'undefined'
+        ? createPortal(
+            <div className="fixed inset-0 z-[100] overflow-y-auto">
+              <FirstEntrySubjectPicker
+                initialSubject={subject}
+                onBack={() => setSubjectSwitcherOpen(false)}
+                onSelect={handleSubjectSwitched}
+              />
+            </div>,
+            document.body,
+          )
+        : null}
     </section>
   );
 }
@@ -573,6 +771,221 @@ function Card({ children }: { children: React.ReactNode }) {
   );
 }
 
+function ActionButton({
+  icon,
+  label,
+  accent,
+  onClick,
+  testId,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  accent: string;
+  onClick: () => void;
+  testId?: string;
+}) {
+  return (
+    <button
+      data-testid={testId}
+      type="button"
+      onClick={onClick}
+      className="kr-heading inline-flex min-h-[48px] w-full items-center justify-center gap-2 rounded-[14px] px-2.5 text-[12.5px] transition active:scale-[0.97]"
+      style={{
+        background: tint(accent, 0.12),
+        color: 'var(--cream)',
+        border: `1px solid ${tint(accent, 0.24)}`,
+      }}
+    >
+      <span className="shrink-0" style={{ color: accent }}>
+        {icon}
+      </span>
+      <span className="min-w-0">{label}</span>
+    </button>
+  );
+}
+
+function ExamDatePickerModal({
+  accent,
+  ymd,
+  nextPreset,
+  onPick,
+  onClose,
+}: {
+  subject: Subject;
+  accent: string;
+  ymd: string | undefined;
+  nextPreset: ExamPreset | null;
+  onPick: (ymd: string | null) => void;
+  onClose: () => void;
+}) {
+  const reduceMotion = useReducedMotion();
+  const presets = nextPreset ? getUpcomingPresets(nextPreset.subject) : [];
+  const [pendingYmd, setPendingYmd] = useState<string | undefined>(ymd);
+  useEffect(() => setPendingYmd(ymd), [ymd]);
+
+  const pendingDays = daysUntil(pendingYmd);
+  const dDayLabel =
+    pendingDays === null
+      ? '미설정'
+      : pendingDays > 0
+        ? `D-${pendingDays}`
+        : pendingDays === 0
+          ? 'D-Day'
+          : `D+${Math.abs(pendingDays)}`;
+  const changed = (pendingYmd ?? '') !== (ymd ?? '');
+
+  return (
+    <motion.div
+      initial={reduceMotion ? undefined : { opacity: 0 }}
+      animate={reduceMotion ? undefined : { opacity: 1 }}
+      exit={reduceMotion ? undefined : { opacity: 0 }}
+      transition={{ duration: 0.18, ease: 'easeOut' }}
+      className="fixed inset-0 z-[100] flex items-end justify-center bg-[#010828]/70 p-4 backdrop-blur-md sm:items-center"
+      role="dialog"
+      aria-modal="true"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={reduceMotion ? undefined : { opacity: 0, y: 28, scale: 0.96 }}
+        animate={reduceMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
+        exit={reduceMotion ? undefined : { opacity: 0, y: 16, scale: 0.98 }}
+        transition={
+          reduceMotion
+            ? undefined
+            : { type: 'spring', stiffness: 360, damping: 30, mass: 0.9 }
+        }
+        className="w-full max-w-[400px] rounded-[24px] p-5"
+        style={{
+          background:
+            'linear-gradient(180deg, rgba(13,37,83,0.96) 0%, rgba(8,28,68,0.94) 100%)',
+          border: `1px solid ${tint(accent, 0.38)}`,
+          boxShadow: `0 18px 54px rgba(0,0,0,0.5), 0 0 0 1px rgba(239,244,255,0.04), 0 0 38px -22px ${accent}`,
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-5 flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <div className="kr-heading text-[19px] leading-tight text-cream">
+              시험일 선택하기
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-cream/60 transition hover:bg-white/10 hover:text-cream active:scale-95"
+            aria-label="닫기"
+          >
+            <X size={17} strokeWidth={2.4} />
+          </button>
+        </div>
+
+        <div
+          className="mb-4 rounded-[18px] px-4 py-4"
+          style={{
+            background: 'rgba(255,255,255,0.045)',
+            border: '1px solid rgba(239,244,255,0.10)',
+          }}
+        >
+          <div
+            className="kr-heading text-[42px] leading-none"
+            style={{ color: accent }}
+          >
+            {dDayLabel}
+          </div>
+          <div className="kr-body mt-2 text-[12.5px] text-cream/70">
+            {pendingYmd ? formatHomeExamDate(pendingYmd) : '아직 선택하지 않았어요'}
+          </div>
+        </div>
+
+        <label className="block">
+          <span className="kr-heading text-[12px] text-cream/70">날짜</span>
+          <input
+            type="date"
+            value={pendingYmd ?? ''}
+            onChange={(e) => setPendingYmd(e.target.value || undefined)}
+            className="kr-body mt-2 w-full rounded-[16px] px-4 py-3 text-[15px] text-cream outline-none transition focus:border-white/35"
+            style={{
+              colorScheme: 'dark',
+              background: 'rgba(255,255,255,0.07)',
+              border: '1px solid rgba(239,244,255,0.13)',
+            }}
+          />
+        </label>
+
+        {presets.length > 0 ? (
+          <div className="mt-4">
+            <div className="kr-heading mb-2 text-[12px] text-cream/70">
+              시험일 선택
+            </div>
+            <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+              {presets.map((preset) => (
+                <button
+                  key={preset.date}
+                  type="button"
+                  onClick={() => setPendingYmd(preset.date)}
+                  className="flex min-h-[70px] min-w-[146px] shrink-0 flex-col items-start justify-center rounded-[16px] px-3.5 text-left transition active:scale-[0.98]"
+                  style={{
+                    background:
+                      preset.date === pendingYmd
+                        ? tint(accent, 0.16)
+                        : 'rgba(255,255,255,0.045)',
+                    border:
+                      preset.date === pendingYmd
+                        ? `1px solid ${tint(accent, 0.42)}`
+                        : '1px solid rgba(239,244,255,0.1)',
+                  }}
+                >
+                  <span className="kr-heading text-[13px] text-cream">
+                    {preset.round}
+                  </span>
+                  <span className="kr-body mt-1 text-[12px] text-cream/62">
+                    {preset.display.replace('2026.', '')}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <p className="kr-body mt-4 text-[12px] leading-[1.55] text-cream/45">
+            공개된 다음 시험 일정이 없으면 날짜를 직접 골라주세요.
+          </p>
+        )}
+
+        {pendingYmd ? (
+          <button
+            type="button"
+            onClick={() => setPendingYmd(undefined)}
+            className="kr-body mt-4 w-full rounded-[14px] px-3 py-2.5 text-[12px] text-cream/45 transition hover:bg-white/5 hover:text-cream/70 active:scale-[0.98]"
+          >
+            시험일 지우기
+          </button>
+        ) : null}
+
+        <button
+          type="button"
+          onClick={() => onPick(pendingYmd ?? null)}
+          className="kr-heading mt-3 w-full rounded-[16px] px-4 py-3.5 text-[14px] transition active:scale-[0.98]"
+          style={{
+            background: changed
+              ? `linear-gradient(180deg, ${accent} 0%, ${tint(accent, 0.78)} 100%)`
+              : 'rgba(239,244,255,0.12)',
+            color: changed ? 'var(--base)' : 'rgba(239,244,255,0.62)',
+            boxShadow: changed ? `0 10px 24px -14px ${accent}` : 'none',
+          }}
+        >
+          적용하기
+        </button>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function formatHomeExamDate(ymd: string): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ymd);
+  if (!m) return ymd;
+  return `${m[1]}년 ${Number(m[2])}월 ${Number(m[3])}일`;
+}
+
 function QuickItem({
   icon,
   label,
@@ -586,10 +999,21 @@ function QuickItem({
     <button
       type="button"
       onClick={onClick}
-      className="liquid-glass flex flex-col items-center gap-2 rounded-[16px] px-1 py-3.5 transition active:scale-95"
+      className="flex min-h-[76px] flex-col items-center justify-center gap-2.5 rounded-[18px] px-2 transition active:scale-95"
+      style={{
+        background:
+          'linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.035) 100%)',
+        border: '1px solid rgba(239,244,255,0.12)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)',
+      }}
     >
-      {icon}
-      <span className="kr-body text-[11.5px] text-cream/80">{label}</span>
+      <span
+        className="inline-flex h-9 w-9 items-center justify-center rounded-[13px]"
+        style={{ background: 'rgba(255,255,255,0.06)' }}
+      >
+        {icon}
+      </span>
+      <span className="kr-heading text-[12px] text-cream/78">{label}</span>
     </button>
   );
 }

@@ -169,13 +169,6 @@ export function PremiumPlanPanel({
           </div>
         </div>
 
-        <div className="mt-5 h-px w-full bg-cream/10" />
-        <p className="kr-body mt-4 text-[12px] font-semibold leading-[1.55] text-cream/55">
-          {appMode
-            ? 'Google Play 정기 결제로 안전하게 처리됩니다.'
-            : '정식 결제 오픈 준비 중 — 지금은 오픈 베타 쿠폰으로 MAX를 이용할 수 있어요.'}
-        </p>
-
         {alreadyPremium ? (
           <div
             className="mt-5 flex items-start gap-2.5 rounded-[18px] px-4 py-3.5"
@@ -253,21 +246,6 @@ export function PremiumPlanPanel({
             </li>
           ))}
         </ul>
-
-        <div
-          className="mt-4 rounded-[14px] px-3 py-2.5"
-          style={{
-            background: 'rgba(2,11,36,0.4)',
-            border: '1px solid rgba(239,244,255,0.09)',
-          }}
-        >
-          <p className="kr-num text-[9px] font-black uppercase tracking-[0.18em] text-cream/40">
-            Free Plan
-          </p>
-          <p className="kr-body mt-1 text-[11px] font-semibold leading-[1.5] text-cream/55">
-            ⚡ 에너지 5개 · 30분당 1개 충전 · 챕터 순차 해금
-          </p>
-        </div>
 
         <button
           type="button"

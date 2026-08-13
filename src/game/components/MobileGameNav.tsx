@@ -19,7 +19,7 @@ import {
   FlagTabIcon,
   TrophyTabIcon,
   UserTabIcon,
-  FlameTabIcon,
+  HomeTabIcon,
   type TabIconProps,
 } from '@/components/nav/TabIcons';
 import type { Subject } from '@/types/question';
@@ -345,7 +345,17 @@ export function MobileTopBar({ subject, customSubject }: TopProps) {
 
 // ---------------------------------------------------------------- Bottom Nav
 
-export type MobileNavTab = 'learn' | 'quests' | 'weakness' | 'trophy' | 'profile';
+/**
+ * 'weakness' 는 탭에서 빠졌지만 타입에는 남는다 — /weakness 화면이 아직 살아
+ * 있고 (홈의 '전체 보기' 로 들어감), 그 화면에서는 어떤 탭도 강조하지 않는다.
+ */
+export type MobileNavTab =
+  | 'home'
+  | 'learn'
+  | 'quests'
+  | 'weakness'
+  | 'trophy'
+  | 'profile';
 
 interface BottomProps {
   /**
@@ -384,11 +394,23 @@ export function MobileBottomNav({
       }}
     >
       {/*
-        Phase 4 Step 5 — 5번째 슬롯 '진행도' 추가. grid-cols-4 → grid-cols-5.
-        iPhone SE (375px) 기준 슬롯 폭 75px — 한글 3자 라벨 (퀘스트/진행도/프로필)
-        모두 잘림 없이 표시 가능 (10.5px 폰트 × 3자 ≈ 33px).
+        5 슬롯: 홈 · 학습 · 퀘스트 · 친구 · 프로필.
+        '나의 약점' 이 있던 자리를 홈이 대신한다 — 약점 목록은 홈 안으로
+        들어갔고, 전체 목록은 홈의 '전체 보기' 로 계속 닿는다.
+        iPhone SE (375px) 기준 슬롯 폭 75px — 한글 3자 라벨까지 잘림 없음
+        (10.5px 폰트 × 3자 ≈ 33px).
       */}
       <div className="grid grid-cols-5 pb-[env(safe-area-inset-bottom)] max-w-[1200px] mx-auto">
+        <Tab
+          tab="home"
+          active={active}
+          accent={navAccent}
+          Icon={HomeTabIcon}
+          label="홈"
+          onClick={() => {
+            window.location.hash = '/home';
+          }}
+        />
         <Tab
           tab="learn"
           active={active}
@@ -415,16 +437,6 @@ export function MobileBottomNav({
             } else {
               window.location.hash = '/quests';
             }
-          }}
-        />
-        <Tab
-          tab="weakness"
-          active={active}
-          accent={navAccent}
-          Icon={FlameTabIcon}
-          label="나의 약점"
-          onClick={() => {
-            window.location.hash = '/weakness';
           }}
         />
         <Tab

@@ -7,6 +7,7 @@
 
 import { useMemo, useState, type ReactNode } from 'react';
 import {
+  Bell,
   CalendarClock,
   ChevronRight,
   CreditCard,
@@ -21,6 +22,7 @@ import ScreenShell from './components/ScreenShell';
 import { MobileTopBar, MobileBottomNav } from './components/MobileGameNav';
 import PageAmbientBg from './components/PageAmbientBg';
 import AuthCard from './components/AuthCard';
+import NotificationSettings from './components/NotificationSettings';
 import ThemePicker from './components/ThemePicker';
 import { useTheme } from './theme/useTheme';
 import { useEnergy } from './energy';
@@ -52,7 +54,13 @@ const SUBJECT_LABEL: Record<Subject, string> = {
   sqld: 'SQLD',
 };
 
-type SettingsSection = 'home' | 'account' | 'plan' | 'theme' | 'exams';
+type SettingsSection =
+  | 'home'
+  | 'account'
+  | 'plan'
+  | 'theme'
+  | 'exams'
+  | 'notifications';
 
 interface SectionMeta {
   eyebrow: string;
@@ -85,6 +93,11 @@ const SECTION_META: Record<SettingsSection, SectionMeta> = {
     eyebrow: 'Exam Dates',
     title: '시험일',
     subtitle: '자격증별 D-Day를 설정합니다.',
+  },
+  notifications: {
+    eyebrow: 'Reminder',
+    title: '학습 리마인더',
+    subtitle: '스트릭이 끊기기 전에 푸시 알림을 받습니다.',
   },
 };
 
@@ -175,6 +188,8 @@ export default function SettingsPage({ onExit, embedded = false }: Props) {
       {activeSection === 'plan' ? <PlanSection /> : null}
 
       {activeSection === 'theme' ? <ThemePicker /> : null}
+
+      {activeSection === 'notifications' ? <NotificationSettings /> : null}
 
       {activeSection === 'exams' ? (
         <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -300,6 +315,12 @@ function SettingsHome({
           value={examSummary}
           onClick={() => onOpen('exams')}
         />
+        <SettingsRow
+          icon={Bell}
+          title="학습 리마인더"
+          value={notificationSummary()}
+          onClick={() => onOpen('notifications')}
+        />
       </SettingsGroup>
 
       {showAppRefresh ? (
@@ -315,6 +336,24 @@ function SettingsHome({
 
     </div>
   );
+}
+
+/**
+ * 홈 목록용 알림 요약 — 권한 기반의 동기 라벨.
+ * 정확한 구독 상태 (서버 row) 는 섹션 진입 후 NotificationSettings 가 조회.
+ */
+function notificationSummary(): string {
+  if (typeof window === 'undefined' || !('Notification' in window)) {
+    return '이 브라우저 미지원';
+  }
+  switch (Notification.permission) {
+    case 'granted':
+      return '켜짐';
+    case 'denied':
+      return '브라우저에서 차단됨';
+    default:
+      return '꺼짐';
+  }
 }
 
 function SettingsGroup({ children }: { children: ReactNode }) {

@@ -95,6 +95,24 @@ export function setExamDate(subject: Subject, ymd: string | null): void {
   void serverSetExamDate(subject, ymd);
 }
 
+/**
+ * 저장된 날짜가 없을 때만 가장 가까운 예정 시험일을 기본값으로 설정합니다.
+ * 사용자가 직접 고른 날짜는 그대로 보존하며, 예정된 회차가 없으면 설정하지 않습니다.
+ */
+export function ensureNearestUpcomingExamDate(
+  subject: Subject,
+  now: number = Date.now(),
+): string | undefined {
+  const savedDate = getExamDate(subject);
+  if (savedDate) return savedDate;
+
+  const nearestDate = getUpcomingPresets(subject, now)[0]?.date;
+  if (!nearestDate) return undefined;
+
+  setExamDate(subject, nearestDate);
+  return nearestDate;
+}
+
 export function getAllExamDates(): ExamDates {
   return load();
 }

@@ -123,8 +123,8 @@ export default function PlanetScreen({
             {schema.title}
           </h1>
           <p className="kr-body text-[13px] md:text-[14px] text-cream/80 mt-4 max-w-xl leading-[1.7]">
-            탐사할 행성(챕터)을 선택하세요. 각 행성에는 여러 존(토픽)이
-            있습니다.
+            먼저 공부할 단원을 골라보세요. 단원마다 짧은 주제로 나뉘어
+            있어요.
           </p>
         </header>
 

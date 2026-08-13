@@ -72,6 +72,7 @@ import type { QuesPose } from '@/components/mascot/types';
 import {
   markPartReviewCompleted,
   recordSingleAnswer,
+  setLearningSubject,
   type ProgressStore,
 } from '../storage';
 import { consumeEnergy } from '../energy';
@@ -86,7 +87,6 @@ import { useMyProfile } from '@/data/profile';
 import { hasEverSolved } from '../progressPredicates';
 import NicknameOnboarding from './NicknameOnboarding';
 import StudyPlanBanner from '../studyPlan/StudyPlanBanner';
-import OnboardingPromptBanner from '../studyPlan/OnboardingPromptBanner';
 import { loadStudyPlan } from '../studyPlan/studyPlanStorage';
 import { recommendNextStep } from '../studyPlan/nextStep';
 import PageAmbientBg from '../components/PageAmbientBg';
@@ -862,13 +862,9 @@ export default function GalaxyScreen({
           />
         </div>
 
-        {/*
-          Phase 4 Step 3 — 학습 플랜 진도 배너 / onboarding 권유 배너.
-          plan 있으면 StudyPlanBanner, 없으면 OnboardingPromptBanner — 둘 중 하나만.
-        */}
+        {/* 생성 버튼은 홈에만 두고, 만들어진 계획의 진도만 학습 화면에 보여준다. */}
         <div className="mb-6 md:mb-8">
           <StudyPlanBanner variant="compact" />
-          <OnboardingPromptBanner />
         </div>
 
         {/* HAIRLINE */}
@@ -897,13 +893,14 @@ export default function GalaxyScreen({
                 key={`${expansionSubject.id}:${variant.id}`}
                 subject={expansionSubject}
                 variant={variant}
-                onSelect={() =>
+                onSelect={() => {
+                  setLearningSubject(expansionSubject.id);
                   setView({
                     kind: 'expansionDetail',
                     subjectId: expansionSubject.id,
                     variantId: variant.id,
-                  })
-                }
+                  });
+                }}
               />
             )),
           )}

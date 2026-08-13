@@ -508,7 +508,15 @@ export function markDailyMissionStarted(): void {
  */
 export function setActiveSubject(subject: Subject): void {
   commit({ ...current, activeSubject: subject, updatedAt: Date.now() });
-  void pushProgressMetaToServer({ active_subject: subject });
+  void pushProgressMetaToServer({
+    active_subject: subject,
+    learning_subject: subject,
+  });
+}
+
+/** 관리자 통계용 현재 학습 과목. 컴활은 core router 상태와 분리해 저장한다. */
+export function setLearningSubject(subject: Subject | 'comhwal'): void {
+  void pushProgressMetaToServer({ learning_subject: subject });
 }
 
 /**

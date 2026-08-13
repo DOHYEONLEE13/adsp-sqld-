@@ -13,6 +13,7 @@
 import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import {
   ArrowLeft,
+  BookOpen,
   CheckCircle2,
   Eye,
   Gauge,
@@ -20,7 +21,6 @@ import {
   RefreshCcw,
   Shield,
   Sparkles,
-  Ticket,
   Trash2,
   Unlock,
   Users,
@@ -31,6 +31,8 @@ import VideoBg from '@/components/ui/VideoBg';
 import { VIDEO_URLS } from '@/data/site';
 import { setDevUnlockFlags, useDevUnlockFlags } from '@/game/useDevUnlockFlags';
 
+type LearningSubject = 'adsp' | 'sqld' | 'comhwal';
+
 interface UserRow {
   id: string;
   tag: string;
@@ -40,6 +42,7 @@ interface UserRow {
   lesson_xp: number;
   level: number;
   is_premium: boolean;
+  learning_subject: LearningSubject | null;
   last_seen_at: string;
   created_at: string;
 }
@@ -70,17 +73,6 @@ interface QuotaReachedUser {
   limitCount: number;
 }
 
-interface CouponUsageToday {
-  userId: string;
-  tag: string;
-  displayName: string;
-  code: string;
-  newQuestions: number;
-  sessions: number;
-  grantedAt: string;
-  expiresAt: string | null;
-}
-
 interface RapidSubmitUser {
   userId: string;
   tag: string;
@@ -100,8 +92,14 @@ interface LearningMetrics {
   total_completed_concepts: number;
   top_new_question_users: TopNewQuestionUser[];
   quota_reached_users: QuotaReachedUser[];
-  coupon_usage_today: CouponUsageToday[];
   rapid_submit_users: RapidSubmitUser[];
+}
+
+interface SubjectCounts {
+  adsp_users: number;
+  sqld_users: number;
+  comhwal_users: number;
+  unselected_users: number;
 }
 
 function toNumber(value: unknown): number {
@@ -128,8 +126,17 @@ function normalizeLearningMetrics(value: unknown): LearningMetrics {
     total_completed_concepts: toNumber(row.total_completed_concepts),
     top_new_question_users: asArray<TopNewQuestionUser>(row.top_new_question_users),
     quota_reached_users: asArray<QuotaReachedUser>(row.quota_reached_users),
-    coupon_usage_today: asArray<CouponUsageToday>(row.coupon_usage_today),
     rapid_submit_users: asArray<RapidSubmitUser>(row.rapid_submit_users),
+  };
+}
+
+function normalizeSubjectCounts(value: unknown): SubjectCounts {
+  const row = (value ?? {}) as Partial<SubjectCounts>;
+  return {
+    adsp_users: toNumber(row.adsp_users),
+    sqld_users: toNumber(row.sqld_users),
+    comhwal_users: toNumber(row.comhwal_users),
+    unselected_users: toNumber(row.unselected_users),
   };
 }
 
@@ -148,6 +155,7 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
   const [users, setUsers] = useState<UserRow[]>([]);
   const [userSort, setUserSort] = useState<UserSortKey>('xp');
   const [learningMetrics, setLearningMetrics] = useState<LearningMetrics | null>(null);
+  const [subjectCounts, setSubjectCounts] = useState<SubjectCounts | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   /** server 직접 확인한 admin 여부. localStorage 가 stale 한 케이스 대응. */
@@ -234,24 +242,30 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
       return;
     }
     try {
-      const [userResult, metricsResult] = await Promise.all([
+      const [userResult, metricsResult, subjectResult] = await Promise.all([
         sb
           .from('profiles')
           .select(
-            'id, tag, display_name, role, total_xp, lesson_xp, level, is_premium, last_seen_at, created_at',
+            'id, tag, display_name, role, total_xp, lesson_xp, level, is_premium, learning_subject, last_seen_at, created_at',
           )
           .order('total_xp', { ascending: false })
           .limit(100),
         sb.rpc('admin_learning_activity'),
+        sb.rpc('admin_subject_counts'),
       ]);
       if (userResult.error) throw userResult.error;
       if (metricsResult.error) throw metricsResult.error;
+      if (subjectResult.error) throw subjectResult.error;
 
       setUsers((userResult.data ?? []) as UserRow[]);
       const metricRow = Array.isArray(metricsResult.data)
         ? metricsResult.data[0]
         : metricsResult.data;
       setLearningMetrics(normalizeLearningMetrics(metricRow));
+      const subjectRow = Array.isArray(subjectResult.data)
+        ? subjectResult.data[0]
+        : subjectResult.data;
+      setSubjectCounts(normalizeSubjectCounts(subjectRow));
     } catch (e) {
       setError(e instanceof Error ? e.message : '조회 실패');
     } finally {
@@ -372,6 +386,35 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
           <Stat label="누적 개념 완료" value={learningMetrics?.total_completed_concepts ?? 0} />
         </section>
 
+        <section className="mb-6">
+          <div className="mb-3 flex items-center gap-2">
+            <BookOpen size={16} className="text-neon" />
+            <h2 className="kr-heading text-[16px]">학습 과목 현황</h2>
+          </div>
+          <div className="grid grid-cols-3 gap-3 md:gap-4">
+            <SubjectStat
+              label="ADsP"
+              value={subjectCounts?.adsp_users ?? 0}
+              accent="#67e8f9"
+            />
+            <SubjectStat
+              label="SQLD"
+              value={subjectCounts?.sqld_users ?? 0}
+              accent="#c084fc"
+            />
+            <SubjectStat
+              label="컴활"
+              value={subjectCounts?.comhwal_users ?? 0}
+              accent="#a7e96a"
+            />
+          </div>
+          {(subjectCounts?.unselected_users ?? 0) > 0 ? (
+            <p className="kr-body mt-2 text-right text-[11px] text-cream/45">
+              아직 과목을 선택하지 않은 사용자 {subjectCounts?.unselected_users.toLocaleString('ko-KR')}명
+            </p>
+          ) : null}
+        </section>
+
         <LearningActivityPanels metrics={learningMetrics} loading={loading} />
 
         {/* 사용자 목록 */}
@@ -419,6 +462,7 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
                 <tr>
                   <th className="text-left px-4 py-3">태그</th>
                   <th className="text-left px-4 py-3">닉네임</th>
+                  <th className="hidden text-center px-4 py-3 md:table-cell">학습 과목</th>
                   <th className="text-right px-4 py-3">레벨</th>
                   <th className="text-right px-4 py-3">XP</th>
                   <th className="text-center px-4 py-3">프리미엄</th>
@@ -430,7 +474,7 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
                 {users.length === 0 && !loading ? (
                   <tr>
                     <td
-                      colSpan={7}
+                      colSpan={8}
                       className="text-center px-4 py-12 text-cream/45"
                     >
                       가입자가 아직 없습니다.
@@ -443,8 +487,14 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
                     className="border-t border-cream/10 hover:bg-cream/5 transition"
                   >
                     <td className="px-4 py-3 font-mono text-cream/85">{u.tag}</td>
-                    <td className="px-4 py-3 truncate max-w-[160px]">
-                      {u.display_name || '—'}
+                    <td className="max-w-[160px] px-4 py-3">
+                      <span className="block truncate">{u.display_name || '—'}</span>
+                      <span className="mt-1 block md:hidden">
+                        <LearningSubjectBadge subject={u.learning_subject} />
+                      </span>
+                    </td>
+                    <td className="hidden px-4 py-3 text-center md:table-cell">
+                      <LearningSubjectBadge subject={u.learning_subject} />
                     </td>
                     <td className="px-4 py-3 text-right tabular-nums">
                       {u.level}
@@ -590,6 +640,59 @@ function Stat({ label, value }: { label: string; value: number }) {
   );
 }
 
+function SubjectStat({
+  label,
+  value,
+  accent,
+}: {
+  label: string;
+  value: number;
+  accent: string;
+}) {
+  return (
+    <div
+      className="rounded-[14px] border px-3 py-4 text-center md:px-4"
+      style={{
+        background: `color-mix(in srgb, ${accent} 10%, rgba(255,255,255,0.035))`,
+        borderColor: `color-mix(in srgb, ${accent} 32%, transparent)`,
+      }}
+    >
+      <div className="kr-heading text-[12px]" style={{ color: accent }}>
+        {label}
+      </div>
+      <div className="kr-heading mt-1 text-[23px] tabular-nums text-cream">
+        {value.toLocaleString('ko-KR')}
+        <span className="ml-0.5 text-[11px] text-cream/48">명</span>
+      </div>
+    </div>
+  );
+}
+
+function LearningSubjectBadge({ subject }: { subject: LearningSubject | null }) {
+  const visual = subject
+    ? {
+        adsp: { label: 'ADsP', color: '#67e8f9' },
+        sqld: { label: 'SQLD', color: '#c084fc' },
+        comhwal: { label: '컴활', color: '#a7e96a' },
+      }[subject]
+    : null;
+
+  if (!visual) return <span className="text-cream/30">—</span>;
+
+  return (
+    <span
+      className="inline-flex whitespace-nowrap rounded-full border px-2 py-1 kr-heading text-[10px]"
+      style={{
+        color: visual.color,
+        borderColor: `color-mix(in srgb, ${visual.color} 38%, transparent)`,
+        background: `color-mix(in srgb, ${visual.color} 12%, transparent)`,
+      }}
+    >
+      {visual.label}
+    </span>
+  );
+}
+
 function LearningActivityPanels({
   metrics,
   loading,
@@ -599,7 +702,6 @@ function LearningActivityPanels({
 }) {
   const topNewUsers = metrics?.top_new_question_users ?? [];
   const quotaReachedUsers = metrics?.quota_reached_users ?? [];
-  const couponUsage = metrics?.coupon_usage_today ?? [];
   const rapidUsers = metrics?.rapid_submit_users ?? [];
 
   return (
@@ -640,24 +742,6 @@ function LearningActivityPanels({
               'ko-KR',
             )}`}
             meta="오늘 새 문제 사용량"
-          />
-        ))}
-      </MetricPanel>
-
-      <MetricPanel
-        title="쿠폰 사용자 중 오늘 새 문제 사용량"
-        caption="관리자 제외. 활성 쿠폰 권한 사용자의 오늘 새 문제 노출량입니다."
-        icon={<Ticket size={15} strokeWidth={2.5} />}
-        loading={loading && !metrics}
-        empty={couponUsage.length === 0}
-      >
-        {couponUsage.map((row) => (
-          <MetricUserRow
-            key={`${row.userId}-${row.code}`}
-            tag={row.tag}
-            displayName={row.displayName}
-            value={`${row.newQuestions.toLocaleString('ko-KR')}문항`}
-            meta={`${row.code} · ${row.sessions.toLocaleString('ko-KR')}세션`}
           />
         ))}
       </MetricPanel>

@@ -44,6 +44,7 @@ import DevUnlockBadge from './components/DevUnlockBadge';
 import GuestDiscardToast from './components/GuestDiscardToast';
 import AuthGuard from './components/auth/AuthGuard';
 import { trackPageview } from './lib/analytics';
+import { navigate } from './lib/navigate';
 import { needsOnboarding } from './game/onboarding/onboardingStorage';
 import { isComhwalExam } from './types/learning';
 import { initAuthSessionSync } from './lib/auth/sessionStore';
@@ -88,6 +89,7 @@ const FriendsPage = lazy(() => import('./game/FriendsPage'));
 const OnboardingFlow = lazy(() =>
   import('./game/onboarding/OnboardingFlow').then((m) => ({ default: m.OnboardingFlow })),
 );
+const StudyPlanSetupFlow = lazy(() => import('./game/studyPlan/StudyPlanSetupFlow'));
 // Phase 4 Step 3 — 학습 플랜 확인 화면 (route wrapper — 자체 load + redirect 처리)
 const StudyPlanRoute = lazy(() => import('./game/studyPlan/StudyPlanRoute'));
 // Phase 4 Step 5 — 진행도 현황 (5번째 네비 슬롯)
@@ -101,6 +103,7 @@ type Route =
   | 'landing'
   | 'game'
   | 'onboarding'
+  | 'study-plan-setup'
   | 'study-plan'
   | 'weakness'
   | 'home'
@@ -231,6 +234,7 @@ function getFunctionalPathRoute(pathname: string): RouteState | null {
   if (normalized === '/payment/callback') return { route: 'payment-callback' };
   if (normalized === '/login') return { route: 'login' };
   if (normalized === '/onboarding') return { route: 'onboarding' };
+  if (normalized === '/study-plan/setup') return { route: 'study-plan-setup' };
   if (normalized === '/study-plan') return { route: 'study-plan' };
   if (normalized === '/weakness' || normalized === '/progress') return { route: 'weakness' };
   if (normalized === '/home') return { route: 'home' };
@@ -358,6 +362,7 @@ function getRoute(): RouteState {
   const hash = window.location.hash.replace(/^#/, '');
   // Phase 4 Step 2 — 직접 진입 (사용자가 강제로 onboarding 재진입 시)
   if (hash.startsWith('/onboarding')) return { route: 'onboarding' };
+  if (hash.startsWith('/study-plan/setup')) return { route: 'study-plan-setup' };
   // Phase 4 Step 3 — 학습 플랜 확인 화면
   if (hash.startsWith('/study-plan')) return { route: 'study-plan' };
   // Phase 4 Step 5 — 나의 약점 (5번째 네비 슬롯).
@@ -590,9 +595,17 @@ export default function App() {
       return (
         <OnboardingFlow
           onFinish={() => {
-            // Phase 4 Step 3 — onboarding 완료 시 학습 플랜 화면으로 이동.
-            // OnboardingFlow 가 plan 자동 생성 + saveStudyPlan 처리 완료 상태.
-            window.location.hash = '/study-plan';
+            navigate('/home');
+          }}
+        />
+      );
+    }
+
+    if (route === 'study-plan-setup') {
+      return (
+        <StudyPlanSetupFlow
+          onFinish={() => {
+            navigate('/study-plan');
           }}
         />
       );
@@ -603,6 +616,15 @@ export default function App() {
     }
 
     if (route === 'home') {
+      if (needsOnboarding()) {
+        return (
+          <OnboardingFlow
+            onFinish={() => {
+              navigate('/home');
+            }}
+          />
+        );
+      }
       return <HomePage />;
     }
 
@@ -622,7 +644,7 @@ export default function App() {
         return (
           <OnboardingFlow
             onFinish={() => {
-              window.location.hash = '/study-plan';
+              navigate('/home');
             }}
           />
         );

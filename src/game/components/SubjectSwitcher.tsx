@@ -21,7 +21,7 @@ import Ques from '@/components/mascot/Ques';
 import SpeechBubble from '@/game/lesson/SpeechBubble';
 import { characterForSubject } from '@/components/mascot/types';
 import type { Subject } from '@/types/question';
-import { setActiveSubject } from '@/game/storage';
+import { setActiveSubject, setLearningSubject } from '@/game/storage';
 import type { ExpansionSubjectId } from '../expansionSubjects';
 
 const SUBJECT_VISUAL = {
@@ -85,6 +85,7 @@ export default function SubjectSwitcher({
       onClose();
       return;
     }
+    setLearningSubject('comhwal');
     onClose();
     navigateHash('/game/comhwal');
   };

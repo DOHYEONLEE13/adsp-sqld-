@@ -3,8 +3,7 @@
  *
  * 책임:
  *   - localStorage 의 활성 plan load
- *   - 없으면 OnboardingResult 에서 즉석 생성 (저장된 onboarding 결과는 있는데 plan 만 사라진 경우)
- *   - 둘 다 없으면 #/onboarding 으로 redirect
+ *   - 없으면 홈에서 분리된 계획 설정 화면으로 이동
  *   - [학습 시작하기] → #/game
  *   - [플랜 다시 생성] → onboarding 재진입 (선택, 사용자 결정)
  */
@@ -19,7 +18,6 @@ import {
 import { buildPlanFromOnboarding } from './fromOnboarding';
 import {
   loadOnboardingResult,
-  clearOnboardingResult,
   saveOnboardingResult,
 } from '@/game/onboarding/onboardingStorage';
 import type { StudyPlan } from '@/types/learning/studyPlan';
@@ -29,54 +27,14 @@ export default function StudyPlanRoute() {
   const [plan, setPlan] = useState<StudyPlan | null | 'loading'>('loading');
 
   useEffect(() => {
-    // 1차: 저장된 plan
     const stored = loadStudyPlan();
     if (stored) {
       setPlan(stored);
       return;
     }
-    // 2차: onboarding result 가 있으면 즉석 생성 (storage 손상/migration 케이스).
-    // 진단형 사용자의 exam_dates 누락 케이스도 default D+60 으로 보강 후 시도.
-    const onboarding = loadOnboardingResult();
-    if (onboarding) {
-      // exam_dates 비어있으면 default D+60 채워서 plan 생성 가능하게 함.
-      const filledExamDates: typeof onboarding.exam_dates = {
-        ...onboarding.exam_dates,
-      };
-      const defaultDday = new Date(
-        Date.now() + 60 * 24 * 3600 * 1000,
-      ).toISOString();
-      let needsResave = false;
-      for (const ex of onboarding.exams) {
-        if (!filledExamDates[ex]) {
-          filledExamDates[ex] = defaultDday;
-          needsResave = true;
-        }
-      }
-      if (needsResave) {
-        saveOnboardingResult({
-          persona: onboarding.persona,
-          background: onboarding.background,
-          exams: onboarding.exams,
-          exam_dates: filledExamDates,
-          daily_minutes: onboarding.daily_minutes,
-          study_style: onboarding.study_style,
-          weak_chapters: onboarding.weak_chapters,
-        });
-      }
-      const fresh = loadOnboardingResult() ?? onboarding;
-      const generated = buildPlanFromOnboarding(fresh);
-      if (generated) {
-        saveStudyPlan(generated);
-        setPlan(generated);
-        return;
-      }
-    }
-    // 3차: onboarding 도 없는 신규 사용자 → onboarding 으로 보냄.
-    // 단, redirect 직전이라 setPlan(null) 로 빈 화면 유지.
     setPlan(null);
     if (typeof window !== 'undefined') {
-      window.location.hash = '/onboarding';
+      window.location.hash = '/study-plan/setup';
     }
   }, []);
 
@@ -165,12 +123,8 @@ export default function StudyPlanRoute() {
   };
 
   const handleRegenerate = () => {
-    // 플랜 재생성: onboarding 재진입을 위해 onboarding result + plan 모두 클리어
-    // (사용자가 입력값을 변경하고 싶을 때).
-    // 새 onboarding 으로 페르소나가 바뀔 수 있으니 first-entry flag 도 리셋 → 다음 [학습 시작하기]
-    // 가 다시 페르소나 기반 분기.
+    // 첫 진입 온보딩은 유지하고 계획 설문만 다시 연다.
     clearStudyPlan();
-    clearOnboardingResult();
     if (typeof window !== 'undefined') {
       try {
         window.localStorage.removeItem('questdp_first_entry_done');
@@ -179,7 +133,7 @@ export default function StudyPlanRoute() {
       }
     }
     if (typeof window !== 'undefined') {
-      window.location.hash = '/onboarding';
+      window.location.hash = '/study-plan/setup';
     }
   };
 

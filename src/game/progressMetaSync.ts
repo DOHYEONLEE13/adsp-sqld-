@@ -3,6 +3,7 @@
  *
  * 대상 컬럼:
  *  - active_subject ('adsp' | 'sqld' | null)
+ *  - learning_subject ('adsp' | 'sqld' | 'comhwal' | null)
  *  - last_daily_mission_at (timestamptz)
  *
  * 정책:
@@ -18,6 +19,7 @@ import { trackPush } from './progressSync';
 
 export interface MetaPatch {
   active_subject?: 'adsp' | 'sqld' | null;
+  learning_subject?: 'adsp' | 'sqld' | 'comhwal' | null;
   last_daily_mission_at?: string | null;
 }
 

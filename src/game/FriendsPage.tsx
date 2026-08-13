@@ -135,7 +135,7 @@ export default function FriendsPage({ onExit }: Props) {
     <ScreenShell
       eyebrow="Friends"
       title="친구 경쟁"
-      subtitle="친구 태그로 서로를 추가하고, XP와 연속 학습을 함께 비교해요."
+      subtitle="친구 코드를 추가하고, 누가 더 꾸준히 공부했는지 함께 확인해요."
       onExit={onExit}
       exitLabel="돌아가기"
       ambient={<PageAmbientBg />}

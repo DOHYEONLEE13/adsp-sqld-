@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
+import { initPushOnBoot } from './lib/push';
 import './styles/index.css';
 
 /**
@@ -81,4 +82,6 @@ if (!redirectToCanonicalIfNeeded()) {
       <App />
     </React.StrictMode>,
   );
+  // 알림 권한이 이미 허용된 기기 — SW 등록 갱신 (프롬프트 없음, 렌더 뒤 지연 실행)
+  initPushOnBoot();
 }

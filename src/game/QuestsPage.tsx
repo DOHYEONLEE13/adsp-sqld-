@@ -102,7 +102,7 @@ export default function QuestsPage({ onExit }: Props) {
     <ScreenShell
       eyebrow="Daily Quests"
       title="오늘의 퀘스트"
-      subtitle={`매일 자정에 갱신돼요. 3개 모두 끝내면 보너스 +${XP_DAILY_BONUS} XP.`}
+      subtitle={`오늘 풀 문제 3개가 준비돼 있어요. 모두 끝내면 보너스 ${XP_DAILY_BONUS} XP를 받아요.`}
       onExit={onExit}
       exitLabel="돌아가기"
       ambient={<PageAmbientBg />}

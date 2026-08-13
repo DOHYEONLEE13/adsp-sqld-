@@ -86,7 +86,7 @@ export default function StatsPage({ onExit }: Props) {
     <ScreenShell
       eyebrow="Mission Log"
       title="학습 대시보드"
-      subtitle="누적 진도, 약점, 최근 세션을 한눈에 확인합니다."
+      subtitle="지금까지 얼마나 공부했는지, 어떤 부분을 더 보면 좋은지 한눈에 볼 수 있어요."
       onExit={onExit}
       exitLabel="돌아가기"
       ambient={<PageAmbientBg />}

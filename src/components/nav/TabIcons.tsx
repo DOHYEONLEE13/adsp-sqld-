@@ -162,6 +162,38 @@ export function UserTabIcon(props: TabIconProps) {
 }
 
 /**
+ * 홈 — 지붕과 몸체로 이루어진 집 실루엣.
+ * 다른 탭들과 같은 구성: 옅은 fill 레이어 + 같은 path 의 stroke 윤곽.
+ */
+export function HomeTabIcon(props: TabIconProps) {
+  return (
+    <svg {...base(props)}>
+      <path
+        d="M3.9 10.35 12 3.8l8.1 6.55v8.05c0 .93-.75 1.68-1.68 1.68H5.58c-.93 0-1.68-.75-1.68-1.68v-8.05Z"
+        fill="currentColor"
+        fillOpacity="0.2"
+      />
+      <path
+        d="M3.9 10.35 12 3.8l8.1 6.55v8.05c0 .93-.75 1.68-1.68 1.68H5.58c-.93 0-1.68-.75-1.68-1.68v-8.05Z"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.75"
+      />
+      <path
+        d="M9.65 20.08v-4.9c0-.6.49-1.09 1.09-1.09h2.52c.6 0 1.09.49 1.09 1.09v4.9"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.6"
+      />
+    </svg>
+  );
+}
+
+/**
  * 진행도 — 3개 막대 그래프 (오름차순).
  * 단일 path 로 3개 직사각형이 baseline 에서 떠올라 progressing.
  */

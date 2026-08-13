@@ -22,6 +22,7 @@ import {
   markDailyMissionStarted,
   recordSessionSummary,
   setActiveSubject,
+  setLearningSubject,
 } from './storage';
 import { passNumberFor } from './studyMode';
 import GalaxyScreen from './screens/GalaxyScreen';
@@ -341,7 +342,8 @@ export default function GamePage({
 
   useEffect(() => {
     if (initialSubject) setActiveSubject(initialSubject);
-  }, [initialSubject]);
+    if (initialExpansionSubject) setLearningSubject(initialExpansionSubject);
+  }, [initialExpansionSubject, initialSubject]);
 
   // 복습 화면은 홈 빠른메뉴에서 바로 들어오는데, 그때 홈에서 내려둔 스크롤이
   // 그대로 남아 화면 중간이 먼저 보인다. `/game/{과목}` 은 학습 위치를 지키려고

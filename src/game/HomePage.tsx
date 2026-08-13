@@ -54,7 +54,7 @@ import { rankWeakChapters } from './passPrediction/weakChapterRanker';
 import { resolveLessonTarget } from './passPrediction/WeakChapterRoadmap';
 import { loadStudyPlan } from './studyPlan/studyPlanStorage';
 import { setActiveSubject, setLearningSubject } from './storage';
-import { getPageScrollY } from '@/lib/pageScroll';
+import { getPageScrollY, scrollPageTo } from '@/lib/pageScroll';
 
 // WebP. 원본 PNG 는 1.4MB 라 첫 화면 최대 요소가 모바일 데이터에서 늦게 떴다.
 // 재생성: node scripts/convert-to-webp.mjs <원본> public/hero/rocket.webp
@@ -156,6 +156,12 @@ export default function HomePage() {
   const handleSubjectSwitched = (nextSubject: FirstEntrySubject) => {
     setSubjectSwitcherOpen(false);
 
+    const returnToHomeTop = () => {
+      window.requestAnimationFrame(() => {
+        scrollPageTo({ top: 0, left: 0, behavior: 'smooth' });
+      });
+    };
+
     if (nextSubject === 'comhwal') {
       setLearningSubject('comhwal');
       try {
@@ -165,9 +171,9 @@ export default function HomePage() {
           JSON.stringify({ subjectId: 'comhwal', variantId: 'grade-1' }),
         );
       } catch {
-        /* localStorage 불가 — 컴활 화면 이동은 계속 진행 */
+        /* localStorage 불가 — 현재 홈의 과목 전환은 계속 진행 */
       }
-      window.location.hash = '/game/comhwal';
+      returnToHomeTop();
       return;
     }
 
@@ -180,6 +186,7 @@ export default function HomePage() {
       /* localStorage 불가 — 현재 홈 표시만 전환 */
     }
     refreshExamDates();
+    returnToHomeTop();
   };
 
   // 뷰포트 크기 — 스크롤 변환 거리 계산에 필요.

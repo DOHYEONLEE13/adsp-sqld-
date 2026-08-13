@@ -278,11 +278,11 @@ function getRoute(): RouteState {
   const initialHash = window.location.hash.replace(/^#/, '');
   const appModeActive = isAppMode();
   if (isAppEntryPath(pathname) && !initialHash) {
-    return { route: 'game' };
+    return { route: 'home' };
   }
   const allowPathRoutes = !appModeActive || isAppEntryPath(pathname);
   if (!allowPathRoutes && !initialHash) {
-    return { route: 'game' };
+    return { route: 'home' };
   }
   if (allowPathRoutes) {
     const functionalPathRoute = getFunctionalPathRoute(pathname);
@@ -388,7 +388,7 @@ function getRoute(): RouteState {
     return resolveGamePathRoute(parts[1]);
   }
   if (appModeActive) {
-    return { route: 'game' };
+    return { route: 'home' };
   }
   return { route: 'landing' };
 }

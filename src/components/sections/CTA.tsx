@@ -3,6 +3,7 @@ import VideoBg from '@/components/ui/VideoBg';
 import { CTA as CTA_CONTENT } from '@/data/site';
 import { SOCIAL_LINKS } from '@/data/nav';
 import { handleNavClick } from '@/lib/navigate';
+import { openPlayEntry } from '@/lib/playEntry';
 
 const ICONS = { email: Mail } as const;
 
@@ -51,6 +52,10 @@ export default function CTA() {
           <div className="flex flex-wrap items-center gap-2.5">
             <a
               href="#/game"
+              onClick={(event) => {
+                event.preventDefault();
+                openPlayEntry();
+              }}
               className="kr-heading inline-flex items-center gap-2 uppercase tracking-widest text-[12px] px-5 py-3 rounded-full transition hover:scale-[1.03]"
               style={{
                 background: '#FD802E',
@@ -111,6 +116,10 @@ export default function CTA() {
             <div className="mt-8 lg:mt-12 flex flex-wrap items-center justify-end gap-3">
               <a
                 href="#/game"
+                onClick={(event) => {
+                  event.preventDefault();
+                  openPlayEntry();
+                }}
                 className="kr-heading inline-flex items-center gap-2 uppercase tracking-widest text-[12px] lg:text-[13px] px-6 lg:px-7 py-3.5 lg:py-4 rounded-full transition hover:scale-[1.03]"
                 style={{
                   background: '#FD802E',

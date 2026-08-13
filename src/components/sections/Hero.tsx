@@ -3,6 +3,7 @@ import Header from '@/components/layout/Header';
 import SocialIcons from '@/components/ui/SocialIcons';
 import VideoBg from '@/components/ui/VideoBg';
 import { HERO } from '@/data/site';
+import { openPlayEntry } from '@/lib/playEntry';
 
 export default function Hero() {
   return (
@@ -50,6 +51,10 @@ export default function Hero() {
             <div className="mt-8 md:mt-10 flex flex-wrap items-center gap-3 md:gap-4">
               <a
                 href="#/game"
+                onClick={(event) => {
+                  event.preventDefault();
+                  openPlayEntry();
+                }}
                 className="kr-heading inline-flex items-center gap-2.5 uppercase tracking-widest text-[13px] md:text-[14px] px-7 md:px-8 py-4 md:py-5 rounded-full transition hover:scale-[1.03]"
                 style={{
                   background: '#FD802E',

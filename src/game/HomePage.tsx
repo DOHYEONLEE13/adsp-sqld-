@@ -13,7 +13,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
+import { motion, useMotionValue, useTransform, useReducedMotion } from 'framer-motion';
 import {
   BookOpen,
   CalendarClock,
@@ -54,6 +54,7 @@ import { rankWeakChapters } from './passPrediction/weakChapterRanker';
 import { resolveLessonTarget } from './passPrediction/WeakChapterRoadmap';
 import { loadStudyPlan } from './studyPlan/studyPlanStorage';
 import { setActiveSubject, setLearningSubject } from './storage';
+import { getPageScrollY } from '@/lib/pageScroll';
 
 // WebP. 원본 PNG 는 1.4MB 라 첫 화면 최대 요소가 모바일 데이터에서 늦게 떴다.
 // 재생성: node scripts/convert-to-webp.mjs <원본> public/hero/rocket.webp
@@ -194,8 +195,21 @@ export default function HomePage() {
   const heroH = vp.h;
 
   // 스크롤 0 → 히어로 80% 지점에서 변환 완료. clamp 로 그 이후엔 고정.
-  const { scrollY } = useScroll();
-  const p = useTransform(scrollY, [0, heroH * 0.8], [0, 1], { clamp: true });
+  const pageScrollY = useMotionValue(0);
+  useEffect(() => {
+    const appScrollSurface = document.querySelector<HTMLElement>('.questdp-route-layer');
+    const syncScroll = () => pageScrollY.set(getPageScrollY());
+
+    syncScroll();
+    window.addEventListener('scroll', syncScroll, { passive: true });
+    appScrollSurface?.addEventListener('scroll', syncScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', syncScroll);
+      appScrollSurface?.removeEventListener('scroll', syncScroll);
+    };
+  }, [pageScrollY]);
+  const p = useTransform(pageScrollY, [0, heroH * 0.8], [0, 1], { clamp: true });
 
   // 로켓: 히어로 중앙 → 우상단으로 날아올라 그 자리에 고정.
   // 스크롤해도 계속 보여야 하므로 fixed 로 띄우고 transform 만 준다

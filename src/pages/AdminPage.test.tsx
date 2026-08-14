@@ -14,6 +14,7 @@ const fixtures = vi.hoisted(() => ({
       role: 'user',
       total_xp: 1200,
       lesson_xp: 100,
+      cumulative_xp: 1400,
       level: 4,
       is_premium: false,
       learning_subject: 'adsp',
@@ -27,6 +28,7 @@ const fixtures = vi.hoisted(() => ({
       role: 'user',
       total_xp: 900,
       lesson_xp: 50,
+      cumulative_xp: 2000,
       level: 3,
       is_premium: true,
       learning_subject: 'sqld',
@@ -40,6 +42,7 @@ const fixtures = vi.hoisted(() => ({
       role: 'user',
       total_xp: 700,
       lesson_xp: 20,
+      cumulative_xp: 800,
       level: 2,
       is_premium: false,
       learning_subject: 'comhwal',
@@ -95,6 +98,9 @@ const supabase = vi.hoisted(() => ({
     insert: vi.fn().mockResolvedValue({ data: null, error: null }),
   })),
   rpc: vi.fn((name: string) => {
+    if (name === 'admin_user_xp_snapshot') {
+      return Promise.resolve({ data: fixtures.users, error: null });
+    }
     if (name === 'admin_learning_activity') {
       return Promise.resolve({ data: fixtures.metrics, error: null });
     }
@@ -172,5 +178,27 @@ describe('AdminPage learning subjects', () => {
       expect(row?.textContent).toContain(subject);
     }
     expect(pageText).not.toContain('쿠폰 사용자 중 오늘 새 문제 사용량');
+  });
+
+  it('shows current and cumulative XP and sorts the loaded users by cumulative XP', async () => {
+    await renderAdminPage();
+
+    expect(document.body.textContent).toContain('보유 XP');
+    expect(document.body.textContent).toContain('누적 XP');
+
+    const cumulativeButton = Array.from(document.querySelectorAll('button')).find(
+      (button) => button.textContent?.trim() === '누적 XP순',
+    );
+    expect(cumulativeButton).toBeTruthy();
+
+    await act(async () => {
+      cumulativeButton?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    });
+
+    const tags = Array.from(document.querySelectorAll('tbody tr'))
+      .map((row) => row.querySelector('td')?.textContent?.trim())
+      .filter(Boolean);
+    expect(tags.slice(0, 3)).toEqual(['Q-SQLD-0002', 'Q-ADSP-0001', 'Q-COMH-0003']);
+    expect(supabase.rpc).toHaveBeenCalledWith('admin_user_xp_snapshot', { p_limit: 100 });
   });
 });

@@ -22,6 +22,7 @@ import {
   ChevronRight,
   Repeat2,
   Sparkles,
+  Zap,
   X,
 } from 'lucide-react';
 import { MobileBottomNav, MobileTopBar } from './components/MobileGameNav';
@@ -55,6 +56,7 @@ import { resolveLessonTarget } from './passPrediction/WeakChapterRoadmap';
 import { loadStudyPlan } from './studyPlan/studyPlanStorage';
 import { setActiveSubject, setLearningSubject } from './storage';
 import { getPageScrollY, scrollPageTo } from '@/lib/pageScroll';
+import EnergyShopModal from './components/EnergyShopModal';
 
 // WebP. 원본 PNG 는 1.4MB 라 첫 화면 최대 요소가 모바일 데이터에서 늦게 떴다.
 // 재생성: node scripts/convert-to-webp.mjs <원본> public/hero/rocket.webp
@@ -76,6 +78,7 @@ export default function HomePage() {
   const [homeSubject, setHomeSubject] = useState<Subject | null>(null);
   const [examPickerOpen, setExamPickerOpen] = useState(false);
   const [subjectSwitcherOpen, setSubjectSwitcherOpen] = useState(false);
+  const [energyShopOpen, setEnergyShopOpen] = useState(false);
 
   // 과목 톤 — ADSP 청록 / SQLD 보라 / 컴활 연두. 확장 과목까지 한 번에 잡히도록
   // 상단바와 동일하게 learningContext 를 경유한다.
@@ -469,6 +472,31 @@ export default function HomePage() {
           </div>
         </Reveal>
 
+        <Reveal>
+          <div className="kr-heading mb-2 mt-5 text-[14px] text-cream">빠른 메뉴</div>
+          <div className="grid grid-cols-3 gap-2.5">
+            <QuickItem
+              icon={<Repeat2 size={21} style={{ color: '#9D8CFF' }} />}
+              label="과목 바꾸기"
+              accent="#9D8CFF"
+              testId="home-subject-switch"
+              onClick={() => setSubjectSwitcherOpen(true)}
+            />
+            <QuickItem
+              icon={<CalendarClock size={21} style={{ color: accent }} />}
+              label="시험일 선택하기"
+              accent={accent}
+              onClick={() => setExamPickerOpen(true)}
+            />
+            <QuickItem
+              icon={<Zap size={21} fill="#78DFFB" strokeWidth={0} />}
+              label="에너지샵"
+              accent="#78DFFB"
+              onClick={() => setEnergyShopOpen(true)}
+            />
+          </div>
+        </Reveal>
+
         {!isExpansion ? (
           <Reveal>
             <Card>
@@ -476,23 +504,31 @@ export default function HomePage() {
                 <div className="min-w-0">
                   <div className="kr-heading text-[14px] text-cream">시험 준비</div>
                   <p className="kr-body mt-1 text-[12px] leading-[1.55] text-cream/55">
-                    공부할 과목과 시험 날짜를 홈에서 바로 바꿀 수 있어요.
+                    틀린 문제를 다시 보고 저장한 문제를 모아볼 수 있어요.
                   </p>
                 </div>
               </div>
               <div className="mt-3 grid grid-cols-2 gap-2.5">
                 <ActionButton
-                  icon={<CalendarClock size={18} />}
-                  label="시험일 선택하기"
-                  accent={accent}
-                  onClick={() => setExamPickerOpen(true)}
+                  icon={<BookOpen size={18} />}
+                  label="오답노트"
+                  accent="#9D8CFF"
+                  onClick={() => {
+                    try {
+                      window.sessionStorage.setItem('questdp.pendingReviewOpen', '1');
+                    } catch {
+                      /* storage 불가 — 학습 화면으로만 이동 */
+                    }
+                    window.location.hash = '/game';
+                  }}
                 />
                 <ActionButton
-                  icon={<Repeat2 size={18} />}
-                  label="과목 바꾸기"
-                  accent={accent}
-                  testId="home-subject-switch"
-                  onClick={() => setSubjectSwitcherOpen(true)}
+                  icon={<Star size={18} />}
+                  label="즐겨찾기"
+                  accent="#FFD166"
+                  onClick={() => {
+                    window.location.hash = '/bookmarks';
+                  }}
                 />
                 <div className="col-span-2">
                   <ActionButton
@@ -673,37 +709,6 @@ export default function HomePage() {
           </Reveal>
         ) : null}
 
-        <Reveal>
-          <div className="kr-heading mb-2 mt-5 text-[14px] text-cream">빠른 메뉴</div>
-          {/*
-            2 칸인 이유. 여기 놓을 수 있는 건 하단 탭에 없는 화면뿐이다.
-            '통계' 는 프로필 탭과 같은 /stats 라 지웠고, '기출문제' 는 학습 탭
-            첫 화면으로만 가서 구분이 안 됐으며, '약점분석' 은 바로 위 약점 단원
-            목록과 같은 일을 했다. 탭으로 이미 닿는 곳을 여기 또 넣지 말 것.
-          */}
-          <div className="grid grid-cols-2 gap-2.5">
-            <QuickItem
-              icon={<BookOpen size={21} style={{ color: '#A78BFA' }} />}
-              label="오답노트"
-              onClick={() => {
-                try {
-                  window.sessionStorage.setItem('questdp.pendingReviewOpen', '1');
-                } catch {
-                  /* storage 불가 — 학습 화면으로만 이동 */
-                }
-                window.location.hash = '/game';
-              }}
-            />
-            <QuickItem
-              icon={<Star size={21} style={{ color: '#FBBF24' }} />}
-              label="즐겨찾기"
-              onClick={() => {
-                window.location.hash = '/bookmarks';
-              }}
-            />
-          </div>
-        </Reveal>
-
       </div>
 
       <MobileBottomNav active="home" />
@@ -729,6 +734,9 @@ export default function HomePage() {
             document.body,
           )
         : null}
+      {energyShopOpen ? (
+        <EnergyShopModal onClose={() => setEnergyShopOpen(false)} />
+      ) : null}
     </section>
   );
 }
@@ -1010,31 +1018,52 @@ function formatHomeExamDate(ymd: string): string {
 function QuickItem({
   icon,
   label,
+  accent,
   onClick,
+  testId,
 }: {
   icon: React.ReactNode;
   label: string;
+  accent: string;
   onClick: () => void;
+  testId?: string;
 }) {
   return (
     <button
+      data-testid={testId}
       type="button"
       onClick={onClick}
-      className="flex min-h-[76px] flex-col items-center justify-center gap-2.5 rounded-[18px] px-2 transition active:scale-95"
+      className="liquid-glass group flex min-h-[84px] flex-col items-center justify-center gap-2.5 rounded-[24px] px-2 transition duration-300 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.97]"
       style={{
         background:
-          'linear-gradient(180deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.035) 100%)',
-        border: '1px solid rgba(239,244,255,0.12)',
-        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)',
+          `radial-gradient(110% 85% at 50% -8%, ${tint(accent, 0.12)} 0%, rgba(255,255,255,0.022) 52%, rgba(4,14,50,0.2) 100%)`,
+        border: `1px solid ${tint(accent, 0.26)}`,
+        boxShadow:
+          `inset 0 1px 0 rgba(255,255,255,0.16), inset 0 -12px 20px rgba(1,8,40,0.12), 0 8px 18px -16px ${tint(accent, 0.48)}, 0 0 10px -8px ${tint(accent, 0.34)}`,
+        WebkitBackdropFilter: 'blur(20px) saturate(135%)',
+        backdropFilter: 'blur(20px) saturate(135%)',
       }}
     >
       <span
-        className="inline-flex h-9 w-9 items-center justify-center rounded-[13px]"
-        style={{ background: 'rgba(255,255,255,0.06)' }}
+        aria-hidden="true"
+        className="absolute inset-x-3 top-0 h-px opacity-80"
+        style={{
+          background: `linear-gradient(90deg, transparent, ${tint(accent, 0.75)}, transparent)`,
+        }}
+      />
+      <span
+        className="relative z-10 inline-flex h-10 w-10 items-center justify-center rounded-[16px] transition duration-300 group-hover:scale-105"
+        style={{
+          background: `linear-gradient(145deg, ${tint(accent, 0.14)}, rgba(255,255,255,0.032))`,
+          border: `1px solid ${tint(accent, 0.24)}`,
+          boxShadow: `inset 0 1px 0 rgba(255,255,255,0.14), 0 4px 10px -7px ${tint(accent, 0.55)}`,
+        }}
       >
         {icon}
       </span>
-      <span className="kr-heading text-[12px] text-cream/78">{label}</span>
+      <span className="kr-heading relative z-10 text-[12px] text-cream/88">
+        {label}
+      </span>
     </button>
   );
 }

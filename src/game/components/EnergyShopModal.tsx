@@ -1,5 +1,5 @@
 /**
- * EnergyShopModal — 상단 ⚡ 배지 클릭 시 노출되는 충전 상점.
+ * EnergyShopModal — 홈의 에너지샵 메뉴에서 노출되는 충전 상점.
  *
  * 옵션:
  *   1) XP → 에너지 구매 (3 티어)
@@ -9,7 +9,7 @@
  * 정책:
  *   - cap (10) 초과 시 구매 거부 ("에너지 가득").
  *   - XP 부족 시 구매 거부 ("XP 부족").
- *   - 게스트 (localStorage) atomic. 인증 사용자 서버 동기화는 v1.1 (server RPC) 에서.
+ *   - 게스트는 localStorage, 인증 사용자는 서버 RPC에서 원자적으로 처리.
  *
  * Portal 으로 document.body 마운트 — backdrop-filter stacking context 회피.
  */
@@ -17,7 +17,15 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
-import { X, Zap, Check, AlertTriangle, Crown, Sparkles } from 'lucide-react';
+import {
+  X,
+  Zap,
+  Check,
+  AlertTriangle,
+  Crown,
+  LoaderCircle,
+  ChevronRight,
+} from 'lucide-react';
 import { openWebOrAppPremiumEntry } from '@/lib/appMode';
 import {
   useEnergy,
@@ -28,7 +36,7 @@ import {
 } from '../energy';
 import { useProgress } from '../useProgress';
 import { computePlayerStats } from '../rpg';
-import { spendXp } from '../storage';
+import { applyServerXpBalance, spendXp } from '../storage';
 
 interface PurchaseTier {
   /** 카드 식별자 (storage key 아님 — UI 용). */
@@ -55,6 +63,7 @@ export default function EnergyShopModal({ onClose }: Props) {
   const stats = computePlayerStats(progress);
   /** 사용자가 선택한 티어 (확인 step 활성화 — 한 번 더 "구매하기" 눌러야 결제). */
   const [selectedTierId, setSelectedTierId] = useState<PurchaseTier['id'] | null>(null);
+  const [buyingTierId, setBuyingTierId] = useState<PurchaseTier['id'] | null>(null);
   /** 직전 구매 결과 — 토스트로 1.6 초 노출. */
   const [flash, setFlash] = useState<{
     kind: 'ok' | 'err';
@@ -71,19 +80,26 @@ export default function EnergyShopModal({ onClose }: Props) {
   }, [onClose]);
 
   const unlimited = isUnlimited(energy);
-  const energyDisplay = unlimited ? '∞' : `${energy.energy}/${ENERGY_CAP}`;
+  const energyDisplay = unlimited ? '∞' : energy.energy;
 
-  const handleConfirmBuy = (tier: PurchaseTier) => {
+  const handleConfirmBuy = async (tier: PurchaseTier) => {
+    if (buyingTierId) return;
     if (unlimited) {
       setFlash({ kind: 'err', text: '프리미엄은 이미 ⚡ 무제한이에요.' });
       setSelectedTierId(null);
       return;
     }
-    const result: PurchaseResult = purchaseEnergyWithXp({
-      xpCost: tier.xpCost,
-      energyAmount: tier.energyAmount,
-      currentDisplayedXp: stats.totalXp,
-    });
+    setBuyingTierId(tier.id);
+    let result: PurchaseResult;
+    try {
+      result = await purchaseEnergyWithXp({
+        xpCost: tier.xpCost,
+        energyAmount: tier.energyAmount,
+        currentDisplayedXp: stats.totalXp,
+      });
+    } finally {
+      setBuyingTierId(null);
+    }
     if (!result.ok) {
       setFlash({
         kind: 'err',
@@ -92,14 +108,19 @@ export default function EnergyShopModal({ onClose }: Props) {
             ? 'XP 가 부족해요.'
             : result.reason === 'cap-overflow'
               ? `에너지가 가득 차서 살 수 없어요 (cap ${ENERGY_CAP}).`
-              : '잠깐 문제가 있어요.',
+              : result.reason === 'unauthenticated'
+                ? '로그인 상태를 다시 확인해 주세요.'
+                : '구매 처리에 실패했어요. 잠시 후 다시 시도해 주세요.',
       });
     } else {
-      // XP 차감은 storage 에 (purchaseEnergyWithXp 는 에너지만 처리).
-      spendXp(tier.xpCost);
+      if (typeof result.remainingXp === 'number') {
+        applyServerXpBalance(result.remainingXp);
+      } else {
+        spendXp(tier.xpCost);
+      }
       setFlash({
         kind: 'ok',
-        text: `+${tier.energyAmount} ⚡ 충전! 잔여 XP ${stats.totalXp - tier.xpCost}`,
+        text: `+${tier.energyAmount} ⚡ 충전! 잔여 XP ${result.remainingXp ?? stats.totalXp - tier.xpCost}`,
       });
     }
     setSelectedTierId(null);
@@ -112,109 +133,92 @@ export default function EnergyShopModal({ onClose }: Props) {
       aria-modal="true"
       aria-labelledby="energy-shop-title"
       className="fixed inset-0 z-[60] flex items-center justify-center px-4 py-6"
-      style={{ background: 'rgba(1,8,40,0.78)', backdropFilter: 'blur(8px)' }}
+      style={{ background: 'rgba(1,8,40,0.76)', backdropFilter: 'blur(12px)' }}
       onClick={onClose}
     >
       <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 8 }}
+        initial={{ opacity: 0, scale: 0.96, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.2, ease: 'easeOut' }}
-        className="liquid-glass relative w-full max-w-[420px] max-h-[90vh] overflow-y-auto rounded-[28px] p-0"
+        transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
+        className="relative w-full max-w-[396px] max-h-[90vh] overflow-y-auto rounded-[26px] p-0"
         style={{
           background:
-            'radial-gradient(120% 80% at 50% 0%, rgba(167,139,250,0.18) 0%, rgba(20,32,46,0.98) 55%)',
-          border: '1px solid rgba(167,139,250,0.45)',
+            'radial-gradient(85% 58% at 82% 0%, rgba(120,223,251,0.10), transparent 72%), linear-gradient(180deg, rgba(13,28,68,0.97), rgba(5,13,42,0.985))',
+          border: '1px solid rgba(149,211,255,0.24)',
           boxShadow:
-            '0 24px 60px -10px rgba(167,139,250,0.35), 0 0 0 1px rgba(255,255,255,0.04) inset',
+            '0 28px 72px -26px rgba(28,104,190,0.58), inset 0 1px 0 rgba(255,255,255,0.10)',
+          backdropFilter: 'blur(24px) saturate(125%)',
         }}
         onClick={(e) => e.stopPropagation()}
       >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-10 top-0 h-px"
+          style={{
+            background:
+              'linear-gradient(90deg, transparent, rgba(120,223,251,0.85), rgba(157,140,255,0.7), transparent)',
+          }}
+        />
         <button
           type="button"
           onClick={onClose}
           aria-label="닫기"
-          className="absolute top-3 right-3 w-9 h-9 inline-flex items-center justify-center rounded-full transition active:scale-95 z-10"
+          className="absolute right-4 top-4 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full transition hover:bg-white/10 active:scale-95"
           style={{
-            background: 'rgba(239,244,255,0.06)',
-            border: '1px solid rgba(239,244,255,0.10)',
+            background: 'rgba(239,244,255,0.055)',
+            border: '1px solid rgba(239,244,255,0.11)',
           }}
         >
-          <X size={16} className="text-cream" strokeWidth={2.4} />
+          <X size={17} className="text-cream/80" strokeWidth={2.2} />
         </button>
 
-        {/* ─── HERO 헤더 — 큰 ⚡ 게이지 + XP 표시 ─────────────────── */}
-        <div className="px-6 pt-7 pb-5 text-center">
+        <div className="px-5 pb-4 pt-5 md:px-6">
           <h3
             id="energy-shop-title"
-            className="kr-heading text-[11px] uppercase tracking-[0.22em] text-cream/55 mb-3"
+            className="kr-heading pr-12 text-[20px] font-bold text-cream"
           >
-            Energy Shop
+            에너지 충전
           </h3>
 
-          {/* 메인 ⚡ 게이지 — 동그란 글로우 + 큰 숫자 */}
-          <div className="relative inline-flex items-center justify-center mb-3">
-            <div
-              aria-hidden
-              className="absolute inset-0 rounded-full blur-2xl"
-              style={{
-                background: unlimited
-                  ? 'radial-gradient(circle, rgba(255,176,32,0.45), transparent 70%)'
-                  : 'radial-gradient(circle, rgba(167,139,250,0.45), transparent 70%)',
-                transform: 'scale(1.5)',
-              }}
-            />
-            <div
-              className="relative flex items-center gap-2 px-5 py-2.5 rounded-full"
-              style={{
-                background:
-                  'linear-gradient(180deg, rgba(167,139,250,0.25), rgba(167,139,250,0.10))',
-                border: '1.5px solid rgba(167,139,250,0.55)',
-                boxShadow:
-                  '0 8px 24px -6px rgba(167,139,250,0.55), inset 0 1px 0 rgba(255,255,255,0.18)',
-              }}
-            >
-              <Zap size={22} fill="#A78BFA" strokeWidth={0} />
+          <div
+            className="mt-4 flex items-center justify-between border-y px-1 py-4"
+            style={{ borderColor: 'rgba(239,244,255,0.08)' }}
+          >
+            <div className="flex items-center gap-3">
               <span
-                className="kr-num font-bold tabular-nums"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-[14px]"
                 style={{
-                  color: '#EFF4FF',
-                  fontSize: 28,
-                  lineHeight: 1,
-                  textShadow: '0 2px 8px rgba(167,139,250,0.5)',
+                  background:
+                    'linear-gradient(145deg, rgba(120,223,251,0.17), rgba(157,140,255,0.12))',
+                  border: '1px solid rgba(120,223,251,0.24)',
+                  boxShadow: '0 8px 24px -16px rgba(120,223,251,0.9)',
                 }}
               >
-                {energyDisplay}
+                <Zap size={21} fill="#78DFFB" color="#78DFFB" strokeWidth={1.5} />
               </span>
+              <div className="flex items-end gap-1">
+                <span className="kr-num text-[31px] font-bold leading-none text-cream tabular-nums">
+                  {energyDisplay}
+                </span>
+                {!unlimited ? (
+                  <span className="kr-num pb-0.5 text-[13px] text-cream/45">
+                    / {ENERGY_CAP}
+                  </span>
+                ) : null}
+              </div>
             </div>
-          </div>
-
-          {/* 보유 XP */}
-          <div className="inline-flex items-center gap-1.5">
-            <span
-              className="kr-num text-[10px] uppercase tracking-widest"
-              style={{ color: 'rgba(239,244,255,0.5)' }}
-            >
-              보유 XP
-            </span>
-            <span
-              className="kr-num text-[14px] font-semibold tabular-nums"
-              style={{ color: '#FFB020' }}
-            >
-              {stats.totalXp.toLocaleString()}
-            </span>
+            <div className="text-right">
+              <p className="kr-body text-[10px] text-cream/45">보유 XP</p>
+              <p className="kr-num mt-0.5 text-[18px] font-semibold text-[#FFD166] tabular-nums">
+                {stats.totalXp.toLocaleString()}
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* ─── 본문 — 회색 배경으로 hero 와 시각 분리 ──────────── */}
-        <div
-          className="px-5 md:px-6 pb-6 pt-4 rounded-b-[28px]"
-          style={{
-            background:
-              'linear-gradient(180deg, rgba(1,8,40,0.0) 0%, rgba(1,8,40,0.35) 100%)',
-          }}
-        >
-          {/* 3 티어 구매 카드 — 시각적 ⚡ 다중 표시 + highlight gradient */}
-          <div className="flex flex-col gap-2.5 mb-5">
+        <div className="px-5 pb-5 pt-1 md:px-6 md:pb-6">
+          <p className="kr-body mb-2.5 text-[11px] font-medium text-cream/50">충전량</p>
+          <div className="mb-4 flex flex-col gap-2">
             {TIERS.map((t) => {
               const canAfford = stats.totalXp >= t.xpCost;
               const wouldOverflow =
@@ -231,98 +235,87 @@ export default function EnergyShopModal({ onClose }: Props) {
               return (
                 <div
                   key={t.id}
-                  className="relative rounded-2xl overflow-visible transition"
+                  className="relative overflow-hidden rounded-[16px] transition"
                   style={{
                     background: disabled
-                      ? 'rgba(239,244,255,0.03)'
+                      ? 'rgba(239,244,255,0.025)'
                       : isSelected
-                        ? 'linear-gradient(135deg, rgba(167,139,250,0.32), rgba(167,139,250,0.18))'
-                        : t.highlight
-                          ? 'linear-gradient(135deg, rgba(167,139,250,0.22), rgba(255,176,32,0.10))'
-                          : 'rgba(239,244,255,0.05)',
+                        ? 'linear-gradient(105deg, rgba(120,223,251,0.12), rgba(157,140,255,0.10))'
+                        : 'rgba(239,244,255,0.045)',
                     border: isSelected
-                      ? '1.5px solid var(--neon)'
-                      : t.highlight
-                        ? '1.5px solid rgba(167,139,250,0.6)'
-                        : '1px solid rgba(239,244,255,0.10)',
-                    opacity: disabled ? 0.5 : 1,
-                    boxShadow: t.highlight && !disabled
-                      ? '0 8px 22px -8px rgba(167,139,250,0.5)'
-                      : undefined,
+                      ? '1px solid rgba(120,223,251,0.62)'
+                      : '1px solid rgba(239,244,255,0.095)',
+                    opacity: disabled ? 0.42 : 1,
+                    boxShadow: isSelected
+                      ? '0 12px 32px -24px rgba(120,223,251,0.95), inset 0 1px 0 rgba(255,255,255,0.07)'
+                      : 'inset 0 1px 0 rgba(255,255,255,0.035)',
                   }}
                 >
-                  {/* 떠있는 BEST 스탬프 — highlight tier 만 */}
-                  {t.highlight ? (
-                    <div
-                      className="absolute -top-2.5 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full inline-flex items-center gap-1"
-                      style={{
-                        background:
-                          'linear-gradient(90deg, #A78BFA, #FFB020)',
-                        boxShadow:
-                          '0 4px 12px -2px rgba(167,139,250,0.6)',
-                      }}
-                    >
-                      <Sparkles size={10} className="text-white" strokeWidth={2.6} />
-                      <span
-                        className="kr-num text-[9px] uppercase tracking-[0.16em] font-bold text-white"
-                      >
-                        Best Value
-                      </span>
-                    </div>
-                  ) : null}
-
-                  {/* 1 단계: 티어 카드 (클릭 → 선택) */}
                   <button
                     type="button"
                     onClick={() => {
                       if (disabled) return;
                       setSelectedTierId(isSelected ? null : t.id);
                     }}
-                    disabled={disabled}
+                    disabled={disabled || buyingTierId !== null}
                     aria-pressed={isSelected}
-                    className="w-full flex items-center justify-between gap-3 px-4 py-3.5 transition active:scale-[0.99] disabled:cursor-not-allowed"
+                    className="flex w-full items-center justify-between gap-3 px-3.5 py-3 transition active:scale-[0.99] disabled:cursor-not-allowed"
                   >
-                    {/* 좌: 비주얼 ⚡ 아이콘들 + 수량 */}
-                    <span className="flex items-center gap-2.5 min-w-0">
-                      <ZapStack count={t.energyAmount} disabled={disabled} />
+                    <span className="flex min-w-0 items-center gap-3">
                       <span
-                        className="kr-num font-bold tabular-nums"
+                        className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px]"
+                        style={{
+                          background: isSelected
+                            ? 'rgba(120,223,251,0.16)'
+                            : 'rgba(157,140,255,0.10)',
+                          border: `1px solid ${isSelected ? 'rgba(120,223,251,0.24)' : 'rgba(157,140,255,0.14)'}`,
+                        }}
+                      >
+                        <Zap
+                          size={18}
+                          fill={disabled ? 'rgba(120,223,251,0.36)' : '#78DFFB'}
+                          color={disabled ? 'rgba(120,223,251,0.36)' : '#78DFFB'}
+                          strokeWidth={1.4}
+                        />
+                      </span>
+                      <span
+                        className="kr-num text-[19px] font-bold leading-none text-cream tabular-nums"
                         style={{
                           color: disabled ? 'rgba(239,244,255,0.5)' : '#EFF4FF',
-                          fontSize: t.highlight ? 22 : 19,
-                          lineHeight: 1,
                         }}
                       >
                         +{t.energyAmount}
                       </span>
+                      {t.highlight ? (
+                        <span
+                          className="kr-body rounded-full px-2 py-0.5 text-[9px] font-bold"
+                          style={{
+                            color: '#BEEFFF',
+                            background: 'rgba(120,223,251,0.09)',
+                            border: '1px solid rgba(120,223,251,0.18)',
+                          }}
+                        >
+                          추천
+                        </span>
+                      ) : null}
                     </span>
 
-                    {/* 우: XP 가격 (항상 표시) + 상태 칩 (disabled 시) */}
-                    <span className="flex flex-col items-end gap-1 shrink-0">
-                      <span
-                        className="inline-flex items-baseline gap-1 px-2.5 py-1 rounded-lg"
-                        style={{
-                          background: 'rgba(255,176,32,0.14)',
-                          border: '1px solid rgba(255,176,32,0.4)',
-                        }}
-                      >
+                    <span className="flex shrink-0 flex-col items-end gap-1">
+                      <span className="inline-flex items-baseline gap-1">
                         <span
-                          className="kr-num text-[15px] font-bold tabular-nums leading-none"
-                          style={{ color: '#FFB020' }}
+                          className="kr-num text-[15px] font-semibold leading-none text-[#FFD166] tabular-nums"
                         >
                           {t.xpCost}
                         </span>
                         <span
-                          className="kr-num text-[9px] uppercase tracking-widest leading-none"
-                          style={{ color: 'rgba(255,176,32,0.8)' }}
+                          className="kr-num text-[9px] uppercase leading-none text-[#FFD166]/65"
                         >
                           XP
                         </span>
                       </span>
                       {reasonShort ? (
                         <span
-                          className="kr-num text-[9px] uppercase tracking-widest leading-none"
-                          style={{ color: 'rgba(248,113,113,0.85)' }}
+                          className="kr-body text-[9px] leading-none text-rose-300/80"
                         >
                           {reasonShort}
                         </span>
@@ -330,30 +323,39 @@ export default function EnergyShopModal({ onClose }: Props) {
                     </span>
                   </button>
 
-                  {/* 2 단계: 선택 시 "구매하기" + "취소" 노출 */}
                   {isSelected && !disabled ? (
-                    <div className="flex gap-2 px-4 pb-3 pt-1">
+                    <div
+                      className="mx-3 flex gap-2 border-t pb-3 pt-2.5"
+                      style={{ borderColor: 'rgba(239,244,255,0.08)' }}
+                    >
                       <button
                         type="button"
-                        onClick={() => handleConfirmBuy(t)}
-                        className="flex-1 kr-num text-[13px] font-bold py-2.5 rounded-full inline-flex items-center justify-center gap-1.5 transition active:scale-[0.97]"
+                        onClick={() => void handleConfirmBuy(t)}
+                        disabled={buyingTierId !== null}
+                        className="kr-body inline-flex flex-1 items-center justify-center gap-1.5 rounded-[12px] py-2.5 text-[12px] font-bold transition active:scale-[0.98] disabled:cursor-wait disabled:opacity-70"
                         style={{
                           background:
-                            'linear-gradient(180deg, var(--cta-primary), var(--cta-primary-dark))',
-                          color: 'var(--cta-text)',
+                            'linear-gradient(135deg, rgba(120,223,251,0.96), rgba(100,169,255,0.96))',
+                          color: '#03142F',
                           boxShadow:
-                            '0 5px 14px -4px rgba(125,216,80,0.45), inset 0 1px 0 rgba(255,255,255,0.22)',
+                            '0 8px 18px -12px rgba(120,223,251,0.95), inset 0 1px 0 rgba(255,255,255,0.36)',
                         }}
                       >
-                        <Check size={14} strokeWidth={2.8} />
-                        구매하기
+                        {buyingTierId === t.id ? (
+                          <LoaderCircle size={14} className="animate-spin" />
+                        ) : (
+                          <Check size={14} strokeWidth={2.8} />
+                        )}
+                        {buyingTierId === t.id ? '처리 중' : '구매하기'}
                       </button>
                       <button
                         type="button"
                         onClick={() => setSelectedTierId(null)}
-                        className="kr-num text-[12.5px] py-2.5 px-4 rounded-full transition active:scale-[0.97]"
+                        disabled={buyingTierId !== null}
+                        className="kr-body rounded-[12px] px-4 py-2.5 text-[12px] transition active:scale-[0.98] disabled:cursor-wait disabled:opacity-50"
                         style={{
-                          background: 'rgba(239,244,255,0.06)',
+                          background: 'rgba(239,244,255,0.055)',
+                          border: '1px solid rgba(239,244,255,0.08)',
                           color: 'rgba(239,244,255,0.7)',
                         }}
                       >
@@ -366,77 +368,44 @@ export default function EnergyShopModal({ onClose }: Props) {
             })}
           </div>
 
-          {/* 구분선 — "또는" */}
-          <div className="flex items-center gap-3 mb-4">
-            <div className="flex-1 h-px bg-cream/10" />
-            <span className="kr-num text-[10px] uppercase tracking-[0.22em] text-cream/40">
-              또는
-            </span>
-            <div className="flex-1 h-px bg-cream/10" />
-          </div>
-
-          {/* 프리미엄 hero 카드 — gold gradient, 가치 어필 */}
+          <div className="mb-3 h-px bg-cream/[0.08]" />
           <button
             type="button"
             onClick={() => {
               openWebOrAppPremiumEntry();
             }}
-            className="relative w-full overflow-hidden rounded-2xl px-4 py-3.5 transition active:scale-[0.98] text-left"
+            className="relative w-full overflow-hidden rounded-[16px] px-3.5 py-3.5 text-left transition hover:bg-white/[0.06] active:scale-[0.99]"
             style={{
               background:
-                'linear-gradient(135deg, rgba(167,139,250,0.28), rgba(255,176,32,0.18))',
-              border: '1.5px solid rgba(167,139,250,0.55)',
+                'linear-gradient(105deg, rgba(157,140,255,0.11), rgba(120,223,251,0.055))',
+              border: '1px solid rgba(157,140,255,0.22)',
               boxShadow:
-                '0 10px 28px -8px rgba(167,139,250,0.5)',
+                'inset 0 1px 0 rgba(255,255,255,0.045)',
             }}
           >
-            {/* 배경 sparkle */}
-            <div
-              aria-hidden
-              className="absolute -right-4 -top-4 w-24 h-24 rounded-full blur-2xl"
-              style={{
-                background:
-                  'radial-gradient(circle, rgba(255,176,32,0.5), transparent 70%)',
-              }}
-            />
             <div className="relative flex items-center gap-3">
               <div
-                className="shrink-0 w-11 h-11 rounded-full inline-flex items-center justify-center"
+                className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[13px]"
                 style={{
                   background:
-                    'linear-gradient(135deg, #FFB020, #FF8a00)',
+                    'linear-gradient(145deg, rgba(157,140,255,0.22), rgba(120,223,251,0.12))',
+                  border: '1px solid rgba(157,140,255,0.25)',
                   boxShadow:
-                    '0 6px 14px -4px rgba(255,176,32,0.6)',
+                    '0 8px 20px -16px rgba(157,140,255,0.9)',
                 }}
               >
-                <Crown size={22} fill="#fff" strokeWidth={0} />
+                <Crown size={19} color="#B9ACFF" strokeWidth={2} />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-0.5">
-                  <span className="kr-heading text-[14px] font-bold text-cream">
-                    프리미엄
-                  </span>
-                  <span
-                    className="kr-num text-[11px] tabular-nums px-1.5 py-0.5 rounded-md"
-                    style={{
-                      background: 'rgba(255,176,32,0.22)',
-                      color: '#FFB020',
-                      border: '1px solid rgba(255,176,32,0.4)',
-                    }}
-                  >
-                    ∞ ⚡
-                  </span>
-                </div>
-                <p className="kr-body text-[11.5px] text-cream/70 leading-tight">
-                  에너지·대기시간 걱정 X · 무제한 풀이
+                <p className="kr-heading text-[13px] font-bold text-cream">
+                  MAX 멤버십
+                </p>
+                <p className="kr-body mt-0.5 text-[10.5px] leading-tight text-cream/50">
+                  에너지와 대기시간 없이 무제한 학습
                 </p>
               </div>
-              <span
-                className="kr-num text-[10px] uppercase tracking-widest shrink-0"
-                style={{ color: 'rgba(239,244,255,0.7)' }}
-              >
-                보기 →
-              </span>
+              <span className="kr-num mr-0.5 text-[15px] font-semibold text-[#B9ACFF]">∞</span>
+              <ChevronRight size={17} className="shrink-0 text-cream/40" strokeWidth={2} />
             </div>
           </button>
 
@@ -444,17 +413,17 @@ export default function EnergyShopModal({ onClose }: Props) {
           {flash ? (
             <div
               role="status"
-              className="mt-3 px-3 py-2.5 rounded-xl kr-body text-[12px] flex items-center gap-2"
+              className="kr-body mt-3 flex items-center gap-2 rounded-[12px] px-3 py-2.5 text-[11.5px]"
               style={{
                 background:
                   flash.kind === 'ok'
-                    ? 'var(--neon-12)'
+                    ? 'rgba(120,223,251,0.09)'
                     : 'rgba(248,113,113,0.12)',
                 border:
                   flash.kind === 'ok'
-                    ? '1px solid var(--neon-40)'
+                    ? '1px solid rgba(120,223,251,0.24)'
                     : '1px solid rgba(248,113,113,0.4)',
-                color: flash.kind === 'ok' ? 'var(--neon)' : '#fca5a5',
+                color: flash.kind === 'ok' ? '#BEEFFF' : '#fca5a5',
               }}
             >
               {flash.kind === 'ok' ? (
@@ -467,65 +436,9 @@ export default function EnergyShopModal({ onClose }: Props) {
           ) : null}
         </div>
       </motion.div>
-
     </div>
   );
 
   if (typeof document === 'undefined') return null;
   return createPortal(node, document.body);
-}
-
-/**
- * ZapStack — 구매할 ⚡ 양을 시각적으로 표현.
- *  - 1~3개: 그만큼 ⚡ 아이콘을 겹치게 표시 (Duolingo gem 스타일)
- *  - 4개 이상: 1개 + "×N" 라벨 (스타카토 길어지는 것 방지)
- */
-function ZapStack({
-  count,
-  disabled,
-}: {
-  count: number;
-  disabled: boolean;
-}) {
-  const color = disabled ? 'rgba(167,139,250,0.4)' : '#A78BFA';
-  if (count <= 3) {
-    return (
-      <span className="inline-flex items-center" aria-hidden>
-        {Array.from({ length: count }).map((_, i) => (
-          <Zap
-            key={i}
-            size={20}
-            fill={color}
-            strokeWidth={0}
-            style={{
-              marginLeft: i === 0 ? 0 : -8,
-              filter: disabled
-                ? undefined
-                : `drop-shadow(0 2px 6px rgba(167,139,250,${0.4 - i * 0.05}))`,
-            }}
-          />
-        ))}
-      </span>
-    );
-  }
-  return (
-    <span className="inline-flex items-center gap-1" aria-hidden>
-      <Zap
-        size={22}
-        fill={color}
-        strokeWidth={0}
-        style={{
-          filter: disabled
-            ? undefined
-            : 'drop-shadow(0 2px 8px rgba(167,139,250,0.55))',
-        }}
-      />
-      <span
-        className="kr-num text-[11px] font-bold tabular-nums"
-        style={{ color }}
-      >
-        ×{count}
-      </span>
-    </span>
-  );
 }

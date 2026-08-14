@@ -40,6 +40,7 @@ interface UserRow {
   role: 'user' | 'admin';
   total_xp: number;
   lesson_xp: number;
+  cumulative_xp: number;
   level: number;
   is_premium: boolean;
   learning_subject: LearningSubject | null;
@@ -47,10 +48,11 @@ interface UserRow {
   created_at: string;
 }
 
-type UserSortKey = 'xp' | 'premium' | 'recent';
+type UserSortKey = 'xp' | 'cumulativeXp' | 'premium' | 'recent';
 
 const USER_SORT_OPTIONS: Array<{ key: UserSortKey; label: string; hint: string }> = [
   { key: 'xp', label: 'XP순', hint: 'XP 높은 순' },
+  { key: 'cumulativeXp', label: '누적 XP순', hint: '지금까지 획득한 XP 높은 순' },
   { key: 'premium', label: '프리미엄순', hint: '프리미엄 먼저' },
   { key: 'recent', label: '최근 접속순', hint: '최근 접속 먼저' },
 ];
@@ -144,6 +146,10 @@ function userTotalXp(user: UserRow): number {
   return (user.total_xp ?? 0) + (user.lesson_xp ?? 0);
 }
 
+function userCumulativeXp(user: UserRow): number {
+  return Math.max(userTotalXp(user), user.cumulative_xp ?? 0);
+}
+
 function userLastSeenMs(user: UserRow): number {
   if (!user.last_seen_at) return 0;
   const parsed = Date.parse(user.last_seen_at);
@@ -198,6 +204,8 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
       userTotalXp(b) - userTotalXp(a) || userLastSeenMs(b) - userLastSeenMs(a);
     const byRecent = (a: UserRow, b: UserRow) =>
       userLastSeenMs(b) - userLastSeenMs(a) || userTotalXp(b) - userTotalXp(a);
+    const byCumulativeXp = (a: UserRow, b: UserRow) =>
+      userCumulativeXp(b) - userCumulativeXp(a) || byXp(a, b);
 
     return [...users].sort((a, b) => {
       if (userSort === 'premium') {
@@ -205,6 +213,7 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
         return premiumDiff || byXp(a, b);
       }
       if (userSort === 'recent') return byRecent(a, b);
+      if (userSort === 'cumulativeXp') return byCumulativeXp(a, b);
       return byXp(a, b);
     });
   }, [users, userSort]);
@@ -243,13 +252,7 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
     }
     try {
       const [userResult, metricsResult, subjectResult] = await Promise.all([
-        sb
-          .from('profiles')
-          .select(
-            'id, tag, display_name, role, total_xp, lesson_xp, level, is_premium, learning_subject, last_seen_at, created_at',
-          )
-          .order('total_xp', { ascending: false })
-          .limit(100),
+        sb.rpc('admin_user_xp_snapshot', { p_limit: 100 }),
         sb.rpc('admin_learning_activity'),
         sb.rpc('admin_subject_counts'),
       ]);
@@ -457,14 +460,15 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
           </div>
 
           <div className="overflow-x-auto rounded-[16px] border border-cream/12">
-            <table className="w-full text-[12px] kr-body">
+            <table className="w-full min-w-[980px] text-[12px] kr-body">
               <thead className="bg-cream/5 text-cream/60 uppercase tracking-widest text-[10px]">
                 <tr>
                   <th className="text-left px-4 py-3">태그</th>
                   <th className="text-left px-4 py-3">닉네임</th>
                   <th className="hidden text-center px-4 py-3 md:table-cell">학습 과목</th>
                   <th className="text-right px-4 py-3">레벨</th>
-                  <th className="text-right px-4 py-3">XP</th>
+                  <th className="text-right px-4 py-3">보유 XP</th>
+                  <th className="text-right px-4 py-3">누적 XP</th>
                   <th className="text-center px-4 py-3">프리미엄</th>
                   <th className="text-center px-4 py-3">역할</th>
                   <th className="text-left px-4 py-3">최근 접속</th>
@@ -474,7 +478,7 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
                 {users.length === 0 && !loading ? (
                   <tr>
                     <td
-                      colSpan={8}
+                      colSpan={9}
                       className="text-center px-4 py-12 text-cream/45"
                     >
                       가입자가 아직 없습니다.
@@ -501,6 +505,9 @@ export default function AdminPage({ onBack }: { onBack: () => void }) {
                     </td>
                     <td className="px-4 py-3 text-right tabular-nums">
                       {((u.total_xp ?? 0) + (u.lesson_xp ?? 0)).toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3 text-right tabular-nums font-semibold text-[#FFD166]">
+                      {userCumulativeXp(u).toLocaleString()}
                     </td>
                     <td className="px-4 py-3 text-center">
                       {u.is_premium ? (

@@ -495,6 +495,18 @@ export function spendXp(amount: number): void {
   commit({ ...current, spentXp: prevSpent + amount, updatedAt: Date.now() });
 }
 
+/** 서버 RPC가 확정한 현재 XP를 즉시 로컬 표시값에 반영한다. */
+export function applyServerXpBalance(remainingXp: number): void {
+  if (!Number.isFinite(remainingXp) || remainingXp < 0) return;
+  commit({
+    ...current,
+    serverTotalXp: Math.floor(remainingXp),
+    lessonXp: 0,
+    spentXp: 0,
+    updatedAt: Date.now(),
+  });
+}
+
 /** Daily Mission 시작 시점 기록. */
 export function markDailyMissionStarted(): void {
   const now = Date.now();

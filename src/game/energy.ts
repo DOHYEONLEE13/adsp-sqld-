@@ -466,9 +466,56 @@ export function formatRetryAfter(sec: number): string {
 export interface PurchaseResult {
   ok: boolean;
   /** 실패 사유. ok=true 면 undefined. */
-  reason?: 'cap-overflow' | 'insufficient-xp' | 'invalid';
+  reason?:
+    | 'cap-overflow'
+    | 'insufficient-xp'
+    | 'invalid'
+    | 'unauthenticated'
+    | 'server-error';
   /** 성공 시 적립 후 총 에너지. 실패 시 현재 에너지. */
   remaining: number;
+  remainingXp?: number;
+}
+
+export interface EnergyPurchaseRpcRow {
+  ok: boolean;
+  reason: string | null;
+  remaining_energy: number;
+  remaining_xp: number;
+  energy_updated_at: string | null;
+}
+
+export function mapEnergyPurchaseRpcRow(
+  row: EnergyPurchaseRpcRow,
+  fallbackEnergy: number,
+): PurchaseResult {
+  if (row.ok) {
+    return {
+      ok: true,
+      remaining: row.remaining_energy,
+      remainingXp: row.remaining_xp,
+    };
+  }
+
+  const reasonMap: Record<string, NonNullable<PurchaseResult['reason']>> = {
+    cap_overflow: 'cap-overflow',
+    insufficient_xp: 'insufficient-xp',
+    invalid_tier: 'invalid',
+    profile_not_found: 'server-error',
+    unauthenticated: 'unauthenticated',
+    unlimited: 'invalid',
+  };
+
+  return {
+    ok: false,
+    reason: reasonMap[row.reason ?? ''] ?? 'server-error',
+    remaining: Number.isFinite(row.remaining_energy)
+      ? row.remaining_energy
+      : fallbackEnergy,
+    remainingXp: Number.isFinite(row.remaining_xp)
+      ? row.remaining_xp
+      : undefined,
+  };
 }
 
 /**
@@ -482,7 +529,7 @@ export interface PurchaseResult {
  * 호출측 (EnergyShopModal) 이 미리 잔액 검사 후 호출하지만 race condition 보호용
  * 으로 여기서도 final check.
  */
-export function purchaseEnergyWithXp(args: {
+function purchaseGuestEnergyWithXp(args: {
   xpCost: number;
   energyAmount: number;
   currentDisplayedXp: number;
@@ -513,6 +560,65 @@ export function purchaseEnergyWithXp(args: {
   setState(guestStateFrom(next));
 
   return { ok: true, remaining: next.count };
+}
+
+export async function purchaseEnergyWithXp(args: {
+  xpCost: number;
+  energyAmount: number;
+  currentDisplayedXp: number;
+}): Promise<PurchaseResult> {
+  if (!isSupabaseConfigured()) return purchaseGuestEnergyWithXp(args);
+
+  const sb = getSupabase();
+  if (!sb) return purchaseGuestEnergyWithXp(args);
+
+  const session = await waitForSession();
+  if (!session) return purchaseGuestEnergyWithXp(args);
+
+  try {
+    const { data, error } = await sb.rpc('purchase_energy_with_xp', {
+      p_xp_cost: args.xpCost,
+      p_energy_amount: args.energyAmount,
+    });
+    if (error) {
+      console.warn('[energy] purchase_energy_with_xp RPC failed', error.message);
+      return {
+        ok: false,
+        reason: 'server-error',
+        remaining: _state.energy,
+      };
+    }
+
+    const row = (data ?? [])[0] as EnergyPurchaseRpcRow | undefined;
+    if (!row) {
+      return {
+        ok: false,
+        reason: 'server-error',
+        remaining: _state.energy,
+      };
+    }
+
+    const result = mapEnergyPurchaseRpcRow(row, _state.energy);
+    if (result.ok) {
+      setState({
+        ..._state,
+        authenticated: true,
+        energy: result.remaining,
+        energyUpdatedAt: row.energy_updated_at
+          ? Date.parse(row.energy_updated_at)
+          : Date.now(),
+      });
+      void pullEnergy();
+    }
+    return result;
+  } catch (error) {
+    console.warn('[energy] purchase_energy_with_xp exception', error);
+    return {
+      ok: false,
+      reason: 'server-error',
+      remaining: _state.energy,
+    };
+  }
 }
 
 // ─── 광고 보상 RPC — grant_ad_energy ───────────────────────────────

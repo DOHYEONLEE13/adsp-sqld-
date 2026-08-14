@@ -3,6 +3,27 @@ const APP_MODE_CLASS = 'questdp-app-mode';
 const APP_MODE_THEME_COLOR = '#081642';
 export const PREMIUM_PLAN_EVENT = 'questdp:premium-plan-open';
 
+const FIRST_ENTRY_BYPASS_HASH_PREFIXES = [
+  '/onboarding',
+  '/payment/callback',
+  '/redeem',
+  '/refund-request',
+] as const;
+
+export function resolveInitialAppRouteHash(
+  initialHash: string,
+  appModeActive: boolean,
+  onboardingRequired: boolean,
+): string {
+  const normalized = initialHash.replace(/^#/, '').replace(/\/$/, '');
+  if (!appModeActive || !onboardingRequired) return normalized;
+
+  const canBypassFirstEntry = FIRST_ENTRY_BYPASS_HASH_PREFIXES.some(
+    (prefix) => normalized === prefix || normalized.startsWith(`${prefix}?`),
+  );
+  return canBypassFirstEntry ? normalized : '/onboarding';
+}
+
 function canUseSessionStorage(): boolean {
   return typeof window !== 'undefined' && typeof window.sessionStorage !== 'undefined';
 }

@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import {
   ensureNearestUpcomingExamDate,
   getExamDate,
+  mergePulledExamDates,
   setExamDate,
 } from './examDate';
 
@@ -39,5 +40,23 @@ describe('ensureNearestUpcomingExamDate', () => {
 
     expect(ensureNearestUpcomingExamDate('adsp', now)).toBeUndefined();
     expect(getExamDate('adsp')).toBeUndefined();
+  });
+});
+
+describe('mergePulledExamDates', () => {
+  it('빈 서버 응답이 온보딩에서 막 저장한 기본 시험일을 지우지 않는다', () => {
+    expect(
+      mergePulledExamDates({}, { sqld: '2026-08-22' }, {}),
+    ).toEqual({ sqld: '2026-08-22' });
+  });
+
+  it('조회 중 로컬 변경이 없으면 서버의 변경과 삭제를 그대로 사용한다', () => {
+    expect(
+      mergePulledExamDates(
+        { adsp: '2026-10-31', sqld: '2026-08-22' },
+        { adsp: '2026-10-31', sqld: '2026-08-22' },
+        { sqld: '2026-11-14' },
+      ),
+    ).toEqual({ sqld: '2026-11-14' });
   });
 });

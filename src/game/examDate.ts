@@ -58,7 +58,22 @@ export function getUpcomingPresets(
   });
 }
 
-type ExamDates = Partial<Record<Subject, string>>;
+export type ExamDates = Partial<Record<Subject, string>>;
+
+/** 서버 조회 도중 로컬에서 바뀐 값만 보존해 늦은 응답의 덮어쓰기를 막습니다. */
+export function mergePulledExamDates(
+  localAtStart: ExamDates,
+  localNow: ExamDates,
+  remote: ExamDates,
+): ExamDates {
+  const merged = { ...remote };
+  for (const subject of ['adsp', 'sqld'] as const) {
+    if (localNow[subject] === localAtStart[subject]) continue;
+    if (localNow[subject]) merged[subject] = localNow[subject];
+    else delete merged[subject];
+  }
+  return merged;
+}
 
 function load(): ExamDates {
   if (typeof window === 'undefined') return {};
@@ -161,6 +176,7 @@ async function serverSetExamDate(subject: Subject, ymd: string | null): Promise<
 }
 
 async function pullExamDates(): Promise<void> {
+  const localAtStart = load();
   const sb = getSupabase();
   if (!sb) return;
   const { data: sess } = await sb.auth.getSession();
@@ -169,11 +185,11 @@ async function pullExamDates(): Promise<void> {
     .from('exam_dates')
     .select('subject, exam_date');
   if (error || !data) return;
-  const merged: ExamDates = {};
+  const remote: ExamDates = {};
   for (const row of data as Array<{ subject: Subject; exam_date: string }>) {
-    merged[row.subject] = row.exam_date;
+    remote[row.subject] = row.exam_date;
   }
-  save(merged);
+  save(mergePulledExamDates(localAtStart, load(), remote));
 }
 
 let _syncStarted = false;

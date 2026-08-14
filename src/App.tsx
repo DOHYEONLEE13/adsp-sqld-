@@ -53,6 +53,7 @@ import {
   isAppEntryPath,
   isAppMode,
   markAppModeFromLocation,
+  resolveInitialAppRouteHash,
 } from './lib/appMode';
 import { scrollPageTo } from './lib/pageScroll';
 
@@ -397,7 +398,17 @@ function getInitialRoute(): RouteState {
   if (typeof window === 'undefined') return { route: 'landing' };
 
   const initialHash = window.location.hash.replace(/^#/, '').replace(/\/$/, '');
-  if (initialHash === '/game') {
+  const resolvedHash = resolveInitialAppRouteHash(
+    initialHash,
+    isAppMode(),
+    needsOnboarding(),
+  );
+
+  if (resolvedHash !== initialHash) {
+    const url = new URL(window.location.href);
+    url.hash = resolvedHash;
+    window.history.replaceState(window.history.state, '', url);
+  } else if (initialHash === '/game') {
     const url = new URL(window.location.href);
     url.hash = '/home';
     window.history.replaceState(window.history.state, '', url);

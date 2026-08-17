@@ -99,6 +99,9 @@ const ProgressDashboard = lazy(
 );
 // 스크롤 히어로 홈 (신규). 완성 후 하단 네비의 '나의 약점' 슬롯을 대체할 예정.
 const HomePage = lazy(() => import('./game/HomePage'));
+const PlayReviewPromptPreview = lazy(
+  () => import('./game/components/PlayReviewPromptPreview'),
+);
 
 type Route =
   | 'landing'
@@ -130,7 +133,8 @@ type Route =
   | 'blog-index'
   | 'blog-post'
   | 'pricing'
-  | 'contact';
+  | 'contact'
+  | 'review-preview';
 
 interface RouteState {
   route: Route;
@@ -384,6 +388,9 @@ function getRoute(): RouteState {
   if (hash.startsWith('/payment/callback'))
     return { route: 'payment-callback' };
   if (hash.startsWith('/login')) return { route: 'login' };
+  if (import.meta.env.DEV && hash.startsWith('/review-preview')) {
+    return { route: 'review-preview' };
+  }
   if (hash.startsWith('/game')) {
     const parts = hash.split('/').filter(Boolean); // ['game'] or ['game', 'adsp']
     return resolveGamePathRoute(parts[1]);
@@ -871,6 +878,10 @@ export default function App() {
 
     if (route === 'contact') {
       return <ContactPage />;
+    }
+
+    if (import.meta.env.DEV && route === 'review-preview') {
+      return <PlayReviewPromptPreview />;
     }
 
     return <Landing />;

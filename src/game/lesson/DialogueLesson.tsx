@@ -52,7 +52,7 @@ import { markPartReviewCompleted, recordSingleAnswer } from '../storage';
 import { recordReviewAttempt } from '../forgettingCurve';
 import { useProgress } from '../useProgress';
 import { consumeEnergy } from '../energy';
-import { stepKey, useStepUnlocks } from '../stepUnlocks';
+import { stepKey } from '../stepUnlocks';
 import EnergyBlockModal from '../components/EnergyBlockModal';
 import LessonCompleteModal from '../components/LessonCompleteModal';
 import Ques from '@/components/mascot/Ques';
@@ -91,6 +91,8 @@ interface Props {
    * 기본 1.
    */
   passNumber?: number;
+  /** Zone 노드에서 진입 전에 에너지 차감을 마친 경우. */
+  energyPrepaid?: boolean;
   onFinishGoToPractice: () => void;
   onBack: (stepIdx?: number) => void;
 }
@@ -103,6 +105,7 @@ export default function DialogueLesson({
   topic,
   initialStepIdx,
   passNumber = 1,
+  energyPrepaid = false,
   onFinishGoToPractice,
   onBack,
 }: Props) {
@@ -130,18 +133,17 @@ export default function DialogueLesson({
   //  - 처음 푸는 step (questionStats 에 correct 기록 없음) 진입 → 1⚡
   //  - 이미 정답 맞춘 step 재진입 → 차감 X (revisit free)
   //  - review 전용 step (quizId 없음) → 항상 진입 시 1⚡
+  //  - Zone 노드에서 미리 차감한 첫 step 은 energyPrepaid 로 중복 차감 X
   //  - 같은 mount 안에서 같은 stepIdx 재방문 (refresh 등) → 추가 차감 X
   //  - 프리미엄/어드민 = RPC 가 ok=true 즉시 반환 → 차감 0
-  const consumedStepsRef = useRef<Set<number>>(new Set());
+  const consumedStepsRef = useRef<Set<number>>(
+    new Set(energyPrepaid ? [initialStepIdx ?? 0] : []),
+  );
   // progressStore (ProgressStore 객체) 의 latest snapshot 을 ref 에 보관
   // — useEffect 안에서 stale 방지. (line 229 의 진행률 number 와 별개)
   const progressStore = useProgress();
   const progressStoreRef = useRef(progressStore);
   progressStoreRef.current = progressStore;
-  // step_unlocks 서버/localStorage set 도 ref — visited dedup 용.
-  const lockSnap = useStepUnlocks();
-  const lockSnapRef = useRef(lockSnap);
-  lockSnapRef.current = lockSnap;
   const [energyBlock, setEnergyBlock] = useState<{ retryAfterSec: number } | null>(null);
   const [quotaBlock, setQuotaBlock] = useState<string | null>(null);
   const [lessonTokens, setLessonTokens] = useState<Record<string, string>>({});
@@ -157,13 +159,6 @@ export default function DialogueLesson({
     const alreadySolved = !!stat && (stat.correct ?? 0) > 0;
     if (alreadySolved) return;
 
-    // 이미 visited (한 번 ⚡ 차감하고 진입한 적 있음) — 차감 X
-    // step_unlocks 서버 row 가 visit 기록 의미. 서버 unlocked set 에 있으면 차감 X.
-    if (lesson) {
-      const sk = stepKey(lesson.id, stepIdx);
-      if (lockSnapRef.current.unlockedSet.has(sk)) return;
-    }
-
     let cancelled = false;
     void consumeEnergy(1).then((res) => {
       if (cancelled) return;
@@ -171,7 +166,6 @@ export default function DialogueLesson({
         setEnergyBlock({ retryAfterSec: res.retryAfterSec });
         return;
       }
-      // 차감 성공 시에만 visit 기록 (= 서버 step_unlocks insert / localStorage 추가)
     });
     return () => {
       cancelled = true;

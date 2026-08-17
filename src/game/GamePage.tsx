@@ -247,9 +247,10 @@ export default function GamePage({
     if (initialSubject) return { kind: 'planet', subject: initialSubject };
     return { kind: 'galaxy' };
   });
-  const [energyBlock, setEnergyBlock] = useState<{ retryAfterSec: number } | null>(
-    null,
-  );
+  const [energyBlock, setEnergyBlock] = useState<{
+    retryAfterSec: number;
+    subject?: Subject;
+  } | null>(null);
   const [lockToast, setLockToast] = useState<string | null>(null);
   const stepLockSnap = useStepUnlocks();
   const progress = useProgress();
@@ -323,7 +324,7 @@ export default function GamePage({
    * 무료 인증 사용자가 0 일 때만 차단 모달.
    * admin 검수 모드 (dev unlock) ON 이면 차감·차단 모두 우회 — 검수 시 무한 풀이.
    */
-  const gateEnergy = async (proceed: () => void) => {
+  const gateEnergy = async (proceed: () => void, subject?: Subject) => {
     if (isDevUnlockEnabled() || isDevUnlockStepsEnabled()) {
       proceed();
       return;
@@ -332,13 +333,9 @@ export default function GamePage({
     if (result.ok) {
       proceed();
     } else {
-      setEnergyBlock({ retryAfterSec: result.retryAfterSec });
+      setEnergyBlock({ retryAfterSec: result.retryAfterSec, subject });
     }
   };
-
-  // initialSubject 가 있으면 그 과목을 active 로 영속화 — 다음 #/game 진입 시
-  // 자동 redirect 되도록. 마운트 시 한 번 (idempotent).
-  void gateEnergy;
 
   useEffect(() => {
     if (initialSubject) setActiveSubject(initialSubject);
@@ -708,7 +705,7 @@ export default function GamePage({
               p.passNumber,
             )
           }
-          onSelectStep={(topic, stepIdx, passNumber) => {
+          onSelectStep={async (topic, stepIdx, passNumber) => {
             // lessonId 는 lesson lookup 으로. 잠금 검사 (정답 cross-check).
             const lesson = getLesson(screen.subject, screen.chapter, topic);
             const lessonId = lesson?.id ?? `${screen.subject}-${screen.chapter}`;
@@ -762,23 +759,35 @@ export default function GamePage({
             }
             // 자동 해금 제거 — 정답 맞춰야 다음 step 해금 (DialogueLesson/LessonScreen
             // 의 handleChoose 가 처리). 진입만으로는 unlock 안 됨.
-            if (entryStep) {
-              saveLearningResume({
+            const alreadySolved = entryStep?.quizId
+              ? (progress.questionStats[entryStep.quizId]?.correct ?? 0) > 0
+              : false;
+            const enterStep = () => {
+              if (entryStep) {
+                saveLearningResume({
+                  subject: screen.subject,
+                  chapter: screen.chapter,
+                  topic,
+                  stepIdx: entryStepIdx,
+                  stepId: entryStep.id,
+                });
+              }
+              setScreen({
+                kind: 'lesson',
                 subject: screen.subject,
                 chapter: screen.chapter,
                 topic,
                 stepIdx: entryStepIdx,
-                stepId: entryStep.id,
+                passNumber,
+                energyPrepaid: !alreadySolved,
               });
+            };
+
+            if (alreadySolved) {
+              enterStep();
+              return;
             }
-            setScreen({
-              kind: 'lesson',
-              subject: screen.subject,
-              chapter: screen.chapter,
-              topic,
-              stepIdx: entryStepIdx,
-              passNumber,
-            });
+            await gateEnergy(enterStep, screen.subject);
           }}
           onReviewIds={(p) =>
             startReviewFromIds(
@@ -808,6 +817,7 @@ export default function GamePage({
           topic={screen.topic}
           initialStepIdx={initialStepIdx}
           passNumber={screen.passNumber ?? 1}
+          energyPrepaid={screen.energyPrepaid}
           onFinishGoToPractice={() =>
             startSession(
               screen.subject,
@@ -903,6 +913,7 @@ export default function GamePage({
       {energyBlock ? (
         <EnergyBlockModal
           retryAfterSec={energyBlock.retryAfterSec}
+          subject={energyBlock.subject}
           onClose={() => setEnergyBlock(null)}
         />
       ) : null}

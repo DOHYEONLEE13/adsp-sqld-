@@ -2,6 +2,7 @@ const APP_MODE_SESSION_KEY = 'questdp.appMode';
 const APP_MODE_CLASS = 'questdp-app-mode';
 const APP_MODE_THEME_COLOR = '#081642';
 export const PREMIUM_PLAN_EVENT = 'questdp:premium-plan-open';
+export const ENERGY_SHOP_EVENT = 'questdp:energy-shop-open';
 
 const FIRST_ENTRY_BYPASS_HASH_PREFIXES = [
   '/onboarding',
@@ -126,6 +127,11 @@ export function refreshAppSurface(): void {
 export function openWebOrAppPremiumEntry(): void {
   if (typeof window === 'undefined') return;
   window.dispatchEvent(new CustomEvent(PREMIUM_PLAN_EVENT));
+}
+
+export function openEnergyShop(): void {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(new CustomEvent(ENERGY_SHOP_EVENT));
 }
 
 export async function requestWebOrAppPremiumPurchase(): Promise<void> {

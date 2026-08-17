@@ -39,7 +39,7 @@ import {
 import { useProgress } from '../useProgress';
 import { recordSingleAnswer } from '../storage';
 import { consumeEnergy } from '../energy';
-import { stepKey, useStepUnlocks } from '../stepUnlocks';
+import { stepKey } from '../stepUnlocks';
 import EnergyBlockModal from '../components/EnergyBlockModal';
 import LessonCompleteModal from '../components/LessonCompleteModal';
 import PageAmbientBg from '../components/PageAmbientBg';
@@ -66,6 +66,8 @@ interface Props {
   initialStepIdx?: number;
   /** N회독 차수 (LessonScreen 은 현재 무시 — DialogueLesson 만 reminder 분기). */
   passNumber?: number;
+  /** Zone 노드에서 진입 전에 에너지 차감을 마친 경우. */
+  energyPrepaid?: boolean;
   /** 레슨 완료 후 "실전 세트" 로 넘어갈 때. */
   onFinishGoToPractice: () => void;
   /** 상단 "Zone 으로". */
@@ -78,6 +80,7 @@ export default function LessonScreen({
   topic,
   initialStepIdx,
   passNumber: _passNumber,
+  energyPrepaid = false,
   onFinishGoToPractice,
   onBack,
 }: Props) {
@@ -128,17 +131,15 @@ export default function LessonScreen({
   const startedAtRef = useRef<number>(Date.now());
 
   // ── ⚡ 차감 정책:
-  //  - 처음 진입하는 step → 1⚡ + visit 기록 (server step_unlocks)
+  //  - 처음 진입하는 step → 1⚡
   //  - 이미 정답 맞춘 step 재진입 → 차감 X (revisit free)
-  //  - 이미 visited 한 step (= 한 번 ⚡ 차감 후 진입했음) 재진입 → 차감 X
-  //  - ⚡ 차감 실패 시 visit 기록 X — 다음 진입 시 재시도 (정상 동작)
+  //  - Zone 노드에서 미리 차감한 첫 step 은 energyPrepaid 로 중복 차감 X
   //  - 프리미엄/어드민 = RPC 가 ok=true 즉시 반환 → 차감 0
-  const consumedStepsRef = useRef<Set<number>>(new Set());
+  const consumedStepsRef = useRef<Set<number>>(
+    new Set(energyPrepaid ? [initialStepIdx ?? 0] : []),
+  );
   const progressRef = useRef(progress);
   progressRef.current = progress;
-  const lockSnap = useStepUnlocks();
-  const lockSnapRef = useRef(lockSnap);
-  lockSnapRef.current = lockSnap;
   const [energyBlock, setEnergyBlock] = useState<{ retryAfterSec: number } | null>(null);
   const [quotaBlock, setQuotaBlock] = useState<string | null>(null);
   const [lessonTokens, setLessonTokens] = useState<Record<string, string>>({});
@@ -156,12 +157,6 @@ export default function LessonScreen({
     const alreadySolved = !!stat && (stat.correct ?? 0) > 0;
     if (alreadySolved) return;
 
-    // 이미 visited 한 step — 차감 X
-    if (lesson) {
-      const sk = stepKey(lesson.id, stepIdx);
-      if (lockSnapRef.current.unlockedSet.has(sk)) return;
-    }
-
     let cancelled = false;
     void consumeEnergy(1).then((res) => {
       if (cancelled) return;
@@ -169,7 +164,6 @@ export default function LessonScreen({
         setEnergyBlock({ retryAfterSec: res.retryAfterSec });
         return;
       }
-      // 차감 성공 시에만 visit 기록
     });
     return () => {
       cancelled = true;

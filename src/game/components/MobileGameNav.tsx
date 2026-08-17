@@ -26,6 +26,7 @@ import type { Subject } from '@/types/question';
 import { useProgress } from '../useProgress';
 import { computePlayerStats } from '../rpg';
 import EnergyBadge from './EnergyBadge';
+import EnergyShopModal from './EnergyShopModal';
 import Ques from '@/components/mascot/Ques';
 import { useMyProfile } from '@/data/profile';
 import { usePassSnapshot } from '../passSync';
@@ -38,6 +39,7 @@ import SubjectSwitchToast from './SubjectSwitchToast';
 import { loadOnboardingResult } from '../onboarding/onboardingStorage';
 import { isCoreExamSubject } from '@/types/learning';
 import {
+  ENERGY_SHOP_EVENT,
   isAppMode,
 } from '@/lib/appMode';
 import { openSettingsDrawer } from '@/lib/settingsDrawer';
@@ -77,11 +79,18 @@ export function MobileTopBar({ subject, customSubject }: TopProps) {
   const progress = useProgress();
   const stats = computePlayerStats(progress);
   const [shareOpen, setShareOpen] = useState(false);
+  const [energyShopOpen, setEnergyShopOpen] = useState(false);
   const appMode = isAppMode();
   // 방안 S (2026-05-07) — useMyProfile (useSyncExternalStore) 로 race condition 해소.
   // 이전 useState + subscribeProfile 패턴은 first render 와 listener 부착 race 로 stale stuck.
   const profile = useMyProfile();
   const passSnap = usePassSnapshot();
+
+  useEffect(() => {
+    const open = () => setEnergyShopOpen(true);
+    window.addEventListener(ENERGY_SHOP_EVENT, open);
+    return () => window.removeEventListener(ENERGY_SHOP_EVENT, open);
+  }, []);
 
   // 사용자 흐름 폴리시 — 좌측 상단 마스코트 옆 과목 배지 + 전환 모달.
   // 활성 과목 = props.subject 우선, 없으면 progress.activeSubject, 없으면 onboarding.exams[0].
@@ -276,7 +285,15 @@ export function MobileTopBar({ subject, customSubject }: TopProps) {
               {stats.totalXp}
             </span>
           </button>
-          <EnergyBadge size="sm" compact={appMode} />
+          <button
+            type="button"
+            onClick={() => setEnergyShopOpen(true)}
+            aria-label="에너지 상점 열기"
+            title="에너지 상점 열기"
+            className="inline-flex items-center rounded-full px-1 py-1 transition hover:bg-white/8 active:scale-95"
+          >
+            <EnergyBadge size="sm" compact={appMode} />
+          </button>
           <button
             type="button"
             onClick={openSettingsDrawer}
@@ -318,6 +335,9 @@ export function MobileTopBar({ subject, customSubject }: TopProps) {
         >
           진도 텍스트 복사됨!
         </div>
+      ) : null}
+      {energyShopOpen ? (
+        <EnergyShopModal onClose={() => setEnergyShopOpen(false)} />
       ) : null}
       {/* 과목 전환 모달 */}
       {switcherOpen ? (

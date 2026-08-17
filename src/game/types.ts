@@ -39,6 +39,8 @@ export type GameScreen =
       stepIdx?: number;
       /** N회독 차수. 1=원본, 2/3=변형 (진입 시 reminder 카드 노출). 기본 1. */
       passNumber?: number;
+      /** Zone 노드에서 진입 전에 에너지 차감을 마친 경우 중복 차감 방지. */
+      energyPrepaid?: boolean;
     }
   | { kind: 'quest'; session: QuestSession }
   | { kind: 'result'; summary: QuestSummary }

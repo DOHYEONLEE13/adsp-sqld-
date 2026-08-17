@@ -3,7 +3,7 @@
  * 정답률 / 소요 시간 / 문항별 정오표 + 리매치 or 다른 토픽 진입 액션.
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { CheckCircle2, Clock, RefreshCcw, Star, XCircle } from 'lucide-react';
 import type { QuestSummary } from '../types';
 import { formatDuration } from '../session';
@@ -12,15 +12,6 @@ import PageAmbientBg from '../components/PageAmbientBg';
 import { cx } from '@/lib/utils';
 import { bulkAdd, toggleBookmark } from '../bookmarks';
 import { useBookmarks } from '../useBookmarks';
-import { computeKpi } from '../stats';
-import { getSnapshot } from '../storage';
-import PlayReviewPromptModal from '../components/PlayReviewPromptModal';
-import {
-  markPlayReviewPageOpened,
-  markPlayReviewPromptShown,
-  openQuestDpPlayStore,
-  shouldShowPlayReviewPrompt,
-} from '../playReviewPrompt';
 
 interface Props {
   summary: QuestSummary;
@@ -46,26 +37,6 @@ export default function ResultScreen({
   const allWrongAlreadyBookmarked =
     wrongIds.length > 0 && wrongIds.every((id) => bookmarks.ids.has(id));
   const [bulkFlash, setBulkFlash] = useState<string | null>(null);
-  const [reviewPrompt, setReviewPrompt] = useState<{
-    totalAttempts: number;
-  } | null>(null);
-
-  useEffect(() => {
-    const totalAttempts = computeKpi(getSnapshot()).totalAttempts;
-    if (!shouldShowPlayReviewPrompt(totalAttempts)) return;
-
-    const timeout = window.setTimeout(() => {
-      markPlayReviewPromptShown();
-      setReviewPrompt({ totalAttempts });
-    }, 1200);
-    return () => window.clearTimeout(timeout);
-  }, [summary]);
-
-  const handleReview = () => {
-    markPlayReviewPageOpened();
-    setReviewPrompt(null);
-    openQuestDpPlayStore();
-  };
   const handleBulkBookmarkWrong = () => {
     if (wrongIds.length === 0) return;
     const added = bulkAdd(wrongIds);
@@ -78,16 +49,7 @@ export default function ResultScreen({
   };
 
   return (
-    <>
-      {reviewPrompt ? (
-        <PlayReviewPromptModal
-          subject={summary.subject}
-          totalAttempts={reviewPrompt.totalAttempts}
-          onReview={handleReview}
-          onClose={() => setReviewPrompt(null)}
-        />
-      ) : null}
-      <ScreenShell
+    <ScreenShell
       eyebrow="Mission Report"
       title={verdict.title}
       subtitle={`${summary.chapterTitle}${summary.topic ? ' · ' + summary.topic : ' · 전체 믹스'}`}
@@ -253,8 +215,7 @@ export default function ResultScreen({
           은하로 돌아가기
         </button>
       </div>
-      </ScreenShell>
-    </>
+    </ScreenShell>
   );
 }
 

@@ -55,6 +55,13 @@ import { consumeEnergy } from '../energy';
 import { stepKey } from '../stepUnlocks';
 import EnergyBlockModal from '../components/EnergyBlockModal';
 import LessonCompleteModal from '../components/LessonCompleteModal';
+import PlayReviewPromptModal from '../components/PlayReviewPromptModal';
+import {
+  getEligiblePlayReviewAttemptCount,
+  markPlayReviewPageOpened,
+  markPlayReviewPromptShown,
+  openQuestDpPlayStore,
+} from '../playReviewPrompt';
 import Ques from '@/components/mascot/Ques';
 import { characterForSubject } from '@/components/mascot/types';
 import TopBar from './TopBar';
@@ -214,6 +221,7 @@ export default function DialogueLesson({
   const partReviewCorrectQuizIdsRef = useRef<Set<string>>(new Set());
   /** 레슨 마지막 스텝 정답 시 축하 모달. */
   const [showCelebration, setShowCelebration] = useState(false);
+  const [reviewPromptAttempts, setReviewPromptAttempts] = useState<number | null>(null);
 
   // 스텝이 바뀔 때 상태 초기화 + 질문 타이머 시작
   useEffect(() => {
@@ -921,6 +929,31 @@ export default function DialogueLesson({
     onBack(stepIdx);
   };
 
+  const finishSingleStep = () => {
+    if (correct !== true) {
+      handleBackToZone();
+      return;
+    }
+    const totalAttempts = getEligiblePlayReviewAttemptCount();
+    if (totalAttempts === null) {
+      handleBackToZone();
+      return;
+    }
+    markPlayReviewPromptShown();
+    setReviewPromptAttempts(totalAttempts);
+  };
+
+  const closeReviewPrompt = () => {
+    setReviewPromptAttempts(null);
+    handleBackToZone();
+  };
+
+  const openReviewPage = () => {
+    markPlayReviewPageOpened();
+    openQuestDpPlayStore();
+    closeReviewPrompt();
+  };
+
   const markCurrentPartReviewCompleted = () => {
     if (!isPartReviewStep(step)) return;
     markPartReviewCompleted(
@@ -1109,6 +1142,14 @@ export default function DialogueLesson({
             setShowCelebration(false);
             onBack(stepIdx);
           }}
+        />
+      ) : null}
+      {reviewPromptAttempts !== null ? (
+        <PlayReviewPromptModal
+          subject={subject}
+          totalAttempts={reviewPromptAttempts}
+          onReview={openReviewPage}
+          onClose={closeReviewPrompt}
         />
       ) : null}
       <PageAmbientBg blur />
@@ -1563,7 +1604,7 @@ export default function DialogueLesson({
               ctaLabel = '존으로 돌아가기';
               onContinue = () => {
                 markCurrentPartReviewCompleted();
-                handleBackToZone();
+                finishSingleStep();
               };
             } else {
               ctaLabel = '실전 세트로';

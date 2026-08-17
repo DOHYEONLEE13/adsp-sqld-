@@ -1,4 +1,6 @@
 import { isAppMode } from '@/lib/appMode';
+import { computeKpi } from './stats';
+import { getSnapshot } from './storage';
 
 const STORAGE_KEY = 'questdp.play-review-prompt.v1';
 const MIN_TOTAL_ATTEMPTS = 30;
@@ -63,6 +65,12 @@ export function isPlayReviewPromptEligible(
 export function shouldShowPlayReviewPrompt(totalAttempts: number): boolean {
   if (!import.meta.env.DEV && !isAppMode()) return false;
   return isPlayReviewPromptEligible(totalAttempts, loadState());
+}
+
+/** 현재 누적 풀이 수가 리뷰 요청 조건을 만족하면 해당 수를 반환합니다. */
+export function getEligiblePlayReviewAttemptCount(): number | null {
+  const totalAttempts = computeKpi(getSnapshot()).totalAttempts;
+  return shouldShowPlayReviewPrompt(totalAttempts) ? totalAttempts : null;
 }
 
 export function markPlayReviewPromptShown(now: number = Date.now()): void {

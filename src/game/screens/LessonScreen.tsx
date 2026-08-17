@@ -42,6 +42,13 @@ import { consumeEnergy } from '../energy';
 import { stepKey } from '../stepUnlocks';
 import EnergyBlockModal from '../components/EnergyBlockModal';
 import LessonCompleteModal from '../components/LessonCompleteModal';
+import PlayReviewPromptModal from '../components/PlayReviewPromptModal';
+import {
+  getEligiblePlayReviewAttemptCount,
+  markPlayReviewPageOpened,
+  markPlayReviewPromptShown,
+  openQuestDpPlayStore,
+} from '../playReviewPrompt';
 import PageAmbientBg from '../components/PageAmbientBg';
 import { reserveLessonQuestion } from '../serverQuestionSessions';
 import SqlQuestionContextCard from '../components/SqlQuestionContextCard';
@@ -145,6 +152,7 @@ export default function LessonScreen({
   const [lessonTokens, setLessonTokens] = useState<Record<string, string>>({});
   /** 레슨 마지막 스텝 정답 시 축하 모달. handleChoose 에서 setTimeout 으로 set. */
   const [showCelebration, setShowCelebration] = useState(false);
+  const [reviewPromptAttempts, setReviewPromptAttempts] = useState<number | null>(null);
   useEffect(() => {
     if (consumedStepsRef.current.has(stepIdx)) return;
     consumedStepsRef.current.add(stepIdx);
@@ -339,7 +347,14 @@ export default function LessonScreen({
 
   const goNextStep = () => {
     if (isSingleStep) {
-      // single-step 모드 — 한 step 만 풀고 Zone 복귀.
+      const totalAttempts = savedQuiz?.correct
+        ? getEligiblePlayReviewAttemptCount()
+        : null;
+      if (totalAttempts !== null) {
+        markPlayReviewPromptShown();
+        setReviewPromptAttempts(totalAttempts);
+        return;
+      }
       onBack(stepIdx);
       return;
     }
@@ -622,6 +637,22 @@ export default function LessonScreen({
         <div className="fixed left-1/2 top-20 z-50 -translate-x-1/2 rounded-full border border-cyan-200/30 bg-[#071326]/95 px-4 py-2.5 kr-body text-[12px] font-bold text-cream shadow-[0_10px_35px_rgba(0,0,0,0.35)]">
           {quotaBlock}
         </div>
+      ) : null}
+      {reviewPromptAttempts !== null ? (
+        <PlayReviewPromptModal
+          subject={subject}
+          totalAttempts={reviewPromptAttempts}
+          onReview={() => {
+            markPlayReviewPageOpened();
+            openQuestDpPlayStore();
+            setReviewPromptAttempts(null);
+            onBack(stepIdx);
+          }}
+          onClose={() => {
+            setReviewPromptAttempts(null);
+            onBack(stepIdx);
+          }}
+        />
       ) : null}
     </section>
   );

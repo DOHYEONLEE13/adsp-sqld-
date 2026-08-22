@@ -44,7 +44,7 @@ export type GameScreen =
     }
   | { kind: 'quest'; session: QuestSession }
   | { kind: 'result'; summary: QuestSummary }
-  | { kind: 'review' };
+  | { kind: 'review'; source?: 'daily' };
 
 /**
  * 세션 진행 방식.

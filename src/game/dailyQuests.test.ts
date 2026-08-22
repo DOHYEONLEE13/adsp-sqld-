@@ -2,9 +2,9 @@
  * dailyQuests.ts — 일일 퀘스트 산출 검증.
  *
  * 핵심 행동:
- *   1. volume = 오늘 sessions 풀이 합 + 학습 모드 inline 풀이 합.
- *   2. accuracy = 오늘 Quest 세션 중 5문 이상 & 정답률 ≥ 80% 하나라도.
- *   3. variety = 오늘 활동한 과목 수 (sessions OR 학습 모드).
+ *   1. review = 오늘 만기 복습의 30%.
+ *   2. volume = 오늘 sessions 풀이 합 + 학습 모드 inline 풀이 합.
+ *   3. accuracy = 오늘 Quest 세션에서 맞힌 정답 수 합계.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -43,45 +43,45 @@ function session(
 }
 
 describe('getTodayQuests — volume', () => {
-  it('빈 store → 0/15', () => {
-    const [volume] = getTodayQuests(emptyStore(), NOW);
+  it('빈 store → 0/8', () => {
+    const [, volume] = getTodayQuests(emptyStore(), NOW);
     expect(volume.progress).toBe(0);
-    expect(volume.target).toBe(15);
+    expect(volume.target).toBe(8);
     expect(volume.completed).toBe(false);
   });
 
-  it('오늘 sessions 풀이 10문 → volume 10/15', () => {
+  it('오늘 sessions 풀이 6문 → volume 6/8', () => {
     const store: ProgressStore = {
       ...emptyStore(),
-      sessions: [session('adsp', 10, 5)],
+      sessions: [session('adsp', 6, 3)],
     };
-    const [volume] = getTodayQuests(store, NOW);
-    expect(volume.progress).toBe(10);
+    const [, volume] = getTodayQuests(store, NOW);
+    expect(volume.progress).toBe(6);
     expect(volume.completed).toBe(false);
   });
 
-  it('오늘 학습 모드 inline 5문 → volume 5/15 (sessions 없어도)', () => {
+  it('오늘 학습 모드 inline 5문 → volume 5/8 (sessions 없어도)', () => {
     const store: ProgressStore = {
       ...emptyStore(),
       lessonAttemptsByDay: {
         [TODAY_KEY]: { total: 5, bySubject: { adsp: 5 } },
       },
     };
-    const [volume] = getTodayQuests(store, NOW);
+    const [, volume] = getTodayQuests(store, NOW);
     expect(volume.progress).toBe(5);
     expect(volume.completed).toBe(false);
   });
 
-  it('sessions 10 + 학습 모드 6 → volume 15/15 완료 (clamp)', () => {
+  it('sessions 6 + 학습 모드 3 → volume 8/8 완료 (clamp)', () => {
     const store: ProgressStore = {
       ...emptyStore(),
-      sessions: [session('adsp', 10, 5)],
+      sessions: [session('adsp', 6, 3)],
       lessonAttemptsByDay: {
-        [TODAY_KEY]: { total: 6, bySubject: { adsp: 6 } },
+        [TODAY_KEY]: { total: 3, bySubject: { adsp: 3 } },
       },
     };
-    const [volume] = getTodayQuests(store, NOW);
-    expect(volume.progress).toBe(15);
+    const [, volume] = getTodayQuests(store, NOW);
+    expect(volume.progress).toBe(8);
     expect(volume.completed).toBe(true);
   });
 
@@ -92,27 +92,30 @@ describe('getTodayQuests — volume', () => {
         '2026-04-30': { total: 99, bySubject: { adsp: 99 } },
       },
     };
-    const [volume] = getTodayQuests(store, NOW);
+    const [, volume] = getTodayQuests(store, NOW);
     expect(volume.progress).toBe(0);
   });
 });
 
 describe('getTodayQuests — accuracy', () => {
-  it('5문 미만 세션은 인정 X', () => {
+  it('정답이 4개 미만이면 완료되지 않음', () => {
     const store: ProgressStore = {
       ...emptyStore(),
-      sessions: [session('adsp', 4, 4)],
+      sessions: [session('adsp', 8, 3)],
     };
-    const [, accuracy] = getTodayQuests(store, NOW);
+    const [, , accuracy] = getTodayQuests(store, NOW);
+    expect(accuracy.progress).toBe(3);
+    expect(accuracy.target).toBe(4);
     expect(accuracy.completed).toBe(false);
   });
 
-  it('5문 + 80% 정답 → 인정', () => {
+  it('여러 세션에서 맞힌 정답 4개를 합산해 완료', () => {
     const store: ProgressStore = {
       ...emptyStore(),
-      sessions: [session('adsp', 5, 4)],
+      sessions: [session('adsp', 3, 2), session('sqld', 4, 2)],
     };
-    const [, accuracy] = getTodayQuests(store, NOW);
+    const [, , accuracy] = getTodayQuests(store, NOW);
+    expect(accuracy.progress).toBe(4);
     expect(accuracy.completed).toBe(true);
   });
 
@@ -123,62 +126,48 @@ describe('getTodayQuests — accuracy', () => {
         [TODAY_KEY]: { total: 100, bySubject: { adsp: 100 } },
       },
     };
-    const [, accuracy] = getTodayQuests(store, NOW);
+    const [, , accuracy] = getTodayQuests(store, NOW);
     expect(accuracy.completed).toBe(false);
   });
 });
 
-describe('getTodayQuests — variety', () => {
-  it('한 과목 sessions 만 → 1/2', () => {
-    const store: ProgressStore = {
-      ...emptyStore(),
-      sessions: [session('adsp', 5, 3)],
-    };
-    const [, , variety] = getTodayQuests(store, NOW);
-    expect(variety.progress).toBe(1);
-    expect(variety.completed).toBe(false);
+describe('getTodayQuests — review', () => {
+  it('복습 대상 10개 중 2개 완료 → 2/3', () => {
+    const [review] = getTodayQuests(emptyStore(), NOW, {
+      total: 10,
+      completed: 2,
+      target: 3,
+      hasWork: true,
+      isComplete: false,
+    });
+    expect(review.progress).toBe(2);
+    expect(review.target).toBe(3);
+    expect(review.completed).toBe(false);
+    expect(review.rewardXp).toBe(20);
   });
 
-  it('두 과목 sessions → 2/2 완료', () => {
-    const store: ProgressStore = {
-      ...emptyStore(),
-      sessions: [session('adsp', 5, 3), session('sqld', 5, 3)],
-    };
-    const [, , variety] = getTodayQuests(store, NOW);
-    expect(variety.progress).toBe(2);
-    expect(variety.completed).toBe(true);
+  it('복습할 항목이 없으면 완료 처리하되 보상은 만들지 않음', () => {
+    const [review] = getTodayQuests(emptyStore(), NOW);
+    expect(review.completed).toBe(true);
+    expect(review.rewardAvailable).toBe(false);
+    expect(review.claimed).toBe(true);
   });
 
-  it('한 과목 sessions + 다른 과목 학습 모드 → 2/2 완료', () => {
+  it('오늘 수령한 퀘스트만 claimed로 표시한다', () => {
     const store: ProgressStore = {
       ...emptyStore(),
-      sessions: [session('adsp', 5, 3)],
-      lessonAttemptsByDay: {
-        [TODAY_KEY]: { total: 3, bySubject: { sqld: 3 } },
-      },
+      dailyQuestClaims: { day: TODAY_KEY, ids: ['daily-volume'] },
     };
-    const [, , variety] = getTodayQuests(store, NOW);
-    expect(variety.progress).toBe(2);
-    expect(variety.completed).toBe(true);
-  });
-
-  it('학습 모드 두 과목만 진행 → 2/2 완료', () => {
-    const store: ProgressStore = {
-      ...emptyStore(),
-      lessonAttemptsByDay: {
-        [TODAY_KEY]: { total: 6, bySubject: { adsp: 3, sqld: 3 } },
-      },
-    };
-    const [, , variety] = getTodayQuests(store, NOW);
-    expect(variety.progress).toBe(2);
-    expect(variety.completed).toBe(true);
+    const [, volume, accuracy] = getTodayQuests(store, NOW);
+    expect(volume.claimed).toBe(true);
+    expect(accuracy.claimed).toBe(false);
   });
 });
 
 describe('completedCount', () => {
   it('완료 수만 세기', () => {
     const quests = getTodayQuests(emptyStore(), NOW);
-    expect(completedCount(quests)).toBe(0);
+    expect(completedCount(quests)).toBe(1);
   });
 
   it('3종 모두 완료 시 3 반환', () => {
@@ -189,7 +178,13 @@ describe('completedCount', () => {
         [TODAY_KEY]: { total: 5, bySubject: { adsp: 3, sqld: 2 } },
       },
     };
-    const quests = getTodayQuests(store, NOW);
+    const quests = getTodayQuests(store, NOW, {
+      total: 10,
+      completed: 3,
+      target: 3,
+      hasWork: true,
+      isComplete: true,
+    });
     expect(completedCount(quests)).toBe(3);
   });
 });

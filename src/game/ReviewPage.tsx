@@ -9,8 +9,9 @@
  */
 
 import { useMemo, useState } from 'react';
-import { Play } from 'lucide-react';
+import { ChevronRight, Clock3, Play, RotateCcw } from 'lucide-react';
 import type { Subject } from '@/types/question';
+import type { ReviewQueueItem } from '@/types/learning/reviewItem';
 import { SUBJECT_SCHEMAS } from '@/data/subjects';
 import ScreenShell from './components/ScreenShell';
 import { useProgress } from './useProgress';
@@ -18,10 +19,22 @@ import { sliceReviewPool, createReviewSession } from './review';
 import { topicWeaknesses, weaknessLevel } from './weakness';
 import { playableCount } from './session';
 import { cx } from '@/lib/utils';
+import {
+  generateDailyReviewQueue,
+  getQuestionMetaMap,
+  loadActiveReviewItems,
+} from './forgettingCurve';
+import { loadOnboardingResult } from './onboarding/onboardingStorage';
+import {
+  resolveQuestionLearningTarget,
+  type QuestionLearningTarget,
+} from './learningTarget';
 
 interface Props {
   onStartSession: (subject: Subject) => void;
+  onOpenReviewItem?: (item: ReviewQueueItem) => void;
   onExit: () => void;
+  mode?: 'general' | 'daily';
 }
 
 const SUBJECT_LABEL: Record<Subject, string> = {
@@ -29,7 +42,19 @@ const SUBJECT_LABEL: Record<Subject, string> = {
   sqld: 'SQLD',
 };
 
-export default function ReviewPage({ onStartSession, onExit }: Props) {
+export default function ReviewPage(props: Props) {
+  if (props.mode === 'daily') {
+    return (
+      <DailyReviewCollection
+        onOpenReviewItem={props.onOpenReviewItem}
+        onExit={props.onExit}
+      />
+    );
+  }
+  return <GeneralReviewPage {...props} />;
+}
+
+function GeneralReviewPage({ onStartSession, onExit }: Props) {
   const progress = useProgress();
   const adspTotal = playableCount('adsp');
   const sqldTotal = playableCount('sqld');
@@ -202,6 +227,156 @@ export default function ReviewPage({ onStartSession, onExit }: Props) {
       </section>
     </ScreenShell>
   );
+}
+
+interface ResolvedReviewItem {
+  queueItem: ReviewQueueItem;
+  target: QuestionLearningTarget;
+}
+
+function DailyReviewCollection({
+  onOpenReviewItem,
+  onExit,
+}: Pick<Props, 'onOpenReviewItem' | 'onExit'>) {
+  const progress = useProgress();
+  const onboarding = useMemo(() => loadOnboardingResult(), []);
+  const queue = useMemo(() => {
+    if (!onboarding) return [];
+    return generateDailyReviewQueue({
+      items: loadActiveReviewItems('guest'),
+      persona:
+        onboarding.persona === 'unknown' ? 'beginner' : onboarding.persona,
+      weak_chapters: onboarding.weak_chapters,
+      sessions: progress.sessions,
+      questionMeta: getQuestionMetaMap(),
+      today: new Date(),
+    });
+  }, [onboarding, progress.sessions]);
+
+  const grouped = useMemo(() => {
+    const result = new Map<Subject, ResolvedReviewItem[]>();
+    for (const queueItem of queue) {
+      const target = resolveQuestionLearningTarget(queueItem.question_id);
+      if (!target) continue;
+      const current = result.get(target.subject) ?? [];
+      current.push({ queueItem, target });
+      result.set(target.subject, current);
+    }
+    return result;
+  }, [queue]);
+
+  return (
+    <ScreenShell
+      eyebrow="Daily Review"
+      title="오늘의 복습"
+      subtitle="기억이 흐려지기 전에 다시 볼 학습 노드를 과목별로 모았어요."
+      onExit={onExit}
+      exitLabel="퀘스트로"
+    >
+      <section
+        className="liquid-glass mb-5 flex items-center gap-4 rounded-[18px] px-5 py-4"
+        style={{ border: '1px solid rgba(134,239,172,0.22)' }}
+      >
+        <span
+          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px]"
+          style={{ background: 'rgba(134,239,172,0.10)', color: '#86efac' }}
+        >
+          <RotateCcw size={20} strokeWidth={2.4} />
+        </span>
+        <div>
+          <p className="kr-heading text-[14px] text-cream">
+            복습할 항목 {queue.length}개
+          </p>
+          <p className="kr-body mt-0.5 text-[12px] leading-[1.5] text-cream/58">
+            오늘 목록의 30%를 학습하면 복습 퀘스트가 완료돼요.
+          </p>
+        </div>
+      </section>
+
+      {queue.length === 0 ? (
+        <section className="liquid-glass rounded-[18px] px-5 py-10 text-center">
+          <Clock3 className="mx-auto text-cream/35" size={28} strokeWidth={1.8} />
+          <p className="kr-heading mt-4 text-[14px] text-cream">
+            지금 복습할 항목이 없어요
+          </p>
+          <p className="kr-body mt-2 text-[12px] text-cream/55">
+            학습을 이어가면 알맞은 시점에 이곳에 다시 나타나요.
+          </p>
+        </section>
+      ) : (
+        <div className="space-y-4">
+          {([...grouped.entries()] as [Subject, ResolvedReviewItem[]][]).map(
+            ([subject, items]) => {
+              const accent = subject === 'adsp' ? '#67e8f9' : '#c084fc';
+              return (
+                <section
+                  key={subject}
+                  className="liquid-glass overflow-hidden rounded-[18px]"
+                >
+                  <div className="flex items-center justify-between px-5 py-4">
+                    <div className="flex items-center gap-2.5">
+                      <span
+                        className="h-2 w-2 rounded-full"
+                        style={{ background: accent, boxShadow: `0 0 12px ${accent}` }}
+                      />
+                      <h2 className="kr-heading text-[14px] text-cream">
+                        {SUBJECT_LABEL[subject]} 복습
+                      </h2>
+                    </div>
+                    <span className="kr-num text-[11px] text-cream/50">
+                      {items.length}개
+                    </span>
+                  </div>
+
+                  <ul className="border-t border-white/[0.06]">
+                    {items.map(({ queueItem, target }) => (
+                      <li key={queueItem.question_id}>
+                        <button
+                          type="button"
+                          onClick={() => onOpenReviewItem?.(queueItem)}
+                          className="group flex w-full items-center gap-3 border-b border-white/[0.05] px-5 py-4 text-left transition last:border-b-0 hover:bg-white/[0.045] active:bg-white/[0.07]"
+                        >
+                          <span
+                            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px] kr-num text-[11px] font-black"
+                            style={{ background: `${accent}16`, color: accent }}
+                          >
+                            {target.chapter}
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate kr-heading text-[13px] text-cream">
+                              {target.stepTitle ??
+                                target.topic ??
+                                queueItem.question_topic ??
+                                '복습할 개념'}
+                            </span>
+                            <span className="mt-1 block truncate kr-body text-[11px] text-cream/48">
+                              {target.chapter}단원 · {reviewReason(queueItem.priority_reason)}
+                            </span>
+                          </span>
+                          <ChevronRight
+                            size={17}
+                            strokeWidth={2.2}
+                            className="shrink-0 text-cream/35 transition-transform group-hover:translate-x-0.5"
+                          />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              );
+            },
+          )}
+        </div>
+      )}
+    </ScreenShell>
+  );
+}
+
+function reviewReason(reason: ReviewQueueItem['priority_reason']): string {
+  if (reason === 'overdue') return '복습 시점이 지난 항목';
+  if (reason === 'wrong_yesterday') return '최근 틀린 항목';
+  if (reason === 'weak_chapter') return '약한 단원';
+  return '오늘 복습할 항목';
 }
 
 /**

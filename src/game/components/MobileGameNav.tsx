@@ -49,6 +49,11 @@ import {
   readLastLearnHash,
   rememberCurrentLearnHash,
 } from '../learningContext';
+import { getTodayQuests } from '../dailyQuests';
+import {
+  DAILY_REVIEW_UPDATED_EVENT,
+  getDailyReviewQuestProgress,
+} from '../dailyReviewQuest';
 
 const SUBJECT_ACCENT: Record<Subject, string> = CORE_SUBJECT_ACCENT;
 
@@ -388,6 +393,8 @@ interface BottomProps {
   onQuests?: () => void;
   /** 활성 탭의 강조 색. 과목별 톤 사용 가능. */
   accent?: string;
+  /** 미지정 시 현재 진행도에서 받을 수 있는 퀘스트 보상 수를 계산한다. */
+  questNotificationCount?: number;
 }
 
 export function MobileBottomNav({
@@ -395,13 +402,35 @@ export function MobileBottomNav({
   onLearn,
   onQuests,
   accent,
+  questNotificationCount,
 }: BottomProps) {
   const progress = useProgress();
+  const [, setReviewNotificationTick] = useState(0);
   const navAccent = accent ?? inferBottomNavAccent(progress.activeSubject);
+  const computedQuestNotificationCount = getTodayQuests(
+    progress,
+    Date.now(),
+    getDailyReviewQuestProgress(),
+  ).filter(
+    (quest) => quest.completed && quest.rewardAvailable && !quest.claimed,
+  ).length;
+  const completedPreview =
+    import.meta.env.DEV &&
+    new URLSearchParams(window.location.search).get('quest-preview') ===
+      'complete';
+  const visibleQuestNotificationCount =
+    questNotificationCount ??
+    (completedPreview ? 1 : computedQuestNotificationCount);
 
   useEffect(() => {
     if (active === 'learn') rememberCurrentLearnHash();
   }, [active]);
+
+  useEffect(() => {
+    const refresh = () => setReviewNotificationTick((tick) => tick + 1);
+    window.addEventListener(DAILY_REVIEW_UPDATED_EVENT, refresh);
+    return () => window.removeEventListener(DAILY_REVIEW_UPDATED_EVENT, refresh);
+  }, []);
 
   return (
     <nav
@@ -451,6 +480,7 @@ export function MobileBottomNav({
           accent={navAccent}
           Icon={FlagTabIcon}
           label="퀘스트"
+          notificationCount={visibleQuestNotificationCount}
           onClick={() => {
             if (onQuests) {
               onQuests();
@@ -503,6 +533,7 @@ function Tab({
   accent,
   Icon,
   label,
+  notificationCount,
   onClick,
 }: {
   tab: MobileNavTab;
@@ -514,6 +545,7 @@ function Tab({
    */
   Icon: ComponentType<TabIconProps>;
   label: string;
+  notificationCount?: number;
   onClick?: () => void;
 }) {
   const isActive = tab === active;
@@ -584,6 +616,25 @@ function Tab({
               : 'none',
           }}
         />
+        {notificationCount && notificationCount > 0 ? (
+          <motion.span
+            key={notificationCount}
+            aria-hidden
+            className="kr-num absolute right-0 top-[-2px] z-20 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[9px] font-black leading-none"
+            style={{
+              color: 'rgba(239,244,255,0.92)',
+              background:
+                `linear-gradient(145deg, color-mix(in srgb, ${activeAccent} 28%, #172044 72%), #0b1435)`,
+              border: `1px solid color-mix(in srgb, ${activeAccent} 42%, #6a7599 58%)`,
+              boxShadow: `0 3px 8px rgba(0,0,0,0.34), 0 0 8px color-mix(in srgb, ${activeAccent} 16%, transparent), inset 0 1px 0 rgba(255,255,255,0.16)`,
+            }}
+            initial={{ opacity: 0, scale: 0.55, y: 3 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ type: 'spring', stiffness: 460, damping: 24 }}
+          >
+            {notificationCount > 9 ? '9+' : notificationCount}
+          </motion.span>
+        ) : null}
       </motion.span>
 
       {/* 라벨 — 항상 노출. 활성 시 굵기 ↑ */}

@@ -16,7 +16,11 @@ import type { QuestSummary } from './types';
 import { pushSessionToServer } from './sessionSync';
 import { pushQuestionStatToServer } from './questionStatSync';
 import { pushProgressMetaToServer } from './progressMetaSync';
-import { claimDailyQuestBonusOnServer } from './dailyBonusSync';
+import {
+  claimDailyQuestBonusOnServer,
+  claimDailyQuestRewardOnServer,
+} from './dailyBonusSync';
+import type { DailyQuestId } from './dailyQuests';
 
 const STORAGE_KEY = 'questdp.progress.v1';
 const SCHEMA_VERSION = 1 as const;
@@ -109,6 +113,8 @@ export interface ProgressStore {
    * 같은 날 중복 지급 방지. 오늘이 아니면 다음 청구 가능.
    */
   dailyBonusClaimedAt?: string;
+  /** 일일 퀘스트별 수령 기록. 날짜가 바뀌면 새 목록으로 교체한다. */
+  dailyQuestClaims?: { day: string; ids: DailyQuestId[] };
   createdAt: number;
   updatedAt: number;
 }
@@ -151,6 +157,7 @@ function loadStore(): ProgressStore {
       spentXp: parsed.spentXp,
       lessonAttemptsByDay: parsed.lessonAttemptsByDay ?? {},
       dailyBonusClaimedAt: parsed.dailyBonusClaimedAt,
+      dailyQuestClaims: parsed.dailyQuestClaims,
       createdAt: parsed.createdAt ?? Date.now(),
       updatedAt: parsed.updatedAt ?? Date.now(),
     };
@@ -193,12 +200,14 @@ function commit(next: ProgressStore): void {
 function applyLessonXpCorrection(
   localOptimisticXp: number,
   serverAwardedXp: number,
-  options: { clearDailyBonusClaim?: string } = {},
+  options: {
+    clearDailyBonusClaim?: string;
+    clearDailyQuestClaim?: { day: string; id: DailyQuestId };
+  } = {},
 ): void {
   const safeLocal = Math.max(0, Math.floor(localOptimisticXp));
   const safeServer = Math.max(0, Math.floor(serverAwardedXp));
   const correction = safeServer - safeLocal;
-  if (correction === 0 && !options.clearDailyBonusClaim) return;
 
   const next: ProgressStore = {
     ...current,
@@ -211,6 +220,18 @@ function applyLessonXpCorrection(
     next.dailyBonusClaimedAt === options.clearDailyBonusClaim
   ) {
     next.dailyBonusClaimedAt = undefined;
+  }
+
+  if (
+    options.clearDailyQuestClaim &&
+    next.dailyQuestClaims?.day === options.clearDailyQuestClaim.day
+  ) {
+    next.dailyQuestClaims = {
+      day: next.dailyQuestClaims.day,
+      ids: next.dailyQuestClaims.ids.filter(
+        (id) => id !== options.clearDailyQuestClaim?.id,
+      ),
+    };
   }
 
   if (typeof current.serverTotalXp === 'number') {
@@ -493,6 +514,63 @@ export function spendXp(amount: number): void {
   if (amount <= 0) return;
   const prevSpent = current.spentXp ?? 0;
   commit({ ...current, spentXp: prevSpent + amount, updatedAt: Date.now() });
+}
+
+/**
+ * 완료한 일일 퀘스트 하나의 XP를 수령한다.
+ * 로컬에서는 즉시 반영하고, 서버 RPC 결과가 실패하면 지급과 수령 표시를 함께 되돌린다.
+ */
+export function claimDailyQuestReward(
+  questId: DailyQuestId,
+  rewardXp: number,
+): number {
+  const at = Date.now();
+  const today = dayKey(at);
+  const safeReward = Math.max(0, Math.floor(rewardXp));
+  if (safeReward === 0) return 0;
+
+  const currentClaims =
+    current.dailyQuestClaims?.day === today
+      ? current.dailyQuestClaims.ids
+      : [];
+  if (currentClaims.includes(questId)) return 0;
+
+  const next: ProgressStore = {
+    ...current,
+    lessonXp: (current.lessonXp ?? 0) + safeReward,
+    dailyQuestClaims: {
+      day: today,
+      ids: [...currentClaims, questId],
+    },
+    updatedAt: at,
+  };
+  if (typeof current.serverTotalXp === 'number') {
+    next.serverTotalXp = current.serverTotalXp + safeReward;
+  }
+  commit(next);
+
+  void claimDailyQuestRewardOnServer(questId).then((result) => {
+    if (!result || !result.ok) {
+      applyLessonXpCorrection(safeReward, 0, {
+        clearDailyQuestClaim: { day: today, id: questId },
+      });
+      return;
+    }
+    applyLessonXpCorrection(safeReward, result.xpAwarded);
+  });
+
+  return safeReward;
+}
+
+export function hasDailyQuestRewardBeenClaimed(
+  store: ProgressStore,
+  questId: DailyQuestId,
+  now: number = Date.now(),
+): boolean {
+  return (
+    store.dailyQuestClaims?.day === dayKey(now) &&
+    store.dailyQuestClaims.ids.includes(questId)
+  );
 }
 
 /** 서버 RPC가 확정한 현재 XP를 즉시 로컬 표시값에 반영한다. */

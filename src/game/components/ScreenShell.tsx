@@ -9,7 +9,7 @@ import type { ReactNode } from 'react';
 interface Props {
   eyebrow: string;
   title: string;
-  subtitle?: string;
+  subtitle?: ReactNode;
   onExit?: () => void;
   /** 뒤로가기 버튼 라벨. 없으면 기본값 "뒤로". */
   exitLabel?: string;
@@ -110,7 +110,7 @@ export default function ScreenShell({
             {title}
           </h1>
           {subtitle ? (
-            <p
+            <div
               className={
                 compact
                   ? 'kr-body text-[13px] leading-[1.65] text-cream/70 mt-3'
@@ -118,7 +118,7 @@ export default function ScreenShell({
               }
             >
               {subtitle}
-            </p>
+            </div>
           ) : null}
         </header>
 

@@ -180,6 +180,9 @@ export function mergeProgress(input: MergeInput): ProgressStore {
     lessonXp,
     serverTotalXp,
     spentXp: local.spentXp,
+    lessonAttemptsByDay: local.lessonAttemptsByDay ?? {},
+    dailyBonusClaimedAt: local.dailyBonusClaimedAt,
+    dailyQuestClaims: local.dailyQuestClaims,
     createdAt: local.createdAt,
     updatedAt: Date.now(),
   };

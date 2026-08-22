@@ -1,6 +1,7 @@
 import { waitForSession } from '@/lib/auth/waitForSession';
 import { getSupabase } from '@/lib/supabase';
 import { trackPush } from './progressSync';
+import type { DailyQuestId } from './dailyQuests';
 
 export interface DailyBonusSyncResult {
   ok: boolean;
@@ -46,6 +47,42 @@ export async function claimDailyQuestBonusOnServer(): Promise<DailyBonusSyncResu
     };
   } catch (error) {
     console.warn('[dailyBonusSync] claim exception', error);
+    return null;
+  }
+}
+
+/** 퀘스트 하나의 고정 보상을 서버 원장에 멱등 지급한다. */
+export async function claimDailyQuestRewardOnServer(
+  questId: DailyQuestId,
+): Promise<DailyBonusSyncResult | null> {
+  const sb = getSupabase();
+  if (!sb) return null;
+  const session = await waitForSession();
+  if (!session) return null;
+
+  try {
+    const response = (await trackPush(
+      Promise.resolve(
+        sb.rpc('claim_daily_quest_reward', { quest_id: questId }),
+      ),
+    )) as { data: unknown; error: { message: string } | null };
+
+    if (response.error) {
+      console.warn(
+        '[dailyBonusSync] claim_daily_quest_reward failed',
+        response.error.message,
+      );
+      return null;
+    }
+
+    const payload = asRecord(response.data);
+    if (payload.ok !== true) return { ok: false, xpAwarded: 0 };
+    return {
+      ok: true,
+      xpAwarded: Math.max(0, toInt(payload.xpAwarded, 0)),
+    };
+  } catch (error) {
+    console.warn('[dailyBonusSync] quest reward exception', error);
     return null;
   }
 }

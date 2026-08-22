@@ -18,6 +18,7 @@ import { findReviewItem, upsertReviewItem } from './reviewItemStorage';
 import { applyAttempt, createInitialReviewItem } from './sm2Algorithm';
 import { determineEaseFactorVariant, easeFactorInitial } from './easeFactor';
 import { loadOnboardingResult } from '@/game/onboarding/onboardingStorage';
+import { recordDailyReviewCompletion } from '@/game/dailyReviewQuest';
 
 /** mock 단계의 user_id — Step 5/6 에서 인증된 user.id 로 전환. */
 const MOCK_USER_ID = 'guest';
@@ -54,6 +55,12 @@ export function recordReviewAttempt(
   }
 
   // 기존 — applyAttempt (5-tier progression 또는 1d 리셋)
+  const wasDue =
+    existing.status === 'active' &&
+    existing.due_date !== null &&
+    existing.due_date.getTime() <= attemptedAt.getTime();
+  if (wasDue) recordDailyReviewCompletion(questionId, attemptedAt);
+
   const result = applyAttempt({
     current: existing,
     is_correct: isCorrect,

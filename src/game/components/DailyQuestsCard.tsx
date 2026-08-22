@@ -102,7 +102,7 @@ export default function DailyQuestsCard({
         </h2>
         <span
           className="kr-heading shrink-0 text-[11px] tabular-nums"
-          style={{ color: allDone ? accent : 'rgba(239,244,255,0.6)' }}
+          style={{ color: 'rgba(239,244,255,0.7)' }}
         >
           {done} / {total} 완료
         </span>
@@ -124,7 +124,7 @@ export default function DailyQuestsCard({
           className="kr-body text-[12px] mt-4 text-center inline-flex w-full items-center justify-center gap-1.5"
           style={{ color: 'rgba(239,244,255,0.62)' }}
         >
-          <CheckCircle2 size={14} strokeWidth={2.6} style={{ color: accent }} />
+          <CheckCircle2 size={14} strokeWidth={2.6} />
           오늘의 퀘스트를 모두 완료했어요! 내일 또 만나요.
         </p>
       ) : null}
@@ -256,7 +256,7 @@ function QuestRow({
             className="kr-heading inline-flex items-center gap-1.5 text-[12px] lg:text-[13px]"
             style={{
               color: quest.claimed
-                ? accent
+                ? '#86efac'
                 : 'rgba(239,244,255,0.68)',
             }}
           >

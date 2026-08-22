@@ -19,6 +19,7 @@ import {
   CalendarClock,
   Star,
   ChevronDown,
+  ChevronLeft,
   ChevronRight,
   Repeat2,
   Sparkles,
@@ -36,7 +37,6 @@ import {
   daysUntil,
   getUpcomingPresets,
   setExamDate,
-  type ExamPreset,
 } from './examDate';
 import {
   FirstEntrySubjectPicker,
@@ -50,6 +50,11 @@ import {
   CORE_SUBJECT_ACCENT,
 } from './learningContext';
 import type { Subject } from '@/types/question';
+import {
+  examShortLabel,
+  isCoreExamSubject,
+  type LearningExamSubject,
+} from '@/types/learning';
 import { getFullChapterAccuracies } from './passPrediction/chapterWeights';
 import { rankWeakChapters } from './passPrediction/weakChapterRanker';
 import { resolveLessonTarget } from './passPrediction/WeakChapterRoadmap';
@@ -96,8 +101,6 @@ export default function HomePage() {
   const subject: Subject =
     homeSubject ?? (learnCtx?.kind === 'core' ? learnCtx.subject : fallbackSubject);
 
-  // 확장 과목(컴활)은 EXAM_PRESETS 에 회차가 없어 D-day 를 만들 수 없다.
-  // 코어 과목 날짜를 대신 보여주면 라벨과 어긋나므로 아예 감춘다.
   // 약점 단원 TOP 4 — /weakness 화면과 같은 계산기를 그대로 쓴다.
   // 확장 과목은 챕터 가중치 테이블이 없어 이 계산이 성립하지 않으므로 건너뛴다.
   const isExpansion = !homeSubject && learnCtx?.kind === 'expansion';
@@ -134,21 +137,29 @@ export default function HomePage() {
   const [examYmdBySubject, setExamYmdBySubject] = useState(() => ({
     adsp: getExamDate('adsp'),
     sqld: getExamDate('sqld'),
+    comhwal1: getExamDate('comhwal1'),
+    comhwal2: getExamDate('comhwal2'),
   }));
-  const examYmd = isExpansion ? undefined : examYmdBySubject[subject];
-  const dDay = isExpansion ? null : daysUntil(examYmd);
+  const examSubject: LearningExamSubject = isExpansion
+    ? learnCtx?.label.includes('2급')
+      ? 'comhwal2'
+      : 'comhwal1'
+    : subject;
+  const examYmd = examYmdBySubject[examSubject];
+  const dDay = daysUntil(examYmd);
   const nextPreset = isExpansion ? null : getUpcomingPresets(subject)[0] ?? null;
 
   const refreshExamDates = () => {
     setExamYmdBySubject({
       adsp: getExamDate('adsp'),
       sqld: getExamDate('sqld'),
+      comhwal1: getExamDate('comhwal1'),
+      comhwal2: getExamDate('comhwal2'),
     });
   };
 
   const handleExamPick = (ymd: string | null) => {
-    if (isExpansion) return;
-    setExamDate(subject, ymd);
+    setExamDate(examSubject, ymd);
     refreshExamDates();
     setExamPickerOpen(false);
     window.requestAnimationFrame(() => {
@@ -166,6 +177,7 @@ export default function HomePage() {
     };
 
     if (nextSubject === 'comhwal') {
+      setHomeSubject(null);
       setLearningSubject('comhwal');
       try {
         window.localStorage.setItem(LAST_LEARN_HASH_KEY, '/game/comhwal');
@@ -247,6 +259,7 @@ export default function HomePage() {
     Math.min(vp.w * 0.19, vp.h * 0.41, 370),
   );
   const ddayValue = dDay !== null && dDay >= 0 ? String(dDay) : '?';
+  const ddayLabel = dDay === 0 ? 'D-Day' : `D-${ddayValue}`;
   // 도착 위치 — 헤드라인과 같은 띠의 오른쪽. 헤드라인은 왼쪽 정렬이라 가로로
   // 겹치지 않고, 시안처럼 문구 옆에 로켓이 서 있는 구도가 된다.
   // 더 내리면 아래 카드를 덮고, 더 키워도 카드를 덮는다.
@@ -307,7 +320,7 @@ export default function HomePage() {
   return (
     <section className="relative min-h-screen text-cream isolate overflow-x-hidden">
       <PageAmbientBg />
-      <MobileTopBar subject={subject} />
+      <MobileTopBar subject={isExpansion ? undefined : subject} />
 
       {/* ─── 히어로 ────────────────────────────────────────────────────── */}
       <div
@@ -368,7 +381,7 @@ export default function HomePage() {
                   filter: 'drop-shadow(0 4px 14px rgba(1,8,40,0.35))',
                 }}
               >
-                D-{ddayValue}
+                {ddayLabel}
               </span>
             ) : (
               <span
@@ -386,7 +399,7 @@ export default function HomePage() {
                   filter: 'drop-shadow(0 4px 14px rgba(1,8,40,0.35))',
                 }}
               >
-                D-{ddayValue}
+                {ddayLabel}
               </span>
             )}
           </motion.div>
@@ -749,12 +762,11 @@ export default function HomePage() {
       </div>
 
       <MobileBottomNav active="home" />
-      {examPickerOpen && !isExpansion ? (
+      {examPickerOpen ? (
         <ExamDatePickerModal
-          subject={subject}
+          subject={examSubject}
           accent={accent}
           ymd={examYmd}
-          nextPreset={nextPreset}
           onPick={handleExamPick}
           onClose={() => setExamPickerOpen(false)}
         />
@@ -871,21 +883,21 @@ function ActionButton({
 }
 
 function ExamDatePickerModal({
+  subject,
   accent,
   ymd,
-  nextPreset,
   onPick,
   onClose,
 }: {
-  subject: Subject;
+  subject: LearningExamSubject;
   accent: string;
   ymd: string | undefined;
-  nextPreset: ExamPreset | null;
   onPick: (ymd: string | null) => void;
   onClose: () => void;
 }) {
   const reduceMotion = useReducedMotion();
-  const presets = nextPreset ? getUpcomingPresets(nextPreset.subject) : [];
+  const coreSubject = isCoreExamSubject(subject);
+  const presets = coreSubject ? getUpcomingPresets(subject) : [];
   const [pendingYmd, setPendingYmd] = useState<string | undefined>(ymd);
   useEffect(() => setPendingYmd(ymd), [ymd]);
 
@@ -920,20 +932,30 @@ function ExamDatePickerModal({
             ? undefined
             : { type: 'spring', stiffness: 360, damping: 30, mass: 0.9 }
         }
-        className="w-full max-w-[400px] rounded-[24px] p-5"
+        data-testid="home-exam-date-modal"
+        className={`max-h-[calc(100dvh-32px)] w-full overflow-y-auto rounded-[24px] p-5 ${
+          coreSubject ? 'max-w-[400px]' : 'max-w-[720px]'
+        }`}
         style={{
           background:
-            'linear-gradient(180deg, rgba(13,37,83,0.96) 0%, rgba(8,28,68,0.94) 100%)',
+            'linear-gradient(155deg, rgba(20,48,91,0.82) 0%, rgba(8,27,66,0.88) 54%, rgba(6,22,54,0.92) 100%)',
           border: `1px solid ${tint(accent, 0.38)}`,
-          boxShadow: `0 18px 54px rgba(0,0,0,0.5), 0 0 0 1px rgba(239,244,255,0.04), 0 0 38px -22px ${accent}`,
+          boxShadow: `0 22px 64px rgba(0,0,0,0.48), inset 0 1px 0 rgba(255,255,255,0.09), 0 0 34px -24px ${accent}`,
+          backdropFilter: 'blur(28px) saturate(135%)',
+          WebkitBackdropFilter: 'blur(28px) saturate(135%)',
         }}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-5 flex items-start justify-between gap-3">
           <div className="min-w-0">
             <div className="kr-heading text-[19px] leading-tight text-cream">
-              시험일 선택하기
+              {coreSubject ? '시험일 선택하기' : `${examShortLabel(subject)} 시험일 선택`}
             </div>
+            {!coreSubject ? (
+              <p className="kr-body mt-1.5 text-[12px] text-cream/52">
+                응시할 날짜를 달력에서 선택해 주세요.
+              </p>
+            ) : null}
           </div>
           <button
             type="button"
@@ -945,83 +967,103 @@ function ExamDatePickerModal({
           </button>
         </div>
 
-        <div
-          className="mb-4 rounded-[18px] px-4 py-4"
-          style={{
-            background: 'rgba(255,255,255,0.045)',
-            border: '1px solid rgba(239,244,255,0.10)',
-          }}
-        >
-          <div
-            className="kr-heading text-[42px] leading-none"
-            style={{ color: accent }}
-          >
-            {dDayLabel}
-          </div>
-          <div className="kr-body mt-2 text-[12.5px] text-cream/70">
-            {pendingYmd ? formatHomeExamDate(pendingYmd) : '아직 선택하지 않았어요'}
-          </div>
-        </div>
+        {coreSubject ? (
+          <>
+            <ExamDateSummary
+              accent={accent}
+              dDayLabel={dDayLabel}
+              pendingYmd={pendingYmd}
+            />
 
-        <label className="block">
-          <span className="kr-heading text-[12px] text-cream/70">날짜</span>
-          <input
-            type="date"
-            value={pendingYmd ?? ''}
-            onChange={(e) => setPendingYmd(e.target.value || undefined)}
-            className="kr-body mt-2 w-full rounded-[16px] px-4 py-3 text-[15px] text-cream outline-none transition focus:border-white/35"
-            style={{
-              colorScheme: 'dark',
-              background: 'rgba(255,255,255,0.07)',
-              border: '1px solid rgba(239,244,255,0.13)',
-            }}
-          />
-        </label>
+            <label className="mt-4 block">
+              <span className="kr-heading text-[12px] text-cream/70">날짜</span>
+              <input
+                type="date"
+                value={pendingYmd ?? ''}
+                onChange={(e) => setPendingYmd(e.target.value || undefined)}
+                className="kr-body mt-2 w-full rounded-[16px] px-4 py-3 text-[15px] text-cream outline-none transition focus:border-white/35"
+                style={{
+                  colorScheme: 'dark',
+                  background: 'rgba(255,255,255,0.07)',
+                  border: '1px solid rgba(239,244,255,0.13)',
+                }}
+              />
+            </label>
 
-        {presets.length > 0 ? (
-          <div className="mt-4">
-            <div className="kr-heading mb-2 text-[12px] text-cream/70">
-              시험일 선택
-            </div>
-            <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
-              {presets.map((preset) => (
-                <button
-                  key={preset.date}
-                  type="button"
-                  onClick={() => setPendingYmd(preset.date)}
-                  className="flex min-h-[70px] min-w-[146px] shrink-0 flex-col items-start justify-center rounded-[16px] px-3.5 text-left transition active:scale-[0.98]"
-                  style={{
-                    background:
-                      preset.date === pendingYmd
-                        ? tint(accent, 0.16)
-                        : 'rgba(255,255,255,0.045)',
-                    border:
-                      preset.date === pendingYmd
-                        ? `1px solid ${tint(accent, 0.42)}`
-                        : '1px solid rgba(239,244,255,0.1)',
-                  }}
-                >
-                  <span className="kr-heading text-[13px] text-cream">
-                    {preset.round}
-                  </span>
-                  <span className="kr-body mt-1 text-[12px] text-cream/62">
-                    {preset.display.replace('2026.', '')}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
+            {presets.length > 0 ? (
+              <div className="mt-4">
+                <div className="kr-heading mb-2 text-[12px] text-cream/70">
+                  시험일 선택
+                </div>
+                <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+                  {presets.map((preset) => (
+                    <button
+                      key={preset.date}
+                      type="button"
+                      onClick={() => setPendingYmd(preset.date)}
+                      className="flex min-h-[70px] min-w-[146px] shrink-0 flex-col items-start justify-center rounded-[16px] px-3.5 text-left transition active:scale-[0.98]"
+                      style={{
+                        background:
+                          preset.date === pendingYmd
+                            ? tint(accent, 0.16)
+                            : 'rgba(255,255,255,0.045)',
+                        border:
+                          preset.date === pendingYmd
+                            ? `1px solid ${tint(accent, 0.42)}`
+                            : '1px solid rgba(239,244,255,0.1)',
+                      }}
+                    >
+                      <span className="kr-heading text-[13px] text-cream">
+                        {preset.round}
+                      </span>
+                      <span className="kr-body mt-1 text-[12px] text-cream/62">
+                        {preset.display.replace('2026.', '')}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <p className="kr-body mt-4 text-[12px] leading-[1.55] text-cream/45">
+                공개된 다음 시험 일정이 없으면 날짜를 직접 골라주세요.
+              </p>
+            )}
+          </>
         ) : (
-          <p className="kr-body mt-4 text-[12px] leading-[1.55] text-cream/45">
-            공개된 다음 시험 일정이 없으면 날짜를 직접 골라주세요.
-          </p>
+          <div className="grid gap-4 sm:grid-cols-[minmax(190px,0.72fr)_minmax(330px,1.28fr)] sm:items-stretch">
+            <div className="flex flex-col gap-3 sm:justify-center">
+              <ExamDateSummary
+                accent={accent}
+                dDayLabel={dDayLabel}
+                pendingYmd={pendingYmd}
+                className="min-h-[112px]"
+              />
+              <div
+                className="hidden rounded-[18px] px-4 py-4 sm:block"
+                style={{
+                  background: 'rgba(255,255,255,0.035)',
+                  border: '1px solid rgba(239,244,255,0.08)',
+                }}
+              >
+                <div className="kr-heading text-[12px] text-cream/72">선택 안내</div>
+                <p className="kr-body mt-1.5 text-[12px] leading-[1.65] text-cream/48">
+                  시험 접수를 마친 날짜를 선택하면 홈의 남은 날짜가 바로 바뀝니다.
+                </p>
+              </div>
+            </div>
+            <ComhwalCalendar
+              value={pendingYmd}
+              accent={accent}
+              onChange={setPendingYmd}
+            />
+          </div>
         )}
 
         {pendingYmd ? (
           <button
             type="button"
             onClick={() => setPendingYmd(undefined)}
-            className="kr-body mt-4 w-full rounded-[14px] px-3 py-2.5 text-[12px] text-cream/45 transition hover:bg-white/5 hover:text-cream/70 active:scale-[0.98]"
+            className="kr-body mt-3 w-full rounded-[14px] px-3 py-2 text-[12px] text-cream/42 transition hover:bg-white/5 hover:text-cream/70 active:scale-[0.98]"
           >
             시험일 지우기
           </button>
@@ -1039,10 +1081,231 @@ function ExamDatePickerModal({
             boxShadow: changed ? `0 10px 24px -14px ${accent}` : 'none',
           }}
         >
-          적용하기
+          {coreSubject ? '적용하기' : '이 날짜로 설정하기'}
         </button>
       </motion.div>
     </motion.div>
+  );
+}
+
+function ExamDateSummary({
+  accent,
+  dDayLabel,
+  pendingYmd,
+  className = '',
+}: {
+  accent: string;
+  dDayLabel: string;
+  pendingYmd: string | undefined;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`rounded-[18px] px-4 py-4 ${className}`}
+      style={{
+        background:
+          'linear-gradient(145deg, rgba(255,255,255,0.075), rgba(255,255,255,0.025))',
+        border: '1px solid rgba(239,244,255,0.11)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.055)',
+      }}
+    >
+      <div className="kr-heading text-[42px] leading-none" style={{ color: accent }}>
+        {dDayLabel}
+      </div>
+      <div className="kr-body mt-2 text-[12.5px] text-cream/70">
+        {pendingYmd ? formatHomeExamDate(pendingYmd) : '날짜를 선택해 주세요'}
+      </div>
+    </div>
+  );
+}
+
+function ComhwalCalendar({
+  value,
+  accent,
+  onChange,
+}: {
+  value: string | undefined;
+  accent: string;
+  onChange: (ymd: string | undefined) => void;
+}) {
+  const selectedDate = parseLocalYmd(value);
+  const [viewMonth, setViewMonth] = useState(() => {
+    const base = selectedDate ?? new Date();
+    return new Date(base.getFullYear(), base.getMonth(), 1);
+  });
+
+  useEffect(() => {
+    const next = parseLocalYmd(value);
+    if (!next) return;
+    setViewMonth((current) =>
+      current.getFullYear() === next.getFullYear() &&
+      current.getMonth() === next.getMonth()
+        ? current
+        : new Date(next.getFullYear(), next.getMonth(), 1),
+    );
+  }, [value]);
+
+  const today = startOfLocalDay(new Date());
+  const monthStart = new Date(viewMonth.getFullYear(), viewMonth.getMonth(), 1);
+  const canMoveToPreviousMonth =
+    monthStart.getFullYear() > today.getFullYear() ||
+    (monthStart.getFullYear() === today.getFullYear() &&
+      monthStart.getMonth() > today.getMonth());
+  const cells = useMemo(() => {
+    const firstWeekday = monthStart.getDay();
+    return Array.from(
+      { length: 42 },
+      (_, index) =>
+        new Date(
+          monthStart.getFullYear(),
+          monthStart.getMonth(),
+          index - firstWeekday + 1,
+        ),
+    );
+  }, [monthStart.getFullYear(), monthStart.getMonth()]);
+
+  const moveMonth = (delta: number) => {
+    setViewMonth(
+      (current) => new Date(current.getFullYear(), current.getMonth() + delta, 1),
+    );
+  };
+
+  return (
+    <div
+      data-testid="home-comhwal-calendar"
+      className="rounded-[20px] p-3.5 sm:p-4"
+      style={{
+        background:
+          'linear-gradient(150deg, rgba(255,255,255,0.075) 0%, rgba(255,255,255,0.026) 100%)',
+        border: '1px solid rgba(239,244,255,0.11)',
+        boxShadow:
+          'inset 0 1px 0 rgba(255,255,255,0.07), 0 16px 36px -30px rgba(0,0,0,0.8)',
+      }}
+    >
+      <div className="flex items-center justify-between gap-3 px-0.5">
+        <button
+          type="button"
+          onClick={() => moveMonth(-1)}
+          disabled={!canMoveToPreviousMonth}
+          aria-label="이전 달"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-full text-cream/68 transition hover:bg-white/8 hover:text-cream active:scale-95 disabled:opacity-20"
+        >
+          <ChevronLeft size={19} strokeWidth={2.2} />
+        </button>
+        <div className="kr-heading text-[15px] text-cream">
+          {viewMonth.getFullYear()}년 {viewMonth.getMonth() + 1}월
+        </div>
+        <button
+          type="button"
+          onClick={() => moveMonth(1)}
+          aria-label="다음 달"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-full text-cream/68 transition hover:bg-white/8 hover:text-cream active:scale-95"
+        >
+          <ChevronRight size={19} strokeWidth={2.2} />
+        </button>
+      </div>
+
+      <div className="mt-2 grid grid-cols-7 gap-1" aria-hidden>
+        {['일', '월', '화', '수', '목', '금', '토'].map((day, index) => (
+          <div
+            key={day}
+            className="kr-body flex h-7 items-center justify-center text-[10px]"
+            style={{
+              color:
+                index === 0
+                  ? 'rgba(255,145,170,0.62)'
+                  : index === 6
+                    ? 'rgba(125,199,255,0.62)'
+                    : 'rgba(239,244,255,0.38)',
+            }}
+          >
+            {day}
+          </div>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-7 gap-1">
+        {cells.map((date) => {
+          const dateYmd = formatLocalYmd(date);
+          const isCurrentMonth = date.getMonth() === viewMonth.getMonth();
+          const isSelected = value === dateYmd;
+          const isToday = isSameLocalDay(date, today);
+          const isPast = startOfLocalDay(date).getTime() < today.getTime();
+
+          return (
+            <button
+              key={dateYmd}
+              type="button"
+              disabled={isPast}
+              aria-current={isToday ? 'date' : undefined}
+              aria-pressed={isSelected}
+              aria-label={`${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일${
+                isPast ? ' 선택 불가' : ' 선택'
+              }`}
+              onClick={() => {
+                onChange(dateYmd);
+                if (!isCurrentMonth) {
+                  setViewMonth(new Date(date.getFullYear(), date.getMonth(), 1));
+                }
+              }}
+              className="kr-num relative flex aspect-square min-h-[34px] w-full items-center justify-center rounded-[12px] text-[12px] transition active:scale-90 disabled:cursor-default"
+              style={{
+                color: isSelected
+                  ? 'var(--base)'
+                  : isPast
+                    ? 'rgba(239,244,255,0.14)'
+                    : isCurrentMonth
+                      ? 'rgba(239,244,255,0.82)'
+                      : 'rgba(239,244,255,0.30)',
+                background: isSelected
+                  ? `linear-gradient(145deg, ${accent}, ${tint(accent, 0.76)})`
+                  : isToday
+                    ? tint(accent, 0.09)
+                    : 'transparent',
+                border: isSelected
+                  ? '1px solid rgba(255,255,255,0.3)'
+                  : isToday
+                    ? `1px solid ${tint(accent, 0.5)}`
+                    : '1px solid transparent',
+                boxShadow: isSelected
+                  ? `0 7px 18px -12px ${accent}, inset 0 1px 0 rgba(255,255,255,0.32)`
+                  : 'none',
+              }}
+            >
+              {date.getDate()}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function parseLocalYmd(ymd: string | undefined): Date | null {
+  if (!ymd) return null;
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ymd);
+  if (!match) return null;
+  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function formatLocalYmd(date: Date): string {
+  return [
+    date.getFullYear(),
+    String(date.getMonth() + 1).padStart(2, '0'),
+    String(date.getDate()).padStart(2, '0'),
+  ].join('-');
+}
+
+function startOfLocalDay(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function isSameLocalDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
   );
 }
 

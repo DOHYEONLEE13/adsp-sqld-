@@ -9,6 +9,10 @@
  */
 
 import type { Subject } from '@/types/question';
+import {
+  isCoreExamSubject,
+  type LearningExamSubject,
+} from '@/types/learning';
 import { getSupabase, onAuthStateChange } from '@/lib/supabase';
 import { decideSignInTransition } from '@/lib/signInTransition';
 
@@ -58,7 +62,7 @@ export function getUpcomingPresets(
   });
 }
 
-export type ExamDates = Partial<Record<Subject, string>>;
+export type ExamDates = Partial<Record<LearningExamSubject, string>>;
 
 /** 서버 조회 도중 로컬에서 바뀐 값만 보존해 늦은 응답의 덮어쓰기를 막습니다. */
 export function mergePulledExamDates(
@@ -69,6 +73,12 @@ export function mergePulledExamDates(
   const merged = { ...remote };
   for (const subject of ['adsp', 'sqld'] as const) {
     if (localNow[subject] === localAtStart[subject]) continue;
+    if (localNow[subject]) merged[subject] = localNow[subject];
+    else delete merged[subject];
+  }
+  // 컴활 시험일은 현재 서버 테이블의 subject 제약에 포함되지 않으므로 로컬 전용이다.
+  // 코어 과목을 서버에서 다시 불러와도 기기에 저장된 컴활 날짜는 보존한다.
+  for (const subject of ['comhwal1', 'comhwal2'] as const) {
     if (localNow[subject]) merged[subject] = localNow[subject];
     else delete merged[subject];
   }
@@ -98,11 +108,11 @@ function save(dates: ExamDates): void {
   // 호출 측에서 setState 로 리렌더 유도.
 }
 
-export function getExamDate(subject: Subject): string | undefined {
+export function getExamDate(subject: LearningExamSubject): string | undefined {
   return load()[subject];
 }
 
-export function setExamDate(subject: Subject, ymd: string | null): void {
+export function setExamDate(subject: LearningExamSubject, ymd: string | null): void {
   const cur = load();
   if (ymd === null || ymd === '') delete cur[subject];
   else cur[subject] = ymd;
@@ -150,7 +160,11 @@ export function daysUntil(ymd: string | undefined, now: number = Date.now()): nu
 
 // ─── Supabase sync layer ────────────────────────────────────────────────
 
-async function serverSetExamDate(subject: Subject, ymd: string | null): Promise<void> {
+async function serverSetExamDate(
+  subject: LearningExamSubject,
+  ymd: string | null,
+): Promise<void> {
+  if (!isCoreExamSubject(subject)) return;
   const sb = getSupabase();
   if (!sb) return;
   try {

@@ -35,6 +35,14 @@ describe('ensureNearestUpcomingExamDate', () => {
     expect(getExamDate('sqld')).toBe('2026-11-14');
   });
 
+  it('컴활 급수별 시험일을 독립적으로 저장한다', () => {
+    setExamDate('comhwal1', '2026-09-19');
+    setExamDate('comhwal2', '2026-10-10');
+
+    expect(getExamDate('comhwal1')).toBe('2026-09-19');
+    expect(getExamDate('comhwal2')).toBe('2026-10-10');
+  });
+
   it('남은 시험 회차가 없으면 임의 날짜를 만들지 않는다', () => {
     const now = new Date(2027, 0, 1, 12).getTime();
 
@@ -48,6 +56,16 @@ describe('mergePulledExamDates', () => {
     expect(
       mergePulledExamDates({}, { sqld: '2026-08-22' }, {}),
     ).toEqual({ sqld: '2026-08-22' });
+  });
+
+  it('서버 동기화 후에도 로컬 컴활 시험일을 보존한다', () => {
+    expect(
+      mergePulledExamDates(
+        { sqld: '2026-08-22', comhwal1: '2026-09-19' },
+        { sqld: '2026-08-22', comhwal1: '2026-09-19' },
+        { sqld: '2026-11-14' },
+      ),
+    ).toEqual({ sqld: '2026-11-14', comhwal1: '2026-09-19' });
   });
 
   it('조회 중 로컬 변경이 없으면 서버의 변경과 삭제를 그대로 사용한다', () => {

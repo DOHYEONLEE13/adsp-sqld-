@@ -227,23 +227,32 @@ export default function HomePage() {
   // 래퍼는 fixed inset-0 + flex center 라 기준점이 "뷰포트 중앙" 이다.
   // 거기서 히어로 중앙까지 옮긴 값이 시작 위치.
   const compactHero = vp.w < 768;
+  const desktopHero = vp.w >= 1024;
   const rocketStartX = 0;
   const rocketStartY =
     heroH / 2 -
     vp.h / 2 +
-    (compactHero ? Math.min(Math.max(vp.h * 0.085, 64), 80) : 0);
+    (compactHero ? Math.min(Math.max(vp.h * 0.085, 64), 80) : desktopHero ? 24 : 0);
   const rocketSize = compactHero
     ? Math.min(vp.w * 0.89, vp.h * 0.44, 395)
-    : Math.min(vp.w * 0.88, 375);
+    : desktopHero
+      ? Math.min(vp.w * 0.29, vp.h * 0.55, 470)
+      : Math.min(vp.w * 0.88, 375);
   const ddayLiftRatio = compactHero ? 0.225 : 0.15;
   const ddayFontSize = compactHero
     ? Math.min(vp.w * 0.36, vp.h * 0.18, 166)
     : Math.min(vp.w * 0.42, 190);
+  const desktopDdayFontSize = Math.max(
+    250,
+    Math.min(vp.w * 0.19, vp.h * 0.41, 370),
+  );
+  const ddayValue = dDay !== null && dDay >= 0 ? String(dDay) : '?';
   // 도착 위치 — 헤드라인과 같은 띠의 오른쪽. 헤드라인은 왼쪽 정렬이라 가로로
   // 겹치지 않고, 시안처럼 문구 옆에 로켓이 서 있는 구도가 된다.
   // 더 내리면 아래 카드를 덮고, 더 키워도 카드를 덮는다.
   const rocketEndY = 122 - vp.h / 2;
-  const rocketX = useTransform(p, [0, 1], [rocketStartX, vp.w * 0.29]);
+  const rocketEndX = desktopHero ? Math.min(vp.w * 0.22, 360) : vp.w * 0.29;
+  const rocketX = useTransform(p, [0, 1], [rocketStartX, rocketEndX]);
   const rocketY = useTransform(p, [0, 1], [rocketStartY, rocketEndY]);
   const rocketScale = useTransform(p, [0, 1], [1, 0.3]);
   const rocketRotate = useTransform(p, [0, 1], [0, 14]);
@@ -319,11 +328,14 @@ export default function HomePage() {
           </div>
         </motion.div>
 
-        {/* D-day 숫자 — 로켓 뒤 레이어 */}
-        {/* 로켓보다 위로 올려서 숫자가 가려지지 않게 한다. */}
+        {/* D-day 숫자 — 데스크톱에서는 중앙의 로켓 뒤, 모바일에서는 기존 구도. */}
         <motion.div
           aria-hidden
-          style={{ ...ddayStyle, y: -Math.round(heroH * ddayLiftRatio) }}
+          data-testid="home-dday-layer"
+          style={{
+            ...ddayStyle,
+            y: -Math.round(heroH * ddayLiftRatio) - (desktopHero ? 24 : 0),
+          }}
           className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center"
         >
           {/*
@@ -331,7 +343,7 @@ export default function HomePage() {
             진입 연출은 이 안쪽 레이어에서 따로 준다 (같은 요소에 style 과
             animate 로 같은 속성을 주면 style 이 이겨서 애니메이션이 죽는다).
           */}
-          <motion.span
+          <motion.div
             {...(reduceMotion
               ? {}
               : {
@@ -339,21 +351,45 @@ export default function HomePage() {
                   animate: { opacity: 1, scale: 1 },
                   transition: { delay: 0.28, duration: 1.05, ease: EASE_OUT },
                 })}
-            className="kr-heading gradient-text select-none leading-none"
-            style={{
-              fontSize: ddayFontSize,
-              fontWeight: 800,
-              letterSpacing: '-0.04em',
-              backgroundImage: `linear-gradient(180deg, ${tint(accent, 0.95)} 0%, ${tint(
-                accent,
-                0.5,
-              )} 58%, ${tint(accent, 0.2)} 100%)`,
-              opacity: 0.92,
-              filter: 'drop-shadow(0 4px 14px rgba(1,8,40,0.35))',
-            }}
           >
-            {dDay !== null && dDay >= 0 ? `D-${dDay}` : 'D-?'}
-          </motion.span>
+            {desktopHero ? (
+              <span
+                data-testid="home-desktop-dday"
+                className="kr-heading gradient-text select-none whitespace-nowrap leading-none"
+                style={{
+                  fontSize: desktopDdayFontSize,
+                  fontWeight: 800,
+                  letterSpacing: 0,
+                  backgroundImage: `linear-gradient(180deg, ${tint(accent, 0.95)} 0%, ${tint(
+                    accent,
+                    0.5,
+                  )} 58%, ${tint(accent, 0.2)} 100%)`,
+                  opacity: 0.92,
+                  filter: 'drop-shadow(0 4px 14px rgba(1,8,40,0.35))',
+                }}
+              >
+                D-{ddayValue}
+              </span>
+            ) : (
+              <span
+                data-testid="home-mobile-dday"
+                className="kr-heading gradient-text select-none whitespace-nowrap leading-none"
+                style={{
+                  fontSize: ddayFontSize,
+                  fontWeight: 800,
+                  letterSpacing: '-0.04em',
+                  backgroundImage: `linear-gradient(180deg, ${tint(accent, 0.95)} 0%, ${tint(
+                    accent,
+                    0.5,
+                  )} 58%, ${tint(accent, 0.2)} 100%)`,
+                  opacity: 0.92,
+                  filter: 'drop-shadow(0 4px 14px rgba(1,8,40,0.35))',
+                }}
+              >
+                D-{ddayValue}
+              </span>
+            )}
+          </motion.div>
         </motion.div>
 
         {/*
@@ -362,6 +398,7 @@ export default function HomePage() {
         */}
         <motion.div
           style={rocketStyle}
+          data-testid="home-hero-rocket"
           className="pointer-events-none fixed inset-0 z-20 flex items-center justify-center"
         >
           {/* 진입: 아래에서 떠오르며 등장 */}

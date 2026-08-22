@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import {
   AnimatePresence,
   LayoutGroup,
@@ -92,6 +92,7 @@ interface Props {
 
 const DRAFT_KEY = 'questdp.onboarding.simple.v1';
 const NICKNAME_RE = /^[가-힣A-Za-z0-9]{2,12}$/;
+const ONBOARDING_STAGE_HEIGHT = 858;
 
 function loadDraft(): Draft {
   const fallback: Draft = {
@@ -174,13 +175,13 @@ export function FirstEntrySubjectPicker({
   };
 
   return (
-    <section className="relative min-h-[100svh] overflow-x-hidden bg-[#010828] text-cream isolate">
+    <section className="relative h-[100svh] overflow-hidden bg-[#010828] text-cream isolate">
       <OnboardingBackdrop step="subject" reduceMotion={reduceMotion} />
 
-      <main className="relative z-10 mx-auto flex min-h-[100svh] w-full max-w-[620px] flex-col px-5 pb-[max(24px,env(safe-area-inset-bottom))] pt-[max(22px,env(safe-area-inset-top))] sm:px-8 lg:max-w-[760px] lg:px-10">
+      <main className="relative z-10 mx-auto flex h-full min-h-0 w-full max-w-[620px] flex-col px-5 pb-[max(24px,env(safe-area-inset-bottom))] pt-[max(22px,env(safe-area-inset-top))] sm:px-8 lg:max-w-[760px] lg:px-10">
         <OnboardingTopBar active={0} reduceMotion={reduceMotion} onBack={onBack} />
 
-        <div className="relative flex min-h-[720px] flex-1">
+        <OnboardingViewportStage>
           <SubjectStep
             selectedIndex={selectedIndex}
             direction={direction}
@@ -190,7 +191,7 @@ export function FirstEntrySubjectPicker({
             reduceMotion={reduceMotion}
             onNext={() => onSelect(SUBJECTS[selectedIndex].id)}
           />
-        </div>
+        </OnboardingViewportStage>
       </main>
     </section>
   );
@@ -311,17 +312,17 @@ export default function FirstEntryOnboarding({ onComplete }: Props) {
   };
 
   return (
-    <section className="relative min-h-[100svh] overflow-x-hidden bg-[#010828] text-cream isolate">
+    <section className="relative h-[100svh] overflow-hidden bg-[#010828] text-cream isolate">
       <OnboardingBackdrop step={draft.step} reduceMotion={reduceMotion} />
 
-      <main className="relative z-10 mx-auto flex min-h-[100svh] w-full max-w-[620px] flex-col px-5 pb-[max(24px,env(safe-area-inset-bottom))] pt-[max(22px,env(safe-area-inset-top))] sm:px-8 lg:max-w-[760px] lg:px-10">
+      <main className="relative z-10 mx-auto flex h-full min-h-0 w-full max-w-[620px] flex-col px-5 pb-[max(24px,env(safe-area-inset-bottom))] pt-[max(22px,env(safe-area-inset-top))] sm:px-8 lg:max-w-[760px] lg:px-10">
         <OnboardingTopBar
           active={activeStep}
           reduceMotion={reduceMotion}
           onBack={handleTopBack}
         />
 
-        <div className="relative flex min-h-[720px] flex-1">
+        <OnboardingViewportStage>
           <LayoutGroup id="first-entry-onboarding">
             <AnimatePresence mode="sync">
               {draft.step === 'subject' ? (
@@ -369,9 +370,65 @@ export default function FirstEntryOnboarding({ onComplete }: Props) {
               )}
             </AnimatePresence>
           </LayoutGroup>
-        </div>
+        </OnboardingViewportStage>
       </main>
     </section>
+  );
+}
+
+/** 남은 화면 안에 세 단계의 기준 무대를 같은 비율로 맞춘다. */
+function OnboardingViewportStage({ children }: { children: ReactNode }) {
+  const hostRef = useRef<HTMLDivElement>(null);
+  const [layout, setLayout] = useState({ width: 372, scale: 1 });
+
+  useLayoutEffect(() => {
+    const host = hostRef.current;
+    if (!host) return;
+
+    const sync = () => {
+      const availableWidth = host.clientWidth;
+      const availableHeight = host.clientHeight;
+      const baseWidth = availableWidth >= 640 ? 680 : availableWidth >= 500 ? 556 : 372;
+      const nextScale = Math.min(
+        1,
+        availableWidth / baseWidth,
+        availableHeight / ONBOARDING_STAGE_HEIGHT,
+      );
+      setLayout({ width: baseWidth, scale: Math.max(0.56, nextScale) });
+    };
+
+    sync();
+    const observer = new ResizeObserver(sync);
+    observer.observe(host);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div
+      ref={hostRef}
+      data-testid="onboarding-viewport-stage"
+      className="relative flex min-h-0 flex-1 justify-center overflow-visible"
+    >
+      <div
+        className="relative shrink-0"
+        style={{
+          width: layout.width * layout.scale,
+          height: ONBOARDING_STAGE_HEIGHT * layout.scale,
+        }}
+      >
+        <div
+          className="absolute left-0 top-0"
+          style={{
+            width: layout.width,
+            height: ONBOARDING_STAGE_HEIGHT,
+            transform: `scale(${layout.scale})`,
+            transformOrigin: 'top left',
+          }}
+        >
+          {children}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -408,6 +465,7 @@ function SubjectStep({
       transition={{ duration: 0.22, ease: 'easeOut' }}
     >
       <motion.header
+        data-testid="onboarding-subject-heading"
         className="mt-2 text-center sm:mt-5 lg:mt-7"
         initial={
           reduceMotion || !playIntro
@@ -425,7 +483,7 @@ function SubjectStep({
       </motion.header>
 
       <motion.div
-        className="relative mt-14 h-[400px] touch-pan-y [perspective:1100px] sm:mt-[60px] sm:h-[410px] lg:mt-16 lg:h-[430px]"
+        className="relative mt-[56px] h-[400px] flex-none touch-pan-y [perspective:1100px] sm:mt-[60px] sm:h-[410px] lg:mt-[62px] lg:h-[430px]"
         onPanEnd={onDragEnd}
       >
         {SUBJECTS.map((subject, index) => (
@@ -454,6 +512,7 @@ function SubjectStep({
       </motion.div>
 
       <motion.div
+        data-testid="onboarding-swipe-controls"
         className="-mt-7 flex h-10 items-center justify-center gap-5 sm:gap-6"
         initial={reduceMotion || !playIntro ? false : { opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -508,11 +567,13 @@ function SubjectStep({
         width={1000}
         height={207}
         className="mx-auto mt-4 w-full max-w-[360px] object-contain"
+        data-testid="onboarding-subject-banner"
         initial={reduceMotion || !playIntro ? false : { opacity: 0, y: 16, scale: 0.97 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.48, delay: 0.86, ease: [0.22, 1, 0.36, 1] }}
       />
       <motion.div
+        data-testid="onboarding-primary-action"
         className="mx-auto w-full max-w-[384px]"
         initial={reduceMotion || !playIntro ? false : { opacity: 0, y: 18, scale: 0.985 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -524,6 +585,7 @@ function SubjectStep({
       </motion.div>
       {onExistingAccount ? (
         <motion.button
+          data-testid="onboarding-existing-account"
           type="button"
           onClick={onExistingAccount}
           className="mx-auto mt-4 pb-1 kr-body text-[13px] text-cream/66 underline decoration-cream/35 underline-offset-4 transition hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
@@ -644,6 +706,7 @@ function OrbitSubjectItem({
       aria-hidden={!selected}
     >
       <motion.div
+        data-testid={selected ? 'onboarding-selected-bubble' : undefined}
         className="absolute left-1/2 z-10"
         initial={
           reduceMotion || !playIntro
@@ -668,6 +731,7 @@ function OrbitSubjectItem({
         <SubjectBubble subject={subject} prominent={selected} />
       </motion.div>
       <motion.img
+        data-testid={selected ? 'onboarding-selected-character' : undefined}
         layoutId={selected ? `onboarding-character-${subject.id}` : undefined}
         src={subject.asset}
         alt={`${subject.characterName} 캐릭터`}
@@ -797,7 +861,7 @@ function NicknameStep({
       exit={reduceMotion ? undefined : { opacity: 0 }}
       transition={{ duration: 0.24, ease: 'easeOut' }}
     >
-      <header className="mt-5 text-center sm:mt-7">
+      <header data-testid="onboarding-nickname-heading" className="mt-5 text-center sm:mt-7">
         <h1 className="kr-heading text-[32px] leading-[1.2] text-white sm:text-[38px]">
           탐험가의 <span style={{ color: selected.accent }}>이름</span>을
           <br />
@@ -813,6 +877,7 @@ function NicknameStep({
         initial={false}
       >
         <motion.img
+          data-testid="onboarding-nickname-character"
           layoutId={`onboarding-character-${selected.id}`}
           src={selected.asset}
           alt={`${selected.characterName} 캐릭터`}
@@ -824,6 +889,7 @@ function NicknameStep({
       </motion.div>
 
       <form
+        data-testid="onboarding-nickname-form"
         className="mt-2"
         onSubmit={(event) => {
           event.preventDefault();
@@ -916,7 +982,10 @@ function LoginStep({
       transition={{ duration: 0.34, ease: 'easeOut' }}
     >
       <h1 className="sr-only">Google 계정으로 탐험 기록 연결하기</h1>
-      <div className="relative z-10 mx-auto mb-32 mt-auto w-full sm:mb-36">
+      <div
+        data-testid="onboarding-login-actions"
+        className="relative z-10 mx-auto mb-32 mt-auto w-full sm:mb-36"
+      >
         {configured ? (
           <button
             data-testid="onboarding-google-login"

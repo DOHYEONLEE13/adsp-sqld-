@@ -5,24 +5,19 @@
  *   상단: header (back · breadcrumb · 챕터 타이틀)
  *   본문: 토픽별 섹션 — 각 토픽은 헤더 + step 노드 column.
  *         하나의 step = 하나의 노드. 클릭하면 그 step 만 단독 학습.
- *   하단: 5종 풀이 모드 chip (랜덤·약점·오답·학습·시험)
+ *   우측 하단: 학습/복습 전환 · 약점 · 오답 개념 · 검색 옵션.
  *
  * Sololearn-스타일 path: 작은 원 노드 + 점선 connector. 3D bevel 없음.
  */
 
-import { Fragment, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import {
   ArrowLeft,
   BookOpen,
   Check,
-  Clock,
-  Code2,
   Flame,
-  GitBranch,
   Lock,
   RefreshCcw,
-  Settings2,
-  Shuffle,
   Target,
   Trophy,
 } from 'lucide-react';
@@ -35,7 +30,7 @@ import {
 } from '@/data/lessons';
 import type { Subject } from '@/types/question';
 import type { FlowMode } from '../types';
-import { getZones, reviewPoolSize, type SamplingMode } from '../session';
+import { getZones, type SamplingMode } from '../session';
 import { useProgress } from '../useProgress';
 import type { ProgressStore } from '../storage';
 import { topicWeaknessOf, weaknessLevel } from '../weakness';
@@ -54,18 +49,25 @@ import { usePassSnapshot } from '../passSync';
 import { hasEverSolved } from '../progressPredicates';
 import { scrollElementIntoPageView } from '@/lib/pageScroll';
 import {
-  chapterPassProgress,
   currentPassFor,
-  passUnlockState,
   type PassSession,
 } from '../passes';
 import { getStudyMode } from '../studyMode';
 import { loadOnboardingResult } from '../onboarding/onboardingStorage';
-import PassTabs from '@/components/passes/PassTabs';
+import StudyOptionsSheet from '../components/StudyOptionsSheet';
+import {
+  reviewConceptsInChapter,
+  type ConceptSearchResult,
+} from '../conceptSearch';
 
 const SUBJECT_ACCENT: Record<Subject, string> = {
   adsp: '#67e8f9',
   sqld: '#c084fc',
+};
+
+const REVIEW_ACCENT: Record<Subject, string> = {
+  adsp: '#38bdf8',
+  sqld: '#8b5cf6',
 };
 
 /**
@@ -112,6 +114,8 @@ interface Props {
   /** 강조 이유. 약점 탭은 red, 학습 복귀는 과목 accent로 표시. */
   highlightReason?: 'weakness' | 'resume';
   onStart: (params: StartParams) => void;
+  /** 현재 챕터 검색 결과를 정확한 학습 노드로 이동. */
+  onSelectConcept: (result: ConceptSearchResult) => void;
   /** 특정 step 노드 클릭 → 그 step 만 단독 학습. passNumber 전달 (선택). */
   onSelectStep: (topic: string, stepIdx: number, passNumber?: number) => void;
   /** 모의고사 오답 복습 — 특정 문항 ID 만 묶어 학습 모드 세션. */
@@ -127,6 +131,7 @@ export default function ZoneScreen({
   highlightQuestionId,
   highlightReason = 'weakness',
   onStart,
+  onSelectConcept,
   onSelectStep,
   onReviewIds,
   onBack,
@@ -143,9 +148,12 @@ export default function ZoneScreen({
   );
   const progress = useProgress();
   const stepLockSnap = useStepUnlocks();
-  const reviewCount = reviewPoolSize(subject, chapter, null);
+  const reviewConcepts = useMemo(
+    () => reviewConceptsInChapter(subject, chapter, progress.questionStats),
+    [subject, chapter, progress.questionStats],
+  );
   const accent = SUBJECT_ACCENT[subject];
-  const hasSqldChapterGuide = subject === 'sqld' && (chapter === 1 || chapter === 2);
+  const isSqldChapter = subject === 'sqld';
 
   // ── Pass 시스템 통합 ───────────────────────────────────────
   const passSnap = usePassSnapshot();
@@ -163,7 +171,7 @@ export default function ZoneScreen({
     [progress.sessions],
   );
   const defaultPass = useMemo(
-    () => currentPassFor(passSessions, passSnap.stamps, subject, chapter),
+    () => Math.min(2, currentPassFor(passSessions, passSnap.stamps, subject, chapter)),
     [passSessions, passSnap.stamps, subject, chapter],
   );
   // studyMode='review' 면 2회독부터 시작이 자연스러움 (사용자가 다른 곳에서
@@ -177,43 +185,14 @@ export default function ZoneScreen({
   const reviewerOnboarding = loadOnboardingResult()?.persona === 'reviewer';
   const isReviewMode =
     getStudyMode(subject) === 'review' || reviewerOnboarding;
-  const initialPass = isReviewMode ? Math.max(defaultPass, 2) : defaultPass;
+  const initialPass = isReviewMode ? 2 : defaultPass;
   const [selectedPass, setSelectedPass] = useState<number>(initialPass);
   const [lockToast, setLockToast] = useState<string | null>(null);
+  const [studyOptionsOpen, setStudyOptionsOpen] = useState(false);
 
-  // 탭 데이터 — 1·2·3회독 각각의 unlock/inProgress/completed 상태
-  const passTabs = useMemo(
-    () =>
-      [1, 2, 3].map((pass) => {
-        const u = passUnlockState(
-          passSessions,
-          passSnap.stamps,
-          subject,
-          chapter,
-          pass,
-          // review 모드: 2회독은 강제 unlocked (3회독 이상은 정상 정책)
-          { forceUnlocked: isReviewMode && pass === 2 },
-        );
-        const prog = chapterPassProgress(
-          passSessions,
-          passSnap.stamps,
-          subject,
-          chapter,
-          pass,
-        );
-        return {
-          passNumber: pass,
-          unlocked: u.unlocked,
-          inProgress: u.inProgress,
-          completed: u.completed,
-          progress: prog.accuracy,
-        };
-      }),
-    [passSessions, passSnap.stamps, subject, chapter, isReviewMode],
-  );
-
-  // 선택된 회독에 따라 path 색조 변환
-  const pathAccent = accent;
+  // 복습 모드는 각 과목의 기본색보다 짙은 시그니처 색을 사용해 노드만
+  // 봐도 모드 전환을 알 수 있게 한다.
+  const pathAccent = selectedPass === 2 ? REVIEW_ACCENT[subject] : accent;
   const partReviews = useMemo(() => {
     const reviews = new Map<
       string,
@@ -309,11 +288,11 @@ export default function ZoneScreen({
   // 마운트 후 첫 frame 에 layout 안정화 후 실행.
   useEffect(() => {
     if (!activeHighlight) return;
-    const section = document.querySelector<HTMLElement>(
-      `[data-highlight-topic="${cssEscape(activeHighlight.topic)}"]`,
-    );
-    if (!section) return;
-    const r = window.requestAnimationFrame(() => {
+    const scrollToHighlight = () => {
+      const section = document.querySelector<HTMLElement>(
+        `[data-highlight-topic="${cssEscape(activeHighlight.topic)}"]`,
+      );
+      if (!section) return;
       const target =
         typeof activeHighlight.stepIdx === 'number'
           ? section.querySelector<HTMLElement>(
@@ -322,8 +301,15 @@ export default function ZoneScreen({
           : section;
       const TOP_BAR_OFFSET = 88; // MobileTopBar 높이 + 여유
       scrollElementIntoPageView(target, TOP_BAR_OFFSET, 'smooth');
-    });
-    return () => window.cancelAnimationFrame(r);
+    };
+    const frame = window.requestAnimationFrame(scrollToHighlight);
+    // 화면 전환 직후의 전역 스크롤 초기화보다 늦게 한 번 더 맞춰 검색·복귀
+    // 대상이 실제 상단 위치에 안정적으로 안착하도록 한다.
+    const settleTimer = window.setTimeout(scrollToHighlight, 140);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(settleTimer);
+    };
   }, [activeHighlight]);
 
   return (
@@ -343,10 +329,27 @@ export default function ZoneScreen({
       {/* 모바일 상/하단 내비 */}
       <MobileTopBar subject={subject} />
       <MobileBottomNav active="learn" accent={accent} />
+      {total > 0 ? (
+        <StudyOptionsSheet
+          open={studyOptionsOpen}
+          accent={accent}
+          reviewConcepts={reviewConcepts}
+          selectedPass={selectedPass}
+          subject={subject}
+          chapter={chapter}
+          onOpen={() => setStudyOptionsOpen(true)}
+          onClose={() => setStudyOptionsOpen(false)}
+          onSelectPass={setSelectedPass}
+          onWeakness={() =>
+            onStartWithPass({ topic: null, sampling: 'weakness', flow: 'play' })
+          }
+          onSelectConcept={onSelectConcept}
+        />
+      ) : null}
 
       <div className="relative mx-auto w-full max-w-[760px] lg:max-w-[1000px] xl:max-w-[1180px] px-5 md:px-8 lg:px-12 xl:px-16 pt-20 pb-28 min-h-screen">
         {/* ============ Header ============ */}
-        <header className={hasSqldChapterGuide ? 'mb-5 md:mb-7' : 'mb-10 md:mb-12'}>
+        <header className={isSqldChapter ? 'mb-6 md:mb-8' : 'mb-10 md:mb-12'}>
           <button
             type="button"
             onClick={onBack}
@@ -365,78 +368,22 @@ export default function ZoneScreen({
 
           <h1
             className={
-              hasSqldChapterGuide
+              isSqldChapter
                 ? 'kr-heading uppercase text-[25px] md:text-[32px] leading-[1.08] tracking-[0.01em]'
                 : 'kr-heading uppercase text-[26px] md:text-[34px] leading-[1.1] tracking-[0.01em]'
             }
           >
             {chapterMeta?.title ?? `Chapter ${chapter}`}
           </h1>
-          <p
-            className={
-              hasSqldChapterGuide
-                ? 'kr-body text-[11.5px] md:text-[13px] text-cream/60 mt-2 leading-[1.55] max-w-xl'
-                : 'kr-body text-[12px] md:text-[13px] text-cream/65 mt-3 leading-[1.65] max-w-xl'
-            }
-          >
-            {hasSqldChapterGuide ? (
-              <>
-                {chapter === 1 ? (
-                  <>
-                    데이터 모델링은 DB 설계의 뼈대를 잡는 과목이야.
-                    <br />
-                    모델링 기초 → 성능을 지키는 설계 순서로 진행해.
-                  </>
-                ) : (
-                  <>
-                    SQL은 외우는 문법보다 절의 자리와 실행 순서가 중요해.
-                    <br />
-                    기본 문법 → 쿼리 활용 → 관리 구문 순서로 진행해.
-                  </>
-                )}
-              </>
-            ) : (
+          {!isSqldChapter ? (
+            <p className="kr-body text-[12px] md:text-[13px] text-cream/65 mt-3 leading-[1.65] max-w-xl">
               <>
                 동그라미를 순서대로 눌러봐. 짧은 개념을 보고, 바로 한 문제로
                 이해했는지 확인해.
               </>
-            )}
-          </p>
-
-          {hasSqldChapterGuide ? (
-            <SqldChapterGuide
-              accent={accent}
-              chapter={chapter}
-              lessons={lessons}
-              progress={progress}
-            />
+            </p>
           ) : null}
 
-          {/* ── 회독 탭 ──
-              사용자 흐름 폴리시 — 재응시생 (persona='reviewer') 한정으로 라벨 교체:
-                1회독 → '약점 학습' (약점 chapter 우선 정렬된 1회독 풀이)
-                2회독 → '복습' (reminder 카드 + 변형 문제)
-              입문자 (persona='beginner') 는 기존 1·2·3회독 라벨 유지. */}
-          <div className={hasSqldChapterGuide ? 'mt-3' : 'mt-5'}>
-            <PassTabs
-              tabs={passTabs}
-              currentPass={selectedPass}
-              labels={
-                loadOnboardingResult()?.persona === 'reviewer'
-                  ? { 1: '약점 학습', 2: '복습' }
-                  : undefined
-              }
-              onSelect={(p) => setSelectedPass(p)}
-              onLockedClick={(p) => {
-                setLockToast(
-                  p === 2
-                    ? '1회독 정답률 75% 도달 후 2회독이 열려요.'
-                    : '직전 회독을 먼저 마쳐줘.',
-                );
-                window.setTimeout(() => setLockToast(null), 2400);
-              }}
-            />
-          </div>
         </header>
 
         {lockToast ? (
@@ -454,87 +401,6 @@ export default function ZoneScreen({
           </div>
         ) : null}
 
-        {/* ============ 빠른 진입 chip row (모드 5종, 상단) ============ */}
-        {total > 0 ? (
-          <section
-            className={hasSqldChapterGuide ? 'mb-5 md:mb-7' : 'mb-8 md:mb-10'}
-            aria-label="풀이 모드 빠른 진입"
-          >
-            <div
-              className={
-                hasSqldChapterGuide
-                  ? 'kr-num text-[9px] uppercase tracking-[0.16em] text-cream/38 mb-2'
-                  : 'kr-num text-[10px] uppercase tracking-[0.18em] text-cream/45 mb-2.5'
-              }
-            >
-              {hasSqldChapterGuide ? '연습 모드' : '빠른 진입'}
-            </div>
-            <div
-              className={
-                hasSqldChapterGuide
-                  ? 'flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
-                  : 'flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
-              }
-              style={{
-                scrollSnapType: 'x proximity',
-                // 첫·마지막 chip 이 컨테이너 가장자리에서 잘리지 않도록 양쪽 4px 여유.
-                paddingInline: '4px',
-                marginInline: '-4px',
-              }}
-            >
-              <ModeChip
-                icon={<Shuffle size={14} strokeWidth={2.4} />}
-                title={`전체 랜덤 · ${total}`}
-                onClick={() =>
-                  onStartWithPass({ topic: null, sampling: 'random', flow: 'play' })
-                }
-                accent="purple"
-                compact={hasSqldChapterGuide}
-              />
-              <ModeChip
-                icon={<Flame size={14} strokeWidth={2.4} />}
-                title="약점 집중"
-                onClick={() =>
-                  onStartWithPass({ topic: null, sampling: 'weakness', flow: 'play' })
-                }
-                accent="red"
-                compact={hasSqldChapterGuide}
-              />
-              <ModeChip
-                icon={<RefreshCcw size={14} strokeWidth={2.4} />}
-                title={
-                  reviewCount > 0 ? `오답 복습 · ${reviewCount}` : '오답 복습'
-                }
-                onClick={() =>
-                  reviewCount > 0 &&
-                  onStartWithPass({ topic: null, sampling: 'review', flow: 'play' })
-                }
-                disabled={reviewCount === 0}
-                accent="neon"
-                compact={hasSqldChapterGuide}
-              />
-              <ModeChip
-                icon={<BookOpen size={14} strokeWidth={2.4} />}
-                title="학습 모드"
-                onClick={() =>
-                  onStartWithPass({ topic: null, sampling: 'random', flow: 'learn' })
-                }
-                accent="cyan"
-                compact={hasSqldChapterGuide}
-              />
-              <ModeChip
-                icon={<Clock size={14} strokeWidth={2.4} />}
-                title="시험 모드"
-                onClick={() =>
-                  onStartWithPass({ topic: null, sampling: 'random', flow: 'test' })
-                }
-                accent="amber"
-                compact={hasSqldChapterGuide}
-              />
-            </div>
-          </section>
-        ) : null}
-
         {/* ============ 토픽 섹션별 step path ============ */}
         {lessons.length === 0 ? (
           <div className="liquid-glass rounded-[20px] p-8 text-center kr-body text-cream/70">
@@ -543,7 +409,7 @@ export default function ZoneScreen({
         ) : (
           <div
             className={
-              hasSqldChapterGuide
+              isSqldChapter
                 ? 'flex flex-col gap-9 md:gap-12 mb-12'
                 : 'flex flex-col gap-12 md:gap-14 mb-12'
             }
@@ -655,75 +521,6 @@ export default function ZoneScreen({
 // TopicSection — 토픽 헤더 + step 노드 column
 // ================================================================
 
-type SqldChapterGuideLesson = {
-  topic: string;
-  steps: { id: string; quizId?: string; group?: string }[];
-};
-
-function sqldPartGuide(chapter: number, topic: string, index: number) {
-  if (chapter === 1) {
-    switch (topic) {
-      case '데이터 모델링의 이해':
-        return {
-          icon: <GitBranch size={17} strokeWidth={2.4} />,
-          label: 'PART 1',
-          title: '데이터 모델링',
-          subtitle: '엔터티 · 속성 · 관계',
-          caption: 'DB 설계의 뼈대 만들기',
-        };
-      case '데이터 모델과 성능':
-        return {
-          icon: <Target size={17} strokeWidth={2.4} />,
-          label: 'PART 2',
-          title: '모델과 성능',
-          subtitle: '정규화 · 반정규화 · NULL',
-          caption: '빠르고 안전한 설계로 다듬기',
-        };
-      default:
-        break;
-    }
-  }
-
-  if (chapter === 2) {
-    switch (topic) {
-      case 'SQL 기본':
-        return {
-          icon: <Code2 size={17} strokeWidth={2.4} />,
-          label: 'PART 1',
-          title: 'SQL 기본',
-          subtitle: 'SELECT · WHERE · GROUP BY',
-          caption: '쿼리의 뼈대와 실행 순서',
-        };
-      case 'SQL 활용':
-        return {
-          icon: <GitBranch size={17} strokeWidth={2.4} />,
-          label: 'PART 2',
-          title: 'SQL 활용',
-          subtitle: 'JOIN · 서브쿼리 · 윈도우',
-          caption: '여러 테이블을 연결하는 기술',
-        };
-      case '관리 구문':
-        return {
-          icon: <Settings2 size={17} strokeWidth={2.4} />,
-          label: 'PART 3',
-          title: '관리 구문',
-          subtitle: 'DML · DDL · TCL · DCL',
-          caption: '데이터 변경과 권한 관리',
-        };
-      default:
-        break;
-    }
-  }
-
-  return {
-    icon: <BookOpen size={17} strokeWidth={2.4} />,
-    label: `PART ${index}`,
-    title: topic,
-    subtitle: '개념 → 문제',
-    caption: '짧게 보고 바로 확인',
-  };
-}
-
 function topicSectionSummary(topic: string): string | null {
   switch (topic) {
     case '데이터 모델링의 이해':
@@ -740,97 +537,6 @@ function topicSectionSummary(topic: string): string | null {
       return null;
   }
 }
-
-function SqldChapterGuide({
-  accent,
-  chapter,
-  lessons,
-  progress,
-}: {
-  accent: string;
-  chapter: number;
-  lessons: SqldChapterGuideLesson[];
-  progress: ProgressStore;
-}) {
-  const label = chapter === 1 ? 'MODEL ROADMAP' : 'SQL ROADMAP';
-  const ariaLabel =
-    chapter === 1 ? 'SQLD 1과목 학습 순서' : 'SQLD 2과목 학습 순서';
-
-  return (
-    <section className="mt-2 md:mt-3" aria-label={ariaLabel}>
-      <div className="mb-1 flex items-center justify-between gap-3">
-        <span className="kr-num text-[8.5px] uppercase tracking-[0.16em] text-cream/35">
-          {label}
-        </span>
-        <span className="kr-num text-[8.5px] uppercase tracking-[0.14em] text-cream/30">
-          part guide
-        </span>
-      </div>
-      <div className="flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {lessons.map((lesson, lessonIdx) => {
-          const meta = sqldPartGuide(chapter, lesson.topic, lessonIdx + 1);
-          const quizSteps = lesson.steps.filter(
-            (step) => !!step.quizId && !isPartReviewStep(step),
-          );
-          const done = quizSteps.reduce((acc, step) => {
-            const stat = step.quizId
-              ? progress.questionStats[step.quizId]
-              : undefined;
-            return acc + (hasEverSolved(stat) ? 1 : 0);
-          }, 0);
-          const pct = quizSteps.length > 0 ? (done / quizSteps.length) * 100 : 0;
-
-          return (
-            <article
-              key={lesson.topic}
-              className="min-w-[132px] flex-1 rounded-[12px] border px-2.5 py-2 md:min-w-[160px] md:px-3"
-              style={{
-                background: `linear-gradient(145deg, color-mix(in srgb, ${accent} 9%, rgba(7,18,50,0.88)), rgba(4,14,42,0.78))`,
-                borderColor: `color-mix(in srgb, ${accent} 28%, transparent)`,
-                boxShadow: `inset 0 1px 0 rgba(255,255,255,0.045), 0 8px 22px -18px ${accent}`,
-              }}
-            >
-              <div className="flex items-center gap-2">
-                <span
-                  className="inline-flex size-6 shrink-0 items-center justify-center rounded-full"
-                  style={{
-                    color: accent,
-                    background: `color-mix(in srgb, ${accent} 16%, rgba(8,18,48,0.88))`,
-                    border: `1px solid color-mix(in srgb, ${accent} 46%, transparent)`,
-                    boxShadow: `0 0 14px -8px ${accent}`,
-                  }}
-                >
-                  {meta.icon}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <h2 className="kr-heading truncate text-[12.5px] leading-none text-cream/90 md:text-[13.5px]">
-                      {meta.title}
-                    </h2>
-                    <span className="kr-num shrink-0 text-[8.5px] text-cream/42">
-                      {done}/{quizSteps.length}
-                    </span>
-                  </div>
-                  <div className="mt-1.5 h-[3px] overflow-hidden rounded-full bg-white/8">
-                    <div
-                      className="h-full rounded-full transition-[width]"
-                      style={{
-                        width: `${pct}%`,
-                        background: accent,
-                        boxShadow: `0 0 8px color-mix(in srgb, ${accent} 55%, transparent)`,
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </article>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
 interface TopicSectionProps {
   index: number;
   topic: string;
@@ -1590,53 +1296,5 @@ function MockExamSlotCard({
         )}
       </div>
     </article>
-  );
-}
-
-// ================================================================
-// ModeChip — 챕터 전체 풀이 모드 (secondary, chip 형태)
-// ================================================================
-
-interface ModeChipProps {
-  icon: ReactNode;
-  title: string;
-  onClick: () => void;
-  disabled?: boolean;
-  accent: 'purple' | 'red' | 'neon' | 'cyan' | 'amber';
-  compact?: boolean;
-}
-
-function ModeChip({
-  icon,
-  title,
-  onClick,
-  disabled,
-  accent,
-  compact = false,
-}: ModeChipProps) {
-  const fg = {
-    purple: '#a78bfa',
-    red: '#f87171',
-    neon: 'var(--neon)',
-    cyan: '#67e8f9',
-    amber: '#fbbf24',
-  }[accent];
-
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className={`liquid-glass kr-heading inline-flex items-center whitespace-nowrap shrink-0 uppercase transition disabled:opacity-40 disabled:cursor-not-allowed ${
-        compact
-          ? 'gap-1.5 text-[10px] tracking-[0.12em] px-2.5 py-2 rounded-full hover:bg-white/[0.07]'
-          : 'gap-2 text-[11px] md:text-[12px] tracking-widest px-3.5 py-2.5 rounded-full hover:bg-white/10'
-      }`}
-    >
-      <span style={{ color: fg }} className="inline-flex">
-        {icon}
-      </span>
-      <span>{title}</span>
-    </button>
   );
 }

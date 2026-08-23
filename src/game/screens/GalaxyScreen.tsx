@@ -72,6 +72,7 @@ import type { QuesPose } from '@/components/mascot/types';
 import {
   markPartReviewCompleted,
   recordSingleAnswer,
+  setActiveSubject,
   setLearningSubject,
   type ProgressStore,
 } from '../storage';
@@ -108,6 +109,10 @@ import {
   type ComhwalVisualFocus,
 } from '../comhwalVisualModels';
 import { scrollElementIntoPageView } from '@/lib/pageScroll';
+import {
+  FirstEntrySubjectPicker,
+  type FirstEntrySubject,
+} from '../onboarding/FirstEntryOnboarding';
 
 interface Props {
   initialExpansionSubject?: ExpansionSubjectId;
@@ -785,6 +790,30 @@ export default function GalaxyScreen({
           })
         }
         onSubjectBack={() => setView({ kind: 'overview' })}
+      />
+    );
+  }
+
+  if (view.kind === 'overview') {
+    const initialSubject: FirstEntrySubject =
+      progress.activeSubject ?? defaultMissionSubject;
+
+    return (
+      <FirstEntrySubjectPicker
+        initialSubject={initialSubject}
+        onBack={() => {
+          window.location.hash = '/home';
+        }}
+        onSelect={(nextSubject) => {
+          if (nextSubject === 'comhwal') {
+            setLearningSubject('comhwal');
+            window.location.hash = '/game/comhwal';
+            return;
+          }
+
+          setActiveSubject(nextSubject);
+          onSelectSubject(nextSubject);
+        }}
       />
     );
   }

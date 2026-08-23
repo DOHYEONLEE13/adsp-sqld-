@@ -13,6 +13,7 @@
  */
 
 import { motion } from 'framer-motion';
+import { createPortal } from 'react-dom';
 import { useEffect, useState, type ComponentType } from 'react';
 import {
   BookTabIcon,
@@ -33,10 +34,12 @@ import { usePassSnapshot } from '../passSync';
 import PassTierBadge from '@/components/passes/PassTierBadge';
 import ProfileSyncSkeleton from '@/components/profile/ProfileSyncSkeleton';
 import SubjectBadge from './SubjectBadge';
-import SubjectSwitcher from './SubjectSwitcher';
 import type { ExpansionSubjectId } from '../expansionSubjects';
-import SubjectSwitchToast from './SubjectSwitchToast';
 import { loadOnboardingResult } from '../onboarding/onboardingStorage';
+import {
+  FirstEntrySubjectPicker,
+  type FirstEntrySubject,
+} from '../onboarding/FirstEntryOnboarding';
 import { isCoreExamSubject } from '@/types/learning';
 import {
   ENERGY_SHOP_EVENT,
@@ -54,6 +57,7 @@ import {
   DAILY_REVIEW_UPDATED_EVENT,
   getDailyReviewQuestProgress,
 } from '../dailyReviewQuest';
+import { setActiveSubject, setLearningSubject } from '../storage';
 
 const SUBJECT_ACCENT: Record<Subject, string> = CORE_SUBJECT_ACCENT;
 
@@ -120,7 +124,22 @@ export function MobileTopBar({ subject, customSubject }: TopProps) {
     ? null
     : activeSubject;
   const [switcherOpen, setSwitcherOpen] = useState(false);
-  const [toastSubject, setToastSubject] = useState<Subject | null>(null);
+  const pickerInitialSubject: FirstEntrySubject = effectiveCustomSubject
+    ? 'comhwal'
+    : effectiveSubject ?? 'adsp';
+
+  const handleSubjectSelect = (nextSubject: FirstEntrySubject) => {
+    setSwitcherOpen(false);
+
+    if (nextSubject === 'comhwal') {
+      setLearningSubject('comhwal');
+      window.location.hash = '/game/comhwal';
+      return;
+    }
+
+    setActiveSubject(nextSubject);
+    window.location.hash = `/game/${nextSubject}`;
+  };
 
   const handleShare = async () => {
     const subj =
@@ -165,7 +184,7 @@ export function MobileTopBar({ subject, customSubject }: TopProps) {
         }`}
       >
         {/*
-          좌측 영역: 마스코트 + 닉네임 (#/stats) + 과목 배지 (SubjectSwitcher).
+          좌측 영역: 마스코트 + 닉네임 (#/stats) + 과목 배지 (홈과 같은 과목 선택기).
           마스코트/닉네임 button 안에 또 다른 button 을 넣으면 nested button 에러가
           발생하므로 SubjectBadge 는 별도 형제로 둠.
         */}
@@ -232,7 +251,7 @@ export function MobileTopBar({ subject, customSubject }: TopProps) {
             );
           })()}
         </button>
-        {/* 과목 배지 — 클릭 시 SubjectSwitcher. 활성 과목 없으면 미노출. */}
+        {/* 과목 배지 — 클릭 시 홈의 과목 바꾸기 화면. 활성 과목 없으면 미노출. */}
         {effectiveCustomSubject ? (
           <button
             type="button"
@@ -344,26 +363,19 @@ export function MobileTopBar({ subject, customSubject }: TopProps) {
       {energyShopOpen ? (
         <EnergyShopModal onClose={() => setEnergyShopOpen(false)} />
       ) : null}
-      {/* 과목 전환 모달 */}
-      {switcherOpen ? (
-        <SubjectSwitcher
-          current={effectiveCustomSubject ? null : activeSubject}
-          currentExpansion={effectiveCustomSubject?.id ?? null}
-          onClose={() => setSwitcherOpen(false)}
-          onSwitched={(newSubject) => {
-            setToastSubject(newSubject);
-            // 다음 화면 진입 — 학습 탭(galaxy chooser X, planet 직진)
-            window.location.hash = `/game/${newSubject}`;
-          }}
-        />
-      ) : null}
-      {/* 과목 전환 인사 toast */}
-      {toastSubject ? (
-        <SubjectSwitchToast
-          subject={toastSubject}
-          onDismiss={() => setToastSubject(null)}
-        />
-      ) : null}
+      {/* 홈의 "과목 바꾸기"와 동일한 온보딩 첫 화면을 재사용한다. */}
+      {switcherOpen && typeof document !== 'undefined'
+        ? createPortal(
+            <div className="fixed inset-0 z-[100] overflow-y-auto">
+              <FirstEntrySubjectPicker
+                initialSubject={pickerInitialSubject}
+                onBack={() => setSwitcherOpen(false)}
+                onSelect={handleSubjectSelect}
+              />
+            </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }

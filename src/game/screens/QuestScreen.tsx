@@ -7,9 +7,13 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import {
+  ArrowLeft,
+  ArrowRight,
   BookOpen,
   CheckCircle2,
   Clock,
+  Crosshair,
+  Lightbulb,
   Star,
   StickyNote,
   XCircle,
@@ -174,50 +178,114 @@ export default function QuestScreen({
   };
 
   const isLast = session.index === session.questions.length - 1;
-  const eyebrowText = session.label
-    ? `${session.label} · ${progress.curr}/${progress.total}`
-    : `Quest ${progress.curr} / ${progress.total}`;
+  const accent = session.subject === 'sqld' ? '#c084fc' : '#67e8f9';
+  const progressPercent = (progress.curr / Math.max(progress.total, 1)) * 100;
+  const displayTitle = current.topic || session.chapterTitle;
+  const displaySubtitle =
+    displayTitle !== session.chapterTitle ? session.chapterTitle : null;
 
   return (
-    <ScreenShell
-      eyebrow={eyebrowText}
-      title={current.topic}
-      subtitle={session.chapterTitle}
-      onExit={onAbort}
-      exitLabel="중단"
-      ambient={<PageAmbientBg blur />}
-    >
-      {/* 상단 HUD — 진행률 + (test 일 때) 타이머 */}
-      <div className="flex items-center gap-4 mb-6">
-        <div className="liquid-glass rounded-full h-2 overflow-hidden flex-1">
+    <section className="relative min-h-screen text-cream isolate overflow-hidden">
+      <PageAmbientBg blur />
+      <div className="relative mx-auto w-full max-w-[760px] px-5 pt-7 pb-12 md:px-8 md:pt-12 md:pb-16">
+        <header className="mb-6 md:mb-8">
+          <div className="flex items-center justify-between gap-4">
+            <button
+              type="button"
+              onClick={onAbort}
+              className="game-back-button kr-heading inline-flex items-center gap-2 text-[12px] transition"
+            >
+              <ArrowLeft size={17} strokeWidth={2.4} />
+              중단
+            </button>
+            {isTest ? (
+              <div
+                className="kr-heading inline-flex min-w-[76px] items-center justify-center gap-2 rounded-full border px-3.5 py-2 text-[12px] tabular-nums backdrop-blur-xl"
+                style={{
+                  color: remainingMs <= 10000 ? '#fb7185' : 'var(--cream)',
+                  background: 'rgba(7, 17, 49, 0.56)',
+                  borderColor:
+                    remainingMs <= 10000
+                      ? 'rgba(251,113,133,0.46)'
+                      : 'rgba(239,244,255,0.14)',
+                }}
+              >
+                <Clock size={14} strokeWidth={2.4} />
+                {Math.ceil(remainingMs / 1000)}초
+              </div>
+            ) : null}
+          </div>
+
           <div
-            className="h-full transition-[width] duration-500"
+            className="mt-5 overflow-hidden rounded-[24px] border px-5 py-5 backdrop-blur-2xl md:px-6 md:py-6"
             style={{
-              width: `${((progress.curr - 1) / progress.total) * 100}%`,
-              background:
-                'linear-gradient(90deg, var(--purple-1), var(--purple-2), var(--neon))',
-            }}
-          />
-        </div>
-        {isTest ? (
-          <div
-            className="liquid-glass kr-heading inline-flex items-center gap-2 text-[13px] px-4 py-2 rounded-full tabular-nums"
-            style={{
-              color: remainingMs <= 10000 ? '#f87171' : 'var(--cream)',
+              background: `linear-gradient(145deg, color-mix(in srgb, ${accent} 10%, rgba(14,30,72,0.78)), rgba(5,14,43,0.74))`,
+              borderColor: `color-mix(in srgb, ${accent} 34%, rgba(255,255,255,0.12))`,
+              boxShadow: `0 18px 46px -34px ${accent}, inset 0 1px 0 rgba(255,255,255,0.11)`,
             }}
           >
-            <Clock size={14} strokeWidth={2.4} />
-            {Math.ceil(remainingMs / 1000)}초
+            <div className="flex items-start gap-3.5">
+              <div
+                className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-[13px] border"
+                style={{
+                  color: accent,
+                  background: `color-mix(in srgb, ${accent} 13%, rgba(8,20,55,0.74))`,
+                  borderColor: `color-mix(in srgb, ${accent} 28%, transparent)`,
+                }}
+              >
+                <Crosshair size={20} strokeWidth={2.2} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center justify-between gap-3">
+                  <span
+                    className="kr-heading text-[11px] uppercase tracking-widest"
+                    style={{ color: accent }}
+                  >
+                    {session.label || '문제 풀이'}
+                  </span>
+                  <span className="kr-num shrink-0 text-[13px] text-cream/72 tabular-nums">
+                    {progress.curr} / {progress.total}
+                  </span>
+                </div>
+                <h1 className="kr-heading mt-2 text-[23px] leading-[1.3] text-cream md:text-[28px]">
+                  {displayTitle}
+                </h1>
+                {displaySubtitle ? (
+                  <p className="kr-body mt-1 text-[12px] text-cream/52 md:text-[13px]">
+                    {displaySubtitle}
+                  </p>
+                ) : null}
+              </div>
+            </div>
+            <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-white/[0.08]">
+              <div
+                className="h-full rounded-full transition-[width] duration-500 ease-out"
+                style={{
+                  width: `${progressPercent}%`,
+                  background: `linear-gradient(90deg, color-mix(in srgb, ${accent} 72%, #ffffff), ${accent})`,
+                  boxShadow: `0 0 14px color-mix(in srgb, ${accent} 45%, transparent)`,
+                }}
+              />
+            </div>
           </div>
-        ) : null}
-      </div>
+        </header>
 
       {/* Learn: 해설 선공개 패널 */}
       {local.studying ? (
-        <div className="liquid-glass rounded-[24px] p-6 md:p-8 mb-6">
-          <span className="kr-heading text-[11px] uppercase tracking-widest text-neon inline-flex items-center gap-2">
+        <div
+          className="mb-5 rounded-[24px] border p-5 backdrop-blur-2xl md:p-7"
+          style={{
+            background: 'rgba(8,18,51,0.68)',
+            borderColor: `color-mix(in srgb, ${accent} 28%, rgba(255,255,255,0.1))`,
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08)',
+          }}
+        >
+          <span
+            className="kr-heading inline-flex items-center gap-2 text-[11px] uppercase tracking-widest"
+            style={{ color: accent }}
+          >
             <BookOpen size={14} strokeWidth={2.4} />
-            Study First
+            먼저 살펴보기
           </span>
           <p className="kr-body text-[14px] md:text-[15px] leading-[1.8] mt-3 text-cream/85 whitespace-pre-wrap">
             {explanationToText(current.explanation)}
@@ -226,15 +294,15 @@ export default function QuestScreen({
             <button
               type="button"
               onClick={() => setLocal({ ...local, studying: false })}
-              className="kr-heading uppercase tracking-widest text-[13px] px-6 py-3 rounded-full"
+              className="kr-heading inline-flex items-center gap-2 rounded-full px-5 py-3 text-[13px] transition hover:brightness-110"
               style={{
-                background:
-                  'linear-gradient(135deg, var(--purple-1), var(--purple-2))',
-                color: '#fff',
-                boxShadow: '0 10px 25px -5px rgba(124, 58, 237, 0.55)',
+                background: `linear-gradient(135deg, color-mix(in srgb, ${accent} 84%, white), ${accent})`,
+                color: '#07122f',
+                boxShadow: `0 12px 28px -18px ${accent}`,
               }}
             >
-              확인 · 풀어보기
+              문제 풀기
+              <ArrowRight size={16} strokeWidth={2.5} />
             </button>
           </div>
         </div>
@@ -248,10 +316,31 @@ export default function QuestScreen({
             <XpPopup key={xpEvent.token} xp={xpEvent.xp} label={xpEvent.label} />
           </>
         ) : null}
-        <div className="liquid-glass rounded-[24px] p-6 md:p-8">
+        <div
+          className="rounded-[26px] border p-5 backdrop-blur-2xl md:p-7"
+          style={{
+            background:
+              'linear-gradient(145deg, rgba(17,35,80,0.76), rgba(7,17,49,0.78))',
+            borderColor: 'rgba(203,216,255,0.18)',
+            boxShadow:
+              '0 22px 50px -38px rgba(0,0,0,0.9), inset 0 1px 0 rgba(255,255,255,0.1)',
+          }}
+        >
         <div className="flex items-start justify-between gap-3">
-          <span className="kr-heading text-[11px] uppercase tracking-widest text-cream/60">
-            Question {progress.curr}
+          <span
+            className="kr-heading inline-flex items-center gap-2 text-[11px] uppercase tracking-widest"
+            style={{ color: accent }}
+          >
+            <span
+              className="inline-flex h-6 min-w-6 items-center justify-center rounded-full px-1.5 kr-num text-[11px]"
+              style={{
+                background: `color-mix(in srgb, ${accent} 14%, rgba(7,17,49,0.7))`,
+                border: `1px solid color-mix(in srgb, ${accent} 28%, transparent)`,
+              }}
+            >
+              {String(progress.curr).padStart(2, '0')}
+            </span>
+            문제
           </span>
           {!isTest ? (
             <div className="flex items-center gap-1.5 shrink-0">
@@ -290,7 +379,7 @@ export default function QuestScreen({
             </div>
           ) : null}
         </div>
-        <p className="kr-body text-[15px] md:text-[17px] leading-[1.8] mt-3 whitespace-pre-wrap">
+        <p className="kr-heading mt-5 whitespace-pre-wrap text-[16px] leading-[1.75] text-cream md:text-[18px]">
           {current.question}
         </p>
         <SqlQuestionContextCard
@@ -336,13 +425,17 @@ export default function QuestScreen({
       </div>
 
       {/* 선지 */}
-      <div className="grid grid-cols-1 gap-3">
+      <div className="grid grid-cols-1 gap-2.5 md:gap-3">
         {current.choices.map((choice, idx) => {
           const isChosen = local.chosen === idx;
           const isCorrect = !isServerDeferred && idx === current.answerIndex;
           const showCorrect = !isTest && local.revealed && isCorrect;
           const showWrong =
-            !isTest && local.revealed && isChosen && !isCorrect;
+            !isTest &&
+            !isServerDeferred &&
+            local.revealed &&
+            isChosen &&
+            !isCorrect;
           const showServerSelected =
             isServerDeferred && local.revealed && isChosen;
           const disabled = local.studying || local.revealed;
@@ -354,20 +447,51 @@ export default function QuestScreen({
               onClick={() => handleSelect(idx)}
               disabled={disabled}
               className={cx(
-                'liquid-glass rounded-[18px] px-5 py-4 md:py-5 text-left transition flex items-start gap-4',
-                !disabled && 'hover:bg-white/10 cursor-pointer',
+                'group rounded-[20px] border px-4 py-4 text-left transition-all duration-200 flex items-start gap-3.5 backdrop-blur-xl md:px-5 md:py-5',
+                !disabled && 'cursor-pointer hover:-translate-y-0.5',
                 local.studying && 'opacity-40',
-                showServerSelected &&
-                  'ring-2 ring-[#67e8f9]/70 bg-[rgba(103,232,249,0.08)]',
-                showCorrect &&
-                  'ring-2 ring-neon bg-[var(--neon-10)]',
-                showWrong && 'ring-2 ring-red-400 bg-[rgba(248,113,113,0.10)]',
               )}
+              style={{
+                background: showCorrect
+                  ? 'linear-gradient(135deg, rgba(125,216,80,0.15), rgba(8,28,51,0.78))'
+                  : showWrong
+                    ? 'linear-gradient(135deg, rgba(251,113,133,0.14), rgba(35,15,48,0.78))'
+                    : showServerSelected
+                      ? `color-mix(in srgb, ${accent} 11%, rgba(8,18,51,0.76))`
+                      : 'linear-gradient(145deg, rgba(20,39,84,0.66), rgba(7,17,49,0.72))',
+                borderColor: showCorrect
+                  ? 'rgba(125,216,80,0.62)'
+                  : showWrong
+                    ? 'rgba(251,113,133,0.62)'
+                    : showServerSelected
+                      ? `color-mix(in srgb, ${accent} 64%, transparent)`
+                      : 'rgba(203,216,255,0.14)',
+                boxShadow: showCorrect
+                  ? '0 12px 30px -24px rgba(125,216,80,0.8), inset 0 1px 0 rgba(255,255,255,0.1)'
+                  : showWrong
+                    ? '0 12px 30px -24px rgba(251,113,133,0.72), inset 0 1px 0 rgba(255,255,255,0.08)'
+                    : `0 14px 34px -30px ${accent}, inset 0 1px 0 rgba(255,255,255,0.08)`,
+              }}
             >
-              <span className="kr-heading text-[13px] uppercase tracking-widest text-cream/70 shrink-0 mt-0.5">
+              <span
+                className="kr-heading mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-[11px] border text-[12px] transition-colors"
+                style={{
+                  color: showWrong ? '#fb7185' : showCorrect ? '#9bea72' : accent,
+                  background: showWrong
+                    ? 'rgba(251,113,133,0.1)'
+                    : showCorrect
+                      ? 'rgba(125,216,80,0.12)'
+                      : `color-mix(in srgb, ${accent} 10%, rgba(6,15,45,0.72))`,
+                  borderColor: showWrong
+                    ? 'rgba(251,113,133,0.36)'
+                    : showCorrect
+                      ? 'rgba(125,216,80,0.38)'
+                      : `color-mix(in srgb, ${accent} 25%, rgba(255,255,255,0.08))`,
+                }}
+              >
                 {String.fromCharCode(65 + idx)}
               </span>
-              <span className="kr-body text-[14px] md:text-[15px] leading-[1.7] flex-1 whitespace-pre-wrap">
+              <span className="kr-body flex-1 whitespace-pre-wrap text-[14px] leading-[1.65] text-cream/90 md:text-[15px]">
                 {choice}
               </span>
               {showCorrect ? (
@@ -394,28 +518,38 @@ export default function QuestScreen({
         <div className="mt-6">
           {current.explanation && !isLearn ? (
             // learn 은 이미 위에서 해설을 봤으니 중복 금지.
-            <div className="liquid-glass rounded-[20px] p-5 md:p-6 mb-5">
-              <span className="kr-heading text-[11px] uppercase tracking-widest text-neon">
-                Explanation
+            <div
+              className="mb-5 rounded-[22px] border p-5 backdrop-blur-2xl md:p-6"
+              style={{
+                background: 'rgba(8,18,51,0.72)',
+                borderColor: `color-mix(in srgb, ${accent} 24%, rgba(255,255,255,0.1))`,
+              }}
+            >
+              <span
+                className="kr-heading inline-flex items-center gap-2 text-[11px] uppercase tracking-widest"
+                style={{ color: accent }}
+              >
+                <Lightbulb size={14} strokeWidth={2.4} />
+                해설
               </span>
               <p className="kr-body text-[13px] md:text-[14px] leading-[1.8] text-cream/85 mt-2 whitespace-pre-wrap">
                 {explanationToText(current.explanation)}
               </p>
             </div>
           ) : null}
-          <div className="flex justify-end">
+          <div className="flex justify-stretch md:justify-end">
             <button
               type="button"
               onClick={handleNext}
-              className="kr-heading uppercase tracking-widest text-[13px] px-7 py-4 rounded-full transition hover:scale-[1.02]"
+              className="kr-heading inline-flex w-full items-center justify-center gap-2 rounded-[18px] px-7 py-4 text-[14px] transition hover:brightness-110 md:w-auto md:min-w-[180px]"
               style={{
-                background:
-                  'linear-gradient(135deg, var(--purple-1), var(--purple-2))',
-                color: '#fff',
-                boxShadow: '0 10px 25px -5px rgba(124, 58, 237, 0.55)',
+                background: `linear-gradient(135deg, color-mix(in srgb, ${accent} 82%, white), ${accent})`,
+                color: '#07122f',
+                boxShadow: `0 14px 34px -20px ${accent}, inset 0 1px 0 rgba(255,255,255,0.38)`,
               }}
             >
               {isLast ? '결과 보기' : '다음 문제'}
+              <ArrowRight size={17} strokeWidth={2.5} />
             </button>
           </div>
         </div>
@@ -427,6 +561,7 @@ export default function QuestScreen({
           선택하면 즉시 다음 문제로 넘어갑니다. 정답은 세션 종료 후에 공개됩니다.
         </p>
       ) : null}
-    </ScreenShell>
+      </div>
+    </section>
   );
 }

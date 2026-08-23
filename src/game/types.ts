@@ -71,7 +71,7 @@ export interface QuestSession {
   /**
    * N회독 차수 (1~). 1이 기본 (1회독 진행 중).
    * Pass 시스템: docs/n-pass-design.md 참고.
-   * 챕터 회독 완료 (정답률 ≥ 75%) 시 다음 회독 진입 가능.
+   * 2회독은 항상 열려 있고, 3회독 이상은 직전 회독 완료 후 진입 가능.
    */
   passNumber: number;
   questions: MultipleChoiceQuestion[];

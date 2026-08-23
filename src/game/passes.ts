@@ -108,7 +108,8 @@ export function isDevUnlockEnabled(): boolean {
  *
  * 정책:
  *   - 1회독: 항상 unlocked.
- *   - N+1회독: N회독 stamp 가 해당 챕터에 존재해야 unlocked.
+ *   - 2회독(복습 모드): 모든 사용자에게 항상 unlocked.
+ *   - 3회독 이상: 직전 회독 stamp 가 해당 챕터에 존재해야 unlocked.
  *   - dev 토글 ON 시 모든 회독 강제 unlocked.
  *   - opts.forceUnlocked=true (e.g. studyMode='review') 도 강제 unlocked.
  *     사용자가 명시적으로 "복습용" 모드를 선택했다는 건 다른 곳에서 1회독을
@@ -142,11 +143,11 @@ export function passUnlockState(
       s.passNumber === passNumber,
   );
 
-  // dev 토글 / 1회독 / studyMode='review' 강제 = 항상 unlocked
+  // 처음 학습과 복습은 누구나 바로 전환 가능하다. 3회독 이상만 기존 stamp 정책 유지.
   if (
     opts?.forceUnlocked ||
     isDevUnlockEnabled() ||
-    passNumber === 1
+    passNumber <= 2
   ) {
     return { unlocked: true, inProgress, completed };
   }

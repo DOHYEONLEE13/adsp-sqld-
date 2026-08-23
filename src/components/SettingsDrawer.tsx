@@ -1,7 +1,10 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import AuthGuard from './auth/AuthGuard';
-import { SETTINGS_DRAWER_EVENT } from '@/lib/settingsDrawer';
+import {
+  SETTINGS_DRAWER_EVENT,
+  setSettingsDrawerOpen,
+} from '@/lib/settingsDrawer';
 
 const SettingsPage = lazy(() => import('@/game/SettingsPage'));
 
@@ -27,6 +30,11 @@ export default function SettingsDrawer() {
   }, []);
 
   useEffect(() => {
+    setSettingsDrawerOpen(open);
+    return () => setSettingsDrawerOpen(false);
+  }, [open]);
+
+  useEffect(() => {
     if (!open) return;
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setOpen(false);
@@ -47,7 +55,7 @@ export default function SettingsDrawer() {
   return (
     <AnimatePresence>
       {open ? (
-        <div className="fixed inset-0 z-[80]" role="dialog" aria-modal="true">
+        <div className="fixed inset-0 z-[160]" role="dialog" aria-modal="true">
           <motion.button
             type="button"
             aria-label="설정 닫기"

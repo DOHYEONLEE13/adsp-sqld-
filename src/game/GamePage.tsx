@@ -807,6 +807,23 @@ export default function GamePage({
               p.passNumber,
             )
           }
+          onSelectConcept={(target) => {
+            saveLearningResume({
+              subject: screen.subject,
+              chapter: screen.chapter,
+              topic: target.topic,
+              stepIdx: target.stepIdx,
+              stepId: target.stepId,
+            });
+            setScreen({
+              kind: 'zone',
+              subject: screen.subject,
+              chapter: screen.chapter,
+              highlightTopic: target.topic,
+              highlightStepIdx: target.stepIdx,
+              highlightReason: 'resume',
+            });
+          }}
           onSelectStep={async (topic, stepIdx, passNumber) => {
             // lessonId 는 lesson lookup 으로. 잠금 검사 (정답 cross-check).
             const lesson = getLesson(screen.subject, screen.chapter, topic);

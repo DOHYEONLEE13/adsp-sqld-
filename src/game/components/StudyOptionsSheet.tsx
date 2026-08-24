@@ -27,6 +27,7 @@ import {
   subscribeSettingsDrawer,
 } from '@/lib/settingsDrawer';
 import ConceptSearchField from './ConceptSearchField';
+import LiquidMetalOrbButton from './LiquidMetalOrbButton';
 
 interface Props {
   open: boolean;
@@ -336,26 +337,15 @@ export default function StudyOptionsSheet({
                     </div>
                   ) : null}
                 </div>
-                <button
-                  type="button"
+                <LiquidMetalOrbButton
                   role="menuitem"
                   aria-label={`${option.label}${option.meta ? `, ${option.meta}` : ''}`}
                   aria-disabled={option.disabled || undefined}
                   disabled={option.disabled}
                   onClick={option.onClick}
-                  className={`relative inline-flex size-[52px] shrink-0 items-center justify-center rounded-full border text-cream backdrop-blur-2xl transition hover:scale-105 active:scale-95 disabled:cursor-not-allowed ${
-                    option.toggleState ? 'pb-1.5' : ''
-                  }`}
-                  style={{
-                    color: option.color,
-                    borderColor: option.selected
-                      ? option.color
-                      : `color-mix(in srgb, ${option.color} 38%, rgba(255,255,255,0.12))`,
-                    background: `radial-gradient(circle at 35% 22%, rgba(255,255,255,0.12), transparent 34%), linear-gradient(145deg, color-mix(in srgb, ${option.color} 8%, rgba(18,37,80,0.36)), rgba(5,15,43,0.28))`,
-                    boxShadow: option.selected
-                      ? `0 0 0 2px color-mix(in srgb, ${option.color} 24%, transparent), 0 12px 30px -15px ${option.color}, inset 0 1px 0 rgba(255,255,255,0.18)`
-                      : `0 12px 28px -18px ${option.color}, inset 0 1px 0 rgba(255,255,255,0.14)`,
-                  }}
+                  accent={option.color}
+                  selected={option.selected}
+                  className={option.toggleState ? 'liquid-metal-control--toggle' : ''}
                 >
                   {option.icon}
                   {option.toggleState ? (
@@ -368,15 +358,14 @@ export default function StudyOptionsSheet({
                       />
                     </span>
                   ) : null}
-                </button>
+                </LiquidMetalOrbButton>
               </motion.div>
             ))}
           </motion.div>
         ) : null}
       </AnimatePresence>
 
-      <button
-        type="button"
+      <LiquidMetalOrbButton
         onClick={open ? onClose : onOpen}
         aria-haspopup="menu"
         aria-expanded={open}
@@ -385,15 +374,13 @@ export default function StudyOptionsSheet({
             ? '학습 옵션 닫기'
             : `학습 옵션 열기, 현재 ${isReviewPass ? '복습 모드' : '처음 학습'}`
         }
-        className="fixed right-4 z-[140] inline-flex size-[54px] items-center justify-center rounded-full border text-cream backdrop-blur-2xl transition hover:scale-105 active:scale-95 md:right-6"
+        accent={accent}
+        selected={open}
+        size={54}
+        className="fixed right-4 z-[140] md:right-6"
         style={{
           position: 'fixed',
           bottom: 'calc(84px + env(safe-area-inset-bottom))',
-          borderColor: `color-mix(in srgb, ${accent} 46%, rgba(255,255,255,0.14))`,
-          background: `radial-gradient(circle at 35% 22%, rgba(255,255,255,0.12), transparent 34%), linear-gradient(145deg, color-mix(in srgb, ${accent} 8%, rgba(18,37,80,0.44)), rgba(5,15,43,0.34))`,
-          boxShadow: open
-            ? `0 0 0 3px color-mix(in srgb, ${accent} 16%, transparent), 0 12px 30px -14px ${accent}, inset 0 1px 0 rgba(255,255,255,0.18)`
-            : `0 12px 30px -18px ${accent}, inset 0 1px 0 rgba(255,255,255,0.14)`,
         }}
         title="학습 옵션"
       >
@@ -405,7 +392,7 @@ export default function StudyOptionsSheet({
         >
           {open ? <X size={21} strokeWidth={2.4} /> : <Settings2 size={21} strokeWidth={2.4} />}
         </motion.span>
-      </button>
+      </LiquidMetalOrbButton>
     </>,
     document.body,
   );

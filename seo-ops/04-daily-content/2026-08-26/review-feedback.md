@@ -1,0 +1,42 @@
+# SEO Studio Review Feedback
+
+TARGET DATE: 2026-08-26
+UPDATED AT: 2026-08-24T18:34:05.336Z
+
+## blog
+
+STATUS: APPROVED
+UPDATED AT: 2026-08-24T18:33:18.756Z
+
+FEEDBACK:
+
+사용자 검토 통과
+
+## instagram
+
+STATUS: NEEDS_REVISION
+UPDATED AT: 2026-08-24T18:34:05.336Z
+
+FEEDBACK:
+
+퀄리티 문제로 업로드하지 않음. 카드뉴스 전면 재디자인 필요.
+
+## naver
+
+STATUS: PUBLISHED
+UPDATED AT: 2026-08-24T18:33:38.863Z
+PUBLISHED URL: https://blog.naver.com/tori_134/224389166630
+
+FEEDBACK:
+
+(없음)
+
+## threads
+
+STATUS: PUBLISHED
+UPDATED AT: 2026-08-24T18:33:55.233Z
+PUBLISHED URL: https://www.threads.com/@korea.certification/post/DcbtSYrE3pc
+
+FEEDBACK:
+
+(없음)

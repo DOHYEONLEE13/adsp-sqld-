@@ -102,6 +102,9 @@ const HomePage = lazy(() => import('./game/HomePage'));
 const PlayReviewPromptPreview = lazy(
   () => import('./game/components/PlayReviewPromptPreview'),
 );
+const SeoStudioPage = import.meta.env.DEV
+  ? lazy(() => import('./seo-studio/SeoStudioPage'))
+  : null;
 
 type Route =
   | 'landing'
@@ -134,7 +137,8 @@ type Route =
   | 'blog-post'
   | 'pricing'
   | 'contact'
-  | 'review-preview';
+  | 'review-preview'
+  | 'seo-studio';
 
 interface RouteState {
   route: Route;
@@ -233,6 +237,7 @@ function resolveGamePathRoute(sub?: string): RouteState {
 
 function getFunctionalPathRoute(pathname: string): RouteState | null {
   const normalized = pathname.replace(/\/+$/, '') || '/';
+  if (import.meta.env.DEV && normalized === '/seo-studio') return { route: 'seo-studio' };
   if (normalized === '/admin') return { route: 'admin' };
   if (normalized === '/redeem') return { route: 'redeem' };
   if (normalized === '/refund-request') return { route: 'refund-request' };
@@ -882,6 +887,10 @@ export default function App() {
 
     if (import.meta.env.DEV && route === 'review-preview') {
       return <PlayReviewPromptPreview />;
+    }
+
+    if (import.meta.env.DEV && route === 'seo-studio' && SeoStudioPage) {
+      return <SeoStudioPage />;
     }
 
     return <Landing />;

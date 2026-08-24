@@ -10,7 +10,7 @@ export default defineConfig({
   },
   test: {
     environment: 'node', // 머지 함수는 순수 — DOM 불필요
-    include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+    include: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'scripts/**/*.test.ts'],
     globals: false, // 명시적 import (it / expect 등) 강제 — 안전
   },
 });

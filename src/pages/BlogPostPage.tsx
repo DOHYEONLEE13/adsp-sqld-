@@ -132,7 +132,7 @@ export default function BlogPostPage({ slug }: Props) {
           onClick={(e) => handleNavClick(e, '/blog')}
           className={
             usesStudyNoteTheme
-              ? 'mb-7 inline-flex items-center gap-2 text-[13px] font-bold text-[#52604d] transition hover:text-[#256d2f]'
+              ? 'mb-4 inline-flex items-center gap-2 text-[13px] font-bold text-[#52604d] transition hover:text-[#256d2f] sm:mb-7'
               : 'inline-flex items-center gap-2 kr-heading uppercase text-[11px] tracking-widest text-cream/65 hover:text-neon transition mb-6'
           }
         >
@@ -144,7 +144,7 @@ export default function BlogPostPage({ slug }: Props) {
           aria-label="breadcrumb"
           className={
             usesStudyNoteTheme
-              ? 'mb-4 flex flex-wrap items-center gap-1.5 text-[12px] font-semibold text-[#697561]'
+              ? 'mb-4 hidden flex-wrap items-center gap-1.5 text-[12px] font-semibold text-[#697561] sm:flex'
               : 'kr-num text-[11px] text-cream/55 mb-3 flex items-center gap-1.5 flex-wrap'
           }
         >
@@ -162,25 +162,18 @@ export default function BlogPostPage({ slug }: Props) {
         </nav>
 
         {/* H1 */}
-        <header className={usesStudyNoteTheme ? 'mb-8 border-b border-[#d8e2ce] pb-6' : 'mb-8 pb-6 border-b border-cream/10'}>
+        <header className={usesStudyNoteTheme ? 'mb-7 border-b border-[#d8e2ce] pb-6 sm:mb-8' : 'mb-8 pb-6 border-b border-cream/10'}>
           <div
             className={
               usesStudyNoteTheme
-                ? 'mb-2 inline-flex items-center gap-3 text-[12px] font-bold text-[#697561]'
+                ? 'mb-3 flex items-center gap-2 text-[12px] font-bold'
                 : 'kr-num text-[10px] uppercase tracking-widest text-cream/55 mb-2 inline-flex items-center gap-3'
             }
           >
-            <span className={usesStudyNoteTheme ? 'text-[#256d2f]' : 'text-neon'}>
+            <span className={usesStudyNoteTheme ? 'rounded-full bg-[#e6f1dd] px-3 py-1.5 text-[#256d2f]' : 'text-neon'}>
               {BLOG_CATEGORY_LABEL[post.category]}
             </span>
-            <span>·</span>
-            <span>작성 {post.publishedAt}</span>
-            <span>·</span>
-            <span>검수 {post.reviewedAt}</span>
-            <span>·</span>
-            <span>{post.author}</span>
-            <span>·</span>
-            <span className="inline-flex items-center gap-1">
+            <span className={usesStudyNoteTheme ? 'inline-flex items-center gap-1 text-[#697561]' : 'inline-flex items-center gap-1'}>
               <Clock size={11} strokeWidth={2.4} />
               {post.readingMinutes}분
             </span>
@@ -197,13 +190,18 @@ export default function BlogPostPage({ slug }: Props) {
           >
             {post.subtitle}
           </p>
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className={usesStudyNoteTheme ? 'mt-3 flex items-center gap-2 text-[11.5px] font-semibold text-[#74806d]' : 'mt-3 flex items-center gap-2 text-[11px] text-cream/55'}>
+            <span>{post.publishedAt.replaceAll('-', '.')}</span>
+            <span aria-hidden="true">·</span>
+            <span>{post.author}</span>
+          </div>
+          <div className="mt-5 grid grid-cols-1 gap-2.5 sm:flex sm:flex-wrap sm:gap-3">
             <a
               href={gameHref}
               onClick={(e) => handleNavClick(e, gameHref)}
               className={
                 usesStudyNoteTheme
-                  ? 'inline-flex items-center gap-2 rounded-full px-5 py-3 text-[14px] font-black text-[#162015] transition active:scale-95'
+                  ? 'inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-[14px] font-black text-[#162015] transition active:scale-95'
                   : 'kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full active:scale-95 transition'
               }
               style={{
@@ -212,7 +210,7 @@ export default function BlogPostPage({ slug }: Props) {
                 boxShadow: '0 8px 22px -6px rgba(253,128,46,0.55)',
               }}
             >
-              {usesStudyNoteTheme ? '게임 화면에서 이어가기' : 'QuestDP 게임 섹션으로'}
+              {usesStudyNoteTheme ? gameCtaLabelForPost(post.slug) : 'QuestDP 게임 섹션으로'}
               <ChevronRight size={14} strokeWidth={2.6} />
             </a>
             <a
@@ -220,7 +218,7 @@ export default function BlogPostPage({ slug }: Props) {
               onClick={(e) => handleNavClick(e, curriculumHref)}
               className={
                 usesStudyNoteTheme
-                  ? 'inline-flex items-center gap-2 rounded-full border border-[#cbd9c1] px-5 py-3 text-[14px] font-bold text-[#33402f] transition hover:border-[#4d8a45] hover:text-[#256d2f]'
+                  ? 'inline-flex items-center justify-center gap-2 rounded-full border border-[#cbd9c1] px-5 py-3 text-[14px] font-bold text-[#33402f] transition hover:border-[#4d8a45] hover:text-[#256d2f]'
                   : 'kr-heading uppercase tracking-widest inline-flex items-center gap-2 text-[12px] md:text-[13px] px-5 py-3 rounded-full border border-cream/20 hover:border-neon/40 hover:text-neon transition'
               }
             >
@@ -576,6 +574,12 @@ function curriculumLabelForPost(slug: string): string {
   if (slug.startsWith('sqld-')) return 'SQLD 커리큘럼';
   if (slug.startsWith('comhwal-')) return '컴활 커리큘럼';
   return 'ADsP 커리큘럼';
+}
+
+function gameCtaLabelForPost(slug: string): string {
+  if (slug.startsWith('sqld-')) return 'SQLD 게임으로 플레이하기';
+  if (slug.startsWith('comhwal-')) return '컴활 게임으로 플레이하기';
+  return 'ADsP 게임으로 플레이하기';
 }
 
 function NotFound() {

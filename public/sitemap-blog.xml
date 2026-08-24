@@ -32,6 +32,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://quest-dp.com/blog/sqld-%EA%B3%B5%EB%B6%80%EB%B2%95/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://quest-dp.com/blog/adsp-%EB%8F%85%ED%95%99-vs-%EC%9D%B8%EA%B0%95/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>

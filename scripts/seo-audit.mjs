@@ -79,6 +79,14 @@ for (const route of manifest.all) {
   if (!isIndexableRoute(route) && !hasNoindex) {
     fail(`Noindex manifest route is missing robots noindex meta: ${route.path}`);
   }
+  const nonCanonicalInternalHrefs = extractAnchorHrefs(html).filter(
+    (href) => canonicalizeInternalHref(href) !== href,
+  );
+  if (nonCanonicalInternalHrefs.length > 0) {
+    fail(
+      `Non-canonical internal anchor in ${route.path}: ${nonCanonicalInternalHrefs[0]}`,
+    );
+  }
   if (isIndexableRoute(route) && route.path.startsWith('/lesson/') && /안녕|첫 시간이야/.test(route.description)) {
     fail(`Lesson meta description still looks like dialogue text: ${route.path}`);
   }
@@ -170,6 +178,21 @@ function readDist(fileName) {
 
 function extractLocs(xml) {
   return [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
+}
+
+function extractAnchorHrefs(html) {
+  return [...html.matchAll(/<a\b[^>]*\bhref=(["'])([^"']+)\1/gi)].map((m) => m[2]);
+}
+
+function canonicalizeInternalHref(href) {
+  if (!href.startsWith('/') || href.startsWith('//')) return href;
+  const suffixIndex = href.search(/[?#]/);
+  const pathname = suffixIndex === -1 ? href : href.slice(0, suffixIndex);
+  const suffix = suffixIndex === -1 ? '' : href.slice(suffixIndex);
+  if (pathname === '/' || pathname.endsWith('/') || /\/[^/]+\.[^/]+$/i.test(pathname)) {
+    return href;
+  }
+  return `${pathname}/${suffix}`;
 }
 
 function htmlPathFor(routePath) {

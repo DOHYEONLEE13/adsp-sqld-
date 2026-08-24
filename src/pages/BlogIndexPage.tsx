@@ -16,9 +16,9 @@ import { handleNavClick } from '@/lib/navigate';
 
 export default function BlogIndexPage() {
   const canonical = 'https://quest-dp.com/blog/';
-  const seoTitle = 'QuestDP 블로그 — ADsP·SQLD·컴활 학습 가이드';
+  const seoTitle = 'ADsP·SQLD·컴활 공부법 블로그 — QuestDP';
   const seoDescription =
-    `ADsP vs SQLD 우선순위, 컴활 1급 vs 2급, 비전공자 공부법, 압축 로드맵까지 — 한국 자격증 합격에 필요한 코너스톤 콘텐츠 ${ALL_BLOG_POSTS.length}편.`;
+    'ADsP 공부법, SQLD 공부법, 컴활 필기 공부법, 비전공자 학습 순서와 복습 전략을 정리한 QuestDP 블로그입니다.';
 
   // JSON-LD Blog
   const blogJsonLd = {
@@ -81,11 +81,11 @@ export default function BlogIndexPage() {
 
         <header className="mb-10 pb-8 border-b border-cream/10">
           <h1 className="kr-heading text-[28px] md:text-[40px] lg:text-[44px] leading-[1.15] mb-3">
-            QuestDP 블로그
+            ADsP·SQLD·컴활 공부법 블로그
           </h1>
           <p className="kr-body text-[14.5px] md:text-[15.5px] text-cream/75 leading-[1.65] max-w-[680px]">
-            ADsP·SQLD·컴활 자격증 합격에 필요한 핵심 가이드 모음. 비교·로드맵·가이드 카테고리별로
-            정리된 코너스톤 콘텐츠 {ALL_BLOG_POSTS.length}편.
+            시험 범위 정리, 독학 로드맵, 기출 복습 순서처럼 검색자가 실제로 궁금해하는 주제를
+            QuestDP 관점으로 정리한 콘텐츠 {ALL_BLOG_POSTS.length}편입니다.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <a

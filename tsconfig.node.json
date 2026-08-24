@@ -5,7 +5,13 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
+    "outDir": "./node_modules/.cache/questdp-tsconfig-node",
+    "tsBuildInfoFile": "./node_modules/.cache/questdp-tsconfig-node/tsconfig.node.tsbuildinfo",
     "strict": true
   },
-  "include": ["vite.config.ts"]
+  "include": [
+    "vite.config.ts",
+    "scripts/seo-studio-dev-plugin.ts",
+    "scripts/seo-studio-dev-plugin.test.ts"
+  ]
 }

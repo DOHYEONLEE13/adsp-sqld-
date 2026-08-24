@@ -1,5 +1,21 @@
 # QuestDP Content Edit Log
 
+## 2026-08-25 - SQLD 공부법 일반 필러와 2026-08-26 Daily Package 생성
+
+- `SQLD 공부법` general intent를 기존 7일 압축 글이나 노랭이 비교 글에 억지로 합치지 않고 `/blog/sqld-공부법/` 단일 필러로 작성했다.
+- SQLD 독학·비전공자·공부기간은 같은 필러에 합치고, D-7 intent와 교재 비교 intent는 기존 글로 내부 링크해 카니벌라이제이션을 줄였다.
+- KDATA 2026-08-25 현재 안내를 기준으로 2과목·객관식 50문항·90분, 과목별 문항·배점, 총점/과락 기준과 제63회 접수·시험 일정을 재확인했다.
+- 4주는 합격 보장이 아닌 하루 60분 계획 예시로 한정하고, 모델링 언어 → SELECT 처리 흐름 → JOIN 결과 예측 → 제한 시간 오답 분류의 초보자용 순서로 새로 작성했다.
+- `seo-ops/04-daily-content/2026-08-26/`에 QuestDP Blog, Naver, Threads, Instagram, HOLD 플랫폼, Community, Sources, Review Checklist를 포함한 11개 파일을 만들었다. 모든 게시 대상은 Studio에서 PENDING으로 시작하며 승인·배포·외부 게시하지 않았다.
+- 레슨·문제·`quizId`는 변경하지 않았으므로 Supabase 반영 대상은 없다.
+
+## 2026-08-24 - 블로그 시험 사실·합격 보장 표현 재검수
+
+- SEO 전수 감사에서 ADsP·SQLD 블로그 6편의 비공식 합격률, 점수 보장, 오래된 시험 일정, 과목별 문항 수 오류를 확인했다.
+- KDATA 공개 시험 구조와 2026년 일정을 기준으로 50문항·90분·합격/과락 기준과 다음 회차 일정을 다시 적고, 근거 없는 합격률·학습효과 수치는 조건과 일정 예시로 교체했다.
+- 수정 포스트의 `updatedAt`을 실제 재검수일인 2026-08-24로 갱신해 화면과 Article JSON-LD의 `dateModified`가 일치하도록 했다.
+- 레슨·문제·`quizId`는 건드리지 않았으므로 Supabase 반영 대상은 없다.
+
 ## 2026-06-12 - ADsP Part 1 데이터의 이해 총 복습 노드 MVP
 
 - ADsP 1과목 `데이터의 이해` 토픽에서 `기업 데이터베이스 복습` 바로 뒤에 `Part 1 데이터의 이해 총 복습` step을 추가하고, Zone 화면에서는 기존 토픽 step 목록과 분리된 별도 `PART REVIEW` 노드로 렌더링하도록 했다.
@@ -3340,3 +3356,56 @@ order by expected.id;
 
 - 새 `quizId` 또는 `extraQuizIds`를 추가하지 않았다.
 - 컴활 로컬 개념 확인 문제의 문구와 선지 생성 기준을 조정한 작업이라 Supabase migration은 필요하지 않다.
+
+## 2026-08-25 — SQLD 공부법 Daily Package 1차 피드백 전면 반영
+
+### 사용자가 발견한 문제
+
+- 공식 블로그가 아직 SQLD를 시작하지 않은 사람보다 재수생처럼 개념을 이미 아는 사람에게 말하고 있었다.
+- 모바일 상단의 가이드·작성 일시·검수 정보가 한꺼번에 보여 읽기 시작하기 어려웠다.
+- Naver와 Threads 원고의 중심 문장이 흔들렸고, 1과목과 2과목의 실제 비중에 맞지 않는 4주 배분이었다.
+- Instagram은 배경 위에 문장을 나열한 수준이라 카드뉴스로서의 시각 구조가 없었다.
+
+### 수정 방향
+
+- Blog·Naver·Threads의 독자를 `SQLD를 아직 시작하지 않은 초보자`로 고정했다.
+- 세부 개념 설명 대신 과목의 역할, 시간이 많이 드는 구간, 자료를 쓰는 순서를 설명했다.
+- 4주를 `1과목 1주 → 2과목 2주 → 노랭이 2회독 1주`로 다시 배분했다.
+- `아답터 강의 → 강의 직후 QuestDP → 다음 날 QuestDP → 같은 범위 노랭이`를 세 플랫폼의 공통 학습 루프로 만들었다.
+- Blog CTA를 `SQLD 게임으로 플레이하기`로 바꾸고 모바일 글 상단 메타데이터를 두 줄로 단순화했다.
+- Instagram은 타임라인, 20/80 도넛 차트, 순환 흐름, 7일 캘린더, 주차 비교, 회독 비교, 체크리스트로 구성한 1080×1080 PNG 7장을 새로 제작했다.
+
+### 반영 파일
+
+- `src/data/seo/blog.ts`
+- `src/pages/BlogPostPage.tsx`
+- `src/seo-studio/dailyPackage.ts`
+- `src/seo-studio/SeoStudioPage.tsx`
+- `scripts/generate-instagram-carousel.mjs`
+- `scripts/seo-studio-dev-plugin.ts`
+- `seo-ops/04-daily-content/2026-08-26/`
+
+### Supabase 반영 상태
+
+- 학습 콘텐츠의 `quizId` 또는 `extraQuizIds`를 수정하지 않았다.
+- 공개 블로그·운영 원고·로컬 Studio만 바뀌므로 Supabase migration은 필요하지 않다.
+
+## 2026-08-25 — SQLD Daily Package 게시 결과 기록
+
+### 사용자 결정
+
+- QuestDP 공식 블로그는 검토를 통과했다.
+- Naver Blog는 사용자가 제목과 일부 문장을 수정한 뒤 게시했다.
+- Threads는 준비 원고로 게시했다.
+- Instagram은 퀄리티 문제로 게시하지 않고 전면 재디자인 대상으로 돌렸다.
+
+### 운영 기록
+
+- Naver 공개 URL: `https://blog.naver.com/tori_134/224389166630`
+- Threads 공개 URL: `https://www.threads.com/@korea.certification/post/DcbtSYrE3pc`
+- Studio 상태: Blog `APPROVED`, Naver·Threads `PUBLISHED`, Instagram `NEEDS_REVISION`
+- Published Log에 Naver·Threads URL을 기록했다.
+
+### Supabase 반영 상태
+
+- 게시 운영 상태만 바뀌었으며 학습 데이터와 Supabase migration은 관련 없다.

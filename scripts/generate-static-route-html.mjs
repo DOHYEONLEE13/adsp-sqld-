@@ -58,7 +58,32 @@ function routeHtml(baseTemplate, route) {
     html = injectSnapshotStyle(html);
     html = setRootSnapshot(html, route);
   }
-  return html;
+  return canonicalizeInternalAnchorHrefs(html);
+}
+
+/**
+ * The canonical URL policy uses trailing slashes for public path routes.
+ * Keep first-fetch snapshot links on those URLs so crawlers and users do not
+ * pay an avoidable 308 redirect for every internal navigation.
+ */
+function canonicalizeInternalAnchorHrefs(html) {
+  return html.replace(/<a\b[^>]*>/gi, (tag) =>
+    tag.replace(/\bhref=(["'])([^"']+)\1/i, (match, quote, href) => {
+      const canonicalHref = canonicalizeInternalHref(href);
+      return match.replace(`${quote}${href}${quote}`, `${quote}${canonicalHref}${quote}`);
+    }),
+  );
+}
+
+function canonicalizeInternalHref(href) {
+  if (!href.startsWith('/') || href.startsWith('//')) return href;
+  const suffixIndex = href.search(/[?#]/);
+  const pathname = suffixIndex === -1 ? href : href.slice(0, suffixIndex);
+  const suffix = suffixIndex === -1 ? '' : href.slice(suffixIndex);
+  if (pathname === '/' || pathname.endsWith('/') || /\/[^/]+\.[^/]+$/i.test(pathname)) {
+    return href;
+  }
+  return `${pathname}/${suffix}`;
 }
 
 function setTitle(html, title) {

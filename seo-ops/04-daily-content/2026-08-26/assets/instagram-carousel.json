@@ -1,100 +1,113 @@
 [
   {
-    "layout": "hero",
-    "kicker": "SQLD, 어디서부터 시작하지?",
-    "title": ["처음이라면", "4주를 이렇게", "나누세요"],
-    "subtitle": "강의·복습·문제집이 한 줄로 이어지는 초보자용 플랜",
-    "steps": [
-      { "title": "1과목", "note": "1주" },
-      { "title": "2과목", "note": "1주" },
-      { "title": "2과목", "note": "1주" },
-      { "title": "노랭이", "note": "2회독" }
-    ]
+    "layout": "ratio-hero",
+    "series": "ADsP BEGINNER GUIDE",
+    "kicker": "통계·R이 처음인 비전공자",
+    "title": ["ADsP 첫 4주,", "시간부터 다르게"],
+    "subtitle": "세 과목을 똑같이 나누지 마세요.",
+    "ratios": [
+      { "value": "1주", "label": "1·2과목", "note": "큰 흐름 1회독" },
+      { "value": "2주", "label": "3과목", "note": "통계·R·분석" },
+      { "value": "1주", "label": "문제·오답", "note": "50문항 흐름" }
+    ],
+    "footer": "ADsP 공부법 · 1 : 2 : 1"
   },
   {
-    "layout": "exam",
-    "kicker": "시간 배분의 기준",
-    "title": ["두 과목을", "똑같이 나누면 안 돼요"],
+    "layout": "weight",
+    "series": "ADsP BEGINNER GUIDE",
+    "kicker": "왜 3과목에 2주를 쓸까?",
+    "title": ["문항 수부터", "10 · 10 · 30"],
+    "subtitle": "처음 막히는 구간과 출제 비중이 3과목에 모입니다.",
     "subjects": [
-      { "label": "1과목", "score": "20점", "note": "낯선 용어가 많지만 범위는 비교적 짧아요", "tone": "cyan" },
-      { "label": "2과목", "score": "80점", "note": "문법과 결과 해석이 함께 나와 시간이 더 필요해요", "tone": "purple" }
+      { "number": "10", "label": "SUBJECT 01", "title": "데이터 이해", "note": "용어의 큰 흐름", "tone": "cyan" },
+      { "number": "10", "label": "SUBJECT 02", "title": "분석 기획", "note": "절차와 방법 구분", "tone": "purple" },
+      { "number": "30", "label": "SUBJECT 03", "title": "데이터 분석", "note": "R · 통계 · 분석 방법이 한꺼번에 등장", "tone": "neon" }
     ],
     "facts": [
-      { "value": "50문항", "label": "객관식" },
-      { "value": "90분", "label": "시험시간" },
-      { "value": "과목별 40%", "label": "과락 주의" }
-    ]
-  },
-  {
-    "layout": "loop",
-    "kicker": "자료 3개, 순서는 1개",
-    "title": ["한 번 듣고", "바로 확인하세요"],
-    "subtitle": "각 자료의 역할을 나누면 진도가 겹치지 않습니다.",
-    "steps": [
-      { "icon": "video", "label": "STEP 1", "title": "아답터 강의", "note": "오늘 범위를 처음 이해", "tone": "cyan" },
-      { "icon": "game", "label": "STEP 2", "title": "QuestDP", "note": "강의 직후 같은 범위 복습", "tone": "neon" },
-      { "icon": "book", "label": "STEP 3", "title": "노랭이", "note": "시험에서는 어떻게 묻는지 확인", "tone": "yellow" }
+      { "value": "50문항", "label": "전체 객관식" },
+      { "value": "90분", "label": "시험 시간" },
+      { "value": "과목별 40%", "label": "과락 기준" }
     ],
-    "returnTitle": "다음 날 아침, QuestDP 오답만 한 번 더",
-    "returnNote": "강의를 다시 처음부터 재생하지 않아도 됩니다."
+    "footer": "공부 시간도 어려운 구간에 더 많이"
   },
   {
     "layout": "week",
+    "series": "ADsP BEGINNER GUIDE",
     "week": "1",
-    "kicker": "1과목 · 데이터 모델링의 이해",
-    "title": ["첫 주 안에", "전체를 한 번 끝내기"],
-    "subtitle": "완벽한 암기보다 끝까지 보는 것이 먼저입니다.",
+    "kicker": "1·2과목 · 첫 회독",
+    "title": ["완벽 암기보다", "끝까지 한 바퀴"],
+    "subtitle": "짧게 보고 바로 문제로 구분하세요.",
     "days": [
-      { "label": "MON", "title": "강의", "note": "+ QuestDP", "tone": "study" },
-      { "label": "TUE", "title": "강의", "note": "+ QuestDP", "tone": "study" },
-      { "label": "WED", "title": "강의", "note": "+ QuestDP", "tone": "study" },
-      { "label": "THU", "title": "강의", "note": "+ QuestDP", "tone": "study" },
-      { "label": "FRI", "title": "1회독", "note": "마무리", "tone": "study" },
-      { "label": "SAT", "title": "노랭이", "note": "1과목", "tone": "practice" },
-      { "label": "SUN", "title": "오답", "note": "짧게 복습", "tone": "practice" }
+      { "label": "MON", "title": "1과목", "note": "첫 범위", "tone": "study" },
+      { "label": "TUE", "title": "1과목", "note": "이어 보기", "tone": "study" },
+      { "label": "WED", "title": "1과목", "note": "문제로 확인", "tone": "practice" },
+      { "label": "THU", "title": "2과목", "note": "첫 범위", "tone": "study" },
+      { "label": "FRI", "title": "2과목", "note": "이어 보기", "tone": "study" },
+      { "label": "SAT", "title": "2과목", "note": "문제로 확인", "tone": "practice" },
+      { "label": "SUN", "title": "혼합", "note": "둘을 섞기", "tone": "practice" }
     ],
-    "goal": "1과목 전체 + 노랭이 1과목"
+    "goal": "1·2과목 전체 지도 + 헷갈린 용어 한 줄",
+    "footer": "WEEK 1 · 완벽 암기 X / 1회독 O"
   },
   {
     "layout": "double-week",
-    "kicker": "2과목 · SQL 기본 및 활용",
-    "title": ["문항의 80%는", "2주를 주세요"],
-    "subtitle": "SQL을 처음 본다면 가장 오래 걸리는 구간입니다.",
+    "series": "ADsP BEGINNER GUIDE",
+    "kicker": "3과목 · 데이터 분석",
+    "title": ["가장 오래 걸리는 곳에", "두 주를 주세요"],
+    "subtitle": "한 수식에 멈추지 말고 역할부터 구분합니다.",
     "weeks": [
-      { "week": "2", "title": "앞부분", "note": "강의에서 본 만큼만 QuestDP와 노랭이로 이어가기", "progress": "48%", "result": "절반까지 끊지 않고 진행" },
-      { "week": "3", "title": "나머지", "note": "시간이 걸려도 주말까지 책 전체 첫 회독 마무리", "progress": "100%", "result": "노랭이 1회독 완료" }
-    ]
+      { "week": "2", "title": "R · 기초 통계", "note": "코드를 외우기보다 무엇을 보여주는지 말로 풀기", "progress": "48%", "result": "하루 범위를 작게 끊기" },
+      { "week": "3", "title": "분석 방법", "note": "분류 · 예측 · 그룹화 중 어떤 문제인지 연결하기", "progress": "100%", "result": "근거 없는 정답 다시 보기" }
+    ],
+    "bannerLabel": "출제 문항의 60%",
+    "bannerMain": "3과목에 2주",
+    "bannerBadge": "30문",
+    "footer": "WEEK 2–3 · 한 곳에 멈춰 전체 진도를 잃지 않기"
   },
   {
-    "layout": "review",
-    "kicker": "WEEK 4 · 새 진도 금지",
-    "title": ["노랭이 2회독은", "다르게 풀어야 합니다"],
-    "subtitle": "모든 문제에 같은 시간을 쓰지 마세요.",
-    "passes": [
-      { "number": "1", "label": "FIRST PASS", "title": "범위별 1회독", "tone": "first", "items": [
-        { "mark": "✓", "text": "그날 배운 범위 바로 풀기" },
-        { "mark": "●", "text": "틀린 문제만 표시하기" },
-        { "mark": "→", "text": "해설에 오래 멈추지 않기" }
-      ] },
-      { "number": "2", "label": "SECOND PASS", "title": "책 전체 2회독", "tone": "second", "items": [
-        { "mark": "↗", "text": "바로 풀리면 넘어가기" },
-        { "mark": "★", "text": "근거 없이 맞으면 별표" },
-        { "mark": "Q", "text": "틀리면 QuestDP로 복귀" }
-      ] }
+    "layout": "time-loop",
+    "series": "ADsP BEGINNER GUIDE",
+    "kicker": "DAILY LOOP",
+    "title": ["평일 90분은", "이 순서로"],
+    "subtitle": "본 내용과 문제 사이의 간격을 짧게 만드세요.",
+    "steps": [
+      { "minutes": "10", "when": "MORNING", "title": "전날 오답", "note": "틀린 이유만 다시 보기" },
+      { "minutes": "35", "when": "LEARN", "title": "강의·기본서", "note": "오늘의 새 범위" },
+      { "minutes": "20", "when": "REVIEW", "title": "QuestDP", "note": "같은 범위 즉시 확인" },
+      { "minutes": "25", "when": "PRACTICE", "title": "교재 문제", "note": "오답 이유 한 줄" }
     ],
-    "result": "2회독 + 표시한 오답 재풀이"
+    "totalLabel": "하루 합계",
+    "total": "90분",
+    "totalNote": "시간이 적다면 기간을 늘리되 복습 간격은 벌리지 마세요.",
+    "footer": "설명 → 즉시 확인 → 다음 날 복습"
+  },
+  {
+    "layout": "mistakes",
+    "series": "ADsP BEGINNER GUIDE",
+    "kicker": "WEEK 4 · 새 진도 금지",
+    "title": ["오답은 세 가지로만", "나누세요"],
+    "subtitle": "분류해야 다음 행동이 보입니다.",
+    "items": [
+      { "mark": "?", "label": "UNKNOWN", "title": "몰랐음", "action": "해당 범위로 돌아가 개념 한 번 더" },
+      { "mark": "≠", "label": "CONFUSED", "title": "헷갈림", "action": "두 용어의 차이를 한 줄로" },
+      { "mark": "⌛", "label": "SLOW", "title": "오래 걸림", "action": "1분 표시 후 넘어가는 연습" }
+    ],
+    "note": "내가 틀린 이유를 쓰기",
+    "footer": "WEEK 4 · 50문항 / 90분 흐름 점검"
   },
   {
     "layout": "checklist",
+    "series": "ADsP BEGINNER GUIDE",
     "kicker": "오늘 바로 시작하기",
-    "title": ["준비물은", "세 가지만"],
-    "subtitle": "계획을 더 찾기 전에 첫 범위를 시작하세요.",
+    "title": ["첫날 할 일은", "세 가지만"],
+    "subtitle": "계획을 더 찾기 전에 첫 범위를 열어보세요.",
     "items": [
-      { "label": "WATCH", "text": "아답터 1과목 첫 영상 열기" },
-      { "label": "REVIEW", "text": "QuestDP에서 같은 범위 찾기" },
-      { "label": "PRACTICE", "text": "노랭이에 오늘 범위 표시하기" }
+      { "label": "MAP", "text": "세 과목의 큰 범위 확인하기" },
+      { "label": "ONE SOURCE", "text": "첫 회독 자료 하나만 정하기" },
+      { "label": "REVIEW", "text": "첫 범위 직후 문제로 확인하기" }
     ],
-    "ctaEyebrow": "QUESTDP · SQLD",
-    "cta": "게임으로 첫 복습 시작하기"
+    "ctaEyebrow": "QUESTDP · ADsP",
+    "cta": "ADsP 게임으로 플레이하기",
+    "footer": "4주는 합격 보장이 아닌 초보자용 계획 예시"
   }
 ]

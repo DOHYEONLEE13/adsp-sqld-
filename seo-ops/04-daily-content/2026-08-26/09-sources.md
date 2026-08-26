@@ -1,21 +1,23 @@
-SOURCE REVIEW DATE: 2026-08-25 KST
+SOURCE REVIEW DATE: 2026-08-26 KST
 
-PRIMARY OFFICIAL SOURCE: 한국데이터산업진흥원 데이터자격시험 SQLD 자격 소개
-URL: https://www.dataq.or.kr/www/sub/a_04.do
-USED FOR: SQLD가 2과목·객관식 50문항·90분으로 구성된다는 사실, 1과목 10문항·20점과 2과목 40문항·80점의 비중, 총점 및 과목별 과락 기준
+PRIMARY OFFICIAL SOURCE: 한국데이터산업진흥원 데이터자격시험 ADsP 자격 소개
+URL: https://www.dataq.or.kr/www/sub/a_06.do
+USED FOR: ADsP 3과목, 객관식 50문항, 90분, 10·10·30 문항 비중, 총점 60점 및 과목별 40% 기준
 
 SECONDARY OFFICIAL SOURCE: 한국데이터산업진흥원 2026년 데이터자격검정 시험 일정
 URL: https://www.dataq.or.kr/www/accept/schedule.do
-USED FOR: Daily Brief의 2026년 시험 일정 확인. 이번 공부법 본문에는 변동 가능한 회차 날짜를 넣지 않음.
+USED FOR: 제51회 접수 2026-09-28~10-02, 시험 2026-10-31, 사전점수 공개 11-13~17, 결과 발표 11-20 확인
 
-RESOURCE SOURCE: 아답터 2026 SQLD 2과목 완벽 요약강의
-URL: https://www.youtube.com/watch?v=Rv4Q4ZrPS94
-USED FOR: 사용자가 제안한 `아답터 강의 → QuestDP 복습 → 노랭이` 흐름에서 현재 공개된 아답터 SQLD 강의의 존재와 명칭 확인
-AFFILIATION: QuestDP와 아답터는 제휴 관계가 없으며, 외부 무료 학습 자료로만 소개
+SERP PATTERN SOURCE: 부산대학교 도서관 ADsP 가이드
+URL: https://libguide.pusan.ac.kr/25519
+USED FOR: ADsP 준비 자료와 학습 정보에 대한 공개 수요 패턴 확인. 표현과 구성은 차용하지 않음.
 
-SERP PATTERN SOURCE: 문어CBT SQLD 비전공자 4주 합격 가이드
-URL: https://www.sqldpass.com/blog/sqld-non-major-guide
-USED FOR: 비전공자·4주·처음 시작 intent가 경쟁 결과에 존재함을 확인. 합격 주장, 문장, 구성은 차용하지 않음.
+SERP PATTERN SOURCE: 공개 ADsP 공부법 및 합격 후기 검색 결과
+URL: https://wonmijang.tistory.com/entry/ADSP-%EA%B3%B5%EB%B6%80%EB%B2%95-%EB%B0%8F-%ED%95%A9%EA%B2%A9-%ED%9B%84%EA%B8%B0?category=1543464
+USED FOR: 기간별 계획과 문제풀이 수요가 최근 결과에 존재함을 확인. 개인 합격 경험, 문장, 숫자, 구성을 차용하지 않음.
 
-LIMITATIONS: Google 직접 순위와 월간 검색량 수치는 확보하지 못했다. Naver 직접 재확인은 2026-08-25 robots·fetch 제한으로 수행하지 못해 2026-08-24 감사 기록만 사용했다. 따라서 순위·월간 검색량 숫자는 쓰지 않았고 수요는 정성 신호로만 기록했다.
-COPYRIGHT NOTE: 공식 시험 사실과 공개 자료의 존재만 확인했다. 경쟁 글, 강의, 교재, 기출의 표현·표·문항을 복사하지 않았다.
+NAVER DIRECT CHECK: https://search.naver.com/search.naver?where=blog&query=ADsP%20%EB%B9%84%EC%A0%84%EA%B3%B5%EC%9E%90%20%EA%B3%B5%EB%B6%80%EB%B2%95
+USED FOR: 2주·3주·4주·한 달, 비전공자, 인강과 문제풀이 조합이 반복되는 제목 패턴과 QuestDP 기존 글의 노출 신호 확인
+
+LIMITATIONS: 월간 검색량, Google Search Console 순위, 실제 합격률은 확보하지 않았다. 수요는 정성 신호로만 기록했고, 4주는 합격 보장이 아닌 학습 시간 배분 예시로 표현했다.
+COPYRIGHT NOTE: 공식 시험 사실과 검색 결과의 주제 패턴만 참고했다. 경쟁 글, 교재, 강의, 기출의 문장·표·문항을 복사하지 않았다.

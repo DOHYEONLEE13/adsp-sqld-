@@ -2,7 +2,7 @@ url,primary_intent,demand_signal,current_strength,issues,cannibalization_risk,re
 https://quest-dp.com/blog/adsp-vs-sqld-순서/,Comparison,HIGH,"깊이 충분; 공식 외부 링크 1; 결정 트리","비공식 난이도·일정 표현이 있었음",LOW,UPDATE_EXISTING,P2,UPDATED_LOCAL,"공식 일정·시험 구조와 조건형 학습 시간으로 수정"
 https://quest-dp.com/blog/adsp-2주-합격-로드맵/,Urgent_Last-minute,HIGH,"14일 일정과 과목별 표","ADsP 문항 수가 8/8/24로 잘못됨; 점수 보장 표현",LOW,UPDATE_EXISTING,P1,UPDATED_LOCAL,"공식 10/10/30으로 수정; D-14 시즌 재강화"
 https://quest-dp.com/blog/sqld-노랭이-vs-questdp/,Commercial_Investigation,HIGH,"도구별 역할 구분이 분명","합격 가능·최적 비율을 단정",MEDIUM,UPDATE_EXISTING,P2,UPDATED_LOCAL,"노랭이 기출 키워드와 일반 SQLD 독학 pillar를 구분"
-https://quest-dp.com/blog/adsp-비전공자-가이드/,Study,HIGH,"기존 ADsP 글 중 가장 깊음; Naver 노출 신호","합격률·문항 보장·100점 문구 오류",MEDIUM,UPDATE_EXISTING,P1,UPDATED_LOCAL,"ADsP 공부법 pillar 역할로 강화 가능"
+https://quest-dp.com/blog/adsp-비전공자-가이드/,Study,HIGH,"기존 ADsP 글 중 가장 깊고 Naver 노출 신호 확인","초보자보다 개념을 아는 독자에게 말하는 흐름이었음",LOW,UPDATE_EXISTING,P1,UPDATED_LOCAL_REVIEW_PENDING,"1·2과목 1주 / 3과목 2주 / 문제·오답 1주로 beginner pillar 강화"
 https://quest-dp.com/blog/sqld-7일-압축-로드맵/,Urgent_Last-minute,HIGH,"7일 표와 개념 순서가 명확","SQLD를 3과목처럼 분리; 32/8문 오류; 합격선 보장",LOW,UPDATE_EXISTING,P1,UPDATED_LOCAL,"공식 10/40문 2과목 구조로 수정; D-7 시즌용"
 https://quest-dp.com/blog/adsp-독학-vs-인강/,Commercial_Investigation,MEDIUM,"비용·선택 기준 표","존재하지 않는 후기 100건 분석·집단별 합격률",MEDIUM,UPDATE_EXISTING,P2,UPDATED_LOCAL,"합격률 표를 자기관리 조건표로 교체"
 https://quest-dp.com/blog/comhwal-1급-vs-2급/,Comparison,HIGH,"검색 의도가 선명하고 URL 적합","본문이 약 1.4k자로 짧고 공식 출처 링크 없음",LOW,UPDATE_EXISTING,P1,PLANNED,"1급/2급 공식 시험 과목·실기 차이·선택 체크리스트 강화"

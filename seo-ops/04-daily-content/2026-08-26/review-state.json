@@ -1,29 +1,29 @@
 {
   "version": 1,
   "date": "2026-08-26",
-  "updatedAt": "2026-08-24T18:34:05.336Z",
+  "updatedAt": "2026-08-26T19:03:47.295Z",
   "items": {
     "blog": {
       "status": "APPROVED",
-      "feedback": "사용자 검토 통과",
-      "updatedAt": "2026-08-24T18:33:18.756Z"
+      "feedback": "",
+      "updatedAt": "2026-08-26T19:03:47.295Z"
     },
     "naver": {
       "status": "PUBLISHED",
       "feedback": "",
-      "updatedAt": "2026-08-24T18:33:38.863Z",
-      "publishedUrl": "https://blog.naver.com/tori_134/224389166630"
+      "updatedAt": "2026-08-26T19:03:39.092Z",
+      "publishedUrl": "https://blog.naver.com/tori_134/224391518505"
     },
     "threads": {
       "status": "PUBLISHED",
       "feedback": "",
-      "updatedAt": "2026-08-24T18:33:55.233Z",
-      "publishedUrl": "https://www.threads.com/@korea.certification/post/DcbtSYrE3pc"
+      "updatedAt": "2026-08-26T19:02:48.793Z",
+      "publishedUrl": "https://www.threads.com/@korea.certification/post/Dcg6ZYdExgo"
     },
     "instagram": {
-      "status": "NEEDS_REVISION",
-      "feedback": "퀄리티 문제로 업로드하지 않음. 카드뉴스 전면 재디자인 필요.",
-      "updatedAt": "2026-08-24T18:34:05.336Z"
+      "status": "PENDING",
+      "feedback": "",
+      "updatedAt": "2026-08-26T00:00:00.000Z"
     }
   }
 }

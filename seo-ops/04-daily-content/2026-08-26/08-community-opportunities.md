@@ -1,8 +1,8 @@
 PLATFORM: NO ACTION TODAY
 STATUS: HOLD
 REVIEW STATUS: HOLD
-TARGET KEYWORD: SQLD 공부법
-SEARCHED ON: 2026-08-25 KST
-IS RESPONSE USEFUL?: NO
-REASON: 공개 검색에서 확인된 결과는 자체 블로그·문제은행·후기 페이지 중심이었다. 답변을 기다리는 구체적이고 최신인 질문 URL을 검증하지 못했고 Naver Cafe 원문은 robots 제한으로 직접 확인하지 못했다. 링크 삽입을 목적으로 일반 글에 끼어들지 않는다.
-SAFE NEXT STEP: 다음 조사에서 14일 이내 작성된 “SQLD를 처음 시작하는데 공부 순서가 궁금하다”는 실제 질문을 찾고, 링크 없이도 완결되는 답변을 먼저 작성한다. QuestDP 링크는 질문자가 자료를 요청했고 커뮤니티 규칙이 허용할 때만 덧붙인다.
+TARGET KEYWORD: ADsP 공부법
+SEARCHED ON: 2026-08-26 KST
+IS RESPONSE USEFUL?: NO VERIFIED THREAD
+REASON: 공개 검색에서는 최근 ADsP 공부법·비전공자 후기와 카페 결과 패턴을 확인했지만, 답변 규칙과 작성일을 함께 검증한 구체적인 질문 URL은 확보하지 못했다. 링크 삽입을 위해 일반 게시물에 끼어들지 않는다.
+SAFE NEXT STEP: 14일 이내의 실제 질문 중 `통계가 처음인데 과목별로 시간을 어떻게 나눌지`를 묻는 글을 찾고, 링크 없이도 완결되는 답변부터 작성한다. QuestDP 링크는 자료 요청과 커뮤니티 규칙이 모두 허용할 때만 추가한다.

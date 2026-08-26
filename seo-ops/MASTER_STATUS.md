@@ -1,8 +1,8 @@
 # QuestDP SEO·AEO Master Status
 
-기준일: 2026-08-25 KST
+기준일: 2026-08-26 KST
 스프린트: 2026-08-24 ~ 2026-09-13
-상태: Phase 1 Foundation 로컬 완료 · Phase 1.5 Publishing Workflow 운영 중 · Phase 2 첫 패키지 3/4 처리
+상태: Phase 1 Foundation 완료 · Phase 1.5 Publishing Workflow 운영 중 · Phase 2 일일 패키지 운영
 
 ## Phase 1.5 — Publishing Workflow
 
@@ -16,13 +16,13 @@
 - [x] 전체 test / production build / 로컬 브라우저 반응형 QA
 - [x] 첫 Daily Package 사용자 검토 상태 반영
 
-2026-08-25 사용자가 `내일 SEO Daily Package 생성`을 명시적으로 요청해 2026-08-26 첫 패키지를 생성했다. 이는 원고 제작 승인일 뿐 Studio 승인, Git commit, push, 배포, 외부 게시 승인이 아니다.
+2026-08-25 SQLD Daily Package는 QuestDP Blog 배포·색인 요청, Naver·Threads 게시까지 처리됐다. Instagram은 사용자 품질 판정에 따라 게시하지 않았다. 2026-08-26 ADsP Daily Package는 QuestDP Blog 승인, Naver·Threads 게시까지 처리됐으며 Instagram은 검토 대기다. QuestDP Blog의 commit·push·배포·색인 요청은 아직 수행하지 않았다.
 
-## Phase 2 — 첫 Daily Package
+## Phase 2 — 2026-08-25 SQLD Daily Package
 
 - [x] `SQLD 공부법`의 당일 공개 SERP 패턴과 KDATA 공식 시험 구조·일정 재검증
 - [x] 일반 필러 `/blog/sqld-공부법/` 로컬 구현
-- [x] 2026-08-26 Daily Package 11개 파일 생성
+- [x] 2026-08-25 Daily Package 생성
 - [x] Naver·Threads·Instagram 원고 작성
 - [x] 사용자 1차 피드백 반영: 초보자 관점 재작성, 4주 배분 교정, 모바일 헤더 정돈, Instagram 실물 PNG 7장 제작
 - [x] Velog·Tistory·LinkedIn HOLD 및 Community NO ACTION 근거 기록
@@ -33,8 +33,28 @@
 - [x] Naver 사용자 수정본 PUBLISHED · Published Log 기록
 - [x] Threads PUBLISHED · Published Log 기록
 - [x] Instagram NEEDS REVISION · 미게시
-- [ ] QuestDP Blog commit / push / deploy
+- [x] QuestDP Blog commit / push / deploy — `136de62`
+- [x] 사용자가 색인 요청 등 SEO 등록 완료
 - [ ] Instagram 전면 재디자인 및 재검토
+
+## Phase 2 — 2026-08-26 ADsP Daily Package
+
+- [x] Naver `ADsP 비전공자 공부법` 현재 결과 패턴과 기존 QuestDP 노출 신호 확인
+- [x] KDATA ADsP 시험 구조·합격 기준·2026 제51회 일정 재검증
+- [x] 카니벌라이제이션 방지를 위해 새 URL 대신 `/blog/adsp-비전공자-가이드/` UPDATE 선택
+- [x] 공식 블로그를 `1·2과목 1주 → 3과목 2주 → 문제·오답 1주` 초보자 흐름으로 재작성
+- [x] Naver·Threads 독립 원고 작성
+- [x] Instagram 1080×1080 PNG 7장 생성 및 1차 시각 검수
+- [x] Velog·Tistory·LinkedIn HOLD, Community NO ACTION 근거 기록
+- [x] Studio Blog 390 / 820 / 1280px에서 가로 넘침 없음·CTA 표시 확인
+- [x] Typecheck, 53 test files / 596 tests 통과
+- [x] `npm ci`, typecheck, 53 test files / 596 tests, production build 통과
+- [x] 정적 HTML 559개, sitemap 262 URL, noindex 297개 SEO audit 통과
+- [x] QuestDP Blog APPROVED
+- [x] Naver PUBLISHED — https://blog.naver.com/tori_134/224391518505
+- [x] Threads PUBLISHED — https://www.threads.com/@korea.certification/post/Dcg6ZYdExgo
+- [ ] Instagram 사용자 검토
+- [ ] QuestDP Blog commit / push / deploy / 색인 요청 — 사용자 승인 후 진행 중
 
 검증 기록 (2026-08-24 KST): `npm ci`, `npm run typecheck`, 53 test files / 595 tests, Production build와 558개 정적 HTML SEO audit 통과. 임시 Daily Package로 실제 Blog iframe 390 / 820 / 1280px, Naver·Threads·Instagram·Tistory·LinkedIn, 복사, review feedback 저장을 확인한 뒤 임시 패키지는 제거했다. Production `dist`에는 Studio 문자열·chunk·정적 route·rewrite·sitemap 항목이 0건이다.
 
@@ -50,15 +70,13 @@
 - [x] 키워드 DB 초안, 클러스터, 카니벌라이제이션, 내부링크 지도
 - [x] 2026-08-24~09-13 캘린더 초안
 
-## 로컬 수정 — 아직 배포되지 않음
+## 2026-08-26 로컬 수정 — 아직 배포되지 않음
 
-- [x] 블로그 인덱스의 정적 HTML ↔ React title/H1/description 불일치 수정
-- [x] 정적 HTML 내부 링크 trailing slash 정규화 및 빌드 감사 규칙 추가
-- [x] ADsP·SQLD 블로그 6편의 잘못된 문항 수·과목 구조·시험 일정·비공식 합격률·보장 표현 수정
-- [x] `npm ci && npm run typecheck && npm test && npm run build` 전체 검증
-- [x] 51 test files / 586 tests 통과
-- [x] 558 static HTML, sitemap 261, noindex 297, quiz 0 SEO audit 통과
-- [x] 생성 HTML 내부 anchor 3,869건 중 noncanonical 0, missing target 0
+- [x] ADsP 비전공자 가이드의 제목·메타·본문·FAQ·CTA 업데이트
+- [x] 2026-08-26 Daily Package 11개 운영 파일 + review state 생성
+- [x] Instagram 설계 JSON + PNG 7장 생성
+- [ ] Local CI와 생성 HTML 감사
+- [ ] Studio 반응형 검수
 - [ ] 사용자 검토
 - [ ] commit / push / deploy — 승인 전 금지
 
@@ -84,8 +102,8 @@
 ## 다음 승인 전 작업
 
 1. 로컬 CI 및 생성된 HTML 재크롤링
-2. 코드·문서 diff 검토
-3. Studio에서 8월 26일 첫 Daily Package 검토 및 피드백 반영
-4. 사용자 승인 후에만 commit/push/deploy
+2. Studio에서 8월 26일 ADsP 패키지의 Blog 반응형·Instagram 7장 검토
+3. 사용자 피드백 반영
+4. 사용자 승인 후에만 commit/push/deploy 및 외부 게시
 
-2026-08-25 1차 검토 결과, 최초 원고와 Instagram 시안은 승인되지 않았다. Blog·Naver·Threads는 `아답터 강의 → 당일·다음 날 QuestDP 복습 → 같은 범위 노랭이`라는 하나의 흐름으로 재작성했고, 4주는 `1과목 1주 → 2과목 2주 → 노랭이 2회독 1주`로 다시 배분했다. Instagram은 텍스트 목업을 폐기하고 실제 1080×1080 PNG 7장으로 교체했다. 현재 상태는 사용자 재검토 대기다.
+2026-08-25 SQLD 패키지는 사용자 피드백에 따라 Blog·Naver·Threads를 `아답터 강의 → 당일·다음 날 QuestDP 복습 → 같은 범위 노랭이` 흐름으로 재작성했고, 4주는 `1과목 1주 → 2과목 2주 → 노랭이 2회독 1주`로 다시 배분했다. Blog는 통과·배포됐고 Naver·Threads도 게시됐다. Instagram은 최종 품질 문제로 게시하지 않았다.

@@ -1,12 +1,24 @@
 # QuestDP Content Edit Log
 
-## 2026-08-25 - SQLD 공부법 일반 필러와 2026-08-26 Daily Package 생성
+## 2026-08-26 - ADsP 비전공자 필러와 Daily Package 생성
+
+- 사용자 검토 결과 QuestDP Blog는 승인됐고, Naver Blog와 Threads는 각각 `https://blog.naver.com/tori_134/224391518505`, `https://www.threads.com/@korea.certification/post/Dcg6ZYdExgo`에 게시됐다. Instagram은 아직 `PENDING`이다.
+- QuestDP Blog는 승인만 받은 상태이며 commit·push·배포·색인 요청은 아직 수행하지 않았다.
+- Naver `ADsP 비전공자 공부법` 결과에서 2주·3주·4주·한 달 계획, 인강과 문제풀이 조합이 반복되고 기존 QuestDP 가이드의 노출 신호가 있음을 확인해 새 URL 대신 `/blog/adsp-비전공자-가이드/`를 업데이트했다.
+- KDATA 공식 안내로 ADsP 3과목·객관식 50문항·90분·10/10/30 문항·합격 및 과락 기준과 2026 제51회 일정을 재확인했다.
+- 아직 ADsP를 시작하지 않은 비전공자를 독자로 고정하고, 세부 개념 설명보다 `1·2과목 1주 → 3과목 2주 → 문제·오답 1주` 시간 배분과 당일·다음 날 복습 순서를 먼저 설명하도록 공식 블로그를 재작성했다.
+- Naver·Threads 원고와 Instagram 7장 설계를 같은 핵심 논리로 독립 작성했다. Instagram은 1:2:1 기간, 10/10/30 문항, 하루 90분, 오답 3분류를 각각 다른 시각 구조로 만든 1080×1080 PNG 7장이다.
+- Daily Package는 `seo-ops/04-daily-content/2026-08-26/`에 생성했으며 Blog·Naver·Threads·Instagram은 모두 사용자 검토 전 `PENDING`이다. commit·push·배포·외부 게시·색인 요청은 수행하지 않았다.
+- 검증은 `npm ci`, `npm run typecheck`, 전체 53 test files / 596 tests, production build와 SEO audit, Studio 실제 Blog 390·820·1280px 가로 넘침 및 CTA, Instagram PNG 7장 개별 시각 확인까지 통과했다. 정적 HTML 559개, sitemap 262 URL, noindex 297개를 확인했다.
+- 레슨·문제·`quizId`는 변경하지 않았으므로 Supabase 반영 대상은 없다.
+
+## 2026-08-25 - SQLD 공부법 일반 필러와 2026-08-25 Daily Package 발행
 
 - `SQLD 공부법` general intent를 기존 7일 압축 글이나 노랭이 비교 글에 억지로 합치지 않고 `/blog/sqld-공부법/` 단일 필러로 작성했다.
 - SQLD 독학·비전공자·공부기간은 같은 필러에 합치고, D-7 intent와 교재 비교 intent는 기존 글로 내부 링크해 카니벌라이제이션을 줄였다.
 - KDATA 2026-08-25 현재 안내를 기준으로 2과목·객관식 50문항·90분, 과목별 문항·배점, 총점/과락 기준과 제63회 접수·시험 일정을 재확인했다.
-- 4주는 합격 보장이 아닌 하루 60분 계획 예시로 한정하고, 모델링 언어 → SELECT 처리 흐름 → JOIN 결과 예측 → 제한 시간 오답 분류의 초보자용 순서로 새로 작성했다.
-- `seo-ops/04-daily-content/2026-08-26/`에 QuestDP Blog, Naver, Threads, Instagram, HOLD 플랫폼, Community, Sources, Review Checklist를 포함한 11개 파일을 만들었다. 모든 게시 대상은 Studio에서 PENDING으로 시작하며 승인·배포·외부 게시하지 않았다.
+- 4주는 합격 보장이 아닌 초보자용 기본 계획으로 한정하고, `1과목 1주 → 2과목 2주 → 노랭이 2회독 1주`와 `아답터 강의 → QuestDP 당일·다음 날 복습 → 같은 범위 노랭이`로 재작성했다.
+- Daily Package의 실제 작업·게시일은 `2026-08-25`로 정정했다. QuestDP Blog는 `136de62`로 배포했고, Naver·Threads는 사용자가 게시했으며 Instagram은 품질 문제로 미게시 상태를 유지했다.
 - 레슨·문제·`quizId`는 변경하지 않았으므로 Supabase 반영 대상은 없다.
 
 ## 2026-08-24 - 블로그 시험 사실·합격 보장 표현 재검수
@@ -3383,7 +3395,7 @@ order by expected.id;
 - `src/seo-studio/SeoStudioPage.tsx`
 - `scripts/generate-instagram-carousel.mjs`
 - `scripts/seo-studio-dev-plugin.ts`
-- `seo-ops/04-daily-content/2026-08-26/`
+- `seo-ops/04-daily-content/2026-08-25/`
 
 ### Supabase 반영 상태
 

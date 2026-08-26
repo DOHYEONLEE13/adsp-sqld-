@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "date": "2026-08-28",
+  "updatedAt": "2026-08-27T13:00:00.000Z",
+  "items": {
+    "blog": {
+      "status": "HOLD",
+      "feedback": "Post-publish QA and internal-link audit; no new source change.",
+      "updatedAt": "2026-08-27T13:00:00.000Z"
+    },
+    "naver": {
+      "status": "HOLD",
+      "feedback": "The existing ADsP post already covers this intent; no duplicate post.",
+      "updatedAt": "2026-08-27T13:00:00.000Z"
+    },
+    "threads": {
+      "status": "HOLD",
+      "feedback": "No new question or unique follow-up angle.",
+      "updatedAt": "2026-08-27T13:00:00.000Z"
+    },
+    "instagram": {
+      "status": "HOLD",
+      "feedback": "No new asset. The 2026-08-26 carousel remains separately pending.",
+      "updatedAt": "2026-08-27T13:00:00.000Z"
+    }
+  }
+}

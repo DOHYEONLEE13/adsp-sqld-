@@ -36,9 +36,9 @@ LOCAL VERIFICATION:
 - [x] production build와 SEO audit 통과 — 정적 HTML 559개, sitemap 262 URL, noindex 297개
 
 USER REVIEW:
-- [x] QuestDP Blog APPROVED — commit / push / deploy 대기
+- [x] QuestDP Blog APPROVED · PUBLISHED — commit `7decea8`
 - [x] Naver Blog PUBLISHED — https://blog.naver.com/tori_134/224391518505
 - [x] Threads PUBLISHED — https://www.threads.com/@korea.certification/post/Dcg6ZYdExgo
 - [ ] Instagram 승인 또는 수정 요청
 
-PUBLISH GATE: Naver와 Threads는 사용자가 게시 완료했고 Published Log에 URL이 기록됐다. QuestDP Blog는 사용자 승인을 받아 commit·push 대상으로 확정됐다. Instagram은 `PENDING`이며 게시하지 않는다.
+PUBLISH GATE: QuestDP Blog는 commit `7decea8`로 push·배포됐고 GitHub Actions·Cloudflare Pages·운영 번들을 확인했다. Naver와 Threads도 Published Log에 URL이 기록됐다. ADsP 색인 요청 여부는 미확인이며 Instagram은 `PENDING`이라 게시하지 않는다.

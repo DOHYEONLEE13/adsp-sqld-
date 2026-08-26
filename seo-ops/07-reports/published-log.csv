@@ -4,3 +4,4 @@ date,platform,keyword,title,url,status,indexed,impressions,clicks,ctr,position,e
 "2026-08-25","threads","SQLD 공부법","처음 준비하는 사람에게 개념을 설명하지 않고, 강의·복습·문제집을 연결하는 4주 실행 순서 하나만 전달한다.","https://www.threads.com/@korea.certification/post/DcbtSYrE3pc","PUBLISHED","UNKNOWN","","","","","","2026-08-25 사용자 게시·등록 완료"
 "2026-08-26","threads","ADsP 공부법","세 과목을 똑같이 나누면 3과목에서 일정이 무너진다는 한 문장과 1:2:1 시간 배분만 전달한다.","https://www.threads.com/@korea.certification/post/Dcg6ZYdExgo","PUBLISHED","UNKNOWN","","","","","","Content Studio에서 기록"
 "2026-08-26","naver","ADsP 공부법","ADsP 비전공자 공부법. 3과목에 2주를 쓰는 4주 플랜","https://blog.naver.com/tori_134/224391518505","PUBLISHED","UNKNOWN","","","","","","Content Studio에서 기록"
+"2026-08-26","questdp","ADsP 공부법","ADsP 공부법 — 비전공자가 통계에서 덜 막히는 4주 플랜","https://quest-dp.com/blog/adsp-비전공자-가이드/","PUBLISHED","UNKNOWN","","","","","","commit 7decea8 배포·CI·Cloudflare·운영 번들 확인; 색인 요청 여부 미확인"

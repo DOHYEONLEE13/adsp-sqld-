@@ -1,5 +1,5 @@
 STATUS: PUBLISH
-REVIEW STATUS: APPROVED — commit / push / deploy 대기
+REVIEW STATUS: APPROVED — PUBLISHED AND DEPLOYED
 ACTION: UPDATE EXISTING
 PRIMARY KEYWORD: ADsP 공부법
 SECONDARY KEYWORDS: ADsP 비전공자, ADsP 독학, ADsP 공부기간, ADsP 3과목
@@ -16,4 +16,4 @@ INTERNAL LINKS: `/curriculum/adsp/` 전체 범위 / `/blog/adsp-독학-vs-인강
 CTA: ADsP 게임으로 플레이하기 → `#/game/adsp`
 SOURCES: KDATA ADsP 자격 소개 https://www.dataq.or.kr/www/sub/a_06.do / KDATA 2026 시험 일정 https://www.dataq.or.kr/www/accept/schedule.do
 QUALITY SCORE: 93 / 100 — Codex 사전 검수: 검색 의도 19, 초보자 명료성 19, 독창성 18, 사실성 20, 내부 연결·CTA 17
-EDITOR NOTE: 실제 전체 본문은 `src/data/seo/blog.ts`의 `POST_NONMAJOR`에 반영했다. 점수는 내부 사전 검수이며 최종 판정은 사용자의 Studio 검토다.
+EDITOR NOTE: 실제 전체 본문은 `src/data/seo/blog.ts`의 `POST_NONMAJOR`에 반영했고 commit `7decea8`로 배포했다. 운영 페이지·번들·CI·Cloudflare Pages 성공을 확인했으며 색인 요청 여부는 미확인이다.

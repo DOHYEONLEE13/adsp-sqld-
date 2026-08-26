@@ -1,6 +1,6 @@
 # QuestDP SEO·AEO Master Status
 
-기준일: 2026-08-26 KST
+기준일: 2026-08-27 KST
 스프린트: 2026-08-24 ~ 2026-09-13
 상태: Phase 1 Foundation 완료 · Phase 1.5 Publishing Workflow 운영 중 · Phase 2 일일 패키지 운영
 
@@ -16,7 +16,9 @@
 - [x] 전체 test / production build / 로컬 브라우저 반응형 QA
 - [x] 첫 Daily Package 사용자 검토 상태 반영
 
-2026-08-25 SQLD Daily Package는 QuestDP Blog 배포·색인 요청, Naver·Threads 게시까지 처리됐다. Instagram은 사용자 품질 판정에 따라 게시하지 않았다. 2026-08-26 ADsP Daily Package는 QuestDP Blog 승인, Naver·Threads 게시까지 처리됐으며 Instagram은 검토 대기다. QuestDP Blog의 commit·push·배포·색인 요청은 아직 수행하지 않았다.
+2026-08-25 SQLD Daily Package는 QuestDP Blog 배포·색인 요청, Naver·Threads 게시까지 처리됐다. Instagram은 사용자 품질 판정에 따라 게시하지 않았다. 2026-08-26 ADsP Daily Package는 QuestDP Blog를 commit `7decea8`로 배포했고 Naver·Threads도 게시됐다. Instagram은 검토 대기이며 ADsP Search Console 색인 요청 여부는 확인되지 않았다. 2026-08-27은 중복 발행 없이 두 필러의 운영·사이트맵·공개 검색 캐시를 점검하는 QA 패키지로 생성했다.
+
+2026-08-28 ADsP 후속 패키지는 사전 생성했다. 4주 필러·2주 로드맵·독학/인강 비교 글의 내부 링크망에 고립 URL이 없음을 확인했고, 공개 검색에 남은 수정 전 스니펫 때문에 실제 실행일에는 세 URL의 Search Console 재크롤 상태만 점검한다. 모든 신규 게시 채널은 HOLD다.
 
 ## Phase 2 — 2026-08-25 SQLD Daily Package
 
@@ -54,7 +56,9 @@
 - [x] Naver PUBLISHED — https://blog.naver.com/tori_134/224391518505
 - [x] Threads PUBLISHED — https://www.threads.com/@korea.certification/post/Dcg6ZYdExgo
 - [ ] Instagram 사용자 검토
-- [ ] QuestDP Blog commit / push / deploy / 색인 요청 — 사용자 승인 후 진행 중
+- [x] QuestDP Blog commit / push / deploy — `7decea8`
+- [x] GitHub Actions build와 Cloudflare Pages 성공, 운영 번들 최신 제목·CTA 확인
+- [ ] Google Search Console 색인 요청 여부 확인
 
 검증 기록 (2026-08-24 KST): `npm ci`, `npm run typecheck`, 53 test files / 595 tests, Production build와 558개 정적 HTML SEO audit 통과. 임시 Daily Package로 실제 Blog iframe 390 / 820 / 1280px, Naver·Threads·Instagram·Tistory·LinkedIn, 복사, review feedback 저장을 확인한 뒤 임시 패키지는 제거했다. Production `dist`에는 Studio 문자열·chunk·정적 route·rewrite·sitemap 항목이 0건이다.
 
@@ -70,15 +74,27 @@
 - [x] 키워드 DB 초안, 클러스터, 카니벌라이제이션, 내부링크 지도
 - [x] 2026-08-24~09-13 캘린더 초안
 
-## 2026-08-26 로컬 수정 — 아직 배포되지 않음
+## Phase 2 — 2026-08-27 Post-publish QA Daily Package
 
-- [x] ADsP 비전공자 가이드의 제목·메타·본문·FAQ·CTA 업데이트
-- [x] 2026-08-26 Daily Package 11개 운영 파일 + review state 생성
-- [x] Instagram 설계 JSON + PNG 7장 생성
-- [ ] Local CI와 생성 HTML 감사
-- [ ] Studio 반응형 검수
-- [ ] 사용자 검토
-- [ ] commit / push / deploy — 승인 전 금지
+- [x] SQLD·ADsP 공식 글 HTTP 200 확인
+- [x] 두 필러의 `sitemap-blog.xml` 포함 확인
+- [x] ADsP 최신 제목·게임 CTA 운영 번들 반영 확인
+- [x] commit `7decea8` GitHub Actions·Cloudflare Pages 성공 확인
+- [x] 공개 검색의 ADsP 이전 스니펫 잔존을 재크롤 대기로 기록
+- [x] Naver·Threads 게시 URL과 QuestDP 발행 기록 정리
+- [x] 새 글·소셜 복제 없이 전 채널 HOLD 패키지 생성
+- [ ] ADsP Search Console URL 검사 또는 색인 요청 여부 확인
+
+## Phase 2 — 2026-08-28 ADsP Internal Link QA Daily Package
+
+- [x] 8월 28일 실행용 Daily Package 사전 생성
+- [x] 4주 필러·2주 로드맵·독학/인강 비교 운영 본문 기준선 확인
+- [x] 세 글의 본문 링크·`relatedSlugs`·이어 읽기 카드 구조 감사
+- [x] 고립 URL 없음 확인
+- [x] 공개 검색의 수정 전 스니펫 잔존 기록
+- [x] 신규 QuestDP·Naver·Threads·Instagram 발행 HOLD
+- [ ] 8월 28일 실제 HTTP·canonical 재확인
+- [ ] Search Console에서 세 URL 최신 크롤·색인 상태 확인
 
 ## 현재 핵심 진단
 
@@ -99,11 +115,11 @@
 | Google Search Console | UNAVAILABLE | 로그인 세션 없음 |
 | PageSpeed Insights API | UNAVAILABLE | 429 quota; 수치 미기록 |
 
-## 다음 승인 전 작업
+## 다음 작업
 
-1. 로컬 CI 및 생성된 HTML 재크롤링
-2. Studio에서 8월 26일 ADsP 패키지의 Blog 반응형·Instagram 7장 검토
-3. 사용자 피드백 반영
-4. 사용자 승인 후에만 commit/push/deploy 및 외부 게시
+1. 8월 26일 ADsP Instagram 7장 승인 또는 보류 결정
+2. 8월 28일 ADsP 세 URL의 HTTP·canonical·Search Console 상태 확인
+3. 필요한 ADsP URL만 색인 요청하고 Published Log 갱신
+4. 8월 29일 `컴활 필기 공부법` 기존 필러 업데이트 패키지 생성
 
 2026-08-25 SQLD 패키지는 사용자 피드백에 따라 Blog·Naver·Threads를 `아답터 강의 → 당일·다음 날 QuestDP 복습 → 같은 범위 노랭이` 흐름으로 재작성했고, 4주는 `1과목 1주 → 2과목 2주 → 노랭이 2회독 1주`로 다시 배분했다. Blog는 통과·배포됐고 Naver·Threads도 게시됐다. Instagram은 최종 품질 문제로 게시하지 않았다.

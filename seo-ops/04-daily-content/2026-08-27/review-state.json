@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "date": "2026-08-27",
+  "updatedAt": "2026-08-27T12:00:00.000Z",
+  "items": {
+    "blog": {
+      "status": "HOLD",
+      "feedback": "Post-publish QA day — no new draft or deployment.",
+      "updatedAt": "2026-08-27T12:00:00.000Z"
+    },
+    "naver": {
+      "status": "HOLD",
+      "feedback": "Existing SQLD and ADsP posts are recorded; no duplicate post today.",
+      "updatedAt": "2026-08-27T12:00:00.000Z"
+    },
+    "threads": {
+      "status": "HOLD",
+      "feedback": "Existing SQLD and ADsP posts are recorded; no duplicate post today.",
+      "updatedAt": "2026-08-27T12:00:00.000Z"
+    },
+    "instagram": {
+      "status": "HOLD",
+      "feedback": "No new asset. The 2026-08-26 ADsP carousel remains separately pending.",
+      "updatedAt": "2026-08-27T12:00:00.000Z"
+    }
+  }
+}

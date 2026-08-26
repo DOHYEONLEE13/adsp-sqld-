@@ -1,9 +1,27 @@
 # QuestDP Content Edit Log
 
+## 2026-08-28 - ADsP 내부 링크·재크롤 QA Daily Package 사전 생성
+
+- 8월 28일은 신규 글 발행일이 아닌 `POST-PUBLISH QA + INTERNAL LINKS` 일정으로 유지하고 `seo-ops/04-daily-content/2026-08-28/`에 전 채널 HOLD 패키지를 생성했다.
+- 2026-08-27 기준 운영 페이지에서 4주 필러, 2주 로드맵, 독학·인강 비교 글의 최신 본문을 확인했다. 2주 글의 합격 보장 표현·문항 수와 비교 글의 비공식 합격률·고정 비용은 운영 본문에서 정정된 상태다.
+- 세 글의 본문 링크와 `relatedSlugs`를 감사해 4주 필러·2주 로드맵·독학/인강 비교·ADsP 커리큘럼 사이에 고립 URL이 없음을 확인했다.
+- 공개 검색에는 세 글 중 일부의 수정 전 제목·수치·과장 문구가 남아 있어 실제 8월 28일 작업을 Search Console URL 검사와 필요한 URL의 재색인 요청으로 한정했다.
+- 4주 필러의 2주/4주 비교 구간에서 2주 로드맵으로 가는 문맥 링크는 선택 개선안으로만 기록했다. 현재 링크망이 완성돼 있어 블로그 소스는 변경하지 않았다.
+- 레슨·문제·`quizId`는 변경하지 않았으므로 Supabase 반영 대상은 없다.
+
+## 2026-08-27 - SQLD·ADsP 발행 후 SEO QA Daily Package
+
+- 8월 27일은 새 글 생성일이 아닌 `CARRYOVER REVIEW + POST-PUBLISH QA` 일정으로 처리했다. 같은 공부법 필러를 중복 생성하지 않고 `seo-ops/04-daily-content/2026-08-27/`에 전 채널 HOLD 패키지를 생성했다.
+- SQLD `/blog/sqld-공부법/`와 ADsP `/blog/adsp-비전공자-가이드/`의 HTTP 200, `sitemap-blog.xml` 포함, ADsP 최신 제목·게임 CTA의 운영 번들 반영을 확인했다.
+- ADsP 배포 commit `7decea8`의 GitHub Actions build와 Cloudflare Pages 성공 기록을 연결했다.
+- 공개 검색에서는 ADsP URL의 업데이트 전 제목·본문 스니펫이 남아 있어 `운영 반영 완료 / 검색 캐시 재수집 대기`로 기록했다. Search Console 데이터가 없어 색인 완료나 순위는 추정하지 않았다.
+- 8월 26일 QuestDP Blog를 Published Log에 추가하고 캘린더·inventory·audit·master status의 배포 대기 상태를 실제 운영 상태로 정정했다.
+- 레슨·문제·`quizId`는 변경하지 않았으므로 Supabase 반영 대상은 없다.
+
 ## 2026-08-26 - ADsP 비전공자 필러와 Daily Package 생성
 
 - 사용자 검토 결과 QuestDP Blog는 승인됐고, Naver Blog와 Threads는 각각 `https://blog.naver.com/tori_134/224391518505`, `https://www.threads.com/@korea.certification/post/Dcg6ZYdExgo`에 게시됐다. Instagram은 아직 `PENDING`이다.
-- QuestDP Blog는 승인만 받은 상태이며 commit·push·배포·색인 요청은 아직 수행하지 않았다.
+- QuestDP Blog는 이후 commit `7decea8`로 push·배포됐다. GitHub Actions build·Cloudflare Pages·운영 번들을 확인했고 색인 요청 여부는 미확인이다.
 - Naver `ADsP 비전공자 공부법` 결과에서 2주·3주·4주·한 달 계획, 인강과 문제풀이 조합이 반복되고 기존 QuestDP 가이드의 노출 신호가 있음을 확인해 새 URL 대신 `/blog/adsp-비전공자-가이드/`를 업데이트했다.
 - KDATA 공식 안내로 ADsP 3과목·객관식 50문항·90분·10/10/30 문항·합격 및 과락 기준과 2026 제51회 일정을 재확인했다.
 - 아직 ADsP를 시작하지 않은 비전공자를 독자로 고정하고, 세부 개념 설명보다 `1·2과목 1주 → 3과목 2주 → 문제·오답 1주` 시간 배분과 당일·다음 날 복습 순서를 먼저 설명하도록 공식 블로그를 재작성했다.

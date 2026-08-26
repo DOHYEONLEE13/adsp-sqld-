@@ -1,5 +1,5 @@
 PACKAGE DATE: 2026-08-26
-REVIEW STATUS: 3 / 4 RESOLVED — BLOG APPROVED · NAVER/THREADS PUBLISHED · INSTAGRAM PENDING
+REVIEW STATUS: 3 / 4 RESOLVED — BLOG/NAVER/THREADS PUBLISHED · INSTAGRAM PENDING
 PRIMARY KEYWORD: ADsP 공부법
 SECONDARY KEYWORDS: ADsP 비전공자, ADsP 독학, ADsP 공부기간, ADsP 3과목
 CLUSTER: ADsP study pillar
@@ -16,5 +16,5 @@ CANNIBALIZATION: 새 URL을 만들지 않고 `/blog/adsp-비전공자-가이드/
 CORE ANGLE: 1주차에 1·2과목을 끝까지 훑고, 2~3주차를 3과목에 쓰며, 4주차에는 새 진도를 멈추고 회차형 문제와 오답을 정리한다. 강의·기본서 직후 QuestDP로 같은 범위를 확인한다.
 TARGET AUDIENCE: 통계·R·데이터 분석을 처음 접하고 ADsP의 과목 이름도 아직 낯선 비전공자
 OFFICIAL FACTS: ADsP는 3과목, 객관식 50문항, 90분이며 과목별 문항 수는 10·10·30이다. 총점 60점 이상 및 과목별 40% 이상이 필요하다. 2026년 제51회 접수는 9월 28일~10월 2일, 시험은 10월 31일이다.
-PLATFORM PLAN: QuestDP Blog APPROVED (배포 대기) / Naver PUBLISHED / Threads PUBLISHED / Instagram PENDING / Velog HOLD / Tistory HOLD / LinkedIn HOLD / Community NO ACTION TODAY
-PUBLISHING RULE: 이 패키지는 로컬 검토용 초안이다. PUBLISH 표시는 게시 후보라는 뜻이며 사용자 승인, Git commit, push, 배포, 외부 게시 또는 색인 요청을 뜻하지 않는다.
+PLATFORM PLAN: QuestDP Blog PUBLISHED / Naver PUBLISHED / Threads PUBLISHED / Instagram PENDING / Velog HOLD / Tistory HOLD / LinkedIn HOLD / Community NO ACTION TODAY
+PUBLISHING RECORD: QuestDP Blog는 commit `7decea8`로 push·배포됐고 운영 페이지와 번들을 확인했다. ADsP 색인 요청 여부는 확인되지 않았다.

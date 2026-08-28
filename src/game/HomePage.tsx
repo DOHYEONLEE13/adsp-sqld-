@@ -784,7 +784,10 @@ export default function HomePage() {
           )
         : null}
       {energyShopOpen ? (
-        <EnergyShopModal onClose={() => setEnergyShopOpen(false)} />
+        <EnergyShopModal
+          subject={learnCtx?.kind === 'expansion' ? learnCtx.subjectId : subject}
+          onClose={() => setEnergyShopOpen(false)}
+        />
       ) : null}
     </section>
   );

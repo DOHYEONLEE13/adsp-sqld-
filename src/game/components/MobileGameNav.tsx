@@ -361,7 +361,10 @@ export function MobileTopBar({ subject, customSubject }: TopProps) {
         </div>
       ) : null}
       {energyShopOpen ? (
-        <EnergyShopModal onClose={() => setEnergyShopOpen(false)} />
+        <EnergyShopModal
+          subject={effectiveCustomSubject?.id ?? effectiveSubject ?? undefined}
+          onClose={() => setEnergyShopOpen(false)}
+        />
       ) : null}
       {/* 홈의 "과목 바꾸기"와 동일한 온보딩 첫 화면을 재사용한다. */}
       {switcherOpen && typeof document !== 'undefined'

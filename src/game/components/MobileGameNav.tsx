@@ -446,12 +446,9 @@ export function MobileBottomNav({
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-30"
+      className="pointer-events-none fixed inset-x-0 z-30 px-3"
       style={{
-        background: 'var(--game-chrome-bottom)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        borderTop: '1px solid var(--game-chrome-border)',
+        bottom: 'calc(8px + env(safe-area-inset-bottom))',
       }}
     >
       {/*
@@ -461,7 +458,7 @@ export function MobileBottomNav({
         iPhone SE (375px) 기준 슬롯 폭 75px — 한글 3자 라벨까지 잘림 없음
         (10.5px 폰트 × 3자 ≈ 33px).
       */}
-      <div className="grid grid-cols-5 pb-[env(safe-area-inset-bottom)] max-w-[1200px] mx-auto">
+      <div className="mobile-floating-glass-nav pointer-events-auto mx-auto grid max-w-[1200px] grid-cols-5">
         <Tab
           tab="home"
           active={active}

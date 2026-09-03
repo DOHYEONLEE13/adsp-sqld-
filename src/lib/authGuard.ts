@@ -13,6 +13,8 @@
  *   localStorage 에 잠시 보관하면 OAuth 후 첫 mount 에서 안전하게 복원 가능.
  */
 
+import { navigate } from './navigate';
+
 const PENDING_REDIRECT_KEY = 'questdp.auth.pendingRedirect.v1';
 
 /**
@@ -73,16 +75,15 @@ export function clearPendingAuthRedirect(): void {
 
 /**
  * 의도 라우트 복원 — SIGNED_IN 직후 호출.
- * 보관된 값을 hash 로 적용하고 localStorage 정리.
+ * 하이브리드 라우터 규칙에 맞춰 path/hash 라우트로 이동하고 localStorage 정리.
  * 보관된 값이 없으면 false 반환 (호출자가 default 라우트로 이동 결정 가능).
  */
 export function consumePendingAuthRedirect(): boolean {
   const target = getPendingAuthRedirect();
   if (!target) return false;
   clearPendingAuthRedirect();
-  // hash 가 이미 같은 곳이면 전이 X
   const currentHash = window.location.hash.replace(/^#/, '');
-  if (currentHash === target) return true;
-  window.location.hash = target;
+  if (currentHash === target || window.location.pathname === target) return true;
+  navigate(target);
   return true;
 }

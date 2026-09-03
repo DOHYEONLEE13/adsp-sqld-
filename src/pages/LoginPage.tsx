@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Loader2, LockKeyhole, Mail } from 'lucide-react';
 import AuthCard from '@/game/components/AuthCard';
 import VideoBg from '@/components/ui/VideoBg';
 import { VIDEO_URLS } from '@/data/site';
 import Ques from '@/components/mascot/Ques';
-import { isSupabaseConfigured } from '@/lib/supabase';
+import { isSupabaseConfigured, signInWithPassword } from '@/lib/supabase';
 import {
   clearPendingAuthRedirect,
   consumePendingAuthRedirect,
@@ -21,7 +21,26 @@ export default function LoginPage({ onBack }: Props) {
   const auth = useAuthSession();
   const appMode = isAppMode();
   const [redirectReason, setRedirectReason] = useState<'protected' | null>(null);
+  const [reviewEmail, setReviewEmail] = useState('');
+  const [reviewPassword, setReviewPassword] = useState('');
+  const [reviewPending, setReviewPending] = useState(false);
+  const [reviewError, setReviewError] = useState('');
   const pendingTarget = getPendingAuthRedirect();
+  const reviewMode = new URLSearchParams(
+    window.location.hash.split('?')[1] ?? '',
+  ).get('review') === '1';
+
+  const handleReviewLogin = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (reviewPending || !reviewEmail || !reviewPassword) return;
+    setReviewPending(true);
+    setReviewError('');
+    const { error } = await signInWithPassword(reviewEmail, reviewPassword);
+    if (error) {
+      setReviewError('이메일 또는 비밀번호를 확인해 주세요.');
+      setReviewPending(false);
+    }
+  };
 
   useEffect(() => {
     try {
@@ -81,11 +100,12 @@ export default function LoginPage({ onBack }: Props) {
         >
           <Ques pose="wave" size={140} />
           <h1 className="kr-heading text-[26px] md:text-[32px] leading-[1.2] mt-5">
-            먼저 로그인해주세요
+            {reviewMode ? '심사용 계정 로그인' : '먼저 로그인해주세요'}
           </h1>
           <p className="kr-body text-[13.5px] md:text-[14.5px] text-cream/70 leading-[1.65] mt-3 max-w-[420px]">
-            Google 계정으로 5초만에 시작할 수 있어요. 진도, 친구 비교,
-            통계가 기기 사이에 동기화돼요.
+            {reviewMode
+              ? '담당자에게 전달받은 이메일과 비밀번호로 로그인해 결제 경로와 서비스를 확인할 수 있습니다.'
+              : 'Google 계정으로 5초만에 시작할 수 있어요. 진도, 친구 비교, 통계가 기기 사이에 동기화돼요.'}
             {redirectReason === 'protected' && pendingTarget ? (
               <>
                 <br />
@@ -98,7 +118,62 @@ export default function LoginPage({ onBack }: Props) {
           </p>
         </header>
 
-        <AuthCard />
+        {reviewMode ? (
+          <form
+            onSubmit={handleReviewLogin}
+            className="liquid-glass rounded-[20px] p-5 md:p-6 space-y-4"
+            aria-label="심사용 계정 로그인"
+          >
+            <label className="block">
+              <span className="kr-body mb-2 flex items-center gap-2 text-[12px] text-cream/70">
+                <Mail size={14} aria-hidden /> 이메일
+              </span>
+              <input
+                type="email"
+                value={reviewEmail}
+                onChange={(event) => setReviewEmail(event.target.value)}
+                autoComplete="username"
+                required
+                className="kr-body w-full rounded-xl border border-cream/15 bg-cream/[0.06] px-4 py-3 text-[14px] text-cream outline-none focus:border-neon/60"
+              />
+            </label>
+            <label className="block">
+              <span className="kr-body mb-2 flex items-center gap-2 text-[12px] text-cream/70">
+                <LockKeyhole size={14} aria-hidden /> 비밀번호
+              </span>
+              <input
+                type="password"
+                value={reviewPassword}
+                onChange={(event) => setReviewPassword(event.target.value)}
+                autoComplete="current-password"
+                required
+                className="kr-body w-full rounded-xl border border-cream/15 bg-cream/[0.06] px-4 py-3 text-[14px] text-cream outline-none focus:border-neon/60"
+              />
+            </label>
+            {reviewError ? (
+              <p role="alert" className="kr-body text-[12px] text-[#ffbcbc]">
+                {reviewError}
+              </p>
+            ) : null}
+            <button
+              type="submit"
+              disabled={reviewPending || !reviewEmail || !reviewPassword}
+              className="kr-body inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-cream px-4 text-[13px] font-bold text-base transition active:scale-[0.99] disabled:opacity-45"
+            >
+              {reviewPending ? <Loader2 size={15} className="animate-spin" aria-hidden /> : null}
+              로그인
+            </button>
+            <button
+              type="button"
+              onClick={() => { window.location.hash = '/login'; }}
+              className="kr-body w-full text-center text-[11.5px] text-cream/50 hover:text-cream/75"
+            >
+              일반 Google 로그인으로 돌아가기
+            </button>
+          </form>
+        ) : (
+          <AuthCard />
+        )}
 
         {!isSupabaseConfigured() ? (
           <p className="kr-body text-[11px] text-cream/45 mt-4 leading-[1.55] text-center">

@@ -4,7 +4,7 @@
  * 라우팅: `#/refund-request`
  *
  * 흐름:
- *   1. 결제일 입력 → 자동 자격 판정 (≤7일 / >7일)
+ *   1. 결제일 입력 → 청약철회 기간 안내 (≤7일 / >7일)
  *   2. 사유 입력 (선택)
  *   3. 제출 → DB `refund_requests` insert (Supabase 활성 시)
  *      + mailto: 로 운영자 이메일 자동 작성
@@ -208,7 +208,7 @@ export default function RefundRequestPage({ onBack }: Props) {
               id="rr-date"
               label="결제일"
               required
-              hint="결제 후 7일 이내인지 자동 판정됩니다."
+              hint="결제일부터 7일 이내인지 확인합니다. 콘텐츠 이용 이력은 접수 후 별도로 확인합니다."
             >
               <input
                 id="rr-date"
@@ -346,9 +346,9 @@ function Field({
 function eligibilityLabel(e: Eligibility): string {
   switch (e) {
   case 'within7':
-    return '결제 후 7일 이내 — 전액 환불 대상';
+    return '결제일부터 7일 이내 — 미사용 시 전액 환불 대상';
   case 'after7':
-    return '결제 후 8일 이상 — 자동 갱신 중단으로 처리';
+    return '청약철회 기간 경과 — 예외 사유 확인 필요';
   default:
     return '결제일 미확인';
   }
@@ -357,9 +357,9 @@ function eligibilityLabel(e: Eligibility): string {
 function eligibilityMessage(e: Eligibility): string {
   switch (e) {
   case 'within7':
-    return '결제 후 7일 이내입니다. 전액 환불 대상이에요.';
+    return '결제일부터 7일 이내입니다. 유료 콘텐츠 사용 이력이 없으면 전액 환불 대상이며, 사용 이력은 접수 후 확인합니다.';
   case 'after7':
-    return '결제 후 8일 이상이라 일할 환불은 불가하지만, 다음 결제부터 자동 중단으로 처리됩니다.';
+    return '일반 청약철회 기간이 지났습니다. 중복 결제, 서비스 미제공 등 관계 법령상 예외 사유가 있는지 접수 후 확인합니다.';
   default:
     return '';
   }

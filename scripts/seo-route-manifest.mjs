@@ -529,11 +529,11 @@ const CORE_ROUTES = [
     priority: '0.9',
     title: 'QuestDP 요금제 — ADsP·SQLD·컴활 게임형 학습사이트',
     description:
-      'ADsP·SQLD·컴활 게임형 학습사이트 QuestDP의 무료 플랜, 오픈 베타 쿠폰, 프리미엄 이용 안내를 확인하세요.',
+      'ADsP·SQLD·컴활 게임형 학습사이트 QuestDP의 무료 플랜, Pro 7일 이용권, Max 30일 이용권과 환불 기준을 확인하세요.',
     h1: 'QuestDP 요금제',
     eyebrow: 'Pricing',
     summary:
-      '정식 결제 오픈 전에는 오픈 베타 쿠폰으로 프리미엄 기능을 체험할 수 있습니다. 결제 관련 안내는 심사와 운영 정책에 맞춰 투명하게 제공합니다.',
+      'Pro는 결제일부터 7일, Max는 결제일부터 30일 이용합니다. 두 상품 모두 단건 결제이며 자동 갱신되지 않습니다.',
     links: [
       { href: '/refund', label: '환불 정책' },
       { href: '/terms', label: '이용약관' },

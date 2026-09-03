@@ -85,6 +85,7 @@ export default function Footer() {
             {COMPANY.hostingProvider}
           </p>
           <p>
+            <span className="text-cream/60">연락처</span> {COMPANY.contact} ·{' '}
             <span className="text-cream/60">이메일</span> {COMPANY.email}
           </p>
         </div>

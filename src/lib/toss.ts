@@ -28,7 +28,7 @@ export const SHOP_NAME = '퀘스트디피';
 export const PRODUCT_LABELS: Record<ProductCode, string> = {
   lifetime: '자격증 학습 이용권 (평생)',
   weekly: '자격증 학습 이용권 (1주)',
-  monthly: '자격증 학습 이용권 (월 구독)',
+  monthly: '자격증 학습 이용권 (30일)',
 };
 
 export const PRODUCT_AMOUNTS: Record<ProductCode, number> = {

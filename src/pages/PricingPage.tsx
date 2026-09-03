@@ -24,6 +24,7 @@ import Pricing from '@/components/sections/Pricing';
 import Footer from '@/components/layout/Footer';
 import { COMPANY, BRAND } from '@/data/site';
 import { PRICING_PLANS } from '@/data/pricing';
+import { COMMERCE_POLICY } from '@/data/commerce';
 import { handleNavClick } from '@/lib/navigate';
 
 const PRODUCT_IMAGE = 'https://quest-dp.com/og/default.png';
@@ -33,7 +34,7 @@ export default function PricingPage() {
   useSeoMeta({
     title: '요금제 — QuestDP | 1주 4,900원 · 월 9,900원',
     description:
-      'QuestDP 의 ADSP·SQLD 자격증 학습 구독 요금. 무료 (제한 풀이) · 1주 단기 4,900원 · 월 구독 9,900원 (주당 약 2,475원). 환불 정책·사업자 정보 안내.',
+      'QuestDP의 ADSP·SQLD 자격증 학습 이용권. 무료 · Pro 7일 4,900원 · Max 30일 9,900원. 이용기간, 환불 정책, 사업자 정보를 안내합니다.',
     canonical: 'https://quest-dp.com/pricing/',
     ogImage: 'https://quest-dp.com/og/default.png',
     ogType: 'website',
@@ -97,7 +98,7 @@ export default function PricingPage() {
           요금제
         </h1>
         <p className="kr-body text-[14px] md:text-[16px] text-cream/70 mt-4 leading-[1.6] max-w-[680px] mx-auto">
-          ADSP · SQLD 자격증 학습. 무료로 시작 · 시험 직전 단기 · 꾸준한 월 구독.
+          ADSP · SQLD 자격증 학습. 무료로 시작 · 시험 직전 7일 · 꾸준한 30일 이용권.
           모든 플랜이 동일한 커리큘럼.
         </p>
       </header>
@@ -118,18 +119,25 @@ export default function PricingPage() {
             <InfoRow label="판매자" value={`${BRAND.nameKr} (대표 ${COMPANY.representative})`} />
             <InfoRow label="사업자등록번호" value={COMPANY.businessNumber} />
             <InfoRow label="통신판매업" value={COMPANY.ecommerceNumber} />
-            <InfoRow label="결제수단" value="신용·체크카드 · 간편결제 (토스페이먼츠)" />
-            <InfoRow label="상품유형" value="디지털 콘텐츠 (학습 구독)" />
-            <InfoRow label="공급시점" value="결제 즉시 자동 활성" />
+            <InfoRow label="연락처" value={`${COMPANY.contact} · ${COMPANY.email}`} />
+            <InfoRow label="사업장 주소" value={COMPANY.address} />
+            <InfoRow label="결제수단" value={COMMERCE_POLICY.paymentMethods} />
+            <InfoRow label="상품유형" value="디지털 콘텐츠 (기간제 학습 이용권)" />
+            <InfoRow label="공급시점" value={COMMERCE_POLICY.activation} />
+            <InfoRow label="이용기간" value={`Pro ${COMMERCE_POLICY.weeklyPeriod} · Max ${COMMERCE_POLICY.monthlyPeriod}`} />
+            <InfoRow label="최대 제공기간" value={COMMERCE_POLICY.maximumServicePeriod} />
           </dl>
 
           <div className="mt-6 pt-6 border-t border-cream/10 text-[12.5px] md:text-[13px] text-cream/65 leading-[1.65] space-y-2">
             <p>
-              ※ <strong className="text-cream/85">청약철회</strong>: 디지털 콘텐츠 사용 전 7일 이내
-              전액 환불. 사용 시작 후엔 잔여일 일할 환불 (결제 후 미사용 비율 계산).
+              ※ <strong className="text-cream/85">청약철회</strong>: {COMMERCE_POLICY.unusedRefund}{' '}
+              {COMMERCE_POLICY.startedContentRefund}
             </p>
             <p>
-              ※ <strong className="text-cream/85">자동결제</strong>: 월 구독은 매월 동일일 자동 결제. 마이페이지에서 언제든 해지 가능.
+              ※ <strong className="text-cream/85">이용권 만료</strong>: {COMMERCE_POLICY.renewal}
+            </p>
+            <p>
+              ※ <strong className="text-cream/85">예외 환불</strong>: {COMMERCE_POLICY.statutoryException}
             </p>
             <p>
               ※ 자세한 환불 절차·면책 조건은{' '}

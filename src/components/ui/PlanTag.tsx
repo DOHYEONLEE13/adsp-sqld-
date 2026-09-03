@@ -8,7 +8,7 @@
  * 세 가지 변형:
  *   - FREE  : 회색 ghost 톤
  *   - PRO   : neon outline (1주 단기)
- *   - MAX   : neon solid + glow (월 구독)
+ *   - MAX   : neon solid + glow (30일 이용권)
  *
  * 클릭 시 #/#pricing 으로 이동 — 사용자가 업그레이드 경로를 즉시 인지.
  *

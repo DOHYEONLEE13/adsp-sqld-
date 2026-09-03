@@ -1,6 +1,8 @@
 import { AlertTriangle, ArrowRight, Check, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import { PRICING_PLANS } from '@/data/pricing';
+import { COMMERCE_POLICY } from '@/data/commerce';
+import { setPendingAuthRedirect } from '@/lib/authGuard';
 import { useAuthSession } from '@/lib/auth/sessionStore';
 import {
   isTossConfigured,
@@ -10,6 +12,7 @@ import {
   type ProductCode,
 } from '@/lib/toss';
 import { cx } from '@/lib/utils';
+import { navigate } from '@/lib/navigate';
 import type { PricingPlan } from '@/types/site';
 
 /** 유료 플랜 → 토스 상품 코드. 무료 플랜은 결제 대상이 아니라 매핑 없음. */
@@ -50,6 +53,17 @@ export default function Pricing({ showIntro = true }: PricingProps) {
     const productCode = PLAN_PRODUCT[plan.id];
     if (!productCode) return;
 
+    if (auth.status !== 'authenticated' || !auth.session) {
+      setPendingAuthRedirect('/pricing');
+      try {
+        window.sessionStorage.setItem('questdp.auth.redirectReason.v1', 'protected');
+      } catch {
+        /* private-mode storage failures do not block login */
+      }
+      navigate('/login');
+      return;
+    }
+
     if (!configured) {
       setError(
         '결제 설정이 아직 없습니다. .env 의 VITE_TOSS_CLIENT_KEY 를 확인해주세요.',
@@ -60,7 +74,7 @@ export default function Pricing({ showIntro = true }: PricingProps) {
     setError('');
     setPendingPlanId(plan.id);
 
-    const email = auth.session?.user.email ?? undefined;
+    const email = auth.session.user.email ?? undefined;
     try {
       await requestPayment({
         productCode,
@@ -123,6 +137,11 @@ export default function Pricing({ showIntro = true }: PricingProps) {
           무료 플랜으로 전체 커리큘럼을 시작할 수 있습니다. 결제 전 가격과 제공 범위를 다시 확인하세요.
         </p>
 
+        <p className="kr-body mx-auto mt-3 max-w-[720px] text-center text-[11.5px] leading-[1.65] text-cream/55 md:text-[12px]">
+          유료 이용권은 결제 즉시 활성화됩니다. {COMMERCE_POLICY.unusedRefund}{' '}
+          {COMMERCE_POLICY.startedContentRefund}
+        </p>
+
         {isTossTestMode() ? (
           <p className="kr-body mt-3 text-center text-[11.5px] leading-[1.6] text-neon/70 md:text-[12px]">
             {SHOP_NAME} · 테스트 결제 모드 — 실제로 청구되지 않습니다.
@@ -151,7 +170,7 @@ function planSubtitle(plan: PricingPlan): string {
   case 'premium-weekly':
     return '시험 직전 집중 풀이';
   case 'premium-monthly':
-    return '꾸준히 가장 알차게 활용';
+    return '30일 동안 꾸준히 활용';
   }
 }
 
@@ -167,7 +186,7 @@ function planPriceNote(plan: PricingPlan): string {
   case 'premium-weekly':
     return '7일 이용 · 자동 갱신 없음';
   case 'premium-monthly':
-    return '월간 · 주당 약 2,475원';
+    return '30일 이용 · 자동 갱신 없음';
   }
 }
 
@@ -202,11 +221,11 @@ function primaryFeatures(plan: PricingPlan): string[] {
     ];
   case 'premium-monthly':
     return [
-      '월간 에너지 무제한',
+      '30일 동안 에너지 무제한',
       '모든 챕터 자유 진행',
       '마스터리 대시보드 해금',
       'D-day와 스트릭 관리',
-      '장기 학습에 가장 낮은 주당 비용',
+      '30일 후 자동 만료',
     ];
   }
 }

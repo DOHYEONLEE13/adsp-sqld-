@@ -83,18 +83,18 @@ export const COMPANY = {
   representative: '이도현',
   /** 운영 전용 이메일 — 약관·정책·푸터·문의 모든 곳에서 이 한 곳을 참조. */
   email: 'questdpofficial@gmail.com',
-  contact: '문의는 이메일로',
+  contact: '010-4469-9607',
   /** 사업자등록번호 (XXX-XX-XXXXX). 2026-04-28 등록. */
   businessNumber: '604-48-01123',
   /** 통신판매업 신고번호. 결제 시작 시점에 정부24 신고 후 갱신. 그전엔 표시 안내. */
   ecommerceNumber: '결제 서비스 준비 중',
   /** 사업장 소재지 (도로명). 정확한 시·구·상세 번지는 등록증 기준으로 갱신. */
-  address: '판교로 20',
+  address: '판교로 20 301동 2202호',
   /** 개업일 (사업자등록 기준일). */
   openedAt: '2026-04-28',
   hostingProvider: 'Cloudflare Pages',
   /** 약관·정책의 마지막 개정일. 변경 시 같이 갱신. */
-  policyUpdatedAt: '2026-05-24',
+  policyUpdatedAt: '2026-09-03',
 } as const;
 
 export const CONTENT_PROTECTION_NOTICE =

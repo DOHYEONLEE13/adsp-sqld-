@@ -31,6 +31,7 @@ const PATH_ROUTES = new Set([
   '/blog',
   '/study-method',
   '/contact',
+  '/pricing',
 ]);
 
 /** Path prefix 라우트 — `/lesson/:stepId`, `/quiz/:questionId`, `/curriculum/:subject`, `/faq/:subject`, `/blog/:slug` 등 동적 segment. */

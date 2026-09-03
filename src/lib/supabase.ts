@@ -150,6 +150,13 @@ export function onAuthStateChange(
   };
 }
 
+/** 이메일·비밀번호 로그인. 심사용 계정을 포함한 일반 사용자 인증에 사용. */
+export async function signInWithPassword(email: string, password: string) {
+  const sb = getSupabase();
+  if (!sb) return { error: new Error('supabase not configured') };
+  return sb.auth.signInWithPassword({ email: email.trim(), password });
+}
+
 /**
  * 계정 + 모든 데이터 영구 삭제. RPC 가 auth.users row 를 지우면
  * cascade 로 profiles · sessions · friendships · ... 모두 자동 정리.
@@ -210,6 +217,6 @@ export async function signInWithDevTestAccount(): Promise<{
   if (!email || !password) {
     return { ok: false, error: 'VITE_TEST_LOGIN_* 미설정 (.env.development.local)' };
   }
-  const { error } = await sb.auth.signInWithPassword({ email, password });
+  const { error } = await signInWithPassword(email, password);
   return error ? { ok: false, error: error.message } : { ok: true };
 }

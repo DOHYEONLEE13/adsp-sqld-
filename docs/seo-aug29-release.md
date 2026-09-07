@@ -12,3 +12,11 @@
 - 색인: 사용자에게 위 canonical URL을 전달한다. GSC 요청·색인 완료는 이 commit만으로 성립하지 않는다.
 
 레슨·문제 원본 및 서버 데이터 변경은 없다.
+
+## 원격 설치 실패 후 재현성 보정
+
+첫 push `c1d9af2d44ce961ef34a7781cf3dd17e79a7f982`의 CI run 34102459295는 Node 22.23.2 / npm 10.9.8의 `npm install`에서 `Cannot read properties of null (reading 'edgesOut')` 오류로 중단됐다. Cloudflare 체크도 실패했으나 상세 로그는 인증이 없어 같은 원인이라고 단정하지 않았다. 운영은 구본문이었다.
+
+별도 빈 검사 폴더에서 동일 package.json과 npm 10.9.8로 lock 없는 설치를 실행해 같은 오류를 재현했다. 로컬 npm 11 lock을 그대로 npm 10의 `npm ci`에 쓰면 nested esbuild 0.28.2 항목 누락도 발생했다. 검증된 lock을 npm 10.9.8의 `npm install --package-lock-only --ignore-scripts`로 보완했고 기존 패키지 버전 변경·삭제는 0건, 누락된 esbuild와 플랫폼별 optional 항목만 추가됐다. 이후 Linux x64 대상 npm 10.9.8 `npm ci --dry-run --ignore-scripts`는 통과했다(실제 Linux 실행은 원격 CI로 별도 확인).
+
+보정 commit은 lockfile 추적을 복원하고 CI도 `npm ci`를 쓰도록 한다. 새 의존성 버전으로 무차별 업데이트하거나 peer 검사를 무시하지 않는다. 이전 lock 제외 정책은 당시 OS 항목 누락의 임시 대응이었고, 앞으로는 모든 플랫폼 항목을 보존한 lock으로 검증한다. 블로그 이외 앱 소스·미승인 8/30 원고는 계속 배포 범위에서 제외한다.

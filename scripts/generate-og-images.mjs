@@ -12,6 +12,7 @@
  *
  * 실행:
  *   - 수동: `node scripts/generate-og-images.mjs`
+ *   - 특정 글만: `node scripts/generate-og-images.mjs <slug>`
  *   - 빌드 통합: package.json prebuild 에 추가 (현재는 수동 — 빌드 시간 늘어남)
  *
  * BlogPostPage 가 자동으로 `/og/blog-<slug>.png` 우선 시도, 없으면 default 폴백.
@@ -157,6 +158,7 @@ function buildHtml(post) {
     font-weight: 900;
     font-size: 64px;
     line-height: 1.18;
+    word-break: keep-all;
     letter-spacing: -0.03em;
     color: #EFF4FF;
   }
@@ -164,6 +166,7 @@ function buildHtml(post) {
     font-weight: 500;
     font-size: 24px;
     line-height: 1.5;
+    word-break: keep-all;
     color: rgba(239, 244, 255, 0.72);
     /* 2 줄 클램프 */
     display: -webkit-box;
@@ -203,7 +206,7 @@ function buildHtml(post) {
     </div>
 
     <div class="body">
-      <h1 class="title">${esc(post.title)}</h1>
+      <h1 class="title">${esc(post.title).replace(/(\S+·\S+)/g, '<span style="white-space:nowrap">$1</span>')}</h1>
       <p class="subtitle">${esc(post.subtitle)}</p>
     </div>
 
@@ -218,9 +221,12 @@ function buildHtml(post) {
 
 // ─── Playwright 실행 ───────────────────────────────────────────
 async function main() {
-  const posts = collectPosts();
+  const targetSlug = process.argv[2];
+  const posts = collectPosts().filter((post) => !targetSlug || post.slug === targetSlug);
   if (posts.length === 0) {
-    console.warn('⚠️  blog.ts 에서 포스트를 찾지 못함. 정규식 / 파일 경로 확인 필요.');
+    console.warn(targetSlug
+      ? `⚠️  요청한 포스트를 찾지 못함: ${targetSlug}`
+      : '⚠️  blog.ts 에서 포스트를 찾지 못함. 정규식 / 파일 경로 확인 필요.');
     process.exit(1);
   }
   if (!fs.existsSync(OUT_DIR)) {

@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "date": "2026-09-06",
+  "updatedAt": "2026-09-11T16:47:26Z",
+  "items": {
+    "blog": {
+      "status": "APPROVED",
+      "feedback": "9/12 일괄 생성·공식 블로그 커밋/푸시 요청으로 공개 승인. 배포 확인 전.",
+      "updatedAt": "2026-09-11T16:47:26Z"
+    },
+    "naver": {
+      "status": "PENDING",
+      "feedback": "",
+      "updatedAt": "2026-09-11T16:47:26Z"
+    },
+    "threads": {
+      "status": "PENDING",
+      "feedback": "",
+      "updatedAt": "2026-09-11T16:47:26Z"
+    },
+    "instagram": {
+      "status": "PENDING",
+      "feedback": "프롬프트만 작성. 이미지 미생성·사용자 검수 필요.",
+      "updatedAt": "2026-09-11T16:47:26Z"
+    },
+    "velog": {
+      "status": "PENDING",
+      "feedback": "",
+      "updatedAt": "2026-09-11T16:47:26Z"
+    },
+    "tistory": {
+      "status": "HOLD",
+      "feedback": "",
+      "updatedAt": "2026-09-11T16:47:26Z"
+    },
+    "linkedin": {
+      "status": "HOLD",
+      "feedback": "",
+      "updatedAt": "2026-09-11T16:47:26Z"
+    },
+    "community": {
+      "status": "HOLD",
+      "feedback": "",
+      "updatedAt": "2026-09-11T16:47:26Z"
+    }
+  }
+}

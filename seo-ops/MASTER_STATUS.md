@@ -1,8 +1,17 @@
 # QuestDP SEO·AEO Master Status
 
-기준일: 2026-08-27 KST
+기준일: 2026-09-12 KST · 최신 생성 패키지: 2026-09-14
 스프린트: 2026-08-24 ~ 2026-09-13
 상태: Phase 1 Foundation 완료 · Phase 1.5 Publishing Workflow 운영 중 · Phase 2 일일 패키지 운영
+
+## 최신 배치 — 2026-09-12 작성
+
+- 8/31~9/14 총 15패키지를 추가했다(콘텐츠 9일 / QA·공식 미확인 HOLD 6일).
+- Naver 8편·Threads 9편·인스타툰 6장 프롬프트 9편·Velog 2편·Tistory 4편·LinkedIn 1편. 외부 채널은 사용자 검수 PENDING, 이미지 미생성.
+- 공식 기존 글 7URL을 보강했고 이번 사용자의 커밋·푸시 요청으로 공개 승인됐다. 배포 전 최종 검증 중이며 실제 결과는 07-reports/2026-09-12-seo-through-0914-publication.md를 따른다.
+- 8/30 비교 글도 이번 공식 공개 범위에 포함했다. 9/4·9/11 SQLD 발표 뉴스는 KDATA 접근 제한으로 사실 검증 불가하여 HOLD.
+- GSC 요청은 실행하지 않고 대상 URL만 제공한다. 노출·클릭·순위·색인 상태를 추정하지 않는다.
+- 인수인계: 08-handover/2026-09-14-batch-handover.md. 아래 기존 일별 기록은 과거 이력이며 최신 상태는 이 배치 기록을 우선한다.
 
 ## Phase 1.5 — Publishing Workflow
 
@@ -19,6 +28,10 @@
 2026-08-25 SQLD Daily Package는 QuestDP Blog 배포·색인 요청, Naver·Threads 게시까지 처리됐다. Instagram은 사용자 품질 판정에 따라 게시하지 않았다. 2026-08-26 ADsP Daily Package는 QuestDP Blog를 commit `7decea8`로 배포했고 Naver·Threads도 게시됐다. Instagram은 검토 대기이며 ADsP Search Console 색인 요청 여부는 확인되지 않았다. 2026-08-27은 중복 발행 없이 두 필러의 운영·사이트맵·공개 검색 캐시를 점검하는 QA 패키지로 생성했다.
 
 2026-08-28 ADsP 후속 패키지는 사전 생성했다. 4주 필러·2주 로드맵·독학/인강 비교 글의 내부 링크망에 고립 URL이 없음을 확인했고, 공개 검색에 남은 수정 전 스니펫 때문에 실제 실행일에는 세 URL의 Search Console 재크롤 상태만 점검한다. 모든 신규 게시 채널은 HOLD다.
+
+2026-08-29 컴활 패키지는 9월 7일 Naver·Threads·Tistory 공개와 Naver·Tistory의 정확한 필러 백링크를 확인했다. 이후 사용자의 명시적 요청으로 공식 블로그를 c1d9af2에 커밋·푸시했고, 원격 설치 실패를 보정한 48f7166에서 CI·Cloudflare 성공 및 운영 본문·번들 반영까지 확인했다. 색인 요청은 사용자 단계이며 UNKNOWN이다. Instagram은 사용자 디자인 반려로 `NEEDS_REVISION`을 유지한다. 상세 근거와 분리 배포 worktree의 후속 Git 주의사항은 `07-reports/2026-09-07-aug29-publication-check.md`에 기록했다.
+
+2026-08-30은 `컴활 1급 2급 차이` 패키지다. 기존 비교 URL에 실기·개별 합격 조건·지원 공고별 선택과 선택 이후 첫 학습 예시를 보강했다. Naver는 친절한 선택 이유·학습 루틴, Threads는 짧은 실행형으로 재작성했다. Instagram은 기존 CSS 이미지 6장을 SUPERSEDED로 보존하고, 캐릭터가 필터 한 개념을 설명하는 인스타툰 6장 프롬프트로 전환했다. 새 이미지 생성·직접 검수·게시는 사용자 단계이며, 8/30 원고는 검토 전 `PENDING`이다. 8/30은 편성일이고 실제 조사·작성은 9/7이다. 다음 작업 전 `EDITORIAL_RULES.md`를 반드시 읽는다.
 
 ## Phase 2 — 2026-08-25 SQLD Daily Package
 
@@ -96,6 +109,39 @@
 - [ ] 8월 28일 실제 HTTP·canonical 재확인
 - [ ] Search Console에서 세 URL 최신 크롤·색인 상태 확인
 
+## Phase 2 — 2026-08-29 COMHWAL Daily Package
+
+- [x] `컴활 필기 공부법` 공개 검색 결과와 대한상공회의소 공식 안내 재검증
+- [x] 신규 URL 대신 기존 컴활 필기 글을 general 필러로 확장
+- [x] 1급·2급 시험 구조와 과락 기준을 초보자 관점으로 설명
+- [x] 2급 12회·1급 18회 회차형 학습 계획과 하루 80분 루프 작성
+- [x] Naver·Threads·Tistory 독립 원고 작성
+- [x] Instagram 1080×1080 PNG 7장 생성 및 개별 시각 QA
+- [x] Velog·LinkedIn HOLD, Community NO ACTION 근거 기록
+- [x] Typecheck, 전체 53 test files / 596 tests, production build와 SEO audit
+- [x] 559 static HTML, sitemap 262 URL, noindex 297개 확인
+- [x] Studio Blog 390 / 820 / 1280px와 Naver·Threads·Instagram·Tistory preview 검증
+- [x] QuestDP Blog 사용자 승인
+- [x] Naver·Threads·Tistory 공개 원고 확인 (2026-09-07)
+- [x] Naver·Tistory의 정확한 필러 백링크 확인
+- [x] QuestDP 새 원고 commit/push/deploy — c1d9af2 + 설치 보정 48f7166, CI·Cloudflare·운영 본문/번들·모바일 확인
+- [ ] Instagram 디자인 재작업·승인 — 기존 자체 점수 철회
+- [ ] 색인 요청 여부 확인
+
+## Phase 2 — 2026-08-30 COMHWAL Comparison Daily Package
+
+- [x] 실제 9/7 검색 결과·대한상공회의소 시험안내 확인
+- [x] 기존 `/blog/comhwal-1급-vs-2급/` 업데이트·필러 문맥 링크
+- [x] 실기 프로그램·시간·개별 합격 조건·요구 급수·증빙 마감일 설명
+- [x] Naver 친절한 선택·학습 루틴과 Threads 257자 실행형 원고 재작성
+- [x] Instagram은 필터 인스타툰 6장 프롬프트로 전환, 기존 CSS 이미지 SUPERSEDED
+- [x] Tistory·Velog·LinkedIn·Community HOLD 사유 기록
+- [x] typecheck·53 test files / 597 tests·production build·SEO audit 통과
+- [x] Studio·390/820/1280px 반응형·Naver 본문/전체 프롬프트 복사·Threads 댓글·콘티 확인
+- [ ] 캐릭터 레퍼런스로 새 이미지 생성·사용자 직접 시각 검수
+- [ ] 사용자 검토·승인
+- [ ] 승인 후 배포·외부 게시·색인 확인
+
 ## 현재 핵심 진단
 
 1. Production sitemap 261개 URL은 모두 200이고 canonical·H1·robots가 일치한다.
@@ -117,9 +163,9 @@
 
 ## 다음 작업
 
-1. 8월 26일 ADsP Instagram 7장 승인 또는 보류 결정
-2. 8월 28일 ADsP 세 URL의 HTTP·canonical·Search Console 상태 확인
-3. 필요한 ADsP URL만 색인 요청하고 Published Log 갱신
-4. 8월 29일 `컴활 필기 공부법` 기존 필러 업데이트 패키지 생성
+1. 8월 30일 Blog·Naver·Threads·인스타툰 콘티/프롬프트 검토
+2. 사용자가 캐릭터 레퍼런스로 인스타툰을 생성하고 이미지 직접 검수
+3. 8월 29일 Instagram 디자인 수정 백로그와 8월 26일 검토 대기 항목 정리
+4. 배포된 글의 Search Console 상태를 확인하고 필요한 URL에 색인 요청
 
 2026-08-25 SQLD 패키지는 사용자 피드백에 따라 Blog·Naver·Threads를 `아답터 강의 → 당일·다음 날 QuestDP 복습 → 같은 범위 노랭이` 흐름으로 재작성했고, 4주는 `1과목 1주 → 2과목 2주 → 노랭이 2회독 1주`로 다시 배분했다. Blog는 통과·배포됐고 Naver·Threads도 게시됐다. Instagram은 최종 품질 문제로 게시하지 않았다.

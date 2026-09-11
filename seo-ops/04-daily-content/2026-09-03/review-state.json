@@ -1,12 +1,13 @@
 {
   "version": 1,
   "date": "2026-09-03",
-  "updatedAt": "2026-09-11T16:47:26Z",
+  "updatedAt": "2026-09-11T17:01:43.512Z",
   "items": {
     "blog": {
-      "status": "APPROVED",
-      "feedback": "9/12 일괄 생성·공식 블로그 커밋/푸시 요청으로 공개 승인. 배포 확인 전.",
-      "updatedAt": "2026-09-11T16:47:26Z"
+      "status": "PUBLISHED",
+      "feedback": "실제 2026-09-12 공개: dad1335 커밋·푸시, CI/Cloudflare 성공 및 운영 HTML·번들 반영 확인. 편성일과 공개일은 다름. GSC 요청 미실행.",
+      "updatedAt": "2026-09-11T17:01:43.512Z",
+      "publishedUrl": "https://quest-dp.com/blog/adsp-비전공자-가이드/"
     },
     "naver": {
       "status": "PENDING",

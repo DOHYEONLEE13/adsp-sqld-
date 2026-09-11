@@ -1,4 +1,4 @@
-STATUS: UPDATE
+STATUS: PUBLISHED
 
 REVIEW STATUS: AUTHORIZED FOR PUBLICATION — 2026-09-12 사용자 요청
 
@@ -79,7 +79,7 @@ https://quest-dp.com/blog/comhwal-필기-비전공자-공부법/
 https://quest-dp.com/blog/comhwal-7일-필기-플랜/
 https://quest-dp.com/blog/comhwal-1급-vs-2급/
 
-DEPLOYMENT STATUS: PENDING — 배포 증거는 07-reports/2026-09-12-seo-through-0914-publication.md 참조
+DEPLOYMENT STATUS: SUCCESS — 실제 2026-09-12 공개, 콘텐츠 dad1335. CI·Cloudflare·운영 HTML/JS 확인. 07-reports/2026-09-12-seo-through-0914-publication.md 참조
 
 INDEXING: NOT_REQUESTED_IN_THIS_BATCH
 
